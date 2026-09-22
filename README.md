@@ -49,7 +49,12 @@ editor supports entity and multi-entity selection, name, secondary text, icon,
 color, layout, documented variants, state visibility, and Home Assistant
 tap/hold/double-tap actions. The **Addition Chips Card** lets users add, remove,
 select, and configure chip entities without authoring Minimalist template
-variables.
+variables. Card-picker previews automatically select compatible entities from
+the current Home Assistant instance so examples show real names and states.
+
+The **PS5 / Xbox Card** preserves the upstream PlayStation mapping while adding
+a graphical platform selector. Choose `ps5` or `xbox`; the icon and presentation
+update without requiring YAML-only variables.
 
 ```yaml
 type: custom:mushroom-addition-card-light

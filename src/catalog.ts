@@ -40,7 +40,9 @@ const humanize = (id: string): string =>
   id
     .replace(/^iAbadia/, "iAbadia")
     .split("_")
-    .map((word) => word.length <= 3 ? word.toUpperCase() : `${word[0].toUpperCase()}${word.slice(1)}`)
+    .map((word) => ["nas", "mdi", "dwd", "vnc", "wifi", "http"].includes(word.toLowerCase())
+      ? word.toUpperCase()
+      : `${word[0].toUpperCase()}${word.slice(1)}`)
     .join(" ");
 
 const familyFor = (id: string): string => {
@@ -83,6 +85,32 @@ const variants: Record<string, string[]> = {
   card_power_outlet: ["default", "popup"],
   card_thermostat: ["default", "popup"],
   card_vacuum: ["default", "popup"],
+  custom_card_playstation: ["ps5", "xbox"],
+};
+
+const preferredDomainsFor = (id: string, family: string): string[] => {
+  if (id.includes("binary_sensor")) return ["binary_sensor"];
+  if (id.includes("battery")) return ["sensor"];
+  if (id.includes("input_boolean")) return ["input_boolean"];
+  if (id.includes("input_number")) return ["input_number"];
+  if (id.includes("input_datetime")) return ["input_datetime"];
+  if (id.includes("light")) return ["light"];
+  if (/media|chromecast|playstation/.test(id)) return ["media_player", "sensor"];
+  if (/thermostat|heat_pump|aircondition/.test(id)) return ["climate"];
+  if (/scene/.test(id)) return ["scene"];
+  if (/script/.test(id)) return ["script"];
+  if (/vacuum/.test(id)) return ["vacuum"];
+  if (/weather/.test(id)) return ["weather"];
+  if (/person/.test(id)) return ["person", "device_tracker"];
+  if (/cover|door|garage/.test(id)) return ["cover", "binary_sensor"];
+  if (/fan/.test(id)) return ["fan"];
+  if (/camera/.test(id)) return ["camera"];
+  if (/lock/.test(id)) return ["lock"];
+  if (/update/.test(id)) return ["update"];
+  if (family === "metric" || family === "weather") return ["sensor"];
+  if (family === "control") return ["switch", "light"];
+  if (family === "presence") return ["person", "device_tracker"];
+  return ["sensor", "switch"];
 };
 
 const makeItem = (
@@ -90,19 +118,29 @@ const makeItem = (
   kind: "card" | "chip",
   sourcePath: string,
 ): CatalogItem => {
+  const componentId = upstreamId
+    .replace(/^custom_(card|chip)_/, "")
+    .replace(/^(card|chip)_/, "");
   const slug = upstreamId.replaceAll("_", "-").toLowerCase();
   const tag = slug.startsWith("custom-card-") || slug.startsWith("custom-chip-")
     ? `mushroom-addition-${slug}`
     : `mushroom-addition-${kind}-${slug.replace(new RegExp(`^${kind}-`), "")}`;
+  const family = familyFor(upstreamId);
+  const consoleCard = upstreamId === "custom_card_playstation";
   return {
     upstreamId,
     sourcePath,
     kind,
-    family: familyFor(upstreamId),
+    family,
     tag,
-    name: `${humanize(upstreamId)} ${kind === "chip" ? "Chip" : "Card"}`,
-    description: `Mushroom-style ${humanize(upstreamId).toLowerCase()} ${kind}.`,
+    name: consoleCard
+      ? "PS5 / Xbox Card"
+      : `${humanize(componentId)} ${kind === "chip" ? "Chip" : "Card"}`,
+    description: consoleCard
+      ? "Mushroom-style game console card with PS5 and Xbox modes."
+      : `Mushroom-style ${humanize(componentId).toLowerCase()} ${kind}.`,
     variants: variants[upstreamId],
+    preferredDomains: preferredDomainsFor(upstreamId, family),
   };
 };
 

@@ -1,9 +1,10 @@
 import "./editor";
 import { CATALOG } from "./catalog";
 import { MushroomAdditionCard } from "./card";
-import type { AdditionConfig, CatalogItem } from "./types";
+import type { AdditionConfig, CatalogItem, HomeAssistant } from "./types";
+import { createStubConfig } from "./stub";
 
-const VERSION = "1.0.0";
+const VERSION = "1.0.1";
 
 for (const item of CATALOG) {
   if (!customElements.get(item.tag)) {
@@ -11,15 +12,12 @@ for (const item of CATALOG) {
     class RegisteredAdditionCard extends MushroomAdditionCard {
       protected descriptor: CatalogItem = descriptor;
 
-      public static getStubConfig(): AdditionConfig {
-        return {
-          type: `custom:${descriptor.tag}`,
-          name: descriptor.name.replace(/ (Card|Chip)$/, ""),
-          icon: descriptor.kind === "chip" ? "mdi:circle-small" : undefined,
-          variant: descriptor.variants?.[0],
-          show_icon: true,
-          show_state: true,
-        };
+      public static getStubConfig(
+        hass?: HomeAssistant,
+        entities: string[] = [],
+        entitiesFallback: string[] = [],
+      ): AdditionConfig {
+        return createStubConfig(descriptor, hass, entities, entitiesFallback);
       }
     }
     customElements.define(item.tag, RegisteredAdditionCard);

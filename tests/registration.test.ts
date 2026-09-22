@@ -25,6 +25,79 @@ describe("Home Assistant registration", () => {
     }
   });
 
+  it("populates picker examples with compatible Home Assistant entities", () => {
+        const hass: HomeAssistant = {
+          states: {
+            "light.kitchen": {
+              entity_id: "light.kitchen",
+              state: "on",
+              attributes: { friendly_name: "Kitchen" },
+            },
+            "media_player.xbox": {
+              entity_id: "media_player.xbox",
+              state: "playing",
+              attributes: { friendly_name: "Xbox" },
+            },
+            "sensor.temperature": {
+              entity_id: "sensor.temperature",
+              state: "21",
+              attributes: { friendly_name: "Temperature", unit_of_measurement: "°C" },
+            },
+          },
+          callService: async () => undefined,
+        };
+        const lightConstructor = customElements.get("mushroom-addition-card-light") as typeof HTMLElement & {
+          getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
+        };
+        const consoleConstructor = customElements.get("mushroom-addition-custom-card-playstation") as typeof HTMLElement & {
+          getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
+        };
+        expect(lightConstructor.getStubConfig(hass, Object.keys(hass.states), [])).toMatchObject({
+          entity: "light.kitchen",
+          name: undefined,
+        });
+        expect(consoleConstructor.getStubConfig(hass, Object.keys(hass.states), [])).toMatchObject({
+          entity: "media_player.xbox",
+          variant: "xbox",
+          icon: undefined,
+        });
+  });
+
+  it("provides populated example chips in the container preview", () => {
+        const constructor = customElements.get("mushroom-addition-chips-card") as typeof HTMLElement & {
+          getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
+        };
+        const hass: HomeAssistant = {
+          states: {
+            "sensor.temperature": {
+              entity_id: "sensor.temperature",
+              state: "21",
+              attributes: { friendly_name: "Temperature" },
+            },
+            "person.joris": {
+              entity_id: "person.joris",
+              state: "home",
+              attributes: { friendly_name: "Joris" },
+            },
+          },
+          callService: async () => undefined,
+        };
+        const config = constructor.getStubConfig(hass, Object.keys(hass.states), []);
+        expect(config.chips).toHaveLength(2);
+        expect(config.chips?.map((chip) => chip.entity)).toEqual([
+          "sensor.temperature",
+          "person.joris",
+        ]);
+  });
+
+  it("exposes PS5 and Xbox as graphical console variants", () => {
+        const consoleCard = CATALOG.find((item) => item.upstreamId === "custom_card_playstation");
+        expect(consoleCard).toMatchObject({
+          name: "PS5 / Xbox Card",
+          variants: ["ps5", "xbox"],
+        });
+  });
+
   it("renders a representative from every component family", async () => {
     const hass: HomeAssistant = {
       states: {

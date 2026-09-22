@@ -1,6 +1,6 @@
 {
   "name": "mushroom-cards-addition",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "UI-configurable Mushroom-style Lovelace cards inspired by UI-Lovelace-Minimalist",
   "type": "module",
   "main": "dist/mushroom-cards-addition.js",

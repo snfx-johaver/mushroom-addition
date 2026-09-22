@@ -209,6 +209,9 @@ export class MushroomAdditionCard extends LitElement {
   }
 
   private defaultIcon(): string {
+    if (this.descriptor?.upstreamId === "custom_card_playstation") {
+      return this.config?.variant === "xbox" ? "mdi:microsoft-xbox" : "mdi:sony-playstation";
+    }
     const icons: Record<string, string> = {
       weather: "mdi:weather-partly-cloudy",
       presence: "mdi:account",

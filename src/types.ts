@@ -67,6 +67,7 @@ export interface CatalogItem {
   name: string;
   description: string;
   variants?: string[];
+  preferredDomains?: string[];
 }
 
 declare global {
