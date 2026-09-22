@@ -1,0 +1,48 @@
+{
+  "name": "mushroom-cards-addition",
+  "version": "1.0.0",
+  "description": "UI-configurable Mushroom-style Lovelace cards inspired by UI-Lovelace-Minimalist",
+  "type": "module",
+  "main": "dist/mushroom-cards-addition.js",
+  "files": [
+    "dist/mushroom-cards-addition.js"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "check:catalog": "tsx scripts/catalog-doc.ts --check && tsx scripts/check-catalog.ts",
+    "docs:catalog": "tsx scripts/catalog-doc.ts",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "validate": "npm run lint && npm run typecheck && npm run check:catalog && npm test && npm run build"
+  },
+  "keywords": [
+    "home-assistant",
+    "lovelace",
+    "mushroom",
+    "hacs"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/snfx-johaver/mushroom-cards-addition.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "lit": "^3.3.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "@types/node": "^24.5.2",
+    "eslint": "^9.36.0",
+    "globals": "^16.4.0",
+    "happy-dom": "^20.14.5",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.44.1",
+    "vite": "^7.1.7",
+    "vitest": "^5.0.1"
+  }
+}

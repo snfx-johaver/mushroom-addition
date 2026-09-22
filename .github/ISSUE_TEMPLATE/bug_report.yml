@@ -1,0 +1,35 @@
+name: Bug report
+description: Report a reproducible card or editor problem
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping improve Mushroom Cards Addition.
+  - type: input
+    id: component
+    attributes:
+      label: Component type
+      placeholder: custom:mushroom-addition-card-light
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Home Assistant, Mushroom Cards Addition, browser
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Configuration
+      render: yaml
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true

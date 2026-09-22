@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - uses: hacs/action@main
+        with:
+          category: plugin
+      - run: npm run validate
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mushroom-cards-addition
+          path: |
+            dist/mushroom-cards-addition.js
+            dist/mushroom-cards-addition.js.map
