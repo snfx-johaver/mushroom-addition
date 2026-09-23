@@ -19,14 +19,13 @@ tokens but not a generic layout.
 | Scene | Compact heading plus a grid of scene activation pills | `card_templates/cards/card_scenes_welcome.yaml`, `docs/usage/cards/card_scenes.md` |
 | Person/presence | Avatar/icon, zone/address/ETA text, presence dot or battery badge | `card_templates/cards/card_person.yaml`, `docs/usage/cards/card_person.md` |
 | Battery | Threshold-colored battery icon, large percentage and level bar | `card_templates/cards/card_battery.yaml`, `docs/usage/cards/card_battery.md` |
-| Energy/power | Current value emphasis, sparkline, optional minimum/maximum sensor detail | `card_templates/cards/card_power_outlet.yaml`, `card_templates/chips/chip_power_consumption.yaml` |
+| Energy/power | Current value emphasis, source-specific graph, gauge, or bar composition | `card_templates/cards/card_power_outlet.yaml`, `custom_cards/custom_card_bar_card/` |
 | Sensor/graph | Current sensor reading plus deterministic compact history/sparkline treatment | `card_templates/2-line_cards/card_graph.yaml`, `docs/usage/cards/card_graph.md` |
 | Media | Artwork or app/device icon, title/state, optional transport controls | `card_templates/cards/card_media_player.yaml`, `docs/usage/cards/card_media_player.md` |
 | Cover | Device/state header and open/stop/close controls | `card_templates/cards/card_cover.yaml`, `docs/usage/cards/card_cover.md` |
 | Vacuum | State-colored robot icon, battery detail and start/pause/home controls | `card_templates/cards/card_vacuum.yaml`, `docs/usage/cards/card_vacuum.md` |
-| Alarm/security | Armed/locked state coloring and explicit secured/attention status | `card_templates/chips/chip_alarm.yaml`, `docs/usage/chips/chip_alarm.md` |
-| Navigation | Direction icon, destination copy and trailing chevron | `card_templates/cards/card_navigate.yaml`, `card_templates/chips/chip_navigate.yaml` |
-| Chips | 34px capsule surface with family-colored circular icon, concise label and state | `card_templates/internal_templates/chips.yaml`, `docs/usage/chips/` |
+| Alarm/security | Armed/locked state coloring and explicit secured/attention status | `custom_cards/custom_card_eraycetinay_lock/` |
+| Navigation | Direction icon, destination copy and trailing chevron | `card_templates/cards/card_navigate.yaml` |
 
 ## Source-derived composition coverage
 
@@ -35,9 +34,7 @@ and README files in custom-card directories. It records 15 materially distinct
 composition profiles built from button-card, native card, popup, control,
 chart, entities, image, vertical-stack, and horizontal-stack primitives.
 [`catalog-fixture.png`](assets/catalog-fixture.png) contains exactly one
-browser-rendered example of every public card and the one chips container.
-Every public chip appears exactly once inside that container rather than as a
-duplicate standalone card. The fixture is ordered by the checked catalog,
+browser-rendered example of every public card. The fixture is ordered by the checked catalog,
 labeled with the public ID/family, and does not add overview cards, duplicate
 state galleries, or decorative variants.
 
@@ -65,8 +62,10 @@ Assistant entity, action, icon, boolean, number, or text selectors.
 ## Visual verification
 
 `demo/` provides deterministic representative states for the complete checked
-catalog, exactly once per registration. The current browser-rendered fixture is
-committed at [`docs/assets/catalog-fixture.png`](assets/catalog-fixture.png).
-Renderer tests assert the weather hierarchy, distinct family markup, exact
-one-per-registration fixture coverage, explicit per-entry renderer mappings,
-and that every exposed editor option has an implementation mapping.
+card catalog, exactly once per registration. The current browser-rendered
+fixture is committed at [`docs/assets/catalog-fixture.png`](assets/catalog-fixture.png).
+Bar Card is the first source-specific visual acceptance gate; its inspected
+comparison is committed at
+[`docs/assets/visual-audit/custom-card-bar-card-comparison.png`](assets/visual-audit/custom-card-bar-card-comparison.png).
+The remaining source-by-source visual audit is tracked explicitly and no longer
+inferred from a shared family renderer.

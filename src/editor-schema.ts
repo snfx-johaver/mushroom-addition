@@ -37,6 +37,15 @@ const percentageOptions = new Set([
   "ulm_card_fan_slider_min",
   "ulm_card_fan_slider_max",
 ]);
+const booleanOptions = new Set([
+  "ulm_custom_card_bar_card_indicator",
+  "ulm_custom_card_bar_card_show_icon",
+  "ulm_custom_card_bar_card_value",
+]);
+const numericBoxOptions = new Set([
+  "ulm_custom_card_bar_card_min",
+  "ulm_custom_card_bar_card_max",
+]);
 
 const choiceOptions: Record<string, Array<{ value: string; label: string }>> = {
   ulm_card_weather_primary_info: [
@@ -111,6 +120,7 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
     toggle("use_entity_picture"),
   ],
   battery: (item) => [...common(item)],
+  bar: (item) => [...common(item)],
   energy: (item) => [...common(item), entity(["sensor"], "min_entity"), entity(["sensor"], "max_entity"), toggle("show_graph")],
   sensor: (item) => [...common(item), toggle("show_graph")],
   media: (item) => [...common(item), toggle("show_controls"), ...(item.upstreamId === "custom_card_playstation" ? [{ name: "console_platform", selector: { select: { options: ["ps5", "xbox"] } } }] : [])],
@@ -125,7 +135,6 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
     ...presentation(),
     text("navigation_path"),
   ],
-  chips: () => [],
   text: () => [...presentation(), text("secondary")],
   camera: (item) => [...common(item)],
   control: (item) => [
@@ -160,6 +169,8 @@ export const upstreamEditorSchemaFor = (item: CatalogItem, config?: AdditionConf
   return variables.filter((variable) => supportedUpstreamOption(item, variable.name)).map((variable) => {
     const choices = choiceOptions[variable.name];
     if (choices) return select(variable.name, choices);
+    if (booleanOptions.has(variable.name)) return toggle(variable.name);
+    if (numericBoxOptions.has(variable.name)) return number(variable.name, -100000, 100000);
     if (percentageOptions.has(variable.name)) {
       return {
         name: variable.name,

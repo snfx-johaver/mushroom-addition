@@ -6,7 +6,7 @@ import { upstreamEditorSchemaFor } from "../src/editor-schema";
 
 describe("family editor schemas", () => {
   it("uses one canonical primary entity selector in every card editor", () => {
-    for (const item of CATALOG.filter((entry) => entry.kind !== "container")) {
+    for (const item of CATALOG) {
       const schema = editorSchemaFor(item);
       expect(schema.filter((field) => field.name === "entity")).toHaveLength(
         item.family === "navigation" || item.family === "text" ? 0 : 1,
@@ -39,8 +39,8 @@ describe("family editor schemas", () => {
   it("maps every registration to a known renderer/editor family", () => {
     const supported = new Set([
       "weather", "climate", "light", "scene", "presence", "battery", "energy",
-      "sensor", "media", "cover", "vacuum", "security", "navigation", "chips",
-      "text", "camera", "control", "alarm-time", "door", "entity",
+      "sensor", "media", "cover", "vacuum", "security", "navigation",
+      "text", "camera", "control", "alarm-time", "door", "entity", "bar",
     ]);
     for (const item of CATALOG) expect(supported.has(item.family)).toBe(true);
   });
@@ -52,7 +52,6 @@ describe("family editor schemas", () => {
       preferredDomains: ["switch", "light"],
     });
     expect(byId("card_welcome_scenes").family).toBe("scene");
-    expect(byId("chip_alarm").preferredDomains).toEqual(["alarm_control_panel"]);
     expect(byId("custom_card_alarm_time")).toMatchObject({
       family: "alarm-time",
       preferredDomains: ["input_boolean"],
@@ -133,5 +132,23 @@ describe("family editor schemas", () => {
       .toBeGreaterThan(0);
     expect(upstreamEditorSchemaFor(weather, { type: `custom:${weather.tag}`, variant: "native" }))
       .toHaveLength(0);
+  });
+
+  it("gives Bar Card only its source-specific controls", () => {
+    const bar = CATALOG.find((item) => item.upstreamId === "custom_card_bar_card")!;
+    expect(bar.family).toBe("bar");
+    const core = editorSchemaFor(bar).map((field) => field.name);
+    expect(core).not.toEqual(expect.arrayContaining(["show_graph", "min_entity", "max_entity"]));
+    expect(upstreamEditorSchemaFor(bar).map((field) => field.name)).toEqual(expect.arrayContaining([
+      "ulm_custom_card_bar_card_color",
+      "ulm_custom_card_bar_card_icon",
+      "ulm_custom_card_bar_card_icon_color",
+      "ulm_custom_card_bar_card_indicator",
+      "ulm_custom_card_bar_card_min",
+      "ulm_custom_card_bar_card_max",
+      "ulm_custom_card_bar_card_name",
+      "ulm_custom_card_bar_card_show_icon",
+      "ulm_custom_card_bar_card_value",
+    ]));
   });
 });

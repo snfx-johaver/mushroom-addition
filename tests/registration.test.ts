@@ -23,24 +23,6 @@ describe("Home Assistant registration", () => {
     }
   });
 
-  it("normalizes legacy chip aliases to unified types in the graphical editor", () => {
-    const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {
-      setConfig(config: AdditionConfig): void;
-      config?: AdditionConfig;
-    };
-    editor.setConfig({
-      type: "custom:mushroom-addition-chips-card",
-      chips: [{
-        type: "custom:mushroom-addition-chip-mdi-icon-only",
-        icon: "mdi:home",
-      }],
-    });
-    expect(editor.config?.chips?.[0]).toMatchObject({
-      type: "custom:mushroom-addition-chip-icon-only",
-      variant: "mdi-icon",
-    });
-  });
-
   it("provides a graphical editor for every component", async () => {
     for (const item of CATALOG) {
       const constructor = customElements.get(item.tag) as typeof HTMLElement & {
@@ -93,33 +75,6 @@ describe("Home Assistant registration", () => {
         });
   });
 
-  it("provides populated example chips in the container preview", () => {
-        const constructor = customElements.get("mushroom-addition-chips-card") as typeof HTMLElement & {
-          getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
-        };
-        const hass: HomeAssistant = {
-          states: {
-            "sensor.temperature": {
-              entity_id: "sensor.temperature",
-              state: "21",
-              attributes: { friendly_name: "Temperature" },
-            },
-            "person.joris": {
-              entity_id: "person.joris",
-              state: "home",
-              attributes: { friendly_name: "Joris" },
-            },
-          },
-          callService: async () => undefined,
-        };
-        const config = constructor.getStubConfig(hass, Object.keys(hass.states), []);
-        expect(config.chips).toHaveLength(2);
-        expect(config.chips?.map((chip) => chip.entity)).toEqual([
-          "sensor.temperature",
-          "person.joris",
-        ]);
-  });
-
   it("exposes PS5 and Xbox as graphical console variants", () => {
         const consoleCard = CATALOG.find((item) => item.upstreamId === "custom_card_playstation");
         expect(consoleCard).toMatchObject({
@@ -165,13 +120,11 @@ describe("Home Assistant registration", () => {
       element.setConfig({
         type: `custom:${item.tag}`,
         entity: "sensor.example",
-        chips: item.kind === "container" ? [] : undefined,
       });
       document.body.append(element);
       await element.updateComplete;
       const text = element.shadowRoot?.textContent ?? "";
-      if (item.kind === "container") expect(text).toContain("Add chips");
-      else expect(text.trim().length).toBeGreaterThan(0);
+      expect(text.trim().length).toBeGreaterThan(0);
       element.remove();
     }
   });
@@ -203,16 +156,16 @@ describe("Home Assistant registration", () => {
     element.remove();
   });
 
-  it("supports hold actions on chips without also tapping", async () => {
+  it("supports hold actions on cards without also tapping", async () => {
     vi.useFakeTimers();
-    const element = document.createElement("mushroom-addition-chip-alarm") as HTMLElement & {
+    const element = document.createElement("mushroom-addition-card-light") as HTMLElement & {
       hass: HomeAssistant;
       setConfig(config: AdditionConfig): void;
       updateComplete: Promise<boolean>;
     };
     element.hass = { states: {}, callService: async () => undefined };
     element.setConfig({
-      type: "custom:mushroom-addition-chip-alarm",
+      type: "custom:mushroom-addition-card-light",
       tap_action: { action: "more-info" },
       hold_action: { action: "assist" },
     });
@@ -221,7 +174,7 @@ describe("Home Assistant registration", () => {
       actions.push((event as CustomEvent<{ action: string }>).detail.action));
     document.body.append(element);
     await element.updateComplete;
-    const target = element.shadowRoot?.querySelector(".ulm-chip");
+    const target = element.shadowRoot?.querySelector(".action-surface");
     target?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
     vi.advanceTimersByTime(500);
     target?.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));

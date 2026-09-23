@@ -34,7 +34,7 @@ export const defaultIconFor = (item: CatalogItem, entity?: HassEntity): string =
     return "mdi:microsoft-xbox";
   }
   return defaultIcons.find(([pattern]) => pattern.test(item.upstreamId))?.[1] ??
-    (item.kind === "chip" ? "mdi:circle-small" : "mdi:information-outline");
+    "mdi:information-outline";
 };
 
 const parsedDefault = (value: string): unknown => {

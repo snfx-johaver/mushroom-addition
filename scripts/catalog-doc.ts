@@ -21,8 +21,8 @@ to Mushroom Cards Addition registrations. It is generated from
 \`src/catalog.ts\`; CI rejects duplicate IDs, missing source paths, invalid
 namespaces, or broken popup mappings.
 
-**Coverage:** ${UPSTREAM_CATALOG.length} documented upstream sources map to
-${PUBLIC_CATALOG.length} public components and one graphical chips container.
+**Coverage:** ${UPSTREAM_CATALOG.length} documented upstream card sources map to
+${PUBLIC_CATALOG.length} public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
 of duplicate picker entries. ${UPSTREAM_VARIANTS.length} popup templates and
 ${SOURCE_ONLY_HELPERS.length} implementation helpers are inventoried but are not

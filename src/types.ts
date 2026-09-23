@@ -82,7 +82,6 @@ export interface AdditionConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
-  chips?: AdditionConfig[];
   show_forecast?: boolean;
   show_controls?: boolean;
   show_graph?: boolean;
@@ -101,8 +100,8 @@ export interface LovelaceCard extends HTMLElement {
 export interface CatalogItem {
   upstreamId: string;
   sourcePath: string;
-  kind: "card" | "chip" | "container";
-  category?: "default-card" | "default-chip" | "custom-card" | "custom-chip" | "container";
+  kind: "card";
+  category?: "default-card" | "custom-card";
   family: string;
   tag: string;
   name: string;

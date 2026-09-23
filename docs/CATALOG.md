@@ -6,11 +6,11 @@ to Mushroom Cards Addition registrations. It is generated from
 `src/catalog.ts`; CI rejects duplicate IDs, missing source paths, invalid
 namespaces, or broken popup mappings.
 
-**Coverage:** 105 documented upstream sources map to
-95 public components and one graphical chips container.
+**Coverage:** 86 documented upstream card sources map to
+79 public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
 of duplicate picker entries. 7 popup templates and
-3 implementation helpers are inventoried but are not
+1 implementation helpers are inventoried but are not
 public registrations.
 
 | Public ID | Category | Addition type | Family | UI variants | Covered upstream sources |
@@ -36,19 +36,10 @@ public registrations.
 | `card_vertical_button` | default-card | `custom:mushroom-addition-card-vertical-button` | sensor | default, custom-state | `card_vertical_button` |
 | `card_weather` | default-card | `custom:mushroom-addition-card-weather` | weather | detailed, native | `card_weather`<br>`card_weather_ulm` |
 | `card_welcome_scenes` | default-card | `custom:mushroom-addition-card-welcome-scenes` | scene | default | `card_welcome_scenes` |
-| `chip_alarm` | default-chip | `custom:mushroom-addition-chip-alarm` | security | default | `chip_alarm` |
-| `chip_icon_double_state` | default-chip | `custom:mushroom-addition-chip-icon-double-state` | entity | default | `chip_icon_double_state` |
-| `chip_icon_label` | default-chip | `custom:mushroom-addition-chip-icon-label` | entity | default | `chip_icon_label` |
-| `chip_icon_only` | default-chip | `custom:mushroom-addition-chip-icon-only` | entity | entity-icon, mdi-icon | `chip_icon_only`<br>`chip_mdi_icon_only` |
-| `chip_icon_state` | default-chip | `custom:mushroom-addition-chip-icon-state` | entity | entity-icon, mdi-icon | `chip_icon_state`<br>`chip_mdi_icon_state` |
-| `chip_navigate` | default-chip | `custom:mushroom-addition-chip-navigate` | navigation | path, back | `chip_navigate`<br>`chip_back` |
-| `chip_power_consumption` | default-chip | `custom:mushroom-addition-chip-power-consumption` | energy | default | `chip_power_consumption` |
-| `chip_presence_detection` | default-chip | `custom:mushroom-addition-chip-presence-detection` | presence | default | `chip_presence_detection` |
-| `chip_temperature` | default-chip | `custom:mushroom-addition-chip-temperature` | climate | default | `chip_temperature` |
 | `custom_card_afvalophaling` | custom-card | `custom:mushroom-addition-custom-card-afvalophaling` | sensor | default | `custom_card_afvalophaling` |
 | `custom_card_alarm_time` | custom-card | `custom:mushroom-addition-custom-card-alarm-time` | alarm-time | default | `custom_card_alarm_time` |
 | `custom_card_apexcharts` | custom-card | `custom:mushroom-addition-custom-card-apexcharts` | energy | default | `custom_card_apexcharts` |
-| `custom_card_bar_card` | custom-card | `custom:mushroom-addition-custom-card-bar-card` | energy | default | `custom_card_bar_card` |
+| `custom_card_bar_card` | custom-card | `custom:mushroom-addition-custom-card-bar-card` | bar | default | `custom_card_bar_card` |
 | `custom_card_camera` | custom-card | `custom:mushroom-addition-custom-card-camera` | camera | default | `custom_card_camera` |
 | `custom_card_chromecast` | custom-card | `custom:mushroom-addition-custom-card-chromecast` | media | default | `custom_card_chromecast` |
 | `custom_card_damix48_power_details` | custom-card | `custom:mushroom-addition-custom-card-damix48-power-details` | energy | default | `custom_card_damix48_power_details` |
@@ -103,13 +94,6 @@ public registrations.
 | `custom_card_water_heater` | custom-card | `custom:mushroom-addition-custom-card-water-heater` | control | default | `custom_card_water_heater` |
 | `custom_card_wsly_pollen` | custom-card | `custom:mushroom-addition-custom-card-wsly-pollen` | weather | default | `custom_card_wsly_pollen` |
 | `custom_card_yagrasdemonde_lights_count` | custom-card | `custom:mushroom-addition-custom-card-yagrasdemonde-lights-count` | light | default | `custom_card_yagrasdemonde_lights_count` |
-| `custom_chip_group_counter` | custom-chip | `custom:mushroom-addition-custom-chip-group-counter` | sensor | default | `custom_chip_group_counter` |
-| `custom_chip_moon` | custom-chip | `custom:mushroom-addition-custom-chip-moon` | weather | default | `custom_chip_moon` |
-| `custom_chip_myenedis` | custom-chip | `custom:mushroom-addition-custom-chip-myenedis` | energy | default | `custom_chip_myenedis` |
-| `custom_chip_simple_temp` | custom-chip | `custom:mushroom-addition-custom-chip-simple-temp` | climate | default | `custom_chip_simple_temp` |
-| `custom_chip_tesla_temperature` | custom-chip | `custom:mushroom-addition-custom-chip-tesla-temperature` | climate | default | `custom_chip_tesla_temperature` |
-| `custom_chip_update` | custom-chip | `custom:mushroom-addition-custom-chip-update` | text | default | `custom_chip_update` |
-| `custom_chip_vlape_garage` | custom-chip | `custom:mushroom-addition-custom-chip-vlape-garage` | cover | default | `custom_chip_vlape_garage` |
 
 ## Unified component mapping
 
@@ -120,9 +104,6 @@ public registrations.
 | `card_weather` | `card_weather` → `detailed`<br>`card_weather_ulm` → `native` |
 | `card_scenes` | `card_scenes` → `welcome-pills`<br>`custom_card_scenes` → `scene-grid` |
 | `card_title` | `card_title` → `title-and-subtitle`<br>`custom_card_wilbiev_title` → `divider-title`<br>`custom_card_wilbiev_subtitle` → `divider-subtitle` |
-| `chip_icon_only` | `chip_icon_only` → `entity-icon`<br>`chip_mdi_icon_only` → `mdi-icon` |
-| `chip_icon_state` | `chip_icon_state` → `entity-icon`<br>`chip_mdi_icon_state` → `mdi-icon` |
-| `chip_navigate` | `chip_navigate` → `path`<br>`chip_back` → `back` |
 | `custom_card_person_info` | `custom_card_person_info` → `full`<br>`custom_card_person_info_small` → `small` |
 
 Old custom-element tags for non-canonical sources remain registered as hidden
@@ -146,8 +127,6 @@ Standard Home Assistant actions are used instead.
 
 ## Source-only helpers
 
-- `chip_short_date_with_day`: Internal date chip used by composed welcome cards; it has no public usage page. [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_short_date_with_day.yaml)
-- `chip_weather_date`: Internal weather/date chip used by composed welcome cards; it has no public usage page. [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_weather_date.yaml)
 - `custom_template_shogun160_battery_info`: Reusable implementation template, not a standalone user-facing custom card. [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_template_shogun160_battery_info)
 
 ## Naming exception

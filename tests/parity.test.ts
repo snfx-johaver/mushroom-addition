@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { CATALOG, publicItemForSource, PUBLIC_CATALOG, UPSTREAM_CATALOG } from "../src/catalog";
 import { upstreamEditorSchemaFor } from "../src/editor-schema";
 import { PARITY_BY_ID, PARITY_ENTRIES } from "../src/parity.generated";
-import { EXAMPLE_CATALOG_IDS, EXAMPLE_CHIP_IDS, EXAMPLE_REGISTRATION_IDS } from "../src/example-catalog";
+import { EXAMPLE_CATALOG_IDS } from "../src/example-catalog";
 import { isRemovedPopupOption, supportedUpstreamOption } from "../src/supported-options";
 
 describe("upstream parity manifest", () => {
@@ -59,11 +59,9 @@ describe("upstream parity manifest", () => {
     }
   });
 
-  it("defines one card per fixture and nests every chip once in the single container", () => {
-    expect(EXAMPLE_CATALOG_IDS).toHaveLength(CATALOG.filter((item) => item.kind !== "chip").length);
-    expect(EXAMPLE_CHIP_IDS).toHaveLength(CATALOG.filter((item) => item.kind === "chip").length);
-    expect(new Set(EXAMPLE_REGISTRATION_IDS).size).toBe(CATALOG.length);
-    expect(new Set(EXAMPLE_REGISTRATION_IDS)).toEqual(new Set(CATALOG.map((item) => item.upstreamId)));
-    expect(EXAMPLE_CATALOG_IDS).not.toEqual(expect.arrayContaining(EXAMPLE_CHIP_IDS));
+  it("defines exactly one fixture for every public card", () => {
+    expect(EXAMPLE_CATALOG_IDS).toHaveLength(CATALOG.length);
+    expect(new Set(EXAMPLE_CATALOG_IDS).size).toBe(CATALOG.length);
+    expect(new Set(EXAMPLE_CATALOG_IDS)).toEqual(new Set(CATALOG.map((item) => item.upstreamId)));
   });
 });

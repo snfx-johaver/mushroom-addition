@@ -25,38 +25,6 @@ export const createStubConfig = (
   entities: string[] = [],
   entitiesFallback: string[] = [],
 ): AdditionConfig => {
-  if (descriptor.kind === "container") {
-    const temperature = firstMatchingEntity(
-      { ...descriptor, preferredDomains: ["sensor"] },
-      hass,
-      entities,
-      entitiesFallback,
-    );
-    const person = firstMatchingEntity(
-      { ...descriptor, preferredDomains: ["person", "device_tracker"] },
-      hass,
-      entities,
-      entitiesFallback,
-    );
-    return {
-      type: `custom:${descriptor.tag}`,
-      chips: [
-        {
-          type: "custom:mushroom-addition-chip-temperature",
-          entity: temperature,
-          name: temperature ? undefined : "Temperature",
-          secondary: temperature ? undefined : "21 °C",
-        },
-        {
-          type: "custom:mushroom-addition-chip-presence-detection",
-          entity: person,
-          name: person ? undefined : "Presence",
-          secondary: person ? undefined : "Home",
-        },
-      ],
-    };
-  }
-
   const entity = firstMatchingEntity(descriptor, hass, entities, entitiesFallback);
   const isText = ["text", "navigation"].includes(descriptor.family);
   const gameConsole = descriptor.upstreamId === "custom_card_playstation";
@@ -80,6 +48,7 @@ export const createStubConfig = (
     show_graph: ["battery", "energy", "sensor"].includes(descriptor.family),
     ulm_card_light_enable_slider: descriptor.family === "light" ? true : undefined,
     ulm_card_light_enable_color: descriptor.family === "light" ? true : undefined,
+    ulm_custom_card_bar_card_value: descriptor.family === "bar" ? true : undefined,
     entities: descriptor.variants?.includes("with-sensors")
       ? entitiesFallback.slice(0, 2)
       : undefined,

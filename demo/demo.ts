@@ -2,7 +2,7 @@ import "../src/index";
 import type { AdditionConfig, HomeAssistant } from "../src/types";
 import { CATALOG } from "../src/catalog";
 import { createStubConfig } from "../src/stub";
-import { EXAMPLE_CATALOG_IDS, EXAMPLE_CHIP_IDS } from "../src/example-catalog";
+import { EXAMPLE_CATALOG_IDS } from "../src/example-catalog";
 
 class HaCard extends HTMLElement {}
 if (!customElements.get("ha-card")) customElements.define("ha-card", HaCard);
@@ -79,15 +79,7 @@ for (const domain of new Set(CATALOG.flatMap((item) => item.preferredDomains ?? 
 const container = document.querySelector("#cards")!;
 for (const upstreamId of EXAMPLE_CATALOG_IDS) {
   const item = CATALOG.find((candidate) => candidate.upstreamId === upstreamId)!;
-  const config = item.kind === "container"
-    ? {
-      type: `custom:${item.tag}`,
-      chips: EXAMPLE_CHIP_IDS.map((chipId) => {
-        const chip = CATALOG.find((candidate) => candidate.upstreamId === chipId)!;
-        return createStubConfig(chip, hass, Object.keys(hass.states), Object.keys(hass.states));
-      }),
-    }
-    : createStubConfig(item, hass, Object.keys(hass.states), Object.keys(hass.states));
+  const config = createStubConfig(item, hass, Object.keys(hass.states), Object.keys(hass.states));
   const wrapper = document.createElement("div");
   wrapper.className = "catalog-fixture";
   const label = document.createElement("div");

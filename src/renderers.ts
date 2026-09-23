@@ -231,6 +231,54 @@ const renderBattery = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
+const configuredColor = (value: string | undefined, fallback: string): string => {
+  if (!value) return fallback;
+  if (/^(?:#|rgb|hsl|var\(|color\()/i.test(value)) return value;
+  return `rgba(var(--color-${value}), 1)`;
+};
+
+const renderBarCard = (ctx: RenderContext): TemplateResult => {
+  const value = numeric(ctx.entity?.state) ?? 0;
+  const min = numeric(configured(ctx, "ulm_custom_card_bar_card_min")) ?? 0;
+  const max = numeric(configured(ctx, "ulm_custom_card_bar_card_max")) ?? 100;
+  const range = max - min;
+  const percentage = range > 0 ? Math.max(0, Math.min(100, ((value - min) / range) * 100)) : 0;
+  const showHeader = configured<boolean>(ctx, "ulm_custom_card_bar_card_show_icon") !== false;
+  const showValue = configured<boolean>(ctx, "ulm_custom_card_bar_card_value") === true;
+  const showIndicator = configured<boolean>(ctx, "ulm_custom_card_bar_card_indicator") === true;
+  const barColor = configuredColor(
+    configured<string>(ctx, "ulm_custom_card_bar_card_color"),
+    "var(--google-blue, #4285f4)",
+  );
+  const iconColor = configuredColor(
+    configured<string>(ctx, "ulm_custom_card_bar_card_icon_color"),
+    "var(--secondary-text-color)",
+  );
+  const barIcon = configured<string>(ctx, "ulm_custom_card_bar_card_icon") ||
+    ctx.config.icon || ctx.entity?.attributes.icon || "mdi:chart-bar";
+  const name = configured<string>(ctx, "ulm_custom_card_bar_card_name") ||
+    displayName(ctx.config, ctx.entity);
+  const valueText = stateLabel(ctx.entity);
+  return ctx.actionSurface(`minimalist-bar-card ${showHeader ? "has-header" : "bar-only"}`, html`
+    ${showHeader ? html`
+      <div class="bar-card-header">
+        <span class="bar-card-icon" style=${`--bar-icon-color:${iconColor}`}>
+          <ha-icon .icon=${barIcon}></ha-icon>
+        </span>
+        <span class="bar-card-copy">
+          <b class="bar-card-primary-value">${valueText}</b>
+          <span class="bar-card-name">${name}</span>
+        </span>
+      </div>
+    ` : nothing}
+    <div class="bar-card-track" style=${`--bar-fill:${barColor}`}>
+      <span class="bar-card-fill" style=${`width:${percentage}%`}></span>
+      ${showIndicator ? html`<span class="bar-card-indicator" style=${`left:${percentage}%`}></span>` : nothing}
+      ${showValue ? html`<b class="bar-card-inside-value">${valueText}</b>` : nothing}
+    </div>
+  `);
+};
+
 const sparkline = (ctx: RenderContext) => {
   const values = Array.isArray(attr(ctx.entity, "history"))
     ? (attr(ctx.entity, "history") as unknown[]).map(Number).filter(Number.isFinite).slice(-12)
@@ -562,37 +610,7 @@ const renderBinary = (ctx: RenderContext, alert = false): TemplateResult => {
   `);
 };
 
-const renderChip = (ctx: RenderContext): TemplateResult => {
-  const id = ctx.descriptor.upstreamId;
-  const tone = ctx.descriptor.family === "security" ? "red"
-    : ctx.descriptor.family === "weather" ? "yellow"
-    : ctx.descriptor.family === "battery" ? "green"
-    : ctx.descriptor.family === "energy" ? "blue"
-    : "grey";
-  if (id === "chip_navigate" && ctx.config.variant === "back") {
-    return ctx.actionSurface("ulm-chip chip-navigation", html`${iconBubble(ctx, "mdi:arrow-left", "blue")}<span>${displayName(ctx.config, ctx.entity)}</span>`);
-  }
-  if (/short_date|weather_date|nik_clock/.test(id)) {
-    return ctx.actionSurface("ulm-chip chip-date", html`${iconBubble(ctx, "mdi:calendar-clock", tone)}<span>${new Intl.DateTimeFormat(undefined, { weekday: "short", month: "short", day: "numeric" }).format(new Date())}</span>`);
-  }
-  if (/icon_only|mdi_icon_only/.test(id)) {
-    return ctx.actionSurface("ulm-chip chip-icon-only", html`${iconBubble(ctx, "mdi:circle-small", tone)}`);
-  }
-  if (id === "chip_icon_double_state") {
-    const second = linkedState(ctx, "graph_entity");
-    return ctx.actionSurface("ulm-chip chip-double-state", html`${iconBubble(ctx, "mdi:circle-small", tone)}<b>${stateLabel(ctx.entity)}</b><b>${stateLabel(second)}</b>`);
-  }
-  if (/temperature|simple_temp|tesla_temperature/.test(id)) {
-    return ctx.actionSurface("ulm-chip chip-temperature", html`${iconBubble(ctx, "mdi:thermometer", tone)}<b>${stateLabel(ctx.entity)}</b>`);
-  }
-  if (/presence|person/.test(id)) {
-    return ctx.actionSurface("ulm-chip chip-presence", html`${iconBubble(ctx, "mdi:account", ctx.entity?.state === "home" ? "blue" : "grey")}<span>${displayName(ctx.config, ctx.entity)}</span>`);
-  }
-  return ctx.actionSurface(`ulm-chip chip-${ctx.descriptor.family}`, html`${iconBubble(ctx, "mdi:circle-small", tone)}<span>${displayName(ctx.config, ctx.entity)}</span>${ctx.config.show_state === false ? nothing : html`<b>${stateLabel(ctx.entity)}</b>`}`);
-};
-
 export const renderByFamily = (ctx: RenderContext): TemplateResult => {
-  if (ctx.descriptor.kind === "chip") return renderChip(ctx);
   switch (ctx.descriptor.upstreamId) {
     case "card_binary_sensor": return renderBinary(ctx, ctx.config.variant === "alert");
     case "card_title": return renderTitle(ctx);
@@ -617,6 +635,7 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "scene": return renderScene(ctx);
     case "presence": return renderPerson(ctx);
     case "battery": return renderBattery(ctx);
+    case "bar": return renderBarCard(ctx);
     case "energy":
     case "sensor": return renderMetric(ctx);
     case "media": return renderMedia(ctx);

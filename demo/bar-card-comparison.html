@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bar Card visual comparison</title>
+    <style>
+      :root {
+        --primary-text-color: #f1f3f4;
+        --secondary-text-color: #8d8f92;
+        --card-background-color: #1d1d1d;
+        --ha-card-background: #1d1d1d;
+        --ha-card-box-shadow: none;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: #111; color: #f1f3f4; font-family: Arial, sans-serif; }
+      main { width: 1046px; margin: 0 auto; padding: 24px; }
+      h1 { margin: 0 0 20px; font-size: 20px; }
+      .comparison { display: grid; grid-template-columns: 499px 499px; gap: 0; }
+      figure { margin: 0; }
+      figcaption { height: 28px; color: #aeb0b4; font-size: 12px; font-weight: 700; }
+      .reference { display: block; width: 499px; height: 111px; object-fit: contain; object-position: top left; }
+      .implementation {
+        display: grid;
+        width: 499px;
+        grid-template-columns: 237px 237px;
+        align-items: start;
+        gap: 8px;
+        padding-top: 5px;
+        padding-left: 1px;
+      }
+      ha-card { display: block; }
+      ha-icon { display: grid; place-items: center; font-size: 17px; font-weight: 700; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Bar Card — upstream reference and Mushroom Addition implementation</h1>
+      <div class="comparison">
+        <figure>
+          <figcaption>Upstream documentation reference</figcaption>
+          <img class="reference" src="/.tmp-ui-minimalist/docs/assets/img/screenshot_bar_card.png" alt="Upstream Bar Card reference" />
+        </figure>
+        <figure>
+          <figcaption>Rendered implementation</figcaption>
+          <div class="implementation" id="implementation"></div>
+        </figure>
+      </div>
+    </main>
+    <script type="module" src="/demo/bar-card-comparison.ts"></script>
+  </body>
+</html>

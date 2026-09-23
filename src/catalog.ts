@@ -7,12 +7,6 @@ const baseCards = [
   "vacuum", "vertical_button", "weather", "weather_ulm", "welcome_scenes",
 ] as const;
 
-const baseChips = [
-  "alarm", "back", "icon_double_state", "icon_label", "icon_only", "icon_state",
-  "mdi_icon_only", "mdi_icon_state", "navigate", "power_consumption",
-  "presence_detection", "temperature",
-] as const;
-
 const customCards = [
   "afvalophaling", "alarm_time", "apexcharts", "bar_card", "camera", "chromecast",
   "damix48_power_details", "device_tracker", "drealine_roomview",
@@ -31,11 +25,6 @@ const customCards = [
   "wsly_pollen", "yagrasdemonde_lights_count",
 ] as const;
 
-const customChips = [
-  "group_counter", "moon", "myenedis", "simple_temp", "tesla_temperature",
-  "update", "vlape_garage",
-] as const;
-
 const humanize = (id: string): string =>
   id
     .replace(/^iAbadia/, "iAbadia")
@@ -46,6 +35,7 @@ const humanize = (id: string): string =>
     .join(" ");
 
 const familyFor = (id: string): string => {
+  if (id === "custom_card_bar_card") return "bar";
   if (id === "custom_card_alarm_time") return "alarm-time";
   if (id === "custom_card_nik_door") return "door";
   if (/alarm|alert|lock/.test(id)) return "security";
@@ -135,49 +125,38 @@ const preferredDomainsFor = (id: string, family: string): string[] => {
 
 const makeItem = (
   upstreamId: string,
-  kind: "card" | "chip",
   sourcePath: string,
 ): CatalogItem => {
   const componentId = upstreamId
     .replace(/^custom_(card|chip)_/, "")
     .replace(/^(card|chip)_/, "");
   const slug = upstreamId.replaceAll("_", "-").toLowerCase();
-  const tag = slug.startsWith("custom-card-") || slug.startsWith("custom-chip-")
+  const tag = slug.startsWith("custom-card-")
     ? `mushroom-addition-${slug}`
-    : `mushroom-addition-${kind}-${slug.replace(new RegExp(`^${kind}-`), "")}`;
+    : `mushroom-addition-card-${slug.replace(/^card-/, "")}`;
   const family = familyFor(upstreamId);
   const consoleCard = upstreamId === "custom_card_playstation";
   return {
     upstreamId,
     sourcePath,
-    kind,
+    kind: "card",
     category: upstreamId.startsWith("custom_")
-      ? (kind === "card" ? "custom-card" : "custom-chip")
-      : (kind === "card" ? "default-card" : "default-chip"),
+      ? "custom-card"
+      : "default-card",
     family,
     tag,
     name: consoleCard
       ? "PS5 / Xbox Card"
-      : `${humanize(componentId)} ${kind === "chip" ? "Chip" : "Card"}`,
+      : `${humanize(componentId)} Card`,
     description: consoleCard
       ? "Mushroom-style game console card with PS5 and Xbox modes."
-      : `Mushroom-style ${humanize(componentId).toLowerCase()} ${kind}.`,
+      : `Mushroom-style ${humanize(componentId).toLowerCase()} card.`,
     variants: variants[upstreamId],
     preferredDomains: preferredDomainsFor(upstreamId, family),
   };
 };
 
 export const SOURCE_ONLY_HELPERS = [
-  {
-    id: "chip_short_date_with_day",
-    reason: "Internal date chip used by composed welcome cards; it has no public usage page.",
-    sourcePath: "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_short_date_with_day.yaml",
-  },
-  {
-    id: "chip_weather_date",
-    reason: "Internal weather/date chip used by composed welcome cards; it has no public usage page.",
-    sourcePath: "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_weather_date.yaml",
-  },
   {
     id: "custom_template_shogun160_battery_info",
     reason: "Reusable implementation template, not a standalone user-facing custom card.",
@@ -195,24 +174,12 @@ export const UPSTREAM_CATALOG: readonly CatalogItem[] = [
     };
     return makeItem(
       `card_${id}`,
-      "card",
       sourcePaths[id] ?? `custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_${id}.yaml`,
     );
   }),
-  ...baseChips.map((id) => makeItem(
-    `chip_${id}`,
-    "chip",
-    `custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_${id}.yaml`,
-  )),
   ...customCards.map((id) => makeItem(
     `custom_card_${id}`,
-    "card",
     `custom_cards/custom_card_${id}`,
-  )),
-  ...customChips.map((id) => makeItem(
-    `custom_chip_${id}`,
-    "chip",
-    `custom_cards/custom_chip_${id}`,
   )),
 ] as const;
 
@@ -265,25 +232,6 @@ export const COMPONENT_GROUPS: readonly ComponentGroup[] = [
       "divider-subtitle": "Divider subtitle",
     },
     name: "Heading Card",
-  },
-  {
-    canonical: "chip_icon_only",
-    sources: { chip_icon_only: "entity-icon", chip_mdi_icon_only: "mdi-icon" },
-    variants: ["entity-icon", "mdi-icon"],
-    variantLabels: { "entity-icon": "Entity icon", "mdi-icon": "Selected icon" },
-  },
-  {
-    canonical: "chip_icon_state",
-    sources: { chip_icon_state: "entity-icon", chip_mdi_icon_state: "mdi-icon" },
-    variants: ["entity-icon", "mdi-icon"],
-    variantLabels: { "entity-icon": "Entity icon and state", "mdi-icon": "Selected icon and state" },
-  },
-  {
-    canonical: "chip_navigate",
-    sources: { chip_navigate: "path", chip_back: "back" },
-    variants: ["path", "back"],
-    variantLabels: { path: "Navigate to path", back: "Back button" },
-    name: "Navigation Chip",
   },
   {
     canonical: "custom_card_person_info",
@@ -340,20 +288,7 @@ export const LEGACY_ALIASES: readonly CatalogAlias[] = UPSTREAM_CATALOG
     };
   });
 
-export const CATALOG: readonly CatalogItem[] = [
-  {
-    upstreamId: "chips_container",
-    sourcePath: "Mushroom Cards Addition composition component",
-    kind: "container",
-    category: "container",
-    family: "chips",
-    tag: "mushroom-addition-chips-card",
-    name: "Addition Chips Card",
-    description: "Compose Addition chips in a responsive row.",
-    sourceIds: [],
-  },
-  ...PUBLIC_CATALOG,
-];
+export const CATALOG: readonly CatalogItem[] = PUBLIC_CATALOG;
 
 export const getCatalogItem = (tag: string): CatalogItem | undefined =>
   CATALOG.find((item) => item.tag === tag) ??

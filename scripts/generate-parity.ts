@@ -35,19 +35,15 @@ assertExactSet(
   UPSTREAM_CATALOG.filter((item) => item.category === "default-card").map((item) => item.upstreamId).sort(),
 );
 assertExactSet(
-  "Documented default chips",
-  documentedPages("docs/usage/chips"),
-  UPSTREAM_CATALOG.filter((item) => item.category === "default-chip").map((item) => item.upstreamId).sort(),
-);
-assertExactSet(
   "Custom source directories",
   readdirSync(resolve(upstreamRoot, "custom_cards"), { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
+    .filter((name) => !name.startsWith("custom_chip_"))
     .sort(),
   [
     ...UPSTREAM_CATALOG
-      .filter((item) => item.category === "custom-card" || item.category === "custom-chip")
+      .filter((item) => item.category === "custom-card")
       .map((item) => item.upstreamId),
     ...SOURCE_ONLY_HELPERS
       .filter((item) => item.sourcePath.startsWith("custom_cards/"))
@@ -145,7 +141,7 @@ const entries = UPSTREAM_CATALOG.map((item) => {
     /popup|browser_mod/.test(sourceText) ? "popup" : undefined,
     /slider/.test(sourceText) ? "control" : undefined,
   ].filter((value): value is string => Boolean(value));
-  if (!primitives.length) primitives.push(item.kind === "chip" ? "chip" : "native-card");
+  if (!primitives.length) primitives.push("native-card");
   const backendRequirements = [
     /history|statistics|mini-graph|apexcharts/.test(sourceText) ? "history/statistics" : undefined,
     /weather/.test(item.upstreamId) ? "weather entity/forecast API" : undefined,

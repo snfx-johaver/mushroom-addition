@@ -40,6 +40,11 @@ const hass: HomeAssistant = {
       state: "843",
       attributes: { friendly_name: "Home power", unit_of_measurement: "W" },
     },
+    "sensor.memory": {
+      entity_id: "sensor.memory",
+      state: "17.7",
+      attributes: { friendly_name: "Memory Usage", unit_of_measurement: "%" },
+    },
     "media_player.tv": {
       entity_id: "media_player.tv",
       state: "playing",
@@ -166,6 +171,31 @@ describe("family renderers", () => {
     expect(native).not.toContain("weather-forecast");
   });
 
+  it("renders Bar Card as a compact header and 35px progress bar without graph regions", async () => {
+    const markup = await render("mushroom-addition-custom-card-bar-card", {
+      type: "custom:mushroom-addition-custom-card-bar-card",
+      entity: "sensor.memory",
+      ulm_custom_card_bar_card_name: "Memory Usage",
+      ulm_custom_card_bar_card_min: 0,
+      ulm_custom_card_bar_card_max: 100,
+      ulm_custom_card_bar_card_value: true,
+      ulm_custom_card_bar_card_color: "#81c995",
+      ulm_custom_card_bar_card_icon: "mdi:memory",
+    });
+    expect(markup).toContain("minimalist-bar-card");
+    expect(markup).toContain("bar-card-header");
+    expect(markup).toContain("bar-card-icon");
+    expect(markup).toContain("bar-card-primary-value");
+    expect(markup).toContain("bar-card-name");
+    expect(markup).toContain("bar-card-track");
+    expect(markup).toContain("bar-card-fill");
+    expect(markup).toContain("bar-card-inside-value");
+    expect(markup).toContain("width:17.7%");
+    expect(markup).not.toContain("sparkline");
+    expect(markup).not.toContain("metric-extremes");
+    expect(markup).not.toContain("ulm-metric");
+  });
+
   it("wires the Minimalist light slider to a valid Home Assistant service", async () => {
     const callService = vi.fn(async () => undefined);
     const element = document.createElement("mushroom-addition-card-light") as HTMLElement & {
@@ -213,7 +243,7 @@ describe("family renderers", () => {
     ["media", "mushroom-addition-card-media-player", "media_player.tv", "ulm-media"],
     ["cover", "mushroom-addition-card-cover", "cover.blind", "ulm-controls"],
     ["vacuum", "mushroom-addition-card-vacuum", "vacuum.robot", "ulm-vacuum"],
-    ["security", "mushroom-addition-chip-alarm", "alarm_control_panel.home", "ulm-chip"],
+    ["security", "mushroom-addition-custom-card-eraycetinay-lock", "alarm_control_panel.home", "ulm-security"],
   ])("renders distinct %s markup", async (_family, tag, entity, marker) => {
     const item = CATALOG.find((entry) => entry.tag === tag)!;
     const markup = await render(tag, {

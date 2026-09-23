@@ -172,6 +172,83 @@ export const sharedStyles = css`
   .battery-track i { display: block; height: 100%; border-radius: inherit; background: rgb(var(--ulm-green)); }
   .ulm-battery.is-charging .ulm-icon { animation: ulm-charge 1.1s ease-in-out infinite alternate; }
   @keyframes ulm-charge { from { transform: scale(.92); } to { transform: scale(1.06); } }
+  .minimalist-bar-card {
+    display: grid;
+    min-height: 96px;
+    grid-template-rows: minmax(60px, 1fr) 35px;
+    overflow: hidden;
+    border-radius: 20px;
+    background: var(--ha-card-background, var(--card-background-color, #fff));
+  }
+  .minimalist-bar-card.bar-only {
+    min-height: 35px;
+    grid-template-rows: 35px;
+  }
+  .bar-card-header {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+  }
+  .bar-card-icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    color: var(--bar-icon-color);
+    background: color-mix(in srgb, var(--bar-icon-color) 12%, transparent);
+  }
+  .bar-card-icon ha-icon { --mdc-icon-size: 21px; }
+  .bar-card-copy { display: flex; min-width: 0; flex-direction: column; line-height: 1.15; }
+  .bar-card-primary-value {
+    overflow: hidden;
+    color: var(--primary-text-color);
+    font-size: 14px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .bar-card-name {
+    overflow: hidden;
+    margin-top: 2px;
+    color: var(--secondary-text-color);
+    font-size: 12px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .bar-card-track {
+    position: relative;
+    height: 35px;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--bar-fill) 16%, var(--ha-card-background, #202124));
+  }
+  .bar-card-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    background: var(--bar-fill);
+  }
+  .bar-card-inside-value {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    z-index: 1;
+    color: var(--primary-text-color);
+    font-size: 12px;
+    transform: translateY(-50%);
+  }
+  .bar-card-indicator {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 6px solid var(--primary-text-color);
+    transform: translate(-1px, -50%);
+  }
   .ulm-metric { padding: 0 12px 12px; }
   .metric-heading { padding-left: 0; padding-right: 0; }
   .metric-value { color: rgb(var(--ulm-blue)); font-size: 20px; font-weight: 650; }
@@ -232,22 +309,5 @@ export const sharedStyles = css`
   .ulm-vertical-button { display: flex; min-height: 96px; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px; text-align: center; }
   .ulm-vertical-button .ulm-copy { align-items: center; }
   .ulm-binary.is-alert { background: rgba(var(--ulm-red), .1); }
-  .chip-icon-only { padding-right: 7px; }
-  .chip-double-state b + b { padding-left: 6px; border-left: 1px solid var(--divider-color); }
-  .ulm-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    min-height: 34px;
-    padding: 0 11px;
-    border-radius: 17px;
-    background: var(--ha-card-background, var(--card-background-color));
-    box-shadow: var(--ha-card-box-shadow, 0 2px 7px rgba(0,0,0,.07));
-    font-size: 12px;
-  }
-  .ulm-chip .ulm-icon { width: 25px; height: 25px; margin-left: -7px; }
-  .ulm-chip .ulm-icon ha-icon { --mdc-icon-size: 16px; }
-  .ulm-chip b { color: var(--secondary-text-color); font-weight: 500; }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px; }
   .preview { padding: 16px; color: var(--secondary-text-color); text-align: center; }
 `;

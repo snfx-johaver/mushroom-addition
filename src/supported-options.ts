@@ -49,6 +49,17 @@ const supportedByFamily: Record<string, readonly string[]> = {
 const supportedByItem: Record<string, readonly string[]> = {
   card_binary_sensor: ["ulm_card_binary_sensor_show_last_changed"],
   card_binary_sensor_alert: ["ulm_card_binary_sensor_alert_show_last_changed"],
+  custom_card_bar_card: [
+    "ulm_custom_card_bar_card_color",
+    "ulm_custom_card_bar_card_icon",
+    "ulm_custom_card_bar_card_icon_color",
+    "ulm_custom_card_bar_card_indicator",
+    "ulm_custom_card_bar_card_max",
+    "ulm_custom_card_bar_card_min",
+    "ulm_custom_card_bar_card_name",
+    "ulm_custom_card_bar_card_show_icon",
+    "ulm_custom_card_bar_card_value",
+  ],
   custom_card_haven_washer: ["ulm_custom_card_washer_power"],
 };
 

@@ -20,20 +20,16 @@ describe("catalog coverage", () => {
     }
   });
 
-  it("includes base cards, base chips, custom cards and custom chips", () => {
+  it("includes default and custom cards", () => {
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "card_light")).toBe(true);
-    expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "chip_alarm")).toBe(true);
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_camera")).toBe(true);
-    expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_chip_moon")).toBe(true);
   });
 
   it("matches the documented source counts and keeps 50+ custom cards public", () => {
     const sourceCount = (category: string) =>
       UPSTREAM_CATALOG.filter((item) => item.category === category).length;
     expect(sourceCount("default-card")).toBe(24);
-    expect(sourceCount("default-chip")).toBe(12);
     expect(sourceCount("custom-card")).toBe(62);
-    expect(sourceCount("custom-chip")).toBe(7);
     expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(58);
   });
 

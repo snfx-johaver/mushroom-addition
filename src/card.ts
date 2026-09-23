@@ -46,7 +46,6 @@ export class MushroomAdditionCard extends LitElement {
   protected render() {
     if (!this.config || !this.descriptor) return nothing;
     if (!this.hass) return html`<ha-card><div class="preview">Mushroom Addition preview</div></ha-card>`;
-    if (this.descriptor.kind === "container") return this.renderContainer();
     const entity = this.config.entity ? this.hass.states[this.config.entity] : undefined;
     return renderByFamily({
       config: this.config,
@@ -111,9 +110,8 @@ export class MushroomAdditionCard extends LitElement {
   }
 
   private readonly actionSurface = (classes: string, content: TemplateResult): TemplateResult => {
-    const chip = this.descriptor?.kind === "chip";
     const parity = this.descriptor ? PARITY_BY_ID.get(this.descriptor.upstreamId) : undefined;
-    if (this.descriptor?.kind !== "container" && !parity) {
+    if (!parity) {
       throw new Error(`Missing explicit parity renderer mapping for ${this.descriptor?.upstreamId}`);
     }
     const parityClass = parity ? ` parity-${parity.rendererId.replaceAll("_", "-")}` : "";
@@ -127,21 +125,8 @@ export class MushroomAdditionCard extends LitElement {
         @pointercancel=${this.pointerUp} @keydown=${this.keydown}>
         ${content}
       </div>`;
-    return chip ? surface : html`<ha-card class="minimalist-card">${surface}</ha-card>`;
+    return html`<ha-card class="minimalist-card">${surface}</ha-card>`;
   };
-
-  private renderContainer() {
-    const chips = this.config?.chips ?? [];
-    return html`<ha-card class="minimalist-card"><div class="chips">
-      ${chips.map((chip) => {
-        const element = document.createElement(chip.type.replace(/^custom:/, "")) as MushroomAdditionCard;
-        element.hass = this.hass;
-        element.setConfig(chip);
-        return element;
-      })}
-      ${chips.length === 0 ? html`<div class="preview">Add chips in the visual editor.</div>` : nothing}
-    </div></ha-card>`;
-  }
 
   private readonly keydown = (event: KeyboardEvent): void => {
     if (event.key === "Enter" || event.key === " ") {
