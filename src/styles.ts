@@ -500,28 +500,29 @@ export const sharedStyles = css`
   .custom-heat-pump { display: grid; gap: 12px; padding: 12px; }
   .heat-pump-header { display: grid; grid-template-columns: 42px minmax(0, 1fr); align-items: center; gap: 12px; }
   .heat-pump-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: rgba(var(--tone), .2); color: rgb(var(--tone)); }
-  .heat-pump-icon ha-icon { --mdc-icon-size: 20px; }
+  .heat-pump-icon ha-icon { --mdc-icon-size: 22px; }
   .heat-pump-target { display: grid; grid-template-columns: minmax(0, 1fr) minmax(74px, auto) minmax(0, 1fr); align-items: center; gap: 10px; }
   .heat-pump-target .ulm-control { width: 100%; height: 44px; border-radius: 14px; background: rgba(var(--ulm-grey), .07); }
+  .heat-pump-target .ulm-control ha-icon { --mdc-icon-size: 22px; }
   .heat-pump-target > b { text-align: center; font-size: 16px; font-weight: 500; }
   .heat-pump-modes { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
   .heat-pump-modes button { display: grid; min-width: 0; height: 42px; place-items: center; border: 0; border-radius: 14px; background: rgba(var(--ulm-grey), .07); color: rgba(var(--ulm-grey), .9); cursor: pointer; }
-  .heat-pump-modes button ha-icon { --mdc-icon-size: 20px; }
+  .heat-pump-modes button ha-icon { --mdc-icon-size: 22px; }
   .heat-pump-modes button.is-active { background: rgba(var(--tone), .2); color: rgb(var(--tone)); }
   .heat-pump-modes button:disabled { cursor: not-allowed; opacity: .28; }
   .custom-ha-updates { display: grid; gap: 18px; padding: 18px; }
-  .ha-updates-summary { display: grid; grid-template-columns: 64px minmax(0, 1fr); align-items: center; gap: 22px; }
-  .ha-updates-icon { position: relative; display: grid; width: 64px; height: 64px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-grey), .08); color: rgba(var(--ulm-grey), .25); }
+  .ha-updates-summary { display: grid; grid-template-columns: 56px minmax(0, 1fr); align-items: center; gap: 18px; }
+  .ha-updates-icon { position: relative; display: grid; width: 56px; height: 56px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-grey), .08); color: rgba(var(--ulm-grey), .25); }
   .ha-updates-icon.has-update { background: rgba(var(--ulm-blue), .2); color: rgb(var(--ulm-blue)); }
-  .ha-updates-icon > ha-icon { --mdc-icon-size: 34px; }
-  .ha-updates-badge { position: absolute; top: -4px; right: -4px; display: grid; width: 26px; height: 26px; place-items: center; border: 3px solid var(--card-background-color); border-radius: 50%; background: rgb(var(--ulm-blue)); color: #fff; }
-  .ha-updates-badge ha-icon { --mdc-icon-size: 15px; }
-  .ha-updates-summary .ulm-name { font-size: 20px; font-weight: 700; }
-  .ha-update-list { display: grid; gap: 2px; color: rgba(var(--ulm-grey), .55); font-size: 16px; font-weight: 600; }
+  .ha-updates-icon > ha-icon { --mdc-icon-size: 28px; }
+  .ha-updates-badge { position: absolute; top: -2px; right: -5px; display: grid; width: 20px; height: 20px; place-items: center; border: 2px solid var(--card-background-color); border-radius: 50%; background: rgb(var(--ulm-blue)); color: #fff; }
+  .ha-updates-badge ha-icon { --mdc-icon-size: 12px; }
+  .ha-updates-summary .ulm-name { font-size: 18px; font-weight: 700; }
+  .ha-update-list { display: grid; gap: 1px; color: rgba(var(--ulm-grey), .55); font-size: 15px; font-weight: 700; }
   .ha-update-list span { display: block; }
   .ha-update-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .ha-update-actions button { display: grid; height: 64px; place-items: center; border: 0; border-radius: 20px; background: rgba(var(--ulm-grey), .07); color: rgba(var(--ulm-grey), .8); cursor: pointer; }
-  .ha-update-actions button ha-icon { --mdc-icon-size: 28px; }
+  .ha-update-actions button { display: grid; height: 55px; place-items: center; border: 0; border-radius: 18px; background: rgba(var(--ulm-grey), .07); color: rgba(var(--ulm-grey), .8); cursor: pointer; }
+  .ha-update-actions button ha-icon { --mdc-icon-size: 24px; }
   .ha-update-actions button:disabled { cursor: not-allowed; opacity: .28; }
   .custom-sun-card { display: grid; min-height: 210px; gap: 8px; padding: 18px; }
   .sun-times, .sun-footer { display: flex; justify-content: space-between; }
@@ -606,7 +607,7 @@ export const sharedStyles = css`
   .nik-nas-tile { box-sizing: border-box; display: grid; min-height: 102px; grid-template-columns: 64px minmax(0, 1fr); align-items: center; gap: 16px; padding: 12px 18px; border: 3px solid rgba(var(--ulm-grey), .45); border-radius: 30px; background: transparent; color: var(--primary-text-color); text-align: left; }
   button.nik-nas-tile { cursor: pointer; }
   .nik-nas-tile-icon { display: grid; width: 62px; height: 62px; place-items: center; border-radius: 50%; background: rgba(var(--tone), .2); color: rgb(var(--tone)); }
-  .nik-nas-tile-icon ha-icon { --mdc-icon-size: 30px; }
+  .nik-nas-tile-icon ha-icon { --mdc-icon-size: 24px; }
   .nik-nas-tile > span:last-child, .nik-nas-metrics > span > span { display: grid; }
   .nik-nas-tile b, .nik-nas-metrics b { font-size: 21px; line-height: 1.1; }
   .nik-nas-tile small, .nik-nas-metrics small { color: rgba(var(--ulm-grey), .65); font-size: 17px; font-weight: 600; }
@@ -614,30 +615,32 @@ export const sharedStyles = css`
   .nik-nas-metrics { display: grid; gap: 12px; }
   .nik-nas-metrics > span { display: grid; min-height: 70px; grid-template-columns: 64px minmax(0, 1fr); align-items: center; gap: 16px; }
   .nik-nas-metrics i { display: grid; width: 62px; height: 62px; place-items: center; border-radius: 50%; background: rgba(var(--tone), .2); color: rgb(var(--tone)); font-style: normal; }
-  .nik-nas-metrics i ha-icon { --mdc-icon-size: 30px; }
-  .nik-nas-rings { width: 100%; max-width: 230px; justify-self: center; overflow: visible; transform: rotate(-90deg); }
+  .nik-nas-metrics i ha-icon { --mdc-icon-size: 24px; }
+  .nik-nas-rings { width: 100%; max-width: 190px; justify-self: center; overflow: visible; transform: rotate(-90deg); }
   .nik-nas-ring-track, .nik-nas-ring-value { fill: none; stroke-width: 6; }
   .nik-nas-ring-track { stroke: rgba(var(--ulm-grey), .16); }
   .nik-nas-ring-value { stroke-linecap: round; }
-  .custom-nik-tablet { min-height: 420px; gap: 14px; padding: 18px; }
-  .nik-tablet-header { display: grid; grid-template-columns: 64px minmax(0, 1fr); align-items: center; gap: 18px; }
-  .nik-tablet-icon { display: grid; width: 62px; height: 62px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-blue), .2); color: rgb(var(--ulm-blue)); }
-  .nik-tablet-icon ha-icon { --mdc-icon-size: 30px; }
-  .nik-tablet-header .ulm-name { font-size: 21px; }
-  .nik-tablet-header .ulm-label { font-size: 16px; }
-  .nik-tablet-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-  .nik-tablet-controls button { display: grid; height: 62px; place-items: center; border: 0; border-radius: 24px; background: rgba(var(--tone), .2); color: rgb(var(--tone)); cursor: pointer; }
-  .nik-tablet-controls button ha-icon { --mdc-icon-size: 28px; }
+  .custom-nik-tablet { gap: 14px; padding: 18px; }
+  .nik-tablet-header { display: grid; grid-template-columns: 42px minmax(0, 1fr); align-items: center; gap: 12px; }
+  .nik-tablet-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-blue), .2); color: rgb(var(--ulm-blue)); }
+  .nik-tablet-icon ha-icon { --mdc-icon-size: 22px; }
+  .nik-tablet-header .ulm-name { font-size: 14px; }
+  .nik-tablet-header .ulm-label { font-size: 12px; }
+  .nik-tablet-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .nik-tablet-controls button { display: grid; height: 42px; place-items: center; border: 0; border-radius: 14px; background: rgba(var(--tone), .2); color: rgb(var(--tone)); cursor: pointer; }
+  .nik-tablet-controls button ha-icon { --mdc-icon-size: 22px; }
+  .nik-tablet-controls button.is-active { background: rgba(var(--tone), .3); box-shadow: inset 0 0 0 2px rgba(var(--tone), .35); }
   .nik-tablet-controls button:disabled { opacity: .3; cursor: not-allowed; }
-  .nik-tablet-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; text-align: center; }
+  .nik-tablet-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; text-align: center; }
   .nik-tablet-metrics span { display: grid; gap: 2px; }
-  .nik-tablet-metrics b { overflow: hidden; font-size: 19px; text-overflow: ellipsis; white-space: nowrap; }
-  .nik-tablet-metrics small { color: rgba(var(--ulm-grey), .65); font-size: 16px; font-weight: 600; }
-  .nik-tablet-battery-row { display: grid; grid-template-columns: 62px minmax(0, 1fr); align-items: center; gap: 18px; }
-  .nik-tablet-battery-icon { display: grid; width: 62px; height: 62px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-grey), .08); color: rgba(var(--ulm-grey), .8); }
+  .nik-tablet-metrics b { overflow: hidden; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+  .nik-tablet-metrics small { color: rgba(var(--ulm-grey), .65); font-size: 12px; font-weight: 600; }
+  .nik-tablet-battery-row { display: grid; grid-template-columns: 42px minmax(0, 1fr); align-items: center; gap: 12px; }
+  .nik-tablet-battery-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-grey), .08); color: rgba(var(--ulm-grey), .8); }
+  .nik-tablet-battery-icon ha-icon { --mdc-icon-size: 22px; }
   .nik-tablet-battery-row > span:last-child { display: grid; }
-  .nik-tablet-battery-row b { font-size: 20px; } .nik-tablet-battery-row small { color: rgba(var(--ulm-grey), .65); font-size: 16px; font-weight: 600; }
-  .nik-tablet-battery-bar { position: relative; height: 50px; overflow: hidden; border-radius: 25px; background: rgba(var(--ulm-grey), .16); }
+  .nik-tablet-battery-row b { font-size: 14px; } .nik-tablet-battery-row small { color: rgba(var(--ulm-grey), .65); font-size: 12px; font-weight: 600; }
+  .nik-tablet-battery-bar { position: relative; height: 35px; overflow: hidden; border-radius: 18px; background: rgba(var(--ulm-grey), .16); }
   .nik-tablet-battery-bar i { position: absolute; inset: 0 auto 0 0; border-radius: inherit 0 0 inherit; background: #00c853; }
   .nik-tablet-battery-bar b { position: relative; z-index: 1; display: flex; height: 100%; align-items: center; justify-content: flex-end; padding-right: 14px; font-size: 16px; }
   .pollen-icon { display: grid; width: 46px; height: 46px; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--pollen) 20%, transparent); color: var(--pollen); }
@@ -654,8 +657,8 @@ export const sharedStyles = css`
   .custom-person-info-small { display: grid; min-height: 118px; gap: 8px; padding: 12px; }
   .person-info-main, .ristou-person-main, .car-hero, .flower-heading, .printer-summary,
   .aircondition-main, .water-heater-top { display: flex; min-width: 0; align-items: center; gap: 10px; }
-  .person-info-avatar { position: relative; display: grid; width: 46px; height: 46px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: rgba(var(--ulm-blue), .12) center/cover; color: rgb(var(--ulm-blue)); }
-  .person-info-avatar.has-picture ha-icon { display: none; }
+  .person-info-avatar { position: relative; display: grid; width: 42px; height: 42px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: rgba(var(--ulm-blue), .12) center/cover; color: rgb(var(--ulm-blue)); }
+  .person-info-avatar.has-picture > ha-icon { display: none; }
   .person-info-badge { position: absolute; top: -3px; right: -3px; display: grid; width: 16px; height: 16px; place-items: center; border: 2px solid var(--card-background-color); border-radius: 50%; background: rgb(var(--tone)); color: #fff; }
   .person-info-badge ha-icon { --mdc-icon-size: 10px; }
   .person-info-small-top { display: flex; align-items: flex-start; justify-content: space-between; }
@@ -665,6 +668,8 @@ export const sharedStyles = css`
   .person-info-small-copy b { font-size: 14px; }
   .person-info-small-copy small { color: var(--secondary-text-color); font-size: 12px; text-transform: capitalize; }
   .custom-person-info { min-height: 68px; grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+  .custom-person-info.is-multiline { grid-template-columns: minmax(0, 1fr); }
+  .custom-person-info.is-multiline .person-info-details { padding-left: 4px; }
   .person-info-details { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .person-info-detail { display: flex; align-items: center; gap: 4px; font-size: 12px; }
   .person-info-detail ha-icon { --mdc-icon-size: 16px; color: rgb(var(--tone, var(--ulm-green))); }

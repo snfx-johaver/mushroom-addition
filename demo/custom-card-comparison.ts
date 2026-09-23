@@ -1,4 +1,5 @@
 import "../src/index";
+import * as mdiPaths from "@mdi/js";
 import type { AdditionConfig, HomeAssistant } from "../src/types";
 
 class HaCard extends HTMLElement {}
@@ -6,41 +7,19 @@ if (!customElements.get("ha-card")) customElements.define("ha-card", HaCard);
 class HaIcon extends HTMLElement {
   public static get observedAttributes() { return ["icon"]; }
 
+  public constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+  }
+
   public set icon(value: string) {
-    const symbols: Record<string, string> = {
-      "mdi:arrow-down": "↓",
-      "mdi:arrow-up": "↑",
-      "mdi:power": "⏻",
-      "mdi:fire": "♨",
-      "mdi:snowflake": "❄",
-      "mdi:sync": "↻",
-      "mdi:water": "●",
-      "mdi:fan": "✣",
-      "mdi:thermostat": "◉",
-      "mdi:home-assistant": "⌂",
-      "mdi:party-popper": "✦",
-      "mdi:file-document": "▤",
-      "mdi:cog": "⚙",
-      "mdi:update": "↻",
-      "mdi:nas": "▣",
-      "mdi:harddisk": "◉",
-      "mdi:thermometer": "♨",
-      "mdi:memory": "▦",
-      "mdi:tablet": "▭",
-      "mdi:battery": "▮",
-      "mdi:usb": "↯",
-      "mdi:motion-sensor": "♙",
-      "mdi:monitor": "▣",
-      "mdi:restart-alert": "↶",
-      "mdi:account-hard-hat-outline": "♟",
-      "mdi:reload": "↻",
-      "mdi:home-variant": "⌂",
-      "mdi:home-minus": "−",
-      "mdi:car": "▰",
-      "mdi:briefcase": "▣",
-      "mdi:school": "⌂",
-    };
-    this.textContent = symbols[value] ?? (value.startsWith("mdi:battery") ? "▮" : "●");
+    const exportName = value.startsWith("mdi:")
+      ? `mdi${value.slice(4).split("-").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join("")}`
+      : "";
+    const path = (mdiPaths as Record<string, unknown>)[exportName];
+    this.shadowRoot!.innerHTML = typeof path === "string"
+      ? `<style>:host{display:inline-flex;width:var(--mdc-icon-size,24px);height:var(--mdc-icon-size,24px);color:inherit}svg{display:block;width:100%;height:100%;fill:currentColor}</style><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${path}"></path></svg>`
+      : `<style>:host{display:inline-flex;width:var(--mdc-icon-size,24px);height:var(--mdc-icon-size,24px)}</style>`;
   }
 
   public attributeChangedCallback(_name: string, _oldValue: string | null, value: string | null) {
@@ -84,6 +63,7 @@ const states: HomeAssistant["states"] = {
   "sensor.washer_job": { entity_id: "sensor.washer_job", state: "Washing", attributes: { friendly_name: "Washer job" } },
   "sensor.washer_progress": { entity_id: "sensor.washer_progress", state: "52", attributes: { friendly_name: "Progress", unit_of_measurement: "%" } },
   "climate.living": { entity_id: "climate.living", state: "heat", attributes: { friendly_name: "Living room", current_temperature: 19, temperature: 21, target_temp_step: .5, hvac_action: "heating" } },
+  "climate.heat_pump": { entity_id: "climate.heat_pump", state: "off", attributes: { friendly_name: "Air conditioner", current_temperature: null, temperature: 20, target_temp_step: 1, hvac_action: "off", hvac_modes: ["off", "heat", "cool", "heat_cool", "dry", "fan_only"] } },
   "update.core": { entity_id: "update.core", state: "on", attributes: { friendly_name: "Home Assistant Core", installed_version: "2026.8", latest_version: "2026.9" } },
   "update.supervisor": { entity_id: "update.supervisor", state: "off", attributes: { friendly_name: "Supervisor", installed_version: "2026.9" } },
   "update.operating_system": { entity_id: "update.operating_system", state: "off", attributes: { friendly_name: "OS", installed_version: "17.0" } },
@@ -104,10 +84,15 @@ const states: HomeAssistant["states"] = {
   } },
   "sensor.phone_battery": { entity_id: "sensor.phone_battery", state: "72", attributes: { friendly_name: "Phone battery", unit_of_measurement: "%" } },
   "sensor.phone_battery_state": { entity_id: "sensor.phone_battery_state", state: "discharging", attributes: { friendly_name: "Phone battery state" } },
+  "sensor.person_full_battery": { entity_id: "sensor.person_full_battery", state: "99", attributes: { friendly_name: "Phone battery", unit_of_measurement: "%" } },
+  "sensor.person_full_commute": { entity_id: "sensor.person_full_commute", state: "30", attributes: { friendly_name: "Commute", unit_of_measurement: "min" } },
+  "sensor.person_small_battery": { entity_id: "sensor.person_small_battery", state: "100", attributes: { friendly_name: "Phone battery", unit_of_measurement: "%" } },
+  "sensor.person_small_battery_state": { entity_id: "sensor.person_small_battery_state", state: "charging", attributes: { friendly_name: "Phone battery state" } },
   "sensor.joris_address": { entity_id: "sensor.joris_address", state: "Home", attributes: { friendly_name: "Joris address" } },
   "sensor.joris_locality": { entity_id: "sensor.joris_locality", state: "Amsterdam", attributes: { friendly_name: "Joris locality", Locality: "Amsterdam" } },
   "sensor.joris_commute": { entity_id: "sensor.joris_commute", state: "24", attributes: { friendly_name: "Commute", unit_of_measurement: "min" } },
   "binary_sensor.joris_driving": { entity_id: "binary_sensor.joris_driving", state: "off", attributes: { friendly_name: "Joris driving" } },
+  "binary_sensor.joris_driving_full": { entity_id: "binary_sensor.joris_driving_full", state: "on", attributes: { friendly_name: "Joris driving" } },
   "zone.work": { entity_id: "zone.work", state: "0", attributes: { friendly_name: "Work", icon: "mdi:briefcase" } },
   "zone.school": { entity_id: "zone.school", state: "0", attributes: { friendly_name: "School", icon: "mdi:school" } },
   "device_tracker.gps": { entity_id: "device_tracker.gps", state: "home", attributes: { friendly_name: "GPS" } },
@@ -166,7 +151,19 @@ const hass: HomeAssistant = {
   },
 };
 
-const fixtures: Array<{ id: string; key?: string; title?: string; entity: string; reference?: string; config?: Partial<AdditionConfig> }> = [
+interface Fixture {
+  id: string;
+  key?: string;
+  title?: string;
+  entity: string;
+  reference?: string;
+  config?: Partial<AdditionConfig>;
+  width?: number;
+  referenceCrop?: { width: number; height: number };
+  theme?: "light" | "dark";
+}
+
+const fixtures: Fixture[] = [
   {
     id: "afvalophaling",
     key: "afvalophaling-full",
@@ -218,8 +215,8 @@ const fixtures: Array<{ id: string; key?: string; title?: string; entity: string
   { id: "eraycetinay-lock", entity: "lock.front_door", reference: "custom_card_eraycetinay_lock.png", config: { ulm_custom_card_eraycetinay_lock_door_open: "binary_sensor.front_door", ulm_custom_card_eraycetinay_lock_battery_level: "sensor.lock_battery" } },
   { id: "esh-welcome", entity: "person.lewis", reference: "custom_card_esh_welcome_light.png", config: { name: "Lewis" } },
   { id: "haven-washer", entity: "switch.washer", reference: "custom_card_haven_washer_running.png", config: { ulm_custom_card_washer_job_state: "sensor.washer_job", ulm_custom_card_washer_job_progress: "sensor.washer_progress" } },
-  { id: "heat-pump", entity: "climate.living", reference: "Heat_pump.PNG" },
-  { id: "homeassistant-updates", entity: "update.core", reference: "ulm_cards/card_homeassistant_updates.png", config: { ulm_card_homeassistant_core: "update.core", ulm_card_homeassistant_supervisor: "update.supervisor", ulm_card_homeassistant_os: "update.operating_system" } },
+  { id: "heat-pump", entity: "climate.heat_pump", reference: "Heat_pump.PNG", width: 475 },
+  { id: "homeassistant-updates", entity: "update.core", reference: "ulm_cards/card_homeassistant_updates.png", width: 650, config: { ulm_card_homeassistant_core: "update.core", ulm_card_homeassistant_supervisor: "update.supervisor", ulm_card_homeassistant_os: "update.operating_system" } },
   { id: "httpedo13-sun", entity: "sun.sun", reference: "sun-card.png" },
   { id: "httpedo13-thermostat", entity: "climate.living", reference: "thermostat_white_with_heating_ui.png" },
   { id: "iabadia-battery-chip", entity: "sensor.battery", reference: "custom_card_iAbadia_battery_chip.png" },
@@ -241,8 +238,8 @@ const fixtures: Array<{ id: string; key?: string; title?: string; entity: string
   { id: "neekster-update", entity: "update.addon", reference: "custom_card_neekster_update.png", config: { ulm_custom_card_neekster_update_enable_controls: true } },
   { id: "nik-clock", entity: "sensor.time", reference: "custom_card_nik_clock.png" },
   { id: "nik-door", entity: "binary_sensor.front_door", reference: "custom_card_nik_door.png", config: { lock_entity: "lock.front_door", battery_entity: "sensor.lock_battery" } },
-  { id: "nik-nas", entity: "binary_sensor.hn_nas_status", reference: "custom_card_nik_nas_on.png", config: { disk_entity: "sensor.hn_nas_disk", temperature_entity: "sensor.hn_nas_temperature", memory_entity: "sensor.hn_nas_memory", cpu_entity: "sensor.hn_nas_cpu" } },
-  { id: "nik-tablet", entity: "binary_sensor.bram_tablet_status", reference: "custom_card_nik_tablet_1.png", config: {
+  { id: "nik-nas", entity: "binary_sensor.hn_nas_status", reference: "custom_card_nik_nas_on.png", width: 510, config: { disk_entity: "sensor.hn_nas_disk", temperature_entity: "sensor.hn_nas_temperature", memory_entity: "sensor.hn_nas_memory", cpu_entity: "sensor.hn_nas_cpu" } },
+  { id: "nik-tablet", entity: "binary_sensor.bram_tablet_status", reference: "custom_card_nik_tablet_1.png", width: 390, config: {
     tablet_button_usb_entity: "switch.bram_tablet_usb",
     tablet_button_motion_entity: "switch.bram_tablet_motion",
     tablet_button_display_entity: "switch.bram_tablet_display",
@@ -258,19 +255,18 @@ const fixtures: Array<{ id: string; key?: string; title?: string; entity: string
   { id: "paddy-waste-collection", entity: "sensor.waste" },
   { id: "paddy-welcome", entity: "person.joris", config: { name: "Joris", ulm_weather: "weather.home" } },
   { id: "person-chip", entity: "person.joris", config: { use_entity_picture: true } },
-  { id: "person-info", entity: "person.joris", reference: "custom_card_person_info.png", config: {
+  { id: "person-info", entity: "person.joris", reference: "custom_card_person_info.png", width: 165, referenceCrop: { width: 165, height: 105 }, theme: "dark", config: {
     ulm_card_person_use_entity_picture: true,
-    ulm_card_person_battery_entity: "sensor.phone_battery",
+    ulm_card_person_battery_entity: "sensor.person_full_battery",
     ulm_card_person_battery_state_entity: "sensor.phone_battery_state",
-    ulm_card_person_commute_entity: "sensor.joris_commute",
-    ulm_card_person_driving_entity: "binary_sensor.joris_driving",
-    ulm_address: "sensor.joris_address",
-    ulm_address_locality: "sensor.joris_locality",
+    ulm_card_person_commute_entity: "sensor.person_full_commute",
+    ulm_card_person_driving_entity: "binary_sensor.joris_driving_full",
+    ulm_multiline: true,
   } },
-  { id: "person-info-small", entity: "person.joris", reference: "custom_card_person_info_small_light.png", config: {
+  { id: "person-info-small", entity: "person.joris", reference: "custom_card_person_info_small_light.png", width: 155, referenceCrop: { width: 155, height: 112 }, config: {
     ulm_card_person_use_entity_picture: true,
-    ulm_card_person_battery_entity: "sensor.phone_battery",
-    ulm_card_person_battery_state_entity: "sensor.phone_battery_state",
+    ulm_card_person_battery_entity: "sensor.person_small_battery",
+    ulm_card_person_battery_state_entity: "sensor.person_small_battery_state",
     ulm_card_person_driving_entity: "binary_sensor.joris_driving",
     ulm_card_person_zone1: "zone.work",
     ulm_card_person_zone2: "zone.school",
@@ -302,7 +298,15 @@ for (const fixture of fixtures) {
   const section = document.createElement("section");
   section.className = "comparison";
   section.dataset.source = fixture.key ?? fixture.id;
-  section.innerHTML = `<h2>${fixture.title ?? `custom_card_${fixture.id.replaceAll("-", "_")}`}</h2><div class="columns"><div><div class="column-label">Upstream reference</div>${fixture.reference ? `<img class="reference" src="/.tmp-ui-minimalist/docs/assets/img/${fixture.reference}" alt="">` : `<div class="no-reference">No dedicated upstream screenshot</div>`}</div><div><div class="column-label">Rendered implementation</div><div class="implementation"></div></div></div>`;
+  const referenceStyle = fixture.referenceCrop
+    ? ` style="width:${fixture.referenceCrop.width}px;height:${fixture.referenceCrop.height}px"`
+    : "";
+  const reference = fixture.reference
+    ? fixture.referenceCrop
+      ? `<div class="reference-crop"${referenceStyle}><img class="reference reference-natural" src="/.tmp-ui-minimalist/docs/assets/img/${fixture.reference}" alt=""></div>`
+      : `<img class="reference" src="/.tmp-ui-minimalist/docs/assets/img/${fixture.reference}" alt="">`
+    : `<div class="no-reference">No dedicated upstream screenshot</div>`;
+  section.innerHTML = `<h2>${fixture.title ?? `custom_card_${fixture.id.replaceAll("-", "_")}`}</h2><div class="columns"><div><div class="column-label">Upstream reference</div>${reference}</div><div><div class="column-label">Rendered implementation</div><div class="implementation ${fixture.theme === "dark" ? "dark-theme" : ""}"${fixture.width ? ` style="width:${fixture.width}px;max-width:${fixture.width}px"` : ""}></div></div></div>`;
   const element = document.createElement(tag) as HTMLElement & { hass: HomeAssistant; setConfig(config: AdditionConfig): void };
   element.hass = hass;
   element.setConfig({

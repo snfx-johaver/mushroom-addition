@@ -286,6 +286,7 @@ const accepted: Record<string, Partial<VisualAuditEntry>> = {
     artifactPath: "docs/assets/visual-audit/custom-card-heat-pump-comparison.png",
     requiredRegions: ["custom-heat-pump", "heat-pump-temperature", "heat-pump-modes", "heat-pump-mode"],
     forbiddenRegions: ["mode-letter", "text-mode-button", "sparkline"],
+    deviations: [],
   },
   custom_card_homeassistant_updates: {
     artifactPath: "docs/assets/visual-audit/custom-card-homeassistant-updates-comparison.png",
@@ -300,21 +301,25 @@ const accepted: Record<string, Partial<VisualAuditEntry>> = {
     artifactPath: "docs/assets/visual-audit/custom-card-nik-nas-comparison.png",
     requiredRegions: ["custom-nik-nas", "nik-nas-top", "nik-nas-metrics", "nik-nas-rings"],
     forbiddenRegions: ["generic-donut", "sparkline"],
+    deviations: [],
   },
   custom_card_nik_tablet: {
     artifactPath: "docs/assets/visual-audit/custom-card-nik-tablet-comparison.png",
     requiredRegions: ["custom-nik-tablet", "nik-tablet-controls", "nik-tablet-metrics", "nik-tablet-battery-bar"],
     forbiddenRegions: ["generic-device-row", "sparkline"],
+    deviations: [],
   },
   custom_card_person_info: {
     artifactPath: "docs/assets/visual-audit/custom-card-person-info-comparison.png",
     requiredRegions: ["custom-person-info", "person-info-avatar", "person-info-badge", "person-info-details"],
     forbiddenRegions: ["generic-presence-tile", "sparkline"],
+    deviations: [],
   },
   custom_card_person_info_small: {
     artifactPath: "docs/assets/visual-audit/custom-card-person-info-small-comparison.png",
     requiredRegions: ["custom-person-info-small", "person-info-avatar", "person-info-badge", "person-info-small-battery"],
     forbiddenRegions: ["person-info-details", "generic-presence-tile", "sparkline"],
+    deviations: [],
   },
 };
 
@@ -332,6 +337,7 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
     inspectedAt: "2026-09-23",
     reviewerNotes: [
       "Focused side-by-side inspected: source hierarchy, icon controls, target-temperature stepper, and six-mode ordering are represented.",
+      "The comparison now uses real @mdi/js paths, 22px glyphs, and a 475px implementation against the 488px source reference.",
       "Mock interaction tests cover exact temperature, power, HVAC-mode, and fan-mode service payloads plus unsupported-mode disabled states.",
       "Visual and interaction acceptance remain false pending independent parent review; picker, editor, state matrix, and live HA remain uncertified.",
     ],
@@ -341,6 +347,7 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
     inspectedAt: "2026-09-23",
     reviewerNotes: [
       "Focused side-by-side inspected: large Home Assistant hero, update badge, version hierarchy, and three source-ordered controls are represented.",
+      "The comparison now uses real @mdi/js paths, a 28px hero glyph, 24px control glyphs, and matched 650px/659px widths.",
       "Mock interaction tests cover release-notes URL, updates navigation, safe more-info behavior, event isolation, and unavailable disabled state.",
       "Visual and interaction acceptance remain false pending independent parent review; picker, editor, state matrix, and live HA remain uncertified.",
     ],
@@ -350,6 +357,7 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
     inspectedAt: "2026-09-23",
     reviewerNotes: [
       "Focused side-by-side inspected after correcting SVG namespace rendering: two bordered tiles, three semantic metrics, and three utilization rings are visible.",
+      "The comparison now uses real 24px MDI glyphs and matched 510px/512px widths; ring diameter was reduced to match the source composition.",
       "Status-tile action has mock evidence; remaining state, picker, editor, independent visual, and live stages remain uncertified.",
     ],
   },
@@ -358,6 +366,7 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
     inspectedAt: "2026-09-23",
     reviewerNotes: [
       "Focused side-by-side inspected: source-ordered six-button grid, RAM/Disk/Power row, battery summary, and thick progress bar are represented.",
+      "The comparison now uses exact MDI paths, 22px glyphs, source-like active colors, and matched 390px/396px widths.",
       "Mock tests cover all six configured controls; independent visual review, complete state matrix, picker, editor, and live stages remain uncertified.",
     ],
   },
@@ -366,7 +375,7 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
     inspectedAt: "2026-09-23",
     reviewerNotes: [
       "Focused side-by-side inspected: full variant now uses avatar/location hierarchy with zone/driving badge and separate battery/commute details.",
-      "One fixture card is compared with the upstream three-column example; dashboard grid composition remains external to the card.",
+      "The reference is cropped to one 165px source card and compared with one 165px dark-theme implementation card.",
       "All six acceptance stages remain false pending independent review and live E2E.",
     ],
   },
@@ -375,6 +384,7 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
     inspectedAt: "2026-09-23",
     reviewerNotes: [
       "Focused side-by-side inspected: compact variant is one person per card with avatar badge, battery circle, centered name, and location label.",
+      "The reference is cropped to one 155px source tile and compared with one 155px implementation tile.",
       "Default tap targets the person and default hold targets the configured battery entity; mock hold-action evidence is present.",
       "All six acceptance stages remain false pending independent review and live E2E.",
     ],

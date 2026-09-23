@@ -956,7 +956,9 @@ const renderHeatPump = (ctx: RenderContext): TemplateResult => {
     { mode: "dry", icon: "mdi:water", label: "Dry mode", tone: "orange" },
     { mode: "fan_only", icon: "mdi:fan", label: "Fan mode", tone: "purple" },
   ] as const;
-  const modeIcon = modes.find(({ mode }) => mode === current)?.icon ?? "mdi:thermostat";
+  const modeIcon = current === "off"
+    ? "mdi:thermostat"
+    : modes.find(({ mode }) => mode === current)?.icon ?? "mdi:thermostat";
   const modeTone = modes.find(({ mode }) => mode === current)?.tone ?? "grey";
   const temperature = attr(ctx.entity, "current_temperature");
   const action = String(attr(ctx.entity, "hvac_action") ?? current).replaceAll("_", " ");
@@ -986,7 +988,7 @@ const renderHeatPump = (ctx: RenderContext): TemplateResult => {
       <span class="heat-pump-icon tone-${modeTone}"><ha-icon .icon=${modeIcon}></ha-icon></span>
       <span class="ulm-copy">
         <span class="ulm-name">${displayName(ctx.config, ctx.entity)}</span>
-        <span class="ulm-label">${temperature ?? "—"}° • ${action} (${current.replaceAll("_", " ")})</span>
+        <span class="ulm-label">${temperature ?? "null"}° • ${current.replaceAll("_", " ")} (${action})</span>
       </span>
     </div>
     <div class="heat-pump-target">
@@ -1384,7 +1386,7 @@ const renderNikNas = (ctx: RenderContext): TemplateResult => {
       <div class="nik-nas-metrics">
         <span><i class="tone-orange"><ha-icon icon="mdi:thermometer"></ha-icon></i><span><b>Temp</b><small>${stateLabel(temperature)}</small></span></span>
         <span><i class="tone-blue"><ha-icon icon="mdi:memory"></ha-icon></i><span><b>Memory</b><small>${stateLabel(memory)}</small></span></span>
-        <span><i class="tone-green"><ha-icon icon="mdi:memory"></ha-icon></i><span><b>CPU</b><small>${stateLabel(cpu)}</small></span></span>
+        <span><i class="tone-green"><ha-icon icon="mdi:cpu-64-bit"></ha-icon></i><span><b>CPU</b><small>${stateLabel(cpu)}</small></span></span>
       </div>
       <svg class="nik-nas-rings" viewBox="0 0 140 140" role="img" aria-label="NAS temperature, memory, and CPU utilization">
         ${[58, 48, 38].map((radius) => svg`<circle class="nik-nas-ring-track" cx="70" cy="70" r=${radius}
@@ -1544,7 +1546,8 @@ const renderPersonInfo = (ctx: RenderContext): TemplateResult => {
       <small>${location}</small>
     </span>
   `);
-  return ctx.actionSurface("custom-person-info", html`
+  const multiline = configured<boolean>(ctx, "ulm_multiline") ?? true;
+  return ctx.actionSurface(`custom-person-info ${multiline ? "is-multiline" : "is-inline"}`, html`
     <div class="person-info-main">
       ${avatar}
       <span class="ulm-copy">
