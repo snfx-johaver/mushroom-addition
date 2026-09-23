@@ -1,6 +1,6 @@
-import { html, nothing, type TemplateResult } from "lit";
-import type { AdditionConfig, AdditionItemConfig, CatalogItem, HassEntity, HomeAssistant, WeatherForecast } from "./types";
-import { activeStates, displayName, stateLabel } from "./helpers";
+import { html, nothing, svg, type TemplateResult } from "lit";
+import type { ActionConfig, AdditionConfig, AdditionItemConfig, CatalogItem, HassEntity, HomeAssistant, WeatherForecast } from "./types";
+import { activeStates, displayName, fireEvent, stateLabel } from "./helpers";
 import { wasteStreamsForConfig } from "./waste-streams";
 import { defaultIconFor } from "./defaults";
 
@@ -75,6 +75,18 @@ const button = (label: string, iconName: string, handler: (event: Event) => void
     <ha-icon .icon=${iconName}></ha-icon>
   </button>
 `;
+const runControlAction = (
+  event: Event,
+  ctx: RenderContext,
+  action: ActionConfig,
+  entity = ctx.config.entity,
+): void => {
+  event.stopPropagation();
+  fireEvent(event.currentTarget as HTMLElement, "hass-action", {
+    config: { type: ctx.config.type, entity, tap_action: action },
+    action: "tap",
+  });
+};
 
 const weatherIcons: Record<string, [string, string]> = {
   "clear-night": ["mdi:weather-night", "yellow"],
@@ -689,7 +701,12 @@ const renderDoor = (ctx: RenderContext): TemplateResult => {
 };
 
 const entityFromConfig = (ctx: RenderContext, ...keys: string[]): HassEntity | undefined => {
-  const entityId = configured<string>(ctx, ...keys);
+  const value = configured<unknown>(ctx, ...keys);
+  const entityId = typeof value === "string"
+    ? value
+    : value && typeof value === "object" && "entity_id" in value && typeof value.entity_id === "string"
+      ? value.entity_id
+      : undefined;
   return entityId ? ctx.hass.states[entityId] : undefined;
 };
 
@@ -924,23 +941,70 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
 const renderHeatPump = (ctx: RenderContext): TemplateResult => {
   const target = numeric(attr(ctx.entity, "temperature")) ?? 20;
   const step = numeric(attr(ctx.entity, "target_temp_step")) ?? 0.5;
+  const current = ctx.entity?.state ?? "off";
+  const supportedModes = Array.isArray(attr(ctx.entity, "hvac_modes"))
+    ? attr(ctx.entity, "hvac_modes") as string[]
+    : ["off", "heat", "cool", "heat_cool", "dry", "fan_only"];
+  const fanModes = Array.isArray(attr(ctx.entity, "fan_modes"))
+    ? attr(ctx.entity, "fan_modes") as string[]
+    : [];
   const modes = [
-    ["off", "mdi:power"], ["heat", "mdi:fire"], ["cool", "mdi:snowflake"],
-    ["heat_cool", "mdi:sync"], ["dry", "mdi:water"], ["fan_only", "mdi:fan"],
-  ];
+    { mode: "off", icon: "mdi:power", label: current === "off" ? "Turn on" : "Turn off", tone: "grey" },
+    { mode: "heat", icon: "mdi:fire", label: "Heat mode", tone: "red" },
+    { mode: "cool", icon: "mdi:snowflake", label: "Cool mode", tone: "blue" },
+    { mode: "heat_cool", icon: "mdi:sync", label: "Automatic mode", tone: "green" },
+    { mode: "dry", icon: "mdi:water", label: "Dry mode", tone: "orange" },
+    { mode: "fan_only", icon: "mdi:fan", label: "Fan mode", tone: "purple" },
+  ] as const;
+  const modeIcon = modes.find(({ mode }) => mode === current)?.icon ?? "mdi:thermostat";
+  const modeTone = modes.find(({ mode }) => mode === current)?.tone ?? "grey";
+  const temperature = attr(ctx.entity, "current_temperature");
+  const action = String(attr(ctx.entity, "hvac_action") ?? current).replaceAll("_", " ");
+  const activateMode = (event: Event, mode: string): void => {
+    event.stopPropagation();
+    if (!ctx.config.entity) return;
+    if (mode === "off") {
+      if (current === "off") {
+        const nextMode = supportedModes.find((candidate) => candidate !== "off");
+        if (nextMode) ctx.service("climate", "set_hvac_mode", { entity_id: ctx.config.entity, hvac_mode: nextMode });
+        else ctx.service("climate", "turn_on", { entity_id: ctx.config.entity });
+      } else if (supportedModes.includes("off")) {
+        ctx.service("climate", "set_hvac_mode", { entity_id: ctx.config.entity, hvac_mode: "off" });
+      } else {
+        ctx.service("climate", "turn_off", { entity_id: ctx.config.entity });
+      }
+      return;
+    }
+    if (mode === "fan_only" && !supportedModes.includes("fan_only") && fanModes.length) {
+      ctx.service("climate", "set_fan_mode", { entity_id: ctx.config.entity, fan_mode: fanModes[0] });
+      return;
+    }
+    ctx.service("climate", "set_hvac_mode", { entity_id: ctx.config.entity, hvac_mode: mode });
+  };
   return ctx.actionSurface("custom-heat-pump", html`
-    <div class="custom-card-heading">${iconBubble(ctx, "mdi:thermostat", ctx.entity?.state === "heat" ? "red" : "grey")}${heading(ctx, `${attr(ctx.entity, "current_temperature") ?? "—"}° · ${attr(ctx.entity, "hvac_action") ?? stateLabel(ctx.entity)}`)}</div>
-    <div class="heat-pump-target">
-      ${button("Decrease temperature", "mdi:arrow-down", (event) => { event.stopPropagation(); ctx.service("climate", "set_temperature", { entity_id: ctx.config.entity, temperature: target - step }); })}
-      <b>${target}°C</b>
-      ${button("Increase temperature", "mdi:arrow-up", (event) => { event.stopPropagation(); ctx.service("climate", "set_temperature", { entity_id: ctx.config.entity, temperature: target + step }); })}
+    <div class="heat-pump-header">
+      <span class="heat-pump-icon tone-${modeTone}"><ha-icon .icon=${modeIcon}></ha-icon></span>
+      <span class="ulm-copy">
+        <span class="ulm-name">${displayName(ctx.config, ctx.entity)}</span>
+        <span class="ulm-label">${temperature ?? "—"}° • ${action} (${current.replaceAll("_", " ")})</span>
+      </span>
     </div>
-    <div class="heat-pump-modes">${modes.map(([mode, modeIcon]) => html`
-      <button class=${ctx.entity?.state === mode ? "is-active" : ""} @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
-        event.stopPropagation();
-        ctx.service("climate", "set_hvac_mode", { entity_id: ctx.config.entity, hvac_mode: mode });
-      }}><ha-icon .icon=${modeIcon}></ha-icon></button>
-    `)}</div>
+    <div class="heat-pump-target">
+      ${button("Decrease target temperature", "mdi:arrow-down", (event) => { event.stopPropagation(); ctx.service("climate", "set_temperature", { entity_id: ctx.config.entity, temperature: target - step }); })}
+      <b>${target}°C</b>
+      ${button("Increase target temperature", "mdi:arrow-up", (event) => { event.stopPropagation(); ctx.service("climate", "set_temperature", { entity_id: ctx.config.entity, temperature: target + step }); })}
+    </div>
+    <div class="heat-pump-modes">${modes.map(({ mode, icon: controlIcon, label, tone }) => {
+      const supported = mode === "off" || supportedModes.includes(mode) || (mode === "fan_only" && fanModes.length > 0);
+      return html`
+      <button
+        aria-label=${label}
+        class="tone-${tone} ${current === mode ? "is-active" : ""}"
+        ?disabled=${!supported}
+        @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => activateMode(event, mode)}
+      ><ha-icon .icon=${controlIcon}></ha-icon></button>
+    `})}</div>
   `);
 };
 
@@ -954,13 +1018,47 @@ const renderHomeAssistantUpdates = (ctx: RenderContext): TemplateResult => {
     ["Core", entityFromConfig(ctx, "ulm_card_homeassistant_core") ?? ctx.entity],
     ["OS", updateEntityFor(ctx, "ulm_card_homeassistant_os", "operating_system")],
   ] as const;
-  const hasUpdate = rows.some(([, entity]) => entity?.state === "on");
+  const hasUpdate = rows.some(([, entity]) => ["on", "true"].includes(entity?.state.toLowerCase() ?? ""));
+  const availableEntities = rows.map(([, entity]) => entity).filter((entity): entity is HassEntity =>
+    Boolean(entity && !["unknown", "unavailable"].includes(entity.state.toLowerCase())));
+  const detailsEntity = availableEntities.find((entity) => ["on", "true"].includes(entity.state.toLowerCase())) ??
+    availableEntities[0];
+  const version = (entity?: HassEntity): string => {
+    if (!entity) return "Unavailable";
+    const installed = String(attr(entity, "installed_version") ?? entity.state);
+    const latest = attr(entity, "latest_version");
+    return ["on", "true"].includes(entity.state.toLowerCase()) && latest
+      ? `${installed} → ${String(latest)}`
+      : installed;
+  };
   return ctx.actionSurface("custom-ha-updates", html`
-    <div class="custom-card-heading">${iconBubble(ctx, "mdi:home-assistant", hasUpdate ? "blue" : "grey")}${heading(ctx, hasUpdate ? "Updates available" : "No updates available")}</div>
-    <div class="ha-update-list">${rows.map(([label, entity]) => html`
-      <span><b>${label}</b><small>${String(attr(entity, "installed_version") ?? stateLabel(entity))}${entity?.state === "on" ? ` → ${String(attr(entity, "latest_version") ?? "new")}` : ""}</small></span>
-    `)}</div>
-    <div class="ha-update-actions"><ha-icon icon="mdi:file-document"></ha-icon><ha-icon icon="mdi:cog"></ha-icon><ha-icon icon="mdi:update"></ha-icon></div>
+    <div class="ha-updates-summary">
+      <span class="ha-updates-icon ${hasUpdate ? "has-update" : ""}">
+        <ha-icon icon="mdi:home-assistant"></ha-icon>
+        ${hasUpdate ? html`<span class="ha-updates-badge"><ha-icon icon="mdi:party-popper"></ha-icon></span>` : nothing}
+      </span>
+      <span class="ulm-copy">
+        <span class="ulm-name">${hasUpdate ? "Updates available!" : "No updates available"}</span>
+        <span class="ha-update-list">${rows.map(([label, entity]) => html`
+          <span><b>${label}:</b> ${version(entity)}</span>
+        `)}</span>
+      </span>
+    </div>
+    <div class="ha-update-actions">
+      <button aria-label="Open Home Assistant release notes" @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => runControlAction(event, ctx, { action: "url", url_path: "https://www.home-assistant.io/latest-release-notes/" })}>
+        <ha-icon icon="mdi:file-document"></ha-icon>
+      </button>
+      <button aria-label="Open update settings" @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => runControlAction(event, ctx, { action: "navigate", navigation_path: "/config/updates" })}>
+        <ha-icon icon="mdi:cog"></ha-icon>
+      </button>
+      <button aria-label="Open available update" ?disabled=${!detailsEntity}
+        @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => detailsEntity && runControlAction(event, ctx, { action: "more-info" }, detailsEntity.entity_id)}>
+        <ha-icon icon="mdi:update"></ha-icon>
+      </button>
+    </div>
   `);
 };
 
@@ -1248,25 +1346,105 @@ const renderNikDoor = (ctx: RenderContext): TemplateResult => {
 };
 
 const renderNikNas = (ctx: RenderContext): TemplateResult => {
-  const details = configuredEntities(ctx).slice(0, 4);
+  const disk = linkedState(ctx, "disk_entity") ?? entityFromConfig(ctx, "entity_4");
+  const temperature = linkedState(ctx, "temperature_entity") ?? entityFromConfig(ctx, "entity_1");
+  const memory = linkedState(ctx, "memory_entity") ?? entityFromConfig(ctx, "entity_2");
+  const cpu = linkedState(ctx, "cpu_entity") ?? entityFromConfig(ctx, "entity_3");
   const online = !["off", "unavailable", "unknown"].includes(ctx.entity?.state ?? "");
-  if (!online) return ctx.actionSurface("custom-nik-nas is-off", html`${iconBubble(ctx, "mdi:nas", "grey")}${heading(ctx, stateLabel(ctx.entity))}`);
+  const legacyMax = (key: string): number | undefined => {
+    const value = ctx.config[key];
+    return value && typeof value === "object" && "max_value" in value ? numeric(value.max_value) : undefined;
+  };
+  const ring = (entity: HassEntity | undefined, radius: number, color: string, max = 100) => {
+    const value = Math.max(0, Math.min(max, numeric(entity?.state) ?? 0));
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference * (1 - value / max);
+    return svg`<circle class="nik-nas-ring-value" cx="70" cy="70" r=${radius}
+      fill="none" stroke=${color} stroke-width="6" stroke-linecap="round"
+      stroke-dasharray=${circumference} stroke-dashoffset=${offset}></circle>`;
+  };
+  const status = ctx.entity?.state === "on" ? "Access" : stateLabel(ctx.entity);
+  const statusTile = html`
+    <button class="nik-nas-tile status-tile" aria-label="Open NAS status"
+      @pointerdown=${(event: Event) => event.stopPropagation()}
+      @click=${(event: Event) => runControlAction(event, ctx, { action: "more-info" })}>
+      <span class="nik-nas-tile-icon tone-blue"><ha-icon icon="mdi:nas"></ha-icon></span>
+      <span><b>Status</b><small>${status}</small></span>
+    </button>`;
+  if (!online) return ctx.actionSurface("custom-nik-nas is-off", html`<div class="nik-nas-top">${statusTile}</div>`);
   return ctx.actionSurface("custom-nik-nas is-on", html`
-    <div class="nik-nas-header">${iconBubble(ctx, "mdi:nas", "blue")}${heading(ctx, stateLabel(ctx.entity))}</div>
-    <div class="nik-nas-metrics">${details.slice(0, 3).map((entity, index) => html`<span class=${`metric-${index + 1}`}><b>${stateLabel(entity)}</b><small>${displayName({ type: "", entity: entity.entity_id }, entity)}</small></span>`)}</div>
-    <div class="nik-nas-chart" style=${`--gauge:${Math.max(0, Math.min(100, numeric(details[0]?.state) ?? 0)) * 3.6}deg`}><ha-icon icon="mdi:nas"></ha-icon></div>
+    <div class="nik-nas-top">
+      ${statusTile}
+      <div class="nik-nas-tile disk-tile">
+        <span class="nik-nas-tile-icon tone-red"><ha-icon icon="mdi:harddisk"></ha-icon></span>
+        <span><b>Disk</b><small>${stateLabel(disk)}</small></span>
+      </div>
+    </div>
+    <div class="nik-nas-body">
+      <div class="nik-nas-metrics">
+        <span><i class="tone-orange"><ha-icon icon="mdi:thermometer"></ha-icon></i><span><b>Temp</b><small>${stateLabel(temperature)}</small></span></span>
+        <span><i class="tone-blue"><ha-icon icon="mdi:memory"></ha-icon></i><span><b>Memory</b><small>${stateLabel(memory)}</small></span></span>
+        <span><i class="tone-green"><ha-icon icon="mdi:memory"></ha-icon></i><span><b>CPU</b><small>${stateLabel(cpu)}</small></span></span>
+      </div>
+      <svg class="nik-nas-rings" viewBox="0 0 140 140" role="img" aria-label="NAS temperature, memory, and CPU utilization">
+        ${[58, 48, 38].map((radius) => svg`<circle class="nik-nas-ring-track" cx="70" cy="70" r=${radius}
+          fill="none" stroke="#dedede" stroke-width="6"></circle>`)}
+        ${ring(temperature, 58, "#ff8a00", legacyMax("entity_1") ?? 100)}
+        ${ring(memory, 48, "#4267ff", legacyMax("entity_2") ?? 100)}
+        ${ring(cpu, 38, "#00c968", legacyMax("entity_3") ?? 100)}
+      </svg>
+    </div>
   `);
 };
 
 const renderNikTablet = (ctx: RenderContext): TemplateResult => {
-  const details = configuredEntities(ctx);
-  const battery = numeric(ctx.entity?.state) ?? 0;
+  const batteryEntity = linkedState(ctx, "battery_entity");
+  const battery = Math.max(0, Math.min(100, numeric(batteryEntity?.state) ?? 0));
+  const controls = [
+    ["tablet_button_usb_entity", "mdi:usb", "green", "Toggle USB"],
+    ["tablet_button_motion_entity", "mdi:motion-sensor", "green", "Toggle motion"],
+    ["tablet_button_display_entity", "mdi:monitor", "green", "Toggle display"],
+    ["tablet_restart_entity", "mdi:restart-alert", "blue", "Restart tablet"],
+    ["tablet_maintenance_entity", "mdi:account-hard-hat-outline", "orange", "Toggle maintenance mode"],
+    ["tablet_reload_entity", "mdi:reload", "blue", "Reload tablet"],
+  ] as const;
+  const metricEntities = [
+    ["RAM", linkedState(ctx, "tablet_ram_entity")],
+    ["Disk", linkedState(ctx, "tablet_disk_entity")],
+    ["Power", linkedState(ctx, "tablet_power_entity")],
+  ] as const;
+  const status = ctx.entity?.state === "on" ? "Access" : stateLabel(ctx.entity);
+  const activateTabletControl = (event: Event, entity?: HassEntity): void => {
+    event.stopPropagation();
+    if (!entity) return;
+    const domain = entity.entity_id.split(".")[0];
+    if (domain === "button") ctx.service("button", "press", { entity_id: entity.entity_id });
+    else ctx.service("homeassistant", "toggle", { entity_id: entity.entity_id });
+  };
   return ctx.actionSurface("custom-nik-tablet", html`
-    <div class="custom-card-heading">${iconBubble(ctx, "mdi:tablet", "blue")}${heading(ctx, stateLabel(ctx.entity))}</div>
-    <div class="tablet-status-row">${details.slice(0, 3).map((entity) => html`<span>${stateLabel(entity)}</span>`)}</div>
-    <div class="tablet-action-row"><button><ha-icon icon="mdi:restart"></ha-icon></button><button><ha-icon icon="mdi:reload"></ha-icon></button><button><ha-icon icon="mdi:wrench"></ha-icon></button></div>
-    <div class="tablet-parameter-row">${details.slice(3, 6).map((entity) => html`<span><small>${displayName({ type: "", entity: entity.entity_id }, entity)}</small><b>${stateLabel(entity)}</b></span>`)}</div>
-    <div class="tablet-battery"><i style=${`width:${battery}%`}></i><b>${battery}%</b></div>
+    <div class="nik-tablet-header">
+      <span class="nik-tablet-icon"><ha-icon icon="mdi:tablet"></ha-icon></span>
+      <span class="ulm-copy"><span class="ulm-name">${displayName(ctx.config, ctx.entity)}</span><span class="ulm-label">${status}</span></span>
+    </div>
+    <div class="nik-tablet-controls">${controls.map(([key, controlIcon, tone, label]) => {
+      const entity = linkedState(ctx, key);
+      if (!entity) return nothing;
+      const unavailable = entity.state.toLowerCase() === "unavailable";
+      return html`<button class="tone-${tone} ${activeStates.has(entity.state) ? "is-active" : ""}"
+        aria-label=${label} ?disabled=${unavailable}
+        @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => activateTabletControl(event, entity)}>
+        <ha-icon .icon=${controlIcon}></ha-icon>
+      </button>`;
+    })}</div>
+    <div class="nik-tablet-metrics">${metricEntities.map(([label, entity]) => html`
+      <span><b>${stateLabel(entity)}</b><small>${label}</small></span>
+    `)}</div>
+    <div class="nik-tablet-battery-row">
+      <span class="nik-tablet-battery-icon"><ha-icon icon="mdi:battery"></ha-icon></span>
+      <span><b>${stateLabel(batteryEntity)}</b><small>Battery</small></span>
+    </div>
+    <div class="nik-tablet-battery-bar"><i style=${`width:${battery}%`}></i><b>${battery}%</b></div>
   `);
 };
 
@@ -1318,25 +1496,65 @@ const renderPersonChip = (ctx: RenderContext): TemplateResult => {
 
 const renderPersonInfo = (ctx: RenderContext): TemplateResult => {
   const small = ctx.config.variant === "small";
-  const trackers = configuredEntities(ctx);
-  const picture = String(attr(ctx.entity, "entity_picture") || "");
+  const battery = entityFromConfig(ctx, "ulm_card_person_battery_entity") ?? linkedState(ctx, "battery_entity");
+  const batteryState = entityFromConfig(ctx, "ulm_card_person_battery_state_entity");
+  const driving = entityFromConfig(ctx, "ulm_card_person_driving_entity");
+  const zone1 = entityFromConfig(ctx, "ulm_card_person_zone1");
+  const zone2 = entityFromConfig(ctx, "ulm_card_person_zone2");
+  const address = entityFromConfig(ctx, "ulm_address");
+  const locality = entityFromConfig(ctx, "ulm_address_locality");
+  const commute = entityFromConfig(ctx, "ulm_card_person_commute_entity");
+  const usePicture = configured<boolean>(ctx, "ulm_card_person_use_entity_picture", "use_entity_picture") ?? small;
+  const picture = usePicture ? String(attr(ctx.entity, "entity_picture") || "") : "";
+  const batteryLevel = numeric(battery?.state);
+  const charging = batteryState?.state.toLowerCase() === "charging";
+  const danger = configured<number>(ctx, "ulm_card_battery_battery_level_danger") ?? 15;
+  const warning = configured<number>(ctx, "ulm_card_battery_battery_level_warning") ?? 30;
+  const batteryTone = batteryLevel === undefined ? "grey" : batteryLevel <= danger ? "red" : batteryLevel <= warning ? "yellow" : "green";
+  const batteryIcon = batteryLevel === undefined ? "mdi:battery-off" :
+    charging ? "mdi:battery-charging" :
+      batteryLevel >= 95 ? "mdi:battery" :
+        batteryLevel < 10 ? "mdi:battery-outline" :
+          `mdi:battery-${Math.floor(batteryLevel / 10) * 10}`;
+  const personState = ctx.entity?.state ?? "unknown";
+  const zoneForState = [zone1, zone2].find((zone) => zone?.attributes.friendly_name === personState);
+  const drivingNow = driving?.state === "on";
+  const badgeIcon = drivingNow ? "mdi:car" :
+    personState === "home" ? "mdi:home-variant" :
+      zoneForState ? String(attr(zoneForState, "icon") || "mdi:map-marker") : "mdi:home-minus";
+  const badgeTone = drivingNow ? "red" : personState === "home" ? "blue" : "yellow";
+  const location = address ? stateLabel(address) :
+    locality && typeof attr(locality, "Locality") === "string" ? String(attr(locality, "Locality")) :
+      drivingNow ? `Driving - ${personState.replaceAll("_", " ")}` :
+        personState.replaceAll("_", " ");
+  const avatar = html`
+    <span class="person-info-avatar ${picture ? "has-picture" : ""}" style=${picture ? `background-image:url("${picture}")` : ""}>
+      ${picture ? nothing : html`<ha-icon .icon=${configured<string>(ctx, "ulm_card_person_icon") || "mdi:face-man"}></ha-icon>`}
+      <i class="person-info-badge tone-${badgeTone}"><ha-icon .icon=${badgeIcon}></ha-icon></i>
+    </span>`;
   if (small) return ctx.actionSurface("custom-person-info-small is-compact", html`
-    <span class="person-info-avatar" style=${picture ? `background-image:url("${picture}")` : ""}><ha-icon icon="mdi:account"></ha-icon></span>
-    ${heading(ctx, `${stateLabel(ctx.entity)}${trackers[0] ? ` · ${stateLabel(trackers[0])}` : ""}`)}
+    <div class="person-info-small-top">
+      ${avatar}
+      <span class="person-info-small-battery tone-${batteryTone}">
+        <ha-icon .icon=${batteryIcon}></ha-icon>
+      </span>
+    </div>
+    <span class="person-info-small-copy">
+      <b>${displayName(ctx.config, ctx.entity)}</b>
+      <small>${location}</small>
+    </span>
   `);
-  const battery = entityFromConfig(ctx, "ulm_card_person_battery") ?? linkedState(ctx, "battery_entity") ?? trackers[0];
-  const distance = entityFromConfig(ctx, "ulm_card_person_distance") ?? trackers[1];
-  const zone = entityFromConfig(ctx, "ulm_card_person_zone") ?? trackers[2];
   return ctx.actionSurface("custom-person-info", html`
     <div class="person-info-main">
-      <span class="person-info-avatar" style=${picture ? `background-image:url("${picture}")` : ""}><ha-icon icon="mdi:account"></ha-icon></span>
-      ${heading(ctx, stateLabel(ctx.entity))}
-      <span class="person-info-status">${ctx.entity?.state === "home" ? "Home" : ctx.entity?.state || "Unknown"}</span>
+      ${avatar}
+      <span class="ulm-copy">
+        <span class="ulm-name">${displayName(ctx.config, ctx.entity)}</span>
+        <span class="ulm-label">${location}</span>
+      </span>
     </div>
     <div class="person-info-details">
-      <span><ha-icon icon="mdi:battery"></ha-icon><b>${stateLabel(battery)}</b><small>Battery</small></span>
-      <span><ha-icon icon="mdi:map-marker-distance"></ha-icon><b>${stateLabel(distance)}</b><small>Distance</small></span>
-      <span><ha-icon icon="mdi:map-marker-radius"></ha-icon><b>${stateLabel(zone)}</b><small>Zone</small></span>
+      ${battery ? html`<span class="person-info-detail tone-${batteryTone}"><ha-icon .icon=${batteryIcon}></ha-icon><b>${batteryLevel ?? "—"}%</b></span>` : nothing}
+      ${commute ? html`<span class="person-info-detail commute-detail"><ha-icon .icon=${configured<string>(ctx, "ulm_card_person_cummute_icon") || "mdi:car"}></ha-icon><b>${stateLabel(commute)}${commute.attributes.unit_of_measurement ? "" : " min"}</b></span>` : nothing}
     </div>
   `);
 };

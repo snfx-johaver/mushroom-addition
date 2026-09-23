@@ -57,6 +57,11 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
     primary_info: upstream.primary_info ?? "name",
     secondary_info: upstream.secondary_info ?? "default",
     tap_action: upstream.tap_action ?? defaultAction,
+    hold_action: upstream.hold_action ?? (
+      upstream.variant === "small" && typeof upstream.ulm_card_person_battery_entity === "string"
+        ? { action: "more-info", entity: upstream.ulm_card_person_battery_entity }
+        : undefined
+    ),
   };
 };
 
@@ -95,10 +100,38 @@ const legacyEntityKeys = [
 
 export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
   const wasteMigrated = migrateWasteStreamConfig(config);
-  if (wasteMigrated.entity) return { ...wasteMigrated, primary_entity: undefined };
   const legacy = wasteMigrated.primary_entity ||
     legacyEntityKeys.map((key) => wasteMigrated[key]).find((value): value is string => typeof value === "string");
-  return legacy
-    ? { ...wasteMigrated, entity: legacy, primary_entity: undefined }
-    : { ...wasteMigrated };
+  const entityId = (value: unknown): string | undefined => {
+    if (typeof value === "string") return value;
+    if (value && typeof value === "object" && "entity_id" in value && typeof value.entity_id === "string") {
+      return value.entity_id;
+    }
+    return undefined;
+  };
+  const migrated: AdditionConfig = {
+    ...wasteMigrated,
+    entity: wasteMigrated.entity ?? legacy,
+    primary_entity: undefined,
+  };
+  if (String(config.type).includes("nik-nas")) {
+    migrated.temperature_entity ??= entityId(config.entity_1);
+    migrated.memory_entity ??= entityId(config.entity_2);
+    migrated.cpu_entity ??= entityId(config.entity_3);
+    migrated.disk_entity ??= entityId(config.entity_4);
+  }
+  if (String(config.type).includes("nik-tablet")) {
+    migrated.entity ??= entityId(config.ulm_custom_card_nik_tablet_main);
+    migrated.battery_entity ??= entityId(config.ulm_custom_card_nik_tablet_battery);
+    migrated.tablet_button_usb_entity ??= entityId(config.ulm_custom_card_nik_tablet_button1);
+    migrated.tablet_button_motion_entity ??= entityId(config.ulm_custom_card_nik_tablet_button2);
+    migrated.tablet_button_display_entity ??= entityId(config.ulm_custom_card_nik_tablet_button3);
+    migrated.tablet_restart_entity ??= entityId(config.ulm_custom_card_nik_tablet_restart);
+    migrated.tablet_reload_entity ??= entityId(config.ulm_custom_card_nik_tablet_reload);
+    migrated.tablet_maintenance_entity ??= entityId(config.ulm_custom_card_nik_tablet_maintenance);
+    migrated.tablet_ram_entity ??= entityId(config.ulm_custom_card_nik_tablet_par1);
+    migrated.tablet_disk_entity ??= entityId(config.ulm_custom_card_nik_tablet_par2);
+    migrated.tablet_power_entity ??= entityId(config.ulm_custom_card_nik_tablet_par3);
+  }
+  return migrated;
 };

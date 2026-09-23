@@ -6,6 +6,7 @@ export const sharedStyles = css`
     --ulm-yellow: 255, 193, 7;
     --ulm-red: 244, 67, 54;
     --ulm-green: 76, 175, 80;
+    --ulm-orange: 255, 152, 0;
     --ulm-purple: 156, 39, 176;
     --ulm-grey: 120, 120, 120;
     display: block;
@@ -60,6 +61,7 @@ export const sharedStyles = css`
   .tone-yellow { --tone: var(--ulm-yellow); }
   .tone-red { --tone: var(--ulm-red); }
   .tone-green { --tone: var(--ulm-green); }
+  .tone-orange { --tone: var(--ulm-orange); }
   .tone-purple { --tone: var(--ulm-purple); }
   .tone-grey { --tone: var(--ulm-grey); }
   .ulm-copy { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
@@ -376,8 +378,8 @@ export const sharedStyles = css`
     align-items: center;
     gap: 12px;
   }
-  .custom-waste-card, .custom-alarm-time, .custom-washer, .custom-heat-pump,
-  .custom-ha-updates, .custom-compact-thermostat, .custom-input-datetime {
+  .custom-waste-card, .custom-alarm-time, .custom-washer,
+  .custom-compact-thermostat, .custom-input-datetime {
     display: grid;
     gap: 12px;
     padding: 12px;
@@ -397,20 +399,18 @@ export const sharedStyles = css`
   .waste-row ha-icon { --mdc-icon-size: 17px; color: var(--waste-color, rgb(var(--ulm-green))); }
   .waste-row b, .waste-row small { font-size: 11px; }
   .waste-row small { color: var(--secondary-text-color); }
-  .alarm-time-controls, .compact-thermostat-controls, .heat-pump-target {
+  .alarm-time-controls, .compact-thermostat-controls {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: center;
     gap: 10px;
   }
-  .alarm-time-controls .ulm-control, .compact-thermostat-controls .ulm-control,
-  .heat-pump-target .ulm-control {
+  .alarm-time-controls .ulm-control, .compact-thermostat-controls .ulm-control {
     width: 100%;
     height: 56px;
     border-radius: 18px;
   }
-  .alarm-time-controls > b, .compact-thermostat-controls > b,
-  .heat-pump-target > b { text-align: center; font-size: 18px; }
+  .alarm-time-controls > b, .compact-thermostat-controls > b { text-align: center; font-size: 18px; }
   .custom-apexcharts {
     display: grid;
     min-height: 190px;
@@ -497,14 +497,32 @@ export const sharedStyles = css`
   .washer-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
   .washer-controls .ulm-control { width: 100%; height: 42px; border-radius: 16px; }
   .washer-remote { color: var(--secondary-text-color); font-size: 11px; text-align: center; }
-  .heat-pump-modes { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-  .heat-pump-modes button { display: grid; height: 38px; place-items: center; border: 0; border-radius: 14px; background: rgba(var(--ulm-grey), .08); color: var(--primary-text-color); }
-  .heat-pump-modes button.is-active { background: rgba(var(--ulm-blue), .18); color: rgb(var(--ulm-blue)); }
-  .ha-update-list { display: grid; gap: 4px; }
-  .ha-update-list span { display: flex; justify-content: space-between; gap: 10px; padding: 4px 8px; border-radius: 8px; background: rgba(var(--ulm-grey), .06); font-size: 11px; }
-  .ha-update-list small { color: var(--secondary-text-color); }
-  .ha-update-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
-  .ha-update-actions ha-icon { box-sizing: content-box; justify-self: center; padding: 9px 22px; border-radius: 14px; background: rgba(var(--ulm-grey), .08); }
+  .custom-heat-pump { display: grid; gap: 12px; padding: 12px; }
+  .heat-pump-header { display: grid; grid-template-columns: 42px minmax(0, 1fr); align-items: center; gap: 12px; }
+  .heat-pump-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: rgba(var(--tone), .2); color: rgb(var(--tone)); }
+  .heat-pump-icon ha-icon { --mdc-icon-size: 20px; }
+  .heat-pump-target { display: grid; grid-template-columns: minmax(0, 1fr) minmax(74px, auto) minmax(0, 1fr); align-items: center; gap: 10px; }
+  .heat-pump-target .ulm-control { width: 100%; height: 44px; border-radius: 14px; background: rgba(var(--ulm-grey), .07); }
+  .heat-pump-target > b { text-align: center; font-size: 16px; font-weight: 500; }
+  .heat-pump-modes { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+  .heat-pump-modes button { display: grid; min-width: 0; height: 42px; place-items: center; border: 0; border-radius: 14px; background: rgba(var(--ulm-grey), .07); color: rgba(var(--ulm-grey), .9); cursor: pointer; }
+  .heat-pump-modes button ha-icon { --mdc-icon-size: 20px; }
+  .heat-pump-modes button.is-active { background: rgba(var(--tone), .2); color: rgb(var(--tone)); }
+  .heat-pump-modes button:disabled { cursor: not-allowed; opacity: .28; }
+  .custom-ha-updates { display: grid; gap: 18px; padding: 18px; }
+  .ha-updates-summary { display: grid; grid-template-columns: 64px minmax(0, 1fr); align-items: center; gap: 22px; }
+  .ha-updates-icon { position: relative; display: grid; width: 64px; height: 64px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-grey), .08); color: rgba(var(--ulm-grey), .25); }
+  .ha-updates-icon.has-update { background: rgba(var(--ulm-blue), .2); color: rgb(var(--ulm-blue)); }
+  .ha-updates-icon > ha-icon { --mdc-icon-size: 34px; }
+  .ha-updates-badge { position: absolute; top: -4px; right: -4px; display: grid; width: 26px; height: 26px; place-items: center; border: 3px solid var(--card-background-color); border-radius: 50%; background: rgb(var(--ulm-blue)); color: #fff; }
+  .ha-updates-badge ha-icon { --mdc-icon-size: 15px; }
+  .ha-updates-summary .ulm-name { font-size: 20px; font-weight: 700; }
+  .ha-update-list { display: grid; gap: 2px; color: rgba(var(--ulm-grey), .55); font-size: 16px; font-weight: 600; }
+  .ha-update-list span { display: block; }
+  .ha-update-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .ha-update-actions button { display: grid; height: 64px; place-items: center; border: 0; border-radius: 20px; background: rgba(var(--ulm-grey), .07); color: rgba(var(--ulm-grey), .8); cursor: pointer; }
+  .ha-update-actions button ha-icon { --mdc-icon-size: 28px; }
+  .ha-update-actions button:disabled { cursor: not-allowed; opacity: .28; }
   .custom-sun-card { display: grid; min-height: 210px; gap: 8px; padding: 18px; }
   .sun-times, .sun-footer { display: flex; justify-content: space-between; }
   .sun-times span, .sun-footer span { display: flex; flex-direction: column; gap: 3px; }
@@ -554,10 +572,10 @@ export const sharedStyles = css`
   .irmajavi-four b, .irmajavi-four small { overflow: hidden; max-width: 100%; text-overflow: ellipsis; white-space: nowrap; }
   .irmajavi-four b { font-size: 10px; } .irmajavi-four small { color: var(--secondary-text-color); font-size: 11px; }
   .speedtest-action { display: flex; min-height: 40px; align-items: center; gap: 10px; padding: 0 12px; border: 0; border-radius: 12px; background: rgba(var(--ulm-blue), .1); color: var(--primary-text-color); }
-  .speedtest-metrics, .nik-nas-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-  .speedtest-metrics > span, .nik-nas-metrics > span { display: grid; gap: 2px; padding: 8px; border-radius: 10px; background: rgba(var(--ulm-grey), .07); }
-  .speedtest-metrics small, .nik-nas-metrics small { color: var(--secondary-text-color); font-size: 10px; }
-  .speedtest-metrics b, .nik-nas-metrics b { overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+  .speedtest-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .speedtest-metrics > span { display: grid; gap: 2px; padding: 8px; border-radius: 10px; background: rgba(var(--ulm-grey), .07); }
+  .speedtest-metrics small { color: var(--secondary-text-color); font-size: 10px; }
+  .speedtest-metrics b { overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
   .light-colorpick-top { display: grid; gap: 10px; }
   .light-color-swatches { display: grid; grid-template-columns: repeat(6, 1fr); gap: 7px; }
   .light-color-swatches button { aspect-ratio: 1; border: 3px solid var(--card-background-color); border-radius: 50%; background: var(--swatch); box-shadow: 0 0 0 1px rgba(var(--ulm-grey), .15); }
@@ -583,16 +601,45 @@ export const sharedStyles = css`
   .nik-door-icon { position: relative; display: grid; width: 46px; height: 46px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-blue), .12); color: rgb(var(--ulm-blue)); }
   .nik-door-icon i { position: absolute; right: -3px; bottom: -3px; display: grid; width: 20px; height: 20px; place-items: center; border: 2px solid var(--card-background-color); border-radius: 50%; background: rgb(var(--ulm-green)); color: #fff; }
   .nik-door-icon i.is-low { background: rgb(var(--ulm-red)); } .nik-door-icon i ha-icon { --mdc-icon-size: 13px; } .nik-door-controls { grid-template-columns: repeat(2, 1fr); }
-  .nik-nas-chart { display: grid; width: 68px; height: 68px; place-items: center; margin: auto; border-radius: 50%; background: conic-gradient(rgb(var(--ulm-blue)) var(--gauge), rgba(var(--ulm-grey), .08) 0); }
-  .nik-nas-chart::before { content: ""; grid-area: 1 / 1; width: 52px; height: 52px; border-radius: 50%; background: var(--card-background-color); }
-  .nik-nas-chart ha-icon { z-index: 1; grid-area: 1 / 1; }
-  .custom-nik-tablet { min-height: 210px; }
-  .tablet-status-row, .tablet-action-row, .tablet-parameter-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
-  .tablet-status-row span, .tablet-action-row button, .tablet-parameter-row span { display: grid; min-height: 38px; place-items: center; border: 0; border-radius: 10px; background: rgba(var(--ulm-grey), .07); color: var(--primary-text-color); text-align: center; }
-  .tablet-parameter-row small { color: var(--secondary-text-color); font-size: 9px; } .tablet-parameter-row b { font-size: 11px; }
-  .tablet-battery { position: relative; height: 32px; overflow: hidden; border-radius: 10px; background: rgba(var(--ulm-grey), .08); }
-  .tablet-battery i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: rgba(var(--ulm-green), .25); }
-  .tablet-battery b { position: relative; z-index: 1; display: grid; height: 100%; place-items: center; font-size: 11px; }
+  .custom-nik-nas { gap: 12px; padding: 18px; }
+  .nik-nas-top { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .nik-nas-tile { box-sizing: border-box; display: grid; min-height: 102px; grid-template-columns: 64px minmax(0, 1fr); align-items: center; gap: 16px; padding: 12px 18px; border: 3px solid rgba(var(--ulm-grey), .45); border-radius: 30px; background: transparent; color: var(--primary-text-color); text-align: left; }
+  button.nik-nas-tile { cursor: pointer; }
+  .nik-nas-tile-icon { display: grid; width: 62px; height: 62px; place-items: center; border-radius: 50%; background: rgba(var(--tone), .2); color: rgb(var(--tone)); }
+  .nik-nas-tile-icon ha-icon { --mdc-icon-size: 30px; }
+  .nik-nas-tile > span:last-child, .nik-nas-metrics > span > span { display: grid; }
+  .nik-nas-tile b, .nik-nas-metrics b { font-size: 21px; line-height: 1.1; }
+  .nik-nas-tile small, .nik-nas-metrics small { color: rgba(var(--ulm-grey), .65); font-size: 17px; font-weight: 600; }
+  .nik-nas-body { display: grid; grid-template-columns: minmax(150px, .9fr) minmax(180px, 1.2fr); align-items: center; gap: 18px; }
+  .nik-nas-metrics { display: grid; gap: 12px; }
+  .nik-nas-metrics > span { display: grid; min-height: 70px; grid-template-columns: 64px minmax(0, 1fr); align-items: center; gap: 16px; }
+  .nik-nas-metrics i { display: grid; width: 62px; height: 62px; place-items: center; border-radius: 50%; background: rgba(var(--tone), .2); color: rgb(var(--tone)); font-style: normal; }
+  .nik-nas-metrics i ha-icon { --mdc-icon-size: 30px; }
+  .nik-nas-rings { width: 100%; max-width: 230px; justify-self: center; overflow: visible; transform: rotate(-90deg); }
+  .nik-nas-ring-track, .nik-nas-ring-value { fill: none; stroke-width: 6; }
+  .nik-nas-ring-track { stroke: rgba(var(--ulm-grey), .16); }
+  .nik-nas-ring-value { stroke-linecap: round; }
+  .custom-nik-tablet { min-height: 420px; gap: 14px; padding: 18px; }
+  .nik-tablet-header { display: grid; grid-template-columns: 64px minmax(0, 1fr); align-items: center; gap: 18px; }
+  .nik-tablet-icon { display: grid; width: 62px; height: 62px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-blue), .2); color: rgb(var(--ulm-blue)); }
+  .nik-tablet-icon ha-icon { --mdc-icon-size: 30px; }
+  .nik-tablet-header .ulm-name { font-size: 21px; }
+  .nik-tablet-header .ulm-label { font-size: 16px; }
+  .nik-tablet-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .nik-tablet-controls button { display: grid; height: 62px; place-items: center; border: 0; border-radius: 24px; background: rgba(var(--tone), .2); color: rgb(var(--tone)); cursor: pointer; }
+  .nik-tablet-controls button ha-icon { --mdc-icon-size: 28px; }
+  .nik-tablet-controls button:disabled { opacity: .3; cursor: not-allowed; }
+  .nik-tablet-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; text-align: center; }
+  .nik-tablet-metrics span { display: grid; gap: 2px; }
+  .nik-tablet-metrics b { overflow: hidden; font-size: 19px; text-overflow: ellipsis; white-space: nowrap; }
+  .nik-tablet-metrics small { color: rgba(var(--ulm-grey), .65); font-size: 16px; font-weight: 600; }
+  .nik-tablet-battery-row { display: grid; grid-template-columns: 62px minmax(0, 1fr); align-items: center; gap: 18px; }
+  .nik-tablet-battery-icon { display: grid; width: 62px; height: 62px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-grey), .08); color: rgba(var(--ulm-grey), .8); }
+  .nik-tablet-battery-row > span:last-child { display: grid; }
+  .nik-tablet-battery-row b { font-size: 20px; } .nik-tablet-battery-row small { color: rgba(var(--ulm-grey), .65); font-size: 16px; font-weight: 600; }
+  .nik-tablet-battery-bar { position: relative; height: 50px; overflow: hidden; border-radius: 25px; background: rgba(var(--ulm-grey), .16); }
+  .nik-tablet-battery-bar i { position: absolute; inset: 0 auto 0 0; border-radius: inherit 0 0 inherit; background: #00c853; }
+  .nik-tablet-battery-bar b { position: relative; z-index: 1; display: flex; height: 100%; align-items: center; justify-content: flex-end; padding-right: 14px; font-size: 16px; }
   .pollen-icon { display: grid; width: 46px; height: 46px; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--pollen) 20%, transparent); color: var(--pollen); }
   .paddy-waste-icon { position: relative; } .paddy-waste-icon > i { position: absolute; top: -3px; right: -3px; display: grid; width: 20px; height: 20px; place-items: center; border-radius: 50%; background: rgb(var(--ulm-red)); color: #fff; }
   .paddy-waste-icon > i ha-icon { --mdc-icon-size: 13px; }
@@ -604,17 +651,28 @@ export const sharedStyles = css`
   .custom-person-info, .custom-ristou-person, .custom-saxel-fan, .custom-schumijo-car,
   .custom-schumijo-flower, .custom-sisimomo-printer, .custom-speedtest-shogun,
   .custom-tpx-aircondition, .custom-water-heater { display: grid; gap: 10px; padding: 12px; }
-  .custom-person-info-small { display: grid; min-height: 62px; grid-template-columns: 46px minmax(0, 1fr); align-items: center; gap: 10px; padding: 10px 14px; }
+  .custom-person-info-small { display: grid; min-height: 118px; gap: 8px; padding: 12px; }
   .person-info-main, .ristou-person-main, .car-hero, .flower-heading, .printer-summary,
   .aircondition-main, .water-heater-top { display: flex; min-width: 0; align-items: center; gap: 10px; }
-  .person-info-avatar { display: grid; width: 46px; height: 46px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: rgba(var(--ulm-blue), .12) center/cover; color: rgb(var(--ulm-blue)); }
-  .person-info-avatar[style*="background-image"] ha-icon { opacity: 0; }
-  .person-info-status { margin-left: auto; padding: 5px 9px; border-radius: 10px; background: rgba(var(--ulm-green), .12); color: rgb(var(--ulm-green)); font-size: 10px; font-weight: 700; }
-  .person-info-details, .car-metrics, .flower-metrics, .device-tracer-meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
-  .person-info-details > span, .car-metrics > span, .flower-metrics > span, .device-tracer-meta > span { display: grid; min-width: 0; min-height: 52px; place-items: center; padding: 6px; border-radius: 12px; background: rgba(var(--ulm-grey), .07); text-align: center; }
-  .person-info-details ha-icon, .car-metrics ha-icon, .flower-metrics ha-icon, .device-tracer-meta ha-icon { --mdc-icon-size: 17px; color: rgb(var(--ulm-blue)); }
-  .person-info-details b, .car-metrics b, .flower-metrics b { overflow: hidden; max-width: 100%; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-  .person-info-details small { color: var(--secondary-text-color); font-size: 9px; }
+  .person-info-avatar { position: relative; display: grid; width: 46px; height: 46px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: rgba(var(--ulm-blue), .12) center/cover; color: rgb(var(--ulm-blue)); }
+  .person-info-avatar.has-picture ha-icon { display: none; }
+  .person-info-badge { position: absolute; top: -3px; right: -3px; display: grid; width: 16px; height: 16px; place-items: center; border: 2px solid var(--card-background-color); border-radius: 50%; background: rgb(var(--tone)); color: #fff; }
+  .person-info-badge ha-icon { --mdc-icon-size: 10px; }
+  .person-info-small-top { display: flex; align-items: flex-start; justify-content: space-between; }
+  .person-info-small-battery { display: grid; width: 30px; height: 30px; place-items: center; border: 2px solid var(--card-background-color); border-radius: 50%; background: rgba(var(--ulm-grey), .05); color: rgb(var(--tone)); }
+  .person-info-small-battery ha-icon { --mdc-icon-size: 25px; }
+  .person-info-small-copy { display: grid; text-align: center; }
+  .person-info-small-copy b { font-size: 14px; }
+  .person-info-small-copy small { color: var(--secondary-text-color); font-size: 12px; text-transform: capitalize; }
+  .custom-person-info { min-height: 68px; grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+  .person-info-details { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .person-info-detail { display: flex; align-items: center; gap: 4px; font-size: 12px; }
+  .person-info-detail ha-icon { --mdc-icon-size: 16px; color: rgb(var(--tone, var(--ulm-green))); }
+  .commute-detail ha-icon { color: rgb(var(--ulm-yellow)); }
+  .car-metrics, .flower-metrics, .device-tracer-meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+  .car-metrics > span, .flower-metrics > span, .device-tracer-meta > span { display: grid; min-width: 0; min-height: 52px; place-items: center; padding: 6px; border-radius: 12px; background: rgba(var(--ulm-grey), .07); text-align: center; }
+  .car-metrics ha-icon, .flower-metrics ha-icon, .device-tracer-meta ha-icon { --mdc-icon-size: 17px; color: rgb(var(--ulm-blue)); }
+  .car-metrics b, .flower-metrics b { overflow: hidden; max-width: 100%; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
   .custom-console-card { position: relative; min-height: 112px; overflow: hidden; background: #17191d; color: #fff; }
   .console-backdrop { position: absolute; inset: 0; background-position: center; background-size: cover; opacity: .35; }
   .console-content { position: relative; z-index: 1; display: grid; min-height: 88px; grid-template-columns: 52px minmax(0, 1fr) 42px; align-items: center; gap: 10px; padding: 12px; background: linear-gradient(90deg, rgba(0,0,0,.8), rgba(0,0,0,.18)); }

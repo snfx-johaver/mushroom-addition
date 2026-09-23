@@ -36,6 +36,21 @@ const hass: HomeAssistant = {
       state: "72",
       attributes: { friendly_name: "Phone battery", unit_of_measurement: "%" },
     },
+    "sensor.person_address": {
+      entity_id: "sensor.person_address",
+      state: "Home",
+      attributes: { friendly_name: "Person address" },
+    },
+    "sensor.commute": {
+      entity_id: "sensor.commute",
+      state: "24",
+      attributes: { friendly_name: "Commute", unit_of_measurement: "min" },
+    },
+    "binary_sensor.driving": {
+      entity_id: "binary_sensor.driving",
+      state: "off",
+      attributes: { friendly_name: "Driving" },
+    },
     "sensor.power": {
       entity_id: "sensor.power",
       state: "843",
@@ -82,6 +97,37 @@ const hass: HomeAssistant = {
     "vacuum.robot": { entity_id: "vacuum.robot", state: "cleaning", attributes: { friendly_name: "Robot", battery_level: 80 } },
     "alarm_control_panel.home": { entity_id: "alarm_control_panel.home", state: "armed_home", attributes: { friendly_name: "Alarm" } },
     "scene.relax": { entity_id: "scene.relax", state: "scening", attributes: { friendly_name: "Relax" } },
+    "update.core": {
+      entity_id: "update.core",
+      state: "on",
+      attributes: { friendly_name: "Core", installed_version: "2026.8", latest_version: "2026.9" },
+    },
+    "update.supervisor": {
+      entity_id: "update.supervisor",
+      state: "off",
+      attributes: { friendly_name: "Supervisor", installed_version: "2026.9" },
+    },
+    "update.operating_system": {
+      entity_id: "update.operating_system",
+      state: "off",
+      attributes: { friendly_name: "OS", installed_version: "17.0" },
+    },
+    "binary_sensor.nas": { entity_id: "binary_sensor.nas", state: "on", attributes: { friendly_name: "HN-NAS" } },
+    "sensor.nas_disk": { entity_id: "sensor.nas_disk", state: "25.5", attributes: { friendly_name: "Disk", unit_of_measurement: "%" } },
+    "sensor.nas_temp": { entity_id: "sensor.nas_temp", state: "46", attributes: { friendly_name: "Temp", unit_of_measurement: "°C" } },
+    "sensor.nas_memory": { entity_id: "sensor.nas_memory", state: "15", attributes: { friendly_name: "Memory", unit_of_measurement: "%" } },
+    "sensor.nas_cpu": { entity_id: "sensor.nas_cpu", state: "19.3", attributes: { friendly_name: "CPU", unit_of_measurement: "%" } },
+    "binary_sensor.tablet": { entity_id: "binary_sensor.tablet", state: "on", attributes: { friendly_name: "Bram Tablet" } },
+    "switch.tablet_usb": { entity_id: "switch.tablet_usb", state: "on", attributes: { friendly_name: "USB" } },
+    "switch.tablet_motion": { entity_id: "switch.tablet_motion", state: "on", attributes: { friendly_name: "Motion" } },
+    "switch.tablet_display": { entity_id: "switch.tablet_display", state: "on", attributes: { friendly_name: "Display" } },
+    "button.tablet_restart": { entity_id: "button.tablet_restart", state: "unknown", attributes: { friendly_name: "Restart" } },
+    "switch.tablet_maintenance": { entity_id: "switch.tablet_maintenance", state: "off", attributes: { friendly_name: "Maintenance" } },
+    "button.tablet_reload": { entity_id: "button.tablet_reload", state: "unknown", attributes: { friendly_name: "Reload" } },
+    "sensor.tablet_ram": { entity_id: "sensor.tablet_ram", state: "747.7", attributes: { friendly_name: "RAM", unit_of_measurement: "MB" } },
+    "sensor.tablet_disk": { entity_id: "sensor.tablet_disk", state: "17829.9", attributes: { friendly_name: "Disk", unit_of_measurement: "MB" } },
+    "binary_sensor.tablet_power": { entity_id: "binary_sensor.tablet_power", state: "off", attributes: { friendly_name: "Power" } },
+    "sensor.tablet_battery": { entity_id: "sensor.tablet_battery", state: "91", attributes: { friendly_name: "Battery", unit_of_measurement: "%" } },
   },
   callService: async () => undefined,
   connection: {
@@ -177,6 +223,62 @@ describe("family renderers", () => {
     });
     expect(markup).toContain("variant-small");
     expect(markup).toContain("is-compact");
+  });
+
+  it("renders source-specific full and small Person Info compositions", async () => {
+    const config = {
+      entity: "person.joris",
+      ulm_card_person_use_entity_picture: true,
+      ulm_card_person_battery_entity: "sensor.battery",
+      ulm_card_person_driving_entity: "binary_sensor.driving",
+      ulm_address: "sensor.person_address",
+    };
+    const full = await render("mushroom-addition-custom-card-person-info", {
+      type: "custom:mushroom-addition-custom-card-person-info",
+      ...config,
+      ulm_card_person_commute_entity: "sensor.commute",
+    });
+    const small = await render("mushroom-addition-custom-card-person-info-small", {
+      type: "custom:mushroom-addition-custom-card-person-info-small",
+      ...config,
+    });
+    expect(full).toContain("custom-person-info");
+    expect(full).toContain("person-info-details");
+    expect(full).toContain("24 min");
+    expect(small).toContain("custom-person-info-small");
+    expect(small).toContain("person-info-small-battery");
+    expect(small).toContain("Home");
+    expect(small).not.toContain("person-info-details");
+  });
+
+  it("uses the battery entity for the small Person Info default hold action", async () => {
+    const element = document.createElement("mushroom-addition-custom-card-person-info-small") as HTMLElement & {
+      hass: HomeAssistant;
+      setConfig(config: AdditionConfig): void;
+      updateComplete: Promise<boolean>;
+      shadowRoot: ShadowRoot;
+    };
+    element.hass = hass;
+    element.setConfig({
+      type: "custom:mushroom-addition-custom-card-person-info-small",
+      entity: "person.joris",
+      ulm_card_person_battery_entity: "sensor.battery",
+    });
+    document.body.append(element);
+    await element.updateComplete;
+    const action = vi.fn();
+    element.addEventListener("hass-action", action);
+    const surface = element.shadowRoot.querySelector(".action-surface") as HTMLElement;
+    surface.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+    await new Promise((resolve) => window.setTimeout(resolve, 525));
+    surface.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
+    expect(action).toHaveBeenCalledWith(expect.objectContaining({
+      detail: expect.objectContaining({
+        action: "hold",
+        config: expect.objectContaining({ entity: "sensor.battery" }),
+      }),
+    }));
+    element.remove();
   });
 
   it("renders detailed and native weather variants distinctly", async () => {
@@ -286,6 +388,263 @@ describe("family renderers", () => {
       brightness_pct: 50,
     });
     element.remove();
+  });
+
+  it("executes every Heat Pump control with exact climate service payloads", async () => {
+      const callService = vi.fn(async () => undefined);
+      const element = document.createElement("mushroom-addition-custom-card-heat-pump") as HTMLElement & {
+        hass: HomeAssistant;
+        setConfig(config: AdditionConfig): void;
+        updateComplete: Promise<boolean>;
+        shadowRoot: ShadowRoot;
+      };
+      element.hass = {
+        ...hass,
+        callService,
+        states: {
+          ...hass.states,
+          "climate.living": {
+            ...hass.states["climate.living"],
+            attributes: {
+              ...hass.states["climate.living"].attributes,
+              hvac_modes: ["off", "heat", "cool", "heat_cool", "dry", "fan_only"],
+              fan_modes: ["auto", "high"],
+              target_temp_step: 0.5,
+            },
+          },
+        },
+      };
+      element.setConfig({ type: "custom:mushroom-addition-custom-card-heat-pump", entity: "climate.living" });
+      document.body.append(element);
+      await element.updateComplete;
+
+      const click = async (label: string) => {
+        (element.shadowRoot.querySelector(`button[aria-label="${label}"]`) as HTMLButtonElement).click();
+        await Promise.resolve();
+      };
+      await click("Decrease target temperature");
+      await click("Increase target temperature");
+      await click("Turn off");
+      await click("Heat mode");
+      await click("Cool mode");
+      await click("Automatic mode");
+      await click("Dry mode");
+      await click("Fan mode");
+
+      expect(callService.mock.calls).toEqual([
+        ["climate", "set_temperature", { entity_id: "climate.living", temperature: 20.5 }],
+        ["climate", "set_temperature", { entity_id: "climate.living", temperature: 21.5 }],
+        ["climate", "set_hvac_mode", { entity_id: "climate.living", hvac_mode: "off" }],
+        ["climate", "set_hvac_mode", { entity_id: "climate.living", hvac_mode: "heat" }],
+        ["climate", "set_hvac_mode", { entity_id: "climate.living", hvac_mode: "cool" }],
+        ["climate", "set_hvac_mode", { entity_id: "climate.living", hvac_mode: "heat_cool" }],
+        ["climate", "set_hvac_mode", { entity_id: "climate.living", hvac_mode: "dry" }],
+        ["climate", "set_hvac_mode", { entity_id: "climate.living", hvac_mode: "fan_only" }],
+      ]);
+      element.remove();
+  });
+
+  it("disables unsupported Heat Pump modes and uses set_fan_mode when only fan modes exist", async () => {
+      const callService = vi.fn(async () => undefined);
+      const element = document.createElement("mushroom-addition-custom-card-heat-pump") as HTMLElement & {
+        hass: HomeAssistant;
+        setConfig(config: AdditionConfig): void;
+        updateComplete: Promise<boolean>;
+        shadowRoot: ShadowRoot;
+      };
+      element.hass = {
+        ...hass,
+        callService,
+        states: {
+          ...hass.states,
+          "climate.living": {
+            ...hass.states["climate.living"],
+            attributes: {
+              ...hass.states["climate.living"].attributes,
+              hvac_modes: ["off", "heat"],
+              fan_modes: ["auto"],
+            },
+          },
+        },
+      };
+      element.setConfig({ type: "custom:mushroom-addition-custom-card-heat-pump", entity: "climate.living" });
+      document.body.append(element);
+      await element.updateComplete;
+      expect((element.shadowRoot.querySelector('button[aria-label="Cool mode"]') as HTMLButtonElement).disabled).toBe(true);
+      expect((element.shadowRoot.querySelector('button[aria-label="Automatic mode"]') as HTMLButtonElement).disabled).toBe(true);
+      expect((element.shadowRoot.querySelector('button[aria-label="Dry mode"]') as HTMLButtonElement).disabled).toBe(true);
+      (element.shadowRoot.querySelector('button[aria-label="Fan mode"]') as HTMLButtonElement).click();
+      expect(callService).toHaveBeenCalledWith("climate", "set_fan_mode", {
+        entity_id: "climate.living",
+        fan_mode: "auto",
+      });
+      element.remove();
+  });
+
+  it("executes all Home Assistant Updates controls without triggering the card action", async () => {
+      const element = document.createElement("mushroom-addition-custom-card-homeassistant-updates") as HTMLElement & {
+        hass: HomeAssistant;
+        setConfig(config: AdditionConfig): void;
+        updateComplete: Promise<boolean>;
+        shadowRoot: ShadowRoot;
+      };
+      element.hass = hass;
+      element.setConfig({
+        type: "custom:mushroom-addition-custom-card-homeassistant-updates",
+        entity: "update.core",
+        ulm_card_homeassistant_core: "update.core",
+        ulm_card_homeassistant_supervisor: "update.supervisor",
+        ulm_card_homeassistant_os: "update.operating_system",
+      });
+      const actions: Array<{ config: AdditionConfig; action: string }> = [];
+      element.addEventListener("hass-action", (event) => {
+        actions.push((event as CustomEvent).detail);
+      });
+      document.body.append(element);
+      await element.updateComplete;
+      for (const label of ["Open Home Assistant release notes", "Open update settings", "Open available update"]) {
+        (element.shadowRoot.querySelector(`button[aria-label="${label}"]`) as HTMLButtonElement).click();
+      }
+      expect(actions).toEqual([
+        {
+          action: "tap",
+          config: {
+            type: "custom:mushroom-addition-custom-card-homeassistant-updates",
+            entity: "update.core",
+            tap_action: { action: "url", url_path: "https://www.home-assistant.io/latest-release-notes/" },
+          },
+        },
+        {
+          action: "tap",
+          config: {
+            type: "custom:mushroom-addition-custom-card-homeassistant-updates",
+            entity: "update.core",
+            tap_action: { action: "navigate", navigation_path: "/config/updates" },
+          },
+        },
+        {
+          action: "tap",
+          config: {
+            type: "custom:mushroom-addition-custom-card-homeassistant-updates",
+            entity: "update.core",
+            tap_action: { action: "more-info" },
+          },
+        },
+      ]);
+      element.remove();
+  });
+
+  it("disables update details when every configured update entity is unavailable", async () => {
+      const element = document.createElement("mushroom-addition-custom-card-homeassistant-updates") as HTMLElement & {
+        hass: HomeAssistant;
+        setConfig(config: AdditionConfig): void;
+        updateComplete: Promise<boolean>;
+        shadowRoot: ShadowRoot;
+      };
+      const unavailable = {
+        entity_id: "update.unavailable",
+        state: "unavailable",
+        attributes: { friendly_name: "Unavailable update" },
+      };
+      element.hass = { ...hass, states: { "update.unavailable": unavailable } };
+      element.setConfig({
+        type: "custom:mushroom-addition-custom-card-homeassistant-updates",
+        entity: "update.unavailable",
+        ulm_card_homeassistant_core: "update.unavailable",
+        ulm_card_homeassistant_supervisor: "update.unavailable",
+        ulm_card_homeassistant_os: "update.unavailable",
+      });
+      document.body.append(element);
+      await element.updateComplete;
+      expect((element.shadowRoot.querySelector('button[aria-label="Open available update"]') as HTMLButtonElement).disabled).toBe(true);
+      element.remove();
+  });
+
+  it("renders the dedicated Nik NAS tiles, semantic metrics, and three radial rings", async () => {
+      const markup = await render("mushroom-addition-custom-card-nik-nas", {
+        type: "custom:mushroom-addition-custom-card-nik-nas",
+        entity: "binary_sensor.nas",
+        disk_entity: "sensor.nas_disk",
+        temperature_entity: "sensor.nas_temp",
+        memory_entity: "sensor.nas_memory",
+        cpu_entity: "sensor.nas_cpu",
+      });
+      expect(markup).toContain("nik-nas-top");
+      expect(markup).toContain("status-tile");
+      expect(markup).toContain("disk-tile");
+      expect(markup).toContain("nik-nas-metrics");
+      expect(markup).toContain("nik-nas-rings");
+      expect(markup.match(/nik-nas-ring-value/g)).toHaveLength(3);
+      expect(markup).not.toContain("nik-nas-chart");
+      expect(markup).not.toContain("metric-1");
+  });
+
+  it("opens NAS status more-info without firing the outer card action", async () => {
+      const element = document.createElement("mushroom-addition-custom-card-nik-nas") as HTMLElement & {
+        hass: HomeAssistant;
+        setConfig(config: AdditionConfig): void;
+        updateComplete: Promise<boolean>;
+        shadowRoot: ShadowRoot;
+      };
+      element.hass = hass;
+      element.setConfig({ type: "custom:mushroom-addition-custom-card-nik-nas", entity: "binary_sensor.nas" });
+      const actions: unknown[] = [];
+      element.addEventListener("hass-action", (event) => actions.push((event as CustomEvent).detail));
+      document.body.append(element);
+      await element.updateComplete;
+      (element.shadowRoot.querySelector('button[aria-label="Open NAS status"]') as HTMLButtonElement).click();
+      expect(actions).toEqual([{
+        action: "tap",
+        config: {
+          type: "custom:mushroom-addition-custom-card-nik-nas",
+          entity: "binary_sensor.nas",
+          tap_action: { action: "more-info" },
+        },
+      }]);
+      element.remove();
+  });
+
+  it("renders and executes all six semantic Nik Tablet controls", async () => {
+      const callService = vi.fn(async () => undefined);
+      const element = document.createElement("mushroom-addition-custom-card-nik-tablet") as HTMLElement & {
+        hass: HomeAssistant;
+        setConfig(config: AdditionConfig): void;
+        updateComplete: Promise<boolean>;
+        shadowRoot: ShadowRoot;
+      };
+      element.hass = { ...hass, callService };
+      element.setConfig({
+        type: "custom:mushroom-addition-custom-card-nik-tablet",
+        entity: "binary_sensor.tablet",
+        tablet_button_usb_entity: "switch.tablet_usb",
+        tablet_button_motion_entity: "switch.tablet_motion",
+        tablet_button_display_entity: "switch.tablet_display",
+        tablet_restart_entity: "button.tablet_restart",
+        tablet_maintenance_entity: "switch.tablet_maintenance",
+        tablet_reload_entity: "button.tablet_reload",
+        tablet_ram_entity: "sensor.tablet_ram",
+        tablet_disk_entity: "sensor.tablet_disk",
+        tablet_power_entity: "binary_sensor.tablet_power",
+        battery_entity: "sensor.tablet_battery",
+      });
+      document.body.append(element);
+      await element.updateComplete;
+      expect(element.shadowRoot.querySelectorAll(".nik-tablet-controls button")).toHaveLength(6);
+      expect(element.shadowRoot.querySelectorAll(".nik-tablet-metrics > span")).toHaveLength(3);
+      for (const label of [
+        "Toggle USB", "Toggle motion", "Toggle display", "Restart tablet", "Toggle maintenance mode", "Reload tablet",
+      ]) {
+        (element.shadowRoot.querySelector(`button[aria-label="${label}"]`) as HTMLButtonElement).click();
+      }
+      expect(callService.mock.calls).toEqual([
+        ["homeassistant", "toggle", { entity_id: "switch.tablet_usb" }],
+        ["homeassistant", "toggle", { entity_id: "switch.tablet_motion" }],
+        ["homeassistant", "toggle", { entity_id: "switch.tablet_display" }],
+        ["button", "press", { entity_id: "button.tablet_restart" }],
+        ["homeassistant", "toggle", { entity_id: "switch.tablet_maintenance" }],
+        ["button", "press", { entity_id: "button.tablet_reload" }],
+      ]);
+      element.remove();
   });
 
   it("does not render service controls for incompatible entity domains", async () => {
@@ -427,7 +786,7 @@ describe("family renderers", () => {
     ["nik-clock", "sensor.power", "custom-nik-clock", "custom-nik-clock"],
     ["nik-door", "binary_sensor.window", "custom-nik-door", "nik-door-controls"],
     ["nik-nas", "sensor.power", "custom-nik-nas", "nik-nas-metrics"],
-    ["nik-tablet", "sensor.battery", "custom-nik-tablet", "tablet-status-row"],
+    ["nik-tablet", "sensor.battery", "custom-nik-tablet", "nik-tablet-metrics"],
     ["paddy-dwd-pollen", "sensor.power", "custom-paddy-pollen", "pollen-icon"],
     ["paddy-waste-collection", "sensor.power", "custom-paddy-waste", "paddy-waste-icon"],
     ["paddy-welcome", "person.joris", "custom-paddy-welcome", "Good"],

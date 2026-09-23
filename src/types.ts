@@ -85,6 +85,9 @@ export interface AdditionConfig {
   temperature_entity?: string;
   humidity_entity?: string;
   battery_entity?: string;
+  disk_entity?: string;
+  memory_entity?: string;
+  cpu_entity?: string;
   graph_entity?: string;
   eta_entity?: string;
   address_entity?: string;
@@ -92,6 +95,15 @@ export interface AdditionConfig {
   max_entity?: string;
   datetime_entity?: string;
   lock_entity?: string;
+  tablet_button_usb_entity?: string;
+  tablet_button_motion_entity?: string;
+  tablet_button_display_entity?: string;
+  tablet_restart_entity?: string;
+  tablet_maintenance_entity?: string;
+  tablet_reload_entity?: string;
+  tablet_ram_entity?: string;
+  tablet_disk_entity?: string;
+  tablet_power_entity?: string;
   name?: string;
   name_mode?: "entity" | "custom" | "none";
   secondary?: string;

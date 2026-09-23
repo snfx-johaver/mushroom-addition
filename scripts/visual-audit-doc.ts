@@ -14,7 +14,7 @@ for (const entry of VISUAL_AUDIT) {
   if (!entry.publicId || !entry.rendererId || !entry.compositionId) {
     failures.push(`${entry.sourceId}: incomplete renderer/composition mapping.`);
   }
-  if (entry.status === "accepted") {
+  if (entry.visualAccepted || entry.interactionsAccepted || entry.liveAccepted) {
     if (!entry.referenceScreenshot) failures.push(`${entry.sourceId}: accepted without a reference screenshot.`);
     if (!entry.artifactPath) failures.push(`${entry.sourceId}: accepted without a comparison artifact.`);
     if (!entry.requiredRegions.length) failures.push(`${entry.sourceId}: accepted without structural regions.`);
@@ -31,31 +31,35 @@ if (failures.length) {
 
 const progress = visualAuditProgress();
 const rows = VISUAL_AUDIT.map((entry) => {
-  const status = entry.status === "accepted" ? "Accepted" : entry.status === "deviation" ? "Accepted with deviation" : "Pending";
   const reference = entry.referenceScreenshot
     ? `\`${entry.referenceScreenshot}\``
     : `Source: \`${entry.sourcePath}\``;
   const artifact = entry.artifactPath ? `[\`artifact\`](../${entry.artifactPath})` : "—";
+  const notes = entry.reviewerNotes.length ? entry.reviewerNotes.join("<br>") : "—";
   const deviations = entry.deviations.length ? entry.deviations.join("<br>") : "—";
-  return `| \`${entry.sourceId}\` | ${entry.category} | \`${entry.publicId}\` | ${entry.variant ?? "—"} | \`${entry.compositionId}\` | ${reference} | ${artifact} | ${status} | ${deviations} |`;
+  return `| \`${entry.sourceId}\` | ${entry.category} | \`${entry.publicId}\` | ${entry.variant ?? "—"} | \`${entry.compositionId}\` | ${reference} | ${artifact} | ${entry.pickerAccepted ? "Yes" : "No"} | ${entry.editorAccepted ? "Yes" : "No"} | ${entry.visualAccepted ? "Yes" : "No"} | ${entry.statesAccepted ? "Yes" : "No"} | ${entry.interactionsAccepted ? "Yes" : "No"} | ${entry.liveAccepted ? "Yes" : "No"} | ${notes} | ${deviations} |`;
 }).join("\n");
 
-const markdown = `# Visual audit index
+const markdown = `# Visual and interaction audit index
 
-This is the source-by-source visual acceptance ledger for the card-only
+This is the source-by-source acceptance ledger for the card-only
 UI-Lovelace-Minimalist catalog pinned at
 \`f8a9cb67a53f91367f1dffe18516aa983b463cb5\`.
 
-**Progress: ${progress.accepted}/${progress.total} source designs accepted.**
+**Progress: ${progress.accepted}/${progress.total} fully E2E accepted. Stage totals — picker ${progress.pickerAccepted}, editor ${progress.editorAccepted}, visual ${progress.visualAccepted}, states ${progress.statesAccepted}, interactions ${progress.interactionsAccepted}, live ${progress.liveAccepted}.**
 
-An entry is accepted only after its upstream source and screenshot have been
-inspected, its deterministic fixture has been rendered at the recorded theme
-and width, a side-by-side artifact has been reviewed, and structural tests
-assert its required and forbidden regions. Family assignment or source metadata
-alone is not visual acceptance.
+An entry is fully accepted only when all six independent stages pass: picker,
+graphical editor, visual parity, state behavior, interactions, and live Home
+Assistant E2E. \`visualAccepted\` requires manual inspection of the upstream
+source and a focused side-by-side artifact at the recorded theme and width.
+\`interactionsAccepted\` requires enumerating every visible source interaction
+and exercising it through click tests with exact Home Assistant payload
+assertions. \`liveAccepted\` requires authenticated testing on the user's Home
+Assistant instance. Batch-generated comparisons, family assignment, source
+metadata, and structural tests do not constitute acceptance.
 
-| Source | Category | Public card | Variant | Composition | Reference | Comparison | Status | Exact deviations |
-|---|---|---|---|---|---|---|---|---|
+| Source | Category | Public card | Variant | Composition | Reference | Comparison | Picker | Editor | Visual | States | Interactions | Live | Reviewer notes | Exact deviations |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 ${rows}
 `;
 
@@ -66,5 +70,5 @@ if (check) {
   }
 } else {
   writeFileSync(output, markdown);
-  console.log(`Wrote visual audit index: ${progress.accepted}/${progress.total} accepted.`);
+  console.log(`Wrote audit index: ${progress.accepted}/${progress.total} fully accepted.`);
 }

@@ -171,6 +171,8 @@ export class MushroomAdditionCard extends LitElement {
   private runAction(key: "tap_action" | "hold_action" | "double_tap_action"): void {
     if (!this.hass || !this.config) return;
     const action = key === "tap_action" ? "tap" : key === "hold_action" ? "hold" : "double_tap";
-    handleAction(this, this.config, action);
+    const selectedAction = this.config[key];
+    const actionEntity = typeof selectedAction?.entity === "string" ? selectedAction.entity : undefined;
+    handleAction(this, actionEntity ? { ...this.config, entity: actionEntity } : this.config, action);
   }
 }

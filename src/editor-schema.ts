@@ -46,6 +46,23 @@ const numericBoxOptions = new Set([
   "ulm_custom_card_bar_card_min",
   "ulm_custom_card_bar_card_max",
 ]);
+const homeAssistantUpdateEntities = new Set([
+  "ulm_card_homeassistant_entity",
+  "ulm_card_homeassistant_core",
+  "ulm_card_homeassistant_supervisor",
+  "ulm_card_homeassistant_os",
+]);
+const personInfoEntities = new Set([
+  "ulm_card_person_entity",
+  "ulm_card_person_zone1",
+  "ulm_card_person_zone2",
+  "ulm_address",
+  "ulm_address_locality",
+  "ulm_card_person_driving_entity",
+  "ulm_card_person_battery_entity",
+  "ulm_card_person_battery_state_entity",
+  "ulm_card_person_commute_entity",
+]);
 
 const choiceOptions: Record<string, Array<{ value: string; label: string }>> = {
   ulm_card_weather_primary_info: [
@@ -164,6 +181,52 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
       entity(["sensor"], "tomorrow_entity"),
       ...presentation(),
     ]
+    : item.upstreamId === "custom_card_nik_nas"
+      ? [
+        entity(["binary_sensor", "sensor", "switch"]),
+        entity(["sensor"], "disk_entity"),
+        entity(["sensor"], "temperature_entity"),
+        entity(["sensor"], "memory_entity"),
+        entity(["sensor"], "cpu_entity"),
+        ...presentation(),
+      ]
+      : item.upstreamId === "custom_card_nik_tablet"
+        ? [
+          entity(["binary_sensor", "sensor", "switch"]),
+          entity(["switch", "input_boolean"], "tablet_button_usb_entity"),
+          entity(["switch", "input_boolean"], "tablet_button_motion_entity"),
+          entity(["light", "switch", "input_boolean"], "tablet_button_display_entity"),
+          entity(["button"], "tablet_restart_entity"),
+          entity(["switch", "input_boolean"], "tablet_maintenance_entity"),
+          entity(["button"], "tablet_reload_entity"),
+          entity(["sensor"], "tablet_ram_entity"),
+          entity(["sensor"], "tablet_disk_entity"),
+          entity(["sensor", "binary_sensor", "switch"], "tablet_power_entity"),
+          entity(["sensor"], "battery_entity"),
+          ...presentation(),
+        ]
+        : item.upstreamId === "custom_card_person_info"
+          ? [
+            entity(["person"]),
+            toggle("ulm_card_person_use_entity_picture"),
+            entity(["zone"], "ulm_card_person_zone1"),
+            entity(["zone"], "ulm_card_person_zone2"),
+            ...(config?.variant === "small"
+              ? []
+              : [
+                entity(["sensor"], "ulm_card_person_commute_entity"),
+                { name: "ulm_card_person_cummute_icon", selector: { icon: {} } },
+                toggle("ulm_multiline"),
+              ]),
+            entity(["sensor"], "ulm_address"),
+            entity(["sensor"], "ulm_address_locality"),
+            entity(["binary_sensor"], "ulm_card_person_driving_entity"),
+            entity(["sensor"], "ulm_card_person_battery_entity"),
+            entity(["sensor", "binary_sensor"], "ulm_card_person_battery_state_entity"),
+            number("ulm_card_battery_battery_level_danger", 0, 100),
+            number("ulm_card_battery_battery_level_warning", 0, 100),
+            ...presentation(),
+          ]
     : (schemas[item.family] ?? schemas.entity)(item, config)),
   action("tap_action"),
   action("hold_action"),
@@ -182,7 +245,30 @@ export const upstreamEditorSchemaFor = (item: CatalogItem, config?: AdditionConf
       .flatMap((sourceId) => PARITY_BY_ID.get(sourceId)?.variables ?? [])
       .map((variable) => [variable.name, variable]),
   ).values()];
-  return variables.filter((variable) => supportedUpstreamOption(item, variable.name)).map((variable) => {
+  return variables
+    .filter((variable) => supportedUpstreamOption(item, variable.name))
+    .filter((variable) => !(item.upstreamId === "custom_card_homeassistant_updates" &&
+      variable.name === "ulm_card_homeassistant_entity"))
+    .filter((variable) => !(item.upstreamId === "custom_card_person_info" && (
+      personInfoEntities.has(variable.name) ||
+      variable.name === "ulm_card_person_use_entity_picture" ||
+      variable.name === "ulm_card_person_cummute_icon" ||
+      variable.name === "ulm_multiline" ||
+      variable.name === "ulm_card_battery_battery_level_danger" ||
+      variable.name === "ulm_card_battery_battery_level_warning"
+    )))
+    .map((variable) => {
+    if (item.upstreamId === "custom_card_homeassistant_updates" && homeAssistantUpdateEntities.has(variable.name)) {
+      return entity(["update", "sensor", "binary_sensor"], variable.name);
+    }
+    if (item.upstreamId === "custom_card_person_info" && personInfoEntities.has(variable.name)) {
+      const domains =
+        variable.name === "ulm_card_person_entity" ? ["person"] :
+          variable.name.startsWith("ulm_card_person_zone") ? ["zone"] :
+            variable.name === "ulm_card_person_driving_entity" ? ["binary_sensor"] :
+              ["sensor", "binary_sensor"];
+      return entity(domains, variable.name);
+    }
     const choices = choiceOptions[variable.name];
     if (choices) return select(variable.name, choices);
     if (booleanOptions.has(variable.name)) return toggle(variable.name);

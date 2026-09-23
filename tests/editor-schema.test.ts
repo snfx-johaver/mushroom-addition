@@ -67,6 +67,36 @@ describe("family editor schemas", () => {
       .toEqual(expect.arrayContaining(["lock_entity", "battery_entity"]));
   });
 
+  it("uses semantic Person Info selectors without duplicating the primary person", () => {
+    const person = CATALOG.find((item) => item.upstreamId === "custom_card_person_info")!;
+    const core = editorSchemaFor(person, { type: `custom:${person.tag}`, variant: "small" });
+    const advanced = upstreamEditorSchemaFor(person);
+    expect(core.find((field) => field.name === "entity")?.selector).toEqual({
+      entity: { domain: ["person"] },
+    });
+
+    expect(advanced.some((field) => field.name === "ulm_card_person_entity")).toBe(false);
+    expect(core.find((field) => field.name === "ulm_card_person_zone1")?.selector).toEqual({
+      entity: { domain: ["zone"] },
+    });
+    expect(core.find((field) => field.name === "ulm_card_person_battery_entity")?.selector).toEqual({
+      entity: { domain: ["sensor"] },
+    });
+  });
+
+  it("keeps update and tablet selectors canonical and executable", () => {
+    const updates = CATALOG.find((item) => item.upstreamId === "custom_card_homeassistant_updates")!;
+    expect(upstreamEditorSchemaFor(updates).some((field) => field.name === "ulm_card_homeassistant_entity")).toBe(false);
+    const tablet = CATALOG.find((item) => item.upstreamId === "custom_card_nik_tablet")!;
+    const schema = editorSchemaFor(tablet);
+    expect(schema.find((field) => field.name === "tablet_button_motion_entity")?.selector).toEqual({
+      entity: { domain: ["switch", "input_boolean"] },
+    });
+    expect(schema.find((field) => field.name === "tablet_button_display_entity")?.selector).toEqual({
+      entity: { domain: ["light", "switch", "input_boolean"] },
+    });
+  });
+
   it("exposes clear welcome-scene collapse controls", () => {
     const welcome = CATALOG.find((item) => item.upstreamId === "card_welcome_scenes")!;
     expect(editorSchemaFor(welcome).map((field) => field.name)).toEqual(expect.arrayContaining([
@@ -128,12 +158,13 @@ describe("family editor schemas", () => {
     const personInfo = CATALOG.find((item) => item.upstreamId === "custom_card_person_info")!;
     const full = editorSchemaFor(personInfo, { type: `custom:${personInfo.tag}`, variant: "full" });
     const small = editorSchemaFor(personInfo, { type: `custom:${personInfo.tag}`, variant: "small" });
-    expect(full.map((field) => field.name)).toEqual(expect.arrayContaining([
-      "battery_entity", "eta_entity", "address_entity",
-    ]));
-    expect(small.map((field) => field.name)).not.toEqual(expect.arrayContaining([
-      "battery_entity", "eta_entity", "address_entity",
-    ]));
+    expect(full.map((field) => field.name)).toContain("ulm_card_person_commute_entity");
+    expect(full.map((field) => field.name)).toContain("ulm_card_person_zone1");
+    expect(small.map((field) => field.name)).toContain("ulm_card_person_zone1");
+    expect(small.map((field) => field.name)).not.toContain("ulm_card_person_commute_entity");
+    expect(full.find((field) => field.name === "entity")?.selector).toEqual({
+      entity: { domain: ["person"] },
+    });
 
     const weather = CATALOG.find((item) => item.upstreamId === "card_weather")!;
     expect(upstreamEditorSchemaFor(weather, { type: `custom:${weather.tag}`, variant: "detailed" }).length)

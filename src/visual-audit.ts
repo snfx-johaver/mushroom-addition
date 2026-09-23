@@ -23,7 +23,14 @@ export interface VisualAuditEntry {
   requiredRegions: readonly string[];
   forbiddenRegions: readonly string[];
   status: VisualAuditStatus;
+  pickerAccepted: boolean;
+  editorAccepted: boolean;
+  visualAccepted: boolean;
+  statesAccepted: boolean;
+  interactionsAccepted: boolean;
+  liveAccepted: boolean;
   inspectedAt?: string;
+  reviewerNotes: readonly string[];
   deviations: readonly string[];
 }
 
@@ -176,6 +183,7 @@ const customReferences: Record<string, string> = {
   custom_card_esh_room: "custom_card_esh_room_light.png",
   custom_card_esh_welcome: "custom_card_esh_welcome_light.png",
   custom_card_haven_washer: "custom_card_haven_washer_running.png",
+  custom_card_heat_pump: "Heat_pump.PNG",
   custom_card_homeassistant_updates: "ulm_cards/card_homeassistant_updates.png",
   custom_card_httpedo13_sun: "sun-card.png",
   custom_card_httpedo13_thermostat: "thermostat_white_with_heating_ui.png",
@@ -274,6 +282,103 @@ const accepted: Record<string, Partial<VisualAuditEntry>> = {
       "The standalone comparison fixture uses abbreviated icon stubs; Home Assistant renders the configured MDI glyphs.",
     ],
   },
+  custom_card_heat_pump: {
+    artifactPath: "docs/assets/visual-audit/custom-card-heat-pump-comparison.png",
+    requiredRegions: ["custom-heat-pump", "heat-pump-temperature", "heat-pump-modes", "heat-pump-mode"],
+    forbiddenRegions: ["mode-letter", "text-mode-button", "sparkline"],
+  },
+  custom_card_homeassistant_updates: {
+    artifactPath: "docs/assets/visual-audit/custom-card-homeassistant-updates-comparison.png",
+    requiredRegions: ["custom-ha-updates", "ha-updates-hero", "ha-update-list", "ha-update-actions"],
+    forbiddenRegions: ["generic-update-row", "sparkline"],
+    deviations: [
+      "The settings control opens Home Assistant's dedicated update settings instead of the pinned template's Developer Tools YAML page.",
+      "The update control safely opens the first available update entity instead of navigating to the dashboard or directly installing an update.",
+    ],
+  },
+  custom_card_nik_nas: {
+    artifactPath: "docs/assets/visual-audit/custom-card-nik-nas-comparison.png",
+    requiredRegions: ["custom-nik-nas", "nik-nas-top", "nik-nas-metrics", "nik-nas-rings"],
+    forbiddenRegions: ["generic-donut", "sparkline"],
+  },
+  custom_card_nik_tablet: {
+    artifactPath: "docs/assets/visual-audit/custom-card-nik-tablet-comparison.png",
+    requiredRegions: ["custom-nik-tablet", "nik-tablet-controls", "nik-tablet-metrics", "nik-tablet-battery-bar"],
+    forbiddenRegions: ["generic-device-row", "sparkline"],
+  },
+  custom_card_person_info: {
+    artifactPath: "docs/assets/visual-audit/custom-card-person-info-comparison.png",
+    requiredRegions: ["custom-person-info", "person-info-avatar", "person-info-badge", "person-info-details"],
+    forbiddenRegions: ["generic-presence-tile", "sparkline"],
+  },
+  custom_card_person_info_small: {
+    artifactPath: "docs/assets/visual-audit/custom-card-person-info-small-comparison.png",
+    requiredRegions: ["custom-person-info-small", "person-info-avatar", "person-info-badge", "person-info-small-battery"],
+    forbiddenRegions: ["person-info-details", "generic-presence-tile", "sparkline"],
+  },
+};
+
+const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
+  custom_card_bar_card: {
+    visualAccepted: true,
+    status: "pending",
+    reviewerNotes: [
+      "Manually inspected against the dedicated dark-theme side-by-side artifact at the upstream card width.",
+      "Picker, editor, state, interaction, and live E2E stages require fresh certification.",
+    ],
+  },
+  custom_card_heat_pump: {
+    status: "pending",
+    inspectedAt: "2026-09-23",
+    reviewerNotes: [
+      "Focused side-by-side inspected: source hierarchy, icon controls, target-temperature stepper, and six-mode ordering are represented.",
+      "Mock interaction tests cover exact temperature, power, HVAC-mode, and fan-mode service payloads plus unsupported-mode disabled states.",
+      "Visual and interaction acceptance remain false pending independent parent review; picker, editor, state matrix, and live HA remain uncertified.",
+    ],
+  },
+  custom_card_homeassistant_updates: {
+    status: "pending",
+    inspectedAt: "2026-09-23",
+    reviewerNotes: [
+      "Focused side-by-side inspected: large Home Assistant hero, update badge, version hierarchy, and three source-ordered controls are represented.",
+      "Mock interaction tests cover release-notes URL, updates navigation, safe more-info behavior, event isolation, and unavailable disabled state.",
+      "Visual and interaction acceptance remain false pending independent parent review; picker, editor, state matrix, and live HA remain uncertified.",
+    ],
+  },
+  custom_card_nik_nas: {
+    status: "pending",
+    inspectedAt: "2026-09-23",
+    reviewerNotes: [
+      "Focused side-by-side inspected after correcting SVG namespace rendering: two bordered tiles, three semantic metrics, and three utilization rings are visible.",
+      "Status-tile action has mock evidence; remaining state, picker, editor, independent visual, and live stages remain uncertified.",
+    ],
+  },
+  custom_card_nik_tablet: {
+    status: "pending",
+    inspectedAt: "2026-09-23",
+    reviewerNotes: [
+      "Focused side-by-side inspected: source-ordered six-button grid, RAM/Disk/Power row, battery summary, and thick progress bar are represented.",
+      "Mock tests cover all six configured controls; independent visual review, complete state matrix, picker, editor, and live stages remain uncertified.",
+    ],
+  },
+  custom_card_person_info: {
+    status: "pending",
+    inspectedAt: "2026-09-23",
+    reviewerNotes: [
+      "Focused side-by-side inspected: full variant now uses avatar/location hierarchy with zone/driving badge and separate battery/commute details.",
+      "One fixture card is compared with the upstream three-column example; dashboard grid composition remains external to the card.",
+      "All six acceptance stages remain false pending independent review and live E2E.",
+    ],
+  },
+  custom_card_person_info_small: {
+    status: "pending",
+    inspectedAt: "2026-09-23",
+    reviewerNotes: [
+      "Focused side-by-side inspected: compact variant is one person per card with avatar badge, battery circle, centered name, and location label.",
+      "Default tap targets the person and default hold targets the configured battery entity; mock hold-action evidence is present.",
+      "All six acceptance stages remain false pending independent review and live E2E.",
+    ],
+  },
 };
 
 export const VISUAL_AUDIT: readonly VisualAuditEntry[] = UPSTREAM_CATALOG.map((source) => {
@@ -298,12 +403,55 @@ export const VISUAL_AUDIT: readonly VisualAuditEntry[] = UPSTREAM_CATALOG.map((s
     requiredRegions: [],
     forbiddenRegions: [],
     status: "pending",
+    pickerAccepted: false,
+    editorAccepted: false,
+    visualAccepted: false,
+    statesAccepted: false,
+    interactionsAccepted: false,
+    liveAccepted: false,
+    reviewerNotes: [
+      "Previous batch-generated comparison was not accepted as manual visual or interaction review.",
+    ],
     deviations: [],
   };
-  return { ...baseline, ...accepted[source.upstreamId] };
+  const reviewed = manuallyReviewed[source.upstreamId];
+  return {
+    ...baseline,
+    ...accepted[source.upstreamId],
+    status: reviewed?.status ?? "pending",
+    pickerAccepted: reviewed?.pickerAccepted ?? false,
+    editorAccepted: reviewed?.editorAccepted ?? false,
+    visualAccepted: reviewed?.visualAccepted ?? false,
+    statesAccepted: reviewed?.statesAccepted ?? false,
+    interactionsAccepted: reviewed?.interactionsAccepted ?? false,
+    liveAccepted: reviewed?.liveAccepted ?? false,
+    reviewerNotes: reviewed?.reviewerNotes ?? baseline.reviewerNotes,
+    inspectedAt: reviewed?.inspectedAt,
+  };
 });
 
-export const visualAuditProgress = (): { accepted: number; total: number } => ({
-  accepted: VISUAL_AUDIT.filter((entry) => entry.status === "accepted").length,
+export const visualAuditProgress = (): {
+  accepted: number;
+  pickerAccepted: number;
+  editorAccepted: number;
+  visualAccepted: number;
+  statesAccepted: number;
+  interactionsAccepted: number;
+  liveAccepted: number;
+  total: number;
+} => ({
+  accepted: VISUAL_AUDIT.filter((entry) =>
+    entry.pickerAccepted &&
+    entry.editorAccepted &&
+    entry.visualAccepted &&
+    entry.statesAccepted &&
+    entry.interactionsAccepted &&
+    entry.liveAccepted).length,
+  pickerAccepted: VISUAL_AUDIT.filter((entry) => entry.pickerAccepted).length,
+  editorAccepted: VISUAL_AUDIT.filter((entry) => entry.editorAccepted).length,
+  visualAccepted: VISUAL_AUDIT.filter((entry) => entry.visualAccepted).length,
+  statesAccepted: VISUAL_AUDIT.filter((entry) => entry.statesAccepted).length,
+  interactionsAccepted: VISUAL_AUDIT.filter((entry) => entry.interactionsAccepted).length,
+  liveAccepted: VISUAL_AUDIT.filter((entry) => entry.liveAccepted).length,
   total: VISUAL_AUDIT.length,
 });

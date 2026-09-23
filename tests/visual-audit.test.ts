@@ -13,7 +13,13 @@ describe("visual audit manifest", () => {
   it("records the inspected Bar Card acceptance contract", () => {
     const bar = VISUAL_AUDIT.find((entry) => entry.sourceId === "custom_card_bar_card");
     expect(bar).toMatchObject({
-      status: "accepted",
+      status: "pending",
+      pickerAccepted: false,
+      editorAccepted: false,
+      visualAccepted: true,
+      statesAccepted: false,
+      interactionsAccepted: false,
+      liveAccepted: false,
       compositionId: "bar-card:compact-header-progress",
       artifactPath: "docs/assets/visual-audit/custom-card-bar-card-comparison.png",
       widths: [237],
@@ -24,6 +30,17 @@ describe("visual audit manifest", () => {
   });
 
   it("reports exact accepted progress without inferring parity from family mappings", () => {
-    expect(visualAuditProgress()).toEqual({ accepted: 86, total: 86 });
+    expect(visualAuditProgress()).toEqual({
+      accepted: 0,
+      pickerAccepted: 0,
+      editorAccepted: 0,
+      visualAccepted: 1,
+      statesAccepted: 0,
+      interactionsAccepted: 0,
+      liveAccepted: 0,
+      total: 86,
+    });
+    expect(VISUAL_AUDIT.filter((entry) => entry.status === "accepted").map((entry) => entry.sourceId))
+      .toEqual([]);
   });
 });

@@ -56,6 +56,7 @@ describe("shared card behavior", () => {
       ulm_card_ophaling_vandaag: "sensor.today",
       ulm_card_ophaling_morgen: "sensor.tomorrow",
     });
+
     expect(normalized.waste_streams?.slice(0, 5)).toMatchObject([
       { preset: "residual", entity: "sensor.rest", enabled: true },
       { preset: "paper", entity: "sensor.paper", enabled: true },
@@ -68,6 +69,49 @@ describe("shared card behavior", () => {
       tomorrow_entity: "sensor.tomorrow",
       show_today: true,
       show_tomorrow: true,
+    });
+  });
+
+  it("migrates documented Nik NAS and Tablet variables into semantic fields", () => {
+    expect(normalizeConfig({
+      type: "custom:mushroom-addition-custom-card-nik-nas",
+      entity: "switch.nas",
+      entity_1: { entity_id: "sensor.nas_temp", max_value: 80 },
+      entity_2: { entity_id: "sensor.nas_memory" },
+      entity_3: { entity_id: "sensor.nas_cpu" },
+      entity_4: { entity_id: "sensor.nas_disk" },
+    })).toMatchObject({
+      entity: "switch.nas",
+      temperature_entity: "sensor.nas_temp",
+      memory_entity: "sensor.nas_memory",
+      cpu_entity: "sensor.nas_cpu",
+      disk_entity: "sensor.nas_disk",
+    });
+    expect(normalizeConfig({
+      type: "custom:mushroom-addition-custom-card-nik-tablet",
+      ulm_custom_card_nik_tablet_main: "binary_sensor.tablet",
+      ulm_custom_card_nik_tablet_battery: "sensor.tablet_battery",
+      ulm_custom_card_nik_tablet_button1: "switch.tablet_usb",
+      ulm_custom_card_nik_tablet_button2: "switch.tablet_motion",
+      ulm_custom_card_nik_tablet_button3: "light.tablet_display",
+      ulm_custom_card_nik_tablet_restart: "button.tablet_restart",
+      ulm_custom_card_nik_tablet_reload: "button.tablet_reload",
+      ulm_custom_card_nik_tablet_maintenance: "switch.tablet_maintenance",
+      ulm_custom_card_nik_tablet_par1: "sensor.tablet_ram",
+      ulm_custom_card_nik_tablet_par2: "sensor.tablet_disk",
+      ulm_custom_card_nik_tablet_par3: "binary_sensor.tablet_power",
+    })).toMatchObject({
+      entity: "binary_sensor.tablet",
+      battery_entity: "sensor.tablet_battery",
+      tablet_button_usb_entity: "switch.tablet_usb",
+      tablet_button_motion_entity: "switch.tablet_motion",
+      tablet_button_display_entity: "light.tablet_display",
+      tablet_restart_entity: "button.tablet_restart",
+      tablet_reload_entity: "button.tablet_reload",
+      tablet_maintenance_entity: "switch.tablet_maintenance",
+      tablet_ram_entity: "sensor.tablet_ram",
+      tablet_disk_entity: "sensor.tablet_disk",
+      tablet_power_entity: "binary_sensor.tablet_power",
     });
   });
 
