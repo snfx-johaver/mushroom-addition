@@ -8424,13 +8424,14 @@ const Ct = new Set(Dt.map((e) => e.canonical)), ze = jt.filter((e) => !le.has(e.
     _(["media_player", "sensor"]),
     ...x()
   ] : e.upstreamId === "custom_card_qubino" ? [
-    _(["light"]),
+    _(["light", "switch"]),
     _([], "qubino_more_info_entity"),
     ...x()
   ] : e.upstreamId === "custom_card_ristou_person" ? [
     _(["person", "device_tracker"]),
     I("ulm_custom_card_ristou_use_entity_picture"),
     I("ulm_custom_card_ristou_use_badge"),
+    _(["sensor"], "battery_entity"),
     _(["binary_sensor"], "ulm_custom_card_ristou_person_driving_entity"),
     { name: "ulm_custom_card_ristou_zones", selector: { entity: { multiple: !0 } } },
     _(["script", "button"], "ulm_custom_card_ristou_find_device_script"),

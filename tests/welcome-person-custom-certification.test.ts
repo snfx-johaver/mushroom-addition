@@ -165,6 +165,7 @@ describe("welcome and person custom source certification", () => {
         "entity",
         "ulm_custom_card_ristou_use_entity_picture",
         "ulm_custom_card_ristou_use_badge",
+        "battery_entity",
         "ulm_custom_card_ristou_person_driving_entity",
         "ulm_custom_card_ristou_zones",
         "ulm_custom_card_ristou_find_device_script",
@@ -195,6 +196,39 @@ describe("welcome and person custom source certification", () => {
       time_entity: "sensor.time",
       weather_entity: "weather.home",
     });
+    expect(editorSchemaFor(item("custom_card_qubino")).find(({ name }) => name === "entity"))
+      .toMatchObject({ selector: { entity: { domain: ["light", "switch"] } } });
+    expect(editorSchemaFor(item("custom_card_ristou_person")).find(({ name }) => name === "battery_entity"))
+      .toMatchObject({ selector: { entity: { domain: ["sensor"] } } });
+  });
+
+  it("round-trips the mapped Ristou battery entity through the graphical editor", async () => {
+    const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {
+      hass: HomeAssistant;
+      setConfig(config: AdditionConfig): void;
+      updateComplete: Promise<boolean>;
+      shadowRoot: ShadowRoot;
+    };
+    editor.hass = { states, callService: vi.fn() };
+    editor.setConfig({
+      type: `custom:${item("custom_card_ristou_person").tag}`,
+      entity: "person.joris",
+      battery_entity: "sensor.joris_mobile_battery_level",
+    });
+    document.body.append(editor);
+    await editor.updateComplete;
+    const form = editor.shadowRoot.querySelector<HTMLElement & { data: AdditionConfig }>("ha-form")!;
+    expect(form.data.battery_entity).toBe("sensor.joris_mobile_battery_level");
+    const changed = vi.fn();
+    editor.addEventListener("config-changed", changed);
+    form.dispatchEvent(new CustomEvent("value-changed", {
+      bubbles: true,
+      composed: true,
+      detail: { value: { ...form.data, battery_entity: "sensor.updated_battery" } },
+    }));
+    expect(changed).toHaveBeenCalledWith(expect.objectContaining({
+      detail: { config: expect.objectContaining({ battery_entity: "sensor.updated_battery" }) },
+    }));
   });
 
   it("migrates the exact upstream fields into dedicated canonical fields", () => {

@@ -341,7 +341,7 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
       ]
     : item.upstreamId === "custom_card_qubino"
       ? [
-        entity(["light"]),
+        entity(["light", "switch"]),
         entity([], "qubino_more_info_entity"),
         ...presentation(),
       ]
@@ -350,6 +350,7 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         entity(["person", "device_tracker"]),
         toggle("ulm_custom_card_ristou_use_entity_picture"),
         toggle("ulm_custom_card_ristou_use_badge"),
+        entity(["sensor"], "battery_entity"),
         entity(["binary_sensor"], "ulm_custom_card_ristou_person_driving_entity"),
         { name: "ulm_custom_card_ristou_zones", selector: { entity: { multiple: true } } },
         entity(["script", "button"], "ulm_custom_card_ristou_find_device_script"),
