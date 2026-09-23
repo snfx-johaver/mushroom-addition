@@ -159,4 +159,13 @@ describe("family editor schemas", () => {
       "ulm_custom_card_bar_card_value",
     ]));
   });
+
+  it("gives Waste Collection semantic stream controls without graph settings", () => {
+    const waste = CATALOG.find((item) => item.upstreamId === "custom_card_afvalophaling")!;
+    const core = editorSchemaFor(waste);
+    expect(core.find((field) => field.name === "entity")?.selector).toEqual({
+      entity: { domain: ["sensor", "calendar"] },
+    });
+    expect(core.map((field) => field.name)).not.toContain("show_graph");
+  });
 });

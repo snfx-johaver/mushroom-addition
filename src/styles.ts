@@ -393,7 +393,7 @@ export const sharedStyles = css`
     border-radius: 10px;
     background: rgba(var(--ulm-grey), .07);
   }
-  .waste-row ha-icon { --mdc-icon-size: 17px; color: rgb(var(--ulm-green)); }
+  .waste-row ha-icon { --mdc-icon-size: 17px; color: var(--waste-color, rgb(var(--ulm-green))); }
   .waste-row b, .waste-row small { font-size: 11px; }
   .waste-row small { color: var(--secondary-text-color); }
   .alarm-time-controls, .compact-thermostat-controls, .heat-pump-target {

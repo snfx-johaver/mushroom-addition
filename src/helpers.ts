@@ -1,4 +1,5 @@
 import type { AdditionConfig, HassEntity } from "./types";
+import { migrateWasteStreamConfig } from "./waste-streams";
 
 export const activeStates = new Set([
   "on", "open", "opening", "playing", "home", "heat", "cool", "heating",
@@ -93,8 +94,11 @@ const legacyEntityKeys = [
 ] as const;
 
 export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
-  if (config.entity) return { ...config, primary_entity: undefined };
-  const legacy = config.primary_entity ||
-    legacyEntityKeys.map((key) => config[key]).find((value): value is string => typeof value === "string");
-  return legacy ? { ...config, entity: legacy, primary_entity: undefined } : { ...config };
+  const wasteMigrated = migrateWasteStreamConfig(config);
+  if (wasteMigrated.entity) return { ...wasteMigrated, primary_entity: undefined };
+  const legacy = wasteMigrated.primary_entity ||
+    legacyEntityKeys.map((key) => wasteMigrated[key]).find((value): value is string => typeof value === "string");
+  return legacy
+    ? { ...wasteMigrated, entity: legacy, primary_entity: undefined }
+    : { ...wasteMigrated };
 };

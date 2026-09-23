@@ -1,6 +1,7 @@
 import { html, nothing, type TemplateResult } from "lit";
 import type { AdditionConfig, AdditionItemConfig, CatalogItem, HassEntity, HomeAssistant, WeatherForecast } from "./types";
 import { activeStates, displayName, stateLabel } from "./helpers";
+import { wasteStreamsForConfig } from "./waste-streams";
 import { defaultIconFor } from "./defaults";
 
 export interface RenderContext {
@@ -693,23 +694,35 @@ const entityFromConfig = (ctx: RenderContext, ...keys: string[]): HassEntity | u
 };
 
 const renderWasteCollection = (ctx: RenderContext): TemplateResult => {
-  const rows = [
-    ["Restafval", "mdi:trash-can", "ulm_card_datum_rest"],
-    ["GFT", "mdi:leaf", "ulm_card_datum_gft"],
-    ["Papier", "mdi:newspaper", "ulm_card_datum_papier"],
-    ["PMD", "mdi:recycle", "ulm_card_datum_pmd"],
-    ["Glas", "mdi:bottle-soda", "ulm_card_datum_glas"],
-  ] as const;
+  const rows = wasteStreamsForConfig(ctx.config).filter((stream) => stream.enabled !== false && stream.entity);
+  const collectionDate = (entity?: HassEntity): string => {
+    if (!entity || ["unknown", "unavailable", "none", "geen"].includes(entity.state.toLowerCase())) return "—";
+    if (entity.entity_id.startsWith("calendar.")) {
+      const dateValue = attr(entity, "start_time") ?? attr(entity, "start") ?? attr(entity, "end_time");
+      if (typeof dateValue === "string") {
+        const date = new Date(dateValue);
+        if (!Number.isNaN(date.getTime())) {
+          return new Intl.DateTimeFormat(ctx.hass.language, { day: "2-digit", month: "2-digit", year: "numeric" }).format(date);
+        }
+      }
+    }
+    return entity.state;
+  };
   return ctx.actionSurface("custom-waste-card", html`
     <div class="custom-card-heading">
       ${iconBubble(ctx, "mdi:trash-can-outline", "green")}
-      ${heading(ctx, configured<string>(ctx, "ulm_volgende_ophaling") || "Next collection")}
+      <span class="ulm-copy">
+        <span class="ulm-name">${ctx.config.name || configured<string>(ctx, "ulm_volgende_ophaling") || "Next collections"}</span>
+        <span class="ulm-label">${rows.length === 1 ? "1 configured waste stream" : `${rows.length} configured waste streams`}</span>
+      </span>
     </div>
-    <div class="waste-grid">${rows.map(([label, rowIcon, key]) => {
-      const configuredValue = configured<string>(ctx, key);
-      const entity = configuredValue ? ctx.hass.states[configuredValue] : undefined;
-      const value = entity ? stateLabel(entity) : configuredValue || (label === "Restafval" ? stateLabel(ctx.entity) : "—");
-      return html`<span class="waste-row"><ha-icon .icon=${rowIcon}></ha-icon><b>${label}</b><small>${value}</small></span>`;
+    <div class="waste-grid">${rows.map((stream) => {
+      const entity = stream.entity ? ctx.hass.states[stream.entity] : undefined;
+      return html`<span class="waste-row" style=${`--waste-color:${stream.color || "#43a047"}`}>
+        <ha-icon .icon=${stream.icon || "mdi:trash-can"}></ha-icon>
+        <b>${stream.label || entity?.attributes.friendly_name || stream.entity}</b>
+        <small>${collectionDate(entity)}</small>
+      </span>`;
     })}</div>
   `);
 };

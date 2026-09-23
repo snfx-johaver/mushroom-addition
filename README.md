@@ -65,6 +65,11 @@ The **PS5 / Xbox Card** preserves the upstream PlayStation mapping while adding
 a graphical platform selector. Choose `ps5` or `xbox`; the icon and presentation
 update without requiring YAML-only variables.
 
+The **Waste Collection Card** has an ordered graphical list of waste streams.
+Each row can be enabled independently and has its own sensor/calendar entity,
+label, icon, and color. Empty or disabled rows are omitted from the rendered card;
+legacy `ulm_card_datum_*` variables are migrated automatically.
+
 ```yaml
 type: custom:mushroom-addition-card-light
 entity: light.kitchen

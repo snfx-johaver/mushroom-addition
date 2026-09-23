@@ -1,6 +1,7 @@
 import { PARITY_BY_ID } from "./parity.generated";
 import type { AdditionConfig, CatalogItem, HassEntity, HomeAssistant } from "./types";
 import { supportedUpstreamOption } from "./supported-options";
+import { defaultWasteStreams } from "./waste-streams";
 
 const defaultIcons: Array<[RegExp, string]> = [
   [/light/, "mdi:lightbulb"],
@@ -73,6 +74,7 @@ export const populatedDefaultsFor = (
     type: `custom:${item.tag}`,
     ...upstreamDefaultsFor(item),
     entity: entityId,
+    waste_streams: item.upstreamId === "custom_card_afvalophaling" ? defaultWasteStreams() : undefined,
     name: entity?.attributes.friendly_name,
     icon: defaultIconFor(item, entity),
     show_icon: true,

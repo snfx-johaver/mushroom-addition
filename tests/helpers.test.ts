@@ -46,6 +46,23 @@ describe("shared card behavior", () => {
     })).toMatchObject({ entity: "weather.home" });
   });
 
+  it("migrates named upstream waste entities into ordered semantic streams", () => {
+    const normalized = normalizeConfig({
+      type: "custom:mushroom-addition-custom-card-afvalophaling",
+      ulm_card_datum_gft: "sensor.gft",
+      ulm_card_datum_pmd: "sensor.pbd",
+      ulm_card_datum_rest: "sensor.rest",
+      ulm_card_datum_papier: "sensor.paper",
+    });
+    expect(normalized.waste_streams?.slice(0, 5)).toMatchObject([
+      { preset: "residual", entity: "sensor.rest", enabled: true },
+      { preset: "paper", entity: "sensor.paper", enabled: true },
+      { preset: "packaging", entity: "sensor.pbd", enabled: true },
+      { preset: "organic", entity: "sensor.gft", enabled: true },
+      { preset: "glass", entity: undefined },
+    ]);
+  });
+
   it("defaults navigation cards to a native navigate action", () => {
     expect(normalizeConfig({
       type: "custom:mushroom-addition-card-navigate",

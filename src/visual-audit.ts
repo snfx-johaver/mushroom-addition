@@ -235,6 +235,22 @@ const acceptedCustoms = Object.fromEntries(Object.entries(customStructures).map(
 const accepted: Record<string, Partial<VisualAuditEntry>> = {
   ...acceptedDefaults,
   ...acceptedCustoms,
+  custom_card_afvalophaling: {
+    compositionId: "custom:custom_card_afvalophaling:semantic-waste-streams",
+    referenceScreenshot: ".tmp-ui-minimalist/docs/assets/img/ulm_cards/custom_card_afvalophaling_1.png",
+    fixturePath: "demo/custom-card-comparison.html",
+    artifactPath: "docs/assets/visual-audit/custom-card-afvalophaling-full-comparison.png",
+    themes: ["light"],
+    widths: [320],
+    requiredRegions: ["custom-waste-card", "waste-grid", "waste-row"],
+    forbiddenRegions: ["ulm-metric", "sparkline", "ulm-schedule-card"],
+    status: "accepted",
+    inspectedAt: "2026-09-23",
+    deviations: [
+      "The standalone fixture abbreviates MDI glyphs; Home Assistant renders the configured icons.",
+      "Full and partial stream sizing were inspected; the partial artifact is docs/assets/visual-audit/custom-card-afvalophaling-partial-comparison.png.",
+    ],
+  },
   custom_card_bar_card: {
     compositionId: "bar-card:compact-header-progress",
     referenceScreenshot: ".tmp-ui-minimalist/docs/assets/img/screenshot_bar_card.png",

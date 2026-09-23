@@ -16,6 +16,11 @@ const states: HomeAssistant["states"] = {
   "sensor.paper": { entity_id: "sensor.paper", state: "Oct 4", attributes: { friendly_name: "Paper" } },
   "sensor.pmd": { entity_id: "sensor.pmd", state: "Oct 10", attributes: { friendly_name: "PMD" } },
   "sensor.glass": { entity_id: "sensor.glass", state: "Oct 18", attributes: { friendly_name: "Glass" } },
+  "sensor.afvalinfo_home_gft": { entity_id: "sensor.afvalinfo_home_gft", state: "02-10-2026", attributes: { friendly_name: "Biodegradable waste" } },
+  "sensor.afvalinfo_home_papier": { entity_id: "sensor.afvalinfo_home_papier", state: "29-09-2026", attributes: { friendly_name: "Paper" } },
+  "sensor.afvalinfo_home_pbd": { entity_id: "sensor.afvalinfo_home_pbd", state: "25-09-2026", attributes: { friendly_name: "Plastic cans and drink cartons" } },
+  "sensor.afvalinfo_home_restafval": { entity_id: "sensor.afvalinfo_home_restafval", state: "25-09-2026", attributes: { friendly_name: "Residual waste" } },
+  "sensor.afvalinfo_home_grofvuil": { entity_id: "sensor.afvalinfo_home_grofvuil", state: "unknown", attributes: { friendly_name: "Bulky waste" } },
   "input_boolean.alarm": { entity_id: "input_boolean.alarm", state: "on", attributes: { friendly_name: "Alarm" } },
   "input_datetime.alarm": { entity_id: "input_datetime.alarm", state: "08:30:00", attributes: { friendly_name: "Alarm time", has_time: true } },
   "sensor.download": { entity_id: "sensor.download", state: "273.07", attributes: { friendly_name: "Download", unit_of_measurement: "Mbit/s", history: [190, 220, 280, 260, 245, 272, 270, 276] } },
@@ -94,8 +99,40 @@ const hass: HomeAssistant = {
   },
 };
 
-const fixtures: Array<{ id: string; entity: string; reference?: string; config?: Partial<AdditionConfig> }> = [
-  { id: "afvalophaling", entity: "sensor.rest", reference: "ulm_cards/custom_card_afvalophaling_1.png", config: { ulm_card_datum_rest: "sensor.rest", ulm_card_datum_gft: "sensor.gft", ulm_card_datum_papier: "sensor.paper", ulm_card_datum_pmd: "sensor.pmd", ulm_card_datum_glas: "sensor.glass" } },
+const fixtures: Array<{ id: string; key?: string; title?: string; entity: string; reference?: string; config?: Partial<AdditionConfig> }> = [
+  {
+    id: "afvalophaling",
+    key: "afvalophaling-full",
+    title: "custom_card_afvalophaling — full configured streams",
+    entity: "sensor.afvalinfo_home_restafval",
+    reference: "ulm_cards/custom_card_afvalophaling_1.png",
+    config: {
+      waste_streams: [
+        { enabled: true, entity: "sensor.afvalinfo_home_restafval", label: "Residual waste", icon: "mdi:trash-can", color: "#43a047" },
+        { enabled: true, entity: "sensor.afvalinfo_home_papier", label: "Paper", icon: "mdi:newspaper-variant", color: "#1e88e5" },
+        { enabled: true, entity: "sensor.afvalinfo_home_pbd", label: "Packaging / PBD", icon: "mdi:recycle", color: "#f9a825" },
+        { enabled: true, entity: "sensor.afvalinfo_home_gft", label: "Organic / GFT", icon: "mdi:leaf", color: "#7cb342" },
+        { enabled: false, entity: "", label: "Glass", icon: "mdi:bottle-soda", color: "#00897b" },
+        { enabled: true, entity: "sensor.afvalinfo_home_grofvuil", label: "Bulky waste", icon: "mdi:sofa", color: "#8d6e63" },
+      ],
+    },
+  },
+  {
+    id: "afvalophaling",
+    key: "afvalophaling-partial",
+    title: "custom_card_afvalophaling — partial configured streams",
+    entity: "sensor.afvalinfo_home_restafval",
+    reference: "ulm_cards/custom_card_afvalophaling_2.png",
+    config: {
+      waste_streams: [
+        { enabled: true, entity: "sensor.afvalinfo_home_restafval", label: "Residual waste", icon: "mdi:trash-can", color: "#43a047" },
+        { enabled: false, entity: "sensor.afvalinfo_home_papier", label: "Paper", icon: "mdi:newspaper-variant", color: "#1e88e5" },
+        { enabled: false, entity: "sensor.afvalinfo_home_pbd", label: "Packaging / PBD", icon: "mdi:recycle", color: "#f9a825" },
+        { enabled: true, entity: "sensor.afvalinfo_home_gft", label: "Organic / GFT", icon: "mdi:leaf", color: "#7cb342" },
+        { enabled: false, entity: "", label: "Glass", icon: "mdi:bottle-soda", color: "#00897b" },
+      ],
+    },
+  },
   { id: "alarm-time", entity: "input_boolean.alarm", config: { datetime_entity: "input_datetime.alarm", ulm_card_alarm_time_step: 15 } },
   { id: "apexcharts", entity: "sensor.download", reference: "custom_card_apexcharts_line.png", config: { entities: ["sensor.ping", "sensor.upload"] } },
   { id: "chromecast", entity: "media_player.chromecast", reference: "chromecast.png" },
@@ -161,8 +198,8 @@ for (const fixture of fixtures) {
   const tag = `mushroom-addition-custom-card-${fixture.id}`;
   const section = document.createElement("section");
   section.className = "comparison";
-  section.dataset.source = fixture.id;
-  section.innerHTML = `<h2>custom_card_${fixture.id.replaceAll("-", "_")}</h2><div class="columns"><div><div class="column-label">Upstream reference</div>${fixture.reference ? `<img class="reference" src="/.tmp-ui-minimalist/docs/assets/img/${fixture.reference}" alt="">` : `<div class="no-reference">No dedicated upstream screenshot</div>`}</div><div><div class="column-label">Rendered implementation</div><div class="implementation"></div></div></div>`;
+  section.dataset.source = fixture.key ?? fixture.id;
+  section.innerHTML = `<h2>${fixture.title ?? `custom_card_${fixture.id.replaceAll("-", "_")}`}</h2><div class="columns"><div><div class="column-label">Upstream reference</div>${fixture.reference ? `<img class="reference" src="/.tmp-ui-minimalist/docs/assets/img/${fixture.reference}" alt="">` : `<div class="no-reference">No dedicated upstream screenshot</div>`}</div><div><div class="column-label">Rendered implementation</div><div class="implementation"></div></div></div>`;
   const element = document.createElement(tag) as HTMLElement & { hass: HomeAssistant; setConfig(config: AdditionConfig): void };
   element.hass = hass;
   element.setConfig({

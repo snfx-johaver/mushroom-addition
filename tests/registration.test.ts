@@ -53,12 +53,41 @@ describe("Home Assistant registration", () => {
         entity,
         [itemKey]: [{ entity, name: "Example", icon: "mdi:star", color: "#ff9800" }],
       });
+
       document.body.append(editor);
       await editor.updateComplete;
       expect(editor.shadowRoot?.textContent).toContain("Add button");
       expect(editor.shadowRoot?.textContent).toContain(itemKey === "scene_items" ? "Scene buttons" : "Room sensor buttons");
       editor.remove();
     }
+  });
+
+  it("renders independent repeatable waste-stream controls", async () => {
+    const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {
+      hass: HomeAssistant;
+      setConfig(config: AdditionConfig): void;
+      updateComplete: Promise<boolean>;
+    };
+    editor.hass = { states: {}, callService: async () => undefined };
+    editor.setConfig({
+      type: "custom:mushroom-addition-custom-card-afvalophaling",
+      entity: "sensor.rest",
+      waste_streams: [
+        { enabled: true, entity: "sensor.rest", label: "Residual waste", icon: "mdi:trash-can", color: "#43a047" },
+        { enabled: false, entity: "sensor.glass", label: "Glass", icon: "mdi:bottle-soda", color: "#00897b" },
+      ],
+    });
+    document.body.append(editor);
+    await editor.updateComplete;
+    const rows = editor.shadowRoot?.querySelectorAll(".waste-stream-row") ?? [];
+    expect(rows).toHaveLength(2);
+    expect(editor.shadowRoot?.textContent).toContain("Collection date entity");
+    expect(editor.shadowRoot?.textContent).toContain("Add waste stream");
+    const entitySelectors = editor.shadowRoot?.querySelectorAll<HTMLElement & { value?: string }>(
+      ".waste-stream-row .wide ha-selector",
+    );
+    expect([...entitySelectors ?? []].map((selector) => selector.value)).toEqual(["sensor.rest", "sensor.glass"]);
+    editor.remove();
   });
 
   it("populates picker examples with compatible Home Assistant entities", () => {

@@ -59,6 +59,15 @@ export interface AdditionItemConfig {
   tap_action?: ActionConfig;
 }
 
+export interface WasteStreamConfig {
+  enabled?: boolean;
+  entity?: string;
+  label?: string;
+  icon?: string;
+  color?: string;
+  preset?: string;
+}
+
 export interface AdditionConfig {
   type: string;
   entity?: string;
@@ -66,6 +75,7 @@ export interface AdditionConfig {
   entities?: string[];
   scene_items?: AdditionItemConfig[];
   room_sensors?: AdditionItemConfig[];
+  waste_streams?: WasteStreamConfig[];
   collapse_entity?: string;
   collapsed?: boolean;
   temperature_entity?: string;

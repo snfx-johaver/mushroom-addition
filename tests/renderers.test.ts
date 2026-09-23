@@ -46,6 +46,11 @@ const hass: HomeAssistant = {
       state: "17.7",
       attributes: { friendly_name: "Memory Usage", unit_of_measurement: "%" },
     },
+    "sensor.unknown": {
+      entity_id: "sensor.unknown",
+      state: "unknown",
+      attributes: { friendly_name: "Unknown schedule" },
+    },
     "media_player.tv": {
       entity_id: "media_player.tv",
       state: "playing",
@@ -330,6 +335,25 @@ describe("family renderers", () => {
     expect(markup).toContain(marker);
     expect(markup).toContain(region);
     expect(markup).not.toContain('class="ulm-metric');
+  });
+
+  it("renders only enabled configured waste streams and handles unknown dates", async () => {
+    const markup = await render("mushroom-addition-custom-card-afvalophaling", {
+      type: "custom:mushroom-addition-custom-card-afvalophaling",
+      entity: "sensor.power",
+      waste_streams: [
+        { enabled: true, entity: "sensor.power", label: "Residual waste", icon: "mdi:trash-can", color: "#43a047" },
+        { enabled: true, entity: "sensor.battery", label: "Organic waste", icon: "mdi:leaf", color: "#7cb342" },
+        { enabled: false, entity: "sensor.memory", label: "Glass", icon: "mdi:bottle-soda", color: "#00897b" },
+        { enabled: true, entity: "sensor.unknown", label: "Bulky waste", icon: "mdi:sofa", color: "#8d6e63" },
+      ],
+    });
+    expect(markup).toContain("Residual waste");
+    expect(markup).toContain("Organic waste");
+    expect(markup).toContain("Bulky waste");
+    expect(markup).not.toContain("Glass");
+    expect(markup.match(/class="waste-row"/g)).toHaveLength(3);
+    expect(markup).toContain("—");
   });
 
   it.each([
