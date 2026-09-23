@@ -28,6 +28,7 @@ const hass: HomeAssistant = {
     "fan.bedroom_off": { entity_id: "fan.bedroom_off", state: "off", attributes: { friendly_name: "Bedroom fan", percentage: 0, oscillating: false } },
     "sensor.temperature": { entity_id: "sensor.temperature", state: "21.4", attributes: { friendly_name: "Living room temperature", unit_of_measurement: "°C", history: [19, 20, 20.4, 21, 20.7, 21.4] } },
     "input_boolean.guest_mode": { entity_id: "input_boolean.guest_mode", state: "on", attributes: { friendly_name: "Guest mode" } },
+    "input_boolean.scenes_collapsed": { entity_id: "input_boolean.scenes_collapsed", state: "off", attributes: { friendly_name: "Collapse scenes" } },
     "light.kitchen": { entity_id: "light.kitchen", state: "on", attributes: { friendly_name: "Kitchen lights", brightness: 172, rgb_color: [255, 174, 66] } },
     "light.kitchen_off": { entity_id: "light.kitchen_off", state: "off", attributes: { friendly_name: "Kitchen lights", brightness: 0 } },
     "media_player.tv": { entity_id: "media_player.tv", state: "playing", attributes: { friendly_name: "Living room TV", media_title: "The Expanse", volume_level: .42, entity_picture: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='120'%3E%3Crect width='200' height='120' fill='%235b436f'/%3E%3C/svg%3E" } },
@@ -144,13 +145,37 @@ const variantsFor = (sourceId: string, base: AdditionConfig): AdditionConfig[] =
       { ...base, show_controls: false, ulm_card_media_player_enable_art: false },
       { ...base, show_controls: true, ulm_card_media_player_enable_art: true, ulm_card_media_player_enable_controls: true },
     ];
-    case "card_room": return [{ ...base, entities: ["sensor.temperature"] }];
-    case "card_scenes": return [{ ...base, entities: ["scene.home", "scene.away", "scene.night", "scene.movie", "scene.relax", "scene.music"] }];
+    case "card_room": return [{
+      ...base,
+      room_sensors: [
+        { entity: "light.kitchen", icon: "mdi:lightbulb", color: "#ff9800", active_state: "on", name: "Lights" },
+        { entity: "sensor.temperature", icon: "mdi:thermometer", color: "#f44336", name: "Temperature" },
+        { entity: "switch.outlet", icon: "mdi:power-plug", color: "#00c853", active_state: "on", name: "Outlet" },
+      ],
+    }];
+    case "card_scenes": return [{
+      ...base,
+      scene_items: [
+        { entity: "scene.home", icon: "mdi:home", color: "#536dfe", name: "Home" },
+        { entity: "scene.away", icon: "mdi:briefcase", color: "#ff5252", name: "Away" },
+        { entity: "scene.night", icon: "mdi:weather-night", color: "#00c853", name: "Night" },
+        { entity: "scene.movie", icon: "mdi:movie", color: "#ff9800", name: "Film Scene" },
+        { entity: "scene.relax", icon: "mdi:lightbulb", color: "#00c853", name: "Scene" },
+        { entity: "scene.music", icon: "mdi:music", color: "#ec407a", name: "Music" },
+      ],
+    }];
     case "card_welcome_scenes": return [{
       ...base,
       name: "Good afternoon, Joris!",
       secondary: "Scenes",
-      entities: ["scene.home", "scene.away", "scene.night", "scene.movie", "scene.relax"],
+      collapse_entity: "input_boolean.scenes_collapsed",
+      scene_items: [
+        { entity: "scene.home", icon: "mdi:home", color: "#536dfe", name: "Home" },
+        { entity: "scene.away", icon: "mdi:shield-home", color: "#ff5252", name: "Away" },
+        { entity: "scene.night", icon: "mdi:weather-night", color: "#00c853", name: "Night" },
+        { entity: "scene.movie", icon: "mdi:movie", color: "#ff9800", name: "Film" },
+        { entity: "scene.relax", icon: "mdi:lightbulb", color: "#ff9800", name: "Scene" },
+      ],
     }];
     case "card_thermostat": return [{ ...base, show_controls: false }, { ...base, show_controls: true }];
     case "card_person": return [{ ...base, entity: "person.joris" }, { ...base, entity: "person.joris_away" }];

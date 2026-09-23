@@ -284,10 +284,12 @@ export const sharedStyles = css`
   .scene-button { display: flex; width: 64px; min-width: 64px; min-height: 88px; flex-direction: column; align-items: center; justify-content: space-between; gap: 5px; padding: 7px 5px 10px; border-radius: 32px; background: var(--ha-card-background, #fff); box-shadow: 0 2px 6px rgba(0,0,0,.12); }
   .scene-button span { width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; }
   .scene-button i { display: grid; width: 46px; height: 46px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-purple), .14); font-style: normal; }
-  .scene-button ha-icon { --mdc-icon-size: 22px; color: rgb(var(--ulm-purple)); }
+  .scene-button i { background: color-mix(in srgb, var(--item-color) 16%, transparent); }
+  .scene-button ha-icon { --mdc-icon-size: 22px; color: var(--item-color); }
+  .scene-button.is-active { background: color-mix(in srgb, var(--item-color) 12%, var(--ha-card-background, #fff)); }
   .welcome-scenes { padding: 18px; }
   .welcome-toolbar { display: grid; grid-template-columns: 42px 1fr 42px; align-items: center; gap: 10px; margin-bottom: 24px; }
-  .welcome-toolbar-button, .welcome-date { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; border-radius: 22px; background: var(--ha-card-background, #fff); box-shadow: 0 2px 6px rgba(0,0,0,.12); }
+  .welcome-toolbar-button, .welcome-date { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; border: 0; border-radius: 22px; background: var(--ha-card-background, #fff); color: var(--primary-text-color); box-shadow: 0 2px 6px rgba(0,0,0,.12); }
   .welcome-date { justify-self: center; gap: 6px; padding: 0 14px; font-weight: 700; }
   .welcome-heading { display: flex; flex-direction: column; gap: 18px; margin-bottom: 14px; }
   .welcome-heading b { max-width: 260px; font-size: 28px; line-height: 1.08; }
@@ -327,6 +329,10 @@ export const sharedStyles = css`
   .room-main .ulm-icon ha-icon { --mdc-icon-size: 56px; }
   .room-entities { display: flex; flex-direction: column; justify-content: flex-end; gap: 7px; }
   .room-entities .metric-pill { width: 46px; min-height: 46px; justify-content: center; overflow: hidden; padding: 0; color: transparent; }
+  .room-sensor { border: 0; cursor: pointer; }
+  .room-sensor ha-icon { color: var(--item-color); }
+  .room-sensor.is-active { background: color-mix(in srgb, var(--item-color) 18%, transparent); }
+  .room-sensor span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   .ulm-camera { position: relative; min-height: 150px; overflow: hidden; background: rgba(var(--ulm-grey), .08); }
   .ulm-camera img { display: block; width: 100%; height: 180px; object-fit: cover; }
   .camera-placeholder { display: grid; min-height: 150px; place-items: center; }

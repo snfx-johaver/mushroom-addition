@@ -51,6 +51,7 @@ describe("family editor schemas", () => {
       family: "control",
       preferredDomains: ["switch", "light"],
     });
+
     expect(byId("card_welcome_scenes").family).toBe("scene");
     expect(byId("custom_card_alarm_time")).toMatchObject({
       family: "alarm-time",
@@ -64,6 +65,13 @@ describe("family editor schemas", () => {
     });
     expect(editorSchemaFor(byId("custom_card_nik_door")).map((field) => field.name))
       .toEqual(expect.arrayContaining(["lock_entity", "battery_entity"]));
+  });
+
+  it("exposes clear welcome-scene collapse controls", () => {
+    const welcome = CATALOG.find((item) => item.upstreamId === "card_welcome_scenes")!;
+    expect(editorSchemaFor(welcome).map((field) => field.name)).toEqual(expect.arrayContaining([
+      "collapse_entity", "collapsed",
+    ]));
   });
 
   it("gives every advanced editor option a user-friendly label and explanation", () => {

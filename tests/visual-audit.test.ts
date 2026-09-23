@@ -24,9 +24,6 @@ describe("visual audit manifest", () => {
   });
 
   it("reports exact accepted progress without inferring parity from family mappings", () => {
-    expect(visualAuditProgress()).toEqual({ accepted: 22, total: 86 });
-    for (const pending of ["card_room", "card_scenes", "card_welcome_scenes"]) {
-      expect(VISUAL_AUDIT.find((entry) => entry.sourceId === pending)?.status).toBe("pending");
-    }
+    expect(visualAuditProgress()).toEqual({ accepted: 25, total: 86 });
   });
 });

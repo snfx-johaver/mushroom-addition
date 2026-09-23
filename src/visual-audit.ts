@@ -42,6 +42,8 @@ const defaultReferences: Record<string, string> = {
   card_navigate: "card_navigate.png",
   card_person: "card_person.png",
   card_power_outlet: "card_power_outlet.png",
+  card_room: "room-card.png",
+  card_scenes: "card_scenes.png",
   card_script: "card_script.png",
   card_thermostat: "card_thermostat_with_controls.png",
   card_title: "card_title.png",
@@ -49,6 +51,7 @@ const defaultReferences: Record<string, string> = {
   card_vertical_button: "card_example.png",
   card_weather: "card_weather.png",
   card_weather_ulm: "card_weather_ulm.png",
+  card_welcome_scenes: "card_welcome_scenes.png",
 };
 
 const defaultStructures: Record<string, { required: string[]; forbidden: string[] }> = {
@@ -66,6 +69,8 @@ const defaultStructures: Record<string, { required: string[]; forbidden: string[
   card_navigate: { required: ["ulm-default-navigation", "ulm-icon"], forbidden: ["sparkline", "weather-forecast"] },
   card_person: { required: ["ulm-person", "presence-dot"], forbidden: ["sparkline", "ulm-controls"] },
   card_power_outlet: { required: ["ulm-simple-default", "ulm-icon"], forbidden: ["sparkline", "ulm-controls"] },
+  card_room: { required: ["ulm-room", "room-main", "room-sensor"], forbidden: ["sparkline", "scene-grid"] },
+  card_scenes: { required: ["scene-pills", "scene-grid", "scene-button"], forbidden: ["sparkline", "room-main"] },
   card_script: { required: ["ulm-simple-default", "ulm-icon"], forbidden: ["sparkline", "ulm-controls"] },
   card_thermostat: { required: ["ulm-climate", "climate-target"], forbidden: ["sparkline"] },
   card_title: { required: ["ulm-title", "ulm-copy"], forbidden: ["ulm-icon", "sparkline"] },
@@ -73,6 +78,7 @@ const defaultStructures: Record<string, { required: string[]; forbidden: string[
   card_vertical_button: { required: ["ulm-vertical-button", "ulm-icon"], forbidden: ["sparkline"] },
   card_weather: { required: ["legacy-weather", "legacy-weather-current", "legacy-weather-details"], forbidden: ["ulm-light-slider"] },
   card_weather_ulm: { required: ["ulm-weather", "weather-metrics"], forbidden: ["legacy-weather", "ulm-light-slider"] },
+  card_welcome_scenes: { required: ["welcome-scenes", "welcome-toolbar", "scene-grid"], forbidden: ["sparkline", "room-main"] },
 };
 
 const acceptedDefaults = Object.fromEntries(Object.entries(defaultStructures).map(([sourceId, structure]) => [

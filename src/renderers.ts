@@ -1,5 +1,5 @@
 import { html, nothing, type TemplateResult } from "lit";
-import type { AdditionConfig, CatalogItem, HassEntity, HomeAssistant, WeatherForecast } from "./types";
+import type { AdditionConfig, AdditionItemConfig, CatalogItem, HassEntity, HomeAssistant, WeatherForecast } from "./types";
 import { activeStates, displayName, stateLabel } from "./helpers";
 import { defaultIconFor } from "./defaults";
 
@@ -335,24 +335,59 @@ const renderMetric = (ctx: RenderContext): TemplateResult => ctx.actionSurface("
   ${(linkedState(ctx, "min_entity") || linkedState(ctx, "max_entity")) ? html`<div class="metric-extremes"><span>Min ${stateLabel(linkedState(ctx, "min_entity"))}</span><span>Max ${stateLabel(linkedState(ctx, "max_entity"))}</span></div>` : nothing}
 `);
 
+const runItemAction = (ctx: RenderContext, item: AdditionItemConfig): void => {
+  const action = item.tap_action;
+  const service = action?.service ?? action?.perform_action;
+  if ((action?.action === "call-service" || action?.action === "perform-action") && service) {
+    const [domain, serviceName] = service.split(".", 2);
+    if (domain && serviceName) {
+      ctx.service(domain, serviceName, {
+        entity_id: item.entity,
+        ...(action.service_data ?? action.data ?? {}),
+      });
+      return;
+    }
+  }
+  ctx.service("scene", "turn_on", { entity_id: item.entity });
+};
+
 const renderScene = (ctx: RenderContext): TemplateResult => {
-  const scenes = (ctx.config.entities?.length ? ctx.config.entities : ctx.config.entity ? [ctx.config.entity] : []).slice(0, 6);
+  const sceneItems: AdditionItemConfig[] = (
+    ctx.config.scene_items?.length
+      ? ctx.config.scene_items
+      : (ctx.config.entities?.length ? ctx.config.entities : ctx.config.entity ? [ctx.config.entity] : [])
+        .map((entity) => ({ entity }))
+  ).filter((item) => item.entity).slice(0, 6);
   const welcome = ctx.descriptor.upstreamId === "card_welcome_scenes";
+  const collapseEntity = ctx.config.collapse_entity ? ctx.hass.states[ctx.config.collapse_entity] : undefined;
+  const collapsed = ctx.config.collapsed === true || collapseEntity?.state === "on";
   return ctx.actionSurface(`ulm-scenes ${welcome ? "welcome-scenes" : "scene-pills"}`, html`
     ${welcome ? html`
       <div class="welcome-toolbar">
-        <span class="welcome-toolbar-button"><ha-icon icon="mdi:chevron-up"></ha-icon></span>
+        <button class="welcome-toolbar-button" aria-label="Toggle scenes" @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
+          event.stopPropagation();
+          if (ctx.config.collapse_entity) {
+            ctx.service("input_boolean", "toggle", { entity_id: ctx.config.collapse_entity });
+          }
+        }}><ha-icon .icon=${collapsed ? "mdi:chevron-down" : "mdi:chevron-up"}></ha-icon></button>
         <span class="welcome-date"><ha-icon icon="mdi:weather-partly-cloudy"></ha-icon>${new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(new Date("2026-02-18"))}</span>
         <span class="welcome-toolbar-button"><ha-icon icon="mdi:cog"></ha-icon></span>
       </div>
       <div class="welcome-heading"><b>${ctx.config.name || "Good day!"}</b><span>${ctx.config.secondary || "Scenes"}</span></div>
     ` : nothing}
-    <div class="scene-grid">${scenes.map((entityId) => html`
+    ${collapsed ? nothing : html`<div class="scene-grid">${sceneItems.map((item) => {
+      const entity = ctx.hass.states[item.entity];
+      const active = entity?.state === (item.active_state || "on") || entity?.state === "playing";
+      const color = configuredColor(item.color, "rgb(var(--ulm-purple))");
+      return html`
       <button class="scene-button" @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
         event.stopPropagation();
-        ctx.service("scene", "turn_on", { entity_id: entityId });
-      }}><i><ha-icon icon="mdi:palette"></ha-icon></i><span>${displayName({ type: "", entity: entityId }, ctx.hass.states[entityId])}</span></button>
-    `)}</div>
+        runItemAction(ctx, item);
+      }} style=${`--item-color:${color}`} class="scene-button ${active ? "is-active" : ""}">
+        <i><ha-icon .icon=${item.icon || entity?.attributes.icon || "mdi:palette"}></ha-icon></i>
+        <span>${item.name || displayName({ type: "", entity: item.entity }, entity)}</span>
+      </button>`;
+    })}</div>`}
   `);
 };
 
@@ -519,15 +554,36 @@ const renderFan = (ctx: RenderContext): TemplateResult => {
 };
 
 const renderRoom = (ctx: RenderContext): TemplateResult => {
-  const entities = (ctx.config.entities ?? []).map((entityId) => ctx.hass.states[entityId]).filter(Boolean);
+  const sensorItems: AdditionItemConfig[] = (
+    ctx.config.room_sensors?.length
+      ? ctx.config.room_sensors
+      : (ctx.config.entities ?? []).map((entity) => ({ entity }))
+  ).filter((item) => item.entity).slice(0, 4);
   return ctx.actionSurface("ulm-room", html`
     <div class="room-main">
       ${heading(ctx, stateLabel(ctx.entity))}
       ${iconBubble(ctx, "mdi:sofa", activeStates.has(ctx.entity?.state ?? "") ? "yellow" : "blue")}
     </div>
-    ${entities.length ? html`<div class="room-entities">${entities.map((entity) => html`
-      <span class="metric-pill"><ha-icon .icon=${entity.attributes.icon ?? "mdi:circle-small"}></ha-icon>${stateLabel(entity)}</span>
-    `)}</div>` : nothing}
+    ${sensorItems.length ? html`<div class="room-entities">${sensorItems.map((item) => {
+      const entity = ctx.hass.states[item.entity];
+      const active = entity?.state === (item.active_state || "on");
+      const color = configuredColor(item.color, "rgb(var(--ulm-blue))");
+      return html`<button
+        class="metric-pill room-sensor ${active ? "is-active" : ""}"
+        style=${`--item-color:${color}`}
+        aria-label=${item.name || displayName({ type: "", entity: item.entity }, entity)}
+        @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => {
+          event.stopPropagation();
+          const action = item.tap_action;
+          const service = action?.service ?? action?.perform_action;
+          if (service) {
+            const [domain, serviceName] = service.split(".", 2);
+            if (domain && serviceName) ctx.service(domain, serviceName, { entity_id: item.entity, ...(action?.service_data ?? action?.data ?? {}) });
+          }
+        }}
+      ><ha-icon .icon=${item.icon || entity?.attributes.icon || "mdi:circle-small"}></ha-icon><span>${item.name || stateLabel(entity)}</span></button>`;
+    })}</div>` : nothing}
   `);
 };
 

@@ -109,15 +109,22 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
   ],
   climate: (item) => [...common(item), entity(["sensor"], "humidity_entity"), toggle("show_controls")],
   light: (item) => [...common(item)],
-  scene: (item) => [...common(item), { name: "entities", selector: { entity: { domain: ["scene"], multiple: true } } }],
+  scene: (item) => [
+    ...common(item),
+    ...(item.upstreamId === "card_welcome_scenes"
+      ? [entity(["input_boolean"], "collapse_entity"), toggle("collapsed")]
+      : []),
+  ],
   presence: (item, config) => [
     ...common(item),
+    ...(item.upstreamId === "card_room" ? [] : [
     ...(config?.variant === "small" ? [] : [
       entity(["sensor"], "battery_entity"),
       entity(["sensor"], "eta_entity"),
       entity(["sensor"], "address_entity"),
     ]),
     toggle("use_entity_picture"),
+    ]),
   ],
   battery: (item) => [...common(item)],
   bar: (item) => [...common(item)],

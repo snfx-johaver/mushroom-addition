@@ -34,6 +34,33 @@ describe("Home Assistant registration", () => {
     }
   });
 
+  it("renders user-friendly repeatable item controls for scenes and rooms", async () => {
+    for (const [type, entity, itemKey] of [
+      ["custom:mushroom-addition-card-scenes", "scene.relax", "scene_items"],
+      ["custom:mushroom-addition-card-room", "light.kitchen", "room_sensors"],
+    ] as const) {
+      const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {
+        hass: HomeAssistant;
+        setConfig(config: AdditionConfig): void;
+        updateComplete: Promise<boolean>;
+      };
+      editor.hass = {
+        states: {},
+        callService: async () => undefined,
+      };
+      editor.setConfig({
+        type,
+        entity,
+        [itemKey]: [{ entity, name: "Example", icon: "mdi:star", color: "#ff9800" }],
+      });
+      document.body.append(editor);
+      await editor.updateComplete;
+      expect(editor.shadowRoot?.textContent).toContain("Add button");
+      expect(editor.shadowRoot?.textContent).toContain(itemKey === "scene_items" ? "Scene buttons" : "Room sensor buttons");
+      editor.remove();
+    }
+  });
+
   it("populates picker examples with compatible Home Assistant entities", () => {
         const hass: HomeAssistant = {
           states: {

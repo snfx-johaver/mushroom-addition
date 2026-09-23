@@ -50,11 +50,24 @@ export interface ActionConfig {
   [key: string]: unknown;
 }
 
+export interface AdditionItemConfig {
+  entity: string;
+  name?: string;
+  icon?: string;
+  color?: string;
+  active_state?: string;
+  tap_action?: ActionConfig;
+}
+
 export interface AdditionConfig {
   type: string;
   entity?: string;
   primary_entity?: string;
   entities?: string[];
+  scene_items?: AdditionItemConfig[];
+  room_sensors?: AdditionItemConfig[];
+  collapse_entity?: string;
+  collapsed?: boolean;
   temperature_entity?: string;
   humidity_entity?: string;
   battery_entity?: string;
