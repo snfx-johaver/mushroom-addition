@@ -4,6 +4,7 @@ import { supportedUpstreamOption } from "./supported-options";
 import { defaultWasteStreams } from "./waste-streams";
 
 const defaultIcons: Array<[RegExp, string]> = [
+  [/input_boolean/, "mdi:toggle-switch"],
   [/light/, "mdi:lightbulb"],
   [/fan/, "mdi:fan"],
   [/cover|garage|door/, "mdi:window-shutter"],
@@ -104,6 +105,13 @@ export const populatedDefaultsFor = (
               nav_5: "network", icon_5: "mdi:flask", name_5: "Lab", color_5: "red",
             }
             : {};
+  const sourceDrivenIcon = new Set([
+    "card_battery",
+    "card_binary_sensor",
+    "card_cover",
+    "card_fan",
+    "card_input_boolean",
+  ]).has(item.upstreamId);
   return {
     type: `custom:${item.tag}`,
     ...upstreamDefaultsFor(item),
@@ -113,7 +121,7 @@ export const populatedDefaultsFor = (
     show_today: item.upstreamId === "custom_card_afvalophaling" ? false : undefined,
     show_tomorrow: item.upstreamId === "custom_card_afvalophaling" ? false : undefined,
     name: entity?.attributes.friendly_name,
-    icon: defaultIconFor(item, entity),
+    icon: sourceDrivenIcon ? undefined : defaultIconFor(item, entity),
     show_icon: true,
     show_state: true,
     layout: "horizontal",

@@ -34,10 +34,15 @@
         padding: 18px;
       }
       .comparison h2 { margin: 0 0 14px; font-size: 16px; }
-      .columns { display: grid; grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr); gap: 20px; align-items: start; }
+      .columns { display: grid; grid-template-columns: var(--comparison-width, 320px) var(--comparison-width, 320px); gap: 20px; align-items: start; }
       .column-label { margin-bottom: 8px; color: var(--secondary-text-color); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
-      .reference { display: block; max-width: 100%; border-radius: 10px; background: #f5f5f5; object-fit: contain; object-position: left top; }
-      .implementation { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; align-items: start; }
+      .reference { display: block; width: var(--comparison-width, 320px); max-width: 100%; border-radius: 10px; background: #f5f5f5; object-fit: contain; object-position: left top; }
+      .implementation { display: grid; width: var(--comparison-width, 320px); grid-template-columns: 1fr; gap: 8px; align-items: start; }
+      [data-source="card_battery"] .implementation,
+      [data-source="card_binary_sensor"] .implementation,
+      [data-source="card_binary_sensor_alert"] .implementation,
+      [data-source="card_fan"] .implementation,
+      [data-source="card_input_boolean"] .implementation { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       [data-source="card_room"] .implementation { grid-template-columns: 220px; }
       [data-source="card_vacuum"] .implementation { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
       ha-card { display: block; }

@@ -50,6 +50,15 @@ export const sharedStyles = css`
   }
   .ulm-icon ha-icon { --mdc-icon-size: 21px; }
   .ulm-icon.entity-picture { background-position: center; background-size: cover; }
+  .source-icon {
+    color: color-mix(in srgb, var(--source-color) 20%, rgba(var(--ulm-grey), .35));
+    background: color-mix(in srgb, var(--source-color) 5%, transparent);
+  }
+  .source-icon.is-source-active {
+    color: var(--source-color);
+    background: color-mix(in srgb, var(--source-color) 20%, transparent);
+  }
+  .is-source-background { background: color-mix(in srgb, var(--source-color, rgb(var(--ulm-blue))) 14%, transparent); }
   .action-surface.layout-vertical {
     display: flex;
     flex-direction: column;
@@ -195,6 +204,7 @@ export const sharedStyles = css`
   .battery-track i { display: block; height: 100%; border-radius: inherit; background: rgb(var(--ulm-green)); }
   .ulm-battery.is-charging .ulm-icon { animation: ulm-charge 1.1s ease-in-out infinite alternate; }
   .ulm-default-battery { grid-template-columns: auto minmax(0, 1fr); }
+  .ulm-default-battery.is-charging .source-icon { animation: ulm-charge 3s linear infinite; }
   @keyframes ulm-charge { from { transform: scale(.92); } to { transform: scale(1.06); } }
   .minimalist-bar-card {
     display: grid;
@@ -328,14 +338,20 @@ export const sharedStyles = css`
   .ulm-cover { display: grid; gap: 8px; padding: 0 12px 12px; }
   .ulm-cover > .ulm-row { padding-right: 0; padding-left: 0; }
   .cover-controls { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .cover-controls:has(.ulm-control:nth-child(4)) { grid-template-columns: repeat(4, 1fr); }
   .cover-controls .ulm-control { width: 100%; height: 32px; border-radius: 12px; }
-  .ulm-cover > .ulm-slider { width: 100%; }
+  .ulm-cover-slider { position: relative; height: 42px; overflow: hidden; border-radius: 14px; background: rgba(var(--ulm-grey), .12); }
+  .ulm-cover-slider i { position: absolute; inset: 0 auto 0 0; width: var(--cover-level); background: rgba(var(--ulm-blue), .8); }
+  .ulm-cover-slider input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+  .ulm-cover.is-horizontal { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
   .ulm-fan { display: grid; gap: 10px; padding: 0 12px 12px; }
   .ulm-fan > .ulm-row { padding-left: 0; padding-right: 0; }
-  .ulm-fan > .ulm-slider { width: 100%; accent-color: rgb(var(--ulm-blue)); }
+  .ulm-fan.is-horizontal { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
+  .ulm-fan-controls { display: grid; grid-template-columns: minmax(0, 2fr) auto; align-items: center; gap: 8px; }
+  .ulm-fan-controls > .ulm-controls:empty { display: none; }
   .ulm-fan-slider { position: relative; height: 42px; overflow: hidden; border-radius: 14px; background: rgba(var(--ulm-grey), .14); }
-  .ulm-fan-slider i { position: absolute; inset: 0 auto 0 0; width: var(--fan-level); background: rgb(var(--ulm-yellow)); }
-  .ulm-fan-slider input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; }
+  .ulm-fan-slider i { position: absolute; inset: 0 auto 0 0; width: var(--fan-level); background: var(--source-color); }
+  .ulm-fan-slider input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
   .ulm-room { display: grid; min-height: 210px; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; padding: 14px; }
   .room-main { display: flex; min-width: 0; flex-direction: column; justify-content: space-between; gap: 12px; }
   .room-main .ulm-icon { width: 116px; height: 116px; margin: 0 0 -14px -14px; border-radius: 0 58px 0 14px; }
@@ -397,6 +413,8 @@ export const sharedStyles = css`
     padding: 12px;
   }
   .navigation-label { font-size: 14px; font-weight: 600; white-space: nowrap; }
+  .source-icon-wrap { position: relative; display: inline-grid; }
+  .binary-alert-badge { position: absolute; right: -3px; bottom: -3px; --mdc-icon-size: 16px; color: rgb(var(--ulm-red)); }
   .custom-card-heading {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;

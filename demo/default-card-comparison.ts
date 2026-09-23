@@ -37,15 +37,20 @@ if (!customElements.get("ha-icon")) customElements.define("ha-icon", HaIcon);
 const hass: HomeAssistant = {
   states: {
     "sensor.battery": { entity_id: "sensor.battery", state: "72", attributes: { friendly_name: "Phone battery", unit_of_measurement: "%" } },
-    "sensor.battery_charging": { entity_id: "sensor.battery_charging", state: "31", attributes: { friendly_name: "Phone battery", unit_of_measurement: "%", is_charging: true } },
+    "sensor.battery_charging": { entity_id: "sensor.battery_charging", state: "31", attributes: { friendly_name: "Phone battery", unit_of_measurement: "%" } },
+    "sensor.battery_usb": { entity_id: "sensor.battery_usb", state: "31", attributes: { friendly_name: "Phone battery", unit_of_measurement: "%" } },
+    "sensor.battery_warning": { entity_id: "sensor.battery_warning", state: "25", attributes: { friendly_name: "Phone battery", unit_of_measurement: "%" } },
+    "sensor.battery_state": { entity_id: "sensor.battery_state", state: "charging", attributes: { friendly_name: "Battery state" } },
+    "sensor.charger_type": { entity_id: "sensor.charger_type", state: "wireless", attributes: { friendly_name: "Charger type" } },
     "sensor.battery_low": { entity_id: "sensor.battery_low", state: "10", attributes: { friendly_name: "Phone battery", unit_of_measurement: "%" } },
-    "binary_sensor.window": { entity_id: "binary_sensor.window", state: "on", attributes: { friendly_name: "Kitchen window", device_class: "window" }, last_changed: "2026-09-23T12:00:00Z" },
-    "binary_sensor.window_closed": { entity_id: "binary_sensor.window_closed", state: "off", attributes: { friendly_name: "Kitchen window", device_class: "window" }, last_changed: "2026-09-23T11:00:00Z" },
-    "cover.blind": { entity_id: "cover.blind", state: "open", attributes: { friendly_name: "Living room blind", current_position: 68 } },
-    "fan.bedroom": { entity_id: "fan.bedroom", state: "on", attributes: { friendly_name: "Bedroom fan", percentage: 42, oscillating: false } },
+    "binary_sensor.window": { entity_id: "binary_sensor.window", state: "on", attributes: { friendly_name: "Kitchen window", device_class: "window", icon: "mdi:checkbox-blank" }, last_changed: "2026-09-23T12:00:00Z" },
+    "binary_sensor.window_closed": { entity_id: "binary_sensor.window_closed", state: "off", attributes: { friendly_name: "Kitchen window", device_class: "window", icon: "mdi:checkbox-blank-outline" }, last_changed: "2026-09-23T11:00:00Z" },
+    "cover.blind": { entity_id: "cover.blind", state: "open", attributes: { friendly_name: "Living room blind", current_position: 68, current_tilt_position: 20, device_class: "blind" } },
+    "fan.bedroom": { entity_id: "fan.bedroom", state: "on", attributes: { friendly_name: "Bedroom fan", percentage: 42, oscillate: false, temperature: 22.4, humidity: 48 } },
     "fan.bedroom_off": { entity_id: "fan.bedroom_off", state: "off", attributes: { friendly_name: "Bedroom fan", percentage: 0, oscillating: false } },
     "sensor.temperature": { entity_id: "sensor.temperature", state: "21.4", attributes: { friendly_name: "Living room temperature", unit_of_measurement: "°C", history: [19, 20, 20.4, 21, 20.7, 21.4] } },
     "input_boolean.guest_mode": { entity_id: "input_boolean.guest_mode", state: "on", attributes: { friendly_name: "Guest mode" } },
+    "input_boolean.bed_mode": { entity_id: "input_boolean.bed_mode", state: "off", attributes: { friendly_name: "Bed mode", icon: "mdi:bed" } },
     "input_boolean.scenes_collapsed": { entity_id: "input_boolean.scenes_collapsed", state: "off", attributes: { friendly_name: "Collapse scenes" } },
     "light.kitchen": { entity_id: "light.kitchen", state: "on", attributes: { friendly_name: "Kitchen lights", brightness: 172, rgb_color: [255, 174, 66] } },
     "light.kitchen_off": { entity_id: "light.kitchen_off", state: "off", attributes: { friendly_name: "Kitchen lights", brightness: 0 } },
@@ -137,22 +142,63 @@ const referenceFor: Record<string, string> = {
 const variantsFor = (sourceId: string, base: AdditionConfig): AdditionConfig[] => {
   switch (sourceId) {
     case "card_battery": return [
-      { ...base, entity: "sensor.battery_charging" },
-      { ...base, entity: "sensor.battery" },
-      { ...base, entity: "sensor.battery_low" },
+      {
+        ...base,
+        entity: "sensor.battery_charging",
+      },
+      {
+        ...base,
+        entity: "sensor.battery_usb",
+        ulm_card_battery_charger_type_entity_id: "sensor.charger_type",
+        ulm_card_battery_battery_level_danger: 10,
+        ulm_card_battery_battery_level_warning: 20,
+      },
+      {
+        ...base,
+        entity: "sensor.battery_charging",
+        ulm_card_battery_battery_state_entity_id: "sensor.battery_state",
+        ulm_card_battery_charging_animation: true,
+        ulm_card_battery_battery_level_danger: 10,
+        ulm_card_battery_battery_level_warning: 20,
+      },
+      {
+        ...base,
+        entity: "sensor.battery_warning",
+        ulm_card_battery_battery_level_danger: 20,
+        ulm_card_battery_battery_level_warning: 50,
+      },
+      {
+        ...base,
+        entity: "sensor.battery_low",
+        ulm_card_battery_battery_level_danger: 20,
+        ulm_card_battery_battery_level_warning: 50,
+      },
     ];
     case "card_binary_sensor":
     case "card_binary_sensor_alert": return [
       { ...base, entity: "binary_sensor.window" },
       { ...base, entity: "binary_sensor.window_closed" },
     ];
-    case "card_cover": return [
-      { ...base, show_controls: false },
-      { ...base, show_controls: true, ulm_card_cover_enable_controls: true },
-    ];
+    case "card_cover": return [{
+        ...base,
+        show_controls: true,
+        ulm_card_cover_enable_controls: true,
+        ulm_card_cover_enable_slider: true,
+      }];
     case "card_fan": return [
       { ...base, entity: "fan.bedroom_off", show_controls: false, ulm_card_fan_enable_slider: false },
-      { ...base, ulm_card_fan_enable_slider: true },
+      {
+        ...base,
+        ulm_card_fan_enable_slider: true,
+        ulm_card_fan_enable_button: true,
+        ulm_card_fan_temp_attribute: "temperature",
+        ulm_card_fan_hum_attribute: "humidity",
+        ulm_card_fan_oscillate_attribute: "oscillate",
+      },
+    ];
+    case "card_input_boolean": return [
+      { ...base, entity: "input_boolean.guest_mode" },
+      { ...base, entity: "input_boolean.bed_mode", name: "Bed mode" },
     ];
     case "card_light": return [
       { ...base, entity: "light.kitchen_off", layout: "default", show_controls: false, ulm_card_light_enable_slider: false },
@@ -225,6 +271,7 @@ for (const source of UPSTREAM_CATALOG.filter((item) => item.category === "defaul
   const section = document.createElement("section");
   section.className = "comparison";
   section.dataset.source = source.upstreamId;
+  section.style.setProperty("--comparison-width", source.upstreamId === "card_cover" ? "309px" : "320px");
   section.innerHTML = `<h2>${source.upstreamId}</h2><div class="columns"><div><div class="column-label">Upstream reference</div><img class="reference" alt="${source.upstreamId} upstream reference" src="/.tmp-ui-minimalist/docs/assets/img/ulm_cards/${referenceFor[source.upstreamId]}"></div><div><div class="column-label">Rendered implementation</div><div class="implementation"></div></div></div>`;
   const implementation = section.querySelector(".implementation")!;
   for (const config of variantsFor(source.upstreamId, base)) {

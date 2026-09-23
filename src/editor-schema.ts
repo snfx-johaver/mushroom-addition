@@ -34,6 +34,7 @@ const percentageOptions = new Set([
   "ulm_card_battery_battery_level_warning",
   "ulm_card_cover_slider_min",
   "ulm_card_cover_slider_max",
+  "ulm_card_cover_favorite_percentage",
   "ulm_card_fan_slider_min",
   "ulm_card_fan_slider_max",
 ]);
@@ -57,6 +58,11 @@ const numericBoxOptions = new Set([
   "ulm_card_graph_line_width",
   "ulm_card_graph_points",
   "ulm_card_media_player_enable_volume_adjust",
+]);
+const iconOptions = new Set([
+  "ulm_card_cover_icon",
+  "ulm_card_fan_button_icon",
+  "ulm_card_fan_icon",
 ]);
 const homeAssistantUpdateEntities = new Set([
   "ulm_card_homeassistant_entity",
@@ -439,6 +445,7 @@ export const upstreamEditorSchemaFor = (item: CatalogItem, config?: AdditionConf
     }
     const choices = choiceOptions[variable.name];
     if (choices) return select(variable.name, choices);
+    if (iconOptions.has(variable.name)) return { name: variable.name, selector: { icon: {} } };
     if (booleanOptions.has(variable.name)) return toggle(variable.name);
     if (numericBoxOptions.has(variable.name)) return number(variable.name, -100000, 100000);
     if (percentageOptions.has(variable.name)) {

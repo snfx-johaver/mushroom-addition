@@ -19,6 +19,35 @@ const numeric = (value: unknown): number | undefined => {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : undefined;
 };
+
+const sourceIconBubble = (
+  ctx: RenderContext,
+  iconName: string,
+  color: string,
+  active: boolean,
+  extraClass = "",
+) => {
+  if (ctx.config.icon_type === "none" || ctx.config.show_icon === false) return nothing;
+  const picture = ctx.config.icon_type === "entity-picture" ? attr(ctx.entity, "entity_picture") : undefined;
+  return picture
+    ? html`<span class="ulm-icon entity-picture ${extraClass}" style=${`background-image:url("${String(picture)}")`}></span>`
+    : html`<span class="ulm-icon source-icon ${active ? "is-source-active" : ""} ${extraClass}"
+        style=${`--source-color:${color}`}>
+        <ha-icon .icon=${ctx.config.icon || iconName}></ha-icon>
+      </span>`;
+};
+
+const configuredEntity = (ctx: RenderContext, key: string): HassEntity | undefined => {
+  const entityId = configured<string>(ctx, key);
+  return entityId ? ctx.hass.states[entityId] : undefined;
+};
+
+const batteryIcon = (level: number | undefined, infix: string): string => {
+  if (level === undefined) return "mdi:battery-off";
+  if (level >= 100) return "mdi:battery";
+  if (level < 10) return `mdi:battery${infix}-outline`;
+  return `mdi:battery${infix}-${Math.floor(level / 10) * 10}`;
+};
 const linkedState = (ctx: RenderContext, key: keyof AdditionConfig): HassEntity | undefined => {
   const entityId = ctx.config[key];
   return typeof entityId === "string" ? ctx.hass.states[entityId] : undefined;
@@ -270,20 +299,53 @@ const renderBattery = (ctx: RenderContext): TemplateResult => {
 };
 
 const renderDefaultBattery = (ctx: RenderContext): TemplateResult => {
-  const value = numeric(ctx.entity?.state) ?? 0;
-  const charging = Boolean(attr(ctx.entity, "is_charging"));
-  const danger = configured<number>(ctx, "ulm_card_battery_battery_level_danger") ?? 20;
-  const warning = configured<number>(ctx, "ulm_card_battery_battery_level_warning") ?? 50;
-  const tone = value < danger ? "red" : value < warning ? "yellow" : "green";
-  return ctx.actionSurface("ulm-row ulm-default-battery", html`
-    ${iconBubble(ctx, charging ? "mdi:battery-charging" : "mdi:battery", tone)}
-    ${valueThenName(ctx, `${Math.round(value)}%`)}
+  const attribute = configured<string>(ctx, "ulm_card_battery_attribute");
+  const rawLevel = attribute ? attr(ctx.entity, attribute) : ctx.entity?.state;
+  const value = numeric(rawLevel);
+  const batteryState = configuredEntity(ctx, "ulm_card_battery_battery_state_entity_id");
+  const chargerType = configuredEntity(ctx, "ulm_card_battery_charger_type_entity_id");
+  const stateCharging = batteryState?.state.toLowerCase() === "charging";
+  const chargerState = chargerType?.state.toLowerCase();
+  const infix = chargerState === "wireless"
+    ? "-charging-wireless"
+    : stateCharging || ["charging", "ac", "usb"].includes(chargerState ?? "")
+      ? "-charging"
+      : "";
+  const danger = configured<number>(ctx, "ulm_card_battery_battery_level_danger");
+  const warning = configured<number>(ctx, "ulm_card_battery_battery_level_warning");
+  const hasThresholds = danger !== undefined || warning !== undefined;
+  const color = value === undefined || (danger !== undefined && value <= danger)
+    ? configuredColor(configured<string>(ctx, "ulm_card_battery_color_battery_level_danger"), "var(--google-red, #f44336)")
+    : warning !== undefined && value <= warning
+      ? configuredColor(configured<string>(ctx, "ulm_card_battery_color_battery_level_warning"), "var(--google-yellow, #fbc02d)")
+      : hasThresholds
+        ? configuredColor(configured<string>(ctx, "ulm_card_battery_color_battery_level_ok"), "var(--google-green, #43a047)")
+        : "rgba(var(--color-theme, 3, 169, 244), .9)";
+  const animate = configured<boolean>(ctx, "ulm_card_battery_charging_animation") === true && stateCharging;
+  const name = configured<string>(ctx, "ulm_card_battery_name");
+  const displayLevel = value === undefined ? stateLabel(ctx.entity) : `${Math.round(value)}%`;
+  return ctx.actionSurface(`ulm-row ulm-default-battery ${animate ? "is-charging" : ""}`, html`
+    ${sourceIconBubble(ctx, batteryIcon(value, infix), color, true)}
+    <span class="ulm-copy value-first">
+      <span class="ulm-name">${displayLevel}</span>
+      <span class="ulm-label">${name || displayName(ctx.config, ctx.entity)}</span>
+    </span>
   `);
 };
 
 const configuredColor = (value: string | undefined, fallback: string): string => {
   if (!value) return fallback;
   if (/^(?:#|rgb|hsl|var\(|color\()/i.test(value)) return value;
+  const localColors: Record<string, string> = {
+    blue: "rgb(var(--ulm-blue))",
+    green: "rgb(var(--ulm-green))",
+    grey: "rgb(var(--ulm-grey))",
+    orange: "rgb(var(--ulm-orange))",
+    purple: "rgb(var(--ulm-purple))",
+    red: "rgb(var(--ulm-red))",
+    yellow: "rgb(var(--ulm-yellow))",
+  };
+  if (localColors[value]) return localColors[value];
   return `rgba(var(--color-${value}), 1)`;
 };
 
@@ -491,27 +553,74 @@ const renderMedia = (ctx: RenderContext): TemplateResult => {
 
 const renderCover = (ctx: RenderContext): TemplateResult => {
   const controllable = ctx.config.entity?.startsWith("cover.") === true;
-  return ctx.actionSurface(`ulm-cover ${configured<boolean>(ctx, "ulm_card_cover_enable_horizontal") ? "is-horizontal" : ""}`, html`
+  const controls = controllable && enabled(ctx, "show_controls", "ulm_card_cover_enable_controls");
+  const slider = controllable && configured<boolean>(ctx, "ulm_card_cover_enable_slider") === true;
+  const tilt = controllable && configured<boolean>(ctx, "ulm_card_cover_enable_tilt") === true;
+  const horizontal = configured<boolean>(ctx, "ulm_card_cover_enable_horizontal") === true;
+  const invert = configured<boolean>(ctx, "ulm_card_cover_invert_percent", "ulm_card_invert_percent") === true;
+  const position = numeric(attr(ctx.entity, "current_position"));
+  const displayedPosition = position === undefined ? undefined : invert ? 100 - position : position;
+  const open = invert ? position !== 100 : ctx.entity?.state !== "closed";
+  const color = configuredColor(configured<string>(ctx, "ulm_card_cover_color"), "rgba(var(--color-blue, 3, 169, 244), 1)");
+  const forceBackground = configured<boolean>(ctx, "ulm_card_cover_force_background_color") === true && open;
+  const deviceClass = String(attr(ctx.entity, "device_class") ?? "");
+  const openIcons: Record<string, string> = {
+    awning: "mdi:window-open", blind: "mdi:blinds-open", curtain: "mdi:curtains",
+    damper: "mdi:circle-outline", door: "mdi:door-open", garage: configured<boolean>(ctx, "ulm_card_cover_garage_large") ? "mdi:garage-open-variant" : "mdi:garage-open",
+    gate: "mdi:gate-open", shade: "mdi:roller-shade", shutter: "mdi:window-shutter-open", window: "mdi:window-open",
+  };
+  const closedIcons: Record<string, string> = {
+    awning: "mdi:window-closed", blind: "mdi:blinds", curtain: "mdi:curtains-closed",
+    damper: "mdi:circle-slice-8", door: "mdi:door-closed", garage: configured<boolean>(ctx, "ulm_card_cover_garage_large") ? "mdi:garage-variant" : "mdi:garage",
+    gate: "mdi:gate", shade: "mdi:roller-shade-closed", shutter: "mdi:window-shutter", window: "mdi:window-closed",
+  };
+  const configuredIcon = configured<string | boolean>(ctx, "ulm_card_cover_icon");
+  const coverIcon = typeof configuredIcon === "string"
+    ? configuredIcon
+    : (open ? openIcons[deviceClass] : closedIcons[deviceClass]) || String(attr(ctx.entity, "icon") ?? "mdi:help-circle");
+  const showLastChanged = configured<boolean>(ctx, "ulm_card_cover_show_last_changed") === true;
+  const secondary = showLastChanged && ctx.entity?.last_changed
+    ? new Date(ctx.entity.last_changed).toLocaleString()
+    : displayedPosition !== undefined && !["unknown", "unavailable", "closed"].includes(ctx.entity?.state ?? "")
+      ? `${stateLabel(ctx.entity)} · ${displayedPosition}%`
+      : stateLabel(ctx.entity);
+  const sideways = configured<boolean>(ctx, "ulm_card_cover_display_left_right") === true;
+  const closeIcon = sideways ? "mdi:arrow-left" : ["curtain", "gate", "awning"].includes(deviceClass) ? "mdi:arrow-collapse-horizontal" : "mdi:arrow-down";
+  const openIcon = sideways ? "mdi:arrow-right" : ["curtain", "gate", "awning"].includes(deviceClass) ? "mdi:arrow-expand-horizontal" : "mdi:arrow-up";
+  const favorite = numeric(configured(ctx, "ulm_card_cover_favorite_percentage"));
+  return ctx.actionSurface(`ulm-cover ${horizontal ? "is-horizontal" : ""} ${forceBackground ? "is-source-background" : ""}`, html`
   <div class="ulm-row">
-    ${iconBubble(ctx, "mdi:window-shutter", ctx.entity?.state === "open" ? "blue" : "grey")}
-    ${heading(ctx, stateLabel(ctx.entity))}
+    ${sourceIconBubble(ctx, coverIcon, color, open)}
+    ${heading(ctx, secondary)}
   </div>
-  ${controllable && ctx.config.show_controls !== false ? html`<div class="ulm-controls cover-controls">
-    ${button("Open", "mdi:arrow-up", (event) => { event.stopPropagation(); ctx.service("cover", "open_cover", { entity_id: ctx.config.entity }); })}
+  ${controls ? html`<div class="ulm-controls cover-controls">
+    ${button("Close", closeIcon, (event) => { event.stopPropagation(); ctx.service("cover", "close_cover", { entity_id: ctx.config.entity }); })}
     ${button("Stop", "mdi:stop", (event) => { event.stopPropagation(); ctx.service("cover", "stop_cover", { entity_id: ctx.config.entity }); })}
-    ${button("Close", "mdi:arrow-down", (event) => { event.stopPropagation(); ctx.service("cover", "close_cover", { entity_id: ctx.config.entity }); })}
+    ${button("Open", openIcon, (event) => { event.stopPropagation(); ctx.service("cover", "open_cover", { entity_id: ctx.config.entity }); })}
+    ${favorite !== undefined ? button(`Move to ${favorite}%`, "mdi:star", (event) => {
+      event.stopPropagation();
+      ctx.service("cover", "set_cover_position", { entity_id: ctx.config.entity, position: favorite });
+    }) : nothing}
   </div>` : nothing}
-  ${controllable && configured<boolean>(ctx, "ulm_card_cover_enable_slider") === true ? html`
-    <input class="ulm-slider" type="range"
+  ${slider ? html`
+    <div class="ulm-cover-slider" style=${`--cover-level:${position ?? 0}%`}>
+    <i></i><input type="range" aria-label="Cover position"
       min=${String(configured<number>(ctx, "ulm_card_cover_slider_min") ?? 0)}
       max=${String(configured<number>(ctx, "ulm_card_cover_slider_max") ?? 100)}
-      .value=${String(attr(ctx.entity, "current_position") ?? 0)}
+      .value=${String(position ?? 0)}
       @pointerdown=${(event: Event) => event.stopPropagation()}
+      @click=${(event: Event) => event.stopPropagation()}
       @change=${(event: Event) => ctx.service("cover", "set_cover_position", {
         entity_id: ctx.config.entity,
         position: Number((event.target as HTMLInputElement).value),
       })}>
+    </div>
   ` : nothing}
+  ${tilt ? html`<div class="ulm-controls cover-controls cover-tilt-controls">
+    ${button("Close tilt", "mdi:arrow-bottom-left", (event) => { event.stopPropagation(); ctx.service("cover", "close_cover_tilt", { entity_id: ctx.config.entity }); })}
+    ${button("Stop tilt", "mdi:stop", (event) => { event.stopPropagation(); ctx.service("cover", "stop_cover_tilt", { entity_id: ctx.config.entity }); })}
+    ${button("Open tilt", "mdi:arrow-top-right", (event) => { event.stopPropagation(); ctx.service("cover", "open_cover_tilt", { entity_id: ctx.config.entity }); })}
+  </div>` : nothing}
   `);
 };
 
@@ -600,27 +709,42 @@ const renderFan = (ctx: RenderContext): TemplateResult => {
   const percentage = numeric(attr(ctx.entity, "percentage")) ?? 0;
   const slider = configured<boolean>(ctx, "ulm_card_fan_enable_slider") === true;
   const oscillation = configured<boolean>(ctx, "ulm_card_fan_enable_button") === true;
-  return ctx.actionSurface(`ulm-control-card ulm-fan ${active ? "is-active" : ""}`, html`
+  const collapsed = configured<boolean>(ctx, "ulm_card_fan_enable_collapse") === true && !active;
+  const horizontal = configured<boolean>(ctx, "ulm_card_fan_enable_horizontal") === true;
+  const color = configuredColor(configured<string>(ctx, "ulm_card_fan_color"), "rgba(var(--color-blue, 3, 169, 244), 1)");
+  const forceBackground = configured<boolean>(ctx, "ulm_card_fan_force_background_color") === true && active;
+  const temperatureAttribute = configured<string | boolean>(ctx, "ulm_card_fan_temp_attribute");
+  const humidityAttribute = configured<string | boolean>(ctx, "ulm_card_fan_hum_attribute");
+  const temperature = typeof temperatureAttribute === "string" ? numeric(attr(ctx.entity, temperatureAttribute)) : undefined;
+  const humidity = typeof humidityAttribute === "string" ? numeric(attr(ctx.entity, humidityAttribute)) : undefined;
+  const label = ctx.entity?.state === "unavailable"
+    ? stateLabel(ctx.entity)
+    : `${active ? (attr(ctx.entity, "percentage") === undefined ? "on" : `${percentage}%`) : "off"}${temperature !== undefined ? ` · ${Math.round(temperature)}°C` : ""}${humidity !== undefined ? ` · ${Math.round(humidity)}%` : ""}`;
+  const oscillateAttribute = configured<string>(ctx, "ulm_card_fan_oscillate_attribute") ?? "oscillating";
+  const oscillating = attr(ctx.entity, oscillateAttribute) === true;
+  const [buttonDomain, buttonService] = (configured<string>(ctx, "ulm_card_fan_button_service") ?? "fan.oscillate").split(".", 2);
+  return ctx.actionSurface(`ulm-control-card ulm-fan ${active ? "is-active" : ""} ${collapsed ? "is-collapsed" : ""} ${horizontal ? "is-horizontal" : ""} ${forceBackground ? "is-source-background" : ""}`, html`
     <div class="ulm-row">
-      ${iconBubble(ctx, "mdi:fan", active ? "blue" : "grey")}
-      ${heading(ctx, `${stateLabel(ctx.entity)}${percentage ? ` · ${percentage}%` : ""}`)}
+     ${sourceIconBubble(ctx, configured<string>(ctx, "ulm_card_fan_icon") || String(attr(ctx.entity, "icon") ?? "mdi:fan"), color, active)}
+     ${heading(ctx, label)}
     </div>
-    ${slider ? html`<div class="ulm-fan-slider" style=${`--fan-level:${percentage}%`}>
-      <i></i>
-      <input type="range"
-        min=${String(configured<number>(ctx, "ulm_card_fan_slider_min") ?? 0)}
-        max=${String(configured<number>(ctx, "ulm_card_fan_slider_max") ?? 100)}
-        .value=${String(percentage)}
-        @pointerdown=${(event: Event) => event.stopPropagation()}
-        @change=${(event: Event) => ctx.service("fan", "set_percentage", {
-          entity_id: ctx.config.entity,
-          percentage: Number((event.target as HTMLInputElement).value),
-        })}>
-    </div>` : nothing}
+    ${slider && !collapsed ? html`<div class="ulm-fan-controls"><div class="ulm-fan-slider" style=${`--fan-level:${percentage}%;--source-color:${color}`}>
+     <i></i>
+     <input type="range" aria-label="Fan speed"
+       min=${String(configured<number>(ctx, "ulm_card_fan_slider_min") ?? 0)}
+       max=${String(configured<number>(ctx, "ulm_card_fan_slider_max") ?? 100)}
+       .value=${String(percentage)}
+       @pointerdown=${(event: Event) => event.stopPropagation()}
+       @click=${(event: Event) => event.stopPropagation()}
+       @change=${(event: Event) => ctx.service("fan", "set_percentage", {
+         entity_id: ctx.config.entity,
+         percentage: Number((event.target as HTMLInputElement).value),
+       })}>
+    </div>
     ${oscillation ? html`<div class="ulm-controls">${button("Toggle oscillation", configured<string>(ctx, "ulm_card_fan_button_icon") ?? "mdi:rotate-3d-variant", (event) => {
       event.stopPropagation();
-      ctx.service("fan", "oscillate", { entity_id: ctx.config.entity, oscillating: attr(ctx.entity, "oscillating") !== true });
-    })}</div>` : nothing}
+      ctx.service(buttonDomain || "fan", buttonService || "oscillate", { entity_id: ctx.config.entity, oscillating: !oscillating });
+    })}</div>` : nothing}</div>` : nothing}
   `);
 };
 
@@ -1996,9 +2120,36 @@ const renderBinary = (ctx: RenderContext, alert = false): TemplateResult => {
   const active = ctx.entity?.state === "on";
   const showLastChanged = configured<boolean>(ctx,
     alert ? "ulm_card_binary_sensor_alert_show_last_changed" : "ulm_card_binary_sensor_show_last_changed") === true;
-  return ctx.actionSurface(`ulm-row ulm-binary ${active ? "is-active" : ""} ${alert && active ? "is-alert" : ""}`, html`
-    ${iconBubble(ctx, alert && active ? "mdi:alert" : "mdi:radiobox-marked", active ? (alert ? "red" : "blue") : "grey")}
-    ${heading(ctx, showLastChanged && ctx.entity?.last_changed ? new Date(ctx.entity.last_changed).toLocaleString() : stateLabel(ctx.entity))}
+  const prefix = alert ? "ulm_card_binary_sensor_alert" : "ulm_card_binary_sensor";
+  const color = configuredColor(configured<string>(ctx, `${prefix}_color`), "rgba(var(--color-blue, 3, 169, 244), 1)");
+  const sourceIcon = configured<string>(ctx, `${prefix}_icon`) || String(attr(ctx.entity, "icon") ?? "mdi:radiobox-marked");
+  const sourceName = configured<string>(ctx, `${prefix}_name`);
+  const forceBackground = configured<boolean>(ctx, `${prefix}_force_background_color`) === true && active;
+  const secondary = showLastChanged && ctx.entity?.last_changed ? new Date(ctx.entity.last_changed).toLocaleString() : stateLabel(ctx.entity);
+  return ctx.actionSurface(`ulm-row ulm-binary ${active ? "is-active" : ""} ${alert ? "is-alert" : ""} ${forceBackground ? "is-source-background" : ""}`, html`
+    <span class="source-icon-wrap">
+      ${sourceIconBubble(ctx, sourceIcon, color, active)}
+      ${alert && active ? html`<ha-icon class="binary-alert-badge" .icon=${"mdi:alert-circle"}></ha-icon>` : nothing}
+    </span>
+    <span class="ulm-copy">
+      <span class="ulm-name">${sourceName || selectedPrimary(ctx)}</span>
+      <span class="ulm-label">${secondary}</span>
+    </span>
+  `);
+};
+
+const renderInputBoolean = (ctx: RenderContext): TemplateResult => {
+  const active = ctx.entity?.state === "on";
+  const color = configuredColor(configured<string>(ctx, "ulm_card_input_boolean_color"), "rgba(var(--color-blue, 3, 169, 244), 1)");
+  const sourceIcon = configured<string>(ctx, "ulm_card_input_boolean_icon") || String(attr(ctx.entity, "icon") ?? "mdi:toggle-switch");
+  const sourceName = configured<string>(ctx, "ulm_card_input_boolean_name");
+  const forceBackground = configured<boolean>(ctx, "ulm_card_input_boolean_force_background_color") === true && active;
+  return ctx.actionSurface(`ulm-row ulm-simple-default ulm-input-boolean ${active ? "is-active" : ""} ${forceBackground ? "is-source-background" : ""}`, html`
+    ${sourceIconBubble(ctx, sourceIcon, color, active)}
+    <span class="ulm-copy">
+      <span class="ulm-name">${sourceName || selectedPrimary(ctx)}</span>
+      <span class="ulm-label">${stateLabel(ctx.entity)}</span>
+    </span>
   `);
 };
 
@@ -2018,7 +2169,7 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "card_battery": return renderDefaultBattery(ctx);
     case "card_binary_sensor": return renderBinary(ctx, ctx.config.variant === "alert");
     case "card_graph": return renderDefaultGraph(ctx);
-    case "card_input_boolean": return renderSimpleDefault(ctx, "mdi:toggle-switch", "blue");
+    case "card_input_boolean": return renderInputBoolean(ctx);
     case "card_light": return renderLight(ctx);
     case "card_media_player": return renderMedia(ctx);
     case "card_navigate": return renderDefaultNavigation(ctx);

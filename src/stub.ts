@@ -75,6 +75,10 @@ export const createStubConfig = (
       : undefined,
     show_forecast: descriptor.family === "weather",
     show_graph: ["battery", "energy", "sensor"].includes(descriptor.family),
+    ulm_card_cover_enable_controls: descriptor.upstreamId === "card_cover" ? true : undefined,
+    ulm_card_cover_enable_slider: descriptor.upstreamId === "card_cover" ? true : undefined,
+    ulm_card_fan_enable_slider: descriptor.upstreamId === "card_fan" ? true : undefined,
+    ulm_card_fan_enable_button: descriptor.upstreamId === "card_fan" ? true : undefined,
     ulm_custom_card_bar_card_value: descriptor.family === "bar" ? true : undefined,
     entities: descriptor.variants?.includes("with-sensors")
       ? entitiesFallback.slice(0, 2)
