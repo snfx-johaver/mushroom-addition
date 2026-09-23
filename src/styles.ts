@@ -857,11 +857,10 @@ export const sharedStyles = css`
   .custom-person-chip > span { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-blue), .12); background-position: center; background-size: cover; color: rgb(var(--ulm-blue)); }
   .custom-person-chip > b { font-size: 12px; }
   .custom-person-info, .custom-ristou-person, .custom-saxel-fan, .custom-schumijo-car,
-  .custom-schumijo-flower, .custom-sisimomo-printer, .custom-speedtest-shogun,
-  .custom-tpx-aircondition, .custom-water-heater { display: grid; gap: 10px; padding: 12px; }
+  .custom-schumijo-flower, .custom-sisimomo-printer, .custom-tpx-aircondition { display: grid; gap: 10px; padding: 12px; }
   .custom-person-info-small { display: grid; min-height: 118px; gap: 8px; padding: 12px; }
   .person-info-main, .ristou-person-main, .car-hero, .flower-heading, .printer-summary,
-  .aircondition-main, .water-heater-top { display: flex; min-width: 0; align-items: center; gap: 10px; }
+  .aircondition-main { display: flex; min-width: 0; align-items: center; gap: 10px; }
   .person-info-avatar { position: relative; display: grid; width: 42px; height: 42px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: rgba(var(--ulm-blue), .12) center/cover; color: rgb(var(--ulm-blue)); }
   .person-info-avatar.has-picture > ha-icon { display: none; }
   .person-info-badge { position: absolute; top: -3px; right: -3px; display: grid; width: 16px; height: 16px; place-items: center; border: 2px solid var(--card-background-color); border-radius: 50%; background: rgb(var(--tone)); color: #fff; }
@@ -921,17 +920,35 @@ export const sharedStyles = css`
   .speedtest-three span { display: grid; min-width: 0; place-items: center; gap: 3px; padding: 8px; border-radius: 12px; background: rgba(var(--ulm-grey), .07); text-align: center; }
   .speedtest-three ha-icon { color: rgb(var(--ulm-blue)); } .speedtest-three b { font-size: 12px; } .speedtest-three small { overflow: hidden; max-width: 100%; color: var(--secondary-text-color); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
   .speedtest-chart { height: 58px; overflow: hidden; } .speedtest-chart .sparkline { height: 60px; }
-  .aircondition-main > b, .water-heater-top > b { margin-left: auto; font-size: 20px; }
-  .aircondition-controls { display: grid; grid-template-columns: 42px 1fr 1fr 42px; align-items: center; gap: 7px; }
-  .aircondition-controls button, .water-heater-controls button { min-height: 42px; border: 0; border-radius: 13px; background: rgba(var(--ulm-grey), .08); color: var(--primary-text-color); }
-  .aircondition-controls span { display: flex; min-height: 42px; align-items: center; justify-content: center; gap: 4px; border-radius: 13px; background: rgba(var(--ulm-grey), .06); font-size: 10px; }
-  .aircondition-controls span ha-icon { --mdc-icon-size: 16px; }
-  .custom-device-tracer { display: grid; min-height: 88px; grid-template-columns: 48px minmax(0, 1fr); align-items: center; gap: 10px; padding: 12px; }
-  .device-tracer-icon { display: grid; width: 48px; height: 48px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-blue), .15); color: rgb(var(--ulm-blue)); }
-  .device-tracer-meta { grid-column: 1 / -1; grid-template-columns: repeat(2, 1fr); } .device-tracer-meta > span { min-height: 36px; display: flex; gap: 6px; font-size: 10px; }
-  .water-heater-controls { display: grid; grid-template-columns: 48px 1fr 48px; align-items: center; gap: 8px; } .water-heater-controls span { text-align: center; font-size: 11px; text-transform: capitalize; }
-  .custom-wilbiev-title { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; padding: 8px 0; }
-  .custom-wilbiev-title span { height: 1px; background: var(--divider-color); } .custom-wilbiev-title b { font-size: 16px; } .custom-wilbiev-title.is-subtitle b { color: var(--secondary-text-color); font-size: 12px; }
+  .aircondition-main > button { margin-left: auto; }
+  .aircondition-controls { display: grid; grid-template-columns: 42px 1fr 42px; align-items: center; gap: 7px; }
+  .aircondition-controls button { min-height: 42px; border: 0; border-radius: 13px; background: rgba(var(--ulm-grey), .08); color: var(--primary-text-color); }
+  .aircondition-target { display: grid; min-height: 42px; place-items: center; border-radius: 13px; background: rgba(var(--ulm-grey), .06); font-size: 14px; font-weight: 700; }
+  .custom-device-tracer { display: grid; min-height: 66px; grid-template-columns: 42px minmax(0, 1fr); align-items: center; gap: 10px; padding: 12px; }
+  .device-tracer-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--device-tracer-color) 18%, transparent); color: var(--device-tracer-color); }
+  .custom-water-heater { display: grid; min-height: 66px; grid-template-columns: 42px minmax(0, 1fr); align-items: center; gap: 10px; padding: 12px; }
+  .custom-water-heater.is-heating { background: rgba(var(--color-background-red, 244, 67, 54), var(--opacity-bg, .12)); }
+  .custom-speedtest-shogun { padding: 8px; }
+  .speedtest-three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; }
+  .speedtest-metric { position: relative; display: grid; min-width: 0; min-height: 112px; place-items: center; color: var(--speedtest-color); }
+  .speedtest-ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .speedtest-ring path { fill: none; stroke-linecap: round; stroke-width: 8; }
+  .speedtest-track { stroke: rgba(var(--ulm-grey), .12); }
+  .speedtest-value { stroke: var(--speedtest-color); stroke-dasharray: var(--speedtest-value) 100; }
+  .speedtest-value-copy { position: relative; display: grid; place-items: center; text-align: center; }
+  .speedtest-value-copy ha-icon { --mdc-icon-size: 20px; }
+  .speedtest-value-copy b { margin-top: 2px; color: var(--primary-text-color); font-size: 13px; }
+  .speedtest-value-copy small { margin-top: 4px; color: var(--secondary-text-color); font-size: 11px; font-weight: 700; }
+  .custom-wilbiev-title { display: grid; min-height: 0; padding: 0; background: #e8e9eb; color: #000; }
+  .custom-wilbiev-title.is-title { grid-template-columns: auto minmax(0, 1fr); gap: 8px; padding: 5px; border: 2px outset #000; }
+  .wilbiev-back { display: grid; width: 48px; height: 48px; place-items: center; align-self: center; border: 0; border-radius: 50%; background: #e8e9eb; box-shadow: 0 2px 6px rgba(0,0,0,.16); color: #000; }
+  .wilbiev-divider { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; min-width: 0; padding: 8px 0; }
+  .wilbiev-divider span { height: 3px; background: #000; }
+  .wilbiev-divider b { font-size: 36px; line-height: 1.1; }
+  .custom-wilbiev-title.is-subtitle .wilbiev-divider { padding: 8px 12px; }
+  .custom-wilbiev-title.is-subtitle .wilbiev-divider span { height: 1px; }
+  .custom-wilbiev-title.is-subtitle .wilbiev-divider b { font-size: 24px; }
+  .wilbiev-bottom-divider { display: block; height: 1px; background: rgb(210, 210, 210); }
   .custom-wsly-pollen { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 8px; }
   .pollen-item { display: grid; min-width: 0; min-height: 92px; place-items: center; gap: 3px; padding: 6px 3px; border: 0; border-radius: var(--border-radius, 12px); background: transparent; color: var(--primary-text-color); text-align: center; cursor: pointer; }
   .pollen-item:disabled { cursor: default; opacity: .55; }

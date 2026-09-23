@@ -65,8 +65,17 @@ export const createStubConfig = (
                         : descriptor.upstreamId === "custom_card_yagrasdemonde_lights_count"
                           ? findEntity(["sensor"], ["number", "lights", "on"]) ??
                             findEntity(["sensor"], ["lights", "on"])
+                        : descriptor.upstreamId === "custom_card_speedtest_shogun160"
+                          ? findEntity(["sensor"], ["speedtest", "download"]) ??
+                              findEntity(["sensor"], ["download"])
+                          : descriptor.upstreamId === "custom_card_tpx01_aircondition"
+                            ? findEntity(["climate"], [])
+                            : descriptor.upstreamId === "custom_card_vncntdev_device_tracer"
+                              ? findEntity(["device_tracker", "switch"], [])
+                              : descriptor.upstreamId === "custom_card_water_heater"
+                                ? findEntity(["water_heater"], [])
                         : descriptor.upstreamId === "custom_card_nik_tablet"
-                        ? findEntity(["binary_sensor", "sensor", "switch"], ["tablet"])
+                          ? findEntity(["binary_sensor", "sensor", "switch"], ["tablet"])
                         : descriptor.upstreamId === "custom_card_homeassistant_updates"
                           ? findEntity(["update", "sensor", "binary_sensor"], ["core"])
                           : descriptor.upstreamId === "custom_card_nik_nas"
@@ -254,6 +263,39 @@ export const createStubConfig = (
         ulm_custom_card_device_tracker_tracker_2_entity:
           findEntity(["device_tracker"], ["bluetooth"]) ?? findEntity(["device_tracker"], ["ble"]),
         ulm_custom_card_device_tracker_tracker_2_type: "bluetooth",
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_speedtest_shogun160"
+      ? {
+        download_entity: findEntity(["sensor"], ["speedtest", "download"]) ??
+          findEntity(["sensor"], ["download"]) ?? entity,
+        upload_entity: findEntity(["sensor"], ["speedtest", "upload"]) ??
+          findEntity(["sensor"], ["upload"]),
+        ping_entity: findEntity(["sensor"], ["speedtest", "ping"]) ??
+          findEntity(["sensor"], ["ping"]),
+        tap_action: {
+          action: "perform-action",
+          perform_action: "homeassistant.update_entity",
+          target: {
+            entity_id: [
+              findEntity(["sensor"], ["speedtest", "download"]) ?? findEntity(["sensor"], ["download"]) ?? entity,
+              findEntity(["sensor"], ["speedtest", "upload"]) ?? findEntity(["sensor"], ["upload"]),
+              findEntity(["sensor"], ["speedtest", "ping"]) ?? findEntity(["sensor"], ["ping"]),
+            ].filter((value): value is string => Boolean(value)),
+          },
+        },
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_vncntdev_device_tracer"
+      ? {
+        custom_card_vncntdev_device_tracker_name:
+          entity ? hass?.states[entity]?.attributes.friendly_name : undefined,
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_water_heater"
+      ? {
+        power_entity: findEntity(["sensor"], ["water", "heater", "power"]) ??
+          findEntity(["sensor"], ["boiler", "power"]),
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_drealine_roomview"

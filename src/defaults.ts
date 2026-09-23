@@ -171,7 +171,24 @@ export const populatedDefaultsFor = (
                             ulm_custom_card_yagrasdemonde_lights_count_color: "yellow",
                             ulm_custom_card_yagrasdemonde_lights_count_force_background_color: false,
                           }
-                          : {};
+                          : item.upstreamId === "custom_card_speedtest_shogun160"
+                            ? {
+                              ulm_custom_card_speedtest_download_speed_color: "var(--google-yellow)",
+                              ulm_custom_card_speedtest_download_speed_max: 100,
+                              ulm_custom_card_speedtest_upload_speed_color: "var(--google-blue)",
+                              ulm_custom_card_speedtest_upload_speed_max: 40,
+                              ulm_custom_card_speedtest_ping_color: "var(--google-green)",
+                              ulm_custom_card_speedtest_ping_max: 85,
+                              ulm_custom_card_speedtest_round: false,
+                            }
+                            : item.upstreamId === "custom_card_vncntdev_device_tracer"
+                              ? {
+                                custom_card_vncntdev_device_tracker_icon: "mdi:server",
+                                custom_card_vncntdev_device_tracker_status_as_name: false,
+                                custom_card_vncntdev_device_tracker_color_online: "var(--google-green)",
+                                custom_card_vncntdev_device_tracker_color_offline: "var(--google-red)",
+                              }
+                              : {};
   const sourceDrivenIcon = new Set([
     "card_battery",
     "card_binary_sensor",

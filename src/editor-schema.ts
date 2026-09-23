@@ -627,6 +627,60 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         toggle("ulm_custom_card_yagrasdemonde_lights_count_force_background_color"),
         ...presentation(),
       ]
+    : item.upstreamId === "custom_card_speedtest_shogun160"
+      ? [
+        entity(["sensor"]),
+        entity(["sensor"], "download_entity"),
+        { name: "ulm_custom_card_speedtest_download_speed_color", selector: { ui_color: {} } },
+        number("ulm_custom_card_speedtest_download_speed_max", 1, 100000),
+        entity(["sensor"], "upload_entity"),
+        { name: "ulm_custom_card_speedtest_upload_speed_color", selector: { ui_color: {} } },
+        number("ulm_custom_card_speedtest_upload_speed_max", 1, 100000),
+        entity(["sensor"], "ping_entity"),
+        { name: "ulm_custom_card_speedtest_ping_color", selector: { ui_color: {} } },
+        number("ulm_custom_card_speedtest_ping_max", 1, 100000),
+        toggle("ulm_custom_card_speedtest_round"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_tpx01_aircondition"
+      ? [
+        entity(["climate"]),
+        text("name"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_vncntdev_device_tracer"
+      ? [
+        entity(["device_tracker", "switch"]),
+        text("custom_card_vncntdev_device_tracker_name"),
+        toggle("custom_card_vncntdev_device_tracker_status_as_name"),
+        { name: "custom_card_vncntdev_device_tracker_icon", selector: { icon: {} } },
+        { name: "custom_card_vncntdev_device_tracker_color_online", selector: { ui_color: {} } },
+        { name: "custom_card_vncntdev_device_tracker_color_offline", selector: { ui_color: {} } },
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_water_heater"
+      ? [
+        entity(["water_heater"]),
+        entity(["sensor"], "power_entity"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "card_title" && config?.variant === "divider-title"
+      ? [
+        text("name"),
+        text("navigation_path"),
+        ...(item.variants?.length ? [select("variant", item.variants.map((variant) => ({
+          value: variant,
+          label: item.variantLabels?.[variant] ?? variant,
+        })))] : []),
+      ]
+    : item.upstreamId === "card_title" && config?.variant === "divider-subtitle"
+      ? [
+        text("name"),
+        ...(item.variants?.length ? [select("variant", item.variants.map((variant) => ({
+          value: variant,
+          label: item.variantLabels?.[variant] ?? variant,
+        })))] : []),
+      ]
     : item.upstreamId === "custom_card_nik_nas"
       ? [
         entity(["binary_sensor", "sensor", "switch"]),

@@ -39,8 +39,30 @@ for (const alias of LEGACY_ALIASES) {
       entitiesFallback: string[] = [],
     ): AdditionConfig {
       const config = createStubConfig(aliasDescriptor, hass, entities, entitiesFallback);
+      if (defaultVariant === "divider-title") {
+        return {
+          ...config,
+          type: `custom:${alias.tag}`,
+          entity: undefined,
+          variant: defaultVariant,
+          name: "Title",
+          navigation_path: "",
+          tap_action: { action: "none" },
+        };
+      }
+      if (defaultVariant === "divider-subtitle") {
+        return {
+          ...config,
+          type: `custom:${alias.tag}`,
+          entity: undefined,
+          variant: defaultVariant,
+          name: "Subtitle",
+          tap_action: { action: "none" },
+        };
+      }
       return {
         ...config,
+        type: `custom:${alias.tag}`,
         variant: defaultVariant,
         show_forecast: alias.tag === "mushroom-addition-card-weather-ulm"
           ? false

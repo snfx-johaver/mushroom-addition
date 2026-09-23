@@ -803,9 +803,9 @@ describe("family renderers", () => {
     ["sisimomo-printer", "sensor.power", "custom-sisimomo-printer", "printer-cartridges"],
     ["speedtest-shogun160", "sensor.power", "custom-speedtest-shogun", "speedtest-three"],
     ["tpx01-aircondition", "climate.living", "custom-tpx-aircondition", "aircondition-controls"],
-    ["vncntdev-device-tracer", "sensor.power", "custom-device-tracer", "device-tracer-meta"],
-    ["water-heater", "sensor.power", "custom-water-heater", "water-heater-controls"],
-    ["wilbiev-title", "sensor.power", "ulm-title", "variant-divider-title"],
+    ["vncntdev-device-tracer", "sensor.power", "custom-device-tracer", "device-tracer-icon"],
+    ["water-heater", "sensor.power", "custom-water-heater", "source-icon"],
+    ["wilbiev-title", "sensor.power", "custom-wilbiev-title", "variant-divider-title"],
     ["wsly-pollen", "sensor.power", "custom-wsly-pollen", "--pollen:"],
     ["yagrasdemonde-lights-count", "sensor.power", "custom-lights-count", "lights on"],
   ])("uses a dedicated remaining-source %s composition", async (slug, entity, marker, region) => {

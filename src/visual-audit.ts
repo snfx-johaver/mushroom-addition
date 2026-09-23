@@ -170,12 +170,12 @@ const customStructures: Record<string, string[]> = {
   custom_card_schumijo_flower: ["custom-schumijo-flower", "flower-metrics"],
   custom_card_senoro_win: ["custom-senoro-window", "window-battery"],
   custom_card_sisimomo_printer: ["custom-sisimomo-printer", "printer-cartridges"],
-  custom_card_speedtest_shogun160: ["custom-speedtest-shogun", "speedtest-three"],
-  custom_card_tpx01_aircondition: ["custom-tpx-aircondition", "aircondition-controls"],
-  custom_card_vncntdev_device_tracer: ["custom-device-tracer", "device-tracer-meta"],
-  custom_card_water_heater: ["custom-water-heater", "water-heater-controls"],
-  custom_card_wilbiev_subtitle: ["ulm-title", "variant-divider-subtitle"],
-  custom_card_wilbiev_title: ["ulm-title", "variant-divider-title"],
+  custom_card_speedtest_shogun160: ["custom-speedtest-shogun", "speedtest-three", "speedtest-ring"],
+  custom_card_tpx01_aircondition: ["custom-tpx-aircondition", "aircondition-controls", "aircondition-target"],
+  custom_card_vncntdev_device_tracer: ["custom-device-tracer", "device-tracer-icon"],
+  custom_card_water_heater: ["custom-water-heater", "source-icon"],
+  custom_card_wilbiev_subtitle: ["custom-wilbiev-title", "variant-divider-subtitle", "wilbiev-bottom-divider"],
+  custom_card_wilbiev_title: ["custom-wilbiev-title", "variant-divider-title", "wilbiev-divider"],
   custom_card_wsly_pollen: ["custom-wsly-pollen"],
   custom_card_yagrasdemonde_lights_count: ["custom-lights-count"],
 };
@@ -367,6 +367,46 @@ const accepted: Record<string, Partial<VisualAuditEntry>> = {
                   : "",
       "The focused comparison fixture renders real @mdi/js SVG paths rather than text icon abbreviations.",
     ],
+  } satisfies Partial<VisualAuditEntry>])),
+  ...Object.fromEntries(([
+    ["custom_card_speedtest_shogun160", 498, "https://user-images.githubusercontent.com/63370033/223386117-ea10ceee-c0a4-48b0-b3da-12768565c8f0.png"],
+    ["custom_card_tpx01_aircondition", 320, "docs/assets/visual-audit/custom-card-tpx01-aircondition-source-blueprint.png"],
+    ["custom_card_vncntdev_device_tracer", 320, ".tmp-ui-minimalist/docs/assets/img/custom_device_tracer.jpg"],
+    ["custom_card_water_heater", 320, "docs/assets/visual-audit/custom-card-water-heater-source-blueprint.png"],
+    ["custom_card_wilbiev_subtitle", 500, ".tmp-ui-minimalist/docs/assets/img/custom_card_wilbiev_subtitle.png"],
+    ["custom_card_wilbiev_title", 500, ".tmp-ui-minimalist/docs/assets/img/custom_card_wilbiev_title.png"],
+  ] satisfies Array<[string, number, string | undefined]>).map(([sourceId, width, referenceScreenshot]) => [sourceId, {
+    ...(acceptedCustoms[sourceId] ?? {}),
+    compositionId: `custom:${sourceId}:source-faithful`,
+    referenceScreenshot,
+    fixturePath: "demo/speed-climate-title-comparison.html",
+    artifactPath: `docs/assets/visual-audit/${sourceId.replaceAll("_", "-")}-comparison.png`,
+    themes: ["light"],
+    widths: [width],
+    status: "pending",
+    deviations: sourceId === "custom_card_speedtest_shogun160"
+      ? [
+        "The original ApexCharts dependency is replaced by source-shaped Lit SVG radial gauges.",
+        "The source documentation image uses different sample measurements; the local comparison uses deterministic mapped entity values.",
+      ]
+      : sourceId === "custom_card_tpx01_aircondition"
+        ? [
+          "No dedicated upstream screenshot exists; the matched-width reference artifact is a real-MDI blueprint derived directly from the pinned YAML composition.",
+          "The source script services are preserved as exact local payloads and were not invoked live.",
+        ]
+        : sourceId === "custom_card_vncntdev_device_tracer"
+          ? ["The pinned screenshot contains two example cards; the focused artifact compares one semantic online card."]
+          : sourceId === "custom_card_water_heater"
+            ? [
+              "No dedicated upstream screenshot exists; the matched-width reference artifact is a real-MDI blueprint derived directly from the pinned YAML composition.",
+              "The pinned source hard-codes a power sensor; this implementation exposes optional power_entity, which is absent from the provided live mapping.",
+            ]
+            : sourceId === "custom_card_wilbiev_subtitle"
+              ? ["The text-divider-row dependency is replaced by an original Lit divider."]
+              : [
+                "The text-divider-row and mushroom-chips-card dependencies are replaced by original Lit divider and back-button elements.",
+                "The provided live mapping omits a navigation path, so its exact live config intentionally has no back button.",
+              ],
   } satisfies Partial<VisualAuditEntry>])),
   custom_card_afvalophaling: {
     compositionId: "custom:custom_card_afvalophaling:semantic-waste-streams",
@@ -958,6 +998,28 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
       "Live Home Assistant E2E was intentionally not claimed.",
     ],
   },
+  ...Object.fromEntries(([
+    ["custom_card_speedtest_shogun160", "Three radial gauges, source maxima/colors, optional download/upload rounding, and the update-entity action are covered."],
+    ["custom_card_tpx01_aircondition", "HVAC icon states, more-info, cool/off power, decrement script, increment script, and unavailable controls are covered."],
+    ["custom_card_vncntdev_device_tracer", "Online/offline/unavailable states, status/name swapping, colors, icon, and more-info are covered."],
+    ["custom_card_water_heater", "Forced-off, inactive, and power-driven heating labels plus tap/hold more-info are covered without invented temperature controls."],
+    ["custom_card_wilbiev_subtitle", "Subtitle migration, 24px divider hierarchy, bottom divider, editor round trip, and no-action behavior are covered."],
+    ["custom_card_wilbiev_title", "Title migration, optional back chip, 36px divider hierarchy, and both exact navigation interactions are covered."],
+  ] satisfies Array<[string, string]>).map(([sourceId, coverage]) => [sourceId, {
+    status: "pending",
+    pickerAccepted: true,
+    editorAccepted: true,
+    visualAccepted: true,
+    statesAccepted: true,
+    interactionsAccepted: true,
+    liveAccepted: false,
+    inspectedAt: "2026-09-23",
+    reviewerNotes: [
+      "Pinned YAML, documentation, and the focused matched-width real-MDI comparison were manually inspected.",
+      `${coverage} Exact local evidence is recorded in tests/speed-climate-title-certification.test.ts and docs/assets/visual-audit/speed-climate-title-local-certification.json.`,
+      "The prepared semantic Home Assistant configuration is recorded, but no authenticated live execution was performed in this child session.",
+    ],
+  } satisfies Partial<VisualAuditEntry>])),
   card_battery: {
     pickerAccepted: true,
     editorAccepted: true,

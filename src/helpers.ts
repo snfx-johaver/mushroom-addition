@@ -53,11 +53,27 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
     ? upstream.qubino_more_info_entity ?? upstream.entity
     : undefined;
   const sourceDisablesTap = /(?:wsly-pollen|yagrasdemonde-lights-count)/.test(type);
-  const defaultAction = sourceDisablesTap
-    ? { action: "none" }
-    : qubinoTarget
-    ? { action: "more-info", entity: qubinoTarget }
-    : upstream.navigation_path
+  const speedtestEntities = [
+    upstream.download_entity,
+    upstream.upload_entity,
+    upstream.ping_entity,
+  ].filter((value): value is string => typeof value === "string");
+  const isSpeedtest = String(upstream.type).includes("speedtest-shogun160");
+  const isWilbievTitle = upstream.variant === "divider-title";
+  const isWilbievSubtitle = upstream.variant === "divider-subtitle";
+  const defaultAction = isSpeedtest
+    ? {
+      action: "perform-action",
+      perform_action: "homeassistant.update_entity",
+      target: { entity_id: speedtestEntities },
+    }
+    : isWilbievSubtitle || (isWilbievTitle && !upstream.navigation_path)
+      ? { action: "none" }
+      : sourceDisablesTap
+        ? { action: "none" }
+        : qubinoTarget
+          ? { action: "more-info", entity: qubinoTarget }
+      : upstream.navigation_path
     ? { action: "navigate", navigation_path: upstream.navigation_path }
     : sourceDefaultAction ?? { action: title || welcomeScenes ? "none" : upstream.entity ? "more-info" : "none" };
   const roomDoubleTap = String(config.type).includes("card-room") &&
@@ -87,7 +103,9 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
     show_controls: upstream.show_controls ?? (type.includes("card-vacuum") ? true : undefined),
     show_forecast: upstream.show_forecast ?? (weather ? !nativeWeather : undefined),
     hold_action: upstream.hold_action ?? (
-      upstream.variant === "small" && typeof upstream.ulm_card_person_battery_entity === "string"
+      String(upstream.type).includes("water-heater") && upstream.entity
+        ? { action: "more-info" }
+        : upstream.variant === "small" && typeof upstream.ulm_card_person_battery_entity === "string"
         ? { action: "more-info", entity: upstream.ulm_card_person_battery_entity }
         : undefined
     ),
@@ -344,6 +362,36 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
     migrated.trees_entity ??= entityId(config.custom_card_wsly_pollen_tree);
     migrated.grass_entity ??= entityId(config.custom_card_wsly_pollen_grass);
     migrated.weeds_entity ??= entityId(config.custom_card_wsly_pollen_weed);
+  }
+  if (String(config.type).includes("speedtest-shogun160")) {
+    migrated.download_entity ??= entityId(config.ulm_custom_card_speedtest_download_speed_entity) ??
+      migrated.entity;
+    migrated.upload_entity ??= entityId(config.ulm_custom_card_speedtest_upload_speed_entity);
+    migrated.ping_entity ??= entityId(config.ulm_custom_card_speedtest_ping_entity);
+    migrated.entity = entityId(migrated.download_entity);
+  }
+  if (String(config.type).includes("vncntdev-device-tracer")) {
+    migrated.name ??= typeof config.custom_card_vncntdev_device_tracker_name === "string"
+      ? config.custom_card_vncntdev_device_tracker_name
+      : undefined;
+    migrated.icon ??= typeof config.custom_card_vncntdev_device_tracker_icon === "string"
+      ? config.custom_card_vncntdev_device_tracker_icon
+      : undefined;
+  }
+  if (String(config.type).includes("wilbiev-title")) {
+    migrated.name ??= typeof config.ulm_custom_card_wilbiev_title_name === "string"
+      ? config.ulm_custom_card_wilbiev_title_name
+      : undefined;
+    migrated.navigation_path ??= typeof config.ulm_custom_card_wilbiev_title_nav === "string"
+      ? config.ulm_custom_card_wilbiev_title_nav
+      : undefined;
+  }
+  if (String(config.type).includes("wilbiev-subtitle")) {
+    migrated.name ??= typeof config.ulm_custom_card_wilbiev_subtitle_name === "string"
+      ? config.ulm_custom_card_wilbiev_subtitle_name
+      : typeof config.ulm_custom_card_wilbiev_title_name === "string"
+        ? config.ulm_custom_card_wilbiev_title_name
+        : undefined;
   }
   return migrated;
 };

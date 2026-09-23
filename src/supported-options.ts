@@ -187,6 +187,26 @@ const supportedByItem: Record<string, readonly string[]> = {
     "ulm_custom_card_yagrasdemonde_lights_count_light_many",
     "ulm_custom_card_yagrasdemonde_lights_count_type",
   ],
+  custom_card_speedtest_shogun160: [
+    "ulm_custom_card_speedtest_download_speed_color",
+    "ulm_custom_card_speedtest_download_speed_entity",
+    "ulm_custom_card_speedtest_download_speed_max",
+    "ulm_custom_card_speedtest_upload_speed_color",
+    "ulm_custom_card_speedtest_upload_speed_entity",
+    "ulm_custom_card_speedtest_upload_speed_max",
+    "ulm_custom_card_speedtest_ping_color",
+    "ulm_custom_card_speedtest_ping_entity",
+    "ulm_custom_card_speedtest_ping_max",
+    "ulm_custom_card_speedtest_round",
+  ],
+  custom_card_wilbiev_title: [
+    "ulm_custom_card_wilbiev_title_name",
+    "ulm_custom_card_wilbiev_title_nav",
+  ],
+  custom_card_wilbiev_subtitle: [
+    "ulm_custom_card_wilbiev_subtitle_name",
+    "ulm_custom_card_wilbiev_title_name",
+  ],
 };
 
 export const supportedUpstreamOption = (item: CatalogItem, name: string): boolean =>

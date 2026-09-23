@@ -2769,57 +2769,135 @@ const renderSisimomoPrinter = (ctx: RenderContext): TemplateResult => {
 };
 
 const renderSpeedtestShogun = (ctx: RenderContext): TemplateResult => {
-  const details = configuredEntities(ctx);
-  const metrics = [ctx.entity, ...details].filter(Boolean).slice(0, 3) as HassEntity[];
+  const round = configured<boolean>(ctx, "ulm_custom_card_speedtest_round") === true;
+  const metric = (
+    entityKey: string,
+    upstreamKey: string,
+    label: string,
+    iconName: string,
+    colorKey: string,
+    fallbackColor: string,
+    maxKey: string,
+    fallbackMax: number,
+    allowRound: boolean,
+  ) => {
+    const entity = entityFromConfig(ctx, entityKey) ?? entityFromConfig(ctx, upstreamKey);
+    const value = numeric(entity?.state);
+    const max = Math.max(1, configured<number>(ctx, maxKey) ?? fallbackMax);
+    const percent = Math.max(0, Math.min(100, ((value ?? 0) / max) * 100));
+    const shownValue = value === undefined ? "—" : allowRound && round ? String(Math.round(value)) : entity!.state;
+    const unit = entity?.attributes.unit_of_measurement;
+    const color = configured<string>(ctx, colorKey) ?? fallbackColor;
+    return html`
+      <div class="speedtest-metric" style=${`--speedtest-color:${color};--speedtest-value:${percent}`}>
+        <svg class="speedtest-ring" viewBox="0 0 120 100" aria-hidden="true">
+          <path class="speedtest-track" pathLength="100" d="M14 83 A50 50 0 1 1 106 83"></path>
+          <path class="speedtest-value" pathLength="100" d="M14 83 A50 50 0 1 1 106 83"></path>
+        </svg>
+        <span class="speedtest-value-copy"><ha-icon .icon=${iconName}></ha-icon><b>${shownValue}${unit ? ` ${String(unit)}` : ""}</b><small>${label}</small></span>
+      </div>`;
+  };
   return ctx.actionSurface("custom-speedtest-shogun", html`
-    <div class="speedtest-three">${metrics.map((entity, index) => html`<span><ha-icon .icon=${["mdi:download", "mdi:upload", "mdi:timer-outline"][index]}></ha-icon><b>${stateLabel(entity)}</b><small>${displayName({ type: "", entity: entity.entity_id }, entity)}</small></span>`)}</div>
-    <div class="speedtest-chart">${sparkline(ctx)}</div>
+    <div class="speedtest-three">
+      ${metric("download_entity", "ulm_custom_card_speedtest_download_speed_entity", "Download", "mdi:download",
+        "ulm_custom_card_speedtest_download_speed_color", "var(--google-yellow)", "ulm_custom_card_speedtest_download_speed_max", 100, true)}
+      ${metric("upload_entity", "ulm_custom_card_speedtest_upload_speed_entity", "Upload", "mdi:upload",
+        "ulm_custom_card_speedtest_upload_speed_color", "var(--google-blue)", "ulm_custom_card_speedtest_upload_speed_max", 40, true)}
+      ${metric("ping_entity", "ulm_custom_card_speedtest_ping_entity", "Ping", "mdi:wan",
+        "ulm_custom_card_speedtest_ping_color", "var(--google-green)", "ulm_custom_card_speedtest_ping_max", 85, false)}
+    </div>
   `);
 };
 
 const renderTpxAircondition = (ctx: RenderContext): TemplateResult => {
   const current = numeric(attr(ctx.entity, "current_temperature"));
   const target = numeric(attr(ctx.entity, "temperature"));
-  const fan = String(attr(ctx.entity, "fan_mode") || "");
-  const swing = String(attr(ctx.entity, "swing_mode") || "");
+  const unavailable = !ctx.config.entity || ctx.entity?.state === "unavailable";
+  const stateIcons: Record<string, string> = {
+    dry: "mdi:water",
+    heat: "mdi:radiator",
+    cool: "mdi:snowflake",
+    fan_only: "mdi:fan",
+  };
+  const toggle = (event: Event): void => {
+    event.stopPropagation();
+    if (!ctx.config.entity || unavailable) return;
+    ctx.service("climate", "set_hvac_mode", {
+      entity_id: ctx.config.entity,
+      hvac_mode: ctx.entity?.state === "off" ? "cool" : "off",
+    });
+  };
+  const temperatureScript = (event: Event, service: string): void => {
+    event.stopPropagation();
+    if (!ctx.config.entity || unavailable) return;
+    ctx.service("script", service, { entity_id: ctx.config.entity });
+  };
   return ctx.actionSurface("custom-tpx-aircondition", html`
-    <div class="aircondition-main">${iconBubble(ctx, "mdi:air-conditioner", ctx.entity?.state === "off" ? "grey" : "blue")}${heading(ctx, `${current ?? "—"}° · ${ctx.entity?.state || "unknown"}`)}<b>${target ?? "—"}°</b></div>
+    <div class="aircondition-main">
+      ${iconBubble(ctx, stateIcons[ctx.entity?.state ?? ""] ?? "mdi:air-conditioner", ctx.entity?.state === "off" ? "grey" : "blue")}
+      ${heading(ctx, `${current ?? "—"}° · ${stateLabel(ctx.entity)}`)}
+      ${button(ctx.entity?.state === "off" ? "Turn on cooling" : "Turn off", ctx.entity?.state === "off" ? "mdi:power" : "mdi:power-off", toggle, unavailable)}
+    </div>
     <div class="aircondition-controls">
-      ${button("Decrease", "mdi:minus", (event) => { event.stopPropagation(); ctx.service("climate", "set_temperature", { entity_id: ctx.config.entity, temperature: (target ?? 20) - 0.5 }); })}
-      <span><ha-icon icon="mdi:fan"></ha-icon>${fan || "Auto"}</span>
-      <span><ha-icon icon="mdi:arrow-up-down"></ha-icon>${swing || "Off"}</span>
-      ${button("Increase", "mdi:plus", (event) => { event.stopPropagation(); ctx.service("climate", "set_temperature", { entity_id: ctx.config.entity, temperature: (target ?? 20) + 0.5 }); })}
+      ${button("Decrease temperature", "mdi:minus", (event) => temperatureScript(event, "decrease_climate_temperature"), unavailable)}
+      <span class="aircondition-target">${target ?? "—"}°C</span>
+      ${button("Increase temperature", "mdi:plus", (event) => temperatureScript(event, "increment_climate_temperature"), unavailable)}
     </div>
   `);
 };
 
 const renderDeviceTracer = (ctx: RenderContext): TemplateResult => {
-  const person = entityFromConfig(ctx, "ulm_custom_card_vncntdev_device_tracer_person");
-  const battery = entityFromConfig(ctx, "ulm_custom_card_vncntdev_device_tracer_battery") ?? configuredEntities(ctx)[0];
-  const source = entityFromConfig(ctx, "ulm_custom_card_vncntdev_device_tracer_source") ?? configuredEntities(ctx)[1];
-  return ctx.actionSurface("custom-device-tracer", html`
-    <span class="device-tracer-icon"><ha-icon icon="mdi:cellphone-marker"></ha-icon></span>
-    ${heading(ctx, `${stateLabel(ctx.entity)}${person ? ` · ${stateLabel(person)}` : ""}`)}
-    <div class="device-tracer-meta"><span><ha-icon icon="mdi:battery"></ha-icon>${stateLabel(battery)}</span><span><ha-icon icon="mdi:crosshairs-gps"></ha-icon>${stateLabel(source)}</span></div>
+  const offline = ctx.entity?.state === "not_home" || ctx.entity?.state === "off";
+  const unavailable = !ctx.entity || ctx.entity.state === "unavailable";
+  const onlineLabel = unavailable ? "Unavailable" : offline ? "Offline" : "Online";
+  const statusAsName = configured<boolean>(ctx, "custom_card_vncntdev_device_tracker_status_as_name") === true;
+  const configuredName = configured<string>(ctx, "custom_card_vncntdev_device_tracker_name") ||
+    displayName(ctx.config, ctx.entity);
+  const deviceIcon = configured<string>(ctx, "custom_card_vncntdev_device_tracker_icon") || "mdi:server";
+  const color = unavailable
+    ? "var(--disabled-text-color, #9e9e9e)"
+    : offline
+      ? configured<string>(ctx, "custom_card_vncntdev_device_tracker_color_offline") || "var(--google-red)"
+      : configured<string>(ctx, "custom_card_vncntdev_device_tracker_color_online") || "var(--google-green)";
+  return ctx.actionSurface(`custom-device-tracer ${offline ? "is-offline" : "is-online"} ${unavailable ? "is-unavailable" : ""}`, html`
+    <span class="device-tracer-icon" style=${`--device-tracer-color:${color}`}><ha-icon .icon=${deviceIcon}></ha-icon></span>
+    <span class="ulm-copy">
+      <span class="ulm-name">${statusAsName ? onlineLabel : configuredName}</span>
+      <span class="ulm-label">${statusAsName ? configuredName : onlineLabel}</span>
+    </span>
   `);
 };
 
 const renderWaterHeater = (ctx: RenderContext): TemplateResult => {
-  const current = numeric(attr(ctx.entity, "current_temperature"));
-  const target = numeric(attr(ctx.entity, "temperature")) ?? numeric(ctx.entity?.state);
-  return ctx.actionSurface("custom-water-heater", html`
-    <div class="water-heater-top">${iconBubble(ctx, "mdi:water-boiler", ctx.entity?.state === "off" ? "grey" : "red")}${heading(ctx, `Current ${current ?? "—"}°`)}<b>${target ?? "—"}°</b></div>
-    <div class="water-heater-controls">
-      ${button("Decrease temperature", "mdi:minus", (event) => { event.stopPropagation(); ctx.service("water_heater", "set_temperature", { entity_id: ctx.config.entity, temperature: (target ?? 50) - 1 }); })}
-      <span>${stateLabel(ctx.entity)}</span>
-      ${button("Increase temperature", "mdi:plus", (event) => { event.stopPropagation(); ctx.service("water_heater", "set_temperature", { entity_id: ctx.config.entity, temperature: (target ?? 50) + 1 }); })}
-    </div>
+  const power = linkedState(ctx, "power_entity");
+  const powerValue = numeric(power?.state) ?? 0;
+  const heating = ctx.entity?.state !== "off" && powerValue > 0;
+  const label = ctx.entity?.state === "off"
+    ? "Arrêt forcé"
+    : heating
+      ? `Chauffe • ${stateLabel(power)}`
+      : "Inactif";
+  return ctx.actionSurface(`custom-water-heater ${heating ? "is-heating" : ""}`, html`
+    ${sourceIconBubble(ctx, "mdi:waves", "rgba(var(--color-red, 244, 67, 54), 1)", heating)}
+    ${heading(ctx, label)}
   `);
 };
 
 const renderCustomTitle = (ctx: RenderContext): TemplateResult => {
   const subtitle = ctx.config.variant === "divider-subtitle";
-  return html`<div class=${`custom-wilbiev-title ${subtitle ? "is-subtitle" : ""}`}><span></span><b>${ctx.config.name || (subtitle ? "Subtitle" : "Title")}</b><span></span></div>`;
+  const title = ctx.config.name || (subtitle ? "Subtitle" : "Title");
+  const navigationPath = ctx.config.navigation_path;
+  return ctx.actionSurface(`custom-wilbiev-title ${subtitle ? "is-subtitle" : "is-title"}`, html`
+    ${!subtitle && navigationPath ? html`
+      <button class="wilbiev-back" aria-label="Back"
+        @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => runControlAction(event, ctx, { action: "navigate", navigation_path: navigationPath })}>
+        <ha-icon icon="mdi:arrow-left"></ha-icon>
+      </button>
+    ` : nothing}
+    <div class="wilbiev-divider"><span></span><b>${title}</b><span></span></div>
+    ${subtitle ? html`<i class="wilbiev-bottom-divider"></i>` : nothing}
+  `);
 };
 
 const renderWslyPollen = (ctx: RenderContext): TemplateResult => {
@@ -2931,12 +3009,15 @@ const renderGenericSwap = (ctx: RenderContext): TemplateResult => ctx.actionSurf
   ${iconBubble(ctx, "mdi:information-outline", activeStates.has(ctx.entity?.state ?? "") ? "blue" : "grey")}
 `);
 
-const renderTitle = (ctx: RenderContext): TemplateResult => ctx.actionSurface("ulm-title", html`
-  <span class="ulm-copy">
-    <span class="ulm-name">${ctx.config.name || "Title"}</span>
-    ${ctx.config.secondary ? html`<span class="ulm-label">${ctx.config.secondary}</span>` : nothing}
-  </span>
-`);
+const renderTitle = (ctx: RenderContext): TemplateResult =>
+  ctx.config.variant === "divider-title" || ctx.config.variant === "divider-subtitle"
+    ? renderCustomTitle(ctx)
+    : ctx.actionSurface("ulm-title", html`
+      <span class="ulm-copy">
+        <span class="ulm-name">${ctx.config.name || "Title"}</span>
+        ${ctx.config.secondary ? html`<span class="ulm-label">${ctx.config.secondary}</span>` : nothing}
+      </span>
+    `);
 
 const renderVerticalButton = (ctx: RenderContext): TemplateResult => {
   const activeState = configured<string>(ctx, "ulm_card_vertical_button_state", "active_state") || "on";
