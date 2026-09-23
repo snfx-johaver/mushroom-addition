@@ -126,6 +126,53 @@ describe("status and pollen custom source certification", () => {
     }
   });
 
+  it("records authenticated live evidence for exactly the six certified sources", () => {
+    const evidence = JSON.parse(readFileSync(
+      join(process.cwd(), "docs", "assets", "visual-audit", "status-pollen-live-certification.json"),
+      "utf8",
+    )) as {
+      candidate: { commit: string; resource: string; sha256: string };
+      result: { accepted: number; overflowFailures: number; pickerFailures: number; editorFailures: number; safeInteractionFailures: number };
+      sources: Record<string, {
+        geometry: { width: number; scrollWidth: number };
+        pickerRegistered: boolean;
+        editorVerified: boolean;
+        screenshot: string;
+        liveAccepted: boolean;
+      }>;
+    };
+
+    expect(evidence.candidate).toMatchObject({
+      commit: "87e5920d37600e29c1caf022f6ed4ba0016afb86",
+      resource: "/local/community/mushroom-cards-addition/mushroom-cards-addition.js?v=1.6.0-status-1b7220b3",
+      sha256: "1B7220B37A16036665B0BA1732CF5D1027E40B8231E999151B4565396EB658F5",
+    });
+    expect(Object.keys(evidence.sources)).toEqual([
+      "custom_card_mpse_wifisignal",
+      "custom_card_nas",
+      "custom_card_neekster_update",
+      "custom_card_nik_clock",
+      "custom_card_nik_door",
+      "custom_card_paddy_dwd_pollen",
+    ]);
+    expect(evidence.result).toEqual({
+      accepted: 6,
+      overflowFailures: 0,
+      pickerFailures: 0,
+      editorFailures: 0,
+      safeInteractionFailures: 0,
+    });
+    for (const source of Object.values(evidence.sources)) {
+      expect(source).toMatchObject({
+        geometry: { width: 330, scrollWidth: 330 },
+        pickerRegistered: true,
+        editorVerified: true,
+        liveAccepted: true,
+      });
+      expect(source.screenshot).toMatch(/^live-status-mushroom-addition-.*\.png$/);
+    }
+  });
+
   it("creates source-specific picker defaults from the requested live mappings", () => {
     const expected = {
       custom_card_mpse_wifisignal: { entity: "sensor.yvette_mobile_signal_strength_sim_1" },

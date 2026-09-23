@@ -934,25 +934,50 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
     ],
   },
   ...Object.fromEntries(([
-    ["custom_card_mpse_wifisignal", 520],
-    ["custom_card_nas", 245],
-    ["custom_card_neekster_update", 494],
-    ["custom_card_nik_clock", 366],
-    ["custom_card_nik_door", 430],
-    ["custom_card_paddy_dwd_pollen", 302],
-  ] satisfies Array<[string, number]>).map(([sourceId, width]) => [sourceId, {
-    status: "pending",
+    [
+      "custom_card_mpse_wifisignal",
+      520,
+      "Authenticated Home Assistant verification passed at 330px without overflow; the card opened more-info for sensor.yvette_mobile_signal_strength_sim_1.",
+    ],
+    [
+      "custom_card_nas",
+      245,
+      "Authenticated Home Assistant verification passed at 330px without overflow; the card opened more-info for sensor.all_nas_disks_status.",
+    ],
+    [
+      "custom_card_neekster_update",
+      494,
+      "Authenticated Home Assistant verification passed at 330px without overflow; the card opened update.home_assistant_core_update more-info. Install and Skip were disabled because the entity was up to date, so those services were not operated live.",
+    ],
+    [
+      "custom_card_nik_clock",
+      366,
+      "Authenticated Home Assistant verification passed at 330px without overflow; the source-default action:none left the dashboard URL unchanged.",
+    ],
+    [
+      "custom_card_nik_door",
+      430,
+      "Authenticated Home Assistant verification passed at 330px without overflow; the card opened binary_sensor.all_doors more-info. No lock entity was supplied, so lock controls were not present or operated live.",
+    ],
+    [
+      "custom_card_paddy_dwd_pollen",
+      302,
+      "Authenticated Home Assistant verification passed at 330px without overflow; the card opened more-info for sensor.kleenex_pollen_radar_home_grass_level.",
+    ],
+  ] satisfies Array<[string, number, string]>).map(([sourceId, width, liveNote]) => [sourceId, {
+    status: "accepted",
     pickerAccepted: true,
     editorAccepted: true,
     visualAccepted: true,
     statesAccepted: true,
     interactionsAccepted: true,
-    liveAccepted: false,
+    liveAccepted: true,
     inspectedAt: "2026-09-23",
     reviewerNotes: [
       `Pinned YAML and the focused ${width}px matched-width source/implementation columns were manually inspected.`,
       "The focused fixture renders real @mdi/js SVG paths; picker defaults, dedicated editor fields, migrations, state matrices, and every visible interaction pass local exact-payload tests.",
-      "The exact prepared Home Assistant config is recorded in status-pollen-local-certification.json; live Home Assistant execution was not performed.",
+      "Authenticated evidence, exact live configuration, picker/editor checks, geometry, and safe interaction results are recorded in status-pollen-live-certification.json.",
+      liveNote,
     ],
   } satisfies Partial<VisualAuditEntry>])),
   card_generic: {

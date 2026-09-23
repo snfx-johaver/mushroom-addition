@@ -31,17 +31,17 @@ describe("visual audit manifest", () => {
 
   it("reports exact accepted progress without inferring parity from family mappings", () => {
     expect(visualAuditProgress()).toEqual({
-      accepted: 74,
+      accepted: 80,
       pickerAccepted: 80,
       editorAccepted: 80,
       visualAccepted: 80,
       statesAccepted: 80,
       interactionsAccepted: 80,
-      liveAccepted: 74,
+      liveAccepted: 80,
       total: 86,
     });
 
-    expect(VISUAL_AUDIT.filter((entry) => entry.status === "accepted")).toHaveLength(74);
+    expect(VISUAL_AUDIT.filter((entry) => entry.status === "accepted")).toHaveLength(80);
   });
 
   it("certifies all six stages for the power and printer custom batch", () => {
@@ -162,6 +162,27 @@ describe("visual audit manifest", () => {
       "custom_card_camera",
       "custom_card_chromecast",
       "custom_card_damix48_power_details",
+    ]) {
+      expect(VISUAL_AUDIT.find((entry) => entry.sourceId === sourceId)).toMatchObject({
+        status: "accepted",
+        pickerAccepted: true,
+        editorAccepted: true,
+        visualAccepted: true,
+        statesAccepted: true,
+        interactionsAccepted: true,
+        liveAccepted: true,
+      });
+    }
+  });
+
+  it("certifies all six stages for the status and pollen batch", () => {
+    for (const sourceId of [
+      "custom_card_mpse_wifisignal",
+      "custom_card_nas",
+      "custom_card_neekster_update",
+      "custom_card_nik_clock",
+      "custom_card_nik_door",
+      "custom_card_paddy_dwd_pollen",
     ]) {
       expect(VISUAL_AUDIT.find((entry) => entry.sourceId === sourceId)).toMatchObject({
         status: "accepted",
