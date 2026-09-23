@@ -46,16 +46,25 @@ const humanize = (id: string): string =>
     .join(" ");
 
 const familyFor = (id: string): string => {
+  if (id === "custom_card_alarm_time") return "alarm-time";
+  if (id === "custom_card_nik_door") return "door";
+  if (/alarm|alert|lock/.test(id)) return "security";
+  if (/navigate|back/.test(id)) return "navigation";
+  if (/battery/.test(id)) return "battery";
+  if (/power_outlet|more_power_outlet/.test(id)) return "control";
+  if (/energy|power|gauge|speedtest|wifisignal|graph|apex|bar_card|myenedis/.test(id)) return "energy";
   if (/weather|sun|pollen|moon/.test(id)) return "weather";
+  if (/scene/.test(id)) return "scene";
   if (/person|tracker|tracer|presence|room|welcome/.test(id)) return "presence";
   if (/media|chromecast|playstation/.test(id)) return "media";
-  if (/thermostat|heat_pump|aircondition|temperature/.test(id)) return "climate";
-  if (/power|battery|gauge|speedtest|wifisignal|graph|apex|bar_card/.test(id)) return "metric";
+  if (/thermostat|heat_pump|aircondition|temperature|simple_temp/.test(id)) return "climate";
   if (/cover|door|garage/.test(id)) return "cover";
-  if (/light|fan|outlet|boolean|script|scene|vacuum|lock|washer|water_heater/.test(id)) return "control";
+  if (/vacuum/.test(id)) return "vacuum";
+  if (/light/.test(id)) return "light";
+  if (/fan|outlet|boolean|script|washer|water_heater|qubino/.test(id)) return "control";
   if (/title|subtitle|clock|date/.test(id)) return "text";
   if (/camera/.test(id)) return "camera";
-  if (/navigate|back/.test(id)) return "navigation";
+  if (/sensor|elapsed|input_number|input_datetime|update|printer|nas|tablet|flower|car|afval|waste|counter/.test(id)) return "sensor";
   return "entity";
 };
 
@@ -89,6 +98,11 @@ const variants: Record<string, string[]> = {
 };
 
 const preferredDomainsFor = (id: string, family: string): string[] => {
+  if (id === "custom_card_alarm_time") return ["input_boolean"];
+  if (id === "custom_card_nik_door") return ["sensor"];
+  if (/alarm/.test(id)) return ["alarm_control_panel"];
+  if (/lock/.test(id)) return ["lock"];
+  if (/power_outlet|more_power_outlet/.test(id)) return ["switch", "light"];
   if (id.includes("binary_sensor")) return ["binary_sensor"];
   if (id.includes("battery")) return ["sensor"];
   if (id.includes("input_boolean")) return ["input_boolean"];
@@ -107,8 +121,14 @@ const preferredDomainsFor = (id: string, family: string): string[] => {
   if (/camera/.test(id)) return ["camera"];
   if (/lock/.test(id)) return ["lock"];
   if (/update/.test(id)) return ["update"];
-  if (family === "metric" || family === "weather") return ["sensor"];
-  if (family === "control") return ["switch", "light"];
+  if (family === "battery" || family === "energy" || family === "sensor" || family === "weather") return ["sensor"];
+  if (family === "control") {
+    if (/fan/.test(id)) return ["fan"];
+    if (/script/.test(id)) return ["script"];
+    if (/washer/.test(id)) return ["sensor", "switch"];
+    if (/water_heater/.test(id)) return ["water_heater"];
+    return ["switch", "input_boolean", "light"];
+  }
   if (family === "presence") return ["person", "device_tracker"];
   return ["sensor", "switch"];
 };

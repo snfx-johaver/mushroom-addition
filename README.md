@@ -79,17 +79,23 @@ chips:
 
 ## Design and behavior
 
-All registrations use shared typed configuration, entity/state formatting,
-action handling, responsive layout, keyboard interaction, focus treatment,
-ARIA labels, unavailable and preview states, Home Assistant theme variables,
-and a family-aware renderer. Related upstream YAML variants are exposed through
-the visual `variant` selector and remain independently registered where that
-helps existing users migrate configurations.
+Registrations share typed configuration, entity/state formatting, action
+handling, responsive layout, keyboard interaction, focus treatment, ARIA
+labels, unavailable and preview states, and Home Assistant theme variables.
+They do **not** share one generic visual tile: weather, climate, lights, scenes,
+people, batteries, energy/graphs, media, covers, vacuums, security, navigation,
+and chips each use a dedicated renderer and a family-specific visual editor.
+Related upstream YAML variants are exposed through relevant UI controls and
+remain independently registered where that helps existing users migrate.
+
+![Representative family renderers](docs/assets/family-fixture.png)
 
 No upstream YAML, JavaScript bundles, or assets are copied. This is an original
 Lit implementation based on documented public behavior. See
 [third-party notices](THIRD_PARTY_NOTICES.md) and the per-item source links in
 the [catalog](docs/CATALOG.md).
+The renderer decisions and upstream source references are documented in the
+[visual specification](docs/VISUAL_SPEC.md).
 
 ## Troubleshooting
 

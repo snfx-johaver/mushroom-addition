@@ -71,6 +71,9 @@ export const createStubConfig = (
     variant: defaultVariant,
     show_icon: true,
     show_state: true,
+    show_controls: ["light", "climate", "media", "cover", "vacuum", "security", "control"].includes(descriptor.family),
+    show_forecast: descriptor.family === "weather",
+    show_graph: ["battery", "energy", "sensor"].includes(descriptor.family),
     entities: descriptor.variants?.includes("with-sensors")
       ? entitiesFallback.slice(0, 2)
       : undefined,

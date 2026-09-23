@@ -149,7 +149,7 @@ describe("Home Assistant registration", () => {
       actions.push((event as CustomEvent<{ action: string }>).detail.action));
     document.body.append(element);
     await element.updateComplete;
-    const target = element.shadowRoot?.querySelector(".card");
+    const target = element.shadowRoot?.querySelector(".action-surface");
     target?.dispatchEvent(new MouseEvent("click", { bubbles: true, detail: 1 }));
     target?.dispatchEvent(new MouseEvent("click", { bubbles: true, detail: 2 }));
     target?.dispatchEvent(new MouseEvent("dblclick", { bubbles: true, detail: 2 }));
@@ -176,7 +176,7 @@ describe("Home Assistant registration", () => {
       actions.push((event as CustomEvent<{ action: string }>).detail.action));
     document.body.append(element);
     await element.updateComplete;
-    const target = element.shadowRoot?.querySelector(".chip");
+    const target = element.shadowRoot?.querySelector(".ulm-chip");
     target?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
     vi.advanceTimersByTime(500);
     target?.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));

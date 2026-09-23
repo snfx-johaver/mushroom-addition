@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { displayName, handleAction, normalizeConfig, stateLabel } from "../src/helpers";
+import { displayName, handleAction, migrateLegacyConfig, normalizeConfig, stateLabel } from "../src/helpers";
 import type { AdditionConfig, HassEntity } from "../src/types";
 
 const entity: HassEntity = {
@@ -19,6 +19,31 @@ describe("shared card behavior", () => {
       show_icon: true,
       show_state: true,
       tap_action: { action: "more-info" },
+    });
+  });
+
+  it("migrates legacy primary entity fields without retaining duplicates", () => {
+    expect(migrateLegacyConfig({
+      type: "x",
+      primary_entity: "weather.home",
+    })).toMatchObject({
+      type: "x",
+      entity: "weather.home",
+      primary_entity: undefined,
+    });
+    expect(normalizeConfig({
+      type: "x",
+      ulm_card_weather_entity: "weather.home",
+    })).toMatchObject({ entity: "weather.home" });
+  });
+
+  it("defaults navigation cards to a native navigate action", () => {
+    expect(normalizeConfig({
+      type: "custom:mushroom-addition-card-navigate",
+      navigation_path: "/lovelace/upstairs",
+    }).tap_action).toEqual({
+      action: "navigate",
+      navigation_path: "/lovelace/upstairs",
     });
   });
 

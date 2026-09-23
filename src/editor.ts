@@ -4,8 +4,7 @@ import type { AdditionConfig, HomeAssistant } from "./types";
 import { CATALOG, getCatalogItem } from "./catalog";
 import { fireEvent } from "./helpers";
 import { localize } from "./localize";
-
-const actionSchema = (name: string) => ({ name, selector: { ui_action: {} } });
+import { editorSchemaFor } from "./editor-schema";
 
 @customElement("mushroom-addition-editor")
 export class MushroomAdditionEditor extends LitElement {
@@ -64,40 +63,21 @@ export class MushroomAdditionEditor extends LitElement {
                 </option>
               `)}
             </select>
-            <input
+            <ha-entity-picker
+              .hass=${this.hass}
               aria-label="Entity ID"
-              placeholder="sensor.example"
               .value=${chip.entity ?? ""}
-              @change=${(event: Event) => this.updateChip(index, "entity", (event.target as HTMLInputElement).value)}
-            />
+              .includeDomains=${getCatalogItem(chip.type.replace(/^custom:/, ""))?.preferredDomains}
+              @value-changed=${(event: CustomEvent<{ value?: string }>) => this.updateChip(index, "entity", event.detail.value ?? "")}
+            ></ha-entity-picker>
             <button class="remove" @click=${() => this.removeChip(index)} aria-label="Remove chip">Remove</button>
           </div>
         `)}
         <button @click=${this.addChip}>Add chip</button>
       </div>`;
     }
-    const schema: Array<Record<string, unknown>> = [
-      { name: "entity", selector: { entity: {} } },
-      { name: "name", selector: { text: {} } },
-      { name: "secondary", selector: { text: {} } },
-      { name: "icon", selector: { icon: {} } },
-      { name: "icon_color", selector: { ui_color: {} } },
-      { name: "entities", selector: { entity: { multiple: true } } },
-    ];
-    if (item?.variants?.length) {
-      schema.push({
-        name: "variant",
-        selector: { select: { options: item.variants, mode: "dropdown" } },
-      });
-    }
-    schema.push(
-      { name: "layout", selector: { select: { options: ["horizontal", "vertical"] } } },
-      { name: "show_icon", selector: { boolean: {} } },
-      { name: "show_state", selector: { boolean: {} } },
-      actionSchema("tap_action"),
-      actionSchema("hold_action"),
-      actionSchema("double_tap_action"),
-    );
+    if (!item) return nothing;
+    const schema = editorSchemaFor(item);
     return html`
       <ha-form
         .hass=${this.hass}

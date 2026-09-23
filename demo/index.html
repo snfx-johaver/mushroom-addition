@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mushroom Addition visual fixture</title>
+    <style>
+      :root {
+        --primary-text-color: #202124;
+        --secondary-text-color: #777b82;
+        --card-background-color: #fff;
+        --ha-card-background: #fff;
+      }
+      body { margin: 0; background: #f4f6f8; color: var(--primary-text-color); font-family: system-ui, sans-serif; }
+      main { max-width: 1080px; margin: auto; padding: 28px; }
+      h1 { margin: 0 0 6px; font-size: 24px; }
+      p { margin: 0 0 22px; color: var(--secondary-text-color); }
+      section { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+      @media (max-width: 800px) { section { grid-template-columns: 1fr; } }
+      ha-icon { font-size: 10px; font-weight: 800; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Mushroom Cards Addition</h1>
+      <p>Deterministic family-renderer visual fixture</p>
+      <section id="cards"></section>
+    </main>
+    <script type="module" src="/demo/demo.ts"></script>
+  </body>
+</html>

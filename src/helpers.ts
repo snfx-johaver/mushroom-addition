@@ -34,10 +34,33 @@ export const handleAction = (
   fireEvent(node, "hass-action", { config, action });
 };
 
-export const normalizeConfig = (config: AdditionConfig): AdditionConfig => ({
-  show_icon: true,
-  show_state: true,
-  layout: "horizontal",
-  tap_action: { action: config.entity ? "more-info" : "none" },
-  ...config,
-});
+export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
+  const migrated = migrateLegacyConfig(config);
+  const defaultAction = migrated.navigation_path
+    ? { action: "navigate", navigation_path: migrated.navigation_path }
+    : { action: migrated.entity ? "more-info" : "none" };
+  return {
+    show_icon: true,
+    show_state: true,
+    layout: "horizontal",
+    tap_action: defaultAction,
+    ...migrated,
+  };
+};
+
+const legacyEntityKeys = [
+  "ulm_card_person_entity",
+  "ulm_card_light_entity",
+  "ulm_card_weather_entity",
+  "ulm_card_media_player_entity",
+  "ulm_card_thermostat_entity",
+  "ulm_card_cover_entity",
+  "ulm_card_vacuum_entity",
+] as const;
+
+export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
+  if (config.entity) return { ...config, primary_entity: undefined };
+  const legacy = config.primary_entity ||
+    legacyEntityKeys.map((key) => config[key]).find((value): value is string => typeof value === "string");
+  return legacy ? { ...config, entity: legacy, primary_entity: undefined } : { ...config };
+};
