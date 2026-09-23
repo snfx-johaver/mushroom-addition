@@ -31,17 +31,42 @@ describe("visual audit manifest", () => {
 
   it("reports exact accepted progress without inferring parity from family mappings", () => {
     expect(visualAuditProgress()).toEqual({
-      accepted: 80,
+      accepted: 86,
       pickerAccepted: 86,
       editorAccepted: 86,
       visualAccepted: 86,
       statesAccepted: 86,
       interactionsAccepted: 86,
-      liveAccepted: 80,
+      liveAccepted: 86,
       total: 86,
     });
 
-    expect(VISUAL_AUDIT.filter((entry) => entry.status === "accepted")).toHaveLength(80);
+    expect(VISUAL_AUDIT.filter((entry) => entry.status === "accepted")).toHaveLength(86);
+  });
+
+  it("certifies all six stages for the final fan, scenes, car, flower, window, and printer batch", () => {
+    for (const sourceId of [
+      "custom_card_saxel_fan",
+      "custom_card_scenes",
+      "custom_card_schumijo_car",
+      "custom_card_schumijo_flower",
+      "custom_card_senoro_win",
+      "custom_card_sisimomo_printer",
+    ]) {
+      const entry = VISUAL_AUDIT.find((candidate) => candidate.sourceId === sourceId);
+      expect(entry).toMatchObject({
+        status: "accepted",
+        pickerAccepted: true,
+        editorAccepted: true,
+        visualAccepted: true,
+        statesAccepted: true,
+        interactionsAccepted: true,
+        liveAccepted: true,
+      });
+      expect(entry?.reviewerNotes.join(" ")).toContain(
+        "docs/assets/visual-audit/fan-car-printer-live-certification.json",
+      );
+    }
   });
 
   it("certifies all six stages for the power and printer custom batch", () => {

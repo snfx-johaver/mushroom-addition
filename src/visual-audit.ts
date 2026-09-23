@@ -1006,19 +1006,21 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
     ["custom_card_senoro_win", 200],
     ["custom_card_sisimomo_printer", 500],
   ] satisfies Array<[string, number]>).map(([sourceId, width]) => [sourceId, {
-    status: "pending",
+    status: "accepted",
     pickerAccepted: true,
     editorAccepted: true,
     visualAccepted: true,
     statesAccepted: true,
     interactionsAccepted: true,
-    liveAccepted: false,
+    liveAccepted: true,
     inspectedAt: "2026-09-23",
     reviewerNotes: [
       `Pinned YAML and the focused ${width}px matched-width comparison with real @mdi/js paths were manually inspected.`,
       "Source-specific defaults, graphical editor fields, legacy migration, state matrices, and every visible interaction are covered by tests/fan-car-printer-certification.test.ts.",
       "The exact prepared live configuration and all source-specific limitations are recorded in docs/assets/visual-audit/fan-car-printer-local-certification.json.",
-      "No live Home Assistant execution or physical action was performed.",
+      "Authenticated Home Assistant evidence is recorded in docs/assets/visual-audit/fan-car-printer-live-certification.json with six matching live-final-six-mushroom-addition screenshots.",
+      "Candidate B71472B20228456704FCA3BC688F372322C379D93BB0657B55F660467E7AAD40 rendered all six at 330px without overflow; picker and editor verification passed.",
+      "Only safe more-info or action:none behavior was exercised. Fan, scene, and other physical actions were not operated.",
     ],
     deviations: sourceId === "custom_card_saxel_fan"
       ? ["Upstream custom:my-slider is replaced by a dependency-free Lit range control."]
