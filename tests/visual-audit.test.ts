@@ -32,11 +32,11 @@ describe("visual audit manifest", () => {
   it("reports exact accepted progress without inferring parity from family mappings", () => {
     expect(visualAuditProgress()).toEqual({
       accepted: 6,
-      pickerAccepted: 6,
-      editorAccepted: 6,
-      visualAccepted: 7,
-      statesAccepted: 6,
-      interactionsAccepted: 6,
+      pickerAccepted: 12,
+      editorAccepted: 12,
+      visualAccepted: 13,
+      statesAccepted: 12,
+      interactionsAccepted: 12,
       liveAccepted: 6,
       total: 86,
     });
@@ -67,6 +67,27 @@ describe("visual audit manifest", () => {
         statesAccepted: true,
         interactionsAccepted: true,
         liveAccepted: true,
+      });
+    }
+  });
+
+  it("certifies all five local stages for the first pending custom batch", () => {
+    for (const sourceId of [
+      "custom_card_afvalophaling",
+      "custom_card_alarm_time",
+      "custom_card_apexcharts",
+      "custom_card_camera",
+      "custom_card_chromecast",
+      "custom_card_damix48_power_details",
+    ]) {
+      expect(VISUAL_AUDIT.find((entry) => entry.sourceId === sourceId)).toMatchObject({
+        status: "pending",
+        pickerAccepted: true,
+        editorAccepted: true,
+        visualAccepted: true,
+        statesAccepted: true,
+        interactionsAccepted: true,
+        liveAccepted: false,
       });
     }
   });

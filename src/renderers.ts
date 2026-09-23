@@ -70,8 +70,9 @@ const valueThenName = (ctx: RenderContext, value = stateLabel(ctx.entity)) => ht
     <span class="ulm-label">${displayName(ctx.config, ctx.entity)}</span>
   </span>
 `;
-const button = (label: string, iconName: string, handler: (event: Event) => void) => html`
-  <button class="ulm-control" aria-label=${label} @pointerdown=${(event: Event) => event.stopPropagation()} @click=${handler}>
+const button = (label: string, iconName: string, handler: (event: Event) => void, disabled = false) => html`
+  <button class="ulm-control" aria-label=${label} ?disabled=${disabled}
+    @pointerdown=${(event: Event) => event.stopPropagation()} @click=${handler}>
     <ha-icon .icon=${iconName}></ha-icon>
   </button>
 `;
@@ -327,9 +328,9 @@ const renderBarCard = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const sparkline = (ctx: RenderContext, filled = false) => {
-  const values = Array.isArray(attr(ctx.entity, "history"))
-    ? (attr(ctx.entity, "history") as unknown[]).map(Number).filter(Number.isFinite).slice(-12)
+const sparkline = (ctx: RenderContext, filled = false, entity = ctx.entity) => {
+  const values = Array.isArray(attr(entity, "history"))
+    ? (attr(entity, "history") as unknown[]).map(Number).filter(Number.isFinite).slice(-12)
     : [20, 28, 24, 42, 35, 52, 48, 63, 55, 70, 62, 78];
   const min = Math.min(...values);
   const max = Math.max(...values);
@@ -601,12 +602,20 @@ const renderRoom = (ctx: RenderContext): TemplateResult => {
 };
 
 const renderCamera = (ctx: RenderContext): TemplateResult => {
-  const picture = attr(ctx.entity, "entity_picture");
-  return ctx.actionSurface("ulm-camera", html`
-    ${picture ? html`<img src=${String(picture)} alt=${displayName(ctx.config, ctx.entity)}>` : html`
+  const picture = attr(ctx.entity, "entity_picture") ||
+    (ctx.entity?.entity_id.startsWith("camera.") ? `/api/camera_proxy/${ctx.entity.entity_id}` : undefined);
+  const showTitle = configured<boolean>(ctx, "ulm_custom_card_camera_title") === true;
+  const cameraName = configured<string>(ctx, "ulm_custom_card_camera_name") || displayName(ctx.config, ctx.entity);
+  const cameraLabel = configured<string>(ctx, "ulm_custom_card_camera_label") || stateLabel(ctx.entity);
+  const aspectRatio = configured<string>(ctx, "ulm_custom_card_camera_aspect_ratio");
+  return ctx.actionSurface(`ulm-camera ${showTitle ? "has-title" : "image-only"}`, html`
+    ${showTitle ? html`<div class="camera-title">
+      ${iconBubble(ctx, ctx.config.icon || "mdi:camera", "blue")}
+      <span class="ulm-copy"><b class="ulm-name">${cameraName}</b><span class="ulm-label">${cameraLabel}</span></span>
+    </div>` : nothing}
+    ${picture ? html`<img src=${String(picture)} alt=${cameraName} style=${aspectRatio ? `aspect-ratio:${aspectRatio}` : ""}>` : html`
       <div class="camera-placeholder">${iconBubble(ctx, "mdi:camera", "blue")}</div>
     `}
-    <div class="camera-caption">${heading(ctx, stateLabel(ctx.entity))}</div>
   `);
 };
 
@@ -774,16 +783,19 @@ const renderAlarmTimeCard = (ctx: RenderContext): TemplateResult => {
       time: `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}:00`,
     });
   };
-  return ctx.actionSurface("custom-alarm-time", html`
+  const unavailable = !timeEntity || ["unknown", "unavailable"].includes(timeEntity.state.toLowerCase());
+  const collapsed = configured<boolean>(ctx, "ulm_card_alarm_time_collapse") === true &&
+    !activeStates.has(ctx.entity?.state ?? "");
+  return ctx.actionSurface(`custom-alarm-time ${configured<boolean>(ctx, "ulm_card_alarm_time_horizontal") ? "is-horizontal" : ""}`, html`
     <div class="custom-card-heading">
       ${iconBubble(ctx, configured<string>(ctx, "ulm_card_alarm_time_icon") || "mdi:alarm", "grey")}
       ${heading(ctx, stateLabel(ctx.entity))}
     </div>
-    <div class="alarm-time-controls">
-      ${button(`Earlier by ${step} minutes`, "mdi:minus", (event) => { event.stopPropagation(); setMinutes(-step); })}
+    ${collapsed ? nothing : html`<div class="alarm-time-controls">
+      ${button(`Earlier by ${step} minutes`, "mdi:minus", (event) => { event.stopPropagation(); setMinutes(-step); }, unavailable)}
       <b>${current.slice(0, 5)}</b>
-      ${button(`Later by ${step} minutes`, "mdi:plus", (event) => { event.stopPropagation(); setMinutes(step); })}
-    </div>
+      ${button(`Later by ${step} minutes`, "mdi:plus", (event) => { event.stopPropagation(); setMinutes(step); }, unavailable)}
+    </div>`}
   `);
 };
 
@@ -798,31 +810,42 @@ const renderApexCharts = (ctx: RenderContext): TemplateResult => {
         <small>${stateLabel(entity)}</small>
       </span>
     `)}</div>
-    <div class="apex-chart">${sparkline(ctx)}<span class="apex-grid-line line-1"></span><span class="apex-grid-line line-2"></span><span class="apex-grid-line line-3"></span></div>
+    <div class="apex-chart">${series.map((entity, index) =>
+      html`<span class="apex-line tone-${colors[index]}">${sparkline(ctx, false, entity)}</span>`)}
+      <span class="apex-grid-line line-1"></span><span class="apex-grid-line line-2"></span><span class="apex-grid-line line-3"></span>
+    </div>
   `);
 };
 
-const renderChromecast = (ctx: RenderContext): TemplateResult => ctx.actionSurface("custom-chromecast", html`
-  <div class="custom-card-heading">
-    ${iconBubble(ctx, "mdi:cast", "blue")}
-    ${heading(ctx, stateLabel(ctx.entity))}
-  </div>
-  <div class="chromecast-controls">
-    ${button("Power", "mdi:power", (event) => { event.stopPropagation(); ctx.service("media_player", ctx.entity?.state === "off" ? "turn_on" : "turn_off", { entity_id: ctx.config.entity }); })}
-    ${button("Play or pause", "mdi:play", (event) => { event.stopPropagation(); ctx.service("media_player", "media_play_pause", { entity_id: ctx.config.entity }); })}
-    ${button("Source", "mdi:video-input-hdmi", (event) => { event.stopPropagation(); })}
-  </div>
-`);
+const renderChromecast = (ctx: RenderContext): TemplateResult => {
+  const unavailable = !ctx.entity || ctx.entity.state === "unavailable";
+  const playing = ctx.entity?.state === "playing";
+  return ctx.actionSurface("custom-chromecast", html`
+    <div class="custom-card-heading">
+      ${iconBubble(ctx, "mdi:cast", unavailable ? "grey" : "blue")}
+      ${heading(ctx, stateLabel(ctx.entity))}
+    </div>
+    <div class="chromecast-controls">
+      ${button("Toggle power", "mdi:power", (event) => { event.stopPropagation(); ctx.service("media_player", "toggle", { entity_id: ctx.config.entity }); }, unavailable)}
+      ${button("Play or pause", playing ? "mdi:pause" : "mdi:play", (event) => { event.stopPropagation(); ctx.service("media_player", "media_play_pause", { entity_id: ctx.config.entity }); }, unavailable)}
+      ${button("Toggle input", "mdi:video-input-hdmi", (event) => { event.stopPropagation(); ctx.service("media_player", "toggle", { entity_id: ctx.config.entity }); }, unavailable)}
+    </div>
+  `);
+};
 
 const renderPowerDetails = (ctx: RenderContext): TemplateResult => {
   const hours = numeric(configured(ctx, "ulm_card_power_details_hours")) ?? ctx.config.graph_hours ?? 2;
+  const chartHeight = numeric(configured(ctx, "ulm_card_power_details_height")) ?? 180;
+  const graphEntity = entityFromConfig(ctx, "ulm_card_power_details_entity") ?? ctx.entity;
   return ctx.actionSurface("custom-power-details", html`
-    <div class="power-details-heading">
-      ${iconBubble(ctx, "mdi:flash", "grey")}
-      ${heading(ctx, `${hours === 1 ? "In the last hour" : `In the last ${hours} hours`}`)}
+    <div class="power-details-content" style=${`min-height:${chartHeight + 66}px`}>
+      <div class="power-details-heading">
+        ${iconBubble(ctx, "mdi:flash", "grey")}
+        ${heading(ctx, `${hours === 1 ? "In the last hour" : `In the last ${hours} hours`}`)}
+      </div>
+      <b class="power-details-value">${stateLabel(graphEntity)}</b>
+      <div class="power-details-chart" style=${`height:${chartHeight}px`}>${sparkline(ctx, true, graphEntity)}</div>
     </div>
-    <b class="power-details-value">${stateLabel(ctx.entity)}</b>
-    <div class="power-details-chart">${sparkline(ctx, true)}</div>
   `);
 };
 

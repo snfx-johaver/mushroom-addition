@@ -336,10 +336,12 @@ export const sharedStyles = css`
   .room-sensor ha-icon { color: var(--item-color); }
   .room-sensor.is-active { background: color-mix(in srgb, var(--item-color) 18%, transparent); }
   .room-sensor span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-  .ulm-camera { position: relative; min-height: 150px; overflow: hidden; background: rgba(var(--ulm-grey), .08); }
-  .ulm-camera img { display: block; width: 100%; height: 180px; object-fit: cover; }
+  .ulm-camera { display: grid; min-height: 150px; overflow: hidden; background: rgba(var(--ulm-grey), .08); }
+  .ulm-camera.has-title { gap: 12px; padding: 12px; }
+  .camera-title { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px; }
+  .ulm-camera img { display: block; width: 100%; height: 180px; border-radius: inherit; object-fit: cover; }
+  .ulm-camera.has-title img { border-radius: 14px; }
   .camera-placeholder { display: grid; min-height: 150px; place-items: center; }
-  .camera-caption { position: absolute; right: 10px; bottom: 10px; left: 10px; padding: 9px; border-radius: 10px; background: rgba(255,255,255,.88); backdrop-filter: blur(8px); }
   .ulm-generic-swap { grid-template-columns: minmax(0, 1fr) auto; }
   .ulm-detail-card, .ulm-schedule-card, .ulm-device-status, .ulm-helper-card {
     display: grid;
@@ -412,22 +414,26 @@ export const sharedStyles = css`
     border-radius: 18px;
   }
   .alarm-time-controls > b, .compact-thermostat-controls > b { text-align: center; font-size: 18px; }
+  .custom-alarm-time.is-horizontal { grid-template-columns: minmax(0, 1fr) minmax(180px, 1fr); align-items: center; }
   .custom-apexcharts {
     display: grid;
-    min-height: 190px;
-    grid-template-columns: minmax(110px, .8fr) minmax(0, 1.6fr);
+    min-height: 300px;
+    grid-template-columns: minmax(180px, .85fr) minmax(0, 1.65fr);
     align-items: stretch;
     gap: 14px;
     padding: 12px;
   }
   .apex-legend { display: grid; align-content: space-around; gap: 6px; }
-  .apex-series { display: grid; grid-template-columns: 42px 1fr; align-items: center; column-gap: 9px; }
-  .apex-series i { display: grid; width: 42px; height: 42px; grid-row: 1 / 3; place-items: center; border-radius: 50%; background: rgba(var(--tone), .18); color: rgb(var(--tone)); }
+  .apex-series { display: grid; grid-template-columns: 56px 1fr; align-items: center; column-gap: 12px; }
+  .apex-series i { display: grid; width: 56px; height: 56px; grid-row: 1 / 3; place-items: center; border-radius: 50%; background: rgba(var(--tone), .18); color: rgb(var(--tone)); }
+  .apex-series i ha-icon { --mdc-icon-size: 25px; }
   .apex-series b, .apex-series small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .apex-series b { font-size: 13px; }
   .apex-series small { color: var(--secondary-text-color); font-size: 12px; font-weight: 700; }
-  .apex-chart { position: relative; display: flex; align-items: center; overflow: hidden; }
-  .apex-chart .sparkline { position: relative; z-index: 2; height: 120px; }
+  .apex-chart { position: relative; display: flex; min-width: 0; align-items: center; overflow: hidden; }
+  .apex-line { position: absolute; inset: 12px 0; z-index: 2; color: rgb(var(--tone)); }
+  .apex-chart .sparkline { width: 100%; height: 240px; }
+  .apex-line .sparkline polyline { stroke: currentColor; stroke-width: 1.8; }
   .apex-grid-line { position: absolute; right: 0; left: 0; border-top: 1px dashed rgba(var(--ulm-grey), .18); }
   .apex-grid-line.line-1 { top: 25%; }
   .apex-grid-line.line-2 { top: 50%; }
@@ -435,10 +441,11 @@ export const sharedStyles = css`
   .custom-chromecast { display: grid; gap: 16px; padding: 12px; }
   .chromecast-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .chromecast-controls .ulm-control { width: 100%; height: 48px; border-radius: 16px; }
-  .custom-power-details { position: relative; min-height: 190px; overflow: hidden; padding: 12px; }
+  .custom-power-details { position: relative; overflow: hidden; padding: 12px; }
+  .power-details-content { position: relative; }
   .power-details-heading { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 10px; }
   .power-details-value { position: relative; z-index: 2; display: block; margin-top: 18px; text-align: center; font-size: 28px; }
-  .power-details-chart { position: absolute; right: 0; bottom: -2px; left: 0; height: 100px; }
+  .power-details-chart { position: absolute; right: 0; bottom: -2px; left: 0; }
   .power-details-chart .sparkline { height: 100%; }
   .power-details-chart .sparkline polygon { fill: color-mix(in srgb, rgb(var(--ulm-yellow)) 22%, transparent); }
   .power-details-chart .sparkline polyline { stroke: rgb(var(--ulm-yellow)); }

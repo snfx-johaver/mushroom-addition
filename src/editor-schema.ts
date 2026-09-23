@@ -181,6 +181,49 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
       entity(["sensor"], "tomorrow_entity"),
       ...presentation(),
     ]
+    : item.upstreamId === "custom_card_alarm_time"
+      ? [
+        entity(["input_boolean", "switch"]),
+        entity(["input_datetime"], "datetime_entity"),
+        number("ulm_card_alarm_time_step", 1, 180),
+        toggle("ulm_card_alarm_time_collapse"),
+        toggle("ulm_card_alarm_time_horizontal"),
+        { name: "ulm_card_alarm_time_icon", selector: { icon: {} } },
+        { name: "ulm_card_alarm_time_color", selector: { ui_color: {} } },
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_apexcharts"
+      ? [
+        entity(["sensor"]),
+        entity(["sensor"], "series_2_entity"),
+        entity(["sensor"], "series_3_entity"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_camera"
+      ? [
+        entity(["camera"]),
+        toggle("ulm_custom_card_camera_title"),
+        text("ulm_custom_card_camera_name"),
+        text("ulm_custom_card_camera_label"),
+        text("ulm_custom_card_camera_aspect_ratio"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_chromecast"
+      ? [
+        entity(["media_player"]),
+        text("ulm_card_media_player_with_controls_name"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_damix48_power_details"
+      ? [
+        entity(["sensor"]),
+        entity(["sensor"], "ulm_card_power_details_entity"),
+        text("ulm_card_power_details_name"),
+        number("ulm_card_power_details_hours", 1, 168),
+        number("ulm_card_power_details_height", 80, 600),
+        toggle("ulm_card_power_details_24hour"),
+        ...presentation(),
+      ]
     : item.upstreamId === "custom_card_nik_nas"
       ? [
         entity(["binary_sensor", "sensor", "switch"]),
