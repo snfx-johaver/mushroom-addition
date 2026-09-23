@@ -31,18 +31,24 @@ describe("visual audit manifest", () => {
 
   it("reports exact accepted progress without inferring parity from family mappings", () => {
     expect(visualAuditProgress()).toEqual({
-      accepted: 6,
+      accepted: 12,
       pickerAccepted: 36,
       editorAccepted: 36,
       visualAccepted: 37,
       statesAccepted: 36,
       interactionsAccepted: 36,
-      liveAccepted: 6,
+      liveAccepted: 12,
       total: 86,
     });
 
     expect(VISUAL_AUDIT.filter((entry) => entry.status === "accepted").map((entry) => entry.sourceId))
       .toEqual([
+        "custom_card_afvalophaling",
+        "custom_card_alarm_time",
+        "custom_card_apexcharts",
+        "custom_card_camera",
+        "custom_card_chromecast",
+        "custom_card_damix48_power_details",
         "custom_card_heat_pump",
         "custom_card_homeassistant_updates",
         "custom_card_nik_nas",
@@ -116,7 +122,7 @@ describe("visual audit manifest", () => {
     }
   });
 
-  it("certifies all five local stages for the first pending custom batch", () => {
+  it("certifies all six stages for the first custom batch", () => {
     for (const sourceId of [
       "custom_card_afvalophaling",
       "custom_card_alarm_time",
@@ -126,13 +132,13 @@ describe("visual audit manifest", () => {
       "custom_card_damix48_power_details",
     ]) {
       expect(VISUAL_AUDIT.find((entry) => entry.sourceId === sourceId)).toMatchObject({
-        status: "pending",
+        status: "accepted",
         pickerAccepted: true,
         editorAccepted: true,
         visualAccepted: true,
         statesAccepted: true,
         interactionsAccepted: true,
-        liveAccepted: false,
+        liveAccepted: true,
       });
     }
   });
