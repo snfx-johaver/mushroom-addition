@@ -4,7 +4,7 @@ This is the source-by-source acceptance ledger for the card-only
 UI-Lovelace-Minimalist catalog pinned at
 `f8a9cb67a53f91367f1dffe18516aa983b463cb5`.
 
-**Progress: 6/86 fully E2E accepted. Stage totals — picker 12, editor 12, visual 13, states 12, interactions 12, live 6.**
+**Progress: 6/86 fully E2E accepted. Stage totals — picker 18, editor 18, visual 19, states 18, interactions 18, live 6.**
 
 An entry is fully accepted only when all six independent stages pass: picker,
 graphical editor, visual parity, state behavior, interactions, and live Home
