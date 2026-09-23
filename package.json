@@ -14,11 +14,12 @@
     "check:parity-source": "tsx scripts/generate-parity.ts .tmp-ui-minimalist --check",
     "docs:catalog": "tsx scripts/catalog-doc.ts",
     "docs:parity": "tsx scripts/generate-parity.ts .tmp-ui-minimalist",
+    "docs:visual-audit": "tsx scripts/visual-audit-doc.ts",
     "demo": "vite --host 127.0.0.1",
     "lint": "eslint .",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "validate": "npm run lint && npm run typecheck && npm run check:catalog && npm run check:parity && npm test && npm run build"
+    "validate": "npm run lint && npm run typecheck && npm run check:catalog && npm run check:parity && npm run docs:visual-audit -- --check && npm test && npm run build"
   },
   "keywords": [
     "home-assistant",

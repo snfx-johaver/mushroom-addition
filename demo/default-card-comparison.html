@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Default card visual comparisons</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --primary-text-color: #212121;
+        --secondary-text-color: #727272;
+        --card-background-color: #fff;
+        --ha-card-background: #fff;
+        --divider-color: #e8e8e8;
+        --primary-color: #03a9f4;
+        --google-blue: #4285f4;
+        --google-red: #ea4335;
+        --google-yellow: #fbbc04;
+        --google-green: #34a853;
+        --rgb-primary-color: 3, 169, 244;
+        --rgb-card-background-color: 255, 255, 255;
+        font-family: Roboto, system-ui, sans-serif;
+        background: #f4f5f7;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 32px; color: var(--primary-text-color); }
+      h1 { margin: 0 0 6px; font-size: 24px; }
+      body > p { margin: 0 0 24px; color: var(--secondary-text-color); }
+      #comparisons { display: grid; gap: 24px; }
+      .comparison {
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        padding: 18px;
+      }
+      .comparison h2 { margin: 0 0 14px; font-size: 16px; }
+      .columns { display: grid; grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr); gap: 20px; align-items: start; }
+      .column-label { margin-bottom: 8px; color: var(--secondary-text-color); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+      .reference { display: block; max-width: 100%; border-radius: 10px; background: #f5f5f5; object-fit: contain; object-position: left top; }
+      .implementation { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; align-items: start; }
+      [data-source="card_room"] .implementation { grid-template-columns: 220px; }
+      [data-source="card_vacuum"] .implementation { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+      ha-card { display: block; }
+      ha-icon { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; font-size: 9px; font-weight: 700; }
+      @media (max-width: 760px) { .columns { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <h1>Default card visual audit</h1>
+    <p>24 pinned upstream source designs. Reference screenshot left, deterministic implementation fixture right.</p>
+    <main id="comparisons"></main>
+    <script type="module" src="/demo/default-card-comparison.ts"></script>
+  </body>
+</html>

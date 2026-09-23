@@ -63,6 +63,12 @@ const heading = (ctx: RenderContext, recommendedSecondary?: string) => html`
       : nothing}
   </span>
 `;
+const valueThenName = (ctx: RenderContext, value = stateLabel(ctx.entity)) => html`
+  <span class="ulm-copy value-first">
+    <span class="ulm-name">${value}</span>
+    <span class="ulm-label">${displayName(ctx.config, ctx.entity)}</span>
+  </span>
+`;
 const button = (label: string, iconName: string, handler: (event: Event) => void) => html`
   <button class="ulm-control" aria-label=${label} @pointerdown=${(event: Event) => event.stopPropagation()} @click=${handler}>
     <ha-icon .icon=${iconName}></ha-icon>
@@ -101,6 +107,23 @@ const renderWeather = (ctx: RenderContext): TemplateResult => {
   const backdrop = configured<boolean>(ctx, "ulm_card_weather_backdrop") === true;
   const primaryInfo = configured<string>(ctx, "ulm_card_weather_primary_info") ?? "extrema";
   const secondaryInfo = configured<string>(ctx, "ulm_card_weather_secondary_info") ?? "precipitation";
+  if (!native) {
+    const first = forecast[0];
+    const high = first?.temperature ?? attr(ctx.entity, "temperature");
+    const low = first?.templow ?? first?.temperature_low ?? "—";
+    const wind = attr(ctx.entity, "wind_speed") ?? "—";
+    const windUnit = attr(ctx.entity, "wind_speed_unit") ?? "";
+    return ctx.actionSurface("ulm-weather legacy-weather", html`
+      <div class="legacy-weather-current">
+        <ha-icon .icon=${weatherIcon}></ha-icon>
+        <span><b>${temperature}</b><small>${condition.replaceAll("-", " ")}</small></span>
+      </div>
+      <div class="legacy-weather-details">
+        <b>${String(low)}° / ${String(high)}°</b>
+        <span><ha-icon icon="mdi:weather-windy"></ha-icon>${String(wind)} ${String(windUnit)}</span>
+      </div>
+    `);
+  }
   return ctx.actionSurface(`ulm-weather ${backdrop ? "has-backdrop" : ""}`, html`
     <div class="weather-main">
       <span class="ulm-icon weather-icon tone-${tone}"><ha-icon .icon=${weatherIcon}></ha-icon></span>
@@ -116,10 +139,10 @@ const renderWeather = (ctx: RenderContext): TemplateResult => {
             : nothing}
       </div>
     </div>
-    ${native ? nothing : html`<div class="weather-metrics">
+    <div class="weather-metrics">
       <span class="metric-pill"><ha-icon icon="mdi:water-percent"></ha-icon>${humidity}</span>
       <span class="metric-pill"><ha-icon icon="mdi:thermometer"></ha-icon>${temperature}</span>
-    </div>`}
+    </div>
     ${!native && ctx.config.show_forecast && forecast.length ? html`
       <div class="weather-forecast">
         ${forecast.map((period) => {
@@ -231,6 +254,18 @@ const renderBattery = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
+const renderDefaultBattery = (ctx: RenderContext): TemplateResult => {
+  const value = numeric(ctx.entity?.state) ?? 0;
+  const charging = Boolean(attr(ctx.entity, "is_charging"));
+  const danger = configured<number>(ctx, "ulm_card_battery_battery_level_danger") ?? 20;
+  const warning = configured<number>(ctx, "ulm_card_battery_battery_level_warning") ?? 50;
+  const tone = value < danger ? "red" : value < warning ? "yellow" : "green";
+  return ctx.actionSurface("ulm-row ulm-default-battery", html`
+    ${iconBubble(ctx, charging ? "mdi:battery-charging" : "mdi:battery", tone)}
+    ${valueThenName(ctx, `${Math.round(value)}%`)}
+  `);
+};
+
 const configuredColor = (value: string | undefined, fallback: string): string => {
   if (!value) return fallback;
   if (/^(?:#|rgb|hsl|var\(|color\()/i.test(value)) return value;
@@ -279,7 +314,7 @@ const renderBarCard = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const sparkline = (ctx: RenderContext) => {
+const sparkline = (ctx: RenderContext, filled = false) => {
   const values = Array.isArray(attr(ctx.entity, "history"))
     ? (attr(ctx.entity, "history") as unknown[]).map(Number).filter(Number.isFinite).slice(-12)
     : [20, 28, 24, 42, 35, 52, 48, 63, 55, 70, 62, 78];
@@ -287,7 +322,11 @@ const sparkline = (ctx: RenderContext) => {
   const max = Math.max(...values);
   const points = values.map((value, index) =>
     `${(index / Math.max(1, values.length - 1)) * 100},${36 - ((value - min) / Math.max(1, max - min)) * 32}`).join(" ");
-  return html`<svg class="sparkline" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><polyline points=${points}></polyline></svg>`;
+  const area = `0,40 ${points} 100,40`;
+  return html`<svg class="sparkline ${filled ? "is-filled" : ""}" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true">
+    ${filled ? html`<polygon points=${area}></polygon>` : nothing}
+    <polyline points=${points}></polyline>
+  </svg>`;
 };
 
 const renderMetric = (ctx: RenderContext): TemplateResult => ctx.actionSurface("ulm-metric", html`
@@ -298,13 +337,21 @@ const renderMetric = (ctx: RenderContext): TemplateResult => ctx.actionSurface("
 
 const renderScene = (ctx: RenderContext): TemplateResult => {
   const scenes = (ctx.config.entities?.length ? ctx.config.entities : ctx.config.entity ? [ctx.config.entity] : []).slice(0, 6);
-  return ctx.actionSurface("ulm-scenes", html`
-    ${heading(ctx, `${scenes.length} scenes`)}
+  const welcome = ctx.descriptor.upstreamId === "card_welcome_scenes";
+  return ctx.actionSurface(`ulm-scenes ${welcome ? "welcome-scenes" : "scene-pills"}`, html`
+    ${welcome ? html`
+      <div class="welcome-toolbar">
+        <span class="welcome-toolbar-button"><ha-icon icon="mdi:chevron-up"></ha-icon></span>
+        <span class="welcome-date"><ha-icon icon="mdi:weather-partly-cloudy"></ha-icon>${new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(new Date("2026-02-18"))}</span>
+        <span class="welcome-toolbar-button"><ha-icon icon="mdi:cog"></ha-icon></span>
+      </div>
+      <div class="welcome-heading"><b>${ctx.config.name || "Good day!"}</b><span>${ctx.config.secondary || "Scenes"}</span></div>
+    ` : nothing}
     <div class="scene-grid">${scenes.map((entityId) => html`
       <button class="scene-button" @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
         event.stopPropagation();
         ctx.service("scene", "turn_on", { entity_id: entityId });
-      }}><ha-icon icon="mdi:palette"></ha-icon><span>${displayName({ type: "", entity: entityId }, ctx.hass.states[entityId])}</span></button>
+      }}><i><ha-icon icon="mdi:palette"></ha-icon></i><span>${displayName({ type: "", entity: entityId }, ctx.hass.states[entityId])}</span></button>
     `)}</div>
   `);
 };
@@ -338,10 +385,12 @@ const renderMedia = (ctx: RenderContext): TemplateResult => {
 
 const renderCover = (ctx: RenderContext): TemplateResult => {
   const controllable = ctx.config.entity?.startsWith("cover.") === true;
-  return ctx.actionSurface(`ulm-row ${configured<boolean>(ctx, "ulm_card_cover_enable_horizontal") ? "is-horizontal" : ""}`, html`
-  ${iconBubble(ctx, "mdi:window-shutter", ctx.entity?.state === "open" ? "blue" : "grey")}
-  ${heading(ctx, stateLabel(ctx.entity))}
-  ${controllable && ctx.config.show_controls !== false ? html`<div class="ulm-controls">
+  return ctx.actionSurface(`ulm-cover ${configured<boolean>(ctx, "ulm_card_cover_enable_horizontal") ? "is-horizontal" : ""}`, html`
+  <div class="ulm-row">
+    ${iconBubble(ctx, "mdi:window-shutter", ctx.entity?.state === "open" ? "blue" : "grey")}
+    ${heading(ctx, stateLabel(ctx.entity))}
+  </div>
+  ${controllable && ctx.config.show_controls !== false ? html`<div class="ulm-controls cover-controls">
     ${button("Open", "mdi:arrow-up", (event) => { event.stopPropagation(); ctx.service("cover", "open_cover", { entity_id: ctx.config.entity }); })}
     ${button("Stop", "mdi:stop", (event) => { event.stopPropagation(); ctx.service("cover", "stop_cover", { entity_id: ctx.config.entity }); })}
     ${button("Close", "mdi:arrow-down", (event) => { event.stopPropagation(); ctx.service("cover", "close_cover", { entity_id: ctx.config.entity }); })}
@@ -371,6 +420,20 @@ const renderVacuum = (ctx: RenderContext): TemplateResult => ctx.actionSurface("
   </div>` : nothing}
 `);
 
+const renderDefaultVacuum = (ctx: RenderContext): TemplateResult => ctx.actionSurface("ulm-default-vacuum", html`
+  <div class="vacuum-summary">
+    ${iconBubble(ctx, "mdi:robot-vacuum", ctx.entity?.state === "cleaning" ? "blue" : "grey")}
+    ${heading(ctx, stateLabel(ctx.entity))}
+    <span class="vacuum-battery">${String(attr(ctx.entity, "battery_level") ?? "—")}%</span>
+  </div>
+  <div class="vacuum-actions">
+    ${button("Stop", "mdi:stop", (event) => { event.stopPropagation(); ctx.service("vacuum", "stop", { entity_id: ctx.config.entity }); })}
+    ${button("Return home", "mdi:home", (event) => { event.stopPropagation(); ctx.service("vacuum", "return_to_base", { entity_id: ctx.config.entity }); })}
+    ${button("Locate", "mdi:map-marker", (event) => { event.stopPropagation(); ctx.service("vacuum", "locate", { entity_id: ctx.config.entity }); })}
+    ${button("Start", "mdi:robot-vacuum", (event) => { event.stopPropagation(); ctx.service("vacuum", "start", { entity_id: ctx.config.entity }); })}
+  </div>
+`);
+
 const renderSecurity = (ctx: RenderContext): TemplateResult => {
   const armed = ctx.entity?.state.startsWith("armed") || ctx.entity?.state === "locked";
   return ctx.actionSurface(`ulm-security ${armed ? "is-armed" : ""}`, html`
@@ -384,6 +447,11 @@ const renderNavigation = (ctx: RenderContext): TemplateResult => ctx.actionSurfa
   ${iconBubble(ctx, ctx.descriptor.upstreamId.includes("back") ? "mdi:arrow-left" : "mdi:arrow-right", "blue")}
   ${heading(ctx, ctx.config.secondary || ctx.config.navigation_path || "Navigate")}
   <ha-icon icon="mdi:chevron-right"></ha-icon>
+`);
+
+const renderDefaultNavigation = (ctx: RenderContext): TemplateResult => ctx.actionSurface("ulm-row ulm-default-navigation", html`
+  ${iconBubble(ctx, ctx.config.icon || "mdi:navigation", "blue")}
+  ${heading(ctx, ctx.config.secondary)}
 `);
 
 const controlService = (entityId: string | undefined, action: "on" | "off"): [string, string] => {
@@ -430,20 +498,19 @@ const renderFan = (ctx: RenderContext): TemplateResult => {
     <div class="ulm-row">
       ${iconBubble(ctx, "mdi:fan", active ? "blue" : "grey")}
       ${heading(ctx, `${stateLabel(ctx.entity)}${percentage ? ` · ${percentage}%` : ""}`)}
-      ${button(active ? "Turn off" : "Turn on", "mdi:power", (event) => {
-        event.stopPropagation();
-        ctx.service("fan", active ? "turn_off" : "turn_on", { entity_id: ctx.config.entity });
-      })}
     </div>
-    ${slider ? html`<input class="ulm-slider" type="range"
-      min=${String(configured<number>(ctx, "ulm_card_fan_slider_min") ?? 0)}
-      max=${String(configured<number>(ctx, "ulm_card_fan_slider_max") ?? 100)}
-      .value=${String(percentage)}
-      @pointerdown=${(event: Event) => event.stopPropagation()}
-      @change=${(event: Event) => ctx.service("fan", "set_percentage", {
-        entity_id: ctx.config.entity,
-        percentage: Number((event.target as HTMLInputElement).value),
-      })}>` : nothing}
+    ${slider ? html`<div class="ulm-fan-slider" style=${`--fan-level:${percentage}%`}>
+      <i></i>
+      <input type="range"
+        min=${String(configured<number>(ctx, "ulm_card_fan_slider_min") ?? 0)}
+        max=${String(configured<number>(ctx, "ulm_card_fan_slider_max") ?? 100)}
+        .value=${String(percentage)}
+        @pointerdown=${(event: Event) => event.stopPropagation()}
+        @change=${(event: Event) => ctx.service("fan", "set_percentage", {
+          entity_id: ctx.config.entity,
+          percentage: Number((event.target as HTMLInputElement).value),
+        })}>
+    </div>` : nothing}
     ${oscillation ? html`<div class="ulm-controls">${button("Toggle oscillation", configured<string>(ctx, "ulm_card_fan_button_icon") ?? "mdi:rotate-3d-variant", (event) => {
       event.stopPropagation();
       ctx.service("fan", "oscillate", { entity_id: ctx.config.entity, oscillating: attr(ctx.entity, "oscillating") !== true });
@@ -454,9 +521,9 @@ const renderFan = (ctx: RenderContext): TemplateResult => {
 const renderRoom = (ctx: RenderContext): TemplateResult => {
   const entities = (ctx.config.entities ?? []).map((entityId) => ctx.hass.states[entityId]).filter(Boolean);
   return ctx.actionSurface("ulm-room", html`
-    <div class="ulm-row">
-      ${iconBubble(ctx, "mdi:sofa", activeStates.has(ctx.entity?.state ?? "") ? "yellow" : "blue")}
+    <div class="room-main">
       ${heading(ctx, stateLabel(ctx.entity))}
+      ${iconBubble(ctx, "mdi:sofa", activeStates.has(ctx.entity?.state ?? "") ? "yellow" : "blue")}
     </div>
     ${entities.length ? html`<div class="room-entities">${entities.map((entity) => html`
       <span class="metric-pill"><ha-icon .icon=${entity.attributes.icon ?? "mdi:circle-small"}></ha-icon>${stateLabel(entity)}</span>
@@ -581,16 +648,15 @@ const renderDoor = (ctx: RenderContext): TemplateResult => {
 
 const renderGeneric = (ctx: RenderContext): TemplateResult => ctx.actionSurface("ulm-row", html`
   ${iconBubble(ctx, "mdi:information-outline", activeStates.has(ctx.entity?.state ?? "") ? "blue" : "grey")}
-  ${heading(ctx, ctx.config.secondary || stateLabel(ctx.entity))}
+  ${valueThenName(ctx)}
 `);
 
 const renderGenericSwap = (ctx: RenderContext): TemplateResult => ctx.actionSurface("ulm-row ulm-generic-swap", html`
-  ${heading(ctx, ctx.config.secondary || stateLabel(ctx.entity))}
+  ${valueThenName(ctx)}
   ${iconBubble(ctx, "mdi:information-outline", activeStates.has(ctx.entity?.state ?? "") ? "blue" : "grey")}
 `);
 
 const renderTitle = (ctx: RenderContext): TemplateResult => ctx.actionSurface("ulm-title", html`
-  ${ctx.config.icon ? iconBubble(ctx, "mdi:format-title", "blue") : nothing}
   ${heading(ctx, ctx.config.secondary)}
 `);
 
@@ -606,14 +672,31 @@ const renderBinary = (ctx: RenderContext, alert = false): TemplateResult => {
   return ctx.actionSurface(`ulm-row ulm-binary ${active ? "is-active" : ""} ${alert && active ? "is-alert" : ""}`, html`
     ${iconBubble(ctx, alert && active ? "mdi:alert" : "mdi:radiobox-marked", active ? (alert ? "red" : "blue") : "grey")}
     ${heading(ctx, showLastChanged && ctx.entity?.last_changed ? new Date(ctx.entity.last_changed).toLocaleString() : stateLabel(ctx.entity))}
-    ${alert && active ? html`<span class="security-status">Alert</span>` : nothing}
   `);
 };
 
+const renderSimpleDefault = (ctx: RenderContext, fallbackIcon: string, tone = "blue"): TemplateResult =>
+  ctx.actionSurface("ulm-row ulm-simple-default", html`
+    ${iconBubble(ctx, fallbackIcon, activeStates.has(ctx.entity?.state ?? "") ? tone : "grey")}
+    ${heading(ctx, stateLabel(ctx.entity))}
+  `);
+
+const renderDefaultGraph = (ctx: RenderContext): TemplateResult => ctx.actionSurface("ulm-default-graph", html`
+  <div class="metric-heading">${iconBubble(ctx, "mdi:chart-line", "red")}${valueThenName(ctx)}</div>
+  ${sparkline(ctx, true)}
+`);
+
 export const renderByFamily = (ctx: RenderContext): TemplateResult => {
   switch (ctx.descriptor.upstreamId) {
+    case "card_battery": return renderDefaultBattery(ctx);
     case "card_binary_sensor": return renderBinary(ctx, ctx.config.variant === "alert");
+    case "card_graph": return renderDefaultGraph(ctx);
+    case "card_input_boolean": return renderSimpleDefault(ctx, "mdi:toggle-switch", "blue");
+    case "card_navigate": return renderDefaultNavigation(ctx);
+    case "card_power_outlet": return renderSimpleDefault(ctx, "mdi:power-socket-eu", "yellow");
+    case "card_script": return renderSimpleDefault(ctx, "mdi:script-text", "blue");
     case "card_title": return renderTitle(ctx);
+    case "card_vacuum": return renderDefaultVacuum(ctx);
     case "card_vertical_button": return renderVerticalButton(ctx);
     case "card_generic": return ctx.config.variant === "swapped" ? renderGenericSwap(ctx) : renderGeneric(ctx);
     case "custom_card_input_datetime": return renderDetailCard(ctx, "mdi:calendar-clock", "blue");

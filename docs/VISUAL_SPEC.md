@@ -67,5 +67,8 @@ fixture is committed at [`docs/assets/catalog-fixture.png`](assets/catalog-fixtu
 Bar Card is the first source-specific visual acceptance gate; its inspected
 comparison is committed at
 [`docs/assets/visual-audit/custom-card-bar-card-comparison.png`](assets/visual-audit/custom-card-bar-card-comparison.png).
-The remaining source-by-source visual audit is tracked explicitly and no longer
-inferred from a shared family renderer.
+The generated [`VISUAL_AUDIT.md`](VISUAL_AUDIT.md) ledger records exact
+accepted/total progress, source references, deterministic fixtures, comparison
+artifacts, structural contracts, and individually reviewed deviations. The
+remaining source-by-source audit is no longer inferred from a shared family
+renderer.

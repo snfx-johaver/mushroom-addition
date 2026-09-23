@@ -51,6 +51,8 @@ const hass: HomeAssistant = {
       attributes: { friendly_name: "TV", media_title: "Movie" },
     },
     "cover.blind": { entity_id: "cover.blind", state: "open", attributes: { friendly_name: "Blind" } },
+    "binary_sensor.window": { entity_id: "binary_sensor.window", state: "on", attributes: { friendly_name: "Window" } },
+    "fan.fixture": { entity_id: "fan.fixture", state: "on", attributes: { friendly_name: "Fan", percentage: 42 } },
     "vacuum.robot": { entity_id: "vacuum.robot", state: "cleaning", attributes: { friendly_name: "Robot", battery_level: 80 } },
     "alarm_control_panel.home": { entity_id: "alarm_control_panel.home", state: "armed_home", attributes: { friendly_name: "Alarm" } },
     "scene.relax": { entity_id: "scene.relax", state: "scening", attributes: { friendly_name: "Relax" } },
@@ -101,11 +103,10 @@ describe("family renderers", () => {
       show_forecast: true,
     });
     expect(markup).toContain("ulm-weather");
-    expect(markup).toContain("weather-main");
-    expect(markup).toContain("weather-metrics");
-    expect(markup).toContain("weather-forecast");
+    expect(markup).toContain("legacy-weather-current");
+    expect(markup).toContain("legacy-weather-details");
     expect(markup).toContain("17");
-    expect(markup).toContain("68%");
+    expect(markup).toContain("partlycloudy");
     expect((document.createElement("mushroom-addition-card-weather") as HTMLElement).tagName).toBe("MUSHROOM-ADDITION-CARD-WEATHER");
   });
 
@@ -165,9 +166,10 @@ describe("family renderers", () => {
       variant: "native",
       show_forecast: true,
     });
-    expect(detailed).toContain("weather-metrics");
-    expect(detailed).toContain("weather-forecast");
-    expect(native).not.toContain("weather-metrics");
+    expect(detailed).toContain("legacy-weather");
+    expect(detailed).toContain("legacy-weather-current");
+    expect(detailed).toContain("legacy-weather-details");
+    expect(native).toContain("weather-metrics");
     expect(native).not.toContain("weather-forecast");
   });
 
@@ -194,6 +196,44 @@ describe("family renderers", () => {
     expect(markup).not.toContain("sparkline");
     expect(markup).not.toContain("metric-extremes");
     expect(markup).not.toContain("ulm-metric");
+  });
+
+  it.each([
+    ["card_battery", "mushroom-addition-card-battery", "sensor.battery", "ulm-default-battery", "battery-track"],
+    ["card_binary_sensor", "mushroom-addition-card-binary-sensor", "binary_sensor.window", "ulm-binary", "sparkline"],
+    ["card_binary_sensor_alert", "mushroom-addition-card-binary-sensor-alert", "binary_sensor.window", "variant-alert", "sparkline"],
+    ["card_cover", "mushroom-addition-card-cover", "cover.blind", "ulm-cover", "sparkline"],
+    ["card_fan", "mushroom-addition-card-fan", "fan.fixture", "ulm-fan", "sparkline"],
+    ["card_generic", "mushroom-addition-card-generic", "sensor.power", "value-first", "sparkline"],
+    ["card_generic_swap", "mushroom-addition-card-generic-swap", "sensor.power", "ulm-generic-swap", "sparkline"],
+    ["card_graph", "mushroom-addition-card-graph", "sensor.power", "ulm-default-graph", "ulm-light-slider"],
+    ["card_input_boolean", "mushroom-addition-card-input-boolean", "sensor.power", "ulm-simple-default", "sparkline"],
+    ["card_light", "mushroom-addition-card-light", "light.kitchen", "ulm-light-card", "sparkline"],
+    ["card_media_player", "mushroom-addition-card-media-player", "media_player.tv", "ulm-media", "sparkline"],
+    ["card_navigate", "mushroom-addition-card-navigate", "sensor.power", "ulm-default-navigation", "sparkline"],
+    ["card_person", "mushroom-addition-card-person", "person.joris", "ulm-person", "sparkline"],
+    ["card_power_outlet", "mushroom-addition-card-power-outlet", "sensor.power", "ulm-simple-default", "sparkline"],
+    ["card_room", "mushroom-addition-card-room", "light.kitchen", "ulm-room", "sparkline"],
+    ["card_scenes", "mushroom-addition-card-scenes", "scene.relax", "scene-pills", "sparkline"],
+    ["card_script", "mushroom-addition-card-script", "sensor.power", "ulm-simple-default", "sparkline"],
+    ["card_thermostat", "mushroom-addition-card-thermostat", "climate.living", "ulm-climate", "sparkline"],
+    ["card_title", "mushroom-addition-card-title", "sensor.power", "ulm-title", "ulm-icon"],
+    ["card_vacuum", "mushroom-addition-card-vacuum", "vacuum.robot", "ulm-default-vacuum", "sparkline"],
+    ["card_vertical_button", "mushroom-addition-card-vertical-button", "light.kitchen", "ulm-vertical-button", "sparkline"],
+    ["card_weather", "mushroom-addition-card-weather", "weather.home", "legacy-weather", "ulm-light-slider"],
+    ["card_weather_ulm", "mushroom-addition-card-weather-ulm", "weather.home", "weather-metrics", "legacy-weather"],
+    ["card_welcome_scenes", "mushroom-addition-card-welcome-scenes", "scene.relax", "welcome-scenes", "sparkline"],
+  ])("enforces the %s visual structure", async (_id, tag, entity, required, forbidden) => {
+    const markup = await render(tag, {
+      type: `custom:${tag}`,
+      entity,
+      entities: entity.startsWith("scene.") ? ["scene.relax"] : undefined,
+      show_controls: true,
+      ulm_card_fan_enable_slider: true,
+      ulm_card_light_enable_slider: true,
+    });
+    expect(markup).toContain(required);
+    expect(markup).not.toContain(forbidden);
   });
 
   it("wires the Minimalist light slider to a valid Home Assistant service", async () => {
@@ -238,11 +278,11 @@ describe("family renderers", () => {
     ["light", "mushroom-addition-card-light", "light.kitchen", "ulm-light"],
     ["scene", "mushroom-addition-card-scenes", "scene.relax", "scene-grid"],
     ["person", "mushroom-addition-card-person", "person.joris", "ulm-person"],
-    ["battery", "mushroom-addition-card-battery", "sensor.battery", "battery-track"],
+    ["battery", "mushroom-addition-card-battery", "sensor.battery", "ulm-default-battery"],
     ["energy", "mushroom-addition-card-graph", "sensor.power", "sparkline"],
     ["media", "mushroom-addition-card-media-player", "media_player.tv", "ulm-media"],
     ["cover", "mushroom-addition-card-cover", "cover.blind", "ulm-controls"],
-    ["vacuum", "mushroom-addition-card-vacuum", "vacuum.robot", "ulm-vacuum"],
+    ["vacuum", "mushroom-addition-card-vacuum", "vacuum.robot", "ulm-default-vacuum"],
     ["security", "mushroom-addition-custom-card-eraycetinay-lock", "alarm_control_panel.home", "ulm-security"],
   ])("renders distinct %s markup", async (_family, tag, entity, marker) => {
     const item = CATALOG.find((entry) => entry.tag === tag)!;
@@ -270,7 +310,8 @@ describe("family renderers", () => {
     expect(signatures).toMatchInlineSnapshot(`
       {
         "battery": [
-          "ulm-battery",
+          "ulm-row",
+          "ulm-default-battery",
           "ulm-icon",
           "ulm-copy",
           "ulm-name",
@@ -286,7 +327,7 @@ describe("family renderers", () => {
           "ulm-control",
         ],
         "energy": [
-          "ulm-metric",
+          "ulm-default-graph",
           "ulm-icon",
           "ulm-copy",
           "ulm-name",
@@ -319,15 +360,9 @@ describe("family renderers", () => {
         ],
         "scene": [
           "ulm-scenes",
-          "ulm-copy",
-          "ulm-name",
-          "ulm-label",
         ],
         "weather": [
           "ulm-weather",
-          "ulm-icon",
-          "ulm-name",
-          "ulm-label",
         ],
       }
     `);
