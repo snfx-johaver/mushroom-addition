@@ -83,10 +83,19 @@ const defaultStructures: Record<string, { required: string[]; forbidden: string[
   card_title: { required: ["ulm-title", "ulm-copy"], forbidden: ["ulm-icon", "sparkline"] },
   card_vacuum: { required: ["ulm-default-vacuum", "vacuum-actions"], forbidden: ["sparkline"] },
   card_vertical_button: { required: ["ulm-vertical-button", "ulm-icon"], forbidden: ["sparkline"] },
-  card_weather: { required: ["legacy-weather", "legacy-weather-current", "legacy-weather-details"], forbidden: ["ulm-light-slider"] },
-  card_weather_ulm: { required: ["ulm-weather", "weather-metrics"], forbidden: ["legacy-weather", "ulm-light-slider"] },
+  card_weather: { required: ["detailed-weather", "detailed-weather-main", "detailed-weather-details"], forbidden: ["native-weather", "ulm-light-slider"] },
+  card_weather_ulm: { required: ["native-weather", "weather-metrics"], forbidden: ["detailed-weather", "ulm-light-slider"] },
   card_welcome_scenes: { required: ["welcome-scenes", "welcome-toolbar", "scene-grid"], forbidden: ["sparkline", "room-main"] },
 };
+
+const defaultBatchTwo = new Set([
+  "card_title",
+  "card_vacuum",
+  "card_vertical_button",
+  "card_weather",
+  "card_weather_ulm",
+  "card_welcome_scenes",
+]);
 
 const acceptedDefaults = Object.fromEntries(Object.entries(defaultStructures).map(([sourceId, structure]) => [
   sourceId,
@@ -96,14 +105,14 @@ const acceptedDefaults = Object.fromEntries(Object.entries(defaultStructures).ma
     fixturePath: "demo/default-card-comparison.html",
     artifactPath: `docs/assets/visual-audit/${sourceId}-comparison.png`,
     themes: ["light"],
-    widths: [320],
+    widths: defaultBatchTwo.has(sourceId) ? [560] : [320],
     requiredRegions: structure.required,
     forbiddenRegions: structure.forbidden,
     status: "accepted",
     inspectedAt: "2026-09-23",
-    deviations: [
-      "The standalone fixture abbreviates MDI glyphs; Home Assistant renders the configured icons.",
-    ],
+    deviations: defaultBatchTwo.has(sourceId)
+      ? []
+      : ["The standalone fixture abbreviates MDI glyphs; Home Assistant renders the configured icons."],
   } satisfies Partial<VisualAuditEntry>,
 ]));
 
@@ -525,6 +534,117 @@ const accepted: Record<string, Partial<VisualAuditEntry>> = {
 };
 
 const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
+  card_title: {
+    status: "pending",
+    pickerAccepted: true,
+    editorAccepted: true,
+    visualAccepted: true,
+    statesAccepted: true,
+    interactionsAccepted: true,
+    liveAccepted: false,
+    inspectedAt: "2026-09-23",
+    reviewerNotes: [
+      "Manually inspected the focused 560px side-by-side: title, subtitle, weights, opacity, spacing, and icon-free hierarchy match the pinned source.",
+      "Picker defaults, graphical editor round trip, legacy normalization, and the source-defined non-interactive tap action pass tests/default-batch-two-certification.test.ts.",
+      "The comparison fixture renders actual @mdi/js SVG paths; this source intentionally has no icon.",
+      "Authenticated Home Assistant E2E has not been run, so Live remains No.",
+    ],
+  },
+  card_vacuum: {
+    status: "pending",
+    pickerAccepted: true,
+    editorAccepted: true,
+    visualAccepted: true,
+    statesAccepted: true,
+    interactionsAccepted: true,
+    liveAccepted: false,
+    inspectedAt: "2026-09-23",
+    reviewerNotes: [
+      "Manually inspected the focused 492px source-width comparison in the cleaning state: icon/name/state header and four source controls are represented.",
+      "Docked, cleaning, returning, camera-toggle, optional room-script, and forced-background states pass local certification.",
+      "Start/stop, return-to-base, locate, room-script, and card more-info actions have exact Home Assistant payload assertions.",
+      "Authenticated Home Assistant E2E has not been run, so Live remains No.",
+    ],
+    deviations: [
+      "The optional browser_mod popup is not exposed; the configured camera map is rendered inline and the card surface uses standard more-info.",
+    ],
+  },
+  card_vertical_button: {
+    status: "pending",
+    pickerAccepted: true,
+    editorAccepted: true,
+    visualAccepted: true,
+    statesAccepted: true,
+    interactionsAccepted: true,
+    liveAccepted: false,
+    inspectedAt: "2026-09-23",
+    reviewerNotes: [
+      "Manually inspected the focused 560px comparison against the pinned vertical-buttons helper and reference.",
+      "Active/inactive color treatment, 42px icon cell, state/option text, and entity-value label behavior pass local state tests.",
+      "Exact actions are asserted for input_select, input_boolean, switch, light, automation, input_button, fan, vacuum, script, button, and both lock states.",
+      "Authenticated Home Assistant E2E has not been run, so Live remains No.",
+    ],
+    deviations: [
+      "The pinned catalog path is the vertical_buttons styling helper; domain actions are taken from the companion card_vertical_button source template.",
+    ],
+  },
+  card_weather: {
+    status: "pending",
+    pickerAccepted: true,
+    editorAccepted: true,
+    visualAccepted: true,
+    statesAccepted: true,
+    interactionsAccepted: true,
+    liveAccepted: false,
+    inspectedAt: "2026-09-23",
+    reviewerNotes: [
+      "Manually inspected the focused 423px source-width comparison: blue compact surface, condition icon, current temperature, extrema, and secondary weather detail match the pinned reference hierarchy.",
+      "Picker/editor defaults, forecast subscription, condition state, extrema/precipitation behavior, and exact more-info card action pass local certification.",
+      "The original Lit renderer replaces upstream custom:simple-weather-card without requiring that frontend dependency.",
+      "Authenticated Home Assistant E2E has not been run, so Live remains No.",
+    ],
+    deviations: [
+      "Upstream embeds custom:simple-weather-card; this plugin provides an original Lit equivalent without requiring that frontend dependency.",
+    ],
+  },
+  card_weather_ulm: {
+    status: "pending",
+    pickerAccepted: true,
+    editorAccepted: true,
+    visualAccepted: true,
+    statesAccepted: true,
+    interactionsAccepted: true,
+    liveAccepted: false,
+    inspectedAt: "2026-09-23",
+    reviewerNotes: [
+      "Manually inspected the focused 471px source-width comparison: colored condition icon, name/state hierarchy, and humidity/temperature metric row match the pinned source.",
+      "Condition icon/color states, picker/editor native defaults, and exact more-info card action pass local certification.",
+      "The optional upstream popup remains intentionally unsupported; standard Home Assistant more-info is used instead.",
+      "Authenticated Home Assistant E2E has not been run, so Live remains No.",
+    ],
+    deviations: [
+      "The optional popup_weather_forecast/browser_mod path is not exposed; the card uses standard Home Assistant more-info.",
+    ],
+  },
+  card_welcome_scenes: {
+    status: "pending",
+    pickerAccepted: true,
+    editorAccepted: true,
+    visualAccepted: true,
+    statesAccepted: true,
+    interactionsAccepted: true,
+    liveAccepted: false,
+    inspectedAt: "2026-09-23",
+    reviewerNotes: [
+      "Manually inspected the focused 560px comparison: collapse chip, localized greeting, weather/date chip, settings chip, scenes heading, and five source-style pills are represented.",
+      "Expanded/collapsed states, seven-item migration, semantic picker defaults, and graphical editor round trip pass local certification.",
+      "Exact payloads are asserted for collapse toggle, dashboard navigation, scene, media player, input select, script, generic toggle, and per-item navigation interactions.",
+      "Authenticated Home Assistant E2E has not been run, so Live remains No.",
+    ],
+    deviations: [
+      "Upstream can auto-discover five light entities through custom:auto-entities; this plugin requires explicit scene_items for deterministic editor and action behavior.",
+    ],
+  },
   ...Object.fromEntries(([
     ["card_person", 496],
     ["card_power_outlet", 496],

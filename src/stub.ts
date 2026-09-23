@@ -37,7 +37,12 @@ export const createStubConfig = (
       terms.every((term) => entityId.toLowerCase().includes(term)) &&
       excludedTerms.every((term) => !entityId.toLowerCase().includes(term)));
   const semanticPrimary =
-    descriptor.upstreamId === "card_generic"
+    descriptor.upstreamId === "card_title"
+      ? undefined
+      : descriptor.upstreamId === "card_vertical_button"
+        ? findEntity(["light"], []) ??
+          findEntity(["switch", "input_boolean", "fan", "vacuum", "script", "button", "lock"], [])
+      : descriptor.upstreamId === "card_generic"
       ? findEntity(["sensor"], ["bedroom", "temperature"])
       : descriptor.upstreamId === "card_graph"
         ? findEntity(["sensor"], ["cv", "plug", "power"])
@@ -66,6 +71,7 @@ export const createStubConfig = (
                                 ? findEntity(["light"], [])
                                 : undefined;
   const entity = descriptor.upstreamId === "card_scenes"
+    || descriptor.upstreamId === "card_title"
     ? undefined
     : semanticPrimary ?? firstMatchingEntity(descriptor, hass, entities, entitiesFallback);
   const isText = ["text", "navigation"].includes(descriptor.family);
@@ -235,6 +241,41 @@ export const createStubConfig = (
         show_controls: true,
         ulm_card_thermostat_enable_controls: true,
         ulm_card_thermostat_enable_display_temperature: true,
+      }
+      : {}),
+    ...(descriptor.upstreamId === "card_title"
+      ? {
+        name: "Living room",
+        secondary: "Lights and climate",
+        tap_action: { action: "none" },
+      }
+      : {}),
+    ...(descriptor.upstreamId === "card_vertical_button"
+      ? {
+        icon: undefined,
+        ulm_card_vertical_button_color: "blue",
+        ulm_card_vertical_button_state: "on",
+      }
+      : {}),
+    ...(descriptor.upstreamId === "card_weather"
+      ? {
+        show_forecast: defaultVariant !== "native",
+        ulm_card_weather_primary_info: "extrema",
+        ulm_card_weather_secondary_info: "precipitation",
+      }
+      : {}),
+    ...(descriptor.upstreamId === "card_welcome_scenes"
+      ? {
+        name: undefined,
+        secondary: "Scenes",
+        collapse_entity: findEntity(["input_boolean"], ["collapse"]) ??
+          findEntity(["input_boolean"], ["dropdown"]) ??
+          findEntity(["input_boolean"], []),
+        scene_items: available
+          .filter((entityId) => entityId.startsWith("scene."))
+          .slice(0, 5)
+          .map((entityId) => ({ entity: entityId })),
+        tap_action: { action: "none" },
       }
       : {}),
   };

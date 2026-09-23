@@ -12,6 +12,7 @@ export interface HassEntity {
 export interface HomeAssistant {
   states: Record<string, HassEntity>;
   language?: string;
+  user?: { name?: string };
   localize?: (key: string) => string;
   callService: (
     domain: string,

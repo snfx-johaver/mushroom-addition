@@ -147,7 +147,12 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
   scene: (item) => [
     ...common(item),
     ...(item.upstreamId === "card_welcome_scenes"
-      ? [entity(["input_boolean"], "collapse_entity"), toggle("collapsed")]
+      ? [
+        entity(["input_boolean"], "collapse_entity"),
+        entity(["weather"], "weather_entity"),
+        text("settings_path"),
+        toggle("collapsed"),
+      ]
       : []),
   ],
   presence: (item, config) => [
@@ -164,10 +169,30 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
   battery: (item) => [...common(item)],
   bar: (item) => [...common(item)],
   energy: (item) => [...common(item), entity(["sensor"], "min_entity"), entity(["sensor"], "max_entity"), toggle("show_graph")],
-  sensor: (item) => [...common(item), toggle("show_graph")],
+  sensor: (item) => [
+    ...common(item),
+    ...(item.upstreamId === "card_vertical_button"
+      ? [
+        { name: "ulm_card_vertical_button_color", selector: { ui_color: {} } },
+        text("ulm_card_vertical_button_state"),
+      ]
+      : [toggle("show_graph")]),
+  ],
   media: (item) => [...common(item), toggle("show_controls"), ...(item.upstreamId === "custom_card_playstation" ? [{ name: "console_platform", selector: { select: { options: ["ps5", "xbox"] } } }] : [])],
   cover: (item) => [...common(item), toggle("show_controls")],
-  vacuum: (item) => [...common(item), toggle("show_controls")],
+  vacuum: (item) => [
+    ...common(item),
+    toggle("show_controls"),
+    ...(item.upstreamId === "card_vacuum"
+      ? [
+        entity(["camera"], "ulm_card_vacuum_camera"),
+        toggle("ulm_card_vacuum_camera_toggle"),
+        entity(["script"], "ulm_card_vacuum_room"),
+        { name: "ulm_card_vacuum_room_icon", selector: { icon: {} } },
+        toggle("ulm_card_vacuum_force_background_color"),
+      ]
+      : []),
+  ],
   security: (item) => [...common(item)],
   navigation: (item) => [
     ...(item.variants?.length ? [select("variant", item.variants.map((variant) => ({

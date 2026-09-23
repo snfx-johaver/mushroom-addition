@@ -45,8 +45,15 @@
       [data-source="card_input_boolean"] .implementation { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       [data-source="card_room"] .implementation { grid-template-columns: 220px; }
       [data-source="card_vacuum"] .implementation { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+      [data-source="card_vacuum"] .implementation {
+        --card-background-color: #1d222a;
+        --ha-card-background: #1d222a;
+        --primary-text-color: #fff;
+        --secondary-text-color: #8f9297;
+      }
       ha-card { display: block; }
-      ha-icon { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; font-size: 9px; font-weight: 700; }
+      ha-icon { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; }
+      ha-icon svg { display: block; width: 100%; height: 100%; fill: currentColor; }
       @media (max-width: 760px) { .columns { grid-template-columns: 1fr; } }
     </style>
   </head>

@@ -106,25 +106,16 @@ export const sharedStyles = css`
   }
   .metric-pill ha-icon { --mdc-icon-size: 18px; color: rgba(var(--ulm-grey), .9); }
   .ulm-weather { padding: 12px; }
-  .legacy-weather {
-    display: grid;
-    min-height: 86px;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    gap: 18px;
-    padding: 16px 22px;
-    border-radius: 20px;
-    background: #4aa8e8;
-    color: #fff;
-  }
-  .legacy-weather-current { display: flex; align-items: center; gap: 14px; }
-  .legacy-weather-current > ha-icon { --mdc-icon-size: 36px; }
-  .legacy-weather-current span, .legacy-weather-details { display: flex; flex-direction: column; gap: 3px; }
-  .legacy-weather-current b, .legacy-weather-details b { font-size: 16px; }
-  .legacy-weather-current small, .legacy-weather-details span { font-size: 14px; font-weight: 700; text-transform: capitalize; }
-  .legacy-weather-details { align-items: flex-end; }
-  .legacy-weather-details span { display: flex; flex-direction: row; align-items: center; gap: 5px; }
-  .legacy-weather-details ha-icon { --mdc-icon-size: 18px; }
+  .detailed-weather { overflow: hidden; padding: 16px 22px; border-radius: 20px; background: #4aa8e8; color: #fff; }
+  .detailed-weather-main { display: grid; min-height: 54px; grid-template-columns: 1fr auto; align-items: center; gap: 18px; text-align: left; }
+  .detailed-weather-current { display: flex; align-items: center; gap: 14px; }
+  .detailed-weather-current > .detailed-weather-icon { --mdc-icon-size: 36px; }
+  .detailed-weather-current span, .detailed-weather-details { display: flex; flex-direction: column; gap: 3px; }
+  .detailed-weather-current b, .detailed-weather-details b { font-size: 16px; }
+  .detailed-weather-current small, .detailed-weather-details span { font-size: 14px; font-weight: 700; text-transform: capitalize; }
+  .detailed-weather-details { align-items: flex-end; }
+  .detailed-weather-details span { flex-direction: row; align-items: center; gap: 5px; }
+  .detailed-weather-details ha-icon { --mdc-icon-size: 18px; }
   .ulm-weather.has-backdrop {
     background: linear-gradient(135deg, rgba(var(--ulm-blue), .15), rgba(var(--ulm-yellow), .12));
   }
@@ -358,13 +349,14 @@ export const sharedStyles = css`
   .ulm-source-scenes .scene-button { width: 52px; min-width: 52px; min-height: 84px; padding: 5px 5px 7px; border-radius: 50px; }
   .ulm-source-scenes .scene-button i { width: 42px; height: 42px; }
   .ulm-source-scenes .scene-button span { font-size: 9.5px; font-weight: 700; }
-  .welcome-scenes { padding: 18px; }
-  .welcome-toolbar { display: grid; grid-template-columns: 42px 1fr 42px; align-items: center; gap: 10px; margin-bottom: 24px; }
+  .welcome-scenes { padding: 10px; }
+  .welcome-toolbar { display: grid; grid-template-columns: 42px 1fr 42px; align-items: center; gap: 10px; padding: 4px; margin-bottom: 8px; }
   .welcome-toolbar-button, .welcome-date { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; border: 0; border-radius: 22px; background: var(--ha-card-background, #fff); color: var(--primary-text-color); box-shadow: 0 2px 6px rgba(0,0,0,.12); }
   .welcome-date { justify-self: center; gap: 6px; padding: 0 14px; font-weight: 700; }
-  .welcome-heading { display: flex; flex-direction: column; gap: 18px; margin-bottom: 14px; }
-  .welcome-heading b { max-width: 260px; font-size: 28px; line-height: 1.08; }
-  .welcome-heading span { color: var(--primary-text-color); font-size: 18px; font-weight: 700; }
+  .welcome-heading { margin: 0 16px 14px; }
+  .welcome-heading b { max-width: 260px; font-size: 24px; line-height: 1.15; }
+  .welcome-scenes-heading { display: flex; align-items: center; justify-content: space-between; margin: 0 16px 10px; font-size: 18px; }
+  .welcome-scenes-heading ha-icon { --mdc-icon-size: 20px; opacity: .5; }
   .ulm-media { position: relative; display: grid; gap: 12px; overflow: hidden; padding: 12px; }
   .media-art { position: absolute; inset: 0; z-index: 0; background-position: center; background-size: cover; }
   .media-art::after { position: absolute; inset: 0; background: rgba(0,0,0,.25); content: ""; }
@@ -379,17 +371,12 @@ export const sharedStyles = css`
   .media-volume-buttons { justify-content: center; }
   .ulm-vacuum, .ulm-security { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px; }
   .ulm-vacuum .ulm-controls { grid-column: 1 / -1; justify-content: center; }
-  .ulm-default-vacuum { display: grid; min-height: 220px; gap: 22px; padding: 24px; background: #1d222a; color: #fff; }
-  .vacuum-summary { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; }
-  .vacuum-summary .ulm-icon { width: 72px; height: 72px; }
-  .vacuum-summary .ulm-icon ha-icon { --mdc-icon-size: 36px; }
-  .vacuum-summary .ulm-name { font-size: 22px; }
-  .vacuum-summary .ulm-label { font-size: 18px; }
-  .ulm-default-vacuum .ulm-label { color: rgba(255,255,255,.7); }
-  .vacuum-battery { padding: 6px 9px; border-radius: 12px; background: rgba(255,255,255,.1); font-size: 11px; }
-  .vacuum-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-  .vacuum-actions .ulm-control { width: 100%; height: 68px; border-radius: 18px; background: rgba(255,255,255,.1); color: #fff; }
-  .vacuum-actions .ulm-control ha-icon { --mdc-icon-size: 28px; }
+  .ulm-default-vacuum { display: grid; gap: 12px; padding: 12px; }
+  .vacuum-summary { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 12px; }
+  .vacuum-map { display: block; width: 100%; max-height: 220px; border-radius: 20px; object-fit: cover; }
+  .vacuum-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .vacuum-actions .ulm-control { width: 100%; background: rgba(var(--ulm-grey), .08); }
+  .ulm-default-vacuum.force-background { background: rgba(var(--ulm-blue), .14); }
   .security-status { padding: 5px 9px; border-radius: 10px; background: rgba(var(--ulm-green), .12); color: rgb(var(--ulm-green)); font-size: 11px; font-weight: 700; }
   .ulm-navigation { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px; }
   .ulm-cover { display: grid; gap: 8px; padding: 0 12px 12px; }
@@ -472,13 +459,18 @@ export const sharedStyles = css`
   .gauge-ring { position: relative; display: grid; width: 64px; height: 64px; place-items: center; border-radius: 50%; background: conic-gradient(rgb(var(--ulm-blue)) var(--gauge), rgba(var(--ulm-grey), .12) 0); }
   .gauge-ring::before { content: ""; position: absolute; width: 48px; height: 48px; border-radius: 50%; background: var(--card-background-color); }
   .gauge-ring b { position: relative; z-index: 1; font-size: 11px; }
-  .ulm-title { display: flex; align-items: center; gap: 10px; padding: 8px 2px; box-shadow: none; background: transparent; }
-  .ulm-title .ulm-name { font-size: 18px; }
+  .ulm-title { display: flex; align-items: center; gap: 10px; margin: 6px 0 0 18px; padding: 6px; box-shadow: none; background: transparent; }
+  .ulm-title .ulm-name { font-size: 1.5rem; font-weight: 700; }
+  .ulm-title .ulm-label { font-size: 1rem; font-weight: 700; opacity: .4; }
   .ulm-title.variant-divider-title { padding-bottom: 10px; border-bottom: 2px solid var(--divider-color); }
   .ulm-title.variant-divider-subtitle { padding-bottom: 7px; border-bottom: 1px solid var(--divider-color); }
   .ulm-title.variant-divider-subtitle .ulm-name { color: var(--secondary-text-color); font-size: 14px; }
-  .ulm-vertical-button { display: flex; min-height: 96px; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px; text-align: center; }
-  .ulm-vertical-button .ulm-copy { align-items: center; }
+  .ulm-vertical-button { min-height: 82px; padding: 10px 0 8px; text-align: center; }
+  .vertical-button-control { display: grid; width: 100%; place-items: center; gap: 0; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+  .vertical-button-control .ulm-icon { width: 42px; height: 42px; }
+  .vertical-button-control .ulm-icon ha-icon { --mdc-icon-size: 20px; }
+  .vertical-button-control .ulm-name { margin-top: 10px; font-size: 14px; font-weight: 700; }
+  .vertical-button-control .ulm-label { align-self: start; justify-self: center; font-size: 12px; font-weight: 800; opacity: .4; }
   .ulm-binary.is-alert { background: rgba(var(--ulm-red), .1); }
   .ulm-simple-default { grid-template-columns: auto minmax(0, 1fr); }
   .ulm-default-navigation {

@@ -175,8 +175,8 @@ describe("family renderers", () => {
       show_forecast: true,
     });
     expect(markup).toContain("ulm-weather");
-    expect(markup).toContain("legacy-weather-current");
-    expect(markup).toContain("legacy-weather-details");
+    expect(markup).toContain("detailed-weather-main");
+    expect(markup).toContain("detailed-weather-details");
     expect(markup).toContain("17");
     expect(markup).toContain("partlycloudy");
     expect((document.createElement("mushroom-addition-card-weather") as HTMLElement).tagName).toBe("MUSHROOM-ADDITION-CARD-WEATHER");
@@ -294,11 +294,11 @@ describe("family renderers", () => {
       variant: "native",
       show_forecast: true,
     });
-    expect(detailed).toContain("legacy-weather");
-    expect(detailed).toContain("legacy-weather-current");
-    expect(detailed).toContain("legacy-weather-details");
+    expect(detailed).toContain("detailed-weather");
+    expect(detailed).toContain("detailed-weather-main");
+    expect(detailed).toContain("detailed-weather-details");
     expect(native).toContain("weather-metrics");
-    expect(native).not.toContain("weather-forecast");
+    expect(native).toContain("native-weather");
   });
 
   it("renders Bar Card as a compact header and 35px progress bar without graph regions", async () => {
@@ -348,8 +348,8 @@ describe("family renderers", () => {
     ["card_title", "mushroom-addition-card-title", "sensor.power", "ulm-title", "ulm-icon"],
     ["card_vacuum", "mushroom-addition-card-vacuum", "vacuum.robot", "ulm-default-vacuum", "sparkline"],
     ["card_vertical_button", "mushroom-addition-card-vertical-button", "light.kitchen", "ulm-vertical-button", "sparkline"],
-    ["card_weather", "mushroom-addition-card-weather", "weather.home", "legacy-weather", "ulm-light-slider"],
-    ["card_weather_ulm", "mushroom-addition-card-weather-ulm", "weather.home", "weather-metrics", "legacy-weather"],
+    ["card_weather", "mushroom-addition-card-weather", "weather.home", "detailed-weather", "ulm-light-slider"],
+    ["card_weather_ulm", "mushroom-addition-card-weather-ulm", "weather.home", "weather-metrics", "detailed-weather"],
     ["card_welcome_scenes", "mushroom-addition-card-welcome-scenes", "scene.relax", "welcome-scenes", "sparkline"],
   ])("enforces the %s visual structure", async (_id, tag, entity, required, forbidden) => {
     const markup = await render(tag, {

@@ -67,18 +67,22 @@ const hass: HomeAssistant = {
     "scene.night": { entity_id: "scene.night", state: "scening", attributes: { friendly_name: "Night" } },
     "scene.music": { entity_id: "scene.music", state: "scening", attributes: { friendly_name: "Music" } },
     "script.goodnight": { entity_id: "script.goodnight", state: "off", attributes: { friendly_name: "Good night" } },
+    "script.clean_living_room": { entity_id: "script.clean_living_room", state: "off", attributes: { friendly_name: "Clean living room", icon: "mdi:sofa" } },
     "climate.living": { entity_id: "climate.living", state: "heat", attributes: { friendly_name: "Living room", current_temperature: 19, temperature: 21 } },
     "vacuum.robot": { entity_id: "vacuum.robot", state: "cleaning", attributes: { friendly_name: "Roborock", battery_level: 80 } },
     "vacuum.robot_docked": { entity_id: "vacuum.robot_docked", state: "docked", attributes: { friendly_name: "Roborock", battery_level: 100 } },
     "vacuum.robot_returning": { entity_id: "vacuum.robot_returning", state: "returning", attributes: { friendly_name: "Roborock", battery_level: 62 } },
-    "weather.home": { entity_id: "weather.home", state: "rainy", attributes: { friendly_name: "Home", temperature: 17, temperature_unit: "°C", humidity: 68, wind_speed: 4, wind_speed_unit: "mi/h" } },
+    "weather.home": { entity_id: "weather.home", state: "rainy", attributes: { friendly_name: "Home", temperature: 49.3, temperature_unit: "°F", humidity: 68, wind_speed: 4, wind_speed_unit: "mi/h" } },
+    "weather.ulm": { entity_id: "weather.ulm", state: "partlycloudy", attributes: { friendly_name: "Lieusaint", temperature: 21, temperature_unit: "°C", humidity: 75 } },
   },
+  language: "nl",
+  user: { name: "Bas" },
   callService: async () => undefined,
   connection: {
     sendMessagePromise: async <T>() => undefined as T,
     subscribeMessage: async <T>(callback: (message: T) => void) => {
       callback({ forecast: [
-        { condition: "sunny", temperature: 20, templow: 12 },
+        { condition: "sunny", temperature: 61, templow: 45.9 },
         { condition: "rainy", temperature: 15, templow: 10 },
         { condition: "cloudy", temperature: 16, templow: 11 },
       ] } as T);
@@ -108,7 +112,7 @@ const entityFor: Record<string, string | undefined> = {
   card_vacuum: "vacuum.robot",
   card_vertical_button: "light.kitchen",
   card_weather: "weather.home",
-  card_weather_ulm: "weather.home",
+  card_weather_ulm: "weather.ulm",
   card_welcome_scenes: "scene.relax",
 };
 
@@ -230,7 +234,7 @@ const variantsFor = (sourceId: string, base: AdditionConfig): AdditionConfig[] =
     }];
     case "card_welcome_scenes": return [{
       ...base,
-      name: "Good afternoon, Joris!",
+      name: undefined,
       secondary: "Scenes",
       collapse_entity: "input_boolean.scenes_collapsed",
       scene_items: [
@@ -245,9 +249,12 @@ const variantsFor = (sourceId: string, base: AdditionConfig): AdditionConfig[] =
     case "card_person": return [{ ...base, entity: "person.joris" }, { ...base, entity: "person.joris_away" }];
     case "card_power_outlet": return [{ ...base, entity: "switch.outlet" }, { ...base, entity: "switch.outlet_off" }];
     case "card_vacuum": return [
-      { ...base, entity: "vacuum.robot_docked" },
-      { ...base, entity: "vacuum.robot" },
-      { ...base, entity: "vacuum.robot_returning" },
+      {
+        ...base,
+        entity: "vacuum.robot",
+        ulm_card_vacuum_room: "script.clean_living_room",
+        ulm_card_vacuum_room_icon: "mdi:sofa",
+      },
     ];
     case "card_weather": return [{ ...base, variant: "detailed", show_forecast: true }];
     case "card_weather_ulm": return [{ ...base, variant: "native", show_forecast: false }];
@@ -258,7 +265,9 @@ const variantsFor = (sourceId: string, base: AdditionConfig): AdditionConfig[] =
 };
 
 const container = document.querySelector("#comparisons")!;
-for (const source of UPSTREAM_CATALOG.filter((item) => item.category === "default-card")) {
+const focusedSource = new URLSearchParams(window.location.search).get("source");
+for (const source of UPSTREAM_CATALOG.filter((item) =>
+  item.category === "default-card" && (!focusedSource || item.upstreamId === focusedSource))) {
   const item = publicItemForSource(source.upstreamId)!;
   const entity = entityFor[source.upstreamId];
   const base = {
@@ -273,6 +282,11 @@ for (const source of UPSTREAM_CATALOG.filter((item) => item.category === "defaul
   section.dataset.source = source.upstreamId;
   section.style.setProperty("--comparison-width", source.upstreamId === "card_cover" ? "309px" : "320px");
   section.innerHTML = `<h2>${source.upstreamId}</h2><div class="columns"><div><div class="column-label">Upstream reference</div><img class="reference" alt="${source.upstreamId} upstream reference" src="/.tmp-ui-minimalist/docs/assets/img/ulm_cards/${referenceFor[source.upstreamId]}"></div><div><div class="column-label">Rendered implementation</div><div class="implementation"></div></div></div>`;
+  const reference = section.querySelector<HTMLImageElement>(".reference")!;
+  reference.addEventListener("load", () => {
+    const width = Math.min(reference.naturalWidth, 560);
+    section.style.setProperty("--comparison-width", `${width}px`);
+  });
   const implementation = section.querySelector(".implementation")!;
   for (const config of variantsFor(source.upstreamId, base)) {
     const element = document.createElement(source.tag) as HTMLElement & {

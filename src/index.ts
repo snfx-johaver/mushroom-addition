@@ -33,6 +33,21 @@ for (const alias of LEGACY_ALIASES) {
   class LegacyAdditionAlias extends MushroomAdditionCard {
     protected descriptor: CatalogItem = aliasDescriptor;
 
+    public static getStubConfig(
+      hass?: HomeAssistant,
+      entities: string[] = [],
+      entitiesFallback: string[] = [],
+    ): AdditionConfig {
+      const config = createStubConfig(aliasDescriptor, hass, entities, entitiesFallback);
+      return {
+        ...config,
+        variant: defaultVariant,
+        show_forecast: alias.tag === "mushroom-addition-card-weather-ulm"
+          ? false
+          : config.show_forecast,
+      };
+    }
+
     public setConfig(config: AdditionConfig): void {
       super.setConfig({ ...config, variant: config.variant ?? defaultVariant });
     }

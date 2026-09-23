@@ -40,9 +40,14 @@ export const handleAction = (
 export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
   const migrated = migrateLegacyConfig(config);
   const upstream = upstreamCompatibility(migrated);
+  const type = String(migrated.type);
+  const title = type.includes("card-title");
+  const welcomeScenes = type.includes("card-welcome-scenes");
+  const weather = type.includes("card-weather");
+  const nativeWeather = type.includes("card-weather-ulm") || migrated.variant === "native";
   const defaultAction = upstream.navigation_path
     ? { action: "navigate", navigation_path: upstream.navigation_path }
-    : { action: upstream.entity ? "more-info" : "none" };
+    : { action: title || welcomeScenes ? "none" : upstream.entity ? "more-info" : "none" };
   const roomDoubleTap = String(config.type).includes("card-room") &&
     upstream.input_select_entity &&
     upstream.input_select_option
@@ -67,6 +72,8 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
     primary_info: upstream.primary_info ?? "name",
     secondary_info: upstream.secondary_info ?? "default",
     tap_action: upstream.tap_action ?? defaultAction,
+    show_controls: upstream.show_controls ?? (type.includes("card-vacuum") ? true : undefined),
+    show_forecast: upstream.show_forecast ?? (weather ? !nativeWeather : undefined),
     hold_action: upstream.hold_action ?? (
       upstream.variant === "small" && typeof upstream.ulm_card_person_battery_entity === "string"
         ? { action: "more-info", entity: upstream.ulm_card_person_battery_entity }
@@ -179,6 +186,38 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
     migrated.tablet_ram_entity ??= entityId(config.ulm_custom_card_nik_tablet_par1);
     migrated.tablet_disk_entity ??= entityId(config.ulm_custom_card_nik_tablet_par2);
     migrated.tablet_power_entity ??= entityId(config.ulm_custom_card_nik_tablet_par3);
+  }
+  if (String(config.type).includes("card-welcome-scenes")) {
+    migrated.collapse_entity ??= entityId(config.ulm_card_welcome_scenes_collapse);
+    if (!migrated.scene_items) {
+      const sceneItems = Array.from({ length: 7 }, (_, index) => {
+        const value = config[`entity_${index + 1}`];
+        if (!value || typeof value !== "object") return undefined;
+        const item = value as Record<string, unknown>;
+        const entity = entityId(item);
+        if (!entity) return undefined;
+        return {
+          entity,
+          name: typeof item.name === "string" ? item.name : undefined,
+          icon: typeof item.icon === "string" ? item.icon : undefined,
+          color: typeof item.color === "string" ? item.color : undefined,
+          state: typeof item.state === "string" ? item.state : undefined,
+          nav_path: typeof item.nav_path === "string" ? item.nav_path : undefined,
+          service_data: item.service_data && typeof item.service_data === "object"
+            ? item.service_data as Record<string, unknown>
+            : undefined,
+        };
+      }).filter((item): item is NonNullable<typeof item> => item !== undefined);
+      if (sceneItems.length) migrated.scene_items = sceneItems;
+    }
+  }
+  if (String(config.type).includes("card-vertical-button")) {
+    migrated.active_state ??= typeof config.ulm_card_vertical_button_state === "string"
+      ? config.ulm_card_vertical_button_state
+      : "on";
+    migrated.icon_color ??= typeof config.ulm_card_vertical_button_color === "string"
+      ? config.ulm_card_vertical_button_color
+      : "blue";
   }
   return migrated;
 };
