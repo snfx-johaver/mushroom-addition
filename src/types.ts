@@ -102,6 +102,13 @@ export interface AdditionConfig {
   min_entity?: string;
   max_entity?: string;
   datetime_entity?: string;
+  date_entity?: string;
+  download_entity?: string;
+  upload_entity?: string;
+  ping_entity?: string;
+  wifi_tracker_entity?: string;
+  gps_tracker_entity?: string;
+  findmy_script_entity?: string;
   lock_entity?: string;
   tablet_button_usb_entity?: string;
   tablet_button_motion_entity?: string;

@@ -32,11 +32,11 @@ describe("visual audit manifest", () => {
   it("reports exact accepted progress without inferring parity from family mappings", () => {
     expect(visualAuditProgress()).toEqual({
       accepted: 12,
-      pickerAccepted: 42,
-      editorAccepted: 42,
-      visualAccepted: 43,
-      statesAccepted: 42,
-      interactionsAccepted: 42,
+      pickerAccepted: 48,
+      editorAccepted: 48,
+      visualAccepted: 49,
+      statesAccepted: 48,
+      interactionsAccepted: 48,
       liveAccepted: 12,
       total: 86,
     });
@@ -160,6 +160,29 @@ describe("visual audit manifest", () => {
         statesAccepted: true,
         interactionsAccepted: true,
         liveAccepted: false,
+      });
+    }
+  });
+
+  it("certifies all five local stages for the person and input custom batch", () => {
+    for (const sourceId of [
+      "custom_card_imswel_person",
+      "custom_card_input_datetime",
+      "custom_card_input_number",
+      "custom_card_irmajavi_entities",
+      "custom_card_irmajavi_speedtest",
+      "custom_card_irmajavi_weather",
+    ]) {
+      expect(VISUAL_AUDIT.find((entry) => entry.sourceId === sourceId)).toMatchObject({
+        status: "pending",
+        pickerAccepted: true,
+        editorAccepted: true,
+        visualAccepted: true,
+        statesAccepted: true,
+        interactionsAccepted: true,
+        liveAccepted: false,
+        fixturePath: "demo/custom-card-comparison.html",
+        widths: [320],
       });
     }
   });

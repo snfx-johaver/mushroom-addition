@@ -57,7 +57,7 @@ public registrations.
 | `custom_card_iAbadia_battery_chip` | custom-card | `custom:mushroom-addition-custom-card-iabadia-battery-chip` | battery | default | `custom_card_iAbadia_battery_chip` |
 | `custom_card_imswel_medias` | custom-card | `custom:mushroom-addition-custom-card-imswel-medias` | media | default | `custom_card_imswel_medias` |
 | `custom_card_imswel_person` | custom-card | `custom:mushroom-addition-custom-card-imswel-person` | presence | default | `custom_card_imswel_person` |
-| `custom_card_input_datetime` | custom-card | `custom:mushroom-addition-custom-card-input-datetime` | text | default | `custom_card_input_datetime` |
+| `custom_card_input_datetime` | custom-card | `custom:mushroom-addition-custom-card-input-datetime` | sensor | default | `custom_card_input_datetime` |
 | `custom_card_input_number` | custom-card | `custom:mushroom-addition-custom-card-input-number` | sensor | default | `custom_card_input_number` |
 | `custom_card_irmajavi_entities` | custom-card | `custom:mushroom-addition-custom-card-irmajavi-entities` | sensor | default | `custom_card_irmajavi_entities` |
 | `custom_card_irmajavi_speedtest` | custom-card | `custom:mushroom-addition-custom-card-irmajavi-speedtest` | energy | default | `custom_card_irmajavi_speedtest` |

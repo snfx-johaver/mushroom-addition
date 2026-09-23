@@ -124,6 +124,10 @@ const legacyEntityKeys = [
   "ulm_card_cover_entity",
   "ulm_card_vacuum_entity",
   "ulm_card_graph_entity",
+  "ulm_card_imswel_person_entity",
+  "ulm_card_input_number_entity",
+  "ulm_custom_card_irmajavi_entities",
+  "ulm_custom_card_irmajavi_weather",
 ] as const;
 
 export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
@@ -218,6 +222,33 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
     migrated.icon_color ??= typeof config.ulm_card_vertical_button_color === "string"
       ? config.ulm_card_vertical_button_color
       : "blue";
+  }
+  if (String(config.type).includes("imswel-person")) {
+    migrated.entity ??= entityId(config.ulm_card_imswel_person_entity);
+    migrated.wifi_tracker_entity ??= entityId(config.ulm_card_imswel_person_wifi_tracker);
+    migrated.gps_tracker_entity ??= entityId(config.ulm_card_imswel_person_gps_tracker);
+    migrated.findmy_script_entity ??= entityId(config.ulm_card_imswel_person_findmy_script);
+    migrated.use_entity_picture ??= config.ulm_card_imswel_person_use_entity_picture === true;
+  }
+  if (String(config.type).includes("irmajavi-entities")) {
+    migrated.entity ??= entityId(config.ulm_custom_card_irmajavi_entities);
+    migrated.entities ??= [1, 2, 3, 4]
+      .map((index) => entityId(config[`ulm_custom_card_irmajavi_entities_entity_${index}`]))
+      .filter((value): value is string => value !== undefined);
+  }
+  if (String(config.type).includes("irmajavi-speedtest")) {
+    migrated.download_entity ??= entityId(config.ulm_custom_card_irmajavi_speedtest_download_speed_entity);
+    migrated.upload_entity ??= entityId(config.ulm_custom_card_irmajavi_speedtest_upload_speed_entity);
+    migrated.ping_entity ??= entityId(config.ulm_custom_card_irmajavi_speedtest_ping_entity);
+    migrated.entity ??= migrated.download_entity;
+  }
+  if (String(config.type).includes("irmajavi-weather")) {
+    migrated.entity ??= entityId(config.ulm_custom_card_irmajavi_weather);
+    migrated.temperature_entity ??= entityId(config.ulm_custom_card_irmajavi_weather_temperature_outside);
+    migrated.date_entity ??= entityId(config.ulm_custom_card_irmajavi_weather_date);
+    migrated.entities ??= [1, 2, 3, 4]
+      .map((index) => entityId(config[`ulm_custom_card_irmajavi_weather_entity_${index}`]))
+      .filter((value): value is string => value !== undefined);
   }
   return migrated;
 };

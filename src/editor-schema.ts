@@ -81,6 +81,45 @@ const personInfoEntities = new Set([
   "ulm_card_person_battery_state_entity",
   "ulm_card_person_commute_entity",
 ]);
+const certifiedCoreVariables = new Set([
+  "ulm_card_imswel_person_entity",
+  "ulm_card_imswel_person_wifi_tracker",
+  "ulm_card_imswel_person_gps_tracker",
+  "ulm_card_imswel_person_findmy_script",
+  "ulm_card_imswel_person_use_entity_picture",
+  "ulm_card_input_datetime_name",
+  "ulm_card_input_number_entity",
+  "ulm_card_input_number_name",
+  "ulm_custom_card_irmajavi_entities",
+  "ulm_custom_card_irmajavi_entities_entity_1",
+  "ulm_custom_card_irmajavi_entities_entity_2",
+  "ulm_custom_card_irmajavi_entities_entity_3",
+  "ulm_custom_card_irmajavi_entities_entity_4",
+  "ulm_custom_card_irmajavi_entities_icon",
+  "ulm_custom_card_irmajavi_entities_name",
+  "ulm_custom_card_irmajavi_entities_name_1",
+  "ulm_custom_card_irmajavi_entities_name_2",
+  "ulm_custom_card_irmajavi_entities_name_3",
+  "ulm_custom_card_irmajavi_entities_name_4",
+  "ulm_custom_card_irmajavi_entitites_name",
+  "ulm_custom_card_irmajavi_speedtest_color",
+  "ulm_custom_card_irmajavi_speedtest_download_speed_entity",
+  "ulm_custom_card_irmajavi_speedtest_ping_entity",
+  "ulm_custom_card_irmajavi_speedtest_router_model",
+  "ulm_custom_card_irmajavi_speedtest_router_name",
+  "ulm_custom_card_irmajavi_speedtest_upload_speed_entity",
+  "ulm_custom_card_irmajavi_weather",
+  "ulm_custom_card_irmajavi_weather_date",
+  "ulm_custom_card_irmajavi_weather_entity_1",
+  "ulm_custom_card_irmajavi_weather_entity_2",
+  "ulm_custom_card_irmajavi_weather_entity_3",
+  "ulm_custom_card_irmajavi_weather_entity_4",
+  "ulm_custom_card_irmajavi_weather_name_1",
+  "ulm_custom_card_irmajavi_weather_name_2",
+  "ulm_custom_card_irmajavi_weather_name_3",
+  "ulm_custom_card_irmajavi_weather_name_4",
+  "ulm_custom_card_irmajavi_weather_temperature_outside",
+]);
 
 const choiceOptions: Record<string, Array<{ value: string; label: string }>> = {
   ulm_card_weather_primary_info: [
@@ -425,6 +464,61 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
       select("chart_type", [{ value: "radialBar", label: "Radial utilization rings" }]),
       ...presentation(),
     ]
+    : item.upstreamId === "custom_card_imswel_person"
+      ? [
+        entity(["person"]),
+        entity(["device_tracker"], "wifi_tracker_entity"),
+        entity(["device_tracker"], "gps_tracker_entity"),
+        entity(["script"], "findmy_script_entity"),
+        entity(["sensor"], "battery_entity"),
+        toggle("use_entity_picture"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_input_datetime"
+      ? [
+        entity(["input_datetime"]),
+        text("ulm_card_input_datetime_name"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_input_number"
+      ? [
+        entity(["input_number", "counter", "select", "input_select"]),
+        text("ulm_card_input_number_name"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_irmajavi_entities"
+      ? [
+        entity(),
+        { name: "ulm_custom_card_irmajavi_entities_icon", selector: { icon: {} } },
+        text("ulm_custom_card_irmajavi_entities_name"),
+        ...[1, 2, 3, 4].flatMap((index) => [
+          entity(undefined, `ulm_custom_card_irmajavi_entities_entity_${index}`),
+          text(`ulm_custom_card_irmajavi_entities_name_${index}`),
+        ]),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_irmajavi_speedtest"
+      ? [
+        entity(["sensor"]),
+        entity(["sensor"], "download_entity"),
+        entity(["sensor"], "upload_entity"),
+        entity(["sensor"], "ping_entity"),
+        text("ulm_custom_card_irmajavi_speedtest_router_name"),
+        text("ulm_custom_card_irmajavi_speedtest_router_model"),
+        { name: "ulm_custom_card_irmajavi_speedtest_color", selector: { ui_color: {} } },
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_irmajavi_weather"
+      ? [
+        entity(["weather"]),
+        entity(["sensor"], "temperature_entity"),
+        entity(["sensor"], "date_entity"),
+        ...[1, 2, 3, 4].flatMap((index) => [
+          entity(undefined, `ulm_custom_card_irmajavi_weather_entity_${index}`),
+          text(`ulm_custom_card_irmajavi_weather_name_${index}`),
+        ]),
+        ...presentation(),
+      ]
     : item.upstreamId === "custom_card_homeassistant_updates"
         ? [
         entity(["update", "sensor", "binary_sensor"]),
@@ -494,6 +588,7 @@ export const upstreamEditorSchemaFor = (item: CatalogItem, config?: AdditionConf
   ).values()];
   return variables
     .filter((variable) => supportedUpstreamOption(item, variable.name))
+    .filter((variable) => !certifiedCoreVariables.has(variable.name))
     .filter((variable) => !(item.upstreamId === "custom_card_homeassistant_updates" &&
       variable.name === "ulm_card_homeassistant_entity"))
     .filter((variable) => !(item.upstreamId === "custom_card_person_info" && (

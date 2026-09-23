@@ -52,9 +52,10 @@ const familyFor = (id: string): string => {
   if (/vacuum/.test(id)) return "vacuum";
   if (/light/.test(id)) return "light";
   if (/fan|outlet|boolean|script|washer|water_heater|qubino/.test(id)) return "control";
+  if (/input_number|input_datetime/.test(id)) return "sensor";
   if (/title|subtitle|clock|date/.test(id)) return "text";
   if (/camera/.test(id)) return "camera";
-  if (/sensor|elapsed|input_number|input_datetime|update|printer|nas|tablet|flower|car|afval|waste|counter/.test(id)) return "sensor";
+  if (/sensor|elapsed|update|printer|nas|tablet|flower|car|afval|waste|counter/.test(id)) return "sensor";
   return "entity";
 };
 
@@ -96,7 +97,7 @@ const preferredDomainsFor = (id: string, family: string): string[] => {
   if (id.includes("binary_sensor")) return ["binary_sensor"];
   if (id.includes("battery")) return ["sensor"];
   if (id.includes("input_boolean")) return ["input_boolean"];
-  if (id.includes("input_number")) return ["input_number"];
+  if (id.includes("input_number")) return ["input_number", "counter", "select", "input_select"];
   if (id.includes("input_datetime")) return ["input_datetime"];
   if (id.includes("light")) return ["light"];
   if (/media|chromecast|playstation/.test(id)) return ["media_player", "sensor"];

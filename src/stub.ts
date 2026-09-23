@@ -67,13 +67,17 @@ export const createStubConfig = (
                           : descriptor.upstreamId === "custom_card_nik_nas"
                             ? findEntity(["switch", "binary_sensor"], ["nas"]) ??
                                 findEntity(["switch", "binary_sensor"], ["status"])
+                              : descriptor.upstreamId === "custom_card_irmajavi_speedtest"
+                                ? findEntity(["sensor"], ["download"])
                               : descriptor.upstreamId === "card_room"
                                 ? findEntity(["light"], [])
                                 : undefined;
-  const entity = descriptor.upstreamId === "card_scenes"
-    || descriptor.upstreamId === "card_title"
-    ? undefined
-    : semanticPrimary ?? firstMatchingEntity(descriptor, hass, entities, entitiesFallback);
+  const entity = descriptor.upstreamId === "custom_card_input_number"
+    ? available.find((entityId) =>
+      descriptor.preferredDomains?.some((domain) => entityId.startsWith(`${domain}.`)))
+    : descriptor.upstreamId === "card_scenes" || descriptor.upstreamId === "card_title"
+      ? undefined
+      : semanticPrimary ?? firstMatchingEntity(descriptor, hass, entities, entitiesFallback);
   const isText = ["text", "navigation"].includes(descriptor.family);
   const gameConsole = descriptor.upstreamId === "custom_card_playstation";
   const defaultVariant = gameConsole && entity?.toLowerCase().includes("xbox")
@@ -276,6 +280,22 @@ export const createStubConfig = (
           .slice(0, 5)
           .map((entityId) => ({ entity: entityId })),
         tap_action: { action: "none" },
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_imswel_person"
+      ? {
+        wifi_tracker_entity: findEntity(["device_tracker"], ["wifi"]),
+        gps_tracker_entity: findEntity(["device_tracker"], ["gps"]),
+        findmy_script_entity: findEntity(["script"], ["find"]),
+        battery_entity: findEntityExcluding(["sensor"], ["battery"], ["state"]),
+        use_entity_picture: false,
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_irmajavi_speedtest"
+      ? {
+        download_entity: findEntity(["sensor"], ["download"]) ?? entity,
+        upload_entity: findEntity(["sensor"], ["upload"]),
+        ping_entity: findEntity(["sensor"], ["ping"]),
       }
       : {}),
   };

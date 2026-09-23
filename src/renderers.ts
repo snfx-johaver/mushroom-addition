@@ -105,6 +105,40 @@ const button = (label: string, iconName: string, handler: (event: Event) => void
     <ha-icon .icon=${iconName}></ha-icon>
   </button>
 `;
+const holdButton = (
+  label: string,
+  content: TemplateResult,
+  tap: () => void,
+  hold: () => void,
+  disabled = false,
+) => {
+  let timer: number | undefined;
+  let held = false;
+  const cancel = () => {
+    if (timer !== undefined) window.clearTimeout(timer);
+    timer = undefined;
+  };
+  return html`
+    <button class="ulm-control hold-control" aria-label=${label} ?disabled=${disabled}
+      @pointerdown=${(event: Event) => {
+        event.stopPropagation();
+        held = false;
+        timer = window.setTimeout(() => {
+          held = true;
+          hold();
+        }, 500);
+      }}
+      @pointerup=${(event: Event) => { event.stopPropagation(); cancel(); }}
+      @pointercancel=${cancel}
+      @click=${(event: Event) => {
+        event.stopPropagation();
+        if (!held) tap();
+        held = false;
+      }}>
+      ${content}
+    </button>
+  `;
+};
 const runControlAction = (
   event: Event,
   ctx: RenderContext,
@@ -1749,29 +1783,44 @@ const renderMediaLibrary = (ctx: RenderContext): TemplateResult => {
 };
 
 const renderImswelPerson = (ctx: RenderContext): TemplateResult => {
-  const gps = entityFromConfig(ctx, "ulm_card_imswel_person_gps_tracker");
-  const wifi = entityFromConfig(ctx, "ulm_card_imswel_person_wifi_tracker");
-  const findScript = configured<string>(ctx, "ulm_card_imswel_person_findmy_script");
+  const state = ctx.entity?.state ?? "unavailable";
+  const unavailable = state === "unavailable" || state === "unknown";
+  const zone = Object.values(ctx.hass.states).find((entity) =>
+    entity.entity_id.startsWith("zone.") && entity.attributes.friendly_name === state);
+  const locationIcon = unavailable
+    ? "mdi:alert"
+    : state === "home"
+      ? "mdi:home-variant"
+      : state === "not_home"
+        ? "mdi:home-minus"
+        : zone?.attributes.icon || "mdi:help-circle";
+  const label = unavailable
+    ? "Unavailable"
+    : state === "home"
+      ? configured<string>(ctx, "ulm_custom_card_imswel_person_home") || "Home"
+      : state === "not_home"
+        ? configured<string>(ctx, "ulm_custom_card_imswel_person_not_home") || "Away"
+        : state;
+  const usePicture = ctx.config.use_entity_picture ||
+    configured<boolean>(ctx, "ulm_card_imswel_person_use_entity_picture") === true;
   return ctx.actionSurface("custom-imswel-person", html`
-    <div class="imswel-person-main">${attr(ctx.entity, "entity_picture")
+    <div class="imswel-person-main">${usePicture && attr(ctx.entity, "entity_picture")
       ? html`<span class="person-picture" style=${`background-image:url("${String(attr(ctx.entity, "entity_picture"))}")`}></span>`
-      : iconBubble(ctx, "mdi:account", ctx.entity?.state === "home" ? "blue" : "grey")}
-      ${heading(ctx, stateLabel(ctx.entity))}
-      ${linkedState(ctx, "battery_entity") ? html`<b>${stateLabel(linkedState(ctx, "battery_entity"))}</b>` : nothing}
-    </div>
-    <div class="imswel-person-trackers">
-      <span><ha-icon icon="mdi:crosshairs-gps"></ha-icon>${stateLabel(gps)}</span>
-      <span><ha-icon icon="mdi:wifi"></ha-icon>${stateLabel(wifi)}</span>
-      <button @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
-        event.stopPropagation();
-        if (findScript) ctx.service("script", "turn_on", { entity_id: findScript });
-      }}><ha-icon icon="mdi:cellphone-marker"></ha-icon></button>
+      : iconBubble(ctx, "mdi:face-man", unavailable ? "grey" : "blue")}
+      <span class="ulm-copy">
+        <span class="ulm-name">${displayName(ctx.config, ctx.entity)}</span>
+        <span class="ulm-label">${label}</span>
+      </span>
+      <span class="imswel-location ${unavailable ? "is-unavailable" : state === "home" ? "is-home" : "is-away"}">
+        <ha-icon .icon=${locationIcon}></ha-icon>
+      </span>
     </div>
   `);
 };
 
 const renderInputDateTime = (ctx: RenderContext): TemplateResult => {
-  const state = ctx.entity?.state || "00:00:00";
+  const available = Boolean(ctx.entity && !["unavailable", "unknown"].includes(ctx.entity.state));
+  const state = available ? ctx.entity!.state : "00:00:00";
   const time = state.split(" ").at(-1) || "00:00:00";
   const [hours, minutes] = time.split(":").map(Number);
   const setMinutes = (delta: number) => {
@@ -1784,15 +1833,22 @@ const renderInputDateTime = (ctx: RenderContext): TemplateResult => {
   return ctx.actionSurface("custom-input-datetime", html`
     <div class="custom-card-heading">${iconBubble(ctx, "mdi:calendar-clock", "green")}${heading(ctx, stateLabel(ctx.entity))}</div>
     <div class="input-datetime-controls">
-      ${button("Earlier", "mdi:arrow-down", (event) => { event.stopPropagation(); setMinutes(-15); })}
-      <b>${time.slice(0, 5)}</b>
-      ${button("Later", "mdi:arrow-up", (event) => { event.stopPropagation(); setMinutes(15); })}
+      ${button("15 minutes earlier", "mdi:arrow-down", (event) => { event.stopPropagation(); setMinutes(-15); }, !available)}
+      ${holdButton(
+        "One minute later; hold for one minute earlier",
+        html`<b>${available ? time.slice(0, 5) : "Unavailable"}</b>`,
+        () => setMinutes(1),
+        () => setMinutes(-1),
+        !available,
+      )}
+      ${button("15 minutes later", "mdi:arrow-up", (event) => { event.stopPropagation(); setMinutes(15); }, !available)}
     </div>
   `);
 };
 
 const renderInputNumberCard = (ctx: RenderContext): TemplateResult => {
   const domain = ctx.config.entity?.split(".", 1)[0] ?? "input_number";
+  const available = Boolean(ctx.entity && !["unavailable", "unknown"].includes(ctx.entity.state));
   const decrement = domain === "counter" ? ["counter", "decrement"]
     : domain === "select" ? ["select", "select_previous"]
       : domain === "input_select" ? ["input_select", "select_previous"]
@@ -1810,58 +1866,116 @@ const renderInputNumberCard = (ctx: RenderContext): TemplateResult => {
           const step = numeric(attr(ctx.entity, "step")) ?? 1;
           ctx.service("number", "set_value", { entity_id: ctx.config.entity, value: (numeric(ctx.entity?.state) ?? 0) - step });
         } else ctx.service(decrement[0], decrement[1], { entity_id: ctx.config.entity });
-      })}
-      <b>${stateLabel(ctx.entity)}</b>
+      }, !available)}
+      <button class="input-number-value" aria-label="Stop cover" ?disabled=${!available}
+        @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => {
+          event.stopPropagation();
+          ctx.service("cover", "stop_cover", { entity_id: ctx.config.entity });
+        }}><b>${stateLabel(ctx.entity)}</b></button>
       ${button("Next value", "mdi:arrow-up", (event) => {
         event.stopPropagation();
         if (domain === "number") {
           const step = numeric(attr(ctx.entity, "step")) ?? 1;
           ctx.service("number", "set_value", { entity_id: ctx.config.entity, value: (numeric(ctx.entity?.state) ?? 0) + step });
         } else ctx.service(increment[0], increment[1], { entity_id: ctx.config.entity });
-      })}
+      }, !available)}
     </div>
   `);
 };
 
 const renderIrmajaviEntities = (ctx: RenderContext): TemplateResult => {
-  const details = configuredEntities(ctx).slice(0, 4);
+  const details = [1, 2, 3, 4]
+    .map((index) => entityFromConfig(ctx, `ulm_custom_card_irmajavi_entities_entity_${index}`) ??
+      (ctx.config.entities?.[index - 1] ? ctx.hass.states[ctx.config.entities[index - 1]] : undefined));
+  const mainName = configured<string>(
+    ctx,
+    "ulm_custom_card_irmajavi_entities_name",
+    "ulm_custom_card_irmajavi_entitites_name",
+  ) || displayName(ctx.config, ctx.entity);
   return ctx.actionSurface("custom-irmajavi-entities", html`
-    <div class="irmajavi-header">${iconBubble(ctx, configured<string>(ctx, "ulm_custom_card_irmajavi_entities_icon") || "mdi:alien", "purple")}${heading(ctx, stateLabel(ctx.entity))}</div>
+    <div class="irmajavi-panel">
+      <span class="irmajavi-main-name"><ha-icon .icon=${configured<string>(ctx, "ulm_custom_card_irmajavi_entities_icon") || "mdi:alien"}></ha-icon>${mainName}</span>
+      <b>${stateLabel(ctx.entity)}</b>
+    </div>
     <div class="irmajavi-four">${details.map((entity, index) => html`
-      <span><b>${configured<string>(ctx, `ulm_custom_card_irmajavi_entities_name_${index + 1}`) || displayName({ type: "", entity: entity.entity_id }, entity)}</b><small>${stateLabel(entity)}</small></span>
+      <button ?disabled=${!entity} @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => entity && runControlAction(event, ctx, { action: "more-info" }, entity.entity_id)}>
+        <b>${stateLabel(entity)}</b>
+        <small>${configured<string>(ctx, `ulm_custom_card_irmajavi_entities_name_${index + 1}`) ||
+          (entity ? displayName({ type: "", entity: entity.entity_id }, entity) : `Entity ${index + 1}`)}</small>
+      </button>
     `)}</div>
   `);
 };
 
 const renderIrmajaviSpeedtest = (ctx: RenderContext): TemplateResult => {
-  const details = configuredEntities(ctx);
-  const download = entityFromConfig(ctx, "ulm_custom_card_irmajavi_speedtest_download_speed_entity") ?? ctx.entity;
-  const upload = entityFromConfig(ctx, "ulm_custom_card_irmajavi_speedtest_upload_speed_entity") ?? details[0];
-  const ping = entityFromConfig(ctx, "ulm_custom_card_irmajavi_speedtest_ping_entity") ?? details[1];
+  const download = linkedState(ctx, "download_entity") ??
+    entityFromConfig(ctx, "ulm_custom_card_irmajavi_speedtest_download_speed_entity") ?? ctx.entity;
+  const upload = linkedState(ctx, "upload_entity") ??
+    entityFromConfig(ctx, "ulm_custom_card_irmajavi_speedtest_upload_speed_entity");
+  const ping = linkedState(ctx, "ping_entity") ??
+    entityFromConfig(ctx, "ulm_custom_card_irmajavi_speedtest_ping_entity");
+  const targets = [download, upload, ping].filter((entity): entity is HassEntity => Boolean(entity));
+  const tone = configured<string>(ctx, "ulm_custom_card_irmajavi_speedtest_color") || "blue";
   return ctx.actionSurface("custom-irmajavi-speedtest", html`
-    <div class="speedtest-router">${iconBubble(ctx, "mdi:router-wireless", "blue")}<span class="ulm-copy"><b class="ulm-name">${configured<string>(ctx, "ulm_custom_card_irmajavi_speedtest_name") || "Router"}</b><span class="ulm-label">${configured<string>(ctx, "ulm_custom_card_irmajavi_speedtest_model") || "Internet connection"}</span></span></div>
-    <button class="speedtest-action" @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
+    <div class="speedtest-router">
+      <span class="ulm-icon tone-${tone}"><ha-icon icon="mdi:wifi"></ha-icon></span>
+      <span class="ulm-copy">
+        <b class="ulm-name">${configured<string>(ctx, "ulm_custom_card_irmajavi_speedtest_router_name") || "router_name"}</b>
+        <span class="ulm-label">${configured<string>(ctx, "ulm_custom_card_irmajavi_speedtest_router_model") || "router_model"}</span>
+      </span>
+    </div>
+    <button class="speedtest-action" ?disabled=${targets.length !== 3}
+      @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
       event.stopPropagation();
-      for (const entity of [download, upload, ping]) if (entity) ctx.service("homeassistant", "update_entity", { entity_id: entity.entity_id });
-    }}><ha-icon icon="mdi:speedometer"></ha-icon><span>Internet speed test</span></button>
+      ctx.service("homeassistant", "update_entity", { entity_id: targets.map((entity) => entity.entity_id) });
+    }}>
+      <ha-icon icon="mdi:speedometer"></ha-icon>
+      <span>${configured<string>(ctx, "ulm_custom_card_irmajavi_speedtest_speedtest") || "Internet speed test"}</span>
+      <ha-icon icon="mdi:chevron-right"></ha-icon>
+    </button>
     <div class="speedtest-metrics">
-      ${[["Download", download], ["Upload", upload], ["Ping", ping]].map(([label, entity]) => html`<span><small>${label}</small><b>${stateLabel(entity as HassEntity | undefined)}</b></span>`)}
+      ${[
+        [configured<string>(ctx, "ulm_custom_card_irmajavi_speedtest_download") || "Download speed", download],
+        [configured<string>(ctx, "ulm_custom_card_irmajavi_speedtest_upload") || "Upload speed", upload],
+      ].map(([label, entity]) => html`
+        <button ?disabled=${!entity} @pointerdown=${(event: Event) => event.stopPropagation()}
+          @click=${(event: Event) => entity && runControlAction(event, ctx, { action: "more-info" }, (entity as HassEntity).entity_id)}>
+          <b>${stateLabel(entity as HassEntity | undefined).replace(" ", "")}</b>
+          <small>${String(label)}</small>
+        </button>
+      `)}
     </div>
   `);
 };
 
 const renderIrmajaviWeather = (ctx: RenderContext): TemplateResult => {
-  const details = configuredEntities(ctx).slice(0, 4);
+  const details = [1, 2, 3, 4]
+    .map((index) => entityFromConfig(ctx, `ulm_custom_card_irmajavi_weather_entity_${index}`) ??
+      (ctx.config.entities?.[index - 1] ? ctx.hass.states[ctx.config.entities[index - 1]] : undefined));
   const temperature = linkedState(ctx, "temperature_entity");
+  const date = linkedState(ctx, "date_entity") ??
+    entityFromConfig(ctx, "ulm_custom_card_irmajavi_weather_date");
   const condition = ctx.entity?.state || "unknown";
-  const weatherIcon = weatherIcons[condition]?.[0] || "mdi:weather-partly-cloudy";
+  const weatherEmoji: Record<string, string> = {
+    "clear-night": "🌙", cloudy: "☁️", exceptional: "🌞", fog: "🌫️", hail: "⛈️",
+    lightning: "⚡", "lightning-rainy": "⛈️", partlycloudy: "⛅", pouring: "🌧️",
+    rainy: "💧", snowy: "❄️", "snowy-rainy": "🌨️", sunny: "☀️", windy: "🌪️",
+  };
   return ctx.actionSurface("custom-irmajavi-weather", html`
-    <div class="irmajavi-weather-header">
-      <span class="weather-emoji"><ha-icon .icon=${weatherIcon}></ha-icon></span>
-      <span class="ulm-copy"><b class="ulm-name">${new Intl.DateTimeFormat(undefined, { weekday: "long", month: "short", day: "numeric" }).format(new Date())}</b><span class="ulm-label">${condition.replaceAll("-", " ")}</span></span>
-      <b>${temperature ? stateLabel(temperature) : `${attr(ctx.entity, "temperature") ?? "—"}°`}</b>
+    <div class="irmajavi-weather-panel">
+      <b class="weather-date">${weatherEmoji[condition] || "❔"} ${date ? stateLabel(date) : "Date unavailable"}</b>
+      <strong>${temperature ? stateLabel(temperature) : `${attr(ctx.entity, "temperature") ?? "—"}°`}</strong>
     </div>
-    <div class="irmajavi-four">${details.map((entity) => html`<span><b>${displayName({ type: "", entity: entity.entity_id }, entity)}</b><small>${stateLabel(entity)}</small></span>`)}</div>
+    <div class="irmajavi-four">${details.map((entity, index) => html`
+      <button ?disabled=${!entity} @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => entity && runControlAction(event, ctx, { action: "more-info" }, entity.entity_id)}>
+        <b>${stateLabel(entity)}</b>
+        <small>${configured<string>(ctx, `ulm_custom_card_irmajavi_weather_name_${index + 1}`) ||
+          (entity ? displayName({ type: "", entity: entity.entity_id }, entity) : `Weather ${index + 1}`)}</small>
+      </button>
+    `)}</div>
   `);
 };
 

@@ -695,38 +695,54 @@ export const sharedStyles = css`
   .media-library-overlay { position: absolute; right: 12px; bottom: 12px; left: 12px; z-index: 1; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 10px; }
   .custom-media-library .ulm-label { color: rgba(255,255,255,.72); }
   .media-platform { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-purple), .75); color: #fff; }
-  .custom-imswel-person { display: grid; gap: 9px; padding: 10px; }
+  .custom-imswel-person { display: grid; padding: 12px; }
   .imswel-person-main { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; }
-  .imswel-person-main .person-picture { width: 44px; height: 44px; border-radius: 50%; background-position: center; background-size: cover; }
-  .imswel-person-trackers { display: grid; grid-template-columns: 1fr 1fr 38px; gap: 6px; }
-  .imswel-person-trackers span, .imswel-person-trackers button { display: flex; min-width: 0; height: 34px; align-items: center; justify-content: center; gap: 4px; overflow: hidden; border: 0; border-radius: 12px; background: rgba(var(--ulm-grey), .08); color: var(--primary-text-color); font-size: 10px; }
+  .imswel-person-main .person-picture { width: 42px; height: 42px; border-radius: 50%; background-position: center; background-size: cover; }
+  .imswel-location { display: grid; width: 16px; height: 16px; place-items: center; border: 2px solid var(--card-background-color); border-radius: 50%; color: #fff; }
+  .imswel-location ha-icon { --mdc-icon-size: 10px; }
+  .imswel-location.is-home { background: rgb(var(--ulm-blue)); }
+  .imswel-location.is-away { background: rgb(var(--ulm-green)); }
+  .imswel-location.is-unavailable { background: rgb(var(--ulm-red)); }
   .input-datetime-controls { display: grid; grid-template-columns: repeat(3, 1fr); align-items: center; gap: 7px; }
   .input-datetime-controls .ulm-control { width: 100%; height: 42px; border-radius: 14px; }
-  .input-datetime-controls > b { padding: 12px 4px; border-radius: 14px; background: rgba(var(--ulm-grey), .08); text-align: center; }
+  .input-datetime-controls .hold-control { font-size: 16px; font-weight: 700; }
   .custom-input-number, .custom-sonos, .custom-mpse-printer, .custom-neekster-update,
   .custom-irmajavi-entities, .custom-irmajavi-weather, .custom-irmajavi-speedtest,
   .custom-light-colorpick, .custom-nik-nas, .custom-nik-tablet { display: grid; gap: 10px; padding: 12px; }
   .input-number-controls, .sonos-controls, .nik-door-controls, .update-controls {
     display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; gap: 7px;
   }
-  .input-number-controls > b { text-align: center; font-size: 16px; }
   .input-number-controls button, .sonos-controls button, .nik-door-controls button, .update-controls button {
     min-height: 42px; border: 0; border-radius: 13px; background: rgba(var(--ulm-grey), .08); color: var(--primary-text-color);
   }
-  .irmajavi-header, .irmajavi-weather-header, .speedtest-router, .nik-nas-header {
+  .input-number-value { font-size: 16px; }
+  .input-number-value:disabled, .speedtest-action:disabled, .irmajavi-four button:disabled { cursor: not-allowed; opacity: .45; }
+  .speedtest-router, .nik-nas-header {
     display: flex; min-width: 0; align-items: center; gap: 10px;
   }
-  .irmajavi-weather-header > b { margin-left: auto; font-size: 18px; }
-  .weather-emoji { display: grid; width: 46px; height: 46px; place-items: center; border-radius: 14px; background: rgba(var(--ulm-blue), .12); color: rgb(var(--ulm-blue)); }
+  .custom-irmajavi-entities, .custom-irmajavi-weather { min-height: 160px; border-radius: 30px; }
+  .irmajavi-panel, .irmajavi-weather-panel { display: grid; min-height: 66px; align-items: center; border: 2px solid rgba(var(--ulm-grey), .65); border-radius: 20px; }
+  .irmajavi-panel { grid-template-columns: 1fr; padding: 0 12px; }
+  .irmajavi-panel > b { margin-left: 23px; color: var(--secondary-text-color); font-size: 14px; }
+  .irmajavi-main-name { display: flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 700; }
+  .irmajavi-main-name ha-icon { --mdc-icon-size: 18px; }
+  .irmajavi-weather-panel { grid-template-columns: 1fr auto; padding-left: 12px; }
+  .irmajavi-weather-panel .weather-date { font-size: 14px; }
+  .irmajavi-weather-panel strong { margin-right: 10px; padding: 10px; border-radius: 12px; background: rgba(var(--ulm-grey), .75); color: #000; font-size: 20px; }
   .irmajavi-four { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
-  .irmajavi-four > span { display: grid; min-width: 0; min-height: 54px; place-items: center; padding: 6px 3px; border-radius: 12px; background: rgba(var(--ulm-grey), .07); text-align: center; }
+  .irmajavi-four > button { display: grid; min-width: 0; min-height: 54px; place-items: center; padding: 6px 3px; border: 0; background: transparent; color: var(--primary-text-color); text-align: center; }
   .irmajavi-four b, .irmajavi-four small { overflow: hidden; max-width: 100%; text-overflow: ellipsis; white-space: nowrap; }
-  .irmajavi-four b { font-size: 10px; } .irmajavi-four small { color: var(--secondary-text-color); font-size: 11px; }
-  .speedtest-action { display: flex; min-height: 40px; align-items: center; gap: 10px; padding: 0 12px; border: 0; border-radius: 12px; background: rgba(var(--ulm-blue), .1); color: var(--primary-text-color); }
-  .speedtest-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-  .speedtest-metrics > span { display: grid; gap: 2px; padding: 8px; border-radius: 10px; background: rgba(var(--ulm-grey), .07); }
+  .irmajavi-four b { font-size: 14px; } .irmajavi-four small { color: var(--secondary-text-color); font-size: 12px; font-weight: 700; }
+  .speedtest-router { flex-direction: column; text-align: center; }
+  .speedtest-router .ulm-icon { width: 62px; height: 62px; }
+  .speedtest-router .ulm-icon ha-icon { --mdc-icon-size: 32px; }
+  .speedtest-router .ulm-copy { align-items: center; }
+  .speedtest-action { display: grid; min-height: 40px; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; padding: 0 12px; border: 2px solid rgba(var(--ulm-grey), .65); border-radius: 10px; background: transparent; color: var(--primary-text-color); font-size: 16px; font-weight: 700; text-align: left; }
+  .speedtest-action ha-icon { --mdc-icon-size: 20px; }
+  .speedtest-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .speedtest-metrics > button { display: grid; gap: 2px; min-height: 80px; place-items: center; padding: 8px; border: 0; border-radius: 14px; background: rgba(var(--ulm-grey), .07); color: var(--primary-text-color); }
   .speedtest-metrics small { color: var(--secondary-text-color); font-size: 10px; }
-  .speedtest-metrics b { overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+  .speedtest-metrics b { overflow: hidden; font-size: 23px; text-overflow: ellipsis; white-space: nowrap; }
   .light-colorpick-top { display: grid; gap: 10px; }
   .light-color-swatches { display: grid; grid-template-columns: repeat(6, 1fr); gap: 7px; }
   .light-color-swatches button { aspect-ratio: 1; border: 3px solid var(--card-background-color); border-radius: 50%; background: var(--swatch); box-shadow: 0 0 0 1px rgba(var(--ulm-grey), .15); }

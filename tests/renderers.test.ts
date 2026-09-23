@@ -699,7 +699,7 @@ describe("family renderers", () => {
     ["httpedo13-thermostat", "climate.living", "custom-compact-thermostat", "compact-thermostat-controls"],
     ["iabadia-battery-chip", "sensor.battery", "custom-battery-chip", "tone-green"],
     ["imswel-medias", "media_player.tv", "custom-media-library", "media-platform"],
-    ["imswel-person", "person.joris", "custom-imswel-person", "imswel-person-trackers"],
+    ["imswel-person", "person.joris", "custom-imswel-person", "imswel-location"],
     ["input-datetime", "input_datetime.alarm", "custom-input-datetime", "input-datetime-controls"],
   ])("uses a source-specific %s composition", async (slug, entity, marker, region) => {
     const tag = `mushroom-addition-custom-card-${slug}`;
@@ -773,7 +773,7 @@ describe("family renderers", () => {
     ["input-number", "sensor.power", "custom-input-number", "input-number-controls"],
     ["irmajavi-entities", "sensor.power", "custom-irmajavi-entities", "irmajavi-four"],
     ["irmajavi-speedtest", "sensor.power", "custom-irmajavi-speedtest", "speedtest-metrics"],
-    ["irmajavi-weather", "weather.home", "custom-irmajavi-weather", "irmajavi-weather-header"],
+    ["irmajavi-weather", "weather.home", "custom-irmajavi-weather", "irmajavi-weather-panel"],
     ["light-colorpick", "light.kitchen", "custom-light-colorpick", "light-color-swatches"],
     ["media-player-sonos", "media_player.tv", "custom-sonos", "sonos-controls"],
     ["more-power-outlet", "sensor.power", "custom-more-power-outlet", "ulm-copy"],
