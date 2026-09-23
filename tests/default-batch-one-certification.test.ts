@@ -407,7 +407,7 @@ describe("queued default batch one certification", () => {
       ["scene", "turn_on", { entity_id: "scene.living_room_relax" }],
       ["media_player", "media_play_pause", { entity_id: "media_player.office" }],
       ["input_select", "select_option", { entity_id: "input_select.scene", option: "Dimmed" }],
-      ["script", "turn_on", { entity_id: "script.welcome_home_briefing" }],
+      ["script", "welcome_home_briefing", { entity_id: "script.welcome_home_briefing" }],
       ["homeassistant", "toggle", { entity_id: "light.joris_iris_1" }],
     ]);
   });

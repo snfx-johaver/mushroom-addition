@@ -77,7 +77,7 @@ public registrations.
 | `custom_card_nik_tablet` | custom-card | `custom:mushroom-addition-custom-card-nik-tablet` | sensor | default | `custom_card_nik_tablet` |
 | `custom_card_paddy_dwd_pollen` | custom-card | `custom:mushroom-addition-custom-card-paddy-dwd-pollen` | weather | default | `custom_card_paddy_dwd_pollen` |
 | `custom_card_paddy_waste_collection` | custom-card | `custom:mushroom-addition-custom-card-paddy-waste-collection` | sensor | default | `custom_card_paddy_waste_collection` |
-| `custom_card_paddy_welcome` | custom-card | `custom:mushroom-addition-custom-card-paddy-welcome` | presence | default | `custom_card_paddy_welcome` |
+| `custom_card_paddy_welcome` | custom-card | `custom:mushroom-addition-custom-card-paddy-welcome` | presence | message, weather, news | `custom_card_paddy_welcome` |
 | `custom_card_person_chip` | custom-card | `custom:mushroom-addition-custom-card-person-chip` | presence | default | `custom_card_person_chip` |
 | `custom_card_person_info` | custom-card | `custom:mushroom-addition-custom-card-person-info` | presence | full, small | `custom_card_person_info`<br>`custom_card_person_info_small` |
 | `custom_card_playstation` | custom-card | `custom:mushroom-addition-custom-card-playstation` | media | ps5, xbox | `custom_card_playstation` |

@@ -88,6 +88,7 @@ const variants: Record<string, string[]> = {
   custom_card_playstation: ["ps5", "xbox"],
   custom_card_httpedo13_thermostat: ["buttons", "collapse"],
   custom_card_imswel_medias: ["library", "upcoming"],
+  custom_card_paddy_welcome: ["message", "weather", "news"],
 };
 
 const preferredDomainsFor = (id: string, family: string): string[] => {
@@ -103,6 +104,7 @@ const preferredDomainsFor = (id: string, family: string): string[] => {
   if (id.includes("input_datetime")) return ["input_datetime"];
   if (id.includes("light")) return ["light"];
   if (/media|chromecast|playstation/.test(id)) return ["media_player", "sensor"];
+  if (id === "custom_card_qubino") return ["light"];
   if (/thermostat|heat_pump|aircondition/.test(id)) return ["climate"];
   if (/scene/.test(id)) return ["scene"];
   if (/script/.test(id)) return ["script"];
@@ -149,12 +151,15 @@ const makeItem = (
     family,
     tag,
     name: consoleCard
-      ? "PS5 / Xbox Card"
+      ? "PS4 Card"
       : `${humanize(componentId)} Card`,
     description: consoleCard
-      ? "Mushroom-style game console card with PS5 and Xbox modes."
+      ? "Source-faithful media artwork card for a PlayStation entity."
       : `Mushroom-style ${humanize(componentId).toLowerCase()} card.`,
     variants: variants[upstreamId],
+    variantLabels: upstreamId === "custom_card_paddy_welcome"
+      ? { message: "Welcome message", weather: "Welcome with weather", news: "Welcome with news" }
+      : undefined,
     preferredDomains: preferredDomainsFor(upstreamId, family),
   };
 };

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome and person custom source certification</title>
+    <style>
+      :root {
+        font-family: Inter, system-ui, sans-serif;
+        color: #202124;
+        background: #eef1f5;
+        --card-background-color: #fff;
+        --primary-text-color: #202124;
+        --secondary-text-color: #6b7280;
+        --divider-color: #e3e6ea;
+        --border-radius: 14px;
+        --box-shadow: 0 2px 8px rgb(0 0 0 / 9%);
+        --color-theme: 70, 115, 160;
+        --color-blue: 33, 150, 243;
+        --color-red: 244, 67, 54;
+        --color-green: 76, 175, 80;
+        --color-yellow: 251, 192, 45;
+        --color-grey: 117, 117, 117;
+        --ulm-blue: 33, 150, 243;
+        --ulm-red: 244, 67, 54;
+        --ulm-green: 76, 175, 80;
+        --ulm-yellow: 251, 192, 45;
+        --ulm-grey: 117, 117, 117;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 28px; }
+      h1 { margin: 0 0 8px; }
+      .intro { margin: 0 0 24px; color: #5f6368; }
+      main { display: grid; gap: 28px; }
+      section { padding: 18px; border: 1px solid #dfe3e8; border-radius: 18px; background: #fff; }
+      section h2 { margin: 0 0 14px; font-size: 17px; }
+      .columns { display: grid; grid-template-columns: max-content max-content; gap: 28px; align-items: start; }
+      .column-label { margin-bottom: 8px; color: #6b7280; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+      .source, .implementation { width: var(--width); max-width: var(--width); }
+      .source-card { overflow: hidden; border-radius: 14px; background: #fff; box-shadow: 0 2px 8px rgb(0 0 0 / 9%); }
+      .source-row { display: grid; min-height: 64px; grid-template-columns: 46px 1fr; align-items: center; gap: 10px; padding: 10px 14px; }
+      .bubble { position: relative; display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: rgb(33 150 243 / 18%); color: rgb(33 150 243); }
+      .bubble.alert::after { position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; border: 2px solid #fff; border-radius: 50%; background: #f44336; color: #fff; content: "!"; font-size: 11px; line-height: 13px; text-align: center; }
+      .copy { display: grid; gap: 3px; min-width: 0; }
+      .copy b { font-size: 14px; } .copy small { color: #6b7280; font-size: 12px; }
+      .welcome-source { display: grid; gap: 12px; padding: 12px; }
+      .welcome-source .greeting { font-size: 30px; line-height: 1.15; }
+      .weather-source { display: flex; align-items: center; justify-content: space-between; padding: 12px; }
+      .weather-source span { display: flex; align-items: center; gap: 8px; }
+      .chip-source { display: inline-grid; min-height: 42px; grid-template-columns: 34px auto; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; border-radius: 24px; }
+      .avatar { position: relative; display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: #d6aa8d; color: #fff; }
+      .console-source { position: relative; min-height: 72px; overflow: hidden; color: #fff; background: linear-gradient(90deg, rgb(0 0 0 / 80%), rgb(0 0 0 / 20%)), linear-gradient(135deg, #6f4a2f, #d79a44); }
+      .console-source .source-row { grid-template-columns: 52px 1fr; }
+      .qubino-source .bubble { color: #2196f3; }
+      .ristou-source { padding: 12px; }
+      .ristou-source .source-row { grid-template-columns: 42px 1fr 42px; padding: 0; }
+      .ristou-source .avatar { width: 42px; height: 42px; }
+      .ristou-source .avatar::after { position: absolute; top: -3px; right: -3px; display: grid; width: 16px; height: 16px; place-items: center; border: 2px solid #fff; border-radius: 50%; background: #4caf50; content: "⌂"; font-size: 10px; }
+      .find { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 12px; background: rgb(33 150 243 / 20%); color: #2196f3; }
+      .ristou-map { display: grid; min-height: 200px; margin-top: 10px; place-items: center; border-radius: 0 0 14px 14px; color: #2196f3; background: linear-gradient(135deg, #dce9d7, #b7d2df); }
+      ha-icon { display: inline-flex; width: 24px; height: 24px; }
+      @media (max-width: 920px) { .columns { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <h1>Welcome/person custom source certification</h1>
+    <p class="intro">Pinned YAML reference replicas and implementation renders use identical widths and real @mdi/js paths.</p>
+    <main id="comparisons"></main>
+    <script type="module" src="/demo/welcome-person-comparison.ts"></script>
+  </body>
+</html>

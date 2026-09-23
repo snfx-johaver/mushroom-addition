@@ -49,7 +49,12 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
     type.includes("custom-card-httpedo13-sun") || type.includes("custom-card-httpedo13-thermostat")
       ? { action: "none" }
       : undefined;
-  const defaultAction = upstream.navigation_path
+  const qubinoTarget = String(upstream.type).includes("custom-card-qubino")
+    ? upstream.qubino_more_info_entity ?? upstream.entity
+    : undefined;
+  const defaultAction = qubinoTarget
+    ? { action: "more-info", entity: qubinoTarget }
+    : upstream.navigation_path
     ? { action: "navigate", navigation_path: upstream.navigation_path }
     : sourceDefaultAction ?? { action: title || welcomeScenes ? "none" : upstream.entity ? "more-info" : "none" };
   const roomDoubleTap = String(config.type).includes("card-room") &&
@@ -300,6 +305,37 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
     migrated.yellow_entity ??= entityId(config.ulm_card_printer_yellow_name);
     migrated.magenta_entity ??= entityId(config.ulm_card_printer_magenta_name);
     migrated.cyan_entity ??= entityId(config.ulm_card_printer_cyan_name);
+  }
+  if (String(config.type).includes("paddy-welcome")) {
+    migrated.time_entity ??= entityId(config.ulm_custom_card_paddy_welcome_time);
+    migrated.weather_entity ??= entityId(config.ulm_custom_card_paddy_welcome_weather_provider) ??
+      entityId(config.ulm_weather);
+    migrated.news_entities ??= Array.isArray(config.ulm_custom_card_paddy_welcome_news_entities)
+      ? config.ulm_custom_card_paddy_welcome_news_entities.flatMap((item) => {
+        const id = entityId(item);
+        return id ? [id] : [];
+      })
+      : undefined;
+    migrated.variant ??= migrated.news_entities?.length
+      ? "news"
+      : migrated.weather_entity
+        ? "weather"
+        : "message";
+  }
+  if (String(config.type).includes("person-chip")) {
+    migrated.entity ??= entityId(config.ulm_custom_card_person_chip_entity);
+    migrated.use_entity_picture ??= true;
+  }
+  if (String(config.type).includes("custom-card-qubino")) {
+    migrated.qubino_more_info_entity ??= entityId(config.more_info_entity) ??
+      entityId(config.ulm_custom_card_qubino_more_info_entity);
+  }
+  if (String(config.type).includes("ristou-person")) {
+    migrated.ulm_custom_card_ristou_camera_entity_light ??= entityId(config.ulm_card_ristou_person_camera);
+    migrated.ulm_custom_card_ristou_camera_entity_dark ??= entityId(config.ulm_card_ristou_person_camera);
+    migrated.ulm_custom_card_ristou_map_enable ??= typeof config.ulm_card_ristou_person_show_map === "boolean"
+      ? config.ulm_card_ristou_person_show_map
+      : undefined;
   }
   return migrated;
 };

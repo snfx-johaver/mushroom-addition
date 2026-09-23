@@ -126,16 +126,16 @@ describe("Home Assistant registration", () => {
         });
         expect(consoleConstructor.getStubConfig(hass, Object.keys(hass.states), [])).toMatchObject({
           entity: "media_player.xbox",
-          variant: "xbox",
-          icon: "mdi:microsoft-xbox",
+          icon: "mdi:sony-playstation",
+          show_controls: false,
         });
   });
 
-  it("exposes PS5 and Xbox as graphical console variants", () => {
+  it("exposes the pinned PS4 source without invented console variants", () => {
         const consoleCard = CATALOG.find((item) => item.upstreamId === "custom_card_playstation");
         expect(consoleCard).toMatchObject({
-          name: "PS5 / Xbox Card",
-          variants: ["ps5", "xbox"],
+          name: "PS4 Card",
+          variants: undefined,
         });
   });
 

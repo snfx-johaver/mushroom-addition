@@ -128,6 +128,35 @@ export const populatedDefaultsFor = (
               nav_4: "climate", icon_4: "mdi:radiator", name_4: "Climate", color_4: "purple",
               nav_5: "network", icon_5: "mdi:flask", name_5: "Lab", color_5: "red",
             }
+            : item.upstreamId === "custom_card_paddy_welcome"
+              ? {
+                variant: Object.keys(hass?.states ?? {}).some((id) => id.startsWith("weather.")) ? "weather" : "message",
+                time_entity: Object.keys(hass?.states ?? {}).find((id) => id === "sensor.time"),
+                weather_entity: Object.keys(hass?.states ?? {}).find((id) => id.startsWith("weather.")),
+              }
+              : item.upstreamId === "custom_card_person_chip"
+                ? {
+                  use_entity_picture: true,
+                  icon: "mdi:face-man",
+                }
+                : item.upstreamId === "custom_card_playstation"
+                  ? {
+                    icon: "mdi:sony-playstation",
+                    show_controls: false,
+                  }
+                  : item.upstreamId === "custom_card_qubino"
+                    ? {
+                      icon: "mdi:memory",
+                    }
+                    : item.upstreamId === "custom_card_ristou_person"
+                      ? {
+                        ulm_custom_card_ristou_use_entity_picture: false,
+                        ulm_custom_card_ristou_use_badge: true,
+                        ulm_custom_card_ristou_map_enable: false,
+                        ulm_custom_card_ristou_map_aspect_ratio: "466:200",
+                        ulm_custom_card_ristou_map_hours_to_show: 0,
+                        ulm_custom_card_ristou_map_default_zoom: 11,
+                      }
             : {};
   const sourceDrivenIcon = new Set([
     "card_battery",

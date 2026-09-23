@@ -2488,27 +2488,65 @@ const renderPaddyPollen = (ctx: RenderContext): TemplateResult => {
 const renderPaddyWaste = (ctx: RenderContext): TemplateResult => {
   const days = numeric(attr(ctx.entity, "daysTo"));
   const warning = days === 0 || days === 1 || ctx.entity?.state === "unavailable";
-  return ctx.actionSurface(`custom-paddy-waste ${warning ? "is-warning" : ""}`, html`
-    <span class="paddy-waste-icon">${iconBubble(ctx, "mdi:trash-can", warning ? "red" : "green")}${warning ? html`<i><ha-icon icon="mdi:alert"></ha-icon></i>` : nothing}</span>
+  const urgency = days === 0 ? "is-today" : days === 1 ? "is-tomorrow" : ctx.entity?.state === "unavailable" ? "is-unavailable" : "";
+  return ctx.actionSurface(`custom-paddy-waste ${warning ? "is-warning" : ""} ${urgency}`, html`
+    <span class="paddy-waste-icon">${iconBubble(ctx, "mdi:trash-can", warning ? "red" : "green")}${warning ? html`<i><ha-icon icon="mdi:exclamation"></ha-icon></i>` : nothing}</span>
     ${valueThenName(ctx)}
   `);
 };
 
 const renderPaddyWelcome = (ctx: RenderContext): TemplateResult => {
-  const hour = new Date().getHours();
-  const greeting = hour >= 18 ? "Good evening" : hour >= 12 ? "Good afternoon" : hour >= 5 ? "Good morning" : "Hello";
-  const weather = entityFromConfig(ctx, "ulm_weather") ?? Object.values(ctx.hass.states).find((entity) => entity.entity_id.startsWith("weather."));
+  const time = linkedState(ctx, "time_entity") ??
+    entityFromConfig(ctx, "ulm_custom_card_paddy_welcome_time");
+  const timeValue = time?.state && /^\d\d:\d\d/.test(time.state)
+    ? time.state
+    : new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
+  const greeting = timeValue > "18:00"
+    ? configured<string>(ctx, "ulm_evening") || "Good evening"
+    : timeValue > "12:00"
+      ? configured<string>(ctx, "ulm_afternoon") || "Good afternoon"
+      : timeValue > "05:00"
+        ? configured<string>(ctx, "ulm_morning") || "Good morning"
+        : configured<string>(ctx, "ulm_hello") || "Hello";
+  const weather = linkedState(ctx, "weather_entity") ??
+    entityFromConfig(ctx, "ulm_custom_card_paddy_welcome_weather_provider") ??
+    entityFromConfig(ctx, "ulm_weather");
+  const variant = ctx.config.variant ?? (ctx.config.news_entities?.length ? "news" : weather ? "weather" : "message");
+  const news = (ctx.config.news_entities ?? []).map((id) => ctx.hass.states[id]).filter(Boolean).slice(0, 3);
   return ctx.actionSurface("custom-paddy-welcome", html`
-    <b>${greeting}, ${ctx.config.name || displayName(ctx.config, ctx.entity)}!</b>
-    ${weather ? html`<span><ha-icon .icon=${weatherIcons[weather.state]?.[0] || "mdi:weather-partly-cloudy"}></ha-icon>${attr(weather, "temperature") ?? "—"}° · ${weather.state.replaceAll("-", " ")}</span>` : nothing}
+    <div class="paddy-welcome-message">${greeting},<br>${ctx.config.name || displayName(ctx.config, ctx.entity)}!</div>
+    ${variant === "weather" && weather ? html`
+      <button class="paddy-welcome-weather" aria-label="Open weather details"
+        @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => runControlAction(event, ctx, { action: "more-info" }, weather.entity_id)}>
+        <span><ha-icon .icon=${weatherIcons[weather.state]?.[0] || "mdi:weather-partly-cloudy"}></ha-icon>
+          <b>${weather.state.replaceAll("-", " ")}</b><small>${displayName({ type: "", entity: weather.entity_id }, weather)}</small></span>
+        <strong>${attr(weather, "temperature") ?? "—"}°</strong>
+      </button>
+    ` : nothing}
+    ${variant === "news" ? html`
+      <div class="paddy-welcome-news">
+        ${news.map((entity) => html`<button
+          @pointerdown=${(event: Event) => event.stopPropagation()}
+          @click=${(event: Event) => runControlAction(event, ctx, { action: "more-info" }, entity.entity_id)}>
+          <ha-icon .icon=${String(attr(entity, "icon") || "mdi:information-outline")}></ha-icon>
+          <span><b>${displayName({ type: "", entity: entity.entity_id }, entity)}</b><small>${stateLabel(entity)}</small></span>
+        </button>`)}
+        ${news.length === 0 ? html`<span class="paddy-welcome-empty">No configured news entities</span>` : nothing}
+      </div>
+    ` : nothing}
   `);
 };
 
 const renderPersonChip = (ctx: RenderContext): TemplateResult => {
-  const picture = ctx.config.use_entity_picture ? attr(ctx.entity, "entity_picture") : undefined;
+  const picture = ctx.config.use_entity_picture !== false ? attr(ctx.entity, "entity_picture") : undefined;
+  const domain = ctx.entity?.entity_id.split(".")[0];
+  const translated = domain && ctx.hass.localize
+    ? ctx.hass.localize(`component.${domain}.entity_component._.state.${ctx.entity?.state}`)
+    : undefined;
   return ctx.actionSurface("custom-person-chip", html`
     ${picture ? html`<span class="person-chip-picture" style=${`background-image:url("${String(picture)}")`}></span>` : html`<span><ha-icon icon="mdi:face-man"></ha-icon></span>`}
-    <b>${stateLabel(ctx.entity)}</b>
+    <b>${translated || stateLabel(ctx.entity)}</b>
   `);
 };
 
@@ -2579,40 +2617,85 @@ const renderPersonInfo = (ctx: RenderContext): TemplateResult => {
 };
 
 const renderConsoleCard = (ctx: RenderContext): TemplateResult => {
-  const platform = configured<string>(ctx, "console_platform", "platform", "console_type", "variant") === "xbox" ? "xbox" : "playstation";
-  const playing = ctx.entity?.state === "on" || ctx.entity?.state === "playing";
-  const background = configured<string>(ctx, "ulm_custom_card_console_background", "ulm_card_playstation_background");
-  return ctx.actionSurface(`custom-console-card platform-${platform}`, html`
-    ${background ? html`<div class="console-backdrop" style=${`background-image:url("${background}")`}></div>` : nothing}
+  const state = ctx.entity?.state ?? "unknown";
+  const artwork = attr(ctx.entity, "entity_picture");
+  const activeArtwork = state !== "unknown" && state !== "standby" && artwork;
+  return ctx.actionSurface(`custom-console-card platform-playstation state-${state} ${activeArtwork ? "has-artwork" : ""}`, html`
+    ${activeArtwork ? html`<div class="console-backdrop" style=${`background-image:url("${String(artwork)}")`}></div>` : nothing}
     <div class="console-content">
-      <span class="console-logo"><ha-icon .icon=${platform === "xbox" ? "mdi:microsoft-xbox" : "mdi:sony-playstation"}></ha-icon></span>
-      ${heading(ctx, `${playing ? "Playing" : stateLabel(ctx.entity)}${attr(ctx.entity, "source") ? ` · ${String(attr(ctx.entity, "source"))}` : ""}`)}
-      <button @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => { event.stopPropagation(); ctx.service("media_player", playing ? "turn_off" : "turn_on", { entity_id: ctx.config.entity }); }}><ha-icon .icon=${playing ? "mdi:power" : "mdi:play"}></ha-icon></button>
+      <span class="console-logo"><ha-icon .icon=${ctx.config.icon || "mdi:sony-playstation"}></ha-icon></span>
+      <span class="ulm-copy">
+        <span class="ulm-name">${activeArtwork ? String(attr(ctx.entity, "media_title") || displayName(ctx.config, ctx.entity)) : displayName(ctx.config, ctx.entity)}</span>
+        <span class="ulm-label">${activeArtwork ? String(attr(ctx.entity, "friendly_name") || stateLabel(ctx.entity)) : stateLabel(ctx.entity)}</span>
+      </span>
     </div>
   `);
 };
 
 const renderQubino = (ctx: RenderContext): TemplateResult => {
-  const power = entityFromConfig(ctx, "ulm_custom_card_qubino_power") ?? configuredEntities(ctx)[0];
+  const brightness = numeric(attr(ctx.entity, "brightness"));
+  const percent = brightness === undefined ? undefined : Math.round(brightness / 2.55);
+  const mode = ctx.entity?.state === "unavailable" || percent === undefined
+    ? "Unavailable"
+    : percent >= 51
+      ? "Comfort"
+      : percent >= 41
+        ? "Comfort -1°C"
+        : percent >= 31
+          ? "Comfort -2°C"
+          : percent >= 21
+            ? "Eco"
+            : percent >= 11
+              ? "Frost protection"
+              : "Off";
   return ctx.actionSurface("custom-qubino", html`
-    ${iconBubble(ctx, ctx.entity?.state === "on" ? "mdi:radiator" : "mdi:radiator-disabled", ctx.entity?.state === "on" ? "red" : "grey")}
-    ${heading(ctx, `${stateLabel(ctx.entity)}${power ? ` · ${stateLabel(power)}` : ""}`)}
-    <button @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => { event.stopPropagation(); ctx.service("switch", "toggle", { entity_id: ctx.config.entity }); }}><ha-icon icon="mdi:power"></ha-icon></button>
+    <span class="ulm-icon tone-blue"><ha-icon .icon=${ctx.config.icon || "mdi:memory"}></ha-icon></span>
+    ${heading(ctx, percent === undefined ? mode : `${mode} · ${percent}`)}
   `);
 };
 
 const renderRistouPerson = (ctx: RenderContext): TemplateResult => {
-  const picture = String(attr(ctx.entity, "entity_picture") || "");
-  const camera = entityFromConfig(ctx, "ulm_card_ristou_person_camera");
+  const usePicture = configured<boolean>(ctx, "ulm_custom_card_ristou_use_entity_picture") === true;
+  const useBadge = configured<boolean>(ctx, "ulm_custom_card_ristou_use_badge") !== false;
+  const picture = usePicture ? String(attr(ctx.entity, "entity_picture") || "") : "";
+  const driving = entityFromConfig(ctx, "ulm_custom_card_ristou_person_driving_entity");
+  const drivingNow = driving?.state === "on" || driving?.state === "true";
+  const zones = configured<string[]>(ctx, "ulm_custom_card_ristou_zones") ?? [];
+  const zone = zones.map((id) => ctx.hass.states[id]).find((entity) => entity?.attributes.friendly_name === ctx.entity?.state);
+  const locationIcon = drivingNow
+    ? "mdi:car"
+    : ctx.entity?.state === "home"
+      ? "mdi:home-variant"
+      : ctx.entity?.state === "not_home"
+        ? "mdi:home-minus"
+        : String(attr(zone, "icon") || "mdi:help-circle");
+  const tone = drivingNow ? "red" : ctx.entity?.state === "home" ? "green" : zone ? "yellow" : "blue";
+  const label = drivingNow
+    ? configured<string>(ctx, "ulm_custom_card_ristou_person_driving") || "Driving"
+    : stateLabel(ctx.entity);
+  const findDevice = configured<string>(ctx, "ulm_custom_card_ristou_find_device_script");
+  const lightCamera = entityFromConfig(ctx, "ulm_custom_card_ristou_camera_entity_light");
+  const darkCamera = entityFromConfig(ctx, "ulm_custom_card_ristou_camera_entity_dark");
+  const camera = lightCamera && darkCamera ? lightCamera : undefined;
   const cameraPicture = camera ? String(attr(camera, "entity_picture") || `/api/camera_proxy/${camera.entity_id}`) : "";
-  const map = configured<boolean>(ctx, "ulm_card_ristou_person_show_map") === true;
+  const map = configured<boolean>(ctx, "ulm_custom_card_ristou_map_enable") === true;
   return ctx.actionSurface("custom-ristou-person", html`
     <div class="ristou-person-main">
-      <span class="person-info-avatar" style=${picture ? `background-image:url("${picture}")` : ""}><ha-icon icon="mdi:account"></ha-icon></span>
-      ${heading(ctx, stateLabel(ctx.entity))}
+      <span class="ristou-person-avatar ${picture ? "has-picture" : ""}" style=${picture ? `background-image:url("${picture}")` : ""}>
+        ${picture ? nothing : html`<ha-icon .icon=${useBadge ? "mdi:face-man" : locationIcon}></ha-icon>`}
+        ${useBadge ? html`<i class=${`tone-${tone}`}><ha-icon .icon=${locationIcon}></ha-icon></i>` : nothing}
+      </span>
+      <span class="ulm-copy"><span class="ulm-name">${configured<string>(ctx, "ulm_custom_card_ristou_name") || displayName(ctx.config, ctx.entity)}</span><span class="ulm-label">${label}</span></span>
+      ${findDevice ? html`<button class="ristou-find-device" aria-label="Find device"
+        @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => { event.stopPropagation(); ctx.service("homeassistant", "toggle", { entity_id: findDevice }); }}>
+        <ha-icon .icon=${configured<string>(ctx, "ulm_custom_card_ristou_icon") || "mdi:cellphone-sound"}></ha-icon>
+      </button>` : nothing}
     </div>
     ${cameraPicture ? html`<div class="ristou-camera" style=${`background-image:url("${cameraPicture}")`}></div>` : nothing}
-    ${map ? html`<div class="ristou-map"><ha-icon icon="mdi:map-marker-path"></ha-icon><span>${stateLabel(ctx.entity)}</span></div>` : nothing}
+    ${map ? html`<div class="ristou-map" style=${`aspect-ratio:${String(configured(ctx, "ulm_custom_card_ristou_map_aspect_ratio") || "466 / 200").replace(":", " / ")}`}>
+      <ha-icon icon="mdi:map-marker-path"></ha-icon><span>${label}</span>
+    </div>` : nothing}
   `);
 };
 

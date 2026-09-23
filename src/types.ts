@@ -123,6 +123,9 @@ export interface AdditionConfig {
   wifi_tracker_entity?: string;
   gps_tracker_entity?: string;
   findmy_script_entity?: string;
+  weather_entity?: string;
+  news_entities?: string[];
+  qubino_more_info_entity?: string;
   lock_entity?: string;
   tablet_button_usb_entity?: string;
   tablet_button_motion_entity?: string;

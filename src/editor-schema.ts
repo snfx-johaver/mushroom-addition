@@ -311,6 +311,56 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
       entity(["sensor"], "tomorrow_entity"),
       ...presentation(),
     ]
+    : item.upstreamId === "custom_card_paddy_waste_collection"
+      ? [
+        entity(["sensor"]),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_paddy_welcome"
+      ? [
+        ...(item.variants?.length ? [select("variant", item.variants.map((variant) => ({
+          value: variant,
+          label: item.variantLabels?.[variant] ?? variant,
+        })))] : []),
+        entity(["person"]),
+        entity(["sensor"], "time_entity"),
+        entity(["weather"], "weather_entity"),
+        { name: "news_entities", selector: { entity: { multiple: true } } },
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_person_chip"
+      ? [
+        entity(["person", "device_tracker"]),
+        toggle("use_entity_picture"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_playstation"
+      ? [
+        entity(["media_player", "sensor"]),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_qubino"
+      ? [
+        entity(["light"]),
+        entity([], "qubino_more_info_entity"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_ristou_person"
+      ? [
+        entity(["person", "device_tracker"]),
+        toggle("ulm_custom_card_ristou_use_entity_picture"),
+        toggle("ulm_custom_card_ristou_use_badge"),
+        entity(["binary_sensor"], "ulm_custom_card_ristou_person_driving_entity"),
+        { name: "ulm_custom_card_ristou_zones", selector: { entity: { multiple: true } } },
+        entity(["script", "button"], "ulm_custom_card_ristou_find_device_script"),
+        toggle("ulm_custom_card_ristou_map_enable"),
+        text("ulm_custom_card_ristou_map_aspect_ratio"),
+        number("ulm_custom_card_ristou_map_hours_to_show", 0, 168),
+        number("ulm_custom_card_ristou_map_default_zoom", 1, 20),
+        entity(["camera"], "ulm_custom_card_ristou_camera_entity_light"),
+        entity(["camera"], "ulm_custom_card_ristou_camera_entity_dark"),
+        ...presentation(),
+      ]
     : item.upstreamId === "custom_card_alarm_time"
       ? [
         entity(["input_boolean", "switch"]),

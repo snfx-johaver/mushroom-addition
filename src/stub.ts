@@ -94,6 +94,16 @@ export const createStubConfig = (
                                 ? findEntity(["sensor"], ["download"])
                               : descriptor.upstreamId === "card_room"
                                 ? findEntity(["light"], [])
+                                : descriptor.upstreamId === "custom_card_paddy_waste_collection"
+                                  ? findEntity(["sensor"], ["trash", "today"]) ?? findEntity(["sensor"], ["waste"])
+                                  : descriptor.upstreamId === "custom_card_paddy_welcome" ||
+                                      descriptor.upstreamId === "custom_card_person_chip" ||
+                                      descriptor.upstreamId === "custom_card_ristou_person"
+                                    ? findEntity(["person"], [])
+                                    : descriptor.upstreamId === "custom_card_playstation"
+                                      ? findEntity(["media_player"], ["tv"]) ?? findEntity(["media_player"], [])
+                                      : descriptor.upstreamId === "custom_card_qubino"
+                                        ? findEntity(["light"], []) ?? findEntity(["switch"], ["cv", "plug"])
                                 : undefined;
   const entity = descriptor.upstreamId === "custom_card_input_number"
     ? available.find((entityId) =>
@@ -102,10 +112,7 @@ export const createStubConfig = (
       ? undefined
       : semanticPrimary ?? firstMatchingEntity(descriptor, hass, entities, entitiesFallback);
   const isText = ["text", "navigation"].includes(descriptor.family);
-  const gameConsole = descriptor.upstreamId === "custom_card_playstation";
-  const defaultVariant = gameConsole && entity?.toLowerCase().includes("xbox")
-    ? "xbox"
-    : descriptor.variants?.[0];
+  const defaultVariant = descriptor.variants?.[0];
   const entityDomain = entity?.split(".", 1)[0];
   const tapAction = ["light", "switch", "input_boolean", "fan"].includes(entityDomain ?? "")
     ? { action: "toggle" }
@@ -403,6 +410,42 @@ export const createStubConfig = (
         yellow_entity: findEntity(["sensor"], ["yellow"]),
         magenta_entity: findEntity(["sensor"], ["magenta"]),
         cyan_entity: findEntity(["sensor"], ["cyan"]),
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_paddy_welcome"
+      ? {
+        variant: findEntity(["weather"], []) ? "weather" : "message",
+        time_entity: findEntity(["sensor"], ["time"]),
+        weather_entity: findEntity(["weather"], []),
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_person_chip"
+      ? {
+        use_entity_picture: true,
+        tap_action: { action: entity ? "more-info" : "none", entity },
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_playstation"
+      ? {
+        show_controls: false,
+        tap_action: { action: entity ? "more-info" : "none", entity },
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_qubino"
+      ? {
+        qubino_more_info_entity: findEntity(["input_select"], ["ordres", "fil", "pilote"]),
+        tap_action: {
+          action: entity ? "more-info" : "none",
+          entity: findEntity(["input_select"], ["ordres", "fil", "pilote"]) ?? entity,
+        },
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_ristou_person"
+      ? {
+        ulm_custom_card_ristou_person_driving_entity: findEntity(["binary_sensor"], ["driving"]),
+        ulm_custom_card_ristou_find_device_script: findEntity(["script"], ["find"]),
+        ulm_custom_card_ristou_zones: available.filter((id) => id.startsWith("zone.")),
+        tap_action: { action: entity ? "more-info" : "none", entity },
       }
       : {}),
   };

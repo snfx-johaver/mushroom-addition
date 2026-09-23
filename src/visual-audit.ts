@@ -253,6 +253,52 @@ const accepted: Record<string, Partial<VisualAuditEntry>> = {
   ...acceptedDefaults,
   ...acceptedCustoms,
   ...Object.fromEntries(([
+    ["custom_card_paddy_waste_collection", 320, ["custom-paddy-waste", "paddy-waste-icon"]],
+    ["custom_card_paddy_welcome", 420, ["custom-paddy-welcome", "paddy-welcome-message"]],
+    ["custom_card_person_chip", 180, ["custom-person-chip", "person-chip-picture"]],
+    ["custom_card_playstation", 320, ["custom-console-card", "console-content"]],
+    ["custom_card_qubino", 320, ["custom-qubino", "ulm-icon"]],
+    ["custom_card_ristou_person", 466, ["custom-ristou-person", "ristou-person-main"]],
+  ] satisfies Array<[string, number, string[]]>).map(([sourceId, width, requiredRegions]) => [sourceId, {
+    compositionId: `custom:${sourceId}:source-faithful-local`,
+    referenceScreenshot: `.tmp-ui-minimalist/${UPSTREAM_CATALOG.find((source) => source.upstreamId === sourceId)?.sourcePath}/custom_card_${sourceId.replace("custom_card_", "")}.yaml`,
+    fixturePath: "demo/welcome-person-comparison.html",
+    artifactPath: "docs/assets/visual-audit/welcome-person-custom-batch-comparison.png",
+    themes: ["light"],
+    widths: [width],
+    requiredRegions,
+    forbiddenRegions: ["ulm-metric", "ulm-detail-card", "ulm-device-status", "ulm-schedule-card", "ulm-helper-card"],
+    status: "pending",
+    pickerAccepted: true,
+    editorAccepted: true,
+    visualAccepted: true,
+    statesAccepted: true,
+    interactionsAccepted: true,
+    liveAccepted: false,
+    inspectedAt: "2026-09-23",
+    reviewerNotes: [
+      `Pinned YAML and the focused ${width}px source-replica/implementation columns were manually inspected with real @mdi/js paths.`,
+      "Dedicated picker defaults, graphical editor fields, upstream-key migration, state matrices, and every visible interaction are covered by tests/welcome-person-custom-certification.test.ts.",
+      "Exact Home Assistant action and service payloads plus the requested live mapping candidates are recorded in docs/assets/visual-audit/welcome-person-custom-local-certification.json.",
+      "No authenticated Home Assistant execution was performed; live acceptance remains false.",
+    ],
+    deviations: [
+      sourceId === "custom_card_paddy_welcome"
+        ? "The optional home-feed-card integration is not embedded; News mode renders up to three configured Home Assistant entities and opens each entity's more-info dialog."
+        : sourceId === "custom_card_playstation"
+          ? "The pinned source is named card_ps4 and marked under review; this implementation preserves its idle, standby, unknown, and media-artwork states without the previously invented power control."
+          : sourceId === "custom_card_qubino"
+            ? "The supplied live candidate is switch.cv_plug, which has no brightness attribute, and no input_select.ordres_fil_pilote equivalent was supplied; source thresholds and target routing are therefore local-only."
+            : sourceId === "custom_card_ristou_person"
+              ? "The built-in Home Assistant map is represented by a non-interactive local map row; paired static-map camera entities are supported only when both light and dark entities are configured."
+              : sourceId === "custom_card_person_chip"
+                ? "The source entity-picture behavior is preserved; the deterministic comparison uses local synthetic artwork rather than a real person's image."
+                : sourceId === "custom_card_paddy_waste_collection"
+                  ? "The supplied trash-type-today sensor may not expose the Waste Collection Schedule daysTo attribute required by the pinned warning rules."
+                  : "",
+    ],
+  } satisfies Partial<VisualAuditEntry>])),
+  ...Object.fromEntries(([
     ["card_person", 496, ["ulm-source-person", "person-location-badge"]],
     ["card_power_outlet", 496, ["ulm-source-power-outlet", "power-outlet-icon"]],
     ["card_room", 340, ["ulm-source-room", "room-copy", "room-sensor"]],
@@ -713,6 +759,29 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
       "Upstream can auto-discover five light entities through custom:auto-entities; this plugin requires explicit scene_items for deterministic editor and action behavior.",
     ],
   },
+  ...Object.fromEntries(([
+    ["custom_card_paddy_waste_collection", 320],
+    ["custom_card_paddy_welcome", 420],
+    ["custom_card_person_chip", 180],
+    ["custom_card_playstation", 320],
+    ["custom_card_qubino", 320],
+    ["custom_card_ristou_person", 466],
+  ] satisfies Array<[string, number]>).map(([sourceId, width]) => [sourceId, {
+    status: "pending",
+    pickerAccepted: true,
+    editorAccepted: true,
+    visualAccepted: true,
+    statesAccepted: true,
+    interactionsAccepted: true,
+    liveAccepted: false,
+    inspectedAt: "2026-09-23",
+    reviewerNotes: [
+      `Pinned YAML and the focused ${width}px source-replica/implementation columns were manually inspected with real @mdi/js paths.`,
+      "Dedicated picker defaults, graphical editor fields, upstream-key migration, state matrices, and every visible interaction are covered by tests/welcome-person-custom-certification.test.ts.",
+      "Exact Home Assistant action and service payloads plus the requested live mapping candidates are recorded in docs/assets/visual-audit/welcome-person-custom-local-certification.json.",
+      "No authenticated Home Assistant execution was performed; live acceptance remains false.",
+    ],
+  } satisfies Partial<VisualAuditEntry>])),
   ...Object.fromEntries(([
     ["card_person", 496],
     ["card_power_outlet", 496],
