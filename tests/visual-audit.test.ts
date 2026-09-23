@@ -31,19 +31,21 @@ describe("visual audit manifest", () => {
 
   it("reports exact accepted progress without inferring parity from family mappings", () => {
     expect(visualAuditProgress()).toEqual({
-      accepted: 4,
+      accepted: 6,
       pickerAccepted: 6,
       editorAccepted: 6,
       visualAccepted: 7,
       statesAccepted: 6,
       interactionsAccepted: 6,
-      liveAccepted: 4,
+      liveAccepted: 6,
       total: 86,
     });
     expect(VISUAL_AUDIT.filter((entry) => entry.status === "accepted").map((entry) => entry.sourceId))
       .toEqual([
         "custom_card_heat_pump",
         "custom_card_homeassistant_updates",
+        "custom_card_nik_nas",
+        "custom_card_nik_tablet",
         "custom_card_person_info",
         "custom_card_person_info_small",
       ]);
@@ -58,19 +60,13 @@ describe("visual audit manifest", () => {
       "custom_card_person_info",
       "custom_card_person_info_small",
     ]) {
-      const liveAccepted = [
-        "custom_card_heat_pump",
-        "custom_card_homeassistant_updates",
-        "custom_card_person_info",
-        "custom_card_person_info_small",
-      ].includes(sourceId);
       expect(VISUAL_AUDIT.find((entry) => entry.sourceId === sourceId)).toMatchObject({
         pickerAccepted: true,
         editorAccepted: true,
         visualAccepted: true,
         statesAccepted: true,
         interactionsAccepted: true,
-        liveAccepted,
+        liveAccepted: true,
       });
     }
   });

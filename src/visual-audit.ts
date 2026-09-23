@@ -399,12 +399,13 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
     ],
   },
   custom_card_nik_nas: {
-    status: "pending",
+    status: "accepted",
     pickerAccepted: true,
     editorAccepted: true,
     visualAccepted: true,
     statesAccepted: true,
     interactionsAccepted: true,
+    liveAccepted: true,
     inspectedAt: "2026-09-23",
     reviewerNotes: [
       "Focused side-by-side inspected after correcting SVG namespace rendering: two bordered tiles, three semantic metrics, and three utilization rings are visible.",
@@ -412,16 +413,17 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
       "Parent manually accepted the refreshed visual stage after reviewing the geometry-matched source comparison.",
       "Picker semantic defaults, status plus four metric editor slots, chart settings, editor round trip, online/off/unavailable collapse states, and configured ring maxima pass local tests.",
       "The status tile and outer card surface were clicked in Chromium; exact more-info evidence is recorded in docs/assets/visual-audit/priority-local-certification.json.",
-      "The live status action passed, but 330px responsiveness required correction; the responsive candidate awaits authenticated redeployment before live acceptance.",
+      "Authenticated Home Assistant verification passed at 330x266: clientWidth and scrollWidth were both 330, both top tiles and the 132px rings were fully visible, and the status tile opened switch.nas_plug more-info.",
     ],
   },
   custom_card_nik_tablet: {
-    status: "pending",
+    status: "accepted",
     pickerAccepted: true,
     editorAccepted: true,
     visualAccepted: true,
     statesAccepted: true,
     interactionsAccepted: true,
+    liveAccepted: true,
     inspectedAt: "2026-09-23",
     reviewerNotes: [
       "Focused side-by-side inspected: source-ordered six-button grid, RAM/Disk/Power row, battery summary, and thick progress bar are represented.",
@@ -429,7 +431,7 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
       "Picker semantic defaults, graphical editor round trip, active/inactive/unavailable state matrix, and exact six-control service payloads pass local tests.",
       "All six visible controls were clicked in Chromium; exact service payloads are recorded in docs/assets/visual-audit/priority-local-certification.json.",
       "Parent manually accepted the visual stage after reviewing the matched-width @mdi/js artifact.",
-      "The live outer-card action passed, but omitted RAM/Disk slots required correction; the optional-slot candidate awaits authenticated redeployment before live acceptance.",
+      "Authenticated Home Assistant verification passed at 330px: omitted RAM/Disk slots produced no placeholder text, configured unavailable controls rendered disabled, and the outer action opened device_tracker.bram_tablet_2 more-info.",
     ],
   },
   custom_card_person_info: {
