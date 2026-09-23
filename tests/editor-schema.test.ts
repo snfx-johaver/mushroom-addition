@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { CATALOG } from "../src/catalog";
 import { editorSchemaFor } from "../src/editor-schema";
+import { editorHelper, localize } from "../src/localize";
+import { upstreamEditorSchemaFor } from "../src/editor-schema";
 
 describe("family editor schemas", () => {
   it("uses one canonical primary entity selector in every card editor", () => {
@@ -63,5 +65,40 @@ describe("family editor schemas", () => {
     });
     expect(editorSchemaFor(byId("custom_card_nik_door")).map((field) => field.name))
       .toEqual(expect.arrayContaining(["lock_entity", "battery_entity"]));
+  });
+
+  it("gives every advanced editor option a user-friendly label and explanation", () => {
+    for (const item of CATALOG) {
+      for (const field of upstreamEditorSchemaFor(item)) {
+        const label = localize(undefined, field.name);
+        expect(label).not.toMatch(/\bUlm\b/i);
+        expect(label).not.toContain("_");
+        expect(label).not.toMatch(/\bEnable\b/i);
+        expect(editorHelper(field.name)).toBeTruthy();
+      }
+    }
+  });
+
+  it("explains every standard editor field", () => {
+    const selfExplanatory = new Set(["entities"]);
+    for (const item of CATALOG) {
+      for (const field of editorSchemaFor(item)) {
+        if (!selfExplanatory.has(field.name)) expect(editorHelper(field.name)).toBeTruthy();
+      }
+    }
+  });
+
+  it("uses dropdowns for finite weather choices and percentage sliders for ranges", () => {
+    const weather = CATALOG.find((item) => item.upstreamId === "card_weather")!;
+    const weatherFields = upstreamEditorSchemaFor(weather);
+    expect(weatherFields.find((field) => field.name === "ulm_card_weather_primary_info")?.selector)
+      .toMatchObject({ select: { mode: "dropdown" } });
+    expect(weatherFields.find((field) => field.name === "ulm_card_weather_secondary_info")?.selector)
+      .toMatchObject({ select: { mode: "dropdown" } });
+
+    const light = CATALOG.find((item) => item.upstreamId === "card_light")!;
+    expect(upstreamEditorSchemaFor(light)
+      .find((field) => field.name === "ulm_card_light_brightness_medium")?.selector)
+      .toEqual({ number: { min: 0, max: 100, step: 1, mode: "slider", unit_of_measurement: "%" } });
   });
 });

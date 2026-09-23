@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import type { AdditionConfig, HomeAssistant } from "./types";
 import { CATALOG, getCatalogItem } from "./catalog";
 import { fireEvent } from "./helpers";
-import { localize } from "./localize";
+import { editorHelper, localize } from "./localize";
 import { editorSchemaFor, upstreamEditorSchemaFor } from "./editor-schema";
 import { populatedDefaultsFor } from "./defaults";
 
@@ -87,16 +87,18 @@ export class MushroomAdditionEditor extends LitElement {
         .data=${formData}
         .schema=${schema}
         .computeLabel=${this.computeLabel}
+        .computeHelper=${this.computeHelper}
         @value-changed=${this.valueChanged}
       ></ha-form>
       ${upstreamSchema.length ? html`
         <ha-expansion-panel outlined>
-          <span slot="header">Implemented upstream options (${upstreamSchema.length})</span>
+          <span slot="header">Additional appearance and controls (${upstreamSchema.length})</span>
           <ha-form
             .hass=${this.hass}
             .data=${formData}
             .schema=${upstreamSchema}
             .computeLabel=${this.computeLabel}
+            .computeHelper=${this.computeHelper}
             @value-changed=${this.valueChanged}
           ></ha-form>
         </ha-expansion-panel>
@@ -106,6 +108,9 @@ export class MushroomAdditionEditor extends LitElement {
 
   private readonly computeLabel = (schema: { name: string }): string =>
     localize(this.hass, schema.name);
+
+  private readonly computeHelper = (schema: { name: string }): string | undefined =>
+    editorHelper(schema.name);
 
   private readonly valueChanged = (event: CustomEvent): void => {
     if (!this.config || !event.detail.value) return;

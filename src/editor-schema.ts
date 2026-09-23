@@ -18,6 +18,35 @@ const number = (name: string, min = 1, max = 168): EditorField => ({
   selector: { number: { min, max, mode: "box" } },
 });
 const action = (name: string): EditorField => ({ name, selector: { ui_action: {} } });
+const select = (name: string, options: Array<{ value: string; label: string }>): EditorField => ({
+  name,
+  selector: { select: { mode: "dropdown", options } },
+});
+
+const percentageOptions = new Set([
+  "ulm_card_light_enable_slider_minSet",
+  "ulm_card_light_enable_slider_maxSet",
+  "ulm_card_light_brightness_low",
+  "ulm_card_light_brightness_medium",
+  "ulm_card_light_brightness_high",
+  "ulm_card_battery_battery_level_danger",
+  "ulm_card_battery_battery_level_warning",
+  "ulm_card_cover_slider_min",
+  "ulm_card_cover_slider_max",
+  "ulm_card_fan_slider_min",
+  "ulm_card_fan_slider_max",
+]);
+
+const choiceOptions: Record<string, Array<{ value: string; label: string }>> = {
+  ulm_card_weather_primary_info: [
+    { value: "extrema", label: "Today's high and low temperatures" },
+    { value: "none", label: "Do not show extra information" },
+  ],
+  ulm_card_weather_secondary_info: [
+    { value: "precipitation", label: "Precipitation chance or amount" },
+    { value: "none", label: "Do not show extra information" },
+  ],
+};
 
 const common = (item: CatalogItem): EditorField[] => [
   entity(item.preferredDomains),
@@ -68,6 +97,14 @@ export const upstreamEditorSchemaFor = (item: CatalogItem): EditorField[] => {
   const parity = PARITY_BY_ID.get(item.upstreamId);
   if (!parity) return [];
   return parity.variables.filter((variable) => supportedUpstreamOption(item, variable.name)).map((variable) => {
+    const choices = choiceOptions[variable.name];
+    if (choices) return select(variable.name, choices);
+    if (percentageOptions.has(variable.name)) {
+      return {
+        name: variable.name,
+        selector: { number: { min: 0, max: 100, step: 1, mode: "slider", unit_of_measurement: "%" } },
+      };
+    }
     switch (variable.selector) {
       case "entity": return entity(undefined, variable.name);
       case "entity-multiple": return {

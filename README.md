@@ -45,7 +45,7 @@ For a manual installation, copy `dist/mushroom-cards-addition.js` into
 `config/www/community/mushroom-cards-addition/` and register
 `/local/community/mushroom-cards-addition/mushroom-cards-addition.js` as a
 module. After replacing a manually installed bundle, use
-`/local/community/mushroom-cards-addition/mushroom-cards-addition.js?v=1.2.1`
+`/local/community/mushroom-cards-addition/mushroom-cards-addition.js?v=1.2.2`
 (or increment the query token) and hard-refresh the Home Assistant frontend to
 invalidate the browser cache.
 
