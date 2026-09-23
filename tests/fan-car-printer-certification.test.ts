@@ -122,12 +122,18 @@ describe("fan, car, and printer custom source certification", () => {
       ulm_show_button: true,
       ulm_button_service: "fan.oscillate",
       oscillate_attribute: "oscillate",
+      tap_action: { action: "toggle" },
+      hold_action: { action: "more-info" },
     });
     expect(evidence.sources.custom_card_schumijo_car.liveConfig).toMatchObject({
       ulm_card_schumijo_car_tracker: "sensor.hn_etronq6_model",
       ulm_card_schumijo_car_lock: "binary_sensor.hn_etronq6_doors",
       ulm_card_schumijo_car_energy_level: "sensor.hn_etronq6_primary_engine_percent",
       ulm_card_schumijo_car_range: "sensor.hn_etronq6_range",
+    });
+    expect(evidence.sources.custom_card_senoro_win.liveConfig).toEqual({
+      entity: "binary_sensor.office_joris_window",
+      tap_action: { action: "none" },
     });
     expect(evidence.sources.custom_card_senoro_win.visibleInteractions).toEqual([]);
     expect(Object.values(evidence.sources).every(({ artifact }) => artifact.endsWith("-comparison.png"))).toBe(true);
