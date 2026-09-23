@@ -80,7 +80,7 @@ public registrations.
 | `custom_card_paddy_welcome` | custom-card | `custom:mushroom-addition-custom-card-paddy-welcome` | presence | message, weather, news | `custom_card_paddy_welcome` |
 | `custom_card_person_chip` | custom-card | `custom:mushroom-addition-custom-card-person-chip` | presence | default | `custom_card_person_chip` |
 | `custom_card_person_info` | custom-card | `custom:mushroom-addition-custom-card-person-info` | presence | full, small | `custom_card_person_info`<br>`custom_card_person_info_small` |
-| `custom_card_playstation` | custom-card | `custom:mushroom-addition-custom-card-playstation` | media | ps5, xbox | `custom_card_playstation` |
+| `custom_card_playstation` | custom-card | `custom:mushroom-addition-custom-card-playstation` | media | default | `custom_card_playstation` |
 | `custom_card_qubino` | custom-card | `custom:mushroom-addition-custom-card-qubino` | control | default | `custom_card_qubino` |
 | `custom_card_ristou_person` | custom-card | `custom:mushroom-addition-custom-card-ristou-person` | presence | default | `custom_card_ristou_person` |
 | `custom_card_saxel_fan` | custom-card | `custom:mushroom-addition-custom-card-saxel-fan` | control | default | `custom_card_saxel_fan` |

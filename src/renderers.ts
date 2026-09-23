@@ -732,8 +732,7 @@ const renderMedia = (ctx: RenderContext): TemplateResult => {
   const picture = configured<boolean>(ctx, "ulm_card_media_player_enable_art") === false
     ? undefined
     : attr(ctx.entity, "entity_picture");
-  const consolePlatform = ctx.config.console_platform || ctx.config.variant;
-  const consoleIcon = consolePlatform === "xbox" ? "mdi:microsoft-xbox" : "mdi:sony-playstation";
+  const consoleIcon = "mdi:sony-playstation";
   const controlsEntity = configured<string>(ctx, "ulm_card_media_player_player_controls_entity") || ctx.config.entity;
   const controlsState = controlsEntity ? ctx.hass.states[controlsEntity] : ctx.entity;
   const controllable = controlsEntity?.startsWith("media_player.") === true;

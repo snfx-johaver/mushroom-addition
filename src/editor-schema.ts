@@ -217,7 +217,7 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
       ]
       : [toggle("show_graph")]),
   ],
-  media: (item) => [...common(item), toggle("show_controls"), ...(item.upstreamId === "custom_card_playstation" ? [{ name: "console_platform", selector: { select: { options: ["ps5", "xbox"] } } }] : [])],
+  media: (item) => [...common(item), toggle("show_controls")],
   cover: (item) => [...common(item), toggle("show_controls")],
   vacuum: (item) => [
     ...common(item),

@@ -33,9 +33,6 @@ const defaultIcons: Array<[RegExp, string]> = [
 export const defaultIconFor = (item: CatalogItem, entity?: HassEntity): string => {
   if (entity?.attributes.icon) return entity.attributes.icon;
   if (item.upstreamId === "custom_card_damix48_power_details") return "mdi:flash";
-  if (item.upstreamId === "custom_card_playstation" && entity?.entity_id.toLowerCase().includes("xbox")) {
-    return "mdi:microsoft-xbox";
-  }
   return defaultIcons.find(([pattern]) => pattern.test(item.upstreamId))?.[1] ??
     "mdi:information-outline";
 };

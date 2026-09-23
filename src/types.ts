@@ -177,7 +177,6 @@ export interface AdditionConfig {
   thermostat_minimum_temp_spread?: number;
   thermostat_temp_step?: number;
   graph_hours?: number;
-  console_platform?: "ps5" | "xbox";
   [key: string]: unknown;
 }
 
