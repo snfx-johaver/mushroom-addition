@@ -1,6 +1,7 @@
 import { html, nothing, type TemplateResult } from "lit";
 import type { AdditionConfig, CatalogItem, HassEntity, HomeAssistant, WeatherForecast } from "./types";
 import { activeStates, displayName, stateLabel } from "./helpers";
+import { defaultIconFor } from "./defaults";
 
 export interface RenderContext {
   config: AdditionConfig;
@@ -30,7 +31,7 @@ const configured = <T>(ctx: RenderContext, ...keys: string[]): T | undefined => 
 const enabled = (ctx: RenderContext, canonical: keyof AdditionConfig, ...upstreamKeys: string[]): boolean =>
   configured<boolean>(ctx, String(canonical), ...upstreamKeys) === true;
 const icon = (ctx: RenderContext, fallback: string): string =>
-  ctx.config.icon || ctx.entity?.attributes.icon || fallback;
+  ctx.config.icon || ctx.entity?.attributes.icon || defaultIconFor(ctx.descriptor, ctx.entity) || fallback;
 const iconBubble = (ctx: RenderContext, fallback: string, tone = "blue") => html`
   <span class="ulm-icon tone-${tone}"><ha-icon .icon=${icon(ctx, fallback)}></ha-icon></span>
 `;
@@ -118,14 +119,30 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
   const low = configured<number>(ctx, "ulm_card_light_brightness_low") ?? 1;
   const medium = configured<number>(ctx, "ulm_card_light_brightness_medium") ?? 50;
   const high = configured<number>(ctx, "ulm_card_light_brightness_high") ?? 100;
-  return ctx.actionSurface(`ulm-row ulm-light ${on ? "is-active" : ""} ${horizontal ? "is-horizontal" : ""} ${collapsed ? "is-collapsed" : ""}`, html`
-    ${iconBubble(ctx, "mdi:lightbulb", on ? "yellow" : "grey")}
-    ${heading(ctx, percent === undefined ? stateLabel(ctx.entity) : `${percent}%`)}
+  const min = configured<number>(ctx, "ulm_card_light_enable_slider_minSet") ?? 0;
+  const max = configured<number>(ctx, "ulm_card_light_enable_slider_maxSet") ?? 100;
+  const entityColor = configured<boolean>(ctx, "ulm_card_light_enable_color") === true
+    ? attr(ctx.entity, "rgb_color")
+    : undefined;
+  const rgb = Array.isArray(entityColor) && entityColor.length >= 3
+    ? entityColor.slice(0, 3).map(Number).join(",")
+    : "255,152,0";
+  const forceBackground = configured<boolean>(ctx, "ulm_card_light_force_background_color") === true && on;
+  const lightStyle = `--light-rgb:${rgb};${forceBackground ? `background:rgba(${rgb},.2);` : ""}`;
+  return ctx.actionSurface(`ulm-light-card ${horizontal ? "is-horizontal" : ""} ${collapsed ? "is-collapsed" : ""}`, html`
+    <div class="light-header ${on ? "is-active" : ""}" style=${lightStyle}>
+      <span class="ulm-icon light-icon"><ha-icon .icon=${icon(ctx, "mdi:lightbulb")}></ha-icon></span>
+      ${heading(ctx, percent === undefined ? stateLabel(ctx.entity) : `${stateLabel(ctx.entity)} · ${percent}%`)}
+    </div>
     ${!collapsed && slider ? html`
-      <input class="ulm-slider" type="range" min="0" max="100" .value=${String(percent ?? 0)}
-        @pointerdown=${(event: Event) => event.stopPropagation()}
-        @click=${(event: Event) => event.stopPropagation()}
-        @change=${(event: Event) => ctx.service("light", "turn_on", { entity_id: ctx.config.entity, brightness_pct: Number((event.target as HTMLInputElement).value) })}>
+      <div class="ulm-light-slider" style=${`${lightStyle}--light-level:${Math.max(0, Math.min(100, percent ?? 0))}%;`}>
+        <i></i>
+        <input type="range" .min=${String(min)} .max=${String(max)} .value=${String(percent ?? 0)}
+          aria-label="Brightness"
+          @pointerdown=${(event: Event) => event.stopPropagation()}
+          @click=${(event: Event) => event.stopPropagation()}
+          @change=${(event: Event) => ctx.service("light", "turn_on", { entity_id: ctx.config.entity, brightness_pct: Number((event.target as HTMLInputElement).value) })}>
+      </div>
     ` : nothing}
     ${!collapsed && buttons ? html`<div class="ulm-controls brightness-presets">
       ${[low, medium, high].map((brightness) => button(`${brightness}% brightness`, "mdi:brightness-6", (event) => {

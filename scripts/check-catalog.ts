@@ -27,5 +27,5 @@ const totals = PUBLIC_CATALOG.reduce<Record<string, number>>((result, item) => {
   return result;
 }, {});
 console.log(`Catalog verified: ${PUBLIC_CATALOG.length} upstream components.`);
-console.log(`Documented popup variants: ${UPSTREAM_VARIANTS.length}.`);
+console.log(`Inventoried popup templates intentionally excluded from the UI: ${UPSTREAM_VARIANTS.length}.`);
 for (const [key, count] of Object.entries(totals)) console.log(`- ${key}: ${count}`);

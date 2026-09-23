@@ -3,6 +3,7 @@ import { CATALOG, PUBLIC_CATALOG } from "../src/catalog";
 import { upstreamEditorSchemaFor } from "../src/editor-schema";
 import { PARITY_BY_ID, PARITY_ENTRIES } from "../src/parity.generated";
 import { EXAMPLE_CATALOG_IDS } from "../src/example-catalog";
+import { isRemovedPopupOption, supportedUpstreamOption } from "../src/supported-options";
 
 describe("upstream parity manifest", () => {
   it("has one explicit source-derived renderer mapping per public catalog entry", () => {
@@ -17,14 +18,15 @@ describe("upstream parity manifest", () => {
     }
   });
 
-  it("exposes every discovered upstream variable in that item's graphical editor", () => {
+  it("exposes every implemented upstream option and no nonfunctional switches", () => {
     for (const item of PUBLIC_CATALOG) {
       const parity = PARITY_BY_ID.get(item.upstreamId)!;
       const editorFields = new Set(upstreamEditorSchemaFor(item).map((field) => field.name));
       const variables = parity.variables.map((variable) => variable.name);
       expect(new Set(variables).size, item.upstreamId).toBe(variables.length);
       for (const variable of variables) {
-        expect(editorFields.has(variable), `${item.upstreamId}: ${variable}`).toBe(true);
+        expect(editorFields.has(variable), `${item.upstreamId}: ${variable}`)
+          .toBe(supportedUpstreamOption(item, variable));
       }
     }
   });
@@ -39,6 +41,13 @@ describe("upstream parity manifest", () => {
     const battery = PARITY_BY_ID.get("card_battery")!;
     expect(battery.variables.find((entry) => entry.name === "ulm_card_battery_battery_level_danger")?.defaultValue)
       .toBe("<null>");
+  });
+
+  it("removes unsupported popup options from every graphical editor", () => {
+    for (const item of PUBLIC_CATALOG) {
+      expect(upstreamEditorSchemaFor(item).some((field) => isRemovedPopupOption(field.name))).toBe(false);
+      expect(item.variants?.includes("popup")).not.toBe(true);
+    }
   });
 
   it("records every external frontend dependency as an item-specific deviation", () => {

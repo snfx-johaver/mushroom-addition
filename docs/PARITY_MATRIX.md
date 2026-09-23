@@ -4,7 +4,7 @@ Generated from UI-Lovelace-Minimalist commit `f8a9cb67a53f91367f1dffe18516aa983b
 
 ## Property mapping
 
-The primary Home Assistant entity maps to `entity`; standard Lovelace actions map to `tap_action`, `hold_action`, and `double_tap_action`. Every `ulm_*` variable below is also accepted unchanged in YAML and exposed unchanged in the expandable graphical-editor parity section. Common name/icon/color/layout/control variables are normalized into the shared Lit primitives while their original keys remain authoritative when explicitly configured. Empty, false, and zero values are preserved rather than replaced with truthy defaults.
+The primary Home Assistant entity maps to `entity`; standard Lovelace actions map to `tap_action`, `hold_action`, and `double_tap_action`. Every non-popup `ulm_*` variable below is accepted unchanged in YAML and exposed unchanged in the expandable graphical-editor parity section. Popup and Browser Mod variables remain inventoried but are intentionally excluded in favor of regular Home Assistant/Mushroom-style actions. Common name/icon/color/layout/control variables are normalized into the shared Lit primitives while their original keys remain authoritative when explicitly configured. Empty, false, and zero values are preserved rather than replaced with truthy defaults.
 
 | Upstream item | Renderer/layout | Sections | Behavior | Upstream variables and defaults | Backend requirements | Individually documented deviations |
 |---|---|---|---|---|---|---|

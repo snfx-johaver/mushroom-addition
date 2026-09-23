@@ -1,5 +1,6 @@
 import type { CatalogItem } from "./types";
 import { PARITY_BY_ID } from "./parity.generated";
+import { supportedUpstreamOption } from "./supported-options";
 
 export interface EditorField {
   name: string;
@@ -22,7 +23,6 @@ const common = (item: CatalogItem): EditorField[] => [
   entity(item.preferredDomains),
   text("name"),
   { name: "icon", selector: { icon: {} } },
-  { name: "icon_color", selector: { ui_color: {} } },
 ];
 
 const schemas: Record<string, (item: CatalogItem) => EditorField[]> = {
@@ -31,19 +31,18 @@ const schemas: Record<string, (item: CatalogItem) => EditorField[]> = {
     entity(["sensor"], "temperature_entity"),
     entity(["sensor"], "humidity_entity"),
     toggle("show_forecast"),
-    ...(item.variants?.length ? [{ name: "variant", selector: { select: { options: item.variants } } }] : []),
   ],
   climate: (item) => [...common(item), entity(["sensor"], "humidity_entity"), toggle("show_controls")],
-  light: (item) => [...common(item), toggle("show_controls"), ...(item.variants?.length ? [{ name: "variant", selector: { select: { options: item.variants } } }] : [])],
+  light: (item) => [...common(item)],
   scene: (item) => [...common(item), { name: "entities", selector: { entity: { domain: ["scene"], multiple: true } } }],
   presence: (item) => [...common(item), entity(["sensor"], "battery_entity"), entity(["sensor"], "eta_entity"), entity(["sensor"], "address_entity"), toggle("use_entity_picture")],
-  battery: (item) => [...common(item), toggle("show_graph"), number("graph_hours", 1, 168)],
-  energy: (item) => [...common(item), entity(["sensor"], "graph_entity"), entity(["sensor"], "min_entity"), entity(["sensor"], "max_entity"), toggle("show_graph"), number("graph_hours", 1, 168)],
-  sensor: (item) => [...common(item), entity(["sensor"], "graph_entity"), toggle("show_graph"), number("graph_hours", 1, 168)],
+  battery: (item) => [...common(item)],
+  energy: (item) => [...common(item), entity(["sensor"], "min_entity"), entity(["sensor"], "max_entity"), toggle("show_graph")],
+  sensor: (item) => [...common(item), toggle("show_graph")],
   media: (item) => [...common(item), toggle("show_controls"), ...(item.upstreamId === "custom_card_playstation" ? [{ name: "console_platform", selector: { select: { options: ["ps5", "xbox"] } } }] : [])],
   cover: (item) => [...common(item), toggle("show_controls")],
   vacuum: (item) => [...common(item), toggle("show_controls")],
-  security: (item) => [...common(item), toggle("show_controls")],
+  security: (item) => [...common(item)],
   navigation: () => [text("name"), { name: "icon", selector: { icon: {} } }, text("navigation_path")],
   chips: () => [],
   text: () => [text("name"), text("secondary"), { name: "icon", selector: { icon: {} } }],
@@ -68,7 +67,7 @@ export const editorSchemaFor = (item: CatalogItem): EditorField[] => [
 export const upstreamEditorSchemaFor = (item: CatalogItem): EditorField[] => {
   const parity = PARITY_BY_ID.get(item.upstreamId);
   if (!parity) return [];
-  return parity.variables.map((variable) => {
+  return parity.variables.filter((variable) => supportedUpstreamOption(item, variable.name)).map((variable) => {
     switch (variable.selector) {
       case "entity": return entity(undefined, variable.name);
       case "entity-multiple": return {

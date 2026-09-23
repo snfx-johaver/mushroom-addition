@@ -8,8 +8,8 @@ UI-Lovelace-Minimalist card and chip catalog. The layouts, state styling,
 controls, variables, and defaults are audited item-by-item while retaining a
 cohesive installation alongside Mushroom.
 
-The release contains **107 mapped upstream components**, **7 popup variants**,
-and a graphical chips container. Every component is registered in the Lovelace
+The release contains **107 mapped upstream components** and a graphical chips
+container. Every component is registered in the Lovelace
 card picker, has a visual editor, and remains YAML-configurable. See the
 [complete, source-linked catalog](docs/CATALOG.md), the generated
 [item-by-item parity matrix](docs/PARITY_MATRIX.md), and the
@@ -45,7 +45,7 @@ For a manual installation, copy `dist/mushroom-cards-addition.js` into
 `config/www/community/mushroom-cards-addition/` and register
 `/local/community/mushroom-cards-addition/mushroom-cards-addition.js` as a
 module. After replacing a manually installed bundle, use
-`/local/community/mushroom-cards-addition/mushroom-cards-addition.js?v=1.2.0`
+`/local/community/mushroom-cards-addition/mushroom-cards-addition.js?v=1.2.1`
 (or increment the query token) and hard-refresh the Home Assistant frontend to
 invalidate the browser cache.
 

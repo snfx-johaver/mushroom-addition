@@ -52,15 +52,12 @@ are explicit (`temperature_entity`, `humidity_entity`, `battery_entity`,
 only appear for families that use them. Legacy `primary_entity` and known
 Minimalist entity-variable names are migrated to `entity` during normalization.
 
-The editor also contains an expandable **Upstream parity options** section.
-Every variable discovered in the exact upstream source is accepted unchanged
-as a YAML property and receives a native Home Assistant selector inferred from
-its source/default: entity, multi-entity, action, icon, color, boolean, number,
-object, or text. The generated matrix documents each raw upstream key and
-default. Frequently used values such as `*_name`, `*_icon`, `*_color`,
-`*_enable_controls`, `*_enable_buttons`, `*_enable_slider`, and
-`*_enable_horizontal` are normalized into the shared Lit rendering primitives
-without removing the original property.
+The editor also contains an expandable **Implemented upstream options**
+section. The parity matrix inventories every discovered source variable, but
+the editor exposes only options that are wired to rendering or a valid Home
+Assistant service. This prevents inert switches and misleading controls.
+Supported source options retain their original YAML key and use native Home
+Assistant entity, action, icon, boolean, number, or text selectors.
 
 ## Visual verification
 
@@ -69,4 +66,4 @@ catalog, exactly once per registration. The current browser-rendered fixture is
 committed at [`docs/assets/catalog-fixture.png`](assets/catalog-fixture.png).
 Renderer tests assert the weather hierarchy, distinct family markup, exact
 one-per-registration fixture coverage, explicit per-entry renderer mappings,
-and complete editor-variable coverage.
+and that every exposed editor option has an implementation mapping.

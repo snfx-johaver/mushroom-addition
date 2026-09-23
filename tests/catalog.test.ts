@@ -22,11 +22,11 @@ describe("catalog coverage", () => {
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_chip_moon")).toBe(true);
   });
 
-  it("maps every popup to an editable card variant", () => {
+  it("inventories upstream popups without exposing nonfunctional variants", () => {
     expect(UPSTREAM_VARIANTS).toHaveLength(7);
     for (const variant of UPSTREAM_VARIANTS) {
       const component = PUBLIC_CATALOG.find((item) => item.upstreamId === variant.component);
-      expect(component?.variants).toContain("popup");
+      expect(component?.variants).not.toContain("popup");
       expect(variant.sourcePath).toContain("/popup_templates/popups/");
     }
   });

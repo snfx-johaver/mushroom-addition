@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { CATALOG } from "../src/catalog";
 import "../src/index";
 import type { AdditionConfig, HomeAssistant } from "../src/types";
@@ -121,6 +121,43 @@ describe("family renderers", () => {
     element.remove();
   });
 
+  it("wires the Minimalist light slider to a valid Home Assistant service", async () => {
+    const callService = vi.fn(async () => undefined);
+    const element = document.createElement("mushroom-addition-card-light") as HTMLElement & {
+      hass: HomeAssistant;
+      setConfig(config: AdditionConfig): void;
+      updateComplete: Promise<boolean>;
+      shadowRoot: ShadowRoot;
+    };
+    element.hass = { ...hass, callService };
+    element.setConfig({
+      type: "custom:mushroom-addition-card-light",
+      entity: "light.kitchen",
+      ulm_card_light_enable_slider: true,
+    });
+    document.body.append(element);
+    await element.updateComplete;
+    const slider = element.shadowRoot.querySelector<HTMLInputElement>(".ulm-light-slider input")!;
+    slider.value = "50";
+    slider.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
+    expect(callService).toHaveBeenCalledWith("light", "turn_on", {
+      entity_id: "light.kitchen",
+      brightness_pct: 50,
+    });
+    element.remove();
+  });
+
+  it("does not render service controls for incompatible entity domains", async () => {
+    const markup = await render("mushroom-addition-card-cover", {
+      type: "custom:mushroom-addition-card-cover",
+      entity: "sensor.power",
+      show_controls: true,
+      ulm_card_cover_enable_slider: true,
+    });
+    expect(markup).not.toContain("ulm-control");
+    expect(markup).not.toContain("ulm-light-slider");
+  });
+
   it.each([
     ["climate", "mushroom-addition-card-thermostat", "climate.living", "ulm-climate"],
     ["light", "mushroom-addition-card-light", "light.kitchen", "ulm-light"],
@@ -181,13 +218,12 @@ describe("family renderers", () => {
           "ulm-label",
         ],
         "light": [
-          "ulm-row",
-          "ulm-light",
+          "ulm-light-card",
           "ulm-icon",
           "ulm-copy",
           "ulm-name",
           "ulm-label",
-          "ulm-slider",
+          "ulm-light-slider",
         ],
         "media": [
           "ulm-media",

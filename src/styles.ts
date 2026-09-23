@@ -98,11 +98,45 @@ export const sharedStyles = css`
   .weather-forecast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
   .weather-forecast span { display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 12px; }
   .weather-forecast ha-icon { --mdc-icon-size: 17px; color: rgb(var(--ulm-blue)); }
-  .ulm-light { grid-template-columns: auto minmax(0, 1fr); }
-  .ulm-light .ulm-slider { grid-column: 1 / -1; width: 100%; accent-color: rgb(var(--ulm-yellow)); }
-  .ulm-light.is-active { background: rgba(var(--ulm-yellow), .08); }
-  .ulm-light.is-collapsed .ulm-slider, .ulm-light.is-collapsed .brightness-presets { display: none; }
-  .brightness-presets { grid-column: 1 / -1; justify-content: center; }
+  .ulm-light-card { display: grid; gap: 12px; padding: 12px; }
+  .ulm-light-card.is-horizontal { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
+  .ulm-light-card.is-horizontal .brightness-presets { display: none; }
+  .light-header { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px; min-height: 42px; border-radius: 14px; }
+  .light-header.is-active .light-icon {
+    background: rgba(var(--light-rgb), .2);
+    color: rgb(var(--light-rgb));
+  }
+  .light-header:not(.is-active) .light-icon {
+    background: rgba(var(--ulm-grey), .06);
+    color: rgba(var(--ulm-grey), .35);
+  }
+  .ulm-light-slider {
+    position: relative;
+    height: 42px;
+    overflow: hidden;
+    border-radius: 14px;
+    background: rgba(var(--light-rgb), .2);
+  }
+  .ulm-light-slider i {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--light-level);
+    border-radius: inherit;
+    background: rgb(var(--light-rgb));
+    pointer-events: none;
+  }
+  .ulm-light-slider input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    cursor: pointer;
+    opacity: 0;
+  }
+  .ulm-light-card.is-collapsed .ulm-light-slider,
+  .ulm-light-card.is-collapsed .brightness-presets { display: none; }
+  .brightness-presets { justify-content: center; }
   .ulm-climate { padding-bottom: 12px; }
   .climate-top { padding-bottom: 8px; }
   .climate-target { color: rgb(var(--ulm-red)); font-size: 23px; font-weight: 600; }

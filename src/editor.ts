@@ -5,6 +5,7 @@ import { CATALOG, getCatalogItem } from "./catalog";
 import { fireEvent } from "./helpers";
 import { localize } from "./localize";
 import { editorSchemaFor, upstreamEditorSchemaFor } from "./editor-schema";
+import { populatedDefaultsFor } from "./defaults";
 
 @customElement("mushroom-addition-editor")
 export class MushroomAdditionEditor extends LitElement {
@@ -79,20 +80,21 @@ export class MushroomAdditionEditor extends LitElement {
     if (!item) return nothing;
     const schema = editorSchemaFor(item);
     const upstreamSchema = upstreamEditorSchemaFor(item);
+    const formData = { ...populatedDefaultsFor(item, this.hass, this.config.entity), ...this.config };
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this.config}
+        .data=${formData}
         .schema=${schema}
         .computeLabel=${this.computeLabel}
         @value-changed=${this.valueChanged}
       ></ha-form>
       ${upstreamSchema.length ? html`
         <ha-expansion-panel outlined>
-          <span slot="header">Upstream parity options (${upstreamSchema.length})</span>
+          <span slot="header">Implemented upstream options (${upstreamSchema.length})</span>
           <ha-form
             .hass=${this.hass}
-            .data=${this.config}
+            .data=${formData}
             .schema=${upstreamSchema}
             .computeLabel=${this.computeLabel}
             @value-changed=${this.valueChanged}

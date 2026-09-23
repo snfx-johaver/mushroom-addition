@@ -1,4 +1,5 @@
 import type { AdditionConfig, CatalogItem, HomeAssistant } from "./types";
+import { populatedDefaultsFor } from "./defaults";
 
 const firstMatchingEntity = (
   descriptor: CatalogItem,
@@ -62,18 +63,23 @@ export const createStubConfig = (
   const defaultVariant = gameConsole && entity?.toLowerCase().includes("xbox")
     ? "xbox"
     : descriptor.variants?.[0];
+  const entityDomain = entity?.split(".", 1)[0];
+  const tapAction = ["light", "switch", "input_boolean", "fan"].includes(entityDomain ?? "")
+    ? { action: "toggle" }
+    : { action: entity ? "more-info" : "none" };
   return {
-    type: `custom:${descriptor.tag}`,
-    entity,
-    name: entity ? undefined : sampleName(descriptor),
+    ...populatedDefaultsFor(descriptor, hass, entity),
+    name: entity ? hass?.states[entity]?.attributes.friendly_name : sampleName(descriptor),
     secondary: entity ? undefined : isText ? "Example" : "Preview",
-    icon: descriptor.kind === "chip" ? "mdi:circle-small" : undefined,
     variant: defaultVariant,
-    show_icon: true,
-    show_state: true,
-    show_controls: ["light", "climate", "media", "cover", "vacuum", "security", "control"].includes(descriptor.family),
+    tap_action: tapAction,
+    show_controls: ["climate", "media", "cover", "vacuum", "control"].includes(descriptor.family)
+      ? true
+      : undefined,
     show_forecast: descriptor.family === "weather",
     show_graph: ["battery", "energy", "sensor"].includes(descriptor.family),
+    ulm_card_light_enable_slider: descriptor.family === "light" ? true : undefined,
+    ulm_card_light_enable_color: descriptor.family === "light" ? true : undefined,
     entities: descriptor.variants?.includes("with-sensors")
       ? entitiesFallback.slice(0, 2)
       : undefined,

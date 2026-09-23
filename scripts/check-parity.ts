@@ -1,6 +1,7 @@
 import { PUBLIC_CATALOG } from "../src/catalog";
 import { upstreamEditorSchemaFor } from "../src/editor-schema";
 import { PARITY_BY_ID, PARITY_ENTRIES } from "../src/parity.generated";
+import { supportedUpstreamOption } from "../src/supported-options";
 
 const failures: string[] = [];
 if (PARITY_ENTRIES.length !== PUBLIC_CATALOG.length) {
@@ -15,7 +16,9 @@ for (const item of PUBLIC_CATALOG) {
   if (parity.rendererId !== item.upstreamId) failures.push(`${item.upstreamId}: renderer mapping is not explicit.`);
   const fields = new Set(upstreamEditorSchemaFor(item).map((field) => field.name));
   for (const variable of parity.variables) {
-    if (!fields.has(variable.name)) failures.push(`${item.upstreamId}: ${variable.name} is not exposed by the editor.`);
+    if (supportedUpstreamOption(item, variable.name) && !fields.has(variable.name)) {
+      failures.push(`${item.upstreamId}: implemented option ${variable.name} is not exposed by the editor.`);
+    }
   }
   const external = parity.dependencies.filter((dependency) => dependency !== "button-card");
   if (parity.deviations.length < external.length) failures.push(`${item.upstreamId}: dependency deviations are incomplete.`);

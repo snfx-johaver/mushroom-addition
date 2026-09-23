@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { CATALOG } from "../src/catalog";
 import "../src/index";
 import type { AdditionConfig, HomeAssistant } from "../src/types";
+import { upstreamDefaultsFor } from "../src/defaults";
 
 describe("Home Assistant registration", () => {
   afterEach(() => vi.useRealTimers());
@@ -54,12 +55,15 @@ describe("Home Assistant registration", () => {
         };
         expect(lightConstructor.getStubConfig(hass, Object.keys(hass.states), [])).toMatchObject({
           entity: "light.kitchen",
-          name: undefined,
+          name: "Kitchen",
+          icon: "mdi:lightbulb",
+          ulm_card_light_enable_slider: true,
+          ulm_card_light_enable_color: true,
         });
         expect(consoleConstructor.getStubConfig(hass, Object.keys(hass.states), [])).toMatchObject({
           entity: "media_player.xbox",
           variant: "xbox",
-          icon: undefined,
+          icon: "mdi:microsoft-xbox",
         });
   });
 
@@ -96,6 +100,21 @@ describe("Home Assistant registration", () => {
           name: "PS5 / Xbox Card",
           variants: ["ps5", "xbox"],
         });
+  });
+
+  it("hydrates implemented upstream defaults without popup options", () => {
+    const light = CATALOG.find((item) => item.upstreamId === "card_light")!;
+    expect(upstreamDefaultsFor(light)).toMatchObject({
+      ulm_card_light_enable_slider: false,
+      ulm_card_light_enable_collapse: false,
+      ulm_card_light_enable_horizontal: false,
+      ulm_card_light_enable_color: false,
+      ulm_card_light_enable_buttons: false,
+      ulm_card_light_brightness_low: 1,
+      ulm_card_light_brightness_medium: 50,
+      ulm_card_light_brightness_high: 100,
+    });
+    expect(Object.keys(upstreamDefaultsFor(light)).some((key) => key.includes("popup"))).toBe(false);
   });
 
   it("renders a representative from every component family", async () => {

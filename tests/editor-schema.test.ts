@@ -17,7 +17,7 @@ describe("family editor schemas", () => {
     const weather = CATALOG.find((item) => item.upstreamId === "card_weather")!;
     const schema = editorSchemaFor(weather);
     expect(schema.map((field) => field.name)).toEqual(expect.arrayContaining([
-      "entity", "temperature_entity", "humidity_entity", "show_forecast", "variant",
+      "entity", "temperature_entity", "humidity_entity", "show_forecast",
     ]));
     expect(schema).not.toContainEqual(expect.objectContaining({ name: "battery_entity" }));
     expect(schema.find((field) => field.name === "entity")?.selector).toEqual({
@@ -31,7 +31,7 @@ describe("family editor schemas", () => {
       const item = CATALOG.find((entry) => entry.family === family)!;
       return editorSchemaFor(item).map((field) => field.name).join(",");
     });
-    expect(new Set(signatures).size).toBeGreaterThanOrEqual(10);
+    expect(new Set(signatures).size).toBeGreaterThanOrEqual(9);
   });
 
   it("maps every registration to a known renderer/editor family", () => {
