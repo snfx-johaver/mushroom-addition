@@ -132,7 +132,7 @@ describe("welcome and person custom source certification", () => {
     ]);
   });
 
-  it("accepts all five local audit stages without claiming live execution", () => {
+  it("accepts all local and authenticated live audit stages", () => {
     for (const sourceId of [
       "custom_card_paddy_waste_collection",
       "custom_card_paddy_welcome",
@@ -142,16 +142,64 @@ describe("welcome and person custom source certification", () => {
       "custom_card_ristou_person",
     ]) {
       expect(VISUAL_AUDIT.find((entry) => entry.sourceId === sourceId)).toMatchObject({
-        status: "pending",
+        status: "accepted",
         pickerAccepted: true,
         editorAccepted: true,
         visualAccepted: true,
         statesAccepted: true,
         interactionsAccepted: true,
-        liveAccepted: false,
+        liveAccepted: true,
         artifactPath: "docs/assets/visual-audit/welcome-person-custom-batch-comparison.png",
       });
     }
+  });
+
+  it("records authenticated 330px live evidence for exactly the six certified sources", () => {
+    const evidence = JSON.parse(readFileSync(join(
+      process.cwd(), "docs", "assets", "visual-audit", "welcome-person-live-certification.json",
+    ), "utf8")) as {
+      candidate: { commit: string; sha256: string; resource: string };
+      sources: Record<string, {
+        geometry: { width: number; clientWidth?: number; scrollWidth?: number };
+        pickerRegistered: boolean;
+        editorFields: string[];
+        safeInteraction: { action: string; entity: string };
+        liveAccepted: boolean;
+      }>;
+      result: Record<string, number>;
+    };
+    expect(evidence.candidate).toMatchObject({
+      commit: "a32c4e0c74798f76589f057647e41ee7c50a1bf2",
+      resource: "/local/community/mushroom-cards-addition/mushroom-cards-addition.js?v=1.6.0-welcome-fix-fa505b83",
+      sha256: "FA505B83853F04A391453D9C6BE29503D89D46A138E1807008C2575550CC90AF",
+    });
+    expect(Object.keys(evidence.sources)).toEqual([
+      "custom_card_paddy_waste_collection",
+      "custom_card_paddy_welcome",
+      "custom_card_person_chip",
+      "custom_card_playstation",
+      "custom_card_qubino",
+      "custom_card_ristou_person",
+    ]);
+    for (const source of Object.values(evidence.sources)) {
+      expect(source).toMatchObject({
+        geometry: { width: 330 },
+        pickerRegistered: true,
+        liveAccepted: true,
+        safeInteraction: { action: "more-info" },
+      });
+      expect(source.editorFields.length).toBeGreaterThan(0);
+      if (source.geometry.clientWidth !== undefined) {
+        expect(source.geometry.scrollWidth).toBe(source.geometry.clientWidth);
+      }
+    }
+    expect(evidence.result).toEqual({
+      accepted: 6,
+      overflowFailures: 0,
+      pickerFailures: 0,
+      editorFailures: 0,
+      interactionFailures: 0,
+    });
   });
 
   it("provides dedicated picker defaults and source-specific graphical editor fields", () => {

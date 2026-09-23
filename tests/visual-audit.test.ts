@@ -31,17 +31,17 @@ describe("visual audit manifest", () => {
 
   it("reports exact accepted progress without inferring parity from family mappings", () => {
     expect(visualAuditProgress()).toEqual({
-      accepted: 60,
+      accepted: 66,
       pickerAccepted: 74,
       editorAccepted: 74,
       visualAccepted: 74,
       statesAccepted: 74,
       interactionsAccepted: 74,
-      liveAccepted: 60,
+      liveAccepted: 66,
       total: 86,
     });
 
-    expect(VISUAL_AUDIT.filter((entry) => entry.status === "accepted")).toHaveLength(60);
+    expect(VISUAL_AUDIT.filter((entry) => entry.status === "accepted")).toHaveLength(66);
   });
 
   it("certifies all six stages for the power and printer custom batch", () => {
