@@ -31,17 +31,17 @@ describe("visual audit manifest", () => {
 
   it("reports exact accepted progress without inferring parity from family mappings", () => {
     expect(visualAuditProgress()).toEqual({
-      accepted: 66,
+      accepted: 68,
       pickerAccepted: 74,
       editorAccepted: 74,
       visualAccepted: 74,
       statesAccepted: 74,
       interactionsAccepted: 74,
-      liveAccepted: 66,
+      liveAccepted: 68,
       total: 86,
     });
 
-    expect(VISUAL_AUDIT.filter((entry) => entry.status === "accepted")).toHaveLength(66);
+    expect(VISUAL_AUDIT.filter((entry) => entry.status === "accepted")).toHaveLength(68);
   });
 
   it("certifies all six stages for the power and printer custom batch", () => {
@@ -215,28 +215,28 @@ describe("visual audit manifest", () => {
     }
   });
 
-  it("certifies only local stages for the final pollen and lights sources", () => {
+  it("certifies all stages for the final pollen and lights sources", () => {
     expect(VISUAL_AUDIT.find((entry) => entry.sourceId === "custom_card_wsly_pollen")).toMatchObject({
-      status: "pending",
+      status: "accepted",
       pickerAccepted: true,
       editorAccepted: true,
       visualAccepted: true,
       statesAccepted: true,
       interactionsAccepted: true,
-      liveAccepted: false,
+      liveAccepted: true,
       fixturePath: "demo/final-pollen-lights-comparison.html",
       artifactPath: "docs/assets/visual-audit/final-pollen-lights-comparison.png",
       widths: [368],
     });
     expect(VISUAL_AUDIT.find((entry) => entry.sourceId === "custom_card_yagrasdemonde_lights_count"))
       .toMatchObject({
-        status: "pending",
+        status: "accepted",
         pickerAccepted: true,
         editorAccepted: true,
         visualAccepted: true,
         statesAccepted: true,
         interactionsAccepted: true,
-        liveAccepted: false,
+        liveAccepted: true,
         fixturePath: "demo/final-pollen-lights-comparison.html",
         artifactPath: "docs/assets/visual-audit/final-pollen-lights-comparison.png",
         widths: [486],

@@ -59,7 +59,44 @@ const render = async (sourceId: string, config: Omit<AdditionConfig, "type">): P
 afterEach(() => document.body.replaceChildren());
 
 describe("final pollen and lights certification", () => {
-  it("records matched-width geometry, exact payloads, and no live acceptance", () => {
+  it("records authenticated live rendering, picker, editor, and interaction evidence", () => {
+    const evidence = JSON.parse(readFileSync(join(
+      process.cwd(), "docs", "assets", "visual-audit", "final-pollen-lights-live-certification.json",
+    ), "utf8")) as {
+      candidate: { commit: string; sha256: string; resource: string };
+      sources: Record<string, {
+        geometry: { width: number; clientWidth: number; scrollWidth: number };
+        pickerRegistered: boolean;
+        editorFields: string[];
+        serviceCalls: unknown[];
+        liveAccepted: boolean;
+      }>;
+      result: Record<string, number>;
+    };
+    expect(evidence.candidate).toMatchObject({
+      commit: "6a42f7b4d87525cdc7464f6117cc4c03b2d990d2",
+      resource: "/local/community/mushroom-cards-addition/mushroom-cards-addition.js?v=1.6.0-pollen-1d18e109",
+      sha256: "1D18E10912363DD3FD172353A3868CCAA1DD46FDC5CBDD02F0CB565154CAFCB7",
+    });
+    for (const sourceId of ["custom_card_wsly_pollen", "custom_card_yagrasdemonde_lights_count"]) {
+      expect(evidence.sources[sourceId]).toMatchObject({
+        geometry: { width: 330, clientWidth: 330, scrollWidth: 330 },
+        pickerRegistered: true,
+        serviceCalls: [],
+        liveAccepted: true,
+      });
+      expect(evidence.sources[sourceId].editorFields).toContain("entity");
+    }
+    expect(evidence.result).toEqual({
+      accepted: 2,
+      overflowFailures: 0,
+      pickerFailures: 0,
+      editorFailures: 0,
+      interactionFailures: 0,
+    });
+  });
+
+  it("records matched-width local geometry and exact payloads separately from live evidence", () => {
     const evidence = JSON.parse(readFileSync(join(
       process.cwd(), "docs", "assets", "visual-audit", "final-pollen-lights-local-certification.json",
     ), "utf8")) as {
