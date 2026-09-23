@@ -354,6 +354,48 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         toggle("ulm_card_power_details_24hour"),
         ...presentation(),
       ]
+    : item.upstreamId === "custom_card_light_colorpick"
+      ? [
+        entity(["light"]),
+        text("ulm_card_light_colorpick_name"),
+        number("ulm_card_light_colorpick_transition", 0, 60),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_media_player_sonos"
+      ? [
+        entity(["media_player"]),
+        text("ulm_card_media_player_with_controls_name"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_more_power_outlet"
+      ? [
+        entity(["switch", "light"]),
+        entity(["sensor"], "power_entity"),
+        entity(["sensor"], "energy_entity"),
+        entity(["sensor"], "time_entity"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_mpse_gauge"
+      ? [
+        entity(["sensor"]),
+        number("minimum", -100000, 100000),
+        number("maximum", -100000, 100000),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_mpse_printer"
+      ? [
+        entity(["sensor", "binary_sensor"]),
+        entity(["sensor"], "black_entity"),
+        entity(["sensor"], "yellow_entity"),
+        entity(["sensor"], "magenta_entity"),
+        entity(["sensor"], "cyan_entity"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_mpse_thermostat"
+      ? [
+        entity(["climate"]),
+        ...presentation(),
+      ]
     : item.upstreamId === "custom_card_device_tracker"
       ? [
         entity(["device_tracker", "person"]),

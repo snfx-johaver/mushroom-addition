@@ -32,11 +32,11 @@ describe("visual audit manifest", () => {
   it("reports exact accepted progress without inferring parity from family mappings", () => {
     expect(visualAuditProgress()).toEqual({
       accepted: 12,
-      pickerAccepted: 54,
-      editorAccepted: 54,
-      visualAccepted: 54,
-      statesAccepted: 54,
-      interactionsAccepted: 54,
+      pickerAccepted: 60,
+      editorAccepted: 60,
+      visualAccepted: 60,
+      statesAccepted: 60,
+      interactionsAccepted: 60,
       liveAccepted: 12,
       total: 86,
     });
@@ -56,6 +56,27 @@ describe("visual audit manifest", () => {
         "custom_card_person_info",
         "custom_card_person_info_small",
       ]);
+  });
+
+  it("certifies only local stages for the power and printer custom batch", () => {
+    for (const sourceId of [
+      "custom_card_light_colorpick",
+      "custom_card_media_player_sonos",
+      "custom_card_more_power_outlet",
+      "custom_card_mpse_gauge",
+      "custom_card_mpse_printer",
+      "custom_card_mpse_thermostat",
+    ]) {
+      expect(VISUAL_AUDIT.find((entry) => entry.sourceId === sourceId)).toMatchObject({
+        status: "pending",
+        pickerAccepted: true,
+        editorAccepted: true,
+        visualAccepted: true,
+        statesAccepted: true,
+        interactionsAccepted: true,
+        liveAccepted: false,
+      });
+    }
   });
 
   it("certifies only local stages for the six default rich sources", () => {

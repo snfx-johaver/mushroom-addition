@@ -103,6 +103,14 @@ export interface AdditionConfig {
   memory_entity?: string;
   cpu_entity?: string;
   graph_entity?: string;
+  energy_entity?: string;
+  time_entity?: string;
+  black_entity?: string;
+  yellow_entity?: string;
+  magenta_entity?: string;
+  cyan_entity?: string;
+  minimum?: number;
+  maximum?: number;
   eta_entity?: string;
   address_entity?: string;
   min_entity?: string;

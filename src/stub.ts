@@ -80,6 +80,16 @@ export const createStubConfig = (
                                       : descriptor.upstreamId === "custom_card_imswel_medias"
                                         ? findEntity(["media_player", "sensor"], ["sonos"]) ??
                                           findEntity(["media_player", "sensor"], ["media"])
+                                      : descriptor.upstreamId === "custom_card_media_player_sonos"
+                                        ? findEntity(["media_player"], ["sonos"])
+                                      : descriptor.upstreamId === "custom_card_more_power_outlet"
+                                        ? findEntity(["switch", "light"], ["outlet"]) ??
+                                          findEntity(["switch", "light"], ["plug"])
+                                      : descriptor.upstreamId === "custom_card_mpse_printer"
+                                        ? findEntity(["sensor", "binary_sensor"], ["printer"]) ??
+                                          findEntity(["sensor", "binary_sensor"], ["online"])
+                                      : descriptor.upstreamId === "custom_card_mpse_thermostat"
+                                        ? findEntity(["climate"], [])
                               : descriptor.upstreamId === "custom_card_irmajavi_speedtest"
                                 ? findEntity(["sensor"], ["download"])
                               : descriptor.upstreamId === "card_room"
@@ -360,6 +370,39 @@ export const createStubConfig = (
         download_entity: findEntity(["sensor"], ["download"]) ?? entity,
         upload_entity: findEntity(["sensor"], ["upload"]),
         ping_entity: findEntity(["sensor"], ["ping"]),
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_light_colorpick"
+      ? {
+        ulm_card_light_colorpick_name: entity
+          ? hass?.states[entity]?.attributes.friendly_name
+          : sampleName(descriptor),
+        ulm_card_light_colorpick_transition: 1,
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_media_player_sonos"
+      ? {
+        ulm_card_media_player_with_controls_name: entity
+          ? hass?.states[entity]?.attributes.friendly_name
+          : "No name set",
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_more_power_outlet"
+      ? {
+        power_entity: findEntity(["sensor"], ["power"]),
+        energy_entity: findEntity(["sensor"], ["energy"]),
+        time_entity: findEntity(["sensor"], ["time"]),
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_mpse_gauge"
+      ? { minimum: 0, maximum: 100 }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_mpse_printer"
+      ? {
+        black_entity: findEntity(["sensor"], ["black"]),
+        yellow_entity: findEntity(["sensor"], ["yellow"]),
+        magenta_entity: findEntity(["sensor"], ["magenta"]),
+        cyan_entity: findEntity(["sensor"], ["cyan"]),
       }
       : {}),
   };

@@ -273,5 +273,33 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
       : undefined;
     migrated.variant ??= !platform || platform === "plex" ? "library" : "upcoming";
   }
+  if (String(config.type).includes("media-player-sonos")) {
+    migrated.entity ??= entityId(config.ulm_card_media_player_with_controls_entity);
+  }
+  if (String(config.type).includes("more-power-outlet")) {
+    migrated.power_entity ??= entityId(
+      config.custom_card_more_power_outlet_power_sensor ??
+      config.ulm_card_more_power_outlet_power_sensor ??
+      config.graph_entity,
+    );
+    migrated.energy_entity ??= entityId(
+      config.custom_card_more_power_outlet_energy_sensor ??
+      config.ulm_card_more_power_outlet_energy_sensor,
+    );
+    migrated.time_entity ??= entityId(
+      config.custom_card_more_power_outlet_time_sensor ??
+      config.ulm_card_more_power_outlet_time_sensor,
+    );
+  }
+  if (String(config.type).includes("mpse-gauge")) {
+    migrated.minimum ??= Number(config.ulm_card_mpse_gauge_min ?? 0);
+    migrated.maximum ??= Number(config.ulm_card_mpse_gauge_max ?? 100);
+  }
+  if (String(config.type).includes("mpse-printer")) {
+    migrated.black_entity ??= entityId(config.ulm_card_printer_black_name);
+    migrated.yellow_entity ??= entityId(config.ulm_card_printer_yellow_name);
+    migrated.magenta_entity ??= entityId(config.ulm_card_printer_magenta_name);
+    migrated.cyan_entity ??= entityId(config.ulm_card_printer_cyan_name);
+  }
   return migrated;
 };

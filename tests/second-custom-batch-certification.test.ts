@@ -147,7 +147,7 @@ describe("second custom batch certification", () => {
 
   it("matches elapsed-time date and time-only source formatting without controls", async () => {
     vi.useFakeTimers();
-    vi.setSystemTime(new Date("2026-09-23T22:23:00+02:00"));
+    vi.setSystemTime(new Date(2026, 8, 23, 22, 23, 0));
     const dated = await renderCard("custom-card-eraycetinay-elapsed-time", { entity: "input_datetime.cat_litter" });
     expect(dated.shadowRoot.textContent).toContain("2 days 10 hours ago");
     expect(dated.shadowRoot.querySelector("button")).toBeNull();

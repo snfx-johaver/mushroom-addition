@@ -2141,64 +2141,155 @@ const renderIrmajaviWeather = (ctx: RenderContext): TemplateResult => {
 
 const renderLightColorPick = (ctx: RenderContext): TemplateResult => {
   const on = ctx.entity?.state === "on";
+  const unavailable = !ctx.entity || ["unknown", "unavailable"].includes(ctx.entity.state);
   const brightness = numeric(attr(ctx.entity, "brightness"));
   const percent = brightness === undefined ? 0 : Math.round(brightness / 2.55);
-  const colors = [[255,255,255], [255,0,0], [0,110,255], [0,190,90], [220,0,220], [0,210,220]];
-  return ctx.actionSurface("custom-light-colorpick", html`
+  const colors = [[255, 255, 255], [245, 68, 54], [51, 102, 204], [51, 204, 51], [255, 0, 255], [0, 255, 255]];
+  const transition = numeric(configured(ctx, "ulm_card_light_colorpick_transition")) ?? 1;
+  return ctx.actionSurface(`custom-light-colorpick ${on ? "is-active" : ""}`, html`
     <div class="light-colorpick-top">
-      <div class="light-header ${on ? "is-active" : ""}">${iconBubble(ctx, "mdi:lightbulb", on ? "yellow" : "grey")}${heading(ctx, `${stateLabel(ctx.entity)} · ${percent}%`)}</div>
-      <div class="ulm-light-slider" style=${`--light-rgb:255,193,7;--light-level:${percent}%`}><i></i><input type="range" min="0" max="100" .value=${String(percent)} @pointerdown=${(event: Event) => event.stopPropagation()} @change=${(event: Event) => ctx.service("light", "turn_on", { entity_id: ctx.config.entity, brightness_pct: Number((event.target as HTMLInputElement).value) })}></div>
+      <div class="light-header ${on ? "is-active" : ""}">
+        ${iconBubble(ctx, "mdi:lightbulb", on ? "yellow" : "grey")}
+        ${heading(ctx, on && brightness !== undefined ? `${percent}%` : stateLabel(ctx.entity))}
+      </div>
+      <div class="ulm-light-slider" style=${`--light-rgb:255,193,7;--light-level:${percent}%`}>
+        <i></i>
+        <input type="range" min="0" max="100" .value=${String(percent)} aria-label="Brightness"
+          ?disabled=${unavailable}
+          @pointerdown=${(event: Event) => event.stopPropagation()}
+          @click=${(event: Event) => event.stopPropagation()}
+          @change=${(event: Event) => ctx.service("light", "turn_on", {
+            entity_id: ctx.config.entity,
+            brightness_pct: Number((event.target as HTMLInputElement).value),
+          })}>
+      </div>
     </div>
-    ${on ? html`<div class="light-color-swatches">${colors.map((rgb) => html`<button style=${`--swatch:rgb(${rgb.join(",")})`} aria-label=${`Set color ${rgb.join(",")}`} @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => { event.stopPropagation(); ctx.service("light", "turn_on", { entity_id: ctx.config.entity, rgb_color: rgb, transition: numeric(configured(ctx, "ulm_card_light_colorpick_transition")) ?? 1 }); }}></button>`)}</div>` : nothing}
+    ${on ? html`<div class="light-color-swatches">${colors.map((rgb) => html`
+      <button style=${`--swatch:rgba(${rgb.join(",")},.8)`} aria-label=${`Set color ${rgb.join(",")}`}
+        ?disabled=${unavailable}
+        @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => {
+          event.stopPropagation();
+          ctx.service("light", "turn_on", { entity_id: ctx.config.entity, rgb_color: rgb, transition });
+        }}></button>
+    `)}</div>` : nothing}
   `);
 };
 
 const renderSonos = (ctx: RenderContext): TemplateResult => {
+  const unavailable = !ctx.entity || ctx.entity.state === "unavailable";
   const volume = Math.round((numeric(attr(ctx.entity, "volume_level")) ?? 0) * 100);
+  const source = attr(ctx.entity, "source");
+  const label = ["idle", "paused", "unavailable"].includes(ctx.entity?.state ?? "")
+    ? stateLabel(ctx.entity)
+    : `${source ? String(source) : stateLabel(ctx.entity)} • ${volume}%`;
   return ctx.actionSurface("custom-sonos", html`
-    <div class="custom-card-heading">${iconBubble(ctx, "mdi:speaker", ctx.entity?.state === "playing" ? "green" : "grey")}${heading(ctx, `${attr(ctx.entity, "source") ?? stateLabel(ctx.entity)} · ${volume}%`)}</div>
+    <div class="custom-card-heading">
+      ${iconBubble(ctx, "mdi:speaker", ctx.entity?.state === "playing" ? "green" : "grey")}
+      <span class="ulm-copy">
+        <span class="ulm-name">${configured<string>(ctx, "ulm_card_media_player_with_controls_name") || displayName(ctx.config, ctx.entity)}</span>
+        <span class="ulm-label">${label}</span>
+      </span>
+    </div>
     <div class="sonos-controls">
-      ${button("Volume down", "mdi:volume-minus", (event) => { event.stopPropagation(); ctx.service("media_player", "volume_down", { entity_id: ctx.config.entity }); })}
-      ${button("Play or pause", ctx.entity?.state === "playing" ? "mdi:pause" : "mdi:play", (event) => { event.stopPropagation(); ctx.service("media_player", "media_play_pause", { entity_id: ctx.config.entity }); })}
-      ${button("Volume up", "mdi:volume-plus", (event) => { event.stopPropagation(); ctx.service("media_player", "volume_up", { entity_id: ctx.config.entity }); })}
+      ${button("Volume down", "mdi:volume-minus", (event) => { event.stopPropagation(); ctx.service("media_player", "volume_down", { entity_id: ctx.config.entity }); }, unavailable)}
+      ${button("Play or pause", ["paused", "off"].includes(ctx.entity?.state ?? "") ? "mdi:play" : "mdi:pause", (event) => { event.stopPropagation(); ctx.service("media_player", "media_play_pause", { entity_id: ctx.config.entity }); }, unavailable)}
+      ${button("Volume up", "mdi:volume-plus", (event) => { event.stopPropagation(); ctx.service("media_player", "volume_up", { entity_id: ctx.config.entity }); }, unavailable)}
     </div>
   `);
 };
 
 const renderMorePowerOutlet = (ctx: RenderContext): TemplateResult => {
-  const power = entityFromConfig(ctx, "ulm_card_more_power_outlet_power_sensor") ?? linkedState(ctx, "graph_entity");
-  const energy = entityFromConfig(ctx, "ulm_card_more_power_outlet_energy_sensor");
-  const elapsed = entityFromConfig(ctx, "ulm_card_more_power_outlet_time_sensor");
-  const details = [power ? stateLabel(power) : "", energy ? stateLabel(energy) : "", elapsed ? stateLabel(elapsed) : ""].filter(Boolean).join(" · ");
+  const power = linkedState(ctx, "power_entity");
+  const energy = linkedState(ctx, "energy_entity");
+  const elapsed = linkedState(ctx, "time_entity");
+  const duration = elapsed
+    ? (numeric(elapsed.state) ?? 0) < 1
+      ? `${(numeric(elapsed.state) ?? 0) * 100}Mins`
+      : `${elapsed.state}Hrs`
+    : undefined;
+  const on = ctx.entity?.state === "on";
+  const details = on
+    ? [
+      power ? `${power.state}W` : undefined,
+      energy ? `${energy.state}kWh` : undefined,
+      duration,
+    ].filter(Boolean).join(" • ") || stateLabel(ctx.entity)
+    : energy && (numeric(energy.state) ?? 0) > 0
+      ? `${stateLabel(ctx.entity)} • ${energy.state}kWh`
+      : stateLabel(ctx.entity);
   return ctx.actionSurface("custom-more-power-outlet", html`
-    ${iconBubble(ctx, "mdi:power-socket-eu", ctx.entity?.state === "on" ? "yellow" : "grey")}
+    ${iconBubble(ctx, "mdi:power-socket-eu", on ? "yellow" : "grey")}
     ${heading(ctx, details || stateLabel(ctx.entity))}
   `);
 };
 
 const renderDualGauge = (ctx: RenderContext): TemplateResult => {
   const value = numeric(ctx.entity?.state) ?? 0;
-  const min = numeric(configured(ctx, "ulm_card_mpse_gauge_min")) ?? 0;
-  const max = numeric(configured(ctx, "ulm_card_mpse_gauge_max")) ?? 100;
+  const min = numeric(ctx.config.minimum) ?? 0;
+  const max = numeric(ctx.config.maximum) ?? 100;
   const gauge = Math.max(0, Math.min(100, ((value - min) / Math.max(1, max - min)) * 100));
   return ctx.actionSurface("custom-dual-gauge", html`
     <div class="custom-card-heading">${iconBubble(ctx, "mdi:gauge", "blue")}${heading(ctx, stateLabel(ctx.entity))}</div>
     <div class="dual-gauge" style=${`--gauge:${gauge * 1.8}deg`}>
       <i></i>
-      <span><b>${stateLabel(ctx.entity)}</b><small>${min} - ${max}</small></span>
+      ${min === 0 && max === 100 ? nothing : html`<span><small>${min} - ${max}</small></span>`}
     </div>
   `);
 };
 
 const renderMpsePrinter = (ctx: RenderContext): TemplateResult => {
-  const details = configuredEntities(ctx).slice(0, 4);
+  const details = [
+    linkedState(ctx, "black_entity"),
+    linkedState(ctx, "yellow_entity"),
+    linkedState(ctx, "magenta_entity"),
+    linkedState(ctx, "cyan_entity"),
+  ];
   const colors = ["#111", "#faff00", "#f800ff", "#00ffff"];
   return ctx.actionSurface("custom-mpse-printer", html`
-    <div class="custom-card-heading">${iconBubble(ctx, "mdi:printer", ctx.entity?.state === "idle" ? "grey" : "blue")}${heading(ctx, stateLabel(ctx.entity))}</div>
+    <div class="custom-card-heading">
+      ${iconBubble(ctx, "mdi:printer", ctx.entity?.state === "idle" ? "grey" : "blue")}
+      <span class="ulm-copy">
+        <span class="ulm-name">${configured<string>(ctx, "ulm_card_printer_name") || displayName(ctx.config, ctx.entity)}</span>
+        <span class="ulm-label">${stateLabel(ctx.entity)}</span>
+      </span>
+    </div>
     <div class="toner-bars">${details.map((entity, index) => {
+      if (!entity) return nothing;
       const value = Math.max(0, Math.min(100, numeric(entity.state) ?? 0));
       return html`<span style=${`--toner:${colors[index]};--level:${value}%`}><i><em></em><b>${stateLabel(entity)}</b></i></span>`;
     })}</div>
+  `);
+};
+
+const renderMpseThermostat = (ctx: RenderContext): TemplateResult => {
+  const target = numeric(attr(ctx.entity, "temperature"));
+  const step = numeric(attr(ctx.entity, "target_temp_step")) ?? 1;
+  const current = attr(ctx.entity, "current_temperature");
+  const action = attr(ctx.entity, "hvac_action");
+  const state = ctx.entity?.state ?? "unknown";
+  const unavailable = !ctx.entity || ["unknown", "unavailable"].includes(state) || target === undefined;
+  const tone = state === "heat" ? "red" : state === "cool" ? "blue" : "grey";
+  const thermostatIcon = state === "heat" ? "mdi:fire" : state === "cool" ? "mdi:snowflake" : "mdi:thermostat";
+  const label = target === undefined
+    ? stateLabel(ctx.entity)
+    : `${String(current ?? "—")}° • ${state}${action ? ` (${String(action)})` : ""}`;
+  return ctx.actionSurface(`custom-compact-thermostat custom-mpse-thermostat is-${state}`, html`
+    <div class="custom-card-heading">
+      ${iconBubble(ctx, thermostatIcon, tone)}
+      ${heading(ctx, label)}
+    </div>
+    <div class="compact-thermostat-controls">
+      ${button("Decrease temperature", "mdi:arrow-down", (event) => {
+        event.stopPropagation();
+        ctx.service("climate", "set_temperature", { entity_id: ctx.config.entity, temperature: Number(target) - step });
+      }, unavailable)}
+      <b>${target === undefined ? "—" : `${target}°C`}</b>
+      ${button("Increase temperature", "mdi:arrow-up", (event) => {
+        event.stopPropagation();
+        ctx.service("climate", "set_temperature", { entity_id: ctx.config.entity, temperature: Number(target) + step });
+      }, unavailable)}
+    </div>
   `);
 };
 
@@ -2813,7 +2904,7 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "custom_card_more_power_outlet": return renderMorePowerOutlet(ctx);
     case "custom_card_mpse_gauge": return renderDualGauge(ctx);
     case "custom_card_mpse_printer": return renderMpsePrinter(ctx);
-    case "custom_card_mpse_thermostat": return renderCompactThermostat(ctx);
+    case "custom_card_mpse_thermostat": return renderMpseThermostat(ctx);
     case "custom_card_mpse_wifisignal": return renderWifiSignal(ctx);
     case "custom_card_nas": return renderNasInfo(ctx);
     case "custom_card_neekster_update": return renderNeeksterUpdate(ctx);
