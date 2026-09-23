@@ -19,6 +19,8 @@ export const sharedStyles = css`
     background: var(--ha-card-background, var(--card-background-color, #fff));
     box-shadow: var(--ha-card-box-shadow, 0 2px 8px rgba(0,0,0,.08));
   }
+  .minimalist-card:has(.fill-container), .fill-container { height: 100%; }
+  .fill-container { min-height: 100%; }
   .action-surface {
     box-sizing: border-box;
     color: var(--primary-text-color);
@@ -45,6 +47,15 @@ export const sharedStyles = css`
     flex: 0 0 auto;
   }
   .ulm-icon ha-icon { --mdc-icon-size: 21px; }
+  .ulm-icon.entity-picture { background-position: center; background-size: cover; }
+  .action-surface.layout-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .action-surface.layout-vertical .ulm-copy { align-items: center; }
   .tone-blue { --tone: var(--ulm-blue); }
   .tone-yellow { --tone: var(--ulm-yellow); }
   .tone-red { --tone: var(--ulm-red); }

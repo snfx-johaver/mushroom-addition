@@ -12,7 +12,9 @@ export const stateLabel = (entity?: HassEntity): string => {
 };
 
 export const displayName = (config: AdditionConfig, entity?: HassEntity): string =>
-  config.name || entity?.attributes.friendly_name || config.entity || "Mushroom Addition";
+  config.name_mode === "none" ? "" :
+    config.name_mode === "entity" ? entity?.attributes.friendly_name || config.entity || "Mushroom Addition" :
+      config.name || entity?.attributes.friendly_name || config.entity || "Mushroom Addition";
 
 export const fireEvent = (
   node: HTMLElement,
@@ -41,11 +43,19 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
     ? { action: "navigate", navigation_path: migrated.navigation_path }
     : { action: migrated.entity ? "more-info" : "none" };
   return {
-    show_icon: true,
-    show_state: true,
-    layout: "horizontal",
-    tap_action: defaultAction,
     ...upstream,
+    show_icon: upstream.show_icon ?? true,
+    show_state: upstream.show_state ?? true,
+    name_mode: upstream.name_mode ?? (migrated.name ? "custom" : "entity"),
+    icon_type: upstream.icon_type ?? (
+      migrated.use_entity_picture ? "entity-picture" :
+        migrated.show_icon === false ? "none" : "icon"
+    ),
+    layout: upstream.layout ?? "default",
+    fill_container: upstream.fill_container ?? false,
+    primary_info: upstream.primary_info ?? "name",
+    secondary_info: upstream.secondary_info ?? "default",
+    tap_action: upstream.tap_action ?? defaultAction,
   };
 };
 

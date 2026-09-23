@@ -32,13 +32,35 @@ const enabled = (ctx: RenderContext, canonical: keyof AdditionConfig, ...upstrea
   configured<boolean>(ctx, String(canonical), ...upstreamKeys) === true;
 const icon = (ctx: RenderContext, fallback: string): string =>
   ctx.config.icon || ctx.entity?.attributes.icon || defaultIconFor(ctx.descriptor, ctx.entity) || fallback;
-const iconBubble = (ctx: RenderContext, fallback: string, tone = "blue") => html`
-  <span class="ulm-icon tone-${tone}"><ha-icon .icon=${icon(ctx, fallback)}></ha-icon></span>
-`;
-const heading = (ctx: RenderContext, secondary?: string) => html`
+const iconBubble = (ctx: RenderContext, fallback: string, tone = "blue", extraClass = "") => {
+  if (ctx.config.icon_type === "none" || ctx.config.show_icon === false) return nothing;
+  const picture = ctx.config.icon_type === "entity-picture" ? attr(ctx.entity, "entity_picture") : undefined;
+  return picture
+    ? html`<span class="ulm-icon entity-picture ${extraClass}" style=${`background-image:url("${String(picture)}")`}></span>`
+    : html`<span class="ulm-icon tone-${tone} ${extraClass}"><ha-icon .icon=${icon(ctx, fallback)}></ha-icon></span>`;
+};
+const selectedSecondary = (ctx: RenderContext, recommended?: string): string | undefined => {
+  switch (ctx.config.secondary_info) {
+    case "none": return undefined;
+    case "name": return displayName(ctx.config, ctx.entity);
+    case "state": return stateLabel(ctx.entity);
+    case "last-changed": return ctx.entity?.last_changed
+      ? new Date(ctx.entity.last_changed).toLocaleString()
+      : "Last changed unavailable";
+    default: return ctx.config.secondary || recommended;
+  }
+};
+const selectedPrimary = (ctx: RenderContext): string => {
+  if (ctx.config.primary_info === "none") return "";
+  if (ctx.config.primary_info === "state") return stateLabel(ctx.entity);
+  return displayName(ctx.config, ctx.entity);
+};
+const heading = (ctx: RenderContext, recommendedSecondary?: string) => html`
   <span class="ulm-copy">
-    <span class="ulm-name">${displayName(ctx.config, ctx.entity)}</span>
-    ${secondary ? html`<span class="ulm-label">${secondary}</span>` : nothing}
+    ${selectedPrimary(ctx) ? html`<span class="ulm-name">${selectedPrimary(ctx)}</span>` : nothing}
+    ${selectedSecondary(ctx, recommendedSecondary)
+      ? html`<span class="ulm-label">${selectedSecondary(ctx, recommendedSecondary)}</span>`
+      : nothing}
   </span>
 `;
 const button = (label: string, iconName: string, handler: (event: Event) => void) => html`
@@ -115,7 +137,8 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
   const slider = enabled(ctx, "show_controls", "ulm_card_light_enable_slider");
   const buttons = configured<boolean>(ctx, "ulm_card_light_enable_buttons") === true;
   const collapsed = configured<boolean>(ctx, "ulm_card_light_enable_collapse") === true && !on;
-  const horizontal = configured<boolean>(ctx, "ulm_card_light_enable_horizontal") === true;
+  const horizontal = ctx.config.layout === "horizontal" ||
+    configured<boolean>(ctx, "ulm_card_light_enable_horizontal") === true;
   const low = configured<number>(ctx, "ulm_card_light_brightness_low") ?? 1;
   const medium = configured<number>(ctx, "ulm_card_light_brightness_medium") ?? 50;
   const high = configured<number>(ctx, "ulm_card_light_brightness_high") ?? 100;
@@ -131,7 +154,7 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
   const lightStyle = `--light-rgb:${rgb};${forceBackground ? `background:rgba(${rgb},.2);` : ""}`;
   return ctx.actionSurface(`ulm-light-card ${horizontal ? "is-horizontal" : ""} ${collapsed ? "is-collapsed" : ""}`, html`
     <div class="light-header ${on ? "is-active" : ""}" style=${lightStyle}>
-      <span class="ulm-icon light-icon"><ha-icon .icon=${icon(ctx, "mdi:lightbulb")}></ha-icon></span>
+      ${iconBubble(ctx, "mdi:lightbulb", on ? "yellow" : "grey", "light-icon")}
       ${heading(ctx, percent === undefined ? stateLabel(ctx.entity) : `${stateLabel(ctx.entity)} · ${percent}%`)}
     </div>
     ${!collapsed && slider ? html`

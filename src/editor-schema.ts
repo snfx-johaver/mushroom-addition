@@ -48,10 +48,42 @@ const choiceOptions: Record<string, Array<{ value: string; label: string }>> = {
   ],
 };
 
-const common = (item: CatalogItem): EditorField[] => [
-  entity(item.preferredDomains),
+const presentation = (): EditorField[] => [
+  select("name_mode", [
+    { value: "entity", label: "Use entity name" },
+    { value: "custom", label: "Use custom name" },
+    { value: "none", label: "Hide name" },
+  ]),
   text("name"),
   { name: "icon", selector: { icon: {} } },
+  select("icon_type", [
+    { value: "icon", label: "Icon" },
+    { value: "entity-picture", label: "Entity picture" },
+    { value: "none", label: "No icon" },
+  ]),
+  select("layout", [
+    { value: "default", label: "Automatic" },
+    { value: "horizontal", label: "Horizontal" },
+    { value: "vertical", label: "Vertical" },
+  ]),
+  toggle("fill_container"),
+  select("primary_info", [
+    { value: "name", label: "Name" },
+    { value: "state", label: "State" },
+    { value: "none", label: "None" },
+  ]),
+  select("secondary_info", [
+    { value: "default", label: "Recommended card information" },
+    { value: "state", label: "State" },
+    { value: "name", label: "Name" },
+    { value: "last-changed", label: "Last changed" },
+    { value: "none", label: "None" },
+  ]),
+];
+
+const common = (item: CatalogItem): EditorField[] => [
+  entity(item.preferredDomains),
+  ...presentation(),
 ];
 
 const schemas: Record<string, (item: CatalogItem) => EditorField[]> = {
@@ -72,9 +104,9 @@ const schemas: Record<string, (item: CatalogItem) => EditorField[]> = {
   cover: (item) => [...common(item), toggle("show_controls")],
   vacuum: (item) => [...common(item), toggle("show_controls")],
   security: (item) => [...common(item)],
-  navigation: () => [text("name"), { name: "icon", selector: { icon: {} } }, text("navigation_path")],
+  navigation: () => [...presentation(), text("navigation_path")],
   chips: () => [],
-  text: () => [text("name"), text("secondary"), { name: "icon", selector: { icon: {} } }],
+  text: () => [...presentation(), text("secondary")],
   camera: (item) => [...common(item)],
   control: (item) => [
     ...common(item),

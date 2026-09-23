@@ -121,6 +121,23 @@ describe("family renderers", () => {
     element.remove();
   });
 
+  it("applies Mushroom-style layout, fill, icon, and information choices", async () => {
+    const markup = await render("mushroom-addition-card-light", {
+      type: "custom:mushroom-addition-card-light",
+      entity: "light.kitchen",
+      layout: "vertical",
+      fill_container: true,
+      icon_type: "none",
+      primary_info: "state",
+      secondary_info: "none",
+    });
+    expect(markup).toContain("layout-vertical");
+    expect(markup).toContain("fill-container");
+    expect(markup).not.toContain("light-icon");
+    expect(markup).toContain("on");
+    expect(markup).not.toContain("Kitchen");
+  });
+
   it("wires the Minimalist light slider to a valid Home Assistant service", async () => {
     const callService = vi.fn(async () => undefined);
     const element = document.createElement("mushroom-addition-card-light") as HTMLElement & {

@@ -101,4 +101,18 @@ describe("family editor schemas", () => {
       .find((field) => field.name === "ulm_card_light_brightness_medium")?.selector)
       .toEqual({ number: { min: 0, max: 100, step: 1, mode: "slider", unit_of_measurement: "%" } });
   });
+
+  it("provides Mushroom-style presentation controls on every card editor", () => {
+    const expected = [
+      "name_mode", "name", "icon", "icon_type", "layout",
+      "fill_container", "primary_info", "secondary_info",
+    ];
+    for (const item of CATALOG.filter((entry) => entry.kind === "card")) {
+      const schema = editorSchemaFor(item);
+      expect(schema.map((field) => field.name)).toEqual(expect.arrayContaining(expected));
+      for (const name of ["name_mode", "icon_type", "layout", "primary_info", "secondary_info"]) {
+        expect(schema.find((field) => field.name === name)?.selector).toHaveProperty("select");
+      }
+    }
+  });
 });

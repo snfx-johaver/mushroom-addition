@@ -2,8 +2,10 @@ import type { HomeAssistant } from "./types";
 
 const translations: Record<string, Record<string, string>> = {
   en: {
-    entity: "Entity", name: "Name", secondary: "Secondary information", icon: "Icon",
+    entity: "Entity", name: "Custom name", name_mode: "Name", secondary: "Custom secondary information", icon: "Icon",
     icon_color: "Icon color", variant: "Variant", layout: "Layout",
+    icon_type: "Icon type", fill_container: "Fill container",
+    primary_info: "Primary information", secondary_info: "Secondary information",
     show_icon: "Show icon", show_state: "Show state", tap_action: "Tap action",
     hold_action: "Hold action", double_tap_action: "Double-tap action", chips: "Chip configurations",
     temperature_entity: "Temperature sensor", humidity_entity: "Humidity sensor",
@@ -85,9 +87,15 @@ export const localize = (hass: HomeAssistant | undefined, key: string): string =
 
 const helpers: Record<string, string> = {
   entity: "The Home Assistant entity shown and controlled by this card.",
-  name: "Optional display name. Leave empty to use the entity's friendly name.",
+  name_mode: "Choose whether the card uses the entity name, a custom name, or no name.",
+  name: "Used when Name is set to Use custom name.",
   secondary: "Optional supporting text shown below the main name or state.",
   icon: "Optional icon override. Leave empty to use the card's recommended icon.",
+  icon_type: "Choose an icon, the entity picture when available, or no icon.",
+  layout: "Automatic uses the layout designed for this card. Horizontal and Vertical override it.",
+  fill_container: "Makes the card stretch to fill the available dashboard grid cell.",
+  primary_info: "Choose the main text displayed by the card.",
+  secondary_info: "Choose the supporting text displayed below the primary information.",
   tap_action: "What happens when the card is tapped.",
   hold_action: "What happens when the card is pressed and held.",
   double_tap_action: "What happens when the card is tapped twice.",

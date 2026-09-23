@@ -4,7 +4,7 @@ import { MushroomAdditionCard } from "./card";
 import type { AdditionConfig, CatalogItem, HomeAssistant } from "./types";
 import { createStubConfig } from "./stub";
 
-const VERSION = "1.2.2";
+const VERSION = "1.2.3";
 
 for (const item of CATALOG) {
   if (!customElements.get(item.tag)) {

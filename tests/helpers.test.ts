@@ -12,11 +12,20 @@ describe("shared card behavior", () => {
   it("formats state and friendly names", () => {
     expect(stateLabel(entity)).toBe("42 W");
     expect(displayName({ type: "x" }, entity)).toBe("Power");
+    expect(displayName({ type: "x", name_mode: "entity", name: "Ignored" }, entity)).toBe("Power");
+    expect(displayName({ type: "x", name_mode: "custom", name: "Custom power" }, entity)).toBe("Custom power");
+    expect(displayName({ type: "x", name_mode: "none" }, entity)).toBe("");
   });
 
   it("normalizes safe defaults", () => {
     expect(normalizeConfig({ type: "x", entity: "light.kitchen" })).toMatchObject({
       show_icon: true,
+      name_mode: "entity",
+      icon_type: "icon",
+      layout: "default",
+      fill_container: false,
+      primary_info: "name",
+      secondary_info: "default",
       show_state: true,
       tap_action: { action: "more-info" },
     });

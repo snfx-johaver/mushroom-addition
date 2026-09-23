@@ -117,8 +117,10 @@ export class MushroomAdditionCard extends LitElement {
       throw new Error(`Missing explicit parity renderer mapping for ${this.descriptor?.upstreamId}`);
     }
     const parityClass = parity ? ` parity-${parity.rendererId.replaceAll("_", "-")}` : "";
+    const layoutClass = this.config?.layout && this.config.layout !== "default" ? ` layout-${this.config.layout}` : "";
+    const fillClass = this.config?.fill_container ? " fill-container" : "";
     const surface = html`
-      <div class="${classes}${parityClass} action-surface" role="button" tabindex="0"
+      <div class="${classes}${parityClass}${layoutClass}${fillClass} action-surface" role="button" tabindex="0"
         @click=${this.tap} @dblclick=${this.doubleTap}
         @pointerdown=${this.pointerDown} @pointerup=${this.pointerUp}
         @pointercancel=${this.pointerUp} @keydown=${this.keydown}>
