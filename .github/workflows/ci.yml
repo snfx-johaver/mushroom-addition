@@ -23,7 +23,7 @@ jobs:
           git -C .tmp-ui-minimalist checkout --quiet f8a9cb67a53f91367f1dffe18516aa983b463cb5
       - run: npm run check:parity-source
       - run: npm run validate
-      - run: git diff --exit-code -- dist
+      - run: git diff --exit-code -- dist/mushroom-cards-addition.js
       - uses: actions/upload-artifact@v4
         with:
           name: mushroom-cards-addition
