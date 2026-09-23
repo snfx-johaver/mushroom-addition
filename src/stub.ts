@@ -25,7 +25,24 @@ export const createStubConfig = (
   entities: string[] = [],
   entitiesFallback: string[] = [],
 ): AdditionConfig => {
-  const entity = firstMatchingEntity(descriptor, hass, entities, entitiesFallback);
+  const available = [...new Set([...entities, ...entitiesFallback, ...Object.keys(hass?.states ?? {})])]
+    .filter((entityId) => hass?.states?.[entityId] !== undefined);
+  const findEntity = (domains: string[], terms: string[]): string | undefined =>
+    available.find((entityId) =>
+      domains.some((domain) => entityId.startsWith(`${domain}.`)) &&
+      terms.every((term) => entityId.toLowerCase().includes(term)));
+  const findEntityExcluding = (domains: string[], terms: string[], excludedTerms: string[]): string | undefined =>
+    available.find((entityId) =>
+      domains.some((domain) => entityId.startsWith(`${domain}.`)) &&
+      terms.every((term) => entityId.toLowerCase().includes(term)) &&
+      excludedTerms.every((term) => !entityId.toLowerCase().includes(term)));
+  const semanticPrimary =
+    descriptor.upstreamId === "custom_card_nik_tablet"
+      ? findEntity(["binary_sensor", "sensor", "switch"], ["tablet"])
+      : descriptor.upstreamId === "custom_card_homeassistant_updates"
+        ? findEntity(["update", "sensor", "binary_sensor"], ["core"])
+        : undefined;
+  const entity = semanticPrimary ?? firstMatchingEntity(descriptor, hass, entities, entitiesFallback);
   const isText = ["text", "navigation"].includes(descriptor.family);
   const gameConsole = descriptor.upstreamId === "custom_card_playstation";
   const defaultVariant = gameConsole && entity?.toLowerCase().includes("xbox")
@@ -52,5 +69,34 @@ export const createStubConfig = (
     entities: descriptor.variants?.includes("with-sensors")
       ? entitiesFallback.slice(0, 2)
       : undefined,
+    ...(descriptor.upstreamId === "custom_card_homeassistant_updates"
+      ? {
+        ulm_card_homeassistant_core: findEntity(["update", "sensor", "binary_sensor"], ["core"]) ?? entity,
+        ulm_card_homeassistant_supervisor: findEntity(["update", "sensor", "binary_sensor"], ["supervisor"]),
+        ulm_card_homeassistant_os: findEntity(["update", "sensor", "binary_sensor"], ["operating", "system"]) ??
+          findEntity(["update", "sensor", "binary_sensor"], ["os"]),
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_nik_tablet"
+      ? {
+        tablet_button_usb_entity: findEntity(["switch", "input_boolean"], ["tablet", "usb"]),
+        tablet_button_motion_entity: findEntity(["switch", "input_boolean"], ["tablet", "motion"]),
+        tablet_button_display_entity: findEntity(["light", "switch", "input_boolean"], ["tablet", "display"]),
+        tablet_restart_entity: findEntity(["button"], ["tablet", "restart"]),
+        tablet_maintenance_entity: findEntity(["switch", "input_boolean"], ["tablet", "maintenance"]),
+        tablet_reload_entity: findEntity(["button"], ["tablet", "reload"]),
+        tablet_ram_entity: findEntity(["sensor"], ["tablet", "ram"]),
+        tablet_disk_entity: findEntity(["sensor"], ["tablet", "disk"]),
+        tablet_power_entity: findEntity(["sensor", "binary_sensor", "switch"], ["tablet", "power"]),
+        battery_entity: findEntity(["sensor"], ["tablet", "battery"]),
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_person_info"
+      ? {
+        ulm_card_person_driving_entity: findEntity(["binary_sensor"], ["person", "driving"]),
+        ulm_card_person_battery_entity: findEntityExcluding(["sensor"], ["person", "battery"], ["state"]),
+        ulm_card_person_battery_state_entity: findEntity(["sensor", "binary_sensor"], ["person", "battery", "state"]),
+      }
+      : {}),
   };
 };

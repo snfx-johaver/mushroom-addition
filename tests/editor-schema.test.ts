@@ -9,7 +9,10 @@ describe("family editor schemas", () => {
     for (const item of CATALOG) {
       const schema = editorSchemaFor(item);
       expect(schema.filter((field) => field.name === "entity")).toHaveLength(
-        item.family === "navigation" || item.family === "text" ? 0 : 1,
+        item.family === "navigation" ||
+          (item.family === "text" && item.upstreamId !== "custom_card_homeassistant_updates")
+          ? 0
+          : 1,
       );
       expect(schema.some((field) => field.name === "primary_entity")).toBe(false);
     }

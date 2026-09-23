@@ -613,8 +613,8 @@ export const sharedStyles = css`
   .nik-nas-tile small, .nik-nas-metrics small { color: rgba(var(--ulm-grey), .65); font-size: 17px; font-weight: 600; }
   .nik-nas-body { display: grid; grid-template-columns: minmax(150px, .9fr) minmax(180px, 1.2fr); align-items: center; gap: 18px; }
   .nik-nas-metrics { display: grid; gap: 12px; }
-  .nik-nas-metrics > span { display: grid; min-height: 70px; grid-template-columns: 64px minmax(0, 1fr); align-items: center; gap: 16px; }
-  .nik-nas-metrics i { display: grid; width: 62px; height: 62px; place-items: center; border-radius: 50%; background: rgba(var(--tone), .2); color: rgb(var(--tone)); font-style: normal; }
+  .nik-nas-metrics > span { display: grid; min-height: 62px; grid-template-columns: 56px minmax(0, 1fr); align-items: center; gap: 14px; }
+  .nik-nas-metrics i { display: grid; width: 56px; height: 56px; place-items: center; border-radius: 50%; background: rgba(var(--tone), .2); color: rgb(var(--tone)); font-style: normal; }
   .nik-nas-metrics i ha-icon { --mdc-icon-size: 24px; }
   .nik-nas-rings { width: 100%; max-width: 190px; justify-self: center; overflow: visible; transform: rotate(-90deg); }
   .nik-nas-ring-track, .nik-nas-ring-value { fill: none; stroke-width: 6; }
@@ -668,7 +668,7 @@ export const sharedStyles = css`
   .person-info-small-copy b { font-size: 14px; }
   .person-info-small-copy small { color: var(--secondary-text-color); font-size: 12px; text-transform: capitalize; }
   .custom-person-info { min-height: 68px; grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
-  .custom-person-info.is-multiline { grid-template-columns: minmax(0, 1fr); }
+  .custom-person-info.is-multiline { min-height: 105px; grid-template-columns: minmax(0, 1fr); gap: 12px; }
   .custom-person-info.is-multiline .person-info-details { padding-left: 4px; }
   .person-info-details { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .person-info-detail { display: flex; align-items: center; gap: 4px; font-size: 12px; }

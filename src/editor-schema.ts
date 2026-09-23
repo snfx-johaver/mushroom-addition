@@ -190,8 +190,16 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         entity(["sensor"], "cpu_entity"),
         ...presentation(),
       ]
-      : item.upstreamId === "custom_card_nik_tablet"
+    : item.upstreamId === "custom_card_homeassistant_updates"
         ? [
+        entity(["update", "sensor", "binary_sensor"]),
+        entity(["update", "sensor", "binary_sensor"], "ulm_card_homeassistant_core"),
+        entity(["update", "sensor", "binary_sensor"], "ulm_card_homeassistant_supervisor"),
+        entity(["update", "sensor", "binary_sensor"], "ulm_card_homeassistant_os"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_nik_tablet"
+      ? [
           entity(["binary_sensor", "sensor", "switch"]),
           entity(["switch", "input_boolean"], "tablet_button_usb_entity"),
           entity(["switch", "input_boolean"], "tablet_button_motion_entity"),
@@ -208,6 +216,10 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         : item.upstreamId === "custom_card_person_info"
           ? [
             entity(["person"]),
+            ...(item.variants?.length ? [select("variant", item.variants.map((variant) => ({
+              value: variant,
+              label: item.variantLabels?.[variant] ?? variant,
+            })))] : []),
             toggle("ulm_card_person_use_entity_picture"),
             entity(["zone"], "ulm_card_person_zone1"),
             entity(["zone"], "ulm_card_person_zone2"),
