@@ -45,14 +45,24 @@ export const createStubConfig = (
           ? findEntity(["light"], ["joris", "iris"])
           : descriptor.upstreamId === "card_media_player"
             ? findEntity(["media_player"], ["office", "joris", "tv"])
-    : descriptor.upstreamId === "custom_card_nik_tablet"
-      ? findEntity(["binary_sensor", "sensor", "switch"], ["tablet"])
-      : descriptor.upstreamId === "custom_card_homeassistant_updates"
-        ? findEntity(["update", "sensor", "binary_sensor"], ["core"])
-        : descriptor.upstreamId === "custom_card_nik_nas"
-          ? findEntity(["switch", "binary_sensor"], ["nas"]) ??
-            findEntity(["switch", "binary_sensor"], ["status"])
-        : undefined;
+            : descriptor.upstreamId === "card_battery"
+              ? findEntityExcluding(["sensor"], ["battery", "level"], ["state", "charging"])
+              : descriptor.upstreamId === "card_binary_sensor"
+                ? findEntity(["binary_sensor"], ["all", "doors"]) ?? findEntity(["binary_sensor"], ["door"])
+                : descriptor.upstreamId === "card_cover"
+                  ? findEntity(["cover"], ["sunscreen"])
+                  : descriptor.upstreamId === "card_fan"
+                    ? findEntity(["fan"], ["air", "purifier"])
+                    : descriptor.upstreamId === "card_input_boolean"
+                      ? findEntity(["input_boolean"], ["dropdown", "welcome"])
+                      : descriptor.upstreamId === "custom_card_nik_tablet"
+                        ? findEntity(["binary_sensor", "sensor", "switch"], ["tablet"])
+                        : descriptor.upstreamId === "custom_card_homeassistant_updates"
+                          ? findEntity(["update", "sensor", "binary_sensor"], ["core"])
+                          : descriptor.upstreamId === "custom_card_nik_nas"
+                            ? findEntity(["switch", "binary_sensor"], ["nas"]) ??
+                              findEntity(["switch", "binary_sensor"], ["status"])
+                            : undefined;
   const entity = semanticPrimary ?? firstMatchingEntity(descriptor, hass, entities, entitiesFallback);
   const isText = ["text", "navigation"].includes(descriptor.family);
   const gameConsole = descriptor.upstreamId === "custom_card_playstation";

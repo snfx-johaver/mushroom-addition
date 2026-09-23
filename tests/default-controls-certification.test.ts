@@ -136,6 +136,118 @@ describe("six default-control source certifications", () => {
     ]);
   });
 
+  it("records exact safe live semantic configs without accepting the live stage", () => {
+    const evidence = JSON.parse(readFileSync(
+      join(process.cwd(), "docs", "assets", "visual-audit", "default-controls-certification.json"),
+      "utf8",
+    )) as {
+      liveAccepted: boolean;
+      liveSemanticConfigs: Record<string, unknown>;
+    };
+    expect(evidence.liveAccepted).toBe(false);
+    expect(evidence.liveSemanticConfigs).toEqual({
+      card_battery: {
+        primary: {
+          type: "custom:mushroom-addition-card-battery",
+          entity: "sensor.yvette_mobile_battery_level",
+        },
+        alternateLowBattery: {
+          type: "custom:mushroom-addition-card-battery",
+          entity: "sensor.joris_mobile_battery_level",
+          ulm_card_battery_battery_level_danger: 20,
+          ulm_card_battery_battery_level_warning: 50,
+        },
+      },
+      card_binary_sensor: {
+        type: "custom:mushroom-addition-card-binary-sensor",
+        entity: "binary_sensor.all_doors",
+      },
+      card_binary_sensor_alert: {
+        type: "custom:mushroom-addition-card-binary-sensor",
+        variant: "alert",
+        entity: "binary_sensor.all_smoke_sensors",
+      },
+      card_cover: {
+        type: "custom:mushroom-addition-card-cover",
+        entity: "cover.sunscreen",
+        ulm_card_cover_enable_controls: false,
+        ulm_card_cover_enable_slider: false,
+        ulm_card_cover_enable_tilt: false,
+      },
+      card_fan: {
+        type: "custom:mushroom-addition-card-fan",
+        entity: "fan.air_purifier",
+        ulm_card_fan_enable_slider: false,
+        ulm_card_fan_enable_button: false,
+      },
+      card_input_boolean: {
+        type: "custom:mushroom-addition-card-input-boolean",
+        entity: "input_boolean.dropdown_welcome",
+        tap_action: { action: "toggle" },
+      },
+    });
+  });
+
+  it("prefers the prepared semantic entities in picker stubs when they are available", () => {
+    const liveStates: Record<string, HassEntity> = {
+      "sensor.joris_mobile_battery_state": {
+        entity_id: "sensor.joris_mobile_battery_state",
+        state: "discharging",
+        attributes: { friendly_name: "Joris battery state" },
+      },
+      "sensor.yvette_mobile_battery_level": {
+        entity_id: "sensor.yvette_mobile_battery_level",
+        state: "77",
+        attributes: { friendly_name: "Yvette battery", unit_of_measurement: "%" },
+      },
+      "sensor.joris_mobile_battery_level": {
+        entity_id: "sensor.joris_mobile_battery_level",
+        state: "18",
+        attributes: { friendly_name: "Joris battery", unit_of_measurement: "%" },
+      },
+      "binary_sensor.other_door": {
+        entity_id: "binary_sensor.other_door",
+        state: "off",
+        attributes: { friendly_name: "Other door" },
+      },
+      "binary_sensor.all_doors": {
+        entity_id: "binary_sensor.all_doors",
+        state: "off",
+        attributes: { friendly_name: "All doors" },
+      },
+      "cover.sunscreen": {
+        entity_id: "cover.sunscreen",
+        state: "closed",
+        attributes: { friendly_name: "Sunscreen" },
+      },
+      "fan.air_purifier": {
+        entity_id: "fan.air_purifier",
+        state: "off",
+        attributes: { friendly_name: "Air purifier" },
+      },
+      "input_boolean.dropdown_welcome": {
+        entity_id: "input_boolean.dropdown_welcome",
+        state: "off",
+        attributes: { friendly_name: "Welcome dropdown" },
+      },
+    };
+    const hass: HomeAssistant = { states: liveStates, callService: async () => undefined };
+    const expected = new Map([
+      ["card_battery", "sensor.yvette_mobile_battery_level"],
+      ["card_binary_sensor", "binary_sensor.all_doors"],
+      ["card_cover", "cover.sunscreen"],
+      ["card_fan", "fan.air_purifier"],
+      ["card_input_boolean", "input_boolean.dropdown_welcome"],
+    ]);
+    for (const [sourceId, entity] of expected) {
+      const item = CATALOG.find((entry) => entry.upstreamId === sourceId)!;
+      const constructor = customElements.get(item.tag) as typeof HTMLElement & {
+        getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
+      };
+      expect(constructor.getStubConfig(hass, Object.keys(liveStates), [])).toMatchObject({ entity });
+    }
+  });
+
   it("publishes source-faithful picker defaults for all six sources", () => {
     const entityBySource: Record<(typeof sourceIds)[number], string> = {
       card_battery: "sensor.phone_battery",

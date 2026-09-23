@@ -590,6 +590,7 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
       "Focused 320px side-by-side manually inspected against the pinned card_battery reference.",
       "The deterministic fixture uses real @mdi/js SVG paths and covers default, wireless charging, wired charging, warning, and danger states.",
       "Picker defaults, graphical editor round trip, attribute-based levels, linked charging entities, thresholds, colors, and all card-surface actions pass tests/default-controls-certification.test.ts.",
+      "Prepared live mappings are Yvette battery level with Joris battery level as the low-battery alternate; live verification remains intentionally unaccepted.",
     ],
     deviations: [
       "The Lit implementation keeps a 66px accessible touch target, so its cards are taller than the documentation montage.",
@@ -608,6 +609,7 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
       "Focused 320px active/inactive comparison manually inspected against the pinned card_binary_sensor reference.",
       "The fixture uses real MDI SVG paths and preserves the source icon, name, translated state, active accent, optional background, and last-changed behavior.",
       "Picker variant exposure, graphical editor round trip, state rendering, and all card-surface actions pass tests/default-controls-certification.test.ts.",
+      "Prepared live mapping is binary_sensor.all_doors; live verification remains intentionally unaccepted.",
     ],
     deviations: [
       "The Lit implementation keeps a 66px accessible touch target, so its cards are taller than the documentation montage.",
@@ -626,6 +628,7 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
       "Focused 320px alert comparison manually inspected against the pinned card_binary_sensor_alert reference.",
       "The real-MDI fixture preserves the unified alert variant, active accent, active-only alert badge, source icon/name options, and last-changed behavior.",
       "Picker variant exposure, variant-specific editor fields, state rendering, and all card-surface actions pass tests/default-controls-certification.test.ts.",
+      "Prepared live alert mapping is binary_sensor.all_smoke_sensors; live verification remains intentionally unaccepted.",
     ],
     deviations: [
       "The active alert is represented by an MDI alert badge instead of button-card's icon_more_info_alert helper.",
@@ -645,6 +648,7 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
       "Focused 309px one-to-one comparison manually inspected against card_cover_controls.png.",
       "The fixture uses real MDI SVG paths and matches the source summary, device-class icon, close/stop/open row, and filled position slider.",
       "Picker defaults, graphical editor round trip, position/inversion/device-class states, favorite and tilt controls, and exact service payloads pass tests/default-controls-certification.test.ts.",
+      "Prepared render-only live mapping is cover.sunscreen; no physical cover service should be operated and live remains unaccepted.",
     ],
     deviations: [
       "Upstream custom:my-slider is replaced by a dependency-free Lit range control.",
@@ -664,6 +668,7 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
       "Focused 320px on/off comparison manually inspected against card_fan_slider.png.",
       "The real-MDI fixture preserves source ordering, percentage/temperature/humidity label composition, slider fill, collapse behavior, and optional oscillation button.",
       "Picker defaults, graphical editor round trip, on/off/collapsed states, configurable service selection, and exact fan payloads pass tests/default-controls-certification.test.ts.",
+      "Prepared render-only live mapping is fan.air_purifier; no physical fan service should be operated and live remains unaccepted.",
     ],
     deviations: [
       "Upstream custom:my-slider is replaced by a dependency-free Lit range control.",
@@ -683,6 +688,7 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
       "Focused 320px on/off comparison manually inspected against the pinned card_input_boolean reference.",
       "The real-MDI fixture preserves entity icon/name, translated state, active accent, and optional active background.",
       "Picker defaults, graphical editor round trip, on/off states, and all card-surface actions pass tests/default-controls-certification.test.ts.",
+      "Prepared reversible live mapping is input_boolean.dropdown_welcome; live remains unaccepted until toggle-and-restore is actually verified.",
     ],
     deviations: [
       "The Lit implementation keeps a 66px accessible touch target, so its cards are taller than the documentation montage.",
