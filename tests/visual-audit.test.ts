@@ -14,11 +14,11 @@ describe("visual audit manifest", () => {
     const bar = VISUAL_AUDIT.find((entry) => entry.sourceId === "custom_card_bar_card");
     expect(bar).toMatchObject({
       status: "pending",
-      pickerAccepted: false,
-      editorAccepted: false,
+      pickerAccepted: true,
+      editorAccepted: true,
       visualAccepted: true,
-      statesAccepted: false,
-      interactionsAccepted: false,
+      statesAccepted: true,
+      interactionsAccepted: true,
       liveAccepted: false,
       compositionId: "bar-card:compact-header-progress",
       artifactPath: "docs/assets/visual-audit/custom-card-bar-card-comparison.png",
@@ -32,11 +32,11 @@ describe("visual audit manifest", () => {
   it("reports exact accepted progress without inferring parity from family mappings", () => {
     expect(visualAuditProgress()).toEqual({
       accepted: 12,
-      pickerAccepted: 48,
-      editorAccepted: 48,
-      visualAccepted: 49,
-      statesAccepted: 48,
-      interactionsAccepted: 48,
+      pickerAccepted: 54,
+      editorAccepted: 54,
+      visualAccepted: 54,
+      statesAccepted: 54,
+      interactionsAccepted: 54,
       liveAccepted: 12,
       total: 86,
     });
@@ -183,6 +183,27 @@ describe("visual audit manifest", () => {
         liveAccepted: false,
         fixturePath: "demo/custom-card-comparison.html",
         widths: [320],
+      });
+    }
+  });
+
+  it("certifies all five local stages for the following custom batch without claiming live", () => {
+    for (const sourceId of [
+      "custom_card_bar_card",
+      "custom_card_haven_washer",
+      "custom_card_httpedo13_sun",
+      "custom_card_httpedo13_thermostat",
+      "custom_card_iAbadia_battery_chip",
+      "custom_card_imswel_medias",
+    ]) {
+      expect(VISUAL_AUDIT.find((entry) => entry.sourceId === sourceId)).toMatchObject({
+        status: "pending",
+        pickerAccepted: true,
+        editorAccepted: true,
+        visualAccepted: true,
+        statesAccepted: true,
+        interactionsAccepted: true,
+        liveAccepted: false,
       });
     }
   });

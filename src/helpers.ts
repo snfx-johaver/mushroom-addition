@@ -45,9 +45,13 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
   const welcomeScenes = type.includes("card-welcome-scenes");
   const weather = type.includes("card-weather");
   const nativeWeather = type.includes("card-weather-ulm") || migrated.variant === "native";
+  const sourceDefaultAction =
+    type.includes("custom-card-httpedo13-sun") || type.includes("custom-card-httpedo13-thermostat")
+      ? { action: "none" }
+      : undefined;
   const defaultAction = upstream.navigation_path
     ? { action: "navigate", navigation_path: upstream.navigation_path }
-    : { action: title || welcomeScenes ? "none" : upstream.entity ? "more-info" : "none" };
+    : sourceDefaultAction ?? { action: title || welcomeScenes ? "none" : upstream.entity ? "more-info" : "none" };
   const roomDoubleTap = String(config.type).includes("card-room") &&
     upstream.input_select_entity &&
     upstream.input_select_option
@@ -249,6 +253,25 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
     migrated.entities ??= [1, 2, 3, 4]
       .map((index) => entityId(config[`ulm_custom_card_irmajavi_weather_entity_${index}`]))
       .filter((value): value is string => value !== undefined);
+  }
+  if (String(config.type).includes("custom-card-haven-washer")) {
+    migrated.entity ??= entityId(config.ulm_custom_card_washer_machine_state) ??
+      entityId(config.ulm_custom_card_washer_power);
+    migrated.power_entity ??= entityId(config.ulm_custom_card_washer_power);
+    migrated.ulm_custom_card_washer_machine_state ??= migrated.entity;
+  }
+  if (String(config.type).includes("custom-card-httpedo13-thermostat")) {
+    migrated.entity ??= entityId(config.entity);
+    migrated.variant ??= "buttons";
+  }
+  if (String(config.type).includes("custom-card-iabadia-battery-chip")) {
+    migrated.entity ??= entityId(config.ulm_custom_card_iAbadia_battery_chip_entity);
+  }
+  if (String(config.type).includes("custom-card-imswel-medias")) {
+    const platform = typeof config.ulm_custom_card_imswel_medias_platform === "string"
+      ? config.ulm_custom_card_imswel_medias_platform
+      : undefined;
+    migrated.variant ??= !platform || platform === "plex" ? "library" : "upcoming";
   }
   return migrated;
 };

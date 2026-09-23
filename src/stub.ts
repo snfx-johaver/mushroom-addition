@@ -67,6 +67,19 @@ export const createStubConfig = (
                           : descriptor.upstreamId === "custom_card_nik_nas"
                             ? findEntity(["switch", "binary_sensor"], ["nas"]) ??
                                 findEntity(["switch", "binary_sensor"], ["status"])
+                              : descriptor.upstreamId === "custom_card_haven_washer"
+                                ? findEntity(["sensor"], ["operation", "state"]) ??
+                                  findEntity(["sensor"], ["washer", "state"])
+                                : descriptor.upstreamId === "custom_card_httpedo13_sun"
+                                  ? findEntity(["sun"], [])
+                                  : descriptor.upstreamId === "custom_card_httpedo13_thermostat"
+                                    ? findEntity(["climate"], [])
+                                    : descriptor.upstreamId === "custom_card_iAbadia_battery_chip"
+                                      ? findEntity(["sensor"], ["battery", "level"]) ??
+                                        findEntity(["sensor"], ["battery"])
+                                      : descriptor.upstreamId === "custom_card_imswel_medias"
+                                        ? findEntity(["media_player", "sensor"], ["sonos"]) ??
+                                          findEntity(["media_player", "sensor"], ["media"])
                               : descriptor.upstreamId === "custom_card_irmajavi_speedtest"
                                 ? findEntity(["sensor"], ["download"])
                               : descriptor.upstreamId === "card_room"
@@ -119,6 +132,57 @@ export const createStubConfig = (
         ulm_card_homeassistant_supervisor: findEntity(["update", "sensor", "binary_sensor"], ["supervisor"]),
         ulm_card_homeassistant_os: findEntity(["update", "sensor", "binary_sensor"], ["operating", "system"]) ??
           findEntity(["update", "sensor", "binary_sensor"], ["os"]),
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_haven_washer"
+      ? {
+        power_entity: findEntity(["sensor", "switch"], ["wasmachine", "power"]) ??
+          findEntity(["sensor", "switch"], ["washer", "power"]) ??
+          findEntity(["sensor", "switch"], ["power"]),
+        door_entity: findEntity(["sensor", "binary_sensor"], ["washer", "door"]) ??
+          findEntity(["sensor", "binary_sensor"], ["door"]),
+        finished_entity: findEntity(["sensor", "binary_sensor"], ["washer", "finished"]) ??
+          findEntity(["sensor", "binary_sensor"], ["finished"]),
+        ulm_custom_card_washer_machine_state: entity,
+        ulm_custom_card_washer_machine_stop_state: "stop",
+        ulm_custom_card_washer_label_idle: "idle",
+        ulm_custom_card_washer_label_configuring: "configure",
+        ulm_custom_card_washer_label_running: "run",
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_httpedo13_sun"
+      ? {
+        darkMode: false,
+        language: hass?.language ?? "en",
+        showAzimuth: false,
+        showElevation: false,
+        timeFormat: "24h",
+        tap_action: { action: "none" },
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_httpedo13_thermostat"
+      ? {
+        variant: "buttons",
+        tap_action: { action: "none" },
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_iAbadia_battery_chip"
+      ? {
+        battery_state_entity: findEntity(["sensor", "binary_sensor"], ["battery", "state"]),
+        charger_type_entity: findEntity(["sensor"], ["charger", "type"]),
+        ulm_custom_card_iAbadia_battery_chip_entity: entity,
+        ulm_custom_card_iAbadia_battery_chip_warning: 20,
+        ulm_custom_card_iAbadia_battery_chip_danger: 10,
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_imswel_medias"
+      ? {
+        secondary_entity: findEntity(["media_player", "sensor"], ["tv"]),
+        variant: entity?.includes("radarr") || entity?.includes("sonarr") ? "upcoming" : "library",
+        ulm_custom_card_imswel_medias_index: 1,
+        ulm_custom_card_imswel_medias_platform: entity?.includes("sonarr")
+          ? "sonarr"
+          : entity?.includes("radarr") ? "radarr" : "plex",
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_nik_tablet"

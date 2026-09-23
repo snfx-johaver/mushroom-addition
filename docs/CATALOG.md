@@ -53,9 +53,9 @@ public registrations.
 | `custom_card_heat_pump` | custom-card | `custom:mushroom-addition-custom-card-heat-pump` | climate | default | `custom_card_heat_pump` |
 | `custom_card_homeassistant_updates` | custom-card | `custom:mushroom-addition-custom-card-homeassistant-updates` | text | default | `custom_card_homeassistant_updates` |
 | `custom_card_httpedo13_sun` | custom-card | `custom:mushroom-addition-custom-card-httpedo13-sun` | weather | default | `custom_card_httpedo13_sun` |
-| `custom_card_httpedo13_thermostat` | custom-card | `custom:mushroom-addition-custom-card-httpedo13-thermostat` | climate | default | `custom_card_httpedo13_thermostat` |
+| `custom_card_httpedo13_thermostat` | custom-card | `custom:mushroom-addition-custom-card-httpedo13-thermostat` | climate | buttons, collapse | `custom_card_httpedo13_thermostat` |
 | `custom_card_iAbadia_battery_chip` | custom-card | `custom:mushroom-addition-custom-card-iabadia-battery-chip` | battery | default | `custom_card_iAbadia_battery_chip` |
-| `custom_card_imswel_medias` | custom-card | `custom:mushroom-addition-custom-card-imswel-medias` | media | default | `custom_card_imswel_medias` |
+| `custom_card_imswel_medias` | custom-card | `custom:mushroom-addition-custom-card-imswel-medias` | media | library, upcoming | `custom_card_imswel_medias` |
 | `custom_card_imswel_person` | custom-card | `custom:mushroom-addition-custom-card-imswel-person` | presence | default | `custom_card_imswel_person` |
 | `custom_card_input_datetime` | custom-card | `custom:mushroom-addition-custom-card-input-datetime` | sensor | default | `custom_card_input_datetime` |
 | `custom_card_input_number` | custom-card | `custom:mushroom-addition-custom-card-input-number` | sensor | default | `custom_card_input_number` |

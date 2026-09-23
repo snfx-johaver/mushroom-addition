@@ -139,7 +139,41 @@ const supportedByItem: Record<string, readonly string[]> = {
     "ulm_custom_card_bar_card_show_icon",
     "ulm_custom_card_bar_card_value",
   ],
-  custom_card_haven_washer: ["ulm_custom_card_washer_power"],
+  custom_card_haven_washer: [
+    "ulm_custom_card_washer_power",
+    "ulm_custom_card_washer_remote_control",
+    "ulm_custom_card_washer_machine_state",
+    "ulm_custom_card_washer_machine_stop_state",
+    "ulm_custom_card_washer_job_state",
+    "ulm_custom_card_washer_job_progress",
+    "ulm_custom_card_washer_job_states",
+    "ulm_custom_card_washer_delayed_start",
+    "ulm_custom_card_washer_delayed_starttime",
+    "ulm_custom_card_washer_label_idle",
+    "ulm_custom_card_washer_label_configuring",
+    "ulm_custom_card_washer_label_running",
+    "ulm_custom_card_washer_start_action",
+    "ulm_custom_card_washer_pause_action",
+    "ulm_custom_card_washer_stop_action",
+  ],
+  custom_card_httpedo13_sun: [
+    "darkMode",
+    "language",
+    "showAzimuth",
+    "showElevation",
+    "timeFormat",
+    "title",
+  ],
+  custom_card_iAbadia_battery_chip: [
+    "ulm_custom_card_iAbadia_battery_chip_entity",
+    "ulm_custom_card_iAbadia_battery_chip_icon",
+    "ulm_custom_card_iAbadia_battery_chip_danger",
+    "ulm_custom_card_iAbadia_battery_chip_warning",
+  ],
+  custom_card_imswel_medias: [
+    "ulm_custom_card_imswel_medias_index",
+    "ulm_custom_card_imswel_medias_platform",
+  ],
 };
 
 export const supportedUpstreamOption = (item: CatalogItem, name: string): boolean =>

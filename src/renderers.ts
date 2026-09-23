@@ -1582,21 +1582,125 @@ const renderEshRoom = (ctx: RenderContext): TemplateResult => {
 };
 
 const renderWasher = (ctx: RenderContext): TemplateResult => {
+  const power = entityFromConfig(ctx, "power_entity") ??
+    entityFromConfig(ctx, "ulm_custom_card_washer_power");
+  const machine = entityFromConfig(ctx, "ulm_custom_card_washer_machine_state") ?? ctx.entity;
   const progress = entityFromConfig(ctx, "ulm_custom_card_washer_job_progress");
-  const job = entityFromConfig(ctx, "ulm_custom_card_washer_job_state");
+  const job = entityFromConfig(ctx, "ulm_custom_card_washer_job_state") ?? ctx.entity;
   const remote = entityFromConfig(ctx, "ulm_custom_card_washer_remote_control");
-  const running = /run|wash|dry/i.test(job?.state || ctx.entity?.state || "");
-  const percent = numeric(progress?.state) ?? (running ? 45 : 0);
-  const stages = ["mdi:water-boiler", "mdi:waves", "mdi:water", "mdi:fan"];
+  const delayed = entityFromConfig(ctx, "ulm_custom_card_washer_delayed_start");
+  const delayedTime = entityFromConfig(ctx, "ulm_custom_card_washer_delayed_starttime");
+  const door = entityFromConfig(ctx, "door_entity");
+  const finished = entityFromConfig(ctx, "finished_entity");
+  const stopState = configured<string>(ctx, "ulm_custom_card_washer_machine_stop_state") ?? "stop";
+  const powered = power
+    ? !["off", "unavailable", "unknown", "0"].includes(power.state.toLowerCase())
+    : machine
+      ? !["off", "unavailable", "unknown"].includes(machine.state.toLowerCase())
+      : true;
+  const stopped = !machine || machine.state === stopState || machine.state === "off";
+  const remoteEnabled = ["true", "on", "enabled"].includes(remote?.state.toLowerCase() ?? "");
+  const delayedEnabled = delayed?.state === "on";
+  const percent = Math.max(0, Math.min(100, numeric(progress?.state) ?? 0));
+  const configuredStages = configured<Record<string, { name?: string; icon?: string }>>(
+    ctx,
+    "ulm_custom_card_washer_job_states",
+  );
+  const stages = Object.values(configuredStages ?? {
+    state1: { name: "weightSensing", icon: "mdi:scale" },
+    state2: { name: "wash", icon: "mdi:waves" },
+    state3: { name: "rinse", icon: "mdi:water" },
+    state4: { name: "spin", icon: "mdi:fan" },
+  }).filter((stage) => stage.name && stage.icon).slice(0, 5);
+  const activeStage = stages.findIndex((stage) =>
+    stage.name?.toLowerCase() === job?.state.toLowerCase());
+  const label = !powered
+    ? configured<string>(ctx, "ulm_custom_card_washer_label_idle") ?? "idle"
+    : !stopped
+      ? configured<string>(ctx, "ulm_custom_card_washer_label_running") ?? "run"
+      : remoteEnabled && delayedEnabled
+        ? configured<string>(ctx, "ulm_custom_card_washer_label_configuring") ?? "configure"
+        : configured<string>(ctx, "ulm_custom_card_washer_label_idle") ?? "idle";
+  const actionFor = (key: string): ActionConfig =>
+    configured<ActionConfig>(ctx, key) ?? { action: "none" };
+  const runWasherAction = (event: Event, action: ActionConfig): void =>
+    runControlAction(event, ctx, action, typeof action.entity === "string" ? action.entity : ctx.config.entity);
+  const timeValue = delayedTime?.state.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/)?.slice(1).map(Number);
+  const setDelayedMinutes = (event: Event, delta: number): void => {
+    event.stopPropagation();
+    if (!delayedTime || !timeValue) return;
+    const total = ((timeValue[0] * 60 + timeValue[1] + delta) % 1440 + 1440) % 1440;
+    ctx.service("input_datetime", "set_datetime", {
+      entity_id: delayedTime.entity_id,
+      time: `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}:00`,
+    });
+  };
+  const primaryAction = stopped
+    ? actionFor("ulm_custom_card_washer_start_action")
+    : actionFor("ulm_custom_card_washer_pause_action");
+  const stopAction = actionFor("ulm_custom_card_washer_stop_action");
   return ctx.actionSurface("custom-washer", html`
-    <div class="custom-card-heading">${iconBubble(ctx, "mdi:washing-machine", "blue")}${heading(ctx, job ? stateLabel(job) : stateLabel(ctx.entity))}</div>
-    <div class="washer-stages">${stages.map((stage, index) => html`<span class=${percent >= index * 25 ? "is-active" : ""}><ha-icon .icon=${stage}></ha-icon></span>`)}</div>
-    <div class="washer-controls">
-      ${button("Pause", "mdi:pause", (event) => { event.stopPropagation(); })}
-      ${button("Stop", "mdi:stop", (event) => { event.stopPropagation(); })}
-      ${button("Delay start", "mdi:alarm", (event) => { event.stopPropagation(); })}
+    <div class="custom-card-heading washer-heading">
+      ${iconBubble(ctx, "mdi:washing-machine", powered ? "blue" : "grey")}
+      <span class="ulm-copy">
+        <span class="ulm-name">${displayName(ctx.config, ctx.entity)}</span>
+        <span class="ulm-label">${label}</span>
+      </span>
+      ${power ? html`<b class="washer-power">${stateLabel(power)}</b>` : nothing}
     </div>
-    ${remote ? html`<span class="washer-remote">${stateLabel(remote)}</span>` : nothing}
+    ${powered && stages.length ? html`
+      <div class="washer-stages" style=${`--washer-stage-count:${stages.length}`}>
+        ${stages.map((stage, index) => html`
+          <span class=${activeStage === index ? "is-active" : ""} title=${stage.name ?? ""}>
+            <ha-icon .icon=${stage.icon}></ha-icon>
+          </span>
+        `)}
+      </div>
+    ` : nothing}
+    ${powered && progress ? html`
+      <div class="washer-progress">
+        <span style=${`width:${percent}%`}></span>
+        <b>${Math.round(percent)}%</b>
+      </div>
+    ` : nothing}
+    ${powered && remoteEnabled ? html`
+      <div class="washer-controls">
+        ${button(
+          stopped ? "Start washer" : "Pause washer",
+          stopped ? "mdi:play" : "mdi:pause",
+          (event) => runWasherAction(event, primaryAction),
+          primaryAction.action === "none",
+        )}
+        ${button(
+          "Stop washer",
+          "mdi:stop",
+          (event) => runWasherAction(event, stopAction),
+          stopped || stopAction.action === "none",
+        )}
+        ${delayed ? button(
+          delayedEnabled ? "Disable delayed start" : "Enable delayed start",
+          "mdi:alarm",
+          (event) => runControlAction(event, ctx, { action: "toggle" }, delayed.entity_id),
+          !stopped,
+        ) : nothing}
+      </div>
+    ` : nothing}
+    ${powered && remoteEnabled && delayedEnabled && delayedTime ? html`
+      <div class="washer-delay-controls">
+        ${button("Move delayed start 15 minutes earlier", "mdi:arrow-down", (event) => setDelayedMinutes(event, -15))}
+        <button class="washer-delay-time" aria-label="Move delayed start 1 minute later"
+          @pointerdown=${(event: Event) => event.stopPropagation()}
+          @click=${(event: Event) => setDelayedMinutes(event, 1)}>${delayedTime.state}</button>
+        ${button("Move delayed start 15 minutes later", "mdi:arrow-up", (event) => setDelayedMinutes(event, 15))}
+      </div>
+    ` : nothing}
+    ${(door || finished || remote) ? html`
+      <div class="washer-status">
+        ${door ? html`<span><ha-icon icon="mdi:door"></ha-icon>${stateLabel(door)}</span>` : nothing}
+        ${finished ? html`<span><ha-icon icon="mdi:check-circle"></ha-icon>${stateLabel(finished)}</span>` : nothing}
+        ${remote ? html`<span><ha-icon icon="mdi:remote"></ha-icon>${stateLabel(remote)}</span>` : nothing}
+      </div>
+    ` : nothing}
   `);
 };
 
@@ -1729,28 +1833,62 @@ const renderHomeAssistantUpdates = (ctx: RenderContext): TemplateResult => {
 const renderSunCard = (ctx: RenderContext): TemplateResult => {
   const rising = attr(ctx.entity, "next_rising");
   const setting = attr(ctx.entity, "next_setting");
+  const dawn = attr(ctx.entity, "next_dawn") ?? rising;
+  const noon = attr(ctx.entity, "next_noon");
+  const dusk = attr(ctx.entity, "next_dusk") ?? setting;
+  const locale = configured<string>(ctx, "language") || ctx.hass.language || "en";
+  const hour12 = configured<string>(ctx, "timeFormat") === "12h";
   const format = (value: unknown) => {
     const date = new Date(String(value ?? ""));
-    return Number.isNaN(date.getTime()) ? "—" : date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return Number.isNaN(date.getTime()) ? "—" : new Intl.DateTimeFormat(locale, {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12,
+    }).format(date);
   };
   const above = ctx.entity?.state === "above_horizon";
-  return ctx.actionSurface("custom-sun-card", html`
+  const elevation = numeric(attr(ctx.entity, "elevation"));
+  const azimuth = numeric(attr(ctx.entity, "azimuth"));
+  const title = configured<string>(ctx, "title");
+  return ctx.actionSurface(`custom-sun-card ${configured<boolean>(ctx, "darkMode") ? "is-dark" : ""}`, html`
+    ${title ? html`<b class="sun-title">${title}</b>` : nothing}
     <div class="sun-times"><span><small>Sunrise</small><b>${format(rising)}</b></span><span><small>Sunset</small><b>${format(setting)}</b></span></div>
     <div class="sun-arc"><svg viewBox="0 0 300 90" preserveAspectRatio="none"><path class="sun-night" d="M0,62 Q60,115 105,62"></path><path class="sun-day" d="M0,62 Q150,-45 300,62"></path><circle cx=${above ? "170" : "28"} cy=${above ? "18" : "70"} r="10"></circle><line x1="0" y1="62" x2="300" y2="62"></line></svg></div>
-    <div class="sun-footer"><span><small>Dawn</small><b>${format(rising)}</b></span><span><small>Solar noon</small><b>12:00</b></span><span><small>Dusk</small><b>${format(setting)}</b></span></div>
+    <div class="sun-footer"><span><small>Dawn</small><b>${format(dawn)}</b></span><span><small>Solar noon</small><b>${format(noon)}</b></span><span><small>Dusk</small><b>${format(dusk)}</b></span></div>
+    ${(configured<boolean>(ctx, "showAzimuth") || configured<boolean>(ctx, "showElevation")) ? html`
+      <div class="sun-position">
+        ${configured<boolean>(ctx, "showAzimuth") ? html`<span>Azimuth <b>${azimuth ?? "—"}°</b></span>` : nothing}
+        ${configured<boolean>(ctx, "showElevation") ? html`<span>Elevation <b>${elevation ?? "—"}°</b></span>` : nothing}
+      </div>
+    ` : nothing}
   `);
 };
 
 const renderCompactThermostat = (ctx: RenderContext): TemplateResult => {
   const heating = attr(ctx.entity, "hvac_action") === "heating";
   const target = numeric(attr(ctx.entity, "temperature")) ?? 20;
+  const currentMode = ctx.entity?.state ?? "off";
+  const controlsVisible = ctx.config.variant !== "collapse" || currentMode === "heat";
+  const toggleMode = (event: Event): void => {
+    event.stopPropagation();
+    if (!ctx.config.entity) return;
+    ctx.service("climate", "set_hvac_mode", {
+      entity_id: ctx.config.entity,
+      hvac_mode: currentMode === "off" ? "heat" : "off",
+    });
+  };
   return ctx.actionSurface(`custom-compact-thermostat ${heating ? "is-heating" : ""}`, html`
-    <div class="custom-card-heading">${iconBubble(ctx, heating ? "mdi:radiator" : "mdi:radiator-off", "red")}${heading(ctx, stateLabel(ctx.entity))}<b>${attr(ctx.entity, "current_temperature") ?? "—"}°</b></div>
-    <div class="compact-thermostat-controls">
+    <button class="thermostat-summary" aria-label=${currentMode === "off" ? "Turn thermostat on" : "Turn thermostat off"}
+      @pointerdown=${(event: Event) => event.stopPropagation()} @click=${toggleMode}>
+      ${iconBubble(ctx, heating ? "mdi:radiator" : "mdi:radiator-off", "red")}
+      ${heading(ctx, stateLabel(ctx.entity))}
+      <b>${attr(ctx.entity, "current_temperature") ?? "—"}°C</b>
+    </button>
+    ${controlsVisible ? html`<div class="compact-thermostat-controls">
       ${button("Decrease temperature", "mdi:minus", (event) => { event.stopPropagation(); ctx.service("climate", "set_temperature", { entity_id: ctx.config.entity, temperature: target - 0.5 }); })}
-      <b>${target}°</b>
+      <b>${target}°C</b>
       ${button("Increase temperature", "mdi:plus", (event) => { event.stopPropagation(); ctx.service("climate", "set_temperature", { entity_id: ctx.config.entity, temperature: target + 0.5 }); })}
-    </div>
+    </div>` : nothing}
   `);
 };
 
@@ -1759,8 +1897,11 @@ const renderBatteryChipCard = (ctx: RenderContext): TemplateResult => {
   const danger = numeric(configured(ctx, "ulm_custom_card_iAbadia_battery_chip_danger")) ?? 10;
   const warning = numeric(configured(ctx, "ulm_custom_card_iAbadia_battery_chip_warning")) ?? 20;
   const tone = value <= danger ? "red" : value <= warning ? "yellow" : "green";
+  const batteryState = entityFromConfig(ctx, "battery_state_entity");
+  const charging = /charg/i.test(batteryState?.state ?? "") && !/discharg/i.test(batteryState?.state ?? "");
   return ctx.actionSurface(`custom-battery-chip tone-${tone}`, html`
-    <ha-icon .icon=${configured<string>(ctx, "ulm_custom_card_iAbadia_battery_chip_icon") || ctx.config.icon || "mdi:battery"}></ha-icon>
+    <ha-icon .icon=${configured<string>(ctx, "ulm_custom_card_iAbadia_battery_chip_icon") ||
+      ctx.config.icon || (charging ? "mdi:battery-charging" : "mdi:battery")}></ha-icon>
   `);
 };
 
@@ -1768,15 +1909,34 @@ const renderMediaLibrary = (ctx: RenderContext): TemplateResult => {
   const data = Array.isArray(attr(ctx.entity, "data")) ? attr(ctx.entity, "data") as Array<Record<string, unknown>> : [];
   const index = Math.max(1, numeric(configured(ctx, "ulm_custom_card_imswel_medias_index")) ?? 1);
   const media = data[index] ?? data.find((item) => item.title) ?? {};
-  const picture = media.fanart || media.poster || attr(ctx.entity, "entity_picture");
+  const secondary = entityFromConfig(ctx, "secondary_entity");
   const platform = configured<string>(ctx, "ulm_custom_card_imswel_medias_platform") || "plex";
-  return ctx.actionSurface("custom-media-library", html`
+  const library = ctx.config.variant === "library" || platform === "plex";
+  const picture = (library ? media.fanart : media.poster) || media.fanart || media.poster ||
+    attr(ctx.entity, "entity_picture") || attr(secondary, "entity_picture");
+  const unavailable = !ctx.entity || ["unavailable", "unknown"].includes(ctx.entity.state);
+  const title = unavailable
+    ? "Unavailable"
+    : String(media.title ?? attr(ctx.entity, "media_title") ?? displayName(ctx.config, ctx.entity));
+  const libraryNumber = media.number ?? (
+    typeof media.aired === "string" ? `(${media.aired.split("-")[0]})` : ""
+  );
+  const upcomingNumber = platform === "sonarr" && media.number ? ` - ${String(media.number)}` : "";
+  const releaseDate = media.airdate ? new Date(String(media.airdate)) : undefined;
+  const release = releaseDate && !Number.isNaN(releaseDate.getTime())
+    ? new Intl.DateTimeFormat(ctx.hass.language || "en", {
+      weekday: "long",
+      month: "short",
+      day: "numeric",
+    }).format(releaseDate)
+    : String(media.release ?? stateLabel(ctx.entity));
+  return ctx.actionSurface(`custom-media-library ${library ? "is-library" : "is-upcoming"}`, html`
     ${picture ? html`<span class="media-library-art" style=${`background-image:url("${String(picture)}")`}></span>` : html`<span class="media-library-art"><ha-icon icon="mdi:movie-open"></ha-icon></span>`}
     <span class="media-library-overlay">
-      <span class="media-platform"><ha-icon .icon=${platform === "sonarr" ? "mdi:television-classic" : platform === "radarr" ? "mdi:movie" : "mdi:plex"}></ha-icon></span>
+      ${library ? html`<span class="media-platform"><ha-icon icon="mdi:plex"></ha-icon></span>` : nothing}
       <span class="ulm-copy">
-        <b class="ulm-name">${String(media.title ?? attr(ctx.entity, "media_title") ?? displayName(ctx.config, ctx.entity))}</b>
-        <span class="ulm-label">${String(media.episode ?? media.release ?? `${platform} · ${stateLabel(ctx.entity)}`)}</span>
+        <b class="ulm-name">${library ? "Recently added" : `${title}${upcomingNumber}`}</b>
+        <span class="ulm-label">${library ? `${title}${libraryNumber ? ` ${String(libraryNumber)}` : ""}` : release}</span>
       </span>
     </span>
   `);

@@ -86,6 +86,8 @@ const variants: Record<string, string[]> = {
   card_thermostat: ["default"],
   card_vacuum: ["default"],
   custom_card_playstation: ["ps5", "xbox"],
+  custom_card_httpedo13_thermostat: ["buttons", "collapse"],
+  custom_card_imswel_medias: ["library", "upcoming"],
 };
 
 const preferredDomainsFor = (id: string, family: string): string[] => {

@@ -93,6 +93,12 @@ export interface AdditionConfig {
   battery_entity?: string;
   consumption_entity?: string;
   fan_entity?: string;
+  battery_state_entity?: string;
+  charger_type_entity?: string;
+  power_entity?: string;
+  door_entity?: string;
+  finished_entity?: string;
+  secondary_entity?: string;
   disk_entity?: string;
   memory_entity?: string;
   cpu_entity?: string;

@@ -438,6 +438,75 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         ]),
         ...presentation(),
       ]
+    : item.upstreamId === "custom_card_haven_washer"
+      ? [
+        entity(["sensor", "switch", "binary_sensor"]),
+        entity(["sensor", "switch", "binary_sensor"], "power_entity"),
+        entity(["sensor", "binary_sensor"], "door_entity"),
+        entity(["sensor", "binary_sensor"], "finished_entity"),
+        entity(["sensor", "binary_sensor"], "ulm_custom_card_washer_remote_control"),
+        entity(["sensor"], "ulm_custom_card_washer_job_progress"),
+        entity(["input_boolean"], "ulm_custom_card_washer_delayed_start"),
+        entity(["input_datetime"], "ulm_custom_card_washer_delayed_starttime"),
+        text("ulm_custom_card_washer_machine_stop_state"),
+        { name: "ulm_custom_card_washer_job_states", selector: { object: {} } },
+        text("ulm_custom_card_washer_label_idle"),
+        text("ulm_custom_card_washer_label_configuring"),
+        text("ulm_custom_card_washer_label_running"),
+        action("ulm_custom_card_washer_start_action"),
+        action("ulm_custom_card_washer_pause_action"),
+        action("ulm_custom_card_washer_stop_action"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_httpedo13_sun"
+      ? [
+        entity(["sun"]),
+        text("title"),
+        text("language"),
+        select("timeFormat", [
+          { value: "24h", label: "24-hour time" },
+          { value: "12h", label: "12-hour time" },
+        ]),
+        toggle("darkMode"),
+        toggle("showAzimuth"),
+        toggle("showElevation"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_httpedo13_thermostat"
+      ? [
+        entity(["climate"]),
+        select("variant", [
+          { value: "buttons", label: "Always show controls" },
+          { value: "collapse", label: "Hide controls while off" },
+        ]),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_iAbadia_battery_chip"
+      ? [
+        entity(["sensor"]),
+        entity(["sensor", "binary_sensor"], "battery_state_entity"),
+        entity(["sensor"], "charger_type_entity"),
+        { name: "ulm_custom_card_iAbadia_battery_chip_icon", selector: { icon: {} } },
+        number("ulm_custom_card_iAbadia_battery_chip_warning", 0, 100),
+        number("ulm_custom_card_iAbadia_battery_chip_danger", 0, 100),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_imswel_medias"
+      ? [
+        entity(["sensor", "media_player"]),
+        entity(["sensor", "media_player"], "secondary_entity"),
+        select("variant", [
+          { value: "library", label: "Recently added library" },
+          { value: "upcoming", label: "Upcoming media" },
+        ]),
+        number("ulm_custom_card_imswel_medias_index", 0, 100),
+        select("ulm_custom_card_imswel_medias_platform", [
+          { value: "plex", label: "Plex" },
+          { value: "radarr", label: "Radarr" },
+          { value: "sonarr", label: "Sonarr" },
+        ]),
+        ...presentation(),
+      ]
     : item.upstreamId === "custom_card_nik_nas"
       ? [
         entity(["binary_sensor", "sensor", "switch"]),
