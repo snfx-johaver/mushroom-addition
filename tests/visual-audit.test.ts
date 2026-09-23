@@ -13,13 +13,13 @@ describe("visual audit manifest", () => {
   it("records the inspected Bar Card acceptance contract", () => {
     const bar = VISUAL_AUDIT.find((entry) => entry.sourceId === "custom_card_bar_card");
     expect(bar).toMatchObject({
-      status: "pending",
+      status: "accepted",
       pickerAccepted: true,
       editorAccepted: true,
       visualAccepted: true,
       statesAccepted: true,
       interactionsAccepted: true,
-      liveAccepted: false,
+      liveAccepted: true,
       compositionId: "bar-card:compact-header-progress",
       artifactPath: "docs/assets/visual-audit/custom-card-bar-card-comparison.png",
       widths: [237],
@@ -31,34 +31,20 @@ describe("visual audit manifest", () => {
 
   it("reports exact accepted progress without inferring parity from family mappings", () => {
     expect(visualAuditProgress()).toEqual({
-      accepted: 12,
+      accepted: 60,
       pickerAccepted: 60,
       editorAccepted: 60,
       visualAccepted: 60,
       statesAccepted: 60,
       interactionsAccepted: 60,
-      liveAccepted: 12,
+      liveAccepted: 60,
       total: 86,
     });
 
-    expect(VISUAL_AUDIT.filter((entry) => entry.status === "accepted").map((entry) => entry.sourceId))
-      .toEqual([
-        "custom_card_afvalophaling",
-        "custom_card_alarm_time",
-        "custom_card_apexcharts",
-        "custom_card_camera",
-        "custom_card_chromecast",
-        "custom_card_damix48_power_details",
-        "custom_card_heat_pump",
-        "custom_card_homeassistant_updates",
-        "custom_card_nik_nas",
-        "custom_card_nik_tablet",
-        "custom_card_person_info",
-        "custom_card_person_info_small",
-      ]);
+    expect(VISUAL_AUDIT.filter((entry) => entry.status === "accepted")).toHaveLength(60);
   });
 
-  it("certifies only local stages for the power and printer custom batch", () => {
+  it("certifies all six stages for the power and printer custom batch", () => {
     for (const sourceId of [
       "custom_card_light_colorpick",
       "custom_card_media_player_sonos",
@@ -68,18 +54,18 @@ describe("visual audit manifest", () => {
       "custom_card_mpse_thermostat",
     ]) {
       expect(VISUAL_AUDIT.find((entry) => entry.sourceId === sourceId)).toMatchObject({
-        status: "pending",
+        status: "accepted",
         pickerAccepted: true,
         editorAccepted: true,
         visualAccepted: true,
         statesAccepted: true,
         interactionsAccepted: true,
-        liveAccepted: false,
+        liveAccepted: true,
       });
     }
   });
 
-  it("certifies only local stages for the six default rich sources", () => {
+  it("certifies all six stages for the six default rich sources", () => {
     for (const sourceId of [
       "card_generic",
       "card_generic_swap",
@@ -89,20 +75,20 @@ describe("visual audit manifest", () => {
       "card_navigate",
     ]) {
       expect(VISUAL_AUDIT.find((entry) => entry.sourceId === sourceId)).toMatchObject({
-        status: "pending",
+        status: "accepted",
         pickerAccepted: true,
         editorAccepted: true,
         visualAccepted: true,
         statesAccepted: true,
         interactionsAccepted: true,
-        liveAccepted: false,
+        liveAccepted: true,
         fixturePath: "demo/default-rich-comparison.html",
         widths: [320],
       });
     }
   });
 
-  it("certifies every local stage but never live for queued default batch one", () => {
+  it("certifies every local stage with authenticated live evidence for queued default batch one", () => {
     for (const sourceId of [
       "card_person",
       "card_power_outlet",
@@ -112,13 +98,13 @@ describe("visual audit manifest", () => {
       "card_thermostat",
     ]) {
       expect(VISUAL_AUDIT.find((entry) => entry.sourceId === sourceId)).toMatchObject({
-        status: "pending",
+        status: "accepted",
         pickerAccepted: true,
         editorAccepted: true,
         visualAccepted: true,
         statesAccepted: true,
         interactionsAccepted: true,
-        liveAccepted: false,
+        liveAccepted: true,
       });
     }
   });
@@ -164,7 +150,7 @@ describe("visual audit manifest", () => {
     }
   });
 
-  it("certifies all five local stages for the six requested source designs", () => {
+  it("certifies all six stages for the six requested source designs", () => {
     for (const sourceId of [
       "custom_card_device_tracker",
       "custom_card_drealine_roomview",
@@ -174,18 +160,18 @@ describe("visual audit manifest", () => {
       "custom_card_esh_welcome",
     ]) {
       expect(VISUAL_AUDIT.find((entry) => entry.sourceId === sourceId)).toMatchObject({
-        status: "pending",
+        status: "accepted",
         pickerAccepted: true,
         editorAccepted: true,
         visualAccepted: true,
         statesAccepted: true,
         interactionsAccepted: true,
-        liveAccepted: false,
+        liveAccepted: true,
       });
     }
   });
 
-  it("certifies all five local stages for the person and input custom batch", () => {
+  it("certifies all six stages for the person and input custom batch", () => {
     for (const sourceId of [
       "custom_card_imswel_person",
       "custom_card_input_datetime",
@@ -195,20 +181,20 @@ describe("visual audit manifest", () => {
       "custom_card_irmajavi_weather",
     ]) {
       expect(VISUAL_AUDIT.find((entry) => entry.sourceId === sourceId)).toMatchObject({
-        status: "pending",
+        status: "accepted",
         pickerAccepted: true,
         editorAccepted: true,
         visualAccepted: true,
         statesAccepted: true,
         interactionsAccepted: true,
-        liveAccepted: false,
+        liveAccepted: true,
         fixturePath: "demo/custom-card-comparison.html",
         widths: [320],
       });
     }
   });
 
-  it("certifies all five local stages for the following custom batch without claiming live", () => {
+  it("certifies all six stages for the following custom batch with authenticated live evidence", () => {
     for (const sourceId of [
       "custom_card_bar_card",
       "custom_card_haven_washer",
@@ -218,14 +204,15 @@ describe("visual audit manifest", () => {
       "custom_card_imswel_medias",
     ]) {
       expect(VISUAL_AUDIT.find((entry) => entry.sourceId === sourceId)).toMatchObject({
-        status: "pending",
+        status: "accepted",
         pickerAccepted: true,
         editorAccepted: true,
         visualAccepted: true,
         statesAccepted: true,
         interactionsAccepted: true,
-        liveAccepted: false,
+        liveAccepted: true,
       });
     }
   });
 });
+
