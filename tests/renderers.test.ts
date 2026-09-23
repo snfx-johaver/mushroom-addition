@@ -138,6 +138,34 @@ describe("family renderers", () => {
     expect(markup).not.toContain("Kitchen");
   });
 
+  it("normalizes hidden legacy tags to their unified component variant", async () => {
+    const markup = await render("mushroom-addition-custom-card-person-info-small", {
+      type: "custom:mushroom-addition-custom-card-person-info-small",
+      entity: "person.joris",
+    });
+    expect(markup).toContain("variant-small");
+    expect(markup).toContain("is-compact");
+  });
+
+  it("renders detailed and native weather variants distinctly", async () => {
+    const detailed = await render("mushroom-addition-card-weather", {
+      type: "custom:mushroom-addition-card-weather",
+      entity: "weather.home",
+      variant: "detailed",
+      show_forecast: true,
+    });
+    const native = await render("mushroom-addition-card-weather", {
+      type: "custom:mushroom-addition-card-weather",
+      entity: "weather.home",
+      variant: "native",
+      show_forecast: true,
+    });
+    expect(detailed).toContain("weather-metrics");
+    expect(detailed).toContain("weather-forecast");
+    expect(native).not.toContain("weather-metrics");
+    expect(native).not.toContain("weather-forecast");
+  });
+
   it("wires the Minimalist light slider to a valid Home Assistant service", async () => {
     const callService = vi.fn(async () => undefined);
     const element = document.createElement("mushroom-addition-card-light") as HTMLElement & {

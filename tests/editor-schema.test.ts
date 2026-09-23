@@ -75,6 +75,7 @@ describe("family editor schemas", () => {
         expect(label).not.toContain("_");
         expect(label).not.toMatch(/\bEnable\b/i);
         expect(editorHelper(field.name)).toBeTruthy();
+        expect(editorHelper(field.name)).not.toMatch(/\bulm\b/i);
       }
     }
   });
@@ -114,5 +115,23 @@ describe("family editor schemas", () => {
         expect(schema.find((field) => field.name === name)?.selector).toHaveProperty("select");
       }
     }
+  });
+
+  it("shows only controls relevant to the selected unified variant", () => {
+    const personInfo = CATALOG.find((item) => item.upstreamId === "custom_card_person_info")!;
+    const full = editorSchemaFor(personInfo, { type: `custom:${personInfo.tag}`, variant: "full" });
+    const small = editorSchemaFor(personInfo, { type: `custom:${personInfo.tag}`, variant: "small" });
+    expect(full.map((field) => field.name)).toEqual(expect.arrayContaining([
+      "battery_entity", "eta_entity", "address_entity",
+    ]));
+    expect(small.map((field) => field.name)).not.toEqual(expect.arrayContaining([
+      "battery_entity", "eta_entity", "address_entity",
+    ]));
+
+    const weather = CATALOG.find((item) => item.upstreamId === "card_weather")!;
+    expect(upstreamEditorSchemaFor(weather, { type: `custom:${weather.tag}`, variant: "detailed" }).length)
+      .toBeGreaterThan(0);
+    expect(upstreamEditorSchemaFor(weather, { type: `custom:${weather.tag}`, variant: "native" }))
+      .toHaveLength(0);
   });
 });

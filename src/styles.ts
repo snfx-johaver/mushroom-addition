@@ -163,6 +163,7 @@ export const sharedStyles = css`
   .presence-dot { width: 12px; height: 12px; border: 3px solid var(--card-background-color); border-radius: 50%; }
   .presence-dot.home { background: rgb(var(--ulm-blue)); }
   .presence-dot.away { background: rgb(var(--ulm-green)); }
+  .ulm-person.is-compact { min-height: 52px; padding-top: 7px; padding-bottom: 7px; }
   .battery-ring, .battery-value { color: rgb(var(--ulm-green)); font-weight: 700; }
   .ulm-battery { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 12px; }
   .battery-value { font-size: 24px; }
@@ -225,6 +226,9 @@ export const sharedStyles = css`
   .gauge-ring b { position: relative; z-index: 1; font-size: 11px; }
   .ulm-title { display: flex; align-items: center; gap: 10px; padding: 8px 2px; box-shadow: none; background: transparent; }
   .ulm-title .ulm-name { font-size: 18px; }
+  .ulm-title.variant-divider-title { padding-bottom: 10px; border-bottom: 2px solid var(--divider-color); }
+  .ulm-title.variant-divider-subtitle { padding-bottom: 7px; border-bottom: 1px solid var(--divider-color); }
+  .ulm-title.variant-divider-subtitle .ulm-name { color: var(--secondary-text-color); font-size: 14px; }
   .ulm-vertical-button { display: flex; min-height: 96px; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px; text-align: center; }
   .ulm-vertical-button .ulm-copy { align-items: center; }
   .ulm-binary.is-alert { background: rgba(var(--ulm-red), .1); }

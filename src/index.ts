@@ -1,10 +1,10 @@
 import "./editor";
-import { CATALOG } from "./catalog";
+import { CATALOG, LEGACY_ALIASES, PUBLIC_CATALOG } from "./catalog";
 import { MushroomAdditionCard } from "./card";
 import type { AdditionConfig, CatalogItem, HomeAssistant } from "./types";
 import { createStubConfig } from "./stub";
 
-const VERSION = "1.2.3";
+const VERSION = "1.3.0";
 
 for (const item of CATALOG) {
   if (!customElements.get(item.tag)) {
@@ -22,6 +22,22 @@ for (const item of CATALOG) {
     }
     customElements.define(item.tag, RegisteredAdditionCard);
   }
+}
+
+for (const alias of LEGACY_ALIASES) {
+  if (customElements.get(alias.tag)) continue;
+  const descriptor = PUBLIC_CATALOG.find((item) => item.upstreamId === alias.targetId);
+  if (!descriptor) throw new Error(`Missing alias target ${alias.targetId}.`);
+  const aliasDescriptor = descriptor;
+  const defaultVariant = alias.variant;
+  class LegacyAdditionAlias extends MushroomAdditionCard {
+    protected descriptor: CatalogItem = aliasDescriptor;
+
+    public setConfig(config: AdditionConfig): void {
+      super.setConfig({ ...config, variant: config.variant ?? defaultVariant });
+    }
+  }
+  customElements.define(alias.tag, LegacyAdditionAlias);
 }
 
 window.customCards = window.customCards || [];

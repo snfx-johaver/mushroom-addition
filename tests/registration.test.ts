@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { CATALOG } from "../src/catalog";
+import { CATALOG, LEGACY_ALIASES } from "../src/catalog";
 import "../src/index";
 import type { AdditionConfig, HomeAssistant } from "../src/types";
 import { upstreamDefaultsFor } from "../src/defaults";
@@ -8,11 +8,37 @@ describe("Home Assistant registration", () => {
   afterEach(() => vi.useRealTimers());
   it("defines every catalog custom element", () => {
     for (const item of CATALOG) expect(customElements.get(item.tag)).toBeDefined();
+    for (const alias of LEGACY_ALIASES) expect(customElements.get(alias.tag)).toBeDefined();
   });
 
   it("publishes every component to the Lovelace picker", () => {
     const registered = new Set(window.customCards?.map((item) => item.type));
     for (const item of CATALOG) expect(registered.has(item.tag)).toBe(true);
+    for (const alias of LEGACY_ALIASES) expect(registered.has(alias.tag)).toBe(false);
+  });
+
+  it("keeps internal terminology out of public picker metadata", () => {
+    for (const card of window.customCards ?? []) {
+      expect(`${card.name} ${card.description}`).not.toMatch(/\bulm\b/i);
+    }
+  });
+
+  it("normalizes legacy chip aliases to unified types in the graphical editor", () => {
+    const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {
+      setConfig(config: AdditionConfig): void;
+      config?: AdditionConfig;
+    };
+    editor.setConfig({
+      type: "custom:mushroom-addition-chips-card",
+      chips: [{
+        type: "custom:mushroom-addition-chip-mdi-icon-only",
+        icon: "mdi:home",
+      }],
+    });
+    expect(editor.config?.chips?.[0]).toMatchObject({
+      type: "custom:mushroom-addition-chip-icon-only",
+      variant: "mdi-icon",
+    });
   });
 
   it("provides a graphical editor for every component", async () => {

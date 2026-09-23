@@ -97,6 +97,7 @@ const renderWeather = (ctx: RenderContext): TemplateResult => {
     ? stateLabel(humidityEntity)
     : `${attr(ctx.entity, "humidity") ?? "—"}%`;
   const forecast = ctx.forecast?.slice(0, 4) ?? [];
+  const native = ctx.config.variant === "native";
   const backdrop = configured<boolean>(ctx, "ulm_card_weather_backdrop") === true;
   const primaryInfo = configured<string>(ctx, "ulm_card_weather_primary_info") ?? "extrema";
   const secondaryInfo = configured<string>(ctx, "ulm_card_weather_secondary_info") ?? "precipitation";
@@ -107,19 +108,19 @@ const renderWeather = (ctx: RenderContext): TemplateResult => {
         <span class="weather-temp">${temperature}</span>
         <span class="ulm-name">${displayName(ctx.config, ctx.entity)}</span>
         <span class="ulm-label weather-condition">${condition.replaceAll("-", " ")}</span>
-        ${forecast[0] && primaryInfo === "extrema" ? html`<span class="weather-extrema">H ${String(forecast[0].temperature ?? "—")}° · L ${String(forecast[0].templow ?? forecast[0].temperature_low ?? "—")}°</span>` : nothing}
-        ${secondaryInfo === "precipitation" && forecast[0]?.precipitation_probability !== undefined
+        ${!native && forecast[0] && primaryInfo === "extrema" ? html`<span class="weather-extrema">H ${String(forecast[0].temperature ?? "—")}° · L ${String(forecast[0].templow ?? forecast[0].temperature_low ?? "—")}°</span>` : nothing}
+        ${!native && secondaryInfo === "precipitation" && forecast[0]?.precipitation_probability !== undefined
           ? html`<span class="weather-extrema">${forecast[0].precipitation_probability}% precipitation</span>`
           : secondaryInfo === "precipitation" && forecast[0]?.precipitation !== undefined
             ? html`<span class="weather-extrema">${forecast[0].precipitation}${String(attr(ctx.entity, "precipitation_unit") ?? " mm")} precipitation</span>`
             : nothing}
       </div>
     </div>
-    <div class="weather-metrics">
+    ${native ? nothing : html`<div class="weather-metrics">
       <span class="metric-pill"><ha-icon icon="mdi:water-percent"></ha-icon>${humidity}</span>
       <span class="metric-pill"><ha-icon icon="mdi:thermometer"></ha-icon>${temperature}</span>
-    </div>
-    ${ctx.config.show_forecast && forecast.length ? html`
+    </div>`}
+    ${!native && ctx.config.show_forecast && forecast.length ? html`
       <div class="weather-forecast">
         ${forecast.map((period) => {
           const state = String(period.condition ?? "cloudy");
@@ -204,11 +205,14 @@ const renderPerson = (ctx: RenderContext): TemplateResult => {
   const battery = linkedState(ctx, "battery_entity");
   const eta = linkedState(ctx, "eta_entity");
   const address = linkedState(ctx, "address_entity");
-  const picture = ctx.config.use_entity_picture ? attr(ctx.entity, "entity_picture") : undefined;
-  return ctx.actionSurface("ulm-row ulm-person", html`
+  const picture = ctx.config.icon_type === "entity-picture" || ctx.config.use_entity_picture
+    ? attr(ctx.entity, "entity_picture")
+    : undefined;
+  const compact = ctx.config.variant === "small";
+  return ctx.actionSurface(`ulm-row ulm-person ${compact ? "is-compact" : ""}`, html`
     ${picture ? html`<span class="person-picture" style=${`background-image:url("${String(picture)}")`}></span>` : iconBubble(ctx, "mdi:account", ctx.entity?.state === "home" ? "blue" : "green")}
     ${heading(ctx, [address ? stateLabel(address) : stateLabel(ctx.entity), eta ? `ETA ${stateLabel(eta)}` : ""].filter(Boolean).join(" · "))}
-    ${battery ? html`<span class="battery-ring">${stateLabel(battery)}</span>` : html`<span class="presence-dot ${ctx.entity?.state === "home" ? "home" : "away"}"></span>`}
+    ${compact ? nothing : battery ? html`<span class="battery-ring">${stateLabel(battery)}</span>` : html`<span class="presence-dot ${ctx.entity?.state === "home" ? "home" : "away"}"></span>`}
   `);
 };
 
@@ -565,7 +569,7 @@ const renderChip = (ctx: RenderContext): TemplateResult => {
     : ctx.descriptor.family === "battery" ? "green"
     : ctx.descriptor.family === "energy" ? "blue"
     : "grey";
-  if (id === "chip_back") {
+  if (id === "chip_navigate" && ctx.config.variant === "back") {
     return ctx.actionSurface("ulm-chip chip-navigation", html`${iconBubble(ctx, "mdi:arrow-left", "blue")}<span>${displayName(ctx.config, ctx.entity)}</span>`);
   }
   if (/short_date|weather_date|nik_clock/.test(id)) {
@@ -590,13 +594,10 @@ const renderChip = (ctx: RenderContext): TemplateResult => {
 export const renderByFamily = (ctx: RenderContext): TemplateResult => {
   if (ctx.descriptor.kind === "chip") return renderChip(ctx);
   switch (ctx.descriptor.upstreamId) {
-    case "card_binary_sensor": return renderBinary(ctx);
-    case "card_binary_sensor_alert": return renderBinary(ctx, true);
-    case "card_title":
-    case "custom_card_wilbiev_title":
-    case "custom_card_wilbiev_subtitle": return renderTitle(ctx);
+    case "card_binary_sensor": return renderBinary(ctx, ctx.config.variant === "alert");
+    case "card_title": return renderTitle(ctx);
     case "card_vertical_button": return renderVerticalButton(ctx);
-    case "card_generic_swap": return renderGenericSwap(ctx);
+    case "card_generic": return ctx.config.variant === "swapped" ? renderGenericSwap(ctx) : renderGeneric(ctx);
     case "custom_card_input_datetime": return renderDetailCard(ctx, "mdi:calendar-clock", "blue");
     case "card_room":
     case "custom_card_esh_room":

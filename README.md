@@ -8,9 +8,12 @@ UI-Lovelace-Minimalist card and chip catalog. The layouts, state styling,
 controls, variables, and defaults are audited item-by-item while retaining a
 cohesive installation alongside Mushroom.
 
-The release contains **107 mapped upstream components** and a graphical chips
-container. Every component is registered in the Lovelace
-card picker, has a visual editor, and remains YAML-configurable. See the
+The release traces **105 documented upstream sources**—24 default cards,
+12 default chips, 62 custom cards, and 7 custom chips—to **95 public
+components** and a graphical chips container. Same-goal aliases and compact or
+layout alternatives are combined into clear graphical variants instead of
+duplicating picker entries. Every public component has a visual editor and
+remains YAML-configurable. See the
 [complete, source-linked catalog](docs/CATALOG.md), the generated
 [item-by-item parity matrix](docs/PARITY_MATRIX.md), and the
 [visual behavior specification](docs/VISUAL_SPEC.md).
@@ -45,18 +48,20 @@ For a manual installation, copy `dist/mushroom-cards-addition.js` into
 `config/www/community/mushroom-cards-addition/` and register
 `/local/community/mushroom-cards-addition/mushroom-cards-addition.js` as a
 module. After replacing a manually installed bundle, use
-`/local/community/mushroom-cards-addition/mushroom-cards-addition.js?v=1.2.3`
+`/local/community/mushroom-cards-addition/mushroom-cards-addition.js?v=1.3.0`
 (or increment the query token) and hard-refresh the Home Assistant frontend to
 invalidate the browser cache.
 
 ## UI usage
 
-Each catalog entry appears as its own card-picker item. The shared graphical
+Each distinct public component appears once in the card picker. The shared graphical
 editor supports entity and multi-entity selection, name, secondary text, icon,
 color, layout, documented variants, state visibility, and Home Assistant
 tap/hold/double-tap actions. The **Addition Chips Card** lets users add, remove,
-select, and configure chip entities without authoring Minimalist template
-variables. Card-picker previews automatically select compatible entities from
+select, and configure chip entities without authoring legacy template
+variables. Hidden compatibility aliases keep existing YAML working while new
+dashboards use the unified component and a friendly style dropdown. Card-picker
+previews automatically select compatible entities from
 the current Home Assistant instance so examples show real names and states.
 
 The **PS5 / Xbox Card** preserves the upstream PlayStation mapping while adding
@@ -92,8 +97,9 @@ labels, unavailable and preview states, and Home Assistant theme variables.
 They do **not** share one generic visual tile: weather, climate, lights, scenes,
 people, batteries, energy/graphs, media, covers, vacuums, security, navigation,
 and chips each use a dedicated renderer and a family-specific visual editor.
-Related upstream YAML variants are exposed through relevant UI controls and
-remain independently registered where that helps existing users migrate.
+Related upstream YAML variants are exposed through relevant UI controls.
+Previous separate custom-element tags remain hidden compatibility aliases so
+existing dashboards continue to render without cluttering the picker.
 
 ![Representative family renderers](docs/assets/family-fixture.png)
 

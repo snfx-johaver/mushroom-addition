@@ -1,13 +1,17 @@
 import { readFileSync, writeFileSync } from "node:fs";
-import { CATALOG, PUBLIC_CATALOG, UPSTREAM_COMMIT, UPSTREAM_VARIANTS } from "../src/catalog";
+import {
+  COMPONENT_GROUPS, CATALOG, PUBLIC_CATALOG, SOURCE_ONLY_HELPERS,
+  UPSTREAM_CATALOG, UPSTREAM_COMMIT, UPSTREAM_VARIANTS,
+} from "../src/catalog";
 
 const upstreamUrl = `https://github.com/UI-Lovelace-Minimalist/UI/blob/${UPSTREAM_COMMIT}`;
 const rows = PUBLIC_CATALOG.map((item) => {
   const variants = item.variants?.join(", ") ?? "default";
-  return `| \`${item.upstreamId}\` | ${item.kind} | \`custom:${item.tag}\` | ${item.family} | ${variants} | [source](${upstreamUrl}/${item.sourcePath}) |`;
+  const sources = (item.sourceIds ?? [item.upstreamId]).map((id) => `\`${id}\``).join("<br>");
+  return `| \`${item.upstreamId}\` | ${item.category} | \`custom:${item.tag}\` | ${item.family} | ${variants} | ${sources} |`;
 });
 const popupRows = UPSTREAM_VARIANTS.map((item) =>
-  `| \`${item.id}\` | \`${item.component}\` | \`variant: popup\` | [source](${upstreamUrl}/${item.sourcePath}) |`);
+  `| \`${item.id}\` | \`${item.component}\` | Not exposed; use standard card actions | [source](${upstreamUrl}/${item.sourcePath}) |`);
 
 const content = `# Catalog coverage
 
@@ -17,35 +21,45 @@ to Mushroom Cards Addition registrations. It is generated from
 \`src/catalog.ts\`; CI rejects duplicate IDs, missing source paths, invalid
 namespaces, or broken popup mappings.
 
-**Coverage:** ${PUBLIC_CATALOG.length} directly registered upstream components,
-${UPSTREAM_VARIANTS.length} documented popup variants, and one graphical chips
-container. Internal composition templates, color primitives, authoring examples,
-and legacy implementation helpers are not user-facing components and are not
-registered.
+**Coverage:** ${UPSTREAM_CATALOG.length} documented upstream sources map to
+${PUBLIC_CATALOG.length} public components and one graphical chips container.
+Equivalent aliases and size/layout alternatives are exposed as variants instead
+of duplicate picker entries. ${UPSTREAM_VARIANTS.length} popup templates and
+${SOURCE_ONLY_HELPERS.length} implementation helpers are inventoried but are not
+public registrations.
 
-| Upstream ID | Kind | Addition type | Family | UI variants | Upstream source |
+| Public ID | Category | Addition type | Family | UI variants | Covered upstream sources |
 |---|---|---|---|---|---|
 ${rows.join("\n")}
 
-## Documented popup mapping
+## Unified component mapping
 
-Minimalist popups are represented as graphical variants of their corresponding
-card rather than standalone Lovelace card types.
+| Public component | Upstream source → variant |
+|---|---|
+${COMPONENT_GROUPS.map((group) => `| \`${group.canonical}\` | ${Object.entries(group.sources).map(([source, variant]) => `\`${source}\` → \`${variant}\``).join("<br>")} |`).join("\n")}
 
-| Upstream popup | Addition component | UI setting | Upstream source |
+Old custom-element tags for non-canonical sources remain registered as hidden
+compatibility aliases. They normalize to the public component and variant but do
+not appear in the card picker or example dashboard.
+
+## Excluded popup templates
+
+Popup templates depend on Browser Mod behavior and are not public card variants.
+Standard Home Assistant actions are used instead.
+
+| Upstream popup | Addition component | Public behavior | Upstream source |
 |---|---|---|---|
 ${popupRows.join("\n")}
 
-## Source-only and naming exceptions
+## Source-only helpers
 
-- \`chip_short_date_with_day\` and \`chip_weather_date\` exist in upstream source
-  without matching usage pages; both are registered.
+${SOURCE_ONLY_HELPERS.map((helper) => `- \`${helper.id}\`: ${helper.reason} [source](${upstreamUrl}/${helper.sourcePath})`).join("\n")}
+
+## Naming exception
+
 - \`custom_card_speedtest_shogun160\` is the upstream source folder associated
-  with the differently named custom template documentation; it is registered
+  with the differently named custom template documentation; it remains covered
   under its source identity.
-- \`card_generic_swap\`, \`card_binary_sensor_alert\`, and
-  \`card_weather_ulm\` retain distinct registrations for migration clarity and
-  are also exposed as variants on their canonical component.
 `;
 
 const target = new URL("../docs/CATALOG.md", import.meta.url);

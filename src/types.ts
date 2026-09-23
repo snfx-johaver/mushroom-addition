@@ -102,11 +102,14 @@ export interface CatalogItem {
   upstreamId: string;
   sourcePath: string;
   kind: "card" | "chip" | "container";
+  category?: "default-card" | "default-chip" | "custom-card" | "custom-chip" | "container";
   family: string;
   tag: string;
   name: string;
   description: string;
   variants?: string[];
+  variantLabels?: Record<string, string>;
+  sourceIds?: string[];
   preferredDomains?: string[];
 }
 
@@ -119,6 +122,8 @@ export interface ParityVariable {
 export interface ParityEntry {
   upstreamId: string;
   sourcePath: string;
+  publicId: string;
+  variant?: string;
   rendererId: string;
   layoutProfile: string;
   primitives: readonly string[];

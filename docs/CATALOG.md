@@ -6,144 +6,152 @@ to Mushroom Cards Addition registrations. It is generated from
 `src/catalog.ts`; CI rejects duplicate IDs, missing source paths, invalid
 namespaces, or broken popup mappings.
 
-**Coverage:** 107 directly registered upstream components,
-7 documented popup variants, and one graphical chips
-container. Internal composition templates, color primitives, authoring examples,
-and legacy implementation helpers are not user-facing components and are not
-registered.
+**Coverage:** 105 documented upstream sources map to
+95 public components and one graphical chips container.
+Equivalent aliases and size/layout alternatives are exposed as variants instead
+of duplicate picker entries. 7 popup templates and
+3 implementation helpers are inventoried but are not
+public registrations.
 
-| Upstream ID | Kind | Addition type | Family | UI variants | Upstream source |
+| Public ID | Category | Addition type | Family | UI variants | Covered upstream sources |
 |---|---|---|---|---|---|
-| `card_battery` | card | `custom:mushroom-addition-card-battery` | battery | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_battery.yaml) |
-| `card_binary_sensor` | card | `custom:mushroom-addition-card-binary-sensor` | sensor | default, alert | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_binary_sensor.yaml) |
-| `card_binary_sensor_alert` | card | `custom:mushroom-addition-card-binary-sensor-alert` | security | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_binary_sensor_alert.yaml) |
-| `card_cover` | card | `custom:mushroom-addition-card-cover` | cover | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_cover.yaml) |
-| `card_fan` | card | `custom:mushroom-addition-card-fan` | control | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_fan.yaml) |
-| `card_generic` | card | `custom:mushroom-addition-card-generic` | sensor | default, swapped | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_generic.yaml) |
-| `card_generic_swap` | card | `custom:mushroom-addition-card-generic-swap` | sensor | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_generic_swap.yaml) |
-| `card_graph` | card | `custom:mushroom-addition-card-graph` | energy | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/2-line_cards/card_graph.yaml) |
-| `card_input_boolean` | card | `custom:mushroom-addition-card-input-boolean` | control | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_input_boolean.yaml) |
-| `card_light` | card | `custom:mushroom-addition-card-light` | light | default, slider, compact | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_light.yaml) |
-| `card_media_player` | card | `custom:mushroom-addition-card-media-player` | media | default, controls, artwork | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_media_player.yaml) |
-| `card_navigate` | card | `custom:mushroom-addition-card-navigate` | navigation | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_navigate.yaml) |
-| `card_person` | card | `custom:mushroom-addition-card-person` | presence | default, small | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_person.yaml) |
-| `card_power_outlet` | card | `custom:mushroom-addition-card-power-outlet` | control | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_power_outlet.yaml) |
-| `card_room` | card | `custom:mushroom-addition-card-room` | presence | default, with-sensors | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_room.yaml) |
-| `card_scenes` | card | `custom:mushroom-addition-card-scenes` | scene | list, welcome | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_scenes_welcome.yaml) |
-| `card_script` | card | `custom:mushroom-addition-card-script` | control | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_script.yaml) |
-| `card_thermostat` | card | `custom:mushroom-addition-card-thermostat` | climate | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_thermostat.yaml) |
-| `card_title` | card | `custom:mushroom-addition-card-title` | text | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/title/card_title.yaml) |
-| `card_vacuum` | card | `custom:mushroom-addition-card-vacuum` | vacuum | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_vacuum.yaml) |
-| `card_vertical_button` | card | `custom:mushroom-addition-card-vertical-button` | sensor | default, custom-state | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/vertical_buttons/vertical_buttons.yaml) |
-| `card_weather` | card | `custom:mushroom-addition-card-weather` | weather | compact, forecast, no-external-resource | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_weather.yaml) |
-| `card_weather_ulm` | card | `custom:mushroom-addition-card-weather-ulm` | weather | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_weather_ulm.yaml) |
-| `card_welcome_scenes` | card | `custom:mushroom-addition-card-welcome-scenes` | scene | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_welcome_scenes.yaml) |
-| `chip_alarm` | chip | `custom:mushroom-addition-chip-alarm` | security | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_alarm.yaml) |
-| `chip_back` | chip | `custom:mushroom-addition-chip-back` | navigation | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_back.yaml) |
-| `chip_icon_double_state` | chip | `custom:mushroom-addition-chip-icon-double-state` | entity | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_icon_double_state.yaml) |
-| `chip_icon_label` | chip | `custom:mushroom-addition-chip-icon-label` | entity | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_icon_label.yaml) |
-| `chip_icon_only` | chip | `custom:mushroom-addition-chip-icon-only` | entity | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_icon_only.yaml) |
-| `chip_icon_state` | chip | `custom:mushroom-addition-chip-icon-state` | entity | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_icon_state.yaml) |
-| `chip_mdi_icon_only` | chip | `custom:mushroom-addition-chip-mdi-icon-only` | entity | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_mdi_icon_only.yaml) |
-| `chip_mdi_icon_state` | chip | `custom:mushroom-addition-chip-mdi-icon-state` | entity | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_mdi_icon_state.yaml) |
-| `chip_navigate` | chip | `custom:mushroom-addition-chip-navigate` | navigation | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_navigate.yaml) |
-| `chip_power_consumption` | chip | `custom:mushroom-addition-chip-power-consumption` | energy | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_power_consumption.yaml) |
-| `chip_presence_detection` | chip | `custom:mushroom-addition-chip-presence-detection` | presence | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_presence_detection.yaml) |
-| `chip_short_date_with_day` | chip | `custom:mushroom-addition-chip-short-date-with-day` | text | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_short_date_with_day.yaml) |
-| `chip_temperature` | chip | `custom:mushroom-addition-chip-temperature` | climate | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_temperature.yaml) |
-| `chip_weather_date` | chip | `custom:mushroom-addition-chip-weather-date` | weather | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_weather_date.yaml) |
-| `custom_card_afvalophaling` | card | `custom:mushroom-addition-custom-card-afvalophaling` | sensor | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_afvalophaling) |
-| `custom_card_alarm_time` | card | `custom:mushroom-addition-custom-card-alarm-time` | alarm-time | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_alarm_time) |
-| `custom_card_apexcharts` | card | `custom:mushroom-addition-custom-card-apexcharts` | energy | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_apexcharts) |
-| `custom_card_bar_card` | card | `custom:mushroom-addition-custom-card-bar-card` | energy | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_bar_card) |
-| `custom_card_camera` | card | `custom:mushroom-addition-custom-card-camera` | camera | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_camera) |
-| `custom_card_chromecast` | card | `custom:mushroom-addition-custom-card-chromecast` | media | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_chromecast) |
-| `custom_card_damix48_power_details` | card | `custom:mushroom-addition-custom-card-damix48-power-details` | energy | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_damix48_power_details) |
-| `custom_card_device_tracker` | card | `custom:mushroom-addition-custom-card-device-tracker` | presence | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_device_tracker) |
-| `custom_card_drealine_roomview` | card | `custom:mushroom-addition-custom-card-drealine-roomview` | presence | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_drealine_roomview) |
-| `custom_card_eraycetinay_elapsed_time` | card | `custom:mushroom-addition-custom-card-eraycetinay-elapsed-time` | sensor | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_eraycetinay_elapsed_time) |
-| `custom_card_eraycetinay_lock` | card | `custom:mushroom-addition-custom-card-eraycetinay-lock` | security | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_eraycetinay_lock) |
-| `custom_card_esh_room` | card | `custom:mushroom-addition-custom-card-esh-room` | presence | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_esh_room) |
-| `custom_card_esh_welcome` | card | `custom:mushroom-addition-custom-card-esh-welcome` | presence | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_esh_welcome) |
-| `custom_card_haven_washer` | card | `custom:mushroom-addition-custom-card-haven-washer` | control | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_haven_washer) |
-| `custom_card_heat_pump` | card | `custom:mushroom-addition-custom-card-heat-pump` | climate | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_heat_pump) |
-| `custom_card_homeassistant_updates` | card | `custom:mushroom-addition-custom-card-homeassistant-updates` | text | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_homeassistant_updates) |
-| `custom_card_httpedo13_sun` | card | `custom:mushroom-addition-custom-card-httpedo13-sun` | weather | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_httpedo13_sun) |
-| `custom_card_httpedo13_thermostat` | card | `custom:mushroom-addition-custom-card-httpedo13-thermostat` | climate | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_httpedo13_thermostat) |
-| `custom_card_iAbadia_battery_chip` | card | `custom:mushroom-addition-custom-card-iabadia-battery-chip` | battery | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_iAbadia_battery_chip) |
-| `custom_card_imswel_medias` | card | `custom:mushroom-addition-custom-card-imswel-medias` | media | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_imswel_medias) |
-| `custom_card_imswel_person` | card | `custom:mushroom-addition-custom-card-imswel-person` | presence | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_imswel_person) |
-| `custom_card_input_datetime` | card | `custom:mushroom-addition-custom-card-input-datetime` | text | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_input_datetime) |
-| `custom_card_input_number` | card | `custom:mushroom-addition-custom-card-input-number` | sensor | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_input_number) |
-| `custom_card_irmajavi_entities` | card | `custom:mushroom-addition-custom-card-irmajavi-entities` | sensor | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_irmajavi_entities) |
-| `custom_card_irmajavi_speedtest` | card | `custom:mushroom-addition-custom-card-irmajavi-speedtest` | energy | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_irmajavi_speedtest) |
-| `custom_card_irmajavi_weather` | card | `custom:mushroom-addition-custom-card-irmajavi-weather` | weather | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_irmajavi_weather) |
-| `custom_card_light_colorpick` | card | `custom:mushroom-addition-custom-card-light-colorpick` | light | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_light_colorpick) |
-| `custom_card_media_player_sonos` | card | `custom:mushroom-addition-custom-card-media-player-sonos` | media | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_media_player_sonos) |
-| `custom_card_more_power_outlet` | card | `custom:mushroom-addition-custom-card-more-power-outlet` | control | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_more_power_outlet) |
-| `custom_card_mpse_gauge` | card | `custom:mushroom-addition-custom-card-mpse-gauge` | energy | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_mpse_gauge) |
-| `custom_card_mpse_printer` | card | `custom:mushroom-addition-custom-card-mpse-printer` | sensor | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_mpse_printer) |
-| `custom_card_mpse_thermostat` | card | `custom:mushroom-addition-custom-card-mpse-thermostat` | climate | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_mpse_thermostat) |
-| `custom_card_mpse_wifisignal` | card | `custom:mushroom-addition-custom-card-mpse-wifisignal` | energy | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_mpse_wifisignal) |
-| `custom_card_nas` | card | `custom:mushroom-addition-custom-card-nas` | sensor | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_nas) |
-| `custom_card_neekster_update` | card | `custom:mushroom-addition-custom-card-neekster-update` | text | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_neekster_update) |
-| `custom_card_nik_clock` | card | `custom:mushroom-addition-custom-card-nik-clock` | security | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_nik_clock) |
-| `custom_card_nik_door` | card | `custom:mushroom-addition-custom-card-nik-door` | door | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_nik_door) |
-| `custom_card_nik_nas` | card | `custom:mushroom-addition-custom-card-nik-nas` | sensor | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_nik_nas) |
-| `custom_card_nik_tablet` | card | `custom:mushroom-addition-custom-card-nik-tablet` | sensor | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_nik_tablet) |
-| `custom_card_paddy_dwd_pollen` | card | `custom:mushroom-addition-custom-card-paddy-dwd-pollen` | weather | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_paddy_dwd_pollen) |
-| `custom_card_paddy_waste_collection` | card | `custom:mushroom-addition-custom-card-paddy-waste-collection` | sensor | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_paddy_waste_collection) |
-| `custom_card_paddy_welcome` | card | `custom:mushroom-addition-custom-card-paddy-welcome` | presence | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_paddy_welcome) |
-| `custom_card_person_chip` | card | `custom:mushroom-addition-custom-card-person-chip` | presence | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_person_chip) |
-| `custom_card_person_info` | card | `custom:mushroom-addition-custom-card-person-info` | presence | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_person_info) |
-| `custom_card_person_info_small` | card | `custom:mushroom-addition-custom-card-person-info-small` | presence | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_person_info_small) |
-| `custom_card_playstation` | card | `custom:mushroom-addition-custom-card-playstation` | media | ps5, xbox | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_playstation) |
-| `custom_card_qubino` | card | `custom:mushroom-addition-custom-card-qubino` | control | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_qubino) |
-| `custom_card_ristou_person` | card | `custom:mushroom-addition-custom-card-ristou-person` | presence | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_ristou_person) |
-| `custom_card_saxel_fan` | card | `custom:mushroom-addition-custom-card-saxel-fan` | control | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_saxel_fan) |
-| `custom_card_scenes` | card | `custom:mushroom-addition-custom-card-scenes` | scene | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_scenes) |
-| `custom_card_schumijo_car` | card | `custom:mushroom-addition-custom-card-schumijo-car` | sensor | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_schumijo_car) |
-| `custom_card_schumijo_flower` | card | `custom:mushroom-addition-custom-card-schumijo-flower` | sensor | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_schumijo_flower) |
-| `custom_card_senoro_win` | card | `custom:mushroom-addition-custom-card-senoro-win` | sensor | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_senoro_win) |
-| `custom_card_sisimomo_printer` | card | `custom:mushroom-addition-custom-card-sisimomo-printer` | sensor | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_sisimomo_printer) |
-| `custom_card_speedtest_shogun160` | card | `custom:mushroom-addition-custom-card-speedtest-shogun160` | energy | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_speedtest_shogun160) |
-| `custom_card_tpx01_aircondition` | card | `custom:mushroom-addition-custom-card-tpx01-aircondition` | climate | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_tpx01_aircondition) |
-| `custom_card_vncntdev_device_tracer` | card | `custom:mushroom-addition-custom-card-vncntdev-device-tracer` | presence | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_vncntdev_device_tracer) |
-| `custom_card_water_heater` | card | `custom:mushroom-addition-custom-card-water-heater` | control | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_water_heater) |
-| `custom_card_wilbiev_subtitle` | card | `custom:mushroom-addition-custom-card-wilbiev-subtitle` | text | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_wilbiev_subtitle) |
-| `custom_card_wilbiev_title` | card | `custom:mushroom-addition-custom-card-wilbiev-title` | text | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_wilbiev_title) |
-| `custom_card_wsly_pollen` | card | `custom:mushroom-addition-custom-card-wsly-pollen` | weather | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_wsly_pollen) |
-| `custom_card_yagrasdemonde_lights_count` | card | `custom:mushroom-addition-custom-card-yagrasdemonde-lights-count` | light | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_card_yagrasdemonde_lights_count) |
-| `custom_chip_group_counter` | chip | `custom:mushroom-addition-custom-chip-group-counter` | sensor | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_chip_group_counter) |
-| `custom_chip_moon` | chip | `custom:mushroom-addition-custom-chip-moon` | weather | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_chip_moon) |
-| `custom_chip_myenedis` | chip | `custom:mushroom-addition-custom-chip-myenedis` | energy | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_chip_myenedis) |
-| `custom_chip_simple_temp` | chip | `custom:mushroom-addition-custom-chip-simple-temp` | climate | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_chip_simple_temp) |
-| `custom_chip_tesla_temperature` | chip | `custom:mushroom-addition-custom-chip-tesla-temperature` | climate | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_chip_tesla_temperature) |
-| `custom_chip_update` | chip | `custom:mushroom-addition-custom-chip-update` | text | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_chip_update) |
-| `custom_chip_vlape_garage` | chip | `custom:mushroom-addition-custom-chip-vlape-garage` | cover | default | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_chip_vlape_garage) |
+| `card_battery` | default-card | `custom:mushroom-addition-card-battery` | battery | default | `card_battery` |
+| `card_binary_sensor` | default-card | `custom:mushroom-addition-card-binary-sensor` | sensor | default, alert | `card_binary_sensor`<br>`card_binary_sensor_alert` |
+| `card_cover` | default-card | `custom:mushroom-addition-card-cover` | cover | default | `card_cover` |
+| `card_fan` | default-card | `custom:mushroom-addition-card-fan` | control | default | `card_fan` |
+| `card_generic` | default-card | `custom:mushroom-addition-card-generic` | sensor | default, swapped | `card_generic`<br>`card_generic_swap` |
+| `card_graph` | default-card | `custom:mushroom-addition-card-graph` | energy | default | `card_graph` |
+| `card_input_boolean` | default-card | `custom:mushroom-addition-card-input-boolean` | control | default | `card_input_boolean` |
+| `card_light` | default-card | `custom:mushroom-addition-card-light` | light | default, slider, compact | `card_light` |
+| `card_media_player` | default-card | `custom:mushroom-addition-card-media-player` | media | default, controls, artwork | `card_media_player` |
+| `card_navigate` | default-card | `custom:mushroom-addition-card-navigate` | navigation | default | `card_navigate` |
+| `card_person` | default-card | `custom:mushroom-addition-card-person` | presence | default, small | `card_person` |
+| `card_power_outlet` | default-card | `custom:mushroom-addition-card-power-outlet` | control | default | `card_power_outlet` |
+| `card_room` | default-card | `custom:mushroom-addition-card-room` | presence | default, with-sensors | `card_room` |
+| `card_scenes` | default-card | `custom:mushroom-addition-card-scenes` | scene | welcome-pills, scene-grid | `card_scenes`<br>`custom_card_scenes` |
+| `card_script` | default-card | `custom:mushroom-addition-card-script` | control | default | `card_script` |
+| `card_thermostat` | default-card | `custom:mushroom-addition-card-thermostat` | climate | default | `card_thermostat` |
+| `card_title` | default-card | `custom:mushroom-addition-card-title` | text | title-and-subtitle, divider-title, divider-subtitle | `card_title`<br>`custom_card_wilbiev_title`<br>`custom_card_wilbiev_subtitle` |
+| `card_vacuum` | default-card | `custom:mushroom-addition-card-vacuum` | vacuum | default | `card_vacuum` |
+| `card_vertical_button` | default-card | `custom:mushroom-addition-card-vertical-button` | sensor | default, custom-state | `card_vertical_button` |
+| `card_weather` | default-card | `custom:mushroom-addition-card-weather` | weather | detailed, native | `card_weather`<br>`card_weather_ulm` |
+| `card_welcome_scenes` | default-card | `custom:mushroom-addition-card-welcome-scenes` | scene | default | `card_welcome_scenes` |
+| `chip_alarm` | default-chip | `custom:mushroom-addition-chip-alarm` | security | default | `chip_alarm` |
+| `chip_icon_double_state` | default-chip | `custom:mushroom-addition-chip-icon-double-state` | entity | default | `chip_icon_double_state` |
+| `chip_icon_label` | default-chip | `custom:mushroom-addition-chip-icon-label` | entity | default | `chip_icon_label` |
+| `chip_icon_only` | default-chip | `custom:mushroom-addition-chip-icon-only` | entity | entity-icon, mdi-icon | `chip_icon_only`<br>`chip_mdi_icon_only` |
+| `chip_icon_state` | default-chip | `custom:mushroom-addition-chip-icon-state` | entity | entity-icon, mdi-icon | `chip_icon_state`<br>`chip_mdi_icon_state` |
+| `chip_navigate` | default-chip | `custom:mushroom-addition-chip-navigate` | navigation | path, back | `chip_navigate`<br>`chip_back` |
+| `chip_power_consumption` | default-chip | `custom:mushroom-addition-chip-power-consumption` | energy | default | `chip_power_consumption` |
+| `chip_presence_detection` | default-chip | `custom:mushroom-addition-chip-presence-detection` | presence | default | `chip_presence_detection` |
+| `chip_temperature` | default-chip | `custom:mushroom-addition-chip-temperature` | climate | default | `chip_temperature` |
+| `custom_card_afvalophaling` | custom-card | `custom:mushroom-addition-custom-card-afvalophaling` | sensor | default | `custom_card_afvalophaling` |
+| `custom_card_alarm_time` | custom-card | `custom:mushroom-addition-custom-card-alarm-time` | alarm-time | default | `custom_card_alarm_time` |
+| `custom_card_apexcharts` | custom-card | `custom:mushroom-addition-custom-card-apexcharts` | energy | default | `custom_card_apexcharts` |
+| `custom_card_bar_card` | custom-card | `custom:mushroom-addition-custom-card-bar-card` | energy | default | `custom_card_bar_card` |
+| `custom_card_camera` | custom-card | `custom:mushroom-addition-custom-card-camera` | camera | default | `custom_card_camera` |
+| `custom_card_chromecast` | custom-card | `custom:mushroom-addition-custom-card-chromecast` | media | default | `custom_card_chromecast` |
+| `custom_card_damix48_power_details` | custom-card | `custom:mushroom-addition-custom-card-damix48-power-details` | energy | default | `custom_card_damix48_power_details` |
+| `custom_card_device_tracker` | custom-card | `custom:mushroom-addition-custom-card-device-tracker` | presence | default | `custom_card_device_tracker` |
+| `custom_card_drealine_roomview` | custom-card | `custom:mushroom-addition-custom-card-drealine-roomview` | presence | default | `custom_card_drealine_roomview` |
+| `custom_card_eraycetinay_elapsed_time` | custom-card | `custom:mushroom-addition-custom-card-eraycetinay-elapsed-time` | sensor | default | `custom_card_eraycetinay_elapsed_time` |
+| `custom_card_eraycetinay_lock` | custom-card | `custom:mushroom-addition-custom-card-eraycetinay-lock` | security | default | `custom_card_eraycetinay_lock` |
+| `custom_card_esh_room` | custom-card | `custom:mushroom-addition-custom-card-esh-room` | presence | default | `custom_card_esh_room` |
+| `custom_card_esh_welcome` | custom-card | `custom:mushroom-addition-custom-card-esh-welcome` | presence | default | `custom_card_esh_welcome` |
+| `custom_card_haven_washer` | custom-card | `custom:mushroom-addition-custom-card-haven-washer` | control | default | `custom_card_haven_washer` |
+| `custom_card_heat_pump` | custom-card | `custom:mushroom-addition-custom-card-heat-pump` | climate | default | `custom_card_heat_pump` |
+| `custom_card_homeassistant_updates` | custom-card | `custom:mushroom-addition-custom-card-homeassistant-updates` | text | default | `custom_card_homeassistant_updates` |
+| `custom_card_httpedo13_sun` | custom-card | `custom:mushroom-addition-custom-card-httpedo13-sun` | weather | default | `custom_card_httpedo13_sun` |
+| `custom_card_httpedo13_thermostat` | custom-card | `custom:mushroom-addition-custom-card-httpedo13-thermostat` | climate | default | `custom_card_httpedo13_thermostat` |
+| `custom_card_iAbadia_battery_chip` | custom-card | `custom:mushroom-addition-custom-card-iabadia-battery-chip` | battery | default | `custom_card_iAbadia_battery_chip` |
+| `custom_card_imswel_medias` | custom-card | `custom:mushroom-addition-custom-card-imswel-medias` | media | default | `custom_card_imswel_medias` |
+| `custom_card_imswel_person` | custom-card | `custom:mushroom-addition-custom-card-imswel-person` | presence | default | `custom_card_imswel_person` |
+| `custom_card_input_datetime` | custom-card | `custom:mushroom-addition-custom-card-input-datetime` | text | default | `custom_card_input_datetime` |
+| `custom_card_input_number` | custom-card | `custom:mushroom-addition-custom-card-input-number` | sensor | default | `custom_card_input_number` |
+| `custom_card_irmajavi_entities` | custom-card | `custom:mushroom-addition-custom-card-irmajavi-entities` | sensor | default | `custom_card_irmajavi_entities` |
+| `custom_card_irmajavi_speedtest` | custom-card | `custom:mushroom-addition-custom-card-irmajavi-speedtest` | energy | default | `custom_card_irmajavi_speedtest` |
+| `custom_card_irmajavi_weather` | custom-card | `custom:mushroom-addition-custom-card-irmajavi-weather` | weather | default | `custom_card_irmajavi_weather` |
+| `custom_card_light_colorpick` | custom-card | `custom:mushroom-addition-custom-card-light-colorpick` | light | default | `custom_card_light_colorpick` |
+| `custom_card_media_player_sonos` | custom-card | `custom:mushroom-addition-custom-card-media-player-sonos` | media | default | `custom_card_media_player_sonos` |
+| `custom_card_more_power_outlet` | custom-card | `custom:mushroom-addition-custom-card-more-power-outlet` | control | default | `custom_card_more_power_outlet` |
+| `custom_card_mpse_gauge` | custom-card | `custom:mushroom-addition-custom-card-mpse-gauge` | energy | default | `custom_card_mpse_gauge` |
+| `custom_card_mpse_printer` | custom-card | `custom:mushroom-addition-custom-card-mpse-printer` | sensor | default | `custom_card_mpse_printer` |
+| `custom_card_mpse_thermostat` | custom-card | `custom:mushroom-addition-custom-card-mpse-thermostat` | climate | default | `custom_card_mpse_thermostat` |
+| `custom_card_mpse_wifisignal` | custom-card | `custom:mushroom-addition-custom-card-mpse-wifisignal` | energy | default | `custom_card_mpse_wifisignal` |
+| `custom_card_nas` | custom-card | `custom:mushroom-addition-custom-card-nas` | sensor | default | `custom_card_nas` |
+| `custom_card_neekster_update` | custom-card | `custom:mushroom-addition-custom-card-neekster-update` | text | default | `custom_card_neekster_update` |
+| `custom_card_nik_clock` | custom-card | `custom:mushroom-addition-custom-card-nik-clock` | security | default | `custom_card_nik_clock` |
+| `custom_card_nik_door` | custom-card | `custom:mushroom-addition-custom-card-nik-door` | door | default | `custom_card_nik_door` |
+| `custom_card_nik_nas` | custom-card | `custom:mushroom-addition-custom-card-nik-nas` | sensor | default | `custom_card_nik_nas` |
+| `custom_card_nik_tablet` | custom-card | `custom:mushroom-addition-custom-card-nik-tablet` | sensor | default | `custom_card_nik_tablet` |
+| `custom_card_paddy_dwd_pollen` | custom-card | `custom:mushroom-addition-custom-card-paddy-dwd-pollen` | weather | default | `custom_card_paddy_dwd_pollen` |
+| `custom_card_paddy_waste_collection` | custom-card | `custom:mushroom-addition-custom-card-paddy-waste-collection` | sensor | default | `custom_card_paddy_waste_collection` |
+| `custom_card_paddy_welcome` | custom-card | `custom:mushroom-addition-custom-card-paddy-welcome` | presence | default | `custom_card_paddy_welcome` |
+| `custom_card_person_chip` | custom-card | `custom:mushroom-addition-custom-card-person-chip` | presence | default | `custom_card_person_chip` |
+| `custom_card_person_info` | custom-card | `custom:mushroom-addition-custom-card-person-info` | presence | full, small | `custom_card_person_info`<br>`custom_card_person_info_small` |
+| `custom_card_playstation` | custom-card | `custom:mushroom-addition-custom-card-playstation` | media | ps5, xbox | `custom_card_playstation` |
+| `custom_card_qubino` | custom-card | `custom:mushroom-addition-custom-card-qubino` | control | default | `custom_card_qubino` |
+| `custom_card_ristou_person` | custom-card | `custom:mushroom-addition-custom-card-ristou-person` | presence | default | `custom_card_ristou_person` |
+| `custom_card_saxel_fan` | custom-card | `custom:mushroom-addition-custom-card-saxel-fan` | control | default | `custom_card_saxel_fan` |
+| `custom_card_schumijo_car` | custom-card | `custom:mushroom-addition-custom-card-schumijo-car` | sensor | default | `custom_card_schumijo_car` |
+| `custom_card_schumijo_flower` | custom-card | `custom:mushroom-addition-custom-card-schumijo-flower` | sensor | default | `custom_card_schumijo_flower` |
+| `custom_card_senoro_win` | custom-card | `custom:mushroom-addition-custom-card-senoro-win` | sensor | default | `custom_card_senoro_win` |
+| `custom_card_sisimomo_printer` | custom-card | `custom:mushroom-addition-custom-card-sisimomo-printer` | sensor | default | `custom_card_sisimomo_printer` |
+| `custom_card_speedtest_shogun160` | custom-card | `custom:mushroom-addition-custom-card-speedtest-shogun160` | energy | default | `custom_card_speedtest_shogun160` |
+| `custom_card_tpx01_aircondition` | custom-card | `custom:mushroom-addition-custom-card-tpx01-aircondition` | climate | default | `custom_card_tpx01_aircondition` |
+| `custom_card_vncntdev_device_tracer` | custom-card | `custom:mushroom-addition-custom-card-vncntdev-device-tracer` | presence | default | `custom_card_vncntdev_device_tracer` |
+| `custom_card_water_heater` | custom-card | `custom:mushroom-addition-custom-card-water-heater` | control | default | `custom_card_water_heater` |
+| `custom_card_wsly_pollen` | custom-card | `custom:mushroom-addition-custom-card-wsly-pollen` | weather | default | `custom_card_wsly_pollen` |
+| `custom_card_yagrasdemonde_lights_count` | custom-card | `custom:mushroom-addition-custom-card-yagrasdemonde-lights-count` | light | default | `custom_card_yagrasdemonde_lights_count` |
+| `custom_chip_group_counter` | custom-chip | `custom:mushroom-addition-custom-chip-group-counter` | sensor | default | `custom_chip_group_counter` |
+| `custom_chip_moon` | custom-chip | `custom:mushroom-addition-custom-chip-moon` | weather | default | `custom_chip_moon` |
+| `custom_chip_myenedis` | custom-chip | `custom:mushroom-addition-custom-chip-myenedis` | energy | default | `custom_chip_myenedis` |
+| `custom_chip_simple_temp` | custom-chip | `custom:mushroom-addition-custom-chip-simple-temp` | climate | default | `custom_chip_simple_temp` |
+| `custom_chip_tesla_temperature` | custom-chip | `custom:mushroom-addition-custom-chip-tesla-temperature` | climate | default | `custom_chip_tesla_temperature` |
+| `custom_chip_update` | custom-chip | `custom:mushroom-addition-custom-chip-update` | text | default | `custom_chip_update` |
+| `custom_chip_vlape_garage` | custom-chip | `custom:mushroom-addition-custom-chip-vlape-garage` | cover | default | `custom_chip_vlape_garage` |
 
-## Documented popup mapping
+## Unified component mapping
 
-Minimalist popups are represented as graphical variants of their corresponding
-card rather than standalone Lovelace card types.
+| Public component | Upstream source → variant |
+|---|---|
+| `card_binary_sensor` | `card_binary_sensor` → `default`<br>`card_binary_sensor_alert` → `alert` |
+| `card_generic` | `card_generic` → `default`<br>`card_generic_swap` → `swapped` |
+| `card_weather` | `card_weather` → `detailed`<br>`card_weather_ulm` → `native` |
+| `card_scenes` | `card_scenes` → `welcome-pills`<br>`custom_card_scenes` → `scene-grid` |
+| `card_title` | `card_title` → `title-and-subtitle`<br>`custom_card_wilbiev_title` → `divider-title`<br>`custom_card_wilbiev_subtitle` → `divider-subtitle` |
+| `chip_icon_only` | `chip_icon_only` → `entity-icon`<br>`chip_mdi_icon_only` → `mdi-icon` |
+| `chip_icon_state` | `chip_icon_state` → `entity-icon`<br>`chip_mdi_icon_state` → `mdi-icon` |
+| `chip_navigate` | `chip_navigate` → `path`<br>`chip_back` → `back` |
+| `custom_card_person_info` | `custom_card_person_info` → `full`<br>`custom_card_person_info_small` → `small` |
 
-| Upstream popup | Addition component | UI setting | Upstream source |
+Old custom-element tags for non-canonical sources remain registered as hidden
+compatibility aliases. They normalize to the public component and variant but do
+not appear in the card picker or example dashboard.
+
+## Excluded popup templates
+
+Popup templates depend on Browser Mod behavior and are not public card variants.
+Standard Home Assistant actions are used instead.
+
+| Upstream popup | Addition component | Public behavior | Upstream source |
 |---|---|---|---|
-| `popup_cover` | `card_cover` | `variant: popup` | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_cover.yaml) |
-| `popup_light` | `card_light` | `variant: popup` | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_light.yaml) |
-| `popup_media_player` | `card_media_player` | `variant: popup` | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_media_player.yaml) |
-| `popup_power_outlet` | `card_power_outlet` | `variant: popup` | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_power_outlet.yaml) |
-| `popup_thermostat` | `card_thermostat` | `variant: popup` | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_thermostat.yaml) |
-| `popup_vacuum` | `card_vacuum` | `variant: popup` | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_vacuum.yaml) |
-| `popup_weather` | `card_weather` | `variant: popup` | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_weather.yaml) |
+| `popup_cover` | `card_cover` | Not exposed; use standard card actions | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_cover.yaml) |
+| `popup_light` | `card_light` | Not exposed; use standard card actions | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_light.yaml) |
+| `popup_media_player` | `card_media_player` | Not exposed; use standard card actions | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_media_player.yaml) |
+| `popup_power_outlet` | `card_power_outlet` | Not exposed; use standard card actions | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_power_outlet.yaml) |
+| `popup_thermostat` | `card_thermostat` | Not exposed; use standard card actions | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_thermostat.yaml) |
+| `popup_vacuum` | `card_vacuum` | Not exposed; use standard card actions | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_vacuum.yaml) |
+| `popup_weather` | `card_weather` | Not exposed; use standard card actions | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_weather.yaml) |
 
-## Source-only and naming exceptions
+## Source-only helpers
 
-- `chip_short_date_with_day` and `chip_weather_date` exist in upstream source
-  without matching usage pages; both are registered.
+- `chip_short_date_with_day`: Internal date chip used by composed welcome cards; it has no public usage page. [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_short_date_with_day.yaml)
+- `chip_weather_date`: Internal weather/date chip used by composed welcome cards; it has no public usage page. [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_weather_date.yaml)
+- `custom_template_shogun160_battery_info`: Reusable implementation template, not a standalone user-facing custom card. [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_template_shogun160_battery_info)
+
+## Naming exception
+
 - `custom_card_speedtest_shogun160` is the upstream source folder associated
-  with the differently named custom template documentation; it is registered
+  with the differently named custom template documentation; it remains covered
   under its source identity.
-- `card_generic_swap`, `card_binary_sensor_alert`, and
-  `card_weather_ulm` retain distinct registrations for migration clarity and
-  are also exposed as variants on their canonical component.

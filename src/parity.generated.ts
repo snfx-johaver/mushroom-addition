@@ -5,6 +5,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_battery",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_battery.yaml",
+    "publicId": "card_battery",
     "rendererId": "card_battery",
     "layoutProfile": "card:button-card+popup",
     "primitives": [
@@ -122,6 +123,8 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_binary_sensor",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_binary_sensor.yaml",
+    "publicId": "card_binary_sensor",
+    "variant": "default",
     "rendererId": "card_binary_sensor",
     "layoutProfile": "card:button-card+popup",
     "primitives": [
@@ -220,7 +223,9 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_binary_sensor_alert",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_binary_sensor_alert.yaml",
-    "rendererId": "card_binary_sensor_alert",
+    "publicId": "card_binary_sensor",
+    "variant": "alert",
+    "rendererId": "card_binary_sensor",
     "layoutProfile": "card:button-card+popup",
     "primitives": [
       "button-card",
@@ -323,6 +328,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_cover",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_cover.yaml",
+    "publicId": "card_cover",
     "rendererId": "card_cover",
     "layoutProfile": "card:button-card+popup+control",
     "primitives": [
@@ -474,6 +480,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_fan",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_fan.yaml",
+    "publicId": "card_fan",
     "rendererId": "card_fan",
     "layoutProfile": "card:button-card+control",
     "primitives": [
@@ -619,6 +626,8 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_generic",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_generic.yaml",
+    "publicId": "card_generic",
+    "variant": "default",
     "rendererId": "card_generic",
     "layoutProfile": "card:button-card+popup",
     "primitives": [
@@ -712,7 +721,9 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_generic_swap",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_generic_swap.yaml",
-    "rendererId": "card_generic_swap",
+    "publicId": "card_generic",
+    "variant": "swapped",
+    "rendererId": "card_generic",
     "layoutProfile": "card:button-card+popup",
     "primitives": [
       "button-card",
@@ -805,6 +816,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_graph",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/2-line_cards/card_graph.yaml",
+    "publicId": "card_graph",
     "rendererId": "card_graph",
     "layoutProfile": "card:button-card+chart",
     "primitives": [
@@ -912,6 +924,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_input_boolean",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_input_boolean.yaml",
+    "publicId": "card_input_boolean",
     "rendererId": "card_input_boolean",
     "layoutProfile": "card:button-card+popup",
     "primitives": [
@@ -1005,6 +1018,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_light",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_light.yaml",
+    "publicId": "card_light",
     "rendererId": "card_light",
     "layoutProfile": "card:button-card+popup+control",
     "primitives": [
@@ -1155,6 +1169,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_media_player",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_media_player.yaml",
+    "publicId": "card_media_player",
     "rendererId": "card_media_player",
     "layoutProfile": "card:button-card+popup+control",
     "primitives": [
@@ -1299,6 +1314,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_navigate",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_navigate.yaml",
+    "publicId": "card_navigate",
     "rendererId": "card_navigate",
     "layoutProfile": "card:native-card",
     "primitives": [
@@ -1348,6 +1364,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_person",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_person.yaml",
+    "publicId": "card_person",
     "rendererId": "card_person",
     "layoutProfile": "card:native-card",
     "primitives": [
@@ -1413,6 +1430,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_power_outlet",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_power_outlet.yaml",
+    "publicId": "card_power_outlet",
     "rendererId": "card_power_outlet",
     "layoutProfile": "card:button-card+popup",
     "primitives": [
@@ -1511,6 +1529,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_room",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_room.yaml",
+    "publicId": "card_room",
     "rendererId": "card_room",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -1565,6 +1584,8 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_scenes",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_scenes_welcome.yaml",
+    "publicId": "card_scenes",
+    "variant": "welcome-pills",
     "rendererId": "card_scenes",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -1599,6 +1620,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_script",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_script.yaml",
+    "publicId": "card_script",
     "rendererId": "card_script",
     "layoutProfile": "card:native-card",
     "primitives": [
@@ -1636,6 +1658,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_thermostat",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_thermostat.yaml",
+    "publicId": "card_thermostat",
     "rendererId": "card_thermostat",
     "layoutProfile": "card:button-card+popup",
     "primitives": [
@@ -1752,6 +1775,8 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_title",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/title/card_title.yaml",
+    "publicId": "card_title",
+    "variant": "title-and-subtitle",
     "rendererId": "card_title",
     "layoutProfile": "card:native-card",
     "primitives": [
@@ -1780,6 +1805,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_vacuum",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_vacuum.yaml",
+    "publicId": "card_vacuum",
     "rendererId": "card_vacuum",
     "layoutProfile": "card:button-card+popup",
     "primitives": [
@@ -1887,6 +1913,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_vertical_button",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/vertical_buttons/vertical_buttons.yaml",
+    "publicId": "card_vertical_button",
     "rendererId": "card_vertical_button",
     "layoutProfile": "card:native-card",
     "primitives": [
@@ -1914,6 +1941,8 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_weather",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_weather.yaml",
+    "publicId": "card_weather",
+    "variant": "detailed",
     "rendererId": "card_weather",
     "layoutProfile": "card:native-card",
     "primitives": [
@@ -1976,7 +2005,9 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_weather_ulm",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_weather_ulm.yaml",
-    "rendererId": "card_weather_ulm",
+    "publicId": "card_weather",
+    "variant": "native",
+    "rendererId": "card_weather",
     "layoutProfile": "card:button-card+popup",
     "primitives": [
       "button-card",
@@ -2031,6 +2062,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "card_welcome_scenes",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_welcome_scenes.yaml",
+    "publicId": "card_welcome_scenes",
     "rendererId": "card_welcome_scenes",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -2125,6 +2157,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "chip_alarm",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_alarm.yaml",
+    "publicId": "chip_alarm",
     "rendererId": "chip_alarm",
     "layoutProfile": "chip:chip",
     "primitives": [
@@ -2161,7 +2194,9 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "chip_back",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_back.yaml",
-    "rendererId": "chip_back",
+    "publicId": "chip_navigate",
+    "variant": "back",
+    "rendererId": "chip_navigate",
     "layoutProfile": "chip:chip",
     "primitives": [
       "chip"
@@ -2192,6 +2227,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "chip_icon_double_state",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_icon_double_state.yaml",
+    "publicId": "chip_icon_double_state",
     "rendererId": "chip_icon_double_state",
     "layoutProfile": "chip:chip",
     "primitives": [
@@ -2238,6 +2274,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "chip_icon_label",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_icon_label.yaml",
+    "publicId": "chip_icon_label",
     "rendererId": "chip_icon_label",
     "layoutProfile": "chip:chip",
     "primitives": [
@@ -2264,6 +2301,8 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "chip_icon_only",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_icon_only.yaml",
+    "publicId": "chip_icon_only",
+    "variant": "entity-icon",
     "rendererId": "chip_icon_only",
     "layoutProfile": "chip:chip",
     "primitives": [
@@ -2293,6 +2332,8 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "chip_icon_state",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_icon_state.yaml",
+    "publicId": "chip_icon_state",
+    "variant": "entity-icon",
     "rendererId": "chip_icon_state",
     "layoutProfile": "chip:chip",
     "primitives": [
@@ -2327,7 +2368,9 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "chip_mdi_icon_only",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_mdi_icon_only.yaml",
-    "rendererId": "chip_mdi_icon_only",
+    "publicId": "chip_icon_only",
+    "variant": "mdi-icon",
+    "rendererId": "chip_icon_only",
     "layoutProfile": "chip:chip",
     "primitives": [
       "chip"
@@ -2370,7 +2413,9 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "chip_mdi_icon_state",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_mdi_icon_state.yaml",
-    "rendererId": "chip_mdi_icon_state",
+    "publicId": "chip_icon_state",
+    "variant": "mdi-icon",
+    "rendererId": "chip_icon_state",
     "layoutProfile": "chip:chip",
     "primitives": [
       "chip"
@@ -2419,6 +2464,8 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "chip_navigate",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_navigate.yaml",
+    "publicId": "chip_navigate",
+    "variant": "path",
     "rendererId": "chip_navigate",
     "layoutProfile": "chip:chip",
     "primitives": [
@@ -2468,6 +2515,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "chip_power_consumption",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_power_consumption.yaml",
+    "publicId": "chip_power_consumption",
     "rendererId": "chip_power_consumption",
     "layoutProfile": "chip:chip",
     "primitives": [
@@ -2512,6 +2560,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "chip_presence_detection",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_presence_detection.yaml",
+    "publicId": "chip_presence_detection",
     "rendererId": "chip_presence_detection",
     "layoutProfile": "chip:chip",
     "primitives": [
@@ -2544,37 +2593,9 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "da8b1d5f4fe612352ac768d98ee75376e5e042d01fb253c1e384ab52fb3aa73e"
   },
   {
-    "upstreamId": "chip_short_date_with_day",
-    "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_short_date_with_day.yaml",
-    "rendererId": "chip_short_date_with_day",
-    "layoutProfile": "chip:chip",
-    "primitives": [
-      "chip"
-    ],
-    "customFields": [],
-    "stateDriven": false,
-    "animated": false,
-    "actions": [],
-    "variables": [
-      {
-        "name": "ulm_language",
-        "defaultValue": "\"[[[\\n  return hass[\\\"language\\\"];\\n]]]\\n\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_templates",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "ca323c8913467ea5dd2105bd99ba15d49b4066b5fe763fe2db847fb6855d3df9"
-  },
-  {
     "upstreamId": "chip_temperature",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_temperature.yaml",
+    "publicId": "chip_temperature",
     "rendererId": "chip_temperature",
     "layoutProfile": "chip:popup",
     "primitives": [
@@ -2622,46 +2643,9 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "d3a077ea5d497b5e18252f364dc04a832f06bbc3cc5e267cc06a060aea62cc5e"
   },
   {
-    "upstreamId": "chip_weather_date",
-    "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_weather_date.yaml",
-    "rendererId": "chip_weather_date",
-    "layoutProfile": "chip:chip",
-    "primitives": [
-      "chip"
-    ],
-    "customFields": [],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_language",
-        "defaultValue": "\"[[[\\n  return hass[\\\"language\\\"];\\n]]]\\n\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_templates",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_weather",
-        "defaultValue": "<documented/inherited>",
-        "selector": "entity"
-      }
-    ],
-    "dependencies": [],
-    "backendRequirements": [
-      "weather entity/forecast API"
-    ],
-    "deviations": [],
-    "sourceDigest": "c3ca83bb1b6906e00b6d6e805cbc75814a7fc55d0e90b2021c710a950aa428cd"
-  },
-  {
     "upstreamId": "custom_card_afvalophaling",
     "sourcePath": "custom_cards/custom_card_afvalophaling",
+    "publicId": "custom_card_afvalophaling",
     "rendererId": "custom_card_afvalophaling",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -2744,6 +2728,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_alarm_time",
     "sourcePath": "custom_cards/custom_card_alarm_time",
+    "publicId": "custom_card_alarm_time",
     "rendererId": "custom_card_alarm_time",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -2814,6 +2799,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_apexcharts",
     "sourcePath": "custom_cards/custom_card_apexcharts",
+    "publicId": "custom_card_apexcharts",
     "rendererId": "custom_card_apexcharts",
     "layoutProfile": "card:button-card+chart",
     "primitives": [
@@ -2860,6 +2846,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_bar_card",
     "sourcePath": "custom_cards/custom_card_bar_card",
+    "publicId": "custom_card_bar_card",
     "rendererId": "custom_card_bar_card",
     "layoutProfile": "card:button-card+chart",
     "primitives": [
@@ -2944,6 +2931,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_camera",
     "sourcePath": "custom_cards/custom_card_camera",
+    "publicId": "custom_card_camera",
     "rendererId": "custom_card_camera",
     "layoutProfile": "card:button-card+image",
     "primitives": [
@@ -2994,6 +2982,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_chromecast",
     "sourcePath": "custom_cards/custom_card_chromecast",
+    "publicId": "custom_card_chromecast",
     "rendererId": "custom_card_chromecast",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -3045,6 +3034,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_damix48_power_details",
     "sourcePath": "custom_cards/custom_card_damix48_power_details",
+    "publicId": "custom_card_damix48_power_details",
     "rendererId": "custom_card_damix48_power_details",
     "layoutProfile": "card:button-card+chart",
     "primitives": [
@@ -3136,6 +3126,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_device_tracker",
     "sourcePath": "custom_cards/custom_card_device_tracker",
+    "publicId": "custom_card_device_tracker",
     "rendererId": "custom_card_device_tracker",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -3198,6 +3189,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_drealine_roomview",
     "sourcePath": "custom_cards/custom_card_drealine_roomview",
+    "publicId": "custom_card_drealine_roomview",
     "rendererId": "custom_card_drealine_roomview",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -3252,6 +3244,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_eraycetinay_elapsed_time",
     "sourcePath": "custom_cards/custom_card_eraycetinay_elapsed_time",
+    "publicId": "custom_card_eraycetinay_elapsed_time",
     "rendererId": "custom_card_eraycetinay_elapsed_time",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -3318,6 +3311,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_eraycetinay_lock",
     "sourcePath": "custom_cards/custom_card_eraycetinay_lock",
+    "publicId": "custom_card_eraycetinay_lock",
     "rendererId": "custom_card_eraycetinay_lock",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -3438,6 +3432,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_esh_room",
     "sourcePath": "custom_cards/custom_card_esh_room",
+    "publicId": "custom_card_esh_room",
     "rendererId": "custom_card_esh_room",
     "layoutProfile": "card:button-card+popup",
     "primitives": [
@@ -3571,6 +3566,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_esh_welcome",
     "sourcePath": "custom_cards/custom_card_esh_welcome",
+    "publicId": "custom_card_esh_welcome",
     "rendererId": "custom_card_esh_welcome",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -3643,6 +3639,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_haven_washer",
     "sourcePath": "custom_cards/custom_card_haven_washer",
+    "publicId": "custom_card_haven_washer",
     "rendererId": "custom_card_haven_washer",
     "layoutProfile": "card:button-card+chart",
     "primitives": [
@@ -3777,6 +3774,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_heat_pump",
     "sourcePath": "custom_cards/custom_card_heat_pump",
+    "publicId": "custom_card_heat_pump",
     "rendererId": "custom_card_heat_pump",
     "layoutProfile": "card:button-card+horizontal-stack",
     "primitives": [
@@ -3818,6 +3816,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_homeassistant_updates",
     "sourcePath": "custom_cards/custom_card_homeassistant_updates",
+    "publicId": "custom_card_homeassistant_updates",
     "rendererId": "custom_card_homeassistant_updates",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -3893,6 +3892,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_httpedo13_sun",
     "sourcePath": "custom_cards/custom_card_httpedo13_sun",
+    "publicId": "custom_card_httpedo13_sun",
     "rendererId": "custom_card_httpedo13_sun",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -3918,6 +3918,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_httpedo13_thermostat",
     "sourcePath": "custom_cards/custom_card_httpedo13_thermostat",
+    "publicId": "custom_card_httpedo13_thermostat",
     "rendererId": "custom_card_httpedo13_thermostat",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -3957,6 +3958,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_iAbadia_battery_chip",
     "sourcePath": "custom_cards/custom_card_iAbadia_battery_chip",
+    "publicId": "custom_card_iAbadia_battery_chip",
     "rendererId": "custom_card_iAbadia_battery_chip",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -4002,6 +4004,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_imswel_medias",
     "sourcePath": "custom_cards/custom_card_imswel_medias",
+    "publicId": "custom_card_imswel_medias",
     "rendererId": "custom_card_imswel_medias",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -4079,6 +4082,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_imswel_person",
     "sourcePath": "custom_cards/custom_card_imswel_person",
+    "publicId": "custom_card_imswel_person",
     "rendererId": "custom_card_imswel_person",
     "layoutProfile": "card:button-card+vertical-stack+horizontal-stack+entities+popup",
     "primitives": [
@@ -4168,6 +4172,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_input_datetime",
     "sourcePath": "custom_cards/custom_card_input_datetime",
+    "publicId": "custom_card_input_datetime",
     "rendererId": "custom_card_input_datetime",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -4212,6 +4217,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_input_number",
     "sourcePath": "custom_cards/custom_card_input_number",
+    "publicId": "custom_card_input_number",
     "rendererId": "custom_card_input_number",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -4260,6 +4266,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_irmajavi_entities",
     "sourcePath": "custom_cards/custom_card_irmajavi_entities",
+    "publicId": "custom_card_irmajavi_entities",
     "rendererId": "custom_card_irmajavi_entities",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -4357,6 +4364,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_irmajavi_speedtest",
     "sourcePath": "custom_cards/custom_card_irmajavi_speedtest",
+    "publicId": "custom_card_irmajavi_speedtest",
     "rendererId": "custom_card_irmajavi_speedtest",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -4436,6 +4444,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_irmajavi_weather",
     "sourcePath": "custom_cards/custom_card_irmajavi_weather",
+    "publicId": "custom_card_irmajavi_weather",
     "rendererId": "custom_card_irmajavi_weather",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -4520,6 +4529,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_light_colorpick",
     "sourcePath": "custom_cards/custom_card_light_colorpick",
+    "publicId": "custom_card_light_colorpick",
     "rendererId": "custom_card_light_colorpick",
     "layoutProfile": "card:button-card+control",
     "primitives": [
@@ -4576,6 +4586,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_media_player_sonos",
     "sourcePath": "custom_cards/custom_card_media_player_sonos",
+    "publicId": "custom_card_media_player_sonos",
     "rendererId": "custom_card_media_player_sonos",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -4628,6 +4639,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_more_power_outlet",
     "sourcePath": "custom_cards/custom_card_more_power_outlet",
+    "publicId": "custom_card_more_power_outlet",
     "rendererId": "custom_card_more_power_outlet",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -4663,6 +4675,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_mpse_gauge",
     "sourcePath": "custom_cards/custom_card_mpse_gauge",
+    "publicId": "custom_card_mpse_gauge",
     "rendererId": "custom_card_mpse_gauge",
     "layoutProfile": "card:button-card+chart",
     "primitives": [
@@ -4701,6 +4714,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_mpse_printer",
     "sourcePath": "custom_cards/custom_card_mpse_printer",
+    "publicId": "custom_card_mpse_printer",
     "rendererId": "custom_card_mpse_printer",
     "layoutProfile": "card:button-card+chart",
     "primitives": [
@@ -4759,6 +4773,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_mpse_thermostat",
     "sourcePath": "custom_cards/custom_card_mpse_thermostat",
+    "publicId": "custom_card_mpse_thermostat",
     "rendererId": "custom_card_mpse_thermostat",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -4800,6 +4815,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_mpse_wifisignal",
     "sourcePath": "custom_cards/custom_card_mpse_wifisignal",
+    "publicId": "custom_card_mpse_wifisignal",
     "rendererId": "custom_card_mpse_wifisignal",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -4820,6 +4836,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_nas",
     "sourcePath": "custom_cards/custom_card_nas",
+    "publicId": "custom_card_nas",
     "rendererId": "custom_card_nas",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -4865,6 +4882,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_neekster_update",
     "sourcePath": "custom_cards/custom_card_neekster_update",
+    "publicId": "custom_card_neekster_update",
     "rendererId": "custom_card_neekster_update",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -4924,6 +4942,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_nik_clock",
     "sourcePath": "custom_cards/custom_card_nik_clock",
+    "publicId": "custom_card_nik_clock",
     "rendererId": "custom_card_nik_clock",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -4964,6 +4983,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_nik_door",
     "sourcePath": "custom_cards/custom_card_nik_door",
+    "publicId": "custom_card_nik_door",
     "rendererId": "custom_card_nik_door",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -5012,6 +5032,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_nik_nas",
     "sourcePath": "custom_cards/custom_card_nik_nas",
+    "publicId": "custom_card_nik_nas",
     "rendererId": "custom_card_nik_nas",
     "layoutProfile": "card:button-card+horizontal-stack+chart",
     "primitives": [
@@ -5081,6 +5102,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_nik_tablet",
     "sourcePath": "custom_cards/custom_card_nik_tablet",
+    "publicId": "custom_card_nik_tablet",
     "rendererId": "custom_card_nik_tablet",
     "layoutProfile": "card:button-card+chart",
     "primitives": [
@@ -5235,6 +5257,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_paddy_dwd_pollen",
     "sourcePath": "custom_cards/custom_card_paddy_dwd_pollen",
+    "publicId": "custom_card_paddy_dwd_pollen",
     "rendererId": "custom_card_paddy_dwd_pollen",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -5323,6 +5346,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_paddy_waste_collection",
     "sourcePath": "custom_cards/custom_card_paddy_waste_collection",
+    "publicId": "custom_card_paddy_waste_collection",
     "rendererId": "custom_card_paddy_waste_collection",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -5361,6 +5385,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_paddy_welcome",
     "sourcePath": "custom_cards/custom_card_paddy_welcome",
+    "publicId": "custom_card_paddy_welcome",
     "rendererId": "custom_card_paddy_welcome",
     "layoutProfile": "card:button-card+horizontal-stack",
     "primitives": [
@@ -5436,6 +5461,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_person_chip",
     "sourcePath": "custom_cards/custom_card_person_chip",
+    "publicId": "custom_card_person_chip",
     "rendererId": "custom_card_person_chip",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -5473,6 +5499,8 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_person_info",
     "sourcePath": "custom_cards/custom_card_person_info",
+    "publicId": "custom_card_person_info",
+    "variant": "full",
     "rendererId": "custom_card_person_info",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -5575,7 +5603,9 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_person_info_small",
     "sourcePath": "custom_cards/custom_card_person_info_small",
-    "rendererId": "custom_card_person_info_small",
+    "publicId": "custom_card_person_info",
+    "variant": "small",
+    "rendererId": "custom_card_person_info",
     "layoutProfile": "card:button-card",
     "primitives": [
       "button-card"
@@ -5694,6 +5724,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_playstation",
     "sourcePath": "custom_cards/custom_card_playstation",
+    "publicId": "custom_card_playstation",
     "rendererId": "custom_card_playstation",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -5730,6 +5761,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_qubino",
     "sourcePath": "custom_cards/custom_card_qubino",
+    "publicId": "custom_card_qubino",
     "rendererId": "custom_card_qubino",
     "layoutProfile": "card:native-card",
     "primitives": [
@@ -5750,6 +5782,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_ristou_person",
     "sourcePath": "custom_cards/custom_card_ristou_person",
+    "publicId": "custom_card_ristou_person",
     "rendererId": "custom_card_ristou_person",
     "layoutProfile": "card:button-card+image",
     "primitives": [
@@ -5877,6 +5910,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_saxel_fan",
     "sourcePath": "custom_cards/custom_card_saxel_fan",
+    "publicId": "custom_card_saxel_fan",
     "rendererId": "custom_card_saxel_fan",
     "layoutProfile": "card:button-card+control",
     "primitives": [
@@ -5968,7 +6002,9 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_scenes",
     "sourcePath": "custom_cards/custom_card_scenes",
-    "rendererId": "custom_card_scenes",
+    "publicId": "card_scenes",
+    "variant": "scene-grid",
+    "rendererId": "card_scenes",
     "layoutProfile": "card:button-card",
     "primitives": [
       "button-card"
@@ -5998,6 +6034,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_schumijo_car",
     "sourcePath": "custom_cards/custom_card_schumijo_car",
+    "publicId": "custom_card_schumijo_car",
     "rendererId": "custom_card_schumijo_car",
     "layoutProfile": "card:button-card+popup",
     "primitives": [
@@ -6081,6 +6118,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_schumijo_flower",
     "sourcePath": "custom_cards/custom_card_schumijo_flower",
+    "publicId": "custom_card_schumijo_flower",
     "rendererId": "custom_card_schumijo_flower",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -6146,6 +6184,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_senoro_win",
     "sourcePath": "custom_cards/custom_card_senoro_win",
+    "publicId": "custom_card_senoro_win",
     "rendererId": "custom_card_senoro_win",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -6264,6 +6303,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_sisimomo_printer",
     "sourcePath": "custom_cards/custom_card_sisimomo_printer",
+    "publicId": "custom_card_sisimomo_printer",
     "rendererId": "custom_card_sisimomo_printer",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -6320,6 +6360,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_speedtest_shogun160",
     "sourcePath": "custom_cards/custom_card_speedtest_shogun160",
+    "publicId": "custom_card_speedtest_shogun160",
     "rendererId": "custom_card_speedtest_shogun160",
     "layoutProfile": "card:button-card+chart",
     "primitives": [
@@ -6407,6 +6448,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_tpx01_aircondition",
     "sourcePath": "custom_cards/custom_card_tpx01_aircondition",
+    "publicId": "custom_card_tpx01_aircondition",
     "rendererId": "custom_card_tpx01_aircondition",
     "layoutProfile": "card:button-card+horizontal-stack",
     "primitives": [
@@ -6447,6 +6489,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_vncntdev_device_tracer",
     "sourcePath": "custom_cards/custom_card_vncntdev_device_tracer",
+    "publicId": "custom_card_vncntdev_device_tracer",
     "rendererId": "custom_card_vncntdev_device_tracer",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -6473,6 +6516,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_water_heater",
     "sourcePath": "custom_cards/custom_card_water_heater",
+    "publicId": "custom_card_water_heater",
     "rendererId": "custom_card_water_heater",
     "layoutProfile": "card:native-card",
     "primitives": [
@@ -6497,7 +6541,9 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_wilbiev_subtitle",
     "sourcePath": "custom_cards/custom_card_wilbiev_subtitle",
-    "rendererId": "custom_card_wilbiev_subtitle",
+    "publicId": "card_title",
+    "variant": "divider-subtitle",
+    "rendererId": "card_title",
     "layoutProfile": "card:button-card+entities",
     "primitives": [
       "button-card",
@@ -6536,7 +6582,9 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_wilbiev_title",
     "sourcePath": "custom_cards/custom_card_wilbiev_title",
-    "rendererId": "custom_card_wilbiev_title",
+    "publicId": "card_title",
+    "variant": "divider-title",
+    "rendererId": "card_title",
     "layoutProfile": "card:button-card+entities",
     "primitives": [
       "button-card",
@@ -6578,6 +6626,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_wsly_pollen",
     "sourcePath": "custom_cards/custom_card_wsly_pollen",
+    "publicId": "custom_card_wsly_pollen",
     "rendererId": "custom_card_wsly_pollen",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -6605,6 +6654,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_card_yagrasdemonde_lights_count",
     "sourcePath": "custom_cards/custom_card_yagrasdemonde_lights_count",
+    "publicId": "custom_card_yagrasdemonde_lights_count",
     "rendererId": "custom_card_yagrasdemonde_lights_count",
     "layoutProfile": "card:button-card",
     "primitives": [
@@ -6700,6 +6750,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_chip_group_counter",
     "sourcePath": "custom_cards/custom_chip_group_counter",
+    "publicId": "custom_chip_group_counter",
     "rendererId": "custom_chip_group_counter",
     "layoutProfile": "chip:button-card",
     "primitives": [
@@ -6766,6 +6817,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_chip_moon",
     "sourcePath": "custom_cards/custom_chip_moon",
+    "publicId": "custom_chip_moon",
     "rendererId": "custom_chip_moon",
     "layoutProfile": "chip:button-card",
     "primitives": [
@@ -6788,6 +6840,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_chip_myenedis",
     "sourcePath": "custom_cards/custom_chip_myenedis",
+    "publicId": "custom_chip_myenedis",
     "rendererId": "custom_chip_myenedis",
     "layoutProfile": "chip:button-card",
     "primitives": [
@@ -6824,6 +6877,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_chip_simple_temp",
     "sourcePath": "custom_cards/custom_chip_simple_temp",
+    "publicId": "custom_chip_simple_temp",
     "rendererId": "custom_chip_simple_temp",
     "layoutProfile": "chip:button-card",
     "primitives": [
@@ -6852,6 +6906,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_chip_tesla_temperature",
     "sourcePath": "custom_cards/custom_chip_tesla_temperature",
+    "publicId": "custom_chip_tesla_temperature",
     "rendererId": "custom_chip_tesla_temperature",
     "layoutProfile": "chip:button-card+popup",
     "primitives": [
@@ -6889,6 +6944,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_chip_update",
     "sourcePath": "custom_cards/custom_chip_update",
+    "publicId": "custom_chip_update",
     "rendererId": "custom_chip_update",
     "layoutProfile": "chip:button-card",
     "primitives": [
@@ -6932,6 +6988,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
     "upstreamId": "custom_chip_vlape_garage",
     "sourcePath": "custom_cards/custom_chip_vlape_garage",
+    "publicId": "custom_chip_vlape_garage",
     "rendererId": "custom_chip_vlape_garage",
     "layoutProfile": "chip:button-card",
     "primitives": [

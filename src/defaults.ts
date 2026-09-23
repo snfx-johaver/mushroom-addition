@@ -53,10 +53,12 @@ const parsedDefault = (value: string): unknown => {
 
 export const upstreamDefaultsFor = (item: CatalogItem): Record<string, unknown> => {
   const defaults: Record<string, unknown> = {};
-  for (const variable of PARITY_BY_ID.get(item.upstreamId)?.variables ?? []) {
-    if (!supportedUpstreamOption(item, variable.name)) continue;
-    const value = parsedDefault(variable.defaultValue);
-    if (value !== undefined) defaults[variable.name] = value;
+  for (const sourceId of item.sourceIds ?? [item.upstreamId]) {
+    for (const variable of PARITY_BY_ID.get(sourceId)?.variables ?? []) {
+      if (!supportedUpstreamOption(item, variable.name)) continue;
+      const value = parsedDefault(variable.defaultValue);
+      if (value !== undefined) defaults[variable.name] = value;
+    }
   }
   return defaults;
 };

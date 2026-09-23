@@ -10,7 +10,7 @@ const baseCards = [
 const baseChips = [
   "alarm", "back", "icon_double_state", "icon_label", "icon_only", "icon_state",
   "mdi_icon_only", "mdi_icon_state", "navigate", "power_consumption",
-  "presence_detection", "short_date_with_day", "temperature", "weather_date",
+  "presence_detection", "temperature",
 ] as const;
 
 const customCards = [
@@ -151,6 +151,9 @@ const makeItem = (
     upstreamId,
     sourcePath,
     kind,
+    category: upstreamId.startsWith("custom_")
+      ? (kind === "card" ? "custom-card" : "custom-chip")
+      : (kind === "card" ? "default-card" : "default-chip"),
     family,
     tag,
     name: consoleCard
@@ -164,16 +167,25 @@ const makeItem = (
   };
 };
 
-export const CATALOG: readonly CatalogItem[] = [
+export const SOURCE_ONLY_HELPERS = [
   {
-    upstreamId: "chips_container",
-    sourcePath: "Mushroom Cards Addition composition component",
-    kind: "container",
-    family: "chips",
-    tag: "mushroom-addition-chips-card",
-    name: "Addition Chips Card",
-    description: "Compose Addition chips in a responsive row.",
+    id: "chip_short_date_with_day",
+    reason: "Internal date chip used by composed welcome cards; it has no public usage page.",
+    sourcePath: "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_short_date_with_day.yaml",
   },
+  {
+    id: "chip_weather_date",
+    reason: "Internal weather/date chip used by composed welcome cards; it has no public usage page.",
+    sourcePath: "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/chips/chip_weather_date.yaml",
+  },
+  {
+    id: "custom_template_shogun160_battery_info",
+    reason: "Reusable implementation template, not a standalone user-facing custom card.",
+    sourcePath: "custom_cards/custom_template_shogun160_battery_info",
+  },
+] as const;
+
+export const UPSTREAM_CATALOG: readonly CatalogItem[] = [
   ...baseCards.map((id) => {
     const sourcePaths: Partial<Record<typeof id, string>> = {
       graph: "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/2-line_cards/card_graph.yaml",
@@ -204,7 +216,157 @@ export const CATALOG: readonly CatalogItem[] = [
   )),
 ] as const;
 
-export const PUBLIC_CATALOG = CATALOG.filter((item) => item.kind !== "container");
+interface ComponentGroup {
+  canonical: string;
+  sources: Record<string, string>;
+  variants: string[];
+  variantLabels: Record<string, string>;
+  name?: string;
+  description?: string;
+}
+
+export const COMPONENT_GROUPS: readonly ComponentGroup[] = [
+  {
+    canonical: "card_binary_sensor",
+    sources: { card_binary_sensor: "default", card_binary_sensor_alert: "alert" },
+    variants: ["default", "alert"],
+    variantLabels: { default: "Standard sensor", alert: "Alert sensor" },
+  },
+  {
+    canonical: "card_generic",
+    sources: { card_generic: "default", card_generic_swap: "swapped" },
+    variants: ["default", "swapped"],
+    variantLabels: { default: "Icon first", swapped: "Icon last" },
+  },
+  {
+    canonical: "card_weather",
+    sources: { card_weather: "detailed", card_weather_ulm: "native" },
+    variants: ["detailed", "native"],
+    variantLabels: { detailed: "Detailed forecast", native: "Compact native weather" },
+  },
+  {
+    canonical: "card_scenes",
+    sources: { card_scenes: "welcome-pills", custom_card_scenes: "scene-grid" },
+    variants: ["welcome-pills", "scene-grid"],
+    variantLabels: { "welcome-pills": "Welcome scene pills", "scene-grid": "Scene button grid" },
+    name: "Scenes Card",
+  },
+  {
+    canonical: "card_title",
+    sources: {
+      card_title: "title-and-subtitle",
+      custom_card_wilbiev_title: "divider-title",
+      custom_card_wilbiev_subtitle: "divider-subtitle",
+    },
+    variants: ["title-and-subtitle", "divider-title", "divider-subtitle"],
+    variantLabels: {
+      "title-and-subtitle": "Title and subtitle",
+      "divider-title": "Divider title",
+      "divider-subtitle": "Divider subtitle",
+    },
+    name: "Heading Card",
+  },
+  {
+    canonical: "chip_icon_only",
+    sources: { chip_icon_only: "entity-icon", chip_mdi_icon_only: "mdi-icon" },
+    variants: ["entity-icon", "mdi-icon"],
+    variantLabels: { "entity-icon": "Entity icon", "mdi-icon": "Selected icon" },
+  },
+  {
+    canonical: "chip_icon_state",
+    sources: { chip_icon_state: "entity-icon", chip_mdi_icon_state: "mdi-icon" },
+    variants: ["entity-icon", "mdi-icon"],
+    variantLabels: { "entity-icon": "Entity icon and state", "mdi-icon": "Selected icon and state" },
+  },
+  {
+    canonical: "chip_navigate",
+    sources: { chip_navigate: "path", chip_back: "back" },
+    variants: ["path", "back"],
+    variantLabels: { path: "Navigate to path", back: "Back button" },
+    name: "Navigation Chip",
+  },
+  {
+    canonical: "custom_card_person_info",
+    sources: {
+      custom_card_person_info: "full",
+      custom_card_person_info_small: "small",
+    },
+    variants: ["full", "small"],
+    variantLabels: { full: "Full person details", small: "Compact person details" },
+    name: "Person Info Card",
+  },
+] as const;
+
+const sourceToGroup = new Map<string, ComponentGroup>();
+for (const group of COMPONENT_GROUPS) {
+  for (const sourceId of Object.keys(group.sources)) sourceToGroup.set(sourceId, group);
+}
+
+const canonicalIds = new Set(COMPONENT_GROUPS.map((group) => group.canonical));
+export const PUBLIC_CATALOG: readonly CatalogItem[] = UPSTREAM_CATALOG
+  .filter((item) => !sourceToGroup.has(item.upstreamId) || canonicalIds.has(item.upstreamId))
+  .map((item) => {
+    const group = sourceToGroup.get(item.upstreamId);
+    if (!group) return { ...item, sourceIds: [item.upstreamId] };
+    return {
+      ...item,
+      name: group.name ?? item.name,
+      description: group.description ?? item.description,
+      variants: group.variants,
+      variantLabels: group.variantLabels,
+      sourceIds: Object.keys(group.sources),
+    };
+  });
+
+export interface CatalogAlias {
+  upstreamId: string;
+  tag: string;
+  targetId: string;
+  targetTag: string;
+  variant: string;
+}
+
+export const LEGACY_ALIASES: readonly CatalogAlias[] = UPSTREAM_CATALOG
+  .filter((item) => sourceToGroup.has(item.upstreamId) && !canonicalIds.has(item.upstreamId))
+  .map((item) => {
+    const group = sourceToGroup.get(item.upstreamId)!;
+    const target = PUBLIC_CATALOG.find((candidate) => candidate.upstreamId === group.canonical)!;
+    return {
+      upstreamId: item.upstreamId,
+      tag: item.tag,
+      targetId: target.upstreamId,
+      targetTag: target.tag,
+      variant: group.sources[item.upstreamId],
+    };
+  });
+
+export const CATALOG: readonly CatalogItem[] = [
+  {
+    upstreamId: "chips_container",
+    sourcePath: "Mushroom Cards Addition composition component",
+    kind: "container",
+    category: "container",
+    family: "chips",
+    tag: "mushroom-addition-chips-card",
+    name: "Addition Chips Card",
+    description: "Compose Addition chips in a responsive row.",
+    sourceIds: [],
+  },
+  ...PUBLIC_CATALOG,
+];
 
 export const getCatalogItem = (tag: string): CatalogItem | undefined =>
-  CATALOG.find((item) => item.tag === tag);
+  CATALOG.find((item) => item.tag === tag) ??
+  (() => {
+    const alias = LEGACY_ALIASES.find((item) => item.tag === tag);
+    return alias ? PUBLIC_CATALOG.find((item) => item.tag === alias.targetTag) : undefined;
+  })();
+
+export const publicItemForSource = (upstreamId: string): CatalogItem | undefined => {
+  const group = sourceToGroup.get(upstreamId);
+  const publicId = group?.canonical ?? upstreamId;
+  return PUBLIC_CATALOG.find((item) => item.upstreamId === publicId);
+};
+
+export const variantForSource = (upstreamId: string): string | undefined =>
+  sourceToGroup.get(upstreamId)?.sources[upstreamId];

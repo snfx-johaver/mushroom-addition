@@ -1,6 +1,7 @@
-import type { CatalogItem } from "./types";
+import type { AdditionConfig, CatalogItem } from "./types";
 import { PARITY_BY_ID } from "./parity.generated";
 import { supportedUpstreamOption } from "./supported-options";
+import { variantForSource } from "./catalog";
 
 export interface EditorField {
   name: string;
@@ -83,10 +84,14 @@ const presentation = (): EditorField[] => [
 
 const common = (item: CatalogItem): EditorField[] => [
   entity(item.preferredDomains),
+  ...(item.variants?.length ? [select("variant", item.variants.map((variant) => ({
+    value: variant,
+    label: item.variantLabels?.[variant] ?? variant.replaceAll("-", " ").replace(/\b\w/g, (letter) => letter.toUpperCase()),
+  })))] : []),
   ...presentation(),
 ];
 
-const schemas: Record<string, (item: CatalogItem) => EditorField[]> = {
+const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => EditorField[]> = {
   weather: (item) => [
     ...common(item),
     entity(["sensor"], "temperature_entity"),
@@ -96,7 +101,15 @@ const schemas: Record<string, (item: CatalogItem) => EditorField[]> = {
   climate: (item) => [...common(item), entity(["sensor"], "humidity_entity"), toggle("show_controls")],
   light: (item) => [...common(item)],
   scene: (item) => [...common(item), { name: "entities", selector: { entity: { domain: ["scene"], multiple: true } } }],
-  presence: (item) => [...common(item), entity(["sensor"], "battery_entity"), entity(["sensor"], "eta_entity"), entity(["sensor"], "address_entity"), toggle("use_entity_picture")],
+  presence: (item, config) => [
+    ...common(item),
+    ...(config?.variant === "small" ? [] : [
+      entity(["sensor"], "battery_entity"),
+      entity(["sensor"], "eta_entity"),
+      entity(["sensor"], "address_entity"),
+    ]),
+    toggle("use_entity_picture"),
+  ],
   battery: (item) => [...common(item)],
   energy: (item) => [...common(item), entity(["sensor"], "min_entity"), entity(["sensor"], "max_entity"), toggle("show_graph")],
   sensor: (item) => [...common(item), toggle("show_graph")],
@@ -104,7 +117,14 @@ const schemas: Record<string, (item: CatalogItem) => EditorField[]> = {
   cover: (item) => [...common(item), toggle("show_controls")],
   vacuum: (item) => [...common(item), toggle("show_controls")],
   security: (item) => [...common(item)],
-  navigation: () => [...presentation(), text("navigation_path")],
+  navigation: (item) => [
+    ...(item.variants?.length ? [select("variant", item.variants.map((variant) => ({
+      value: variant,
+      label: item.variantLabels?.[variant] ?? variant,
+    })))] : []),
+    ...presentation(),
+    text("navigation_path"),
+  ],
   chips: () => [],
   text: () => [...presentation(), text("secondary")],
   camera: (item) => [...common(item)],
@@ -118,17 +138,26 @@ const schemas: Record<string, (item: CatalogItem) => EditorField[]> = {
   entity: (item) => [...common(item), text("secondary")],
 };
 
-export const editorSchemaFor = (item: CatalogItem): EditorField[] => [
-  ...(schemas[item.family] ?? schemas.entity)(item),
+export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): EditorField[] => [
+  ...(schemas[item.family] ?? schemas.entity)(item, config),
   action("tap_action"),
   action("hold_action"),
   action("double_tap_action"),
 ];
 
-export const upstreamEditorSchemaFor = (item: CatalogItem): EditorField[] => {
-  const parity = PARITY_BY_ID.get(item.upstreamId);
-  if (!parity) return [];
-  return parity.variables.filter((variable) => supportedUpstreamOption(item, variable.name)).map((variable) => {
+export const upstreamEditorSchemaFor = (item: CatalogItem, config?: AdditionConfig): EditorField[] => {
+  const selectedSources = config?.variant
+    ? (item.sourceIds ?? [item.upstreamId]).filter((sourceId) =>
+      variantForSource(sourceId) === config.variant || (
+        sourceId === item.upstreamId && variantForSource(sourceId) === undefined
+      ))
+    : (item.sourceIds ?? [item.upstreamId]);
+  const variables = [...new Map(
+    selectedSources
+      .flatMap((sourceId) => PARITY_BY_ID.get(sourceId)?.variables ?? [])
+      .map((variable) => [variable.name, variable]),
+  ).values()];
+  return variables.filter((variable) => supportedUpstreamOption(item, variable.name)).map((variable) => {
     const choices = choiceOptions[variable.name];
     if (choices) return select(variable.name, choices);
     if (percentageOptions.has(variable.name)) {

@@ -35,13 +35,16 @@ and README files in custom-card directories. It records 15 materially distinct
 composition profiles built from button-card, native card, popup, control,
 chart, entities, image, vertical-stack, and horizontal-stack primitives.
 [`catalog-fixture.png`](assets/catalog-fixture.png) contains exactly one
-browser-rendered example of every registered card, chip, and container. It is
-ordered by the checked catalog, labeled with the upstream ID/family, and does
-not add duplicate state galleries or decorative variants.
+browser-rendered example of every public card and the one chips container.
+Every public chip appears exactly once inside that container rather than as a
+duplicate standalone card. The fixture is ordered by the checked catalog,
+labeled with the public ID/family, and does not add overview cards, duplicate
+state galleries, or decorative variants.
 
-Every public entry also receives a unique `rendererId` and CSS parity class.
-Shared Lit primitives are reused, but missing metadata is a runtime error and a
-test failure rather than a generic visual fallback.
+Every documented source maps explicitly to a public `rendererId` and, where
+sources are combined, a stable variant. Shared Lit primitives are reused, but
+missing mappings are a generation or test failure rather than a generic visual
+fallback.
 
 ## Editor contract
 

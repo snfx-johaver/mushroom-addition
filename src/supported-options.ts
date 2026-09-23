@@ -54,6 +54,6 @@ const supportedByItem: Record<string, readonly string[]> = {
 
 export const supportedUpstreamOption = (item: CatalogItem, name: string): boolean =>
   !isRemovedPopupOption(name) && (
-    supportedByItem[item.upstreamId]?.includes(name) === true ||
+    [item.upstreamId, ...(item.sourceIds ?? [])].some((id) => supportedByItem[id]?.includes(name) === true) ||
     supportedByFamily[item.family]?.includes(name) === true
   );

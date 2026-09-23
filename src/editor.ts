@@ -1,7 +1,7 @@
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import type { AdditionConfig, HomeAssistant } from "./types";
-import { CATALOG, getCatalogItem } from "./catalog";
+import { CATALOG, getCatalogItem, LEGACY_ALIASES } from "./catalog";
 import { fireEvent } from "./helpers";
 import { editorHelper, localize } from "./localize";
 import { editorSchemaFor, upstreamEditorSchemaFor } from "./editor-schema";
@@ -13,7 +13,7 @@ export class MushroomAdditionEditor extends LitElement {
     .chips { display: grid; gap: 12px; }
     .chip-row {
       display: grid;
-      grid-template-columns: minmax(150px, 1fr) minmax(150px, 1fr) auto;
+      grid-template-columns: minmax(150px, 1fr) minmax(130px, 1fr) minmax(150px, 1fr) auto;
       align-items: center;
       gap: 8px;
     }
@@ -42,7 +42,23 @@ export class MushroomAdditionEditor extends LitElement {
   @state() private config?: AdditionConfig;
 
   public setConfig(config: AdditionConfig): void {
-    this.config = config;
+    const tag = config.type.replace(/^custom:/, "");
+    const alias = LEGACY_ALIASES.find((item) => item.tag === tag);
+    const normalizedChips = config.chips?.map((chip) => {
+      const chipAlias = LEGACY_ALIASES.find((item) => item.tag === chip.type.replace(/^custom:/, ""));
+      return chipAlias
+        ? {
+          ...chip,
+          type: `custom:${chipAlias.targetTag}`,
+          variant: chip.variant ?? chipAlias.variant,
+        }
+        : chip;
+    });
+    this.config = {
+      ...config,
+      variant: config.variant ?? alias?.variant,
+      chips: normalizedChips,
+    };
   }
 
   protected render() {
@@ -64,6 +80,22 @@ export class MushroomAdditionEditor extends LitElement {
                 </option>
               `)}
             </select>
+            ${(() => {
+              const descriptor = getCatalogItem(chip.type.replace(/^custom:/, ""));
+              return descriptor?.variants?.length ? html`
+                <select
+                  aria-label="Chip style"
+                  .value=${chip.variant ?? descriptor.variants[0]}
+                  @change=${(event: Event) => this.updateChip(index, "variant", (event.target as HTMLSelectElement).value)}
+                >
+                  ${descriptor.variants.map((variant) => html`
+                    <option value=${variant} ?selected=${chip.variant === variant}>
+                      ${descriptor.variantLabels?.[variant] ?? variant}
+                    </option>
+                  `)}
+                </select>
+              ` : html`<span></span>`;
+            })()}
             <ha-entity-picker
               .hass=${this.hass}
               aria-label="Entity ID"
@@ -78,8 +110,8 @@ export class MushroomAdditionEditor extends LitElement {
       </div>`;
     }
     if (!item) return nothing;
-    const schema = editorSchemaFor(item);
-    const upstreamSchema = upstreamEditorSchemaFor(item);
+    const schema = editorSchemaFor(item, this.config);
+    const upstreamSchema = upstreamEditorSchemaFor(item, this.config);
     const formData = { ...populatedDefaultsFor(item, this.hass, this.config.entity), ...this.config };
     return html`
       <ha-form
@@ -140,12 +172,20 @@ export class MushroomAdditionEditor extends LitElement {
     fireEvent(this, "config-changed", { config: this.config });
   }
 
-  private updateChip(index: number, key: "type" | "entity", value: string): void {
+  private updateChip(index: number, key: "type" | "entity" | "variant", value: string): void {
     if (!this.config) return;
     this.config = {
       ...this.config,
       chips: (this.config.chips ?? []).map((chip, chipIndex) =>
-        chipIndex === index ? { ...chip, [key]: value || undefined } : chip),
+        chipIndex === index
+          ? key === "type"
+            ? {
+              ...chip,
+              type: value,
+              variant: getCatalogItem(value.replace(/^custom:/, ""))?.variants?.[0],
+            }
+            : { ...chip, [key]: value || undefined }
+          : chip),
     };
     fireEvent(this, "config-changed", { config: this.config });
   }

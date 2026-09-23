@@ -1,26 +1,28 @@
 import { describe, expect, it } from "vitest";
-import { CATALOG, PUBLIC_CATALOG } from "../src/catalog";
+import { CATALOG, publicItemForSource, PUBLIC_CATALOG, UPSTREAM_CATALOG } from "../src/catalog";
 import { upstreamEditorSchemaFor } from "../src/editor-schema";
 import { PARITY_BY_ID, PARITY_ENTRIES } from "../src/parity.generated";
-import { EXAMPLE_CATALOG_IDS } from "../src/example-catalog";
+import { EXAMPLE_CATALOG_IDS, EXAMPLE_CHIP_IDS, EXAMPLE_REGISTRATION_IDS } from "../src/example-catalog";
 import { isRemovedPopupOption, supportedUpstreamOption } from "../src/supported-options";
 
 describe("upstream parity manifest", () => {
-  it("has one explicit source-derived renderer mapping per public catalog entry", () => {
-    expect(PARITY_ENTRIES).toHaveLength(PUBLIC_CATALOG.length);
-    expect(new Set(PARITY_ENTRIES.map((entry) => entry.upstreamId)).size).toBe(PUBLIC_CATALOG.length);
-    for (const item of PUBLIC_CATALOG) {
-      const parity = PARITY_BY_ID.get(item.upstreamId);
-      expect(parity, item.upstreamId).toBeDefined();
-      expect(parity?.rendererId).toBe(item.upstreamId);
+  it("has one source-derived mapping per documented upstream source", () => {
+    expect(PARITY_ENTRIES).toHaveLength(UPSTREAM_CATALOG.length);
+    expect(new Set(PARITY_ENTRIES.map((entry) => entry.upstreamId)).size).toBe(UPSTREAM_CATALOG.length);
+    for (const source of UPSTREAM_CATALOG) {
+      const parity = PARITY_BY_ID.get(source.upstreamId);
+      const publicItem = publicItemForSource(source.upstreamId)!;
+      expect(parity, source.upstreamId).toBeDefined();
+      expect(parity?.rendererId).toBe(publicItem.upstreamId);
       expect(parity?.layoutProfile).not.toBe("generic");
       expect(parity?.sourceDigest).toMatch(/^[a-f0-9]{64}$/);
     }
   });
 
   it("exposes every implemented upstream option and no nonfunctional switches", () => {
-    for (const item of PUBLIC_CATALOG) {
-      const parity = PARITY_BY_ID.get(item.upstreamId)!;
+    for (const source of UPSTREAM_CATALOG) {
+      const item = publicItemForSource(source.upstreamId)!;
+      const parity = PARITY_BY_ID.get(source.upstreamId)!;
       const editorFields = new Set(upstreamEditorSchemaFor(item).map((field) => field.name));
       const variables = parity.variables.map((variable) => variable.name);
       expect(new Set(variables).size, item.upstreamId).toBe(variables.length);
@@ -57,9 +59,11 @@ describe("upstream parity manifest", () => {
     }
   });
 
-  it("defines exactly one deterministic fixture for every registered item", () => {
-    expect(EXAMPLE_CATALOG_IDS).toHaveLength(CATALOG.length);
-    expect(new Set(EXAMPLE_CATALOG_IDS).size).toBe(CATALOG.length);
-    expect(new Set(EXAMPLE_CATALOG_IDS)).toEqual(new Set(CATALOG.map((item) => item.upstreamId)));
+  it("defines one card per fixture and nests every chip once in the single container", () => {
+    expect(EXAMPLE_CATALOG_IDS).toHaveLength(CATALOG.filter((item) => item.kind !== "chip").length);
+    expect(EXAMPLE_CHIP_IDS).toHaveLength(CATALOG.filter((item) => item.kind === "chip").length);
+    expect(new Set(EXAMPLE_REGISTRATION_IDS).size).toBe(CATALOG.length);
+    expect(new Set(EXAMPLE_REGISTRATION_IDS)).toEqual(new Set(CATALOG.map((item) => item.upstreamId)));
+    expect(EXAMPLE_CATALOG_IDS).not.toEqual(expect.arrayContaining(EXAMPLE_CHIP_IDS));
   });
 });

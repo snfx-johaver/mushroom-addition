@@ -3,7 +3,10 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { parseAllDocuments } from "yaml";
-import { PUBLIC_CATALOG, UPSTREAM_COMMIT } from "../src/catalog";
+import {
+  publicItemForSource, SOURCE_ONLY_HELPERS, UPSTREAM_CATALOG,
+  UPSTREAM_COMMIT, variantForSource,
+} from "../src/catalog";
 
 const upstreamRoot = resolve(process.argv[2] ?? ".tmp-ui-minimalist");
 const check = process.argv.includes("--check");
@@ -14,6 +17,43 @@ const actualCommit = execFileSync("git", ["-C", upstreamRoot, "rev-parse", "HEAD
 if (actualCommit !== UPSTREAM_COMMIT) {
   throw new Error(`Expected upstream ${UPSTREAM_COMMIT}, found ${actualCommit}.`);
 }
+
+const assertExactSet = (label: string, actual: string[], expected: string[]): void => {
+  const missing = expected.filter((value) => !actual.includes(value));
+  const unexpected = actual.filter((value) => !expected.includes(value));
+  if (missing.length || unexpected.length) {
+    throw new Error(`${label} mismatch. Missing: ${missing.join(", ") || "none"}; unexpected: ${unexpected.join(", ") || "none"}.`);
+  }
+};
+const documentedPages = (directory: string): string[] => readdirSync(resolve(upstreamRoot, directory))
+  .filter((name) => name.endsWith(".md") && name !== "._example.md")
+  .map((name) => name.replace(/\.md$/, ""))
+  .sort();
+assertExactSet(
+  "Documented default cards",
+  documentedPages("docs/usage/cards"),
+  UPSTREAM_CATALOG.filter((item) => item.category === "default-card").map((item) => item.upstreamId).sort(),
+);
+assertExactSet(
+  "Documented default chips",
+  documentedPages("docs/usage/chips"),
+  UPSTREAM_CATALOG.filter((item) => item.category === "default-chip").map((item) => item.upstreamId).sort(),
+);
+assertExactSet(
+  "Custom source directories",
+  readdirSync(resolve(upstreamRoot, "custom_cards"), { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort(),
+  [
+    ...UPSTREAM_CATALOG
+      .filter((item) => item.category === "custom-card" || item.category === "custom-chip")
+      .map((item) => item.upstreamId),
+    ...SOURCE_ONLY_HELPERS
+      .filter((item) => item.sourcePath.startsWith("custom_cards/"))
+      .map((item) => item.id),
+  ].sort(),
+);
 
 const filesUnder = (path: string): string[] => {
   if (!statSync(path).isDirectory()) return [path];
@@ -62,7 +102,9 @@ const collectVariables = (node: unknown, variables: Map<string, { name: string; 
   }
 };
 
-const entries = PUBLIC_CATALOG.map((item) => {
+const entries = UPSTREAM_CATALOG.map((item) => {
+  const publicItem = publicItemForSource(item.upstreamId);
+  if (!publicItem) throw new Error(`${item.upstreamId}: missing public component mapping.`);
   const source = resolve(upstreamRoot, item.sourcePath);
   if (!existsSync(source)) throw new Error(`${item.upstreamId}: missing ${item.sourcePath}`);
   const files = filesUnder(source)
@@ -121,7 +163,9 @@ const entries = PUBLIC_CATALOG.map((item) => {
   return {
     upstreamId: item.upstreamId,
     sourcePath: item.sourcePath,
-    rendererId: item.upstreamId,
+    publicId: publicItem.upstreamId,
+    variant: variantForSource(item.upstreamId),
+    rendererId: publicItem.upstreamId,
     layoutProfile: `${item.kind}:${primitives.join("+")}`,
     primitives,
     customFields,
@@ -151,14 +195,17 @@ const rows = entries.map((entry) => {
     entry.actions.length ? `actions: ${entry.actions.join(", ")}` : undefined,
   ].filter(Boolean).join("; ");
   const deviations = entry.deviations.length ? entry.deviations.join("<br>") : "None";
-  return `| \`${entry.upstreamId}\` | \`${entry.layoutProfile}\` | ${entry.customFields.join(", ") || "single surface"} | ${behavior} | ${variables} | ${entry.backendRequirements.join(", ") || "entity state only"} | ${deviations} |`;
+  const mapping = entry.variant
+    ? `\`${entry.publicId}\` → \`${entry.variant}\``
+    : `\`${entry.publicId}\``;
+  return `| \`${entry.upstreamId}\` | ${mapping} | \`${entry.layoutProfile}\` | ${entry.customFields.join(", ") || "single surface"} | ${behavior} | ${variables} | ${entry.backendRequirements.join(", ") || "entity state only"} | ${deviations} |`;
 });
 const matrix = `# Upstream parity matrix\n\n` +
   `Generated from UI-Lovelace-Minimalist commit \`${UPSTREAM_COMMIT}\`. Every public catalog entry has an explicit renderer ID, source digest, layout profile, editor-variable inventory, action inventory, and dependency deviation record.\n\n` +
   `## Property mapping\n\n` +
-  `The primary Home Assistant entity maps to \`entity\`; standard Lovelace actions map to \`tap_action\`, \`hold_action\`, and \`double_tap_action\`. Every non-popup \`ulm_*\` variable below is accepted unchanged in YAML and exposed unchanged in the expandable graphical-editor parity section. Popup and Browser Mod variables remain inventoried but are intentionally excluded in favor of regular Home Assistant/Mushroom-style actions. Common name/icon/color/layout/control variables are normalized into the shared Lit primitives while their original keys remain authoritative when explicitly configured. Empty, false, and zero values are preserved rather than replaced with truthy defaults.\n\n` +
-  `| Upstream item | Renderer/layout | Sections | Behavior | Upstream variables and defaults | Backend requirements | Individually documented deviations |\n` +
-  `|---|---|---|---|---|---|---|\n${rows.join("\n")}\n`;
+  `The primary Home Assistant entity maps to \`entity\`; standard Lovelace actions map to \`tap_action\`, \`hold_action\`, and \`double_tap_action\`. Legacy upstream keys are listed below only as a YAML compatibility reference. The graphical editor uses plain-language labels and exposes only options backed by implemented behavior. Popup and Browser Mod variables remain inventoried but are intentionally excluded in favor of regular Home Assistant/Mushroom-style actions. Common name/icon/color/layout/control variables are normalized into shared Lit primitives while original keys remain accepted when explicitly configured. Empty, false, and zero values are preserved rather than replaced with truthy defaults.\n\n` +
+  `| Upstream item | Public component / variant | Renderer/layout | Sections | Behavior | Upstream variables and defaults | Backend requirements | Individually documented deviations |\n` +
+  `|---|---|---|---|---|---|---|---|\n${rows.join("\n")}\n`;
 const outputs = [
   [resolve("src/parity.generated.ts"), generated],
   [resolve("docs/PARITY_MATRIX.md"), matrix],

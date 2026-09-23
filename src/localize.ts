@@ -3,7 +3,7 @@ import type { HomeAssistant } from "./types";
 const translations: Record<string, Record<string, string>> = {
   en: {
     entity: "Entity", name: "Custom name", name_mode: "Name", secondary: "Custom secondary information", icon: "Icon",
-    icon_color: "Icon color", variant: "Variant", layout: "Layout",
+    icon_color: "Icon color", variant: "Card style", layout: "Layout",
     icon_type: "Icon type", fill_container: "Fill container",
     primary_info: "Primary information", secondary_info: "Secondary information",
     show_icon: "Show icon", show_state: "Show state", tap_action: "Tap action",
@@ -91,6 +91,7 @@ const helpers: Record<string, string> = {
   name: "Used when Name is set to Use custom name.",
   secondary: "Optional supporting text shown below the main name or state.",
   icon: "Optional icon override. Leave empty to use the card's recommended icon.",
+  variant: "Choose the upstream layout or behavior represented by this unified component.",
   icon_type: "Choose an icon, the entity picture when available, or no icon.",
   layout: "Automatic uses the layout designed for this card. Horizontal and Vertical override it.",
   fill_container: "Makes the card stretch to fill the available dashboard grid cell.",
