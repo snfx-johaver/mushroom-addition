@@ -398,11 +398,19 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
   },
   custom_card_nik_nas: {
     status: "pending",
+    pickerAccepted: true,
+    editorAccepted: true,
+    visualAccepted: true,
+    statesAccepted: true,
+    interactionsAccepted: true,
     inspectedAt: "2026-09-23",
     reviewerNotes: [
       "Focused side-by-side inspected after correcting SVG namespace rendering: two bordered tiles, three semantic metrics, and three utilization rings are visible.",
       "The refreshed comparison uses real 24px MDI glyphs and measures 510x360 against the 512x360 source reference.",
-      "Status-tile action has mock evidence; remaining state, picker, editor, independent visual, and live stages remain uncertified.",
+      "Parent manually accepted the refreshed visual stage after reviewing the geometry-matched source comparison.",
+      "Picker semantic defaults, status plus four metric editor slots, chart settings, editor round trip, online/off/unavailable collapse states, and configured ring maxima pass local tests.",
+      "The status tile and outer card surface were clicked in Chromium; exact more-info evidence is recorded in docs/assets/visual-audit/priority-local-certification.json.",
+      "Live Home Assistant acceptance remains false until an explicitly authorized deployment and authenticated verification.",
     ],
   },
   custom_card_nik_tablet: {
@@ -424,11 +432,19 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
   },
   custom_card_person_info: {
     status: "pending",
+    pickerAccepted: true,
+    editorAccepted: true,
+    visualAccepted: true,
+    statesAccepted: true,
+    interactionsAccepted: true,
     inspectedAt: "2026-09-23",
     reviewerNotes: [
       "Focused side-by-side inspected: full variant now uses avatar/location hierarchy with zone/driving badge and separate battery/commute details.",
       "The refreshed one-to-one comparison measures 165x105 for both the cropped source card and dark-theme implementation.",
-      "All six acceptance stages remain false pending independent review and live E2E.",
+      "Parent manually accepted the refreshed visual stage after reviewing the one-to-one dark tile comparison.",
+      "Picker variant exposure, full editor round trip, address/locality/multiline/zone/driving/charging/threshold/commute states, and configured actions pass local tests.",
+      "Tap and configured hold were exercised in Chromium; exact action targets are recorded in docs/assets/visual-audit/priority-local-certification.json.",
+      "Live Home Assistant acceptance remains false until an explicitly authorized deployment and authenticated verification.",
     ],
   },
   custom_card_person_info_small: {

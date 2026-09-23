@@ -113,6 +113,46 @@ const baseStates: HomeAssistant["states"] = {
     state: "0",
     attributes: { friendly_name: "Work", icon: "mdi:briefcase" },
   },
+  "sensor.person_address": {
+    entity_id: "sensor.person_address",
+    state: "12 Main Street",
+    attributes: { friendly_name: "Address" },
+  },
+  "sensor.person_locality": {
+    entity_id: "sensor.person_locality",
+    state: "Amsterdam",
+    attributes: { friendly_name: "Locality", Locality: "Amsterdam" },
+  },
+  "sensor.person_commute": {
+    entity_id: "sensor.person_commute",
+    state: "24",
+    attributes: { friendly_name: "Commute", unit_of_measurement: "min" },
+  },
+  "binary_sensor.nas": {
+    entity_id: "binary_sensor.nas",
+    state: "on",
+    attributes: { friendly_name: "Home NAS" },
+  },
+  "sensor.nas_disk": {
+    entity_id: "sensor.nas_disk",
+    state: "25.5",
+    attributes: { friendly_name: "NAS disk", unit_of_measurement: "%" },
+  },
+  "sensor.nas_temperature": {
+    entity_id: "sensor.nas_temperature",
+    state: "46",
+    attributes: { friendly_name: "NAS temperature", unit_of_measurement: "°C" },
+  },
+  "sensor.nas_memory": {
+    entity_id: "sensor.nas_memory",
+    state: "15",
+    attributes: { friendly_name: "NAS memory", unit_of_measurement: "%" },
+  },
+  "sensor.nas_cpu": {
+    entity_id: "sensor.nas_cpu",
+    state: "19.3",
+    attributes: { friendly_name: "NAS CPU", unit_of_measurement: "%" },
+  },
 };
 
 const hass = (states: HomeAssistant["states"] = baseStates): HomeAssistant => ({
@@ -170,6 +210,13 @@ describe("priority local certification", () => {
         { action: "navigate", navigation_path: "/config/updates" },
       ]),
     });
+    expect(evidence.browserInteractions.custom_card_nik_nas).toMatchObject({
+      controlsClicked: 1,
+      actions: [
+        { gesture: "tap", source: "status tile", action: "more-info", entity: "binary_sensor.hn_nas_status" },
+        { gesture: "tap", source: "card surface", action: "more-info", entity: "binary_sensor.hn_nas_status" },
+      ],
+    });
     expect(evidence.browserInteractions.custom_card_nik_tablet).toMatchObject({
       controlsClicked: 6,
       serviceCalls: expect.arrayContaining([
@@ -183,12 +230,20 @@ describe("priority local certification", () => {
         { gesture: "hold", action: "more-info", entity: "sensor.phone_battery" },
       ],
     });
+    expect(evidence.browserInteractions.custom_card_person_info).toMatchObject({
+      controlsClicked: 0,
+      cardSurfaceActions: [
+        { gesture: "tap", action: "more-info", entity: "person.joris" },
+        { gesture: "hold", action: "more-info", entity: "sensor.person_full_battery" },
+      ],
+    });
   });
 
   it("creates populated picker previews for the four visually accepted sources", () => {
     const cases = [
       ["custom_card_heat_pump", "climate.heat_pump"],
       ["custom_card_homeassistant_updates", "update.core"],
+      ["custom_card_nik_nas", "binary_sensor.nas"],
       ["custom_card_nik_tablet", "binary_sensor.tablet"],
       ["custom_card_person_info", "person.joris"],
     ] as const;
@@ -211,6 +266,22 @@ describe("priority local certification", () => {
     };
     expect(personConstructor.getStubConfig(hass(), Object.keys(baseStates), []).variant).toBe("full");
     expect(person.variants).toContain("small");
+    const nas = CATALOG.find((entry) => entry.upstreamId === "custom_card_nik_nas")!;
+    const nasConstructor = customElements.get(nas.tag) as typeof HTMLElement & {
+      getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
+    };
+    expect(nasConstructor.getStubConfig(hass(), Object.keys(baseStates), [])).toMatchObject({
+      entity: "binary_sensor.nas",
+      disk_entity: "sensor.nas_disk",
+      temperature_entity: "sensor.nas_temperature",
+      memory_entity: "sensor.nas_memory",
+      cpu_entity: "sensor.nas_cpu",
+      temperature_max: 100,
+      memory_max: 100,
+      cpu_max: 100,
+      graph_span: "1d",
+      chart_type: "radialBar",
+    });
   });
 
   it.each([
@@ -225,9 +296,27 @@ describe("priority local certification", () => {
       fields: ["entity", "ulm_card_homeassistant_core", "ulm_card_homeassistant_supervisor", "ulm_card_homeassistant_os"],
     },
     {
+      type: "custom:mushroom-addition-custom-card-nik-nas",
+      entity: "binary_sensor.nas",
+      fields: [
+        "entity", "disk_entity", "disk_name", "temperature_entity", "temperature_max",
+        "memory_entity", "memory_max", "cpu_entity", "cpu_max", "graph_span", "chart_type",
+      ],
+    },
+    {
       type: "custom:mushroom-addition-custom-card-nik-tablet",
       entity: "binary_sensor.tablet",
       fields: ["entity", "tablet_button_usb_entity", "tablet_button_display_entity", "tablet_ram_entity", "battery_entity"],
+    },
+    {
+      type: "custom:mushroom-addition-custom-card-person-info",
+      entity: "person.joris",
+      variant: "full",
+      fields: [
+        "entity", "variant", "ulm_card_person_zone1", "ulm_address", "ulm_address_locality",
+        "ulm_card_person_driving_entity", "ulm_card_person_battery_entity",
+        "ulm_card_person_battery_state_entity", "ulm_card_person_commute_entity", "ulm_multiline", "hold_action",
+      ],
     },
     {
       type: "custom:mushroom-addition-custom-card-person-info",
@@ -356,6 +445,40 @@ describe("priority local certification", () => {
     expect((unavailable.shadowRoot.querySelector('button[aria-label="Toggle USB"]') as HTMLButtonElement).disabled).toBe(true);
   });
 
+  it("covers NAS online, off, unavailable, and configured ring states", async () => {
+    const config: AdditionConfig = {
+      type: "custom:mushroom-addition-custom-card-nik-nas",
+      entity: "binary_sensor.nas",
+      disk_entity: "sensor.nas_disk",
+      disk_name: "Storage",
+      temperature_entity: "sensor.nas_temperature",
+      temperature_max: 80,
+      memory_entity: "sensor.nas_memory",
+      memory_max: 100,
+      cpu_entity: "sensor.nas_cpu",
+      cpu_max: 50,
+      graph_span: "1d",
+      chart_type: "radialBar",
+    };
+    const online = await renderCard("mushroom-addition-custom-card-nik-nas", config);
+    expect(online.shadowRoot.querySelector(".custom-nik-nas")?.classList.contains("is-on")).toBe(true);
+    expect(online.shadowRoot.textContent).toContain("Storage");
+    expect(online.shadowRoot.querySelectorAll(".nik-nas-ring-value")).toHaveLength(3);
+    online.remove();
+
+    for (const state of ["off", "unavailable"]) {
+      const collapsed = await renderCard("mushroom-addition-custom-card-nik-nas", config, {
+        ...baseStates,
+        "binary_sensor.nas": { ...baseStates["binary_sensor.nas"], state },
+      });
+      expect(collapsed.shadowRoot.querySelector(".custom-nik-nas")?.classList.contains("is-off")).toBe(true);
+      expect(collapsed.shadowRoot.querySelector(".nik-nas-body")).toBeNull();
+      expect(collapsed.shadowRoot.querySelectorAll(".status-tile")).toHaveLength(1);
+      if (state === "unavailable") expect(collapsed.shadowRoot.textContent?.toLowerCase()).toContain("unavailable");
+      collapsed.remove();
+    }
+  });
+
   it("covers compact Person Info home, driving, zone, charging, and threshold states", async () => {
     const config: AdditionConfig = {
       type: "custom:mushroom-addition-custom-card-person-info-small",
@@ -392,6 +515,101 @@ describe("priority local certification", () => {
     expect((work.shadowRoot.querySelector(".person-info-badge ha-icon") as HTMLElement & { icon: string }).icon)
       .toBe("mdi:briefcase");
     expect(work.shadowRoot.querySelector(".person-info-small-battery")?.classList.contains("tone-red")).toBe(true);
+  });
+
+  it("covers full Person Info address, multiline, zone, driving, charging, threshold, and commute states", async () => {
+    const config: AdditionConfig = {
+      type: "custom:mushroom-addition-custom-card-person-info",
+      entity: "person.joris",
+      variant: "full",
+      ulm_card_person_use_entity_picture: true,
+      ulm_card_person_zone1: "zone.work",
+      ulm_address: "sensor.person_address",
+      ulm_address_locality: "sensor.person_locality",
+      ulm_card_person_driving_entity: "binary_sensor.person_driving",
+      ulm_card_person_battery_entity: "sensor.person_battery",
+      ulm_card_person_battery_state_entity: "sensor.person_battery_state",
+      ulm_card_person_commute_entity: "sensor.person_commute",
+      ulm_multiline: true,
+      ulm_card_battery_battery_level_danger: 15,
+      ulm_card_battery_battery_level_warning: 30,
+    };
+    const addressed = await renderCard("mushroom-addition-custom-card-person-info", config);
+    expect(addressed.shadowRoot.querySelector(".custom-person-info")?.classList.contains("is-multiline")).toBe(true);
+    expect(addressed.shadowRoot.textContent).toContain("12 Main Street");
+    expect(addressed.shadowRoot.textContent).toContain("24 min");
+    expect(addressed.shadowRoot.querySelector(".person-info-detail")?.classList.contains("tone-green")).toBe(true);
+    addressed.remove();
+
+    const zone = await renderCard("mushroom-addition-custom-card-person-info", {
+      ...config,
+      ulm_address: undefined,
+      ulm_address_locality: undefined,
+      ulm_multiline: false,
+    }, {
+      ...baseStates,
+      "person.joris": { ...baseStates["person.joris"], state: "Work" },
+      "sensor.person_battery": { ...baseStates["sensor.person_battery"], state: "22" },
+    });
+    expect(zone.shadowRoot.querySelector(".custom-person-info")?.classList.contains("is-inline")).toBe(true);
+    expect((zone.shadowRoot.querySelector(".person-info-badge ha-icon") as HTMLElement & { icon: string }).icon)
+      .toBe("mdi:briefcase");
+    expect(zone.shadowRoot.querySelector(".person-info-detail")?.classList.contains("tone-yellow")).toBe(true);
+    zone.remove();
+
+    const driving = await renderCard("mushroom-addition-custom-card-person-info", {
+      ...config,
+      ulm_address: undefined,
+      ulm_address_locality: undefined,
+    }, {
+      ...baseStates,
+      "person.joris": { ...baseStates["person.joris"], state: "away" },
+      "binary_sensor.person_driving": { ...baseStates["binary_sensor.person_driving"], state: "on" },
+      "sensor.person_battery": { ...baseStates["sensor.person_battery"], state: "10" },
+      "sensor.person_battery_state": { ...baseStates["sensor.person_battery_state"], state: "charging" },
+    });
+    expect((driving.shadowRoot.querySelector(".person-info-badge ha-icon") as HTMLElement & { icon: string }).icon)
+      .toBe("mdi:car");
+    expect(driving.shadowRoot.textContent).toContain("Driving - away");
+    expect((driving.shadowRoot.querySelector(".person-info-detail ha-icon") as HTMLElement & { icon: string }).icon)
+      .toBe("mdi:battery-charging");
+    expect(driving.shadowRoot.querySelector(".person-info-detail")?.classList.contains("tone-red")).toBe(true);
+  });
+
+  it("dispatches NAS status/outer actions and full Person tap/configured hold actions", async () => {
+    vi.useFakeTimers();
+    const nas = await renderCard("mushroom-addition-custom-card-nik-nas", {
+      type: "custom:mushroom-addition-custom-card-nik-nas",
+      entity: "binary_sensor.nas",
+    });
+    const nasActions: Array<{ action: string; config: AdditionConfig }> = [];
+    nas.addEventListener("hass-action", (event) => nasActions.push((event as CustomEvent).detail));
+    (nas.shadowRoot.querySelector('button[aria-label="Open NAS status"]') as HTMLButtonElement).click();
+    (nas.shadowRoot.querySelector(".action-surface") as HTMLElement).click();
+    expect(nasActions).toEqual([
+      expect.objectContaining({ action: "tap", config: expect.objectContaining({ entity: "binary_sensor.nas" }) }),
+      expect.objectContaining({ action: "tap", config: expect.objectContaining({ entity: "binary_sensor.nas" }) }),
+    ]);
+    nas.remove();
+
+    const person = await renderCard("mushroom-addition-custom-card-person-info", {
+      type: "custom:mushroom-addition-custom-card-person-info",
+      entity: "person.joris",
+      variant: "full",
+      ulm_card_person_battery_entity: "sensor.person_battery",
+      hold_action: { action: "more-info", entity: "sensor.person_battery" },
+    });
+    const personActions: Array<{ action: string; config: AdditionConfig }> = [];
+    person.addEventListener("hass-action", (event) => personActions.push((event as CustomEvent).detail));
+    const surface = person.shadowRoot.querySelector(".action-surface") as HTMLElement;
+    surface.click();
+    surface.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+    await vi.advanceTimersByTimeAsync(500);
+    surface.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
+    expect(personActions).toEqual([
+      expect.objectContaining({ action: "tap", config: expect.objectContaining({ entity: "person.joris" }) }),
+      expect.objectContaining({ action: "hold", config: expect.objectContaining({ entity: "sensor.person_battery" }) }),
+    ]);
   });
 
   it("dispatches compact Person Info tap and battery-targeted hold actions", async () => {

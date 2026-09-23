@@ -185,11 +185,28 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
       ? [
         entity(["binary_sensor", "sensor", "switch"]),
         entity(["sensor"], "disk_entity"),
-        entity(["sensor"], "temperature_entity"),
-        entity(["sensor"], "memory_entity"),
-        entity(["sensor"], "cpu_entity"),
-        ...presentation(),
-      ]
+      text("disk_name"),
+      { name: "disk_icon", selector: { icon: {} } },
+      { name: "disk_color", selector: { ui_color: {} } },
+      entity(["sensor"], "temperature_entity"),
+      text("temperature_name"),
+      { name: "temperature_icon", selector: { icon: {} } },
+      { name: "temperature_color", selector: { ui_color: {} } },
+      number("temperature_max", 1, 100000),
+      entity(["sensor"], "memory_entity"),
+      text("memory_name"),
+      { name: "memory_icon", selector: { icon: {} } },
+      { name: "memory_color", selector: { ui_color: {} } },
+      number("memory_max", 1, 100000),
+      entity(["sensor"], "cpu_entity"),
+      text("cpu_name"),
+      { name: "cpu_icon", selector: { icon: {} } },
+      { name: "cpu_color", selector: { ui_color: {} } },
+      number("cpu_max", 1, 100000),
+      text("graph_span"),
+      select("chart_type", [{ value: "radialBar", label: "Radial utilization rings" }]),
+      ...presentation(),
+    ]
     : item.upstreamId === "custom_card_homeassistant_updates"
         ? [
         entity(["update", "sensor", "binary_sensor"]),

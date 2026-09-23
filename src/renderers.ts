@@ -1353,6 +1353,17 @@ const renderNikNas = (ctx: RenderContext): TemplateResult => {
   const memory = linkedState(ctx, "memory_entity") ?? entityFromConfig(ctx, "entity_2");
   const cpu = linkedState(ctx, "cpu_entity") ?? entityFromConfig(ctx, "entity_3");
   const online = !["off", "unavailable", "unknown"].includes(ctx.entity?.state ?? "");
+  const colorValue = (key: string, fallback: string): string => {
+    const value = configured<string>(ctx, key) || fallback;
+    return {
+      red: "#ff3b49",
+      orange: "#ff8a00",
+      yellow: "#ffb300",
+      blue: "#4267ff",
+      green: "#00c968",
+    }[value] ?? value;
+  };
+  const configuredColor = (key: string): string | undefined => configured<string>(ctx, key);
   const legacyMax = (key: string): number | undefined => {
     const value = ctx.config[key];
     return value && typeof value === "object" && "max_value" in value ? numeric(value.max_value) : undefined;
@@ -1378,22 +1389,27 @@ const renderNikNas = (ctx: RenderContext): TemplateResult => {
     <div class="nik-nas-top">
       ${statusTile}
       <div class="nik-nas-tile disk-tile">
-        <span class="nik-nas-tile-icon tone-red"><ha-icon icon="mdi:harddisk"></ha-icon></span>
-        <span><b>Disk</b><small>${stateLabel(disk)}</small></span>
+        <span class=${`nik-nas-tile-icon ${configuredColor("disk_color") ? "" : "tone-red"}`}
+          style=${configuredColor("disk_color")
+            ? `color:${colorValue("disk_color", "red")};background:color-mix(in srgb, ${colorValue("disk_color", "red")} 18%, transparent)`
+            : ""}>
+          <ha-icon .icon=${configured<string>(ctx, "disk_icon") || "mdi:harddisk"}></ha-icon>
+        </span>
+        <span><b>${configured<string>(ctx, "disk_name") || "Disk"}</b><small>${stateLabel(disk)}</small></span>
       </div>
     </div>
     <div class="nik-nas-body">
       <div class="nik-nas-metrics">
-        <span><i class="tone-orange"><ha-icon icon="mdi:thermometer"></ha-icon></i><span><b>Temp</b><small>${stateLabel(temperature)}</small></span></span>
-        <span><i class="tone-blue"><ha-icon icon="mdi:memory"></ha-icon></i><span><b>Memory</b><small>${stateLabel(memory)}</small></span></span>
-        <span><i class="tone-green"><ha-icon icon="mdi:cpu-64-bit"></ha-icon></i><span><b>CPU</b><small>${stateLabel(cpu)}</small></span></span>
+        <span><i class=${configuredColor("temperature_color") ? "" : "tone-orange"} style=${configuredColor("temperature_color") ? `color:${colorValue("temperature_color", "orange")}` : ""}><ha-icon .icon=${configured<string>(ctx, "temperature_icon") || "mdi:thermometer"}></ha-icon></i><span><b>${configured<string>(ctx, "temperature_name") || "Temp"}</b><small>${stateLabel(temperature)}</small></span></span>
+        <span><i class=${configuredColor("memory_color") ? "" : "tone-blue"} style=${configuredColor("memory_color") ? `color:${colorValue("memory_color", "blue")}` : ""}><ha-icon .icon=${configured<string>(ctx, "memory_icon") || "mdi:memory"}></ha-icon></i><span><b>${configured<string>(ctx, "memory_name") || "Memory"}</b><small>${stateLabel(memory)}</small></span></span>
+        <span><i class=${configuredColor("cpu_color") ? "" : "tone-green"} style=${configuredColor("cpu_color") ? `color:${colorValue("cpu_color", "green")}` : ""}><ha-icon .icon=${configured<string>(ctx, "cpu_icon") || "mdi:cpu-64-bit"}></ha-icon></i><span><b>${configured<string>(ctx, "cpu_name") || "CPU"}</b><small>${stateLabel(cpu)}</small></span></span>
       </div>
       <svg class="nik-nas-rings" viewBox="0 0 140 140" role="img" aria-label="NAS temperature, memory, and CPU utilization">
         ${[58, 48, 38].map((radius) => svg`<circle class="nik-nas-ring-track" cx="70" cy="70" r=${radius}
           fill="none" stroke="#dedede" stroke-width="6"></circle>`)}
-        ${ring(temperature, 58, "#ff8a00", legacyMax("entity_1") ?? 100)}
-        ${ring(memory, 48, "#4267ff", legacyMax("entity_2") ?? 100)}
-        ${ring(cpu, 38, "#00c968", legacyMax("entity_3") ?? 100)}
+        ${ring(temperature, 58, colorValue("temperature_color", "orange"), numeric(configured(ctx, "temperature_max")) ?? legacyMax("entity_1") ?? 100)}
+        ${ring(memory, 48, colorValue("memory_color", "blue"), numeric(configured(ctx, "memory_max")) ?? legacyMax("entity_2") ?? 100)}
+        ${ring(cpu, 38, colorValue("cpu_color", "green"), numeric(configured(ctx, "cpu_max")) ?? legacyMax("entity_3") ?? 100)}
       </svg>
     </div>
   `);

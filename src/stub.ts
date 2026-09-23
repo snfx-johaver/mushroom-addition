@@ -41,6 +41,9 @@ export const createStubConfig = (
       ? findEntity(["binary_sensor", "sensor", "switch"], ["tablet"])
       : descriptor.upstreamId === "custom_card_homeassistant_updates"
         ? findEntity(["update", "sensor", "binary_sensor"], ["core"])
+        : descriptor.upstreamId === "custom_card_nik_nas"
+          ? findEntity(["switch", "binary_sensor"], ["nas"]) ??
+            findEntity(["switch", "binary_sensor"], ["status"])
         : undefined;
   const entity = semanticPrimary ?? firstMatchingEntity(descriptor, hass, entities, entitiesFallback);
   const isText = ["text", "navigation"].includes(descriptor.family);
@@ -89,6 +92,31 @@ export const createStubConfig = (
         tablet_disk_entity: findEntity(["sensor"], ["tablet", "disk"]),
         tablet_power_entity: findEntity(["sensor", "binary_sensor", "switch"], ["tablet", "power"]),
         battery_entity: findEntity(["sensor"], ["tablet", "battery"]),
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_nik_nas"
+      ? {
+        disk_entity: findEntity(["sensor"], ["nas", "disk"]) ?? findEntity(["sensor"], ["disk"]),
+        disk_name: "Disk",
+        disk_icon: "mdi:harddisk",
+        disk_color: "red",
+        temperature_entity: findEntity(["sensor"], ["nas", "temp"]) ?? findEntity(["sensor"], ["temperature"]),
+        temperature_name: "Temp",
+        temperature_icon: "mdi:thermometer",
+        temperature_color: "orange",
+        temperature_max: 100,
+        memory_entity: findEntity(["sensor"], ["nas", "memory"]) ?? findEntity(["sensor"], ["memory"]),
+        memory_name: "Memory",
+        memory_icon: "mdi:memory",
+        memory_color: "blue",
+        memory_max: 100,
+        cpu_entity: findEntity(["sensor"], ["nas", "cpu"]) ?? findEntity(["sensor"], ["cpu"]),
+        cpu_name: "CPU",
+        cpu_icon: "mdi:cpu-64-bit",
+        cpu_color: "green",
+        cpu_max: 100,
+        graph_span: "1d",
+        chart_type: "radialBar",
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_person_info"

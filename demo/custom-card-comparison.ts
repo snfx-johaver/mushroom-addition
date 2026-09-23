@@ -262,6 +262,7 @@ const fixtures: Fixture[] = [
     ulm_card_person_commute_entity: "sensor.person_full_commute",
     ulm_card_person_driving_entity: "binary_sensor.joris_driving_full",
     ulm_multiline: true,
+    hold_action: { action: "more-info", entity: "sensor.person_full_battery" },
   } },
   { id: "person-info-small", entity: "person.joris", reference: "custom_card_person_info_small_light.png", width: 155, referenceCrop: { width: 155, height: 112 }, config: {
     ulm_card_person_use_entity_picture: true,
