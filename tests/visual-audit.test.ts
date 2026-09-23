@@ -31,17 +31,17 @@ describe("visual audit manifest", () => {
 
   it("reports exact accepted progress without inferring parity from family mappings", () => {
     expect(visualAuditProgress()).toEqual({
-      accepted: 68,
+      accepted: 74,
       pickerAccepted: 74,
       editorAccepted: 74,
       visualAccepted: 74,
       statesAccepted: 74,
       interactionsAccepted: 74,
-      liveAccepted: 68,
+      liveAccepted: 74,
       total: 86,
     });
 
-    expect(VISUAL_AUDIT.filter((entry) => entry.status === "accepted")).toHaveLength(68);
+    expect(VISUAL_AUDIT.filter((entry) => entry.status === "accepted")).toHaveLength(74);
   });
 
   it("certifies all six stages for the power and printer custom batch", () => {
@@ -62,6 +62,31 @@ describe("visual audit manifest", () => {
         interactionsAccepted: true,
         liveAccepted: true,
       });
+    }
+  });
+
+  it("records authenticated live acceptance for the speed, climate, and title batch", () => {
+    for (const sourceId of [
+      "custom_card_speedtest_shogun160",
+      "custom_card_tpx01_aircondition",
+      "custom_card_vncntdev_device_tracer",
+      "custom_card_water_heater",
+      "custom_card_wilbiev_subtitle",
+      "custom_card_wilbiev_title",
+    ]) {
+      const entry = VISUAL_AUDIT.find((candidate) => candidate.sourceId === sourceId);
+      expect(entry).toMatchObject({
+        status: "accepted",
+        pickerAccepted: true,
+        editorAccepted: true,
+        visualAccepted: true,
+        statesAccepted: true,
+        interactionsAccepted: true,
+        liveAccepted: true,
+      });
+      expect(entry?.reviewerNotes.join(" ")).toContain(
+        "docs/assets/visual-audit/speed-climate-title-live-certification.json",
+      );
     }
   });
 

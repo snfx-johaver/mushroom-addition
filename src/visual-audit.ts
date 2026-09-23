@@ -1005,25 +1005,49 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
     ],
   },
   ...Object.fromEntries(([
-    ["custom_card_speedtest_shogun160", "Three radial gauges, source maxima/colors, optional download/upload rounding, and the update-entity action are covered."],
-    ["custom_card_tpx01_aircondition", "HVAC icon states, more-info, cool/off power, decrement script, increment script, and unavailable controls are covered."],
-    ["custom_card_vncntdev_device_tracer", "Online/offline/unavailable states, status/name swapping, colors, icon, and more-info are covered."],
-    ["custom_card_water_heater", "Forced-off, inactive, and power-driven heating labels plus tap/hold more-info are covered without invented temperature controls."],
-    ["custom_card_wilbiev_subtitle", "Subtitle migration, 24px divider hierarchy, bottom divider, editor round trip, and no-action behavior are covered."],
-    ["custom_card_wilbiev_title", "Title migration, optional back chip, 36px divider hierarchy, and both exact navigation interactions are covered."],
-  ] satisfies Array<[string, string]>).map(([sourceId, coverage]) => [sourceId, {
-    status: "pending",
+    [
+      "custom_card_speedtest_shogun160",
+      "Three radial gauges, source maxima/colors, optional download/upload rounding, and the update-entity action are covered.",
+      "Authenticated Home Assistant rendering, direct picker registration, editor schema, and 330px no-overflow geometry passed. The update action was not operated live; its exact payload remains locally certified.",
+    ],
+    [
+      "custom_card_tpx01_aircondition",
+      "HVAC icon states, more-info, cool/off power, decrement script, increment script, and unavailable controls are covered.",
+      "Authenticated Home Assistant rendering, direct picker registration, editor schema, 330px no-overflow geometry, and climate.living_room more-info passed. HVAC and script controls were not operated live.",
+    ],
+    [
+      "custom_card_vncntdev_device_tracer",
+      "Online/offline/unavailable states, status/name swapping, colors, icon, and more-info are covered.",
+      "Authenticated Home Assistant rendering, direct picker registration, editor schema, 330px no-overflow geometry, and device_tracker.joris_mobile more-info passed.",
+    ],
+    [
+      "custom_card_water_heater",
+      "Forced-off, inactive, and power-driven heating labels plus tap/hold more-info are covered without invented temperature controls.",
+      "Authenticated Home Assistant rendering, direct picker registration, editor schema, 330px no-overflow geometry, and water_heater.hot_water more-info passed. No optional power_entity was supplied, so the source-faithful inactive state was accepted.",
+    ],
+    [
+      "custom_card_wilbiev_subtitle",
+      "Subtitle migration, 24px divider hierarchy, bottom divider, editor round trip, and no-action behavior are covered.",
+      "Authenticated Home Assistant rendering, canonical Heading Card picker registration, divider-subtitle editor schema, and 330px no-overflow geometry passed. The no-action interaction left the URL unchanged.",
+    ],
+    [
+      "custom_card_wilbiev_title",
+      "Title migration, optional back chip, 36px divider hierarchy, and both exact navigation interactions are covered.",
+      "Authenticated Home Assistant rendering, canonical Heading Card picker registration, divider-title editor schema, and 330px no-overflow geometry passed. With no navigation path configured, the no-action interaction left the URL unchanged.",
+    ],
+  ] satisfies Array<[string, string, string]>).map(([sourceId, coverage, liveEvidence]) => [sourceId, {
+    status: "accepted",
     pickerAccepted: true,
     editorAccepted: true,
     visualAccepted: true,
     statesAccepted: true,
     interactionsAccepted: true,
-    liveAccepted: false,
+    liveAccepted: true,
     inspectedAt: "2026-09-23",
     reviewerNotes: [
       "Pinned YAML, documentation, and the focused matched-width real-MDI comparison were manually inspected.",
       `${coverage} Exact local evidence is recorded in tests/speed-climate-title-certification.test.ts and docs/assets/visual-audit/speed-climate-title-local-certification.json.`,
-      "The prepared semantic Home Assistant configuration is recorded, but no authenticated live execution was performed in this child session.",
+      `${liveEvidence} Authenticated evidence is recorded in docs/assets/visual-audit/speed-climate-title-live-certification.json.`,
     ],
   } satisfies Partial<VisualAuditEntry>])),
   card_battery: {
