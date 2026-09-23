@@ -599,6 +599,33 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         ]),
         ...presentation(),
       ]
+    : item.upstreamId === "custom_card_wsly_pollen"
+      ? [
+        entity(["sensor"]),
+        entity(["sensor"], "trees_entity"),
+        text("custom_card_wsly_pollen_tree_name"),
+        { name: "custom_card_wsly_pollen_tree_icon", selector: { icon: {} } },
+        entity(["sensor"], "grass_entity"),
+        text("custom_card_wsly_pollen_grass_name"),
+        { name: "custom_card_wsly_pollen_grass_icon", selector: { icon: {} } },
+        entity(["sensor"], "weeds_entity"),
+        text("custom_card_wsly_pollen_weed_name"),
+        { name: "custom_card_wsly_pollen_weed_icon", selector: { icon: {} } },
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_yagrasdemonde_lights_count"
+      ? [
+        entity(["sensor"]),
+        select("ulm_custom_card_yagrasdemonde_lights_count_type", [
+          { value: "light", label: "Lights" },
+          { value: "cover", label: "Covers" },
+        ]),
+        { name: "ulm_custom_card_yagrasdemonde_lights_count_icon_on", selector: { icon: {} } },
+        { name: "ulm_custom_card_yagrasdemonde_lights_count_icon_off", selector: { icon: {} } },
+        { name: "ulm_custom_card_yagrasdemonde_lights_count_color", selector: { ui_color: {} } },
+        toggle("ulm_custom_card_yagrasdemonde_lights_count_force_background_color"),
+        ...presentation(),
+      ]
     : item.upstreamId === "custom_card_nik_nas"
       ? [
         entity(["binary_sensor", "sensor", "switch"]),

@@ -891,7 +891,7 @@ export const sharedStyles = css`
   .console-logo { display: grid; width: 52px; height: 52px; place-items: center; border-radius: 50%; background: rgba(255,255,255,.1); }
   .console-logo ha-icon { --mdc-icon-size: 32px; } .state-idle .console-logo { color: rgb(var(--ulm-blue)); background: rgba(var(--ulm-blue), .2); } .state-standby .console-logo { color: rgba(var(--ulm-grey), .35); background: rgba(var(--ulm-grey), .05); }
   .has-artwork .console-content .ulm-label { color: rgba(255,255,255,.75); }
-  .custom-qubino, .custom-senoro-window, .custom-lights-count { display: grid; min-height: 64px; grid-template-columns: 46px minmax(0, 1fr); align-items: center; gap: 10px; padding: 10px 14px; }
+  .custom-qubino, .custom-senoro-window { display: grid; min-height: 64px; grid-template-columns: 46px minmax(0, 1fr); align-items: center; gap: 10px; padding: 10px 14px; }
   .custom-qubino .ulm-icon { color: rgb(var(--ulm-blue)); background: rgba(var(--ulm-blue), .2); }
   .ristou-person-main { grid-template-columns: min-content minmax(0,1fr) auto; align-items: center; }
   .ristou-person-avatar { position: relative; display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-grey), .05); background-position: center; background-size: cover; }
@@ -932,8 +932,22 @@ export const sharedStyles = css`
   .water-heater-controls { display: grid; grid-template-columns: 48px 1fr 48px; align-items: center; gap: 8px; } .water-heater-controls span { text-align: center; font-size: 11px; text-transform: capitalize; }
   .custom-wilbiev-title { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; padding: 8px 0; }
   .custom-wilbiev-title span { height: 1px; background: var(--divider-color); } .custom-wilbiev-title b { font-size: 16px; } .custom-wilbiev-title.is-subtitle b { color: var(--secondary-text-color); font-size: 12px; }
-  .custom-wsly-pollen { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 12px; }
-  .custom-wsly-pollen > span { display: grid; min-height: 70px; place-items: center; padding: 7px; border-radius: 15px; background: color-mix(in srgb, var(--pollen) 12%, transparent); color: var(--pollen); text-align: center; }
-  .custom-wsly-pollen b { font-size: 13px; } .custom-wsly-pollen small { font-size: 9px; }
+  .custom-wsly-pollen { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 8px; }
+  .pollen-item { display: grid; min-width: 0; min-height: 92px; place-items: center; gap: 3px; padding: 6px 3px; border: 0; border-radius: var(--border-radius, 12px); background: transparent; color: var(--primary-text-color); text-align: center; cursor: pointer; }
+  .pollen-item:disabled { cursor: default; opacity: .55; }
+  .pollen-item-icon { position: relative; display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--pollen) 20%, transparent); color: var(--pollen); }
+  .pollen-item-icon > ha-icon { --mdc-icon-size: 22px; }
+  .pollen-extreme { position: absolute; top: -3px; right: -4px; display: grid; width: 18px; height: 18px; place-items: center; border: 2px solid var(--card-background-color); border-radius: 50%; background: rgba(var(--color-red, 244, 67, 54), 1); color: white; }
+  .pollen-extreme ha-icon { --mdc-icon-size: 11px; }
+  .custom-wsly-pollen b { overflow: hidden; max-width: 100%; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+  .custom-wsly-pollen small { color: var(--secondary-text-color); font-size: 10px; }
+  .custom-lights-count { min-height: 64px; }
+  .lights-count-content { display: grid; min-height: 64px; grid-template-columns: min-content min-content; align-items: center; justify-content: start; gap: 12px; padding: 10px 14px; border-radius: inherit; }
+  .custom-lights-count.is-active .lights-count-content { background: color-mix(in srgb, var(--count-accent, rgb(var(--ulm-yellow))) 10%, var(--card-background-color)); }
+  .custom-lights-count.force-background .lights-count-content { background: color-mix(in srgb, var(--count-accent, rgb(var(--ulm-yellow))) 14%, transparent); }
+  .lights-count-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-grey), .05); color: rgba(var(--color-theme, var(--ulm-grey)), .2); }
+  .custom-lights-count.is-active .lights-count-icon { background: color-mix(in srgb, var(--count-accent) 20%, transparent); color: var(--count-accent); }
+  .lights-count-name { color: var(--primary-text-color); font-size: 14px; font-weight: 700; white-space: nowrap; }
+  .custom-lights-count.is-active .lights-count-name { color: var(--count-accent); }
   .preview { padding: 16px; color: var(--secondary-text-color); text-align: center; }
 `;

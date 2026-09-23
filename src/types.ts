@@ -90,6 +90,9 @@ export interface AdditionConfig {
   collapsed?: boolean;
   temperature_entity?: string;
   humidity_entity?: string;
+  trees_entity?: string;
+  grass_entity?: string;
+  weeds_entity?: string;
   battery_entity?: string;
   consumption_entity?: string;
   fan_entity?: string;

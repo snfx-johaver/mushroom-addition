@@ -32,11 +32,11 @@ describe("visual audit manifest", () => {
   it("reports exact accepted progress without inferring parity from family mappings", () => {
     expect(visualAuditProgress()).toEqual({
       accepted: 60,
-      pickerAccepted: 66,
-      editorAccepted: 66,
-      visualAccepted: 66,
-      statesAccepted: 66,
-      interactionsAccepted: 66,
+      pickerAccepted: 68,
+      editorAccepted: 68,
+      visualAccepted: 68,
+      statesAccepted: 68,
+      interactionsAccepted: 68,
       liveAccepted: 60,
       total: 86,
     });
@@ -213,5 +213,33 @@ describe("visual audit manifest", () => {
         liveAccepted: true,
       });
     }
+  });
+
+  it("certifies only local stages for the final pollen and lights sources", () => {
+    expect(VISUAL_AUDIT.find((entry) => entry.sourceId === "custom_card_wsly_pollen")).toMatchObject({
+      status: "pending",
+      pickerAccepted: true,
+      editorAccepted: true,
+      visualAccepted: true,
+      statesAccepted: true,
+      interactionsAccepted: true,
+      liveAccepted: false,
+      fixturePath: "demo/final-pollen-lights-comparison.html",
+      artifactPath: "docs/assets/visual-audit/final-pollen-lights-comparison.png",
+      widths: [368],
+    });
+    expect(VISUAL_AUDIT.find((entry) => entry.sourceId === "custom_card_yagrasdemonde_lights_count"))
+      .toMatchObject({
+        status: "pending",
+        pickerAccepted: true,
+        editorAccepted: true,
+        visualAccepted: true,
+        statesAccepted: true,
+        interactionsAccepted: true,
+        liveAccepted: false,
+        fixturePath: "demo/final-pollen-lights-comparison.html",
+        artifactPath: "docs/assets/visual-audit/final-pollen-lights-comparison.png",
+        widths: [486],
+      });
   });
 });

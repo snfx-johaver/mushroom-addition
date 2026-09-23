@@ -174,6 +174,19 @@ const supportedByItem: Record<string, readonly string[]> = {
     "ulm_custom_card_imswel_medias_index",
     "ulm_custom_card_imswel_medias_platform",
   ],
+  custom_card_yagrasdemonde_lights_count: [
+    "ulm_custom_card_yagrasdemonde_lights_count_color",
+    "ulm_custom_card_yagrasdemonde_lights_count_cover_0",
+    "ulm_custom_card_yagrasdemonde_lights_count_cover_1",
+    "ulm_custom_card_yagrasdemonde_lights_count_cover_many",
+    "ulm_custom_card_yagrasdemonde_lights_count_force_background_color",
+    "ulm_custom_card_yagrasdemonde_lights_count_icon_off",
+    "ulm_custom_card_yagrasdemonde_lights_count_icon_on",
+    "ulm_custom_card_yagrasdemonde_lights_count_light_0",
+    "ulm_custom_card_yagrasdemonde_lights_count_light_1",
+    "ulm_custom_card_yagrasdemonde_lights_count_light_many",
+    "ulm_custom_card_yagrasdemonde_lights_count_type",
+  ],
 };
 
 export const supportedUpstreamOption = (item: CatalogItem, name: string): boolean =>

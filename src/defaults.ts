@@ -157,13 +157,29 @@ export const populatedDefaultsFor = (
                         ulm_custom_card_ristou_map_hours_to_show: 0,
                         ulm_custom_card_ristou_map_default_zoom: 11,
                       }
-            : {};
+                      : item.upstreamId === "custom_card_wsly_pollen"
+                        ? {
+                          icon: undefined,
+                          show_state: false,
+                        }
+                        : item.upstreamId === "custom_card_yagrasdemonde_lights_count"
+                          ? {
+                            icon: undefined,
+                            show_state: false,
+                            ulm_custom_card_yagrasdemonde_lights_count_type: "light",
+                            ulm_custom_card_yagrasdemonde_lights_count_icon_off: "mdi:lightbulb-outline",
+                            ulm_custom_card_yagrasdemonde_lights_count_color: "yellow",
+                            ulm_custom_card_yagrasdemonde_lights_count_force_background_color: false,
+                          }
+                          : {};
   const sourceDrivenIcon = new Set([
     "card_battery",
     "card_binary_sensor",
     "card_cover",
     "card_fan",
     "card_input_boolean",
+    "custom_card_wsly_pollen",
+    "custom_card_yagrasdemonde_lights_count",
   ]).has(item.upstreamId);
   return {
     type: `custom:${item.tag}`,
@@ -176,7 +192,9 @@ export const populatedDefaultsFor = (
     name: entity?.attributes.friendly_name,
     icon: sourceDrivenIcon ? undefined : sourceDefaults.icon ?? defaultIconFor(item, entity),
     show_icon: true,
-    show_state: true,
+    show_state: ["custom_card_wsly_pollen", "custom_card_yagrasdemonde_lights_count"].includes(item.upstreamId)
+      ? false
+      : true,
     layout: "horizontal",
   };
 };

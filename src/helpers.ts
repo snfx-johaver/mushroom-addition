@@ -52,7 +52,10 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
   const qubinoTarget = String(upstream.type).includes("custom-card-qubino")
     ? upstream.qubino_more_info_entity ?? upstream.entity
     : undefined;
-  const defaultAction = qubinoTarget
+  const sourceDisablesTap = /(?:wsly-pollen|yagrasdemonde-lights-count)/.test(type);
+  const defaultAction = sourceDisablesTap
+    ? { action: "none" }
+    : qubinoTarget
     ? { action: "more-info", entity: qubinoTarget }
     : upstream.navigation_path
     ? { action: "navigate", navigation_path: upstream.navigation_path }
@@ -336,6 +339,11 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
     migrated.ulm_custom_card_ristou_map_enable ??= typeof config.ulm_card_ristou_person_show_map === "boolean"
       ? config.ulm_card_ristou_person_show_map
       : undefined;
+  }
+  if (String(config.type).includes("wsly-pollen")) {
+    migrated.trees_entity ??= entityId(config.custom_card_wsly_pollen_tree);
+    migrated.grass_entity ??= entityId(config.custom_card_wsly_pollen_grass);
+    migrated.weeds_entity ??= entityId(config.custom_card_wsly_pollen_weed);
   }
   return migrated;
 };

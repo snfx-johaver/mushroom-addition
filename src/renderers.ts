@@ -2823,21 +2823,102 @@ const renderCustomTitle = (ctx: RenderContext): TemplateResult => {
 };
 
 const renderWslyPollen = (ctx: RenderContext): TemplateResult => {
-  const details = [ctx.entity, ...configuredEntities(ctx)].filter(Boolean).slice(0, 3) as HassEntity[];
+  const translations: Record<string, Record<string, string>> = {
+    en: { none: "None", very_low: "Very low", low: "Low", medium: "Medium", high: "High", very_high: "Very high", tree: "Trees", grass: "Grass", weed: "Weeds" },
+    de: { none: "Keine", very_low: "Sehr niedrig", low: "Niedrig", medium: "Mittel", high: "Hoch", very_high: "Sehr hoch", tree: "Bäume", grass: "Gräser", weed: "Kräuter" },
+    es: { none: "Ninguno", very_low: "Muy bajo", low: "Bajo", medium: "Medio", high: "Alto", very_high: "Muy alto", tree: "Árboles", grass: "Hierbas", weed: "Malezas" },
+    nl: { none: "Geen", very_low: "Zeer laag", low: "Laag", medium: "Gemiddeld", high: "Hoog", very_high: "Extreem hoog", tree: "Bomen", grass: "Grassen", weed: "Kruiden" },
+    pl: { none: "Brak", very_low: "Bardzo słabe", low: "Słabe", medium: "Średnie", high: "Wysokie", very_high: "Bardzo wysokie", tree: "Drzewa", grass: "Trawy", weed: "Zioła" },
+  };
+  const language = translations[(ctx.hass.language ?? "en").split("-")[0]] ?? translations.en;
+  const items = [
+    {
+      entity: linkedState(ctx, "trees_entity"),
+      name: configured<string>(ctx, "custom_card_wsly_pollen_tree_name"),
+      icon: configured<string>(ctx, "custom_card_wsly_pollen_tree_icon"),
+      kind: "tree",
+      fallbackIcon: "mdi:tree",
+    },
+    {
+      entity: linkedState(ctx, "grass_entity"),
+      name: configured<string>(ctx, "custom_card_wsly_pollen_grass_name"),
+      icon: configured<string>(ctx, "custom_card_wsly_pollen_grass_icon"),
+      kind: "grass",
+      fallbackIcon: "mdi:grass",
+    },
+    {
+      entity: linkedState(ctx, "weeds_entity"),
+      name: configured<string>(ctx, "custom_card_wsly_pollen_weed_name"),
+      icon: configured<string>(ctx, "custom_card_wsly_pollen_weed_icon"),
+      kind: "weed",
+      fallbackIcon: "mdi:flower-pollen",
+    },
+  ];
+  const severity = (state?: string): { label: string; color: string; extreme: boolean } => {
+    const normalized = state?.toLowerCase() ?? "none";
+    const colors: Record<string, string> = {
+      none: "rgba(var(--color-grey, 158, 158, 158), 1)",
+      very_low: "rgba(var(--color-green, 76, 175, 80), 1)",
+      low: "rgb(241, 196, 15)",
+      medium: "rgb(243, 156, 18)",
+      high: "rgb(231, 76, 60)",
+      very_high: "rgba(var(--color-pink, 233, 30, 99), 1)",
+    };
+    return {
+      label: language[normalized] ?? language.none,
+      color: colors[normalized] ?? colors.none,
+      extreme: normalized === "very_high",
+    };
+  };
   return ctx.actionSurface("custom-wsly-pollen", html`
-    ${details.map((entity, index) => {
-      const [label, color] = pollenSeverity(numeric(entity.state) ?? 0);
-      return html`<span style=${`--pollen:${color}`}><ha-icon .icon=${["mdi:tree", "mdi:grass", "mdi:flower-pollen"][index]}></ha-icon><b>${stateLabel(entity)}</b><small>${label}</small></span>`;
+    ${items.map((item) => {
+      const state = severity(item.entity?.state);
+      const name = item.name || item.entity?.attributes.friendly_name || language[item.kind];
+      const iconName = item.icon || item.entity?.attributes.icon || item.fallbackIcon;
+      return html`<button class="pollen-item" style=${`--pollen:${state.color}`}
+        ?disabled=${!item.entity}
+        @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => item.entity && runControlAction(event, ctx, { action: "more-info" }, item.entity.entity_id)}>
+        <span class="pollen-item-icon"><ha-icon .icon=${iconName}></ha-icon>
+          ${state.extreme ? html`<span class="pollen-extreme"><ha-icon .icon=${"mdi:exclamation-thick"}></ha-icon></span>` : nothing}
+        </span>
+        <b>${name}</b><small>${item.entity ? state.label : "Entity unavailable"}</small>
+      </button>`;
     })}
   `);
 };
 
 const renderLightsCount = (ctx: RenderContext): TemplateResult => {
-  const value = numeric(ctx.entity?.state) ?? 0;
+  const value = numeric(ctx.entity?.state);
   const kind = configured<string>(ctx, "ulm_custom_card_yagrasdemonde_lights_count_type") || "light";
-  const icons: Record<string, string> = { light: value === 0 ? "mdi:lightbulb-outline" : "mdi:lightbulb-on", switch: "mdi:toggle-switch", cover: "mdi:blinds" };
-  const noun = value === 1 ? kind : `${kind}s`;
-  return ctx.actionSurface("custom-lights-count", html`${iconBubble(ctx, icons[kind] || icons.light, value > 0 ? "yellow" : "grey")}${heading(ctx, `${value} ${noun} on`)}`);
+  const languageDefaults = {
+    light: { zero: "No lights on", one: "1 light on", many: "lights on" },
+    cover: { zero: "No covers open", one: "1 cover open", many: "covers open" },
+  };
+  const labels = languageDefaults[kind === "cover" ? "cover" : "light"];
+  const prefix = `ulm_custom_card_yagrasdemonde_lights_count_${kind === "cover" ? "cover" : "light"}`;
+  const label = ctx.entity?.state === "unavailable" || value === undefined
+    ? ctx.hass.localize?.("state.default.unavailable") || "Unavailable"
+    : value === 0
+      ? configured<string>(ctx, `${prefix}_0`) || labels.zero
+      : value === 1
+        ? configured<string>(ctx, `${prefix}_1`) || labels.one
+        : `${value} ${configured<string>(ctx, `${prefix}_many`) || labels.many}`;
+  const active = value !== undefined && value > 0;
+  const sourceIcon = active
+    ? configured<string>(ctx, "ulm_custom_card_yagrasdemonde_lights_count_icon_on") ||
+      String(ctx.entity?.attributes.icon || (kind === "cover" ? "mdi:window-shutter-open" : "mdi:lightbulb-on-outline"))
+    : configured<string>(ctx, "ulm_custom_card_yagrasdemonde_lights_count_icon_off") ||
+      (kind === "cover" ? "mdi:window-shutter" : "mdi:lightbulb-outline");
+  const color = configured<string>(ctx, "ulm_custom_card_yagrasdemonde_lights_count_color") || "yellow";
+  const accent = configuredColor(color, "rgb(var(--ulm-yellow))");
+  const forceBackground = configured<boolean>(ctx, "ulm_custom_card_yagrasdemonde_lights_count_force_background_color") === true;
+  return ctx.actionSurface(`custom-lights-count ${active ? "is-active" : ""} ${active && forceBackground ? "force-background" : ""}`, html`
+    <div class="lights-count-content" style=${`--count-accent:${accent}`}>
+      <span class="lights-count-icon"><ha-icon .icon=${sourceIcon}></ha-icon></span>
+      <span class="lights-count-name">${label}</span>
+    </div>
+  `);
 };
 
 const renderGeneric = (ctx: RenderContext): TemplateResult => ctx.actionSurface(`ulm-row ulm-generic ${configured<boolean>(ctx, "ulm_card_generic_force_background_color") === true ? "force-background" : ""}`, html`

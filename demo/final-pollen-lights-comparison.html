@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final pollen and lights comparisons</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --primary-text-color: #282828;
+        --secondary-text-color: #9e9e9e;
+        --primary-background-color: #fff;
+        --card-background-color: #fff;
+        --ha-card-background: #fff;
+        --ha-card-box-shadow: 0 2px 8px rgba(0,0,0,.16);
+        --divider-color: #e8e8e8;
+        --border-radius: 20px;
+        --ulm-grey: 158, 158, 158;
+        --ulm-red: 244, 67, 54;
+        --ulm-yellow: 255, 152, 0;
+        font-family: Roboto, Arial, sans-serif;
+        background: #eee;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 18px; }
+      h1 { margin: 0 0 16px; font-size: 18px; }
+      section { margin-bottom: 22px; }
+      h2 { margin: 0 0 8px; font-size: 14px; }
+      .comparison { display: grid; grid-template-columns: var(--width) var(--width); gap: 18px; align-items: center; }
+      .column { min-width: 0; }
+      .label { margin-bottom: 6px; color: #666; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+      .reference-frame { width: var(--width); height: var(--height); overflow: hidden; border-radius: 20px; background: #eee; }
+      .reference-frame img { display: block; width: var(--image-width); max-width: none; transform: translate(var(--image-x), var(--image-y)); }
+      .implementation { display: grid; width: var(--width); min-height: var(--height); align-items: center; }
+      ha-card { display: block; }
+    </style>
+  </head>
+  <body>
+    <h1>Matched-width pinned reference comparisons</h1>
+    <main id="comparisons"></main>
+    <script type="module" src="/demo/final-pollen-lights-comparison.ts"></script>
+  </body>
+</html>

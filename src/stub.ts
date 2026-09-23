@@ -60,7 +60,12 @@ export const createStubConfig = (
                     ? findEntity(["fan"], ["air", "purifier"])
                     : descriptor.upstreamId === "card_input_boolean"
                       ? findEntity(["input_boolean"], ["dropdown", "welcome"])
-                      : descriptor.upstreamId === "custom_card_nik_tablet"
+                        : descriptor.upstreamId === "custom_card_wsly_pollen"
+                          ? findEntity(["sensor"], ["pollen", "grass"])
+                        : descriptor.upstreamId === "custom_card_yagrasdemonde_lights_count"
+                          ? findEntity(["sensor"], ["number", "lights", "on"]) ??
+                            findEntity(["sensor"], ["lights", "on"])
+                        : descriptor.upstreamId === "custom_card_nik_tablet"
                         ? findEntity(["binary_sensor", "sensor", "switch"], ["tablet"])
                         : descriptor.upstreamId === "custom_card_homeassistant_updates"
                           ? findEntity(["update", "sensor", "binary_sensor"], ["core"])
@@ -283,6 +288,23 @@ export const createStubConfig = (
       ? {
         ulm_card_esh_welcome_collapse: findEntity(["input_boolean"], ["welcome"]),
         ulm_weather: findEntity(["weather"], []),
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_wsly_pollen"
+      ? {
+        trees_entity: findEntity(["sensor"], ["pollen", "trees"]) ??
+          findEntity(["sensor"], ["tree", "pollen"]),
+        grass_entity: findEntity(["sensor"], ["pollen", "grass"]) ??
+          findEntity(["sensor"], ["grass", "pollen"]) ?? entity,
+        weeds_entity: findEntity(["sensor"], ["pollen", "weeds"]) ??
+          findEntity(["sensor"], ["weed", "pollen"]),
+        tap_action: { action: "none" },
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_yagrasdemonde_lights_count"
+      ? {
+        ulm_custom_card_yagrasdemonde_lights_count_type: "light",
+        tap_action: { action: "none" },
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_person_info"
