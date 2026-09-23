@@ -434,6 +434,24 @@ const accepted: Record<string, Partial<VisualAuditEntry>> = {
             : "The dependency-free Lit renderer preserves the pinned source composition and uses real @mdi/js paths in the focused fixture.",
     ],
   } satisfies Partial<VisualAuditEntry>])),
+  ...Object.fromEntries(([
+    ["custom_card_saxel_fan", 249, ["custom-saxel-fan", "saxel-fan-summary", "saxel-fan-controls"]],
+    ["custom_card_scenes", 486, ["ulm-scenes", "source-scene-grid", "scene-button"]],
+    ["custom_card_schumijo_car", 313, ["custom-schumijo-car", "car-badge", "car-metrics"]],
+    ["custom_card_schumijo_flower", 274, ["custom-schumijo-flower", "flower-heading", "flower-bars"]],
+    ["custom_card_senoro_win", 200, ["custom-senoro-window", "senoro-icon", "senoro-state-badge"]],
+    ["custom_card_sisimomo_printer", 500, ["custom-sisimomo-printer", "printer-summary", "printer-cartridges"]],
+  ] satisfies Array<[string, number, string[]]>).map(([sourceId, width, requiredRegions]) => [sourceId, {
+    ...(acceptedCustoms[sourceId] ?? {}),
+    compositionId: `custom:${sourceId}:source-faithful`,
+    fixturePath: "demo/fan-car-printer-comparison.html",
+    artifactPath: `docs/assets/visual-audit/${sourceId.replaceAll("_", "-")}-comparison.png`,
+    widths: [width],
+    requiredRegions,
+    forbiddenRegions: ["ulm-metric", "ulm-detail-card", "ulm-device-status"],
+    status: "pending",
+    inspectedAt: "2026-09-23",
+  } satisfies Partial<VisualAuditEntry>])),
   custom_card_afvalophaling: {
     compositionId: "custom:custom_card_afvalophaling:semantic-waste-streams",
     referenceScreenshot: ".tmp-ui-minimalist/docs/assets/img/ulm_cards/custom_card_afvalophaling_1.png",
@@ -979,6 +997,46 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
       "Authenticated evidence, exact live configuration, picker/editor checks, geometry, and safe interaction results are recorded in status-pollen-live-certification.json.",
       liveNote,
     ],
+  } satisfies Partial<VisualAuditEntry>])),
+  ...Object.fromEntries(([
+    ["custom_card_saxel_fan", 249],
+    ["custom_card_scenes", 486],
+    ["custom_card_schumijo_car", 313],
+    ["custom_card_schumijo_flower", 274],
+    ["custom_card_senoro_win", 200],
+    ["custom_card_sisimomo_printer", 500],
+  ] satisfies Array<[string, number]>).map(([sourceId, width]) => [sourceId, {
+    status: "pending",
+    pickerAccepted: true,
+    editorAccepted: true,
+    visualAccepted: true,
+    statesAccepted: true,
+    interactionsAccepted: true,
+    liveAccepted: false,
+    inspectedAt: "2026-09-23",
+    reviewerNotes: [
+      `Pinned YAML and the focused ${width}px matched-width comparison with real @mdi/js paths were manually inspected.`,
+      "Source-specific defaults, graphical editor fields, legacy migration, state matrices, and every visible interaction are covered by tests/fan-car-printer-certification.test.ts.",
+      "The exact prepared live configuration and all source-specific limitations are recorded in docs/assets/visual-audit/fan-car-printer-local-certification.json.",
+      "No live Home Assistant execution or physical action was performed.",
+    ],
+    deviations: sourceId === "custom_card_saxel_fan"
+      ? ["Upstream custom:my-slider is replaced by a dependency-free Lit range control."]
+      : sourceId === "custom_card_schumijo_car"
+        ? [
+          "The removed browser_mod map popup is represented by standard more-info on the tracker slot.",
+          "The prepared instance has no vehicle device_tracker or lock entity; the model and doors entities are used as read-only semantic substitutes.",
+        ]
+        : sourceId === "custom_card_schumijo_flower"
+          ? [
+            "Upstream custom:flower-card is replaced by dependency-free Lit attribute bars.",
+            "The prepared instance exposes separate soil sensors rather than a plant entity, so only the moisture source slot can be mapped honestly.",
+          ]
+          : sourceId === "custom_card_senoro_win"
+            ? ["The prepared instance has no handle-position entity, so live rendering is expected to remain unavailable."]
+            : sourceId === "custom_card_sisimomo_printer"
+              ? ["Prepared printer error and power entities are not ink-level sensors and are intentionally omitted from cartridges."]
+              : [],
   } satisfies Partial<VisualAuditEntry>])),
   card_generic: {
     status: "pending",

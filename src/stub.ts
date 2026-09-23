@@ -123,6 +123,17 @@ export const createStubConfig = (
                                 ? findEntity(["sensor"], ["download"])
                               : descriptor.upstreamId === "card_room"
                                 ? findEntity(["light"], [])
+                                : descriptor.upstreamId === "custom_card_saxel_fan"
+                                  ? findEntity(["fan"], ["air", "purifier"]) ?? findEntity(["fan"], [])
+                                  : descriptor.upstreamId === "custom_card_schumijo_car"
+                                    ? findEntity(["sensor"], ["model"]) ?? findEntity(["device_tracker"], [])
+                                    : descriptor.upstreamId === "custom_card_schumijo_flower"
+                                      ? findEntity(["plant"], []) ?? findEntity(["sensor"], ["soil", "humidity"])
+                                      : descriptor.upstreamId === "custom_card_senoro_win"
+                                        ? findEntity(["binary_sensor"], ["window"]) ?? findEntity(["binary_sensor"], [])
+                                        : descriptor.upstreamId === "custom_card_sisimomo_printer"
+                                          ? findEntity(["binary_sensor", "sensor"], ["printer"]) ??
+                                            findEntity(["binary_sensor", "sensor"], ["online"])
                                 : descriptor.upstreamId === "custom_card_paddy_waste_collection"
                                   ? findEntity(["sensor"], ["trash", "today"]) ?? findEntity(["sensor"], ["waste"])
                                   : descriptor.upstreamId === "custom_card_paddy_welcome" ||
@@ -394,6 +405,53 @@ export const createStubConfig = (
         ulm_card_person_driving_entity: findEntity(["binary_sensor"], ["person", "driving"]),
         ulm_card_person_battery_entity: findEntityExcluding(["sensor"], ["person", "battery"], ["state"]),
         ulm_card_person_battery_state_entity: findEntity(["sensor", "binary_sensor"], ["person", "battery", "state"]),
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_saxel_fan"
+      ? {
+        entity,
+        tap_action: { action: "toggle" },
+        hold_action: { action: "more-info" },
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_schumijo_car"
+      ? {
+        entity,
+        ulm_card_schumijo_car_tracker: entity,
+        ulm_card_schumijo_car_lock:
+          findEntity(["lock"], ["car"]) ?? findEntity(["binary_sensor"], ["doors"]),
+        ulm_card_schumijo_car_energy_level:
+          findEntity(["sensor"], ["primary", "engine", "percent"]) ?? findEntity(["sensor"], ["battery"]),
+        ulm_card_schumijo_car_range: findEntity(["sensor"], ["range"]),
+        ulm_card_schumijo_car_name: entity ? hass?.states[entity]?.attributes.friendly_name : undefined,
+        tap_action: { action: "more-info" },
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_schumijo_flower"
+      ? {
+        entity,
+        ulm_card_flower_entity: entity,
+        ulm_card_flower_name: entity ? hass?.states[entity]?.attributes.friendly_name : "No name set",
+        ulm_card_flower_show_bars: ["temperature", "humidity", "moisture"],
+        tap_action: { action: "more-info" },
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_senoro_win"
+      ? {
+        entity,
+        ulm_custom_card_senoro_win_entity: entity,
+        ulm_custom_card_senoro_win_handle: findEntity(["sensor"], ["window", "handle"]) ??
+          findEntity(["sensor"], ["handle"]),
+        ulm_custom_card_senoro_win_battery_level: findEntity(["sensor"], ["window", "battery"]) ??
+          findEntity(["sensor"], ["battery"]),
+        tap_action: { action: "none" },
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_sisimomo_printer"
+      ? {
+        entity,
+        ulm_card_printer_name: entity ? hass?.states[entity]?.attributes.friendly_name : "Printer",
+        tap_action: { action: "none" },
       }
       : {}),
     ...(descriptor.upstreamId === "card_person"

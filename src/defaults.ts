@@ -151,6 +151,43 @@ export const populatedDefaultsFor = (
               nav_4: "climate", icon_4: "mdi:radiator", name_4: "Climate", color_4: "purple",
               nav_5: "network", icon_5: "mdi:flask", name_5: "Lab", color_5: "red",
             }
+            : item.upstreamId === "custom_card_saxel_fan"
+              ? {
+                collapsable: true,
+                ulm_card_fan_horizontal: false,
+                ulm_card_fan_temp_attribute: "temp",
+                ulm_card_fan_hum_attribute: "hum",
+                always_show_attributes: false,
+                ulm_show_button: true,
+                ulm_button_icon: "mdi:rotate-3d-variant",
+                ulm_button_service: "fan.oscillate",
+                oscillate_attribute: "oscillate",
+              }
+              : item.upstreamId === "custom_card_schumijo_car"
+                ? {
+                  ulm_custom_card_schumijo_car_default_name: "O meu carro",
+                  ulm_custom_card_schumijo_car_energy_level: "Nível de energia",
+                  ulm_custom_card_schumijo_car_range: "Alcance",
+                }
+                : item.upstreamId === "custom_card_schumijo_flower"
+                  ? {
+                    ulm_card_flower_name: "No name set",
+                    ulm_custom_card_schumijo_flower_correct: "Correto",
+                    ulm_custom_card_schumijo_flower_problem: "Problema",
+                  }
+                  : item.upstreamId === "custom_card_senoro_win"
+                    ? {
+                      ulm_custom_card_senoro_win_color: "blue",
+                      ulm_custom_card_senoro_win_force_background_color: false,
+                      ulm_custom_card_senoro_win_battery_warning: 20,
+                      ulm_custom_card_senoro_win_battery_warning_low: 5,
+                      ulm_show_last_changed: false,
+                    }
+                    : item.upstreamId === "custom_card_sisimomo_printer"
+                      ? {
+                        ulm_idle: "idle",
+                        tap_action: { action: "none" },
+                      }
             : item.upstreamId === "custom_card_paddy_welcome"
               ? {
                 variant: Object.keys(hass?.states ?? {}).some((id) => id.startsWith("weather.")) ? "weather" : "message",

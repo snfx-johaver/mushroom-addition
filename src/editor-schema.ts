@@ -583,6 +583,60 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         ]),
         ...presentation(),
       ]
+    : item.upstreamId === "custom_card_saxel_fan"
+      ? [
+        entity(["fan"]),
+        toggle("collapsable"),
+        toggle("ulm_card_fan_horizontal"),
+        text("ulm_card_fan_temp_attribute"),
+        text("ulm_card_fan_hum_attribute"),
+        toggle("always_show_attributes"),
+        toggle("ulm_show_button"),
+        { name: "ulm_button_icon", selector: { icon: {} } },
+        text("ulm_button_service"),
+        text("oscillate_attribute"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_schumijo_car"
+      ? [
+        entity(["device_tracker", "sensor"]),
+        entity(["device_tracker", "sensor"], "ulm_card_schumijo_car_tracker"),
+        entity(["lock", "binary_sensor"], "ulm_card_schumijo_car_lock"),
+        entity(["sensor"], "ulm_card_schumijo_car_energy_level"),
+        entity(["sensor"], "ulm_card_schumijo_car_range"),
+        text("ulm_card_schumijo_car_name"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_schumijo_flower"
+      ? [
+        entity(["plant", "sensor"]),
+        entity(["plant", "sensor"], "ulm_card_flower_entity"),
+        text("ulm_card_flower_name"),
+        text("ulm_card_flower_species"),
+        { name: "ulm_card_flower_show_bars", selector: { object: {} } },
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_senoro_win"
+      ? [
+        entity(["binary_sensor"]),
+        entity(["sensor"], "ulm_custom_card_senoro_win_handle"),
+        text("ulm_custom_card_senoro_win_name"),
+        { name: "ulm_custom_card_senoro_win_icon", selector: { icon: {} } },
+        { name: "ulm_custom_card_senoro_win_color", selector: { ui_color: {} } },
+        toggle("ulm_custom_card_senoro_win_force_background_color"),
+        entity(["sensor"], "ulm_custom_card_senoro_win_battery_level"),
+        number("ulm_custom_card_senoro_win_battery_warning", 0, 100),
+        number("ulm_custom_card_senoro_win_battery_warning_low", 0, 100),
+        toggle("ulm_show_last_changed"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_sisimomo_printer"
+      ? [
+        entity(["sensor", "binary_sensor"]),
+        text("ulm_card_printer_name"),
+        { name: "cartridges", selector: { object: {} } },
+        ...presentation(),
+      ]
     : item.upstreamId === "custom_card_haven_washer"
       ? [
         entity(["sensor", "switch", "binary_sensor"]),

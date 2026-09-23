@@ -668,9 +668,11 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
         .map((entity) => ({ entity }))
   ).filter((item) => item.entity);
   const welcome = ctx.descriptor.upstreamId === "card_welcome_scenes";
-  sceneItems.splice(welcome ? 7 : 6);
+  const sourceGrid = ctx.descriptor.upstreamId === "card_scenes" && ctx.config.variant === "scene-grid";
+  sceneItems.splice(welcome ? 7 : sourceGrid ? 5 : 6);
   const collapseEntity = ctx.config.collapse_entity ? ctx.hass.states[ctx.config.collapse_entity] : undefined;
   const collapsed = ctx.config.collapsed === true || collapseEntity?.state === "on";
+  const visibleItems = sceneItems;
   const weatherEntity = linkedState(ctx, "weather_entity");
   const weatherCondition = weatherEntity?.state || "partlycloudy";
   const weatherIcon = weatherIcons[weatherCondition]?.[0] ?? "mdi:weather-partly-cloudy";
@@ -686,7 +688,7 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
   const greetingSet = greetings[language] ?? greetings.en;
   const greeting = hour >= 18 ? greetingSet[3] : hour >= 12 ? greetingSet[2] : hour >= 5 ? greetingSet[1] : greetingSet[0];
   const welcomeName = ctx.config.name || `${greeting}, ${ctx.hass.user?.name || "Home"}!`;
-  return ctx.actionSurface(`ulm-scenes ${welcome ? "welcome-scenes" : "scene-pills"} ${ctx.descriptor.upstreamId === "card_scenes" ? "ulm-source-scenes" : ""}`, html`
+  return ctx.actionSurface(`ulm-scenes ${welcome ? "welcome-scenes" : sourceGrid ? "source-scene-grid" : "scene-pills"} ${ctx.descriptor.upstreamId === "card_scenes" ? "ulm-source-scenes" : ""}`, html`
     ${welcome ? html`
       <div class="welcome-toolbar">
         <button class="welcome-toolbar-button" aria-label="Toggle scenes" @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
@@ -701,14 +703,23 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
       <div class="welcome-heading"><b>${welcomeName}</b></div>
       ${collapsed ? nothing : html`<div class="welcome-scenes-heading"><b>${ctx.config.secondary || "Scenes"}</b><ha-icon icon="mdi:dots-vertical"></ha-icon></div>`}
     ` : nothing}
-    ${collapsed ? nothing : html`<div class="scene-grid">${sceneItems.map((item) => {
+    ${collapsed ? nothing : html`<div class="scene-grid">${visibleItems.map((item) => {
       const entity = ctx.hass.states[item.entity];
       const active = entity?.state === (item.active_state || item.state || "on") || entity?.state === "playing";
       const color = configuredColor(item.color, "rgb(var(--ulm-purple))");
       return html`
       <button @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
         event.stopPropagation();
-        runItemAction(event, ctx, item);
+        if (sourceGrid && !item.tap_action) {
+          const domain = item.entity.split(".", 1)[0];
+          ctx.service(
+            domain === "automation" ? "automation" : "homeassistant",
+            domain === "automation" ? "trigger" : "turn_on",
+            { entity_id: item.entity },
+          );
+        } else {
+          runItemAction(event, ctx, item);
+        }
       }} style=${`--item-color:${color}`} class="scene-button ${active ? "is-active" : ""}">
         <i><ha-icon .icon=${item.icon || entity?.attributes.icon || "mdi:palette"}></ha-icon></i>
         <span>${item.name || item.label || displayName({ type: "", entity: item.entity }, entity)}</span>
@@ -2805,70 +2816,228 @@ const renderRistouPerson = (ctx: RenderContext): TemplateResult => {
 
 const renderSaxelFan = (ctx: RenderContext): TemplateResult => {
   const on = ctx.entity?.state === "on";
-  const percentage = numeric(attr(ctx.entity, "percentage")) ?? 0;
-  const presets = Array.isArray(attr(ctx.entity, "preset_modes")) ? attr(ctx.entity, "preset_modes") as string[] : [];
-  return ctx.actionSurface("custom-saxel-fan", html`
-    <div class="custom-card-heading">${iconBubble(ctx, "mdi:fan", on ? "blue" : "grey", on ? "spin" : undefined)}${heading(ctx, `${stateLabel(ctx.entity)} · ${percentage}%`)}</div>
-    <div class="fan-speed-row">${[33, 66, 100].map((value, index) => html`<button class=${percentage >= value - 10 ? "is-active" : ""} @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => { event.stopPropagation(); ctx.service("fan", "set_percentage", { entity_id: ctx.config.entity, percentage: value }); }}><ha-icon .icon=${`mdi:fan-speed-${index + 1}`}></ha-icon></button>`)}</div>
-    ${presets.length ? html`<div class="fan-preset-row">${presets.slice(0, 4).map((preset) => html`<button class=${attr(ctx.entity, "preset_mode") === preset ? "is-active" : ""} @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => { event.stopPropagation(); ctx.service("fan", "set_preset_mode", { entity_id: ctx.config.entity, preset_mode: preset }); }}>${preset}</button>`)}</div>` : nothing}
-  `);
-};
-
-const renderCustomScenes = (ctx: RenderContext): TemplateResult => {
-  const scenes = configuredEntities(ctx).slice(0, 5);
-  return ctx.actionSurface("custom-scenes-grid", html`
-    ${scenes.map((entity, index) => html`
-      <button @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => { event.stopPropagation(); ctx.service(entity.entity_id.split(".")[0], "turn_on", { entity_id: entity.entity_id }); }}>
-        <span style=${`--tone:${["255,193,7","33,150,243","156,39,176","76,175,80","244,67,54"][index]}`}><ha-icon .icon=${String(attr(entity, "icon") || "mdi:palette")}></ha-icon></span>
-        <small>${displayName({ type: "", entity: entity.entity_id }, entity)}</small>
-      </button>
-    `)}
+  const percentage = Math.max(0, Math.min(100, numeric(attr(ctx.entity, "percentage")) ?? 0));
+  const collapsable = configured<boolean>(ctx, "collapsable", "collapsible") ?? true;
+  const controlsVisible = on || !collapsable;
+  const horizontal = configured<boolean>(ctx, "ulm_card_fan_horizontal") === true;
+  const showButton = configured<boolean>(ctx, "ulm_show_button") !== false;
+  const tempAttribute = configured<string>(ctx, "ulm_card_fan_temp_attribute") ?? "temp";
+  const humidityAttribute = configured<string>(ctx, "ulm_card_fan_hum_attribute") ?? "hum";
+  const temperature = tempAttribute ? numeric(attr(ctx.entity, tempAttribute)) : undefined;
+  const humidity = humidityAttribute ? numeric(attr(ctx.entity, humidityAttribute)) : undefined;
+  const showAttributes = on || configured<boolean>(ctx, "always_show_attributes") === true;
+  const label = ctx.entity?.state === "unavailable"
+    ? "unavailable"
+    : on
+      ? attr(ctx.entity, "percentage") == null ? "on" : `${percentage}%`
+      : "off";
+  const detail = [
+    label,
+    ...(showAttributes && temperature !== undefined ? [`${Math.round(temperature)}°C`] : []),
+    ...(showAttributes && humidity !== undefined ? [`${Math.round(humidity)}%`] : []),
+  ].join(" • ");
+  return ctx.actionSurface(`custom-saxel-fan ${on ? "is-on" : "is-off"} ${horizontal ? "is-horizontal" : ""} ${controlsVisible ? "has-controls" : "is-collapsed"}`, html`
+    <div class="saxel-fan-summary">${iconBubble(ctx, "mdi:fan", on ? "blue" : "grey", on ? "spin" : undefined)}${heading(ctx, detail)}</div>
+    ${controlsVisible ? html`<div class="saxel-fan-controls ${showButton ? "has-button" : ""}">
+      <input class="saxel-fan-slider" type="range" min="0" max="100"
+        step=${String(numeric(attr(ctx.entity, "percentage_step")) ?? 1)}
+        .value=${String(percentage)}
+        aria-label="Fan speed"
+        @pointerdown=${(event: Event) => event.stopPropagation()}
+        @change=${(event: Event) => ctx.service("fan", "set_percentage", {
+          entity_id: ctx.config.entity,
+          percentage: Number((event.target as HTMLInputElement).value),
+        })}>
+      ${showButton ? html`<button class="saxel-fan-oscillate ${attr(ctx.entity, configured<string>(ctx, "oscillate_attribute") || "oscillate") ? "is-active" : ""}"
+        aria-label="Toggle oscillation"
+        @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => {
+          event.stopPropagation();
+          const service = configured<string>(ctx, "ulm_button_service") || "fan.oscillate";
+          const [domain, serviceName] = service.split(".", 2);
+          const oscillateAttribute = configured<string>(ctx, "oscillate_attribute") || "oscillate";
+          ctx.service(domain, serviceName, {
+            entity_id: ctx.config.entity,
+            oscillating: !attr(ctx.entity, oscillateAttribute),
+          });
+        }}><ha-icon .icon=${configured<string>(ctx, "ulm_button_icon") || "mdi:rotate-3d-variant"}></ha-icon></button>` : nothing}
+    </div>` : nothing}
   `);
 };
 
 const renderCar = (ctx: RenderContext): TemplateResult => {
-  const details = configuredEntities(ctx);
-  const fuel = entityFromConfig(ctx, "ulm_custom_card_schumijo_car_fuel") ?? details[0];
-  const range = entityFromConfig(ctx, "ulm_custom_card_schumijo_car_range") ?? ctx.entity;
-  const lock = entityFromConfig(ctx, "ulm_custom_card_schumijo_car_lock") ?? details.find((entity) => entity.entity_id.startsWith("lock.")) ?? details[2];
+  const tracker = entityFromConfig(ctx, "ulm_card_schumijo_car_tracker") ?? ctx.entity;
+  const energy = entityFromConfig(ctx, "ulm_card_schumijo_car_energy_level");
+  const range = entityFromConfig(ctx, "ulm_card_schumijo_car_range");
+  const lock = entityFromConfig(ctx, "ulm_card_schumijo_car_lock");
+  const home = tracker?.state === "home";
+  const locked = lock?.state === "locked" || lock?.state === "off";
+  const roundedState = (entity?: HassEntity): string => {
+    const value = numeric(entity?.state);
+    return value === undefined ? stateLabel(entity) : String(Math.round(value));
+  };
+  const metricLabel = (entity: HassEntity | undefined, fallback: string): string =>
+    [entity?.attributes.unit_of_measurement, fallback].filter(Boolean).join(" ");
+  const trackerLabel = tracker?.last_changed
+    ? (() => {
+      const minutes = Math.max(0, Math.round((Date.now() - new Date(tracker.last_changed).getTime()) / 60_000));
+      return minutes < 1 ? "just now" : `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
+    })()
+    : stateLabel(tracker);
   return ctx.actionSurface("custom-schumijo-car", html`
-    <div class="car-hero">${iconBubble(ctx, "mdi:car", "blue")}${heading(ctx, stateLabel(ctx.entity))}<ha-icon .icon=${lock?.state === "locked" ? "mdi:lock" : "mdi:lock-open"}></ha-icon></div>
-    <div class="car-metrics"><span><ha-icon icon="mdi:gas-station"></ha-icon><b>${stateLabel(fuel)}</b></span><span><ha-icon icon="mdi:map-marker-distance"></ha-icon><b>${stateLabel(range)}</b></span></div>
+    <button class="car-hero" aria-label="Open car details"
+      @pointerdown=${(event: Event) => event.stopPropagation()}
+      @click=${(event: Event) => runControlAction(event, ctx, { action: "more-info" }, tracker?.entity_id)}>
+      <span class="car-icon-wrap">${iconBubble(ctx, "mdi:car", "blue")}
+        <i class="car-badge tracker ${home ? "is-home" : "is-away"}"><ha-icon .icon=${home ? "mdi:home-variant" : "mdi:road-variant"}></ha-icon></i>
+        <i class="car-badge lock ${locked ? "is-locked" : "is-unlocked"}"><ha-icon .icon=${locked ? "mdi:lock" : "mdi:lock-open"}></ha-icon></i>
+      </span>
+      ${heading(ctx, trackerLabel)}
+    </button>
+    <div class="car-metrics">
+      <span><ha-icon icon="mdi:gas-station"></ha-icon><b>${roundedState(energy)}</b><small>${metricLabel(energy, configured<string>(ctx, "ulm_custom_card_schumijo_car_energy_level") || "Nível de energia")}</small></span>
+      <span><ha-icon icon="mdi:map-marker-distance"></ha-icon><b>${roundedState(range)}</b><small>${metricLabel(range, configured<string>(ctx, "ulm_custom_card_schumijo_car_range") || "Alcance")}</small></span>
+    </div>
   `);
 };
 
 const renderFlower = (ctx: RenderContext): TemplateResult => {
-  const details = configuredEntities(ctx);
-  const moisture = entityFromConfig(ctx, "ulm_custom_card_schumijo_flower_moisture") ?? ctx.entity;
-  const conductivity = entityFromConfig(ctx, "ulm_custom_card_schumijo_flower_conductivity") ?? details[0];
-  const temperature = entityFromConfig(ctx, "ulm_custom_card_schumijo_flower_temperature") ?? details[1];
-  const brightness = entityFromConfig(ctx, "ulm_custom_card_schumijo_flower_brightness") ?? details[2];
+  const plant = entityFromConfig(ctx, "ulm_card_flower_entity") ?? ctx.entity;
+  const problem = plant?.state === "problem";
+  const requested = configured<unknown>(ctx, "ulm_card_flower_show_bars");
+  const allowed = ["temperature", "humidity", "moisture", "conductivity", "illuminance", "dli"];
+  const bars = (Array.isArray(requested) ? requested.filter((value): value is string => typeof value === "string") : allowed)
+    .filter((key) => allowed.includes(key))
+    .filter((key) => attr(plant, key) !== undefined || (key === "moisture" && plant?.entity_id.startsWith("sensor.")));
+  const icons: Record<string, string> = {
+    temperature: "mdi:thermometer",
+    humidity: "mdi:water-percent",
+    moisture: "mdi:water",
+    conductivity: "mdi:flash",
+    illuminance: "mdi:white-balance-sunny",
+    dli: "mdi:leaf",
+  };
+  const valueFor = (key: string): number | undefined =>
+    numeric(attr(plant, key)) ?? (key === "moisture" ? numeric(plant?.state) : undefined);
   return ctx.actionSurface("custom-schumijo-flower", html`
-    <div class="flower-heading">${iconBubble(ctx, "mdi:flower", "green")}${heading(ctx, stateLabel(ctx.entity))}</div>
-    <div class="flower-metrics">${[["mdi:water-percent", moisture], ["mdi:flash", conductivity], ["mdi:thermometer", temperature], ["mdi:white-balance-sunny", brightness]].map(([icon, entity]) => html`<span><ha-icon .icon=${icon as string}></ha-icon><b>${stateLabel(entity as HassEntity | undefined)}</b></span>`)}</div>
+    <button class="flower-heading" aria-label="Open plant details"
+      @pointerdown=${(event: Event) => event.stopPropagation()}
+      @click=${(event: Event) => runControlAction(event, ctx, { action: "more-info" }, plant?.entity_id)}>
+      ${iconBubble(ctx, problem ? "mdi:alert-circle" : "mdi:flower", problem ? "red" : "green")}
+      ${heading(ctx, problem
+        ? configured<string>(ctx, "ulm_custom_card_schumijo_flower_problem") || "Problema"
+        : configured<string>(ctx, "ulm_custom_card_schumijo_flower_correct") || "Correto")}
+    </button>
+    ${bars.length ? html`<div class="flower-bars">${bars.map((key) => {
+      const value = valueFor(key);
+      return html`<span>
+        <ha-icon .icon=${icons[key]}></ha-icon>
+        <i><em style=${`width:${Math.max(0, Math.min(100, value ?? 0))}%`}></em></i>
+      </span>`;
+    })}</div>` : nothing}
   `);
 };
 
 const renderSenoroWindow = (ctx: RenderContext): TemplateResult => {
-  const open = ctx.entity?.state === "on";
-  const battery = entityFromConfig(ctx, "ulm_custom_card_senoro_win_battery") ?? configuredEntities(ctx)[0];
-  return ctx.actionSurface(`custom-senoro-window ${open ? "is-open" : ""}`, html`
-    ${iconBubble(ctx, open ? "mdi:window-open-variant" : "mdi:window-closed-variant", open ? "red" : "green")}
-    ${heading(ctx, stateLabel(ctx.entity))}
-    <span class="window-battery"><ha-icon icon="mdi:battery"></ha-icon>${stateLabel(battery)}</span>
+  const contact = entityFromConfig(ctx, "ulm_custom_card_senoro_win_entity") ?? ctx.entity;
+  const handle = entityFromConfig(ctx, "ulm_custom_card_senoro_win_handle");
+  const battery = entityFromConfig(ctx, "ulm_custom_card_senoro_win_battery_level");
+  const contactState = contact?.state.toLowerCase();
+  const handleState = handle?.state.toLowerCase();
+  const unavailable = contactState === "unavailable" || handleState === "unavailable" || !contact || !handle;
+  const status =
+    unavailable ? "unavailable" :
+      contactState === "off" && handleState === "closed" ? "locked" :
+        contactState === "off" && (handleState === "tilted" || handleState === "open") ? "closed" :
+          contactState === "on" && handleState === "tilted" ? "tilted" :
+            contactState === "on" && handleState === "open" ? "open" :
+              contactState === "on" && handleState === "closed" ? "manipulated" : "unknown";
+  const labels: Record<string, string> = {
+    unavailable: configured<string>(ctx, "ulm_unavailable") || "Unavailable",
+    locked: configured<string>(ctx, "ulm_custom_card_senoro_win_locked") || "Locked",
+    closed: configured<string>(ctx, "ulm_custom_card_senoro_win_closed") || "Closed",
+    tilted: configured<string>(ctx, "ulm_custom_card_senoro_win_tilted") || "Tilted",
+    open: configured<string>(ctx, "ulm_custom_card_senoro_win_open") || "Open",
+    manipulated: configured<string>(ctx, "ulm_custom_card_senoro_win_manipulated") || "Manipulated",
+    unknown: "Unknown",
+  };
+  const accent = status === "locked" ? "green" : status === "manipulated" ? "red" :
+    configured<string>(ctx, "ulm_custom_card_senoro_win_color") || "blue";
+  const badgeIcon = status === "locked" ? "mdi:lock" :
+    status === "manipulated" ? "mdi:alert" : "mdi:lock-open-variant";
+  const batteryValue = numeric(battery?.state);
+  const warning = numeric(configured(ctx, "ulm_custom_card_senoro_win_battery_warning")) ?? 20;
+  const danger = numeric(configured(ctx, "ulm_custom_card_senoro_win_battery_warning_low")) ?? 5;
+  const showBattery = batteryValue !== undefined && batteryValue <= warning;
+  const forceBackground = configured<boolean>(ctx, "ulm_custom_card_senoro_win_force_background_color") === true &&
+    ["tilted", "open", "manipulated"].includes(status);
+  const label = configured<boolean>(ctx, "ulm_show_last_changed") === true
+    ? contact?.last_changed || labels[status]
+    : labels[status];
+  return ctx.actionSurface(`custom-senoro-window status-${status} ${forceBackground ? "is-source-background" : ""}`, html`
+    <span class="senoro-icon" style=${`--senoro-color:${configuredColor(accent, "rgb(var(--ulm-blue))")}`}>
+      ${iconBubble(ctx, configured<string>(ctx, "ulm_custom_card_senoro_win_icon") || String(attr(contact, "icon") || "mdi:window-closed"), accent)}
+      <i class="senoro-state-badge"><ha-icon .icon=${badgeIcon}></ha-icon></i>
+      ${showBattery ? html`<i class="senoro-battery-badge ${batteryValue <= danger ? "is-danger" : "is-warning"}"><ha-icon icon="mdi:battery-low"></ha-icon></i>` : nothing}
+    </span>
+    ${heading({ ...ctx, entity: contact }, label)}
   `);
 };
 
 const renderSisimomoPrinter = (ctx: RenderContext): TemplateResult => {
-  const cartridges = configuredEntities(ctx).slice(0, 6);
-  const colors = ["#111", "#111", "#ffdf55", "#ef4778", "#4a86db", "#8b69bc"];
-  const labels = ["BK", "B", "Y", "M", "C", "PB"];
+  const cartridges = Array.isArray(ctx.config.cartridges) ? ctx.config.cartridges : [];
+  const errors: string[] = [];
+  let unavailable = false;
+  const isCssColor = (value: string): boolean => {
+    const style = document.createElement("span").style;
+    style.color = "";
+    style.color = value;
+    return style.color !== "";
+  };
+  const validated = cartridges.map((cartridge, index) => {
+    const type = cartridge.type ?? "unicolor";
+    const entity = cartridge.entity_id ? ctx.hass.states[cartridge.entity_id] : undefined;
+    const value = numeric(entity?.state);
+    if (!cartridge.label) errors.push(`cartridges.[${index}].label: You must provide a value.`);
+    if (!["unicolor", "tricolor"].includes(type)) {
+      errors.push(`cartridges.[${index}].type: You must provide a valid cartridge type.`);
+    }
+    if (!cartridge.entity_id) errors.push(`cartridges.[${index}].entity_id: You must provide a value.`);
+    else if (!entity) errors.push(`cartridges.[${index}].entity_id: You must provide an existing entity_id.`);
+    else if (entity.state.toLowerCase() === "unavailable") unavailable = true;
+    else if (value === undefined || value < 0 || value > 100) {
+      errors.push(`cartridges.[${index}].entity_id: You must provide a number between 0 and 100 inclusively.`);
+    }
+    if (type === "unicolor") {
+      if (typeof cartridge.color !== "string" || !isCssColor(cartridge.color)) {
+        errors.push(`cartridges.[${index}].color: You must provide a single valid CSS color value.`);
+      }
+    } else if (
+      !Array.isArray(cartridge.color) ||
+      cartridge.color.length !== 3 ||
+      cartridge.color.some((color) => typeof color !== "string" || !isCssColor(color))
+    ) {
+      errors.push(`cartridges.[${index}].color: Invalid combination of colour and type.`);
+    }
+    return { ...cartridge, type, entity, value: value ?? 0 };
+  });
   return ctx.actionSurface("custom-sisimomo-printer", html`
-    <div class="printer-summary">${iconBubble(ctx, "mdi:printer", "blue")}${heading(ctx, stateLabel(ctx.entity))}</div>
-    <div class="printer-cartridges">${cartridges.map((entity, index) => {
-      const value = Math.max(0, Math.min(100, numeric(entity.state) ?? 0));
-      return html`<span style=${`--cartridge:${colors[index]};--level:${value}%`}><small>${labels[index]}</small><i><em></em></i><b>${stateLabel(entity)}</b></span>`;
-    })}</div>
+    <button class="printer-summary" aria-label="Open printer details"
+      @pointerdown=${(event: Event) => event.stopPropagation()}
+      @click=${(event: Event) => runControlAction(event, ctx, { action: "more-info" })}>
+      ${iconBubble(ctx, "mdi:printer", ctx.entity?.state.toLowerCase() === String(configured(ctx, "ulm_idle") || "idle").toLowerCase() ? "grey" : "blue")}
+      ${heading(ctx, stateLabel(ctx.entity))}
+    </button>
+    ${errors.length ? html`<div class="printer-errors"><b>Configuration Error:</b><ul>${errors.map((error) => html`<li>${error}</li>`)}</ul></div>` :
+      unavailable ? html`<div class="printer-unavailable">Toner Information Unavailable</div>` :
+        validated.length ? html`<div class="printer-cartridges">${validated.map((cartridge) => {
+          const fill = cartridge.type === "tricolor"
+            ? `linear-gradient(180deg, ${(cartridge.color as string[])[0]} 0 33%, ${(cartridge.color as string[])[1]} 33% 66%, ${(cartridge.color as string[])[2]} 66% 100%)`
+            : String(cartridge.color);
+          return html`<span style=${`--cartridge:${fill};--level:${Math.max(0, Math.min(100, cartridge.value))}%`}>
+            <small>${cartridge.label}</small><i><em></em></i><b>${cartridge.value}%</b>
+          </span>`;
+        })}</div>` : nothing}
   `);
 };
 
@@ -3271,7 +3440,6 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "custom_card_qubino": return renderQubino(ctx);
     case "custom_card_ristou_person": return renderRistouPerson(ctx);
     case "custom_card_saxel_fan": return renderSaxelFan(ctx);
-    case "custom_card_scenes": return renderCustomScenes(ctx);
     case "custom_card_schumijo_car": return renderCar(ctx);
     case "custom_card_schumijo_flower": return renderFlower(ctx);
     case "custom_card_senoro_win": return renderSenoroWindow(ctx);

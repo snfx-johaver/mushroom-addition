@@ -894,10 +894,15 @@ export const sharedStyles = css`
   .person-info-detail { display: flex; align-items: center; gap: 4px; font-size: 12px; }
   .person-info-detail ha-icon { --mdc-icon-size: 16px; color: rgb(var(--tone, var(--ulm-green))); }
   .commute-detail ha-icon { color: rgb(var(--ulm-yellow)); }
-  .car-metrics, .flower-metrics, .device-tracer-meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
-  .car-metrics > span, .flower-metrics > span, .device-tracer-meta > span { display: grid; min-width: 0; min-height: 52px; place-items: center; padding: 6px; border-radius: 12px; background: rgba(var(--ulm-grey), .07); text-align: center; }
-  .car-metrics ha-icon, .flower-metrics ha-icon, .device-tracer-meta ha-icon { --mdc-icon-size: 17px; color: rgb(var(--ulm-blue)); }
-  .car-metrics b, .flower-metrics b { overflow: hidden; max-width: 100%; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+  .flower-metrics, .device-tracer-meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+  .flower-metrics > span, .device-tracer-meta > span { display: grid; min-width: 0; min-height: 52px; place-items: center; padding: 6px; border-radius: 12px; background: rgba(var(--ulm-grey), .07); text-align: center; }
+  .flower-metrics ha-icon, .device-tracer-meta ha-icon { --mdc-icon-size: 17px; color: rgb(var(--ulm-blue)); }
+  .flower-metrics b { overflow: hidden; max-width: 100%; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+  .car-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+  .car-metrics > span { display: grid; min-width: 0; min-height: 52px; grid-template-columns: 24px auto; grid-template-rows: auto auto; align-items: center; padding: 7px; border-radius: 14px; background: rgba(var(--ulm-grey), .07); }
+  .car-metrics ha-icon { --mdc-icon-size: 18px; grid-row: 1 / 3; color: rgb(var(--ulm-blue)); }
+  .car-metrics b { overflow: hidden; max-width: 100%; font-size: 18px; text-overflow: ellipsis; white-space: nowrap; }
+  .car-metrics small { overflow: hidden; color: var(--secondary-text-color); font-size: 9px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
   .custom-console-card { position: relative; min-height: 72px; overflow: hidden; }
   .custom-console-card.has-artwork { background: #17191d; color: #fff; }
   .console-backdrop { position: absolute; inset: 0; background-position: center; background-size: cover; opacity: .35; }
@@ -915,23 +920,53 @@ export const sharedStyles = css`
   .ristou-find-device { display: grid; width: 42px; height: 42px; place-items: center; border: 0; border-radius: 12px; background: rgba(var(--ulm-blue), .2); color: rgb(var(--ulm-blue)); }
   .ristou-camera { min-height: 130px; border-radius: 15px; background: rgba(var(--ulm-grey), .08) center/cover; }
   .ristou-map { display: flex; min-height: 42px; align-items: center; justify-content: center; gap: 7px; border-radius: 13px; background: rgba(var(--ulm-blue), .1); color: rgb(var(--ulm-blue)); font-size: 11px; font-weight: 700; }
-  .fan-speed-row, .fan-preset-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
-  .fan-preset-row { grid-template-columns: repeat(4, 1fr); }
-  .fan-speed-row button, .fan-preset-row button { min-height: 38px; border: 0; border-radius: 12px; background: rgba(var(--ulm-grey), .08); color: var(--primary-text-color); font-size: 10px; }
-  .fan-speed-row button.is-active, .fan-preset-row button.is-active { background: rgba(var(--ulm-blue), .18); color: rgb(var(--ulm-blue)); }
-  .custom-scenes-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; padding: 12px; }
-  .custom-scenes-grid button { display: grid; min-width: 0; gap: 6px; place-items: center; padding: 0; border: 0; background: transparent; color: var(--primary-text-color); }
-  .custom-scenes-grid button > span { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 50%; background: rgba(var(--tone), .18); color: rgb(var(--tone)); }
-  .custom-scenes-grid small { overflow: hidden; width: 100%; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
-  .car-hero > ha-icon { margin-left: auto; } .car-metrics { grid-template-columns: repeat(2, 1fr); }
-  .flower-metrics { grid-template-columns: repeat(4, 1fr); } .flower-metrics > span { min-height: 44px; }
-  .window-battery { display: flex; align-items: center; gap: 4px; color: var(--secondary-text-color); font-size: 11px; }
-  .window-battery ha-icon { --mdc-icon-size: 16px; }
-  .printer-cartridges { display: grid; gap: 5px; }
-  .printer-cartridges span { display: grid; grid-template-columns: 18px minmax(0, 1fr) 42px; align-items: center; gap: 7px; }
-  .printer-cartridges i { position: relative; display: block; height: 13px; overflow: hidden; border: 1px solid rgba(var(--ulm-grey), .2); border-radius: 3px; background: rgba(var(--ulm-grey), .05); }
+  .custom-saxel-fan { grid-template-columns: minmax(0, 1fr); }
+  .custom-saxel-fan.is-on { background: #3d5afe; color: #fff; }
+  .custom-saxel-fan.is-on .ulm-label { color: rgba(255,255,255,.78); }
+  .custom-saxel-fan.is-on .ulm-icon { background: rgba(255,255,255,.2); color: #fff; }
+  .saxel-fan-summary { display: flex; min-width: 0; align-items: center; gap: 10px; }
+  .saxel-fan-controls { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .saxel-fan-controls.has-button { grid-template-columns: minmax(0, 1fr) 48px; }
+  .custom-saxel-fan.is-horizontal { grid-template-columns: minmax(125px, .8fr) minmax(150px, 1.2fr); align-items: center; }
+  .custom-saxel-fan.is-horizontal .saxel-fan-controls { margin: 0; }
+  .saxel-fan-slider { width: 100%; height: 42px; margin: 0; accent-color: #fff; }
+  .custom-saxel-fan.is-off .saxel-fan-slider { accent-color: rgb(var(--ulm-blue)); }
+  .saxel-fan-oscillate { display: grid; width: 48px; min-height: 42px; place-items: center; border: 0; border-radius: 14px; background: rgba(255,255,255,.2); color: inherit; }
+  .custom-saxel-fan.is-off .saxel-fan-oscillate { background: rgba(var(--ulm-blue), .12); color: rgb(var(--ulm-blue)); }
+  .saxel-fan-oscillate.is-active { background: #fff; color: rgb(var(--ulm-blue)); }
+  .source-scene-grid .scene-grid { display: grid; grid-template-columns: repeat(5, 52px); justify-content: space-between; gap: 12px; }
+  .source-scene-grid .scene-button { width: 52px; min-width: 52px; min-height: 84px; padding: 5px 5px 7px; border-radius: 50px; }
+  .source-scene-grid .scene-button i { width: 42px; height: 42px; }
+  .source-scene-grid .scene-button span { font-size: 9.5px; font-weight: 700; }
+  .car-hero, .flower-heading, .printer-summary { width: 100%; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; }
+  .car-icon-wrap, .senoro-icon { position: relative; display: inline-grid; }
+  .car-badge, .senoro-state-badge, .senoro-battery-badge { position: absolute; display: grid; width: 18px; height: 18px; place-items: center; border: 2px solid var(--card-background-color); border-radius: 50%; color: var(--primary-background-color); }
+  .car-badge ha-icon, .senoro-state-badge ha-icon, .senoro-battery-badge ha-icon { --mdc-icon-size: 11px; }
+  .car-badge.tracker { top: -5px; right: -5px; background: rgb(var(--ulm-blue)); }
+  .car-badge.tracker.is-away { background: rgb(var(--ulm-green)); }
+  .car-badge.lock { right: -5px; bottom: -5px; background: rgb(var(--ulm-blue)); }
+  .car-badge.lock.is-unlocked { background: rgb(var(--ulm-red)); }
+  .flower-bars { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 12px; }
+  .flower-bars > span { display: grid; grid-template-columns: 18px minmax(0, 1fr); align-items: center; gap: 5px; }
+  .flower-bars ha-icon { --mdc-icon-size: 15px; }
+  .flower-bars i { display: block; height: 7px; overflow: hidden; border-radius: 2px; background: rgba(var(--ulm-grey), .1); }
+  .flower-bars em { display: block; height: 100%; background: rgb(var(--ulm-green)); }
+  .senoro-icon .ulm-icon { color: var(--senoro-color); background: color-mix(in srgb, var(--senoro-color) 18%, transparent); }
+  .senoro-state-badge { top: -6px; right: -6px; background: var(--senoro-color); }
+  .status-manipulated .senoro-state-badge { background: rgb(var(--ulm-red)); }
+  .status-locked .senoro-state-badge { background: rgb(var(--ulm-green)); }
+  .senoro-battery-badge { top: -6px; left: -6px; }
+  .senoro-battery-badge.is-warning { background: rgb(var(--ulm-yellow)); }
+  .senoro-battery-badge.is-danger { background: rgb(var(--ulm-red)); }
+  .custom-senoro-window.is-source-background { background: color-mix(in srgb, var(--senoro-color, rgb(var(--ulm-blue))) 12%, var(--ha-card-background, #fff)); }
+  .printer-cartridges { display: grid; gap: 16px; padding: 8px; }
+  .printer-cartridges span { display: grid; grid-template-columns: 28px minmax(0, 1fr) 50px; align-items: center; gap: 10px; }
+  .printer-cartridges i { position: relative; display: block; height: 20px; overflow: hidden; border: 1px solid rgba(var(--ulm-grey), .2); border-radius: 4px; background: rgba(var(--ulm-grey), .05); }
   .printer-cartridges em { position: absolute; inset: 0 auto 0 0; width: var(--level); background: var(--cartridge); }
-  .printer-cartridges small, .printer-cartridges b { color: var(--secondary-text-color); font-size: 9px; font-weight: 500; }
+  .printer-cartridges small, .printer-cartridges b { color: var(--secondary-text-color); font-size: 14px; font-weight: 500; }
+  .printer-errors { padding: 10px; border-radius: 8px; background: rgba(219,68,55,.75); font-family: var(--code-font-family, monospace); font-size: 10px; }
+  .printer-errors ul { margin: 6px 0 0; padding: 0; list-style: none; }
+  .printer-unavailable { padding: 12px; border-radius: 8px; color: var(--secondary-text-color); text-align: center; }
   .speedtest-three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
   .speedtest-three span { display: grid; min-width: 0; place-items: center; gap: 3px; padding: 8px; border-radius: 12px; background: rgba(var(--ulm-grey), .07); text-align: center; }
   .speedtest-three ha-icon { color: rgb(var(--ulm-blue)); } .speedtest-three b { font-size: 12px; } .speedtest-three small { overflow: hidden; max-width: 100%; color: var(--secondary-text-color); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }

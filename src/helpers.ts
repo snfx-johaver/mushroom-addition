@@ -428,5 +428,52 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
       ? config.ulm_custom_card_paddy_dwd_pollen_icon
       : undefined;
   }
+  if (String(config.type).includes("custom-card-scenes") || (
+    String(config.type).includes("card-scenes") && config.variant === "scene-grid"
+  )) {
+    const legacyItems = Array.from({ length: 5 }, (_, index) => {
+      const value = config[`entity_${index + 1}`];
+      if (typeof value === "string") return { entity: value };
+      if (!value || typeof value !== "object" || !("entity_id" in value) || typeof value.entity_id !== "string") {
+        return undefined;
+      }
+      const item = value as Record<string, unknown> & { entity_id: string };
+      return {
+        entity: item.entity_id,
+        icon: typeof item.icon === "string" ? item.icon : undefined,
+        color: typeof item.icon_color === "string" ? item.icon_color : undefined,
+        name: typeof item.name === "string" ? item.name : undefined,
+      };
+    }).filter((item): item is NonNullable<typeof item> => Boolean(item));
+    if (!migrated.scene_items?.length && legacyItems.length) migrated.scene_items = legacyItems;
+  }
+  if (String(config.type).includes("schumijo-car")) {
+    migrated.entity ??= entityId(config.ulm_card_schumijo_car_tracker);
+    migrated.ulm_card_schumijo_car_tracker ??= migrated.entity;
+    migrated.ulm_card_schumijo_car_energy_level ??= entityId(config.energy_entity) ?? entityId(config.battery_entity);
+    migrated.ulm_card_schumijo_car_range ??= entityId(config.range_entity);
+    migrated.ulm_card_schumijo_car_lock ??= entityId(config.lock_entity) ?? entityId(config.doors_entity);
+  }
+  if (String(config.type).includes("schumijo-flower")) {
+    migrated.entity ??= entityId(config.ulm_card_flower_entity);
+    migrated.ulm_card_flower_entity ??= migrated.entity;
+  }
+  if (String(config.type).includes("senoro-win")) {
+    migrated.ulm_custom_card_senoro_win_entity ??= migrated.entity;
+    migrated.ulm_custom_card_senoro_win_handle ??= entityId(config.handle_entity) ??
+      entityId(config.entities?.[0]);
+    migrated.ulm_custom_card_senoro_win_battery_level ??= entityId(config.battery_entity) ??
+      entityId(config.entities?.[1]);
+  }
+  if (String(config.type).includes("sisimomo-printer") && !migrated.cartridges?.length && config.entities?.length) {
+    const colors = ["black", "#427EDE", "#F84B7A", "rgba(var(--color-yellow), 1)", "#9272BE"];
+    const labels = ["BK", "C", "M", "Y", "PB"];
+    migrated.cartridges = config.entities.map((entity, index) => ({
+      label: labels[index] ?? `C${index + 1}`,
+      entity_id: entity,
+      type: "unicolor",
+      color: colors[index] ?? "gray",
+    }));
+  }
   return migrated;
 };

@@ -74,6 +74,13 @@ export interface WasteStreamConfig {
   preset?: string;
 }
 
+export interface PrinterCartridgeConfig {
+  label?: string;
+  entity_id?: string;
+  type?: "unicolor" | "tricolor";
+  color?: string | string[];
+}
+
 export interface AdditionConfig {
   type: string;
   entity?: string;
@@ -81,6 +88,7 @@ export interface AdditionConfig {
   entities?: string[];
   scene_items?: AdditionItemConfig[];
   room_sensors?: AdditionItemConfig[];
+  cartridges?: PrinterCartridgeConfig[];
   waste_streams?: WasteStreamConfig[];
   today_entity?: string;
   tomorrow_entity?: string;

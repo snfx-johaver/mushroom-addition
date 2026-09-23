@@ -32,11 +32,11 @@ describe("visual audit manifest", () => {
   it("reports exact accepted progress without inferring parity from family mappings", () => {
     expect(visualAuditProgress()).toEqual({
       accepted: 80,
-      pickerAccepted: 80,
-      editorAccepted: 80,
-      visualAccepted: 80,
-      statesAccepted: 80,
-      interactionsAccepted: 80,
+      pickerAccepted: 86,
+      editorAccepted: 86,
+      visualAccepted: 86,
+      statesAccepted: 86,
+      interactionsAccepted: 86,
       liveAccepted: 80,
       total: 86,
     });
