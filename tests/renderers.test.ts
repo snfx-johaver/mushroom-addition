@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { CATALOG } from "../src/catalog";
 import "../src/index";
+import { PARITY_ENTRIES } from "../src/parity.generated";
 import type { AdditionConfig, HomeAssistant } from "../src/types";
 
 const hass: HomeAssistant = {
@@ -283,7 +284,7 @@ describe("family renderers", () => {
     ["media", "mushroom-addition-card-media-player", "media_player.tv", "ulm-media"],
     ["cover", "mushroom-addition-card-cover", "cover.blind", "ulm-controls"],
     ["vacuum", "mushroom-addition-card-vacuum", "vacuum.robot", "ulm-default-vacuum"],
-    ["security", "mushroom-addition-custom-card-eraycetinay-lock", "alarm_control_panel.home", "ulm-security"],
+    ["security", "mushroom-addition-custom-card-eraycetinay-lock", "lock.front_door", "custom-eray-lock"],
   ])("renders distinct %s markup", async (_family, tag, entity, marker) => {
     const item = CATALOG.find((entry) => entry.tag === tag)!;
     const markup = await render(tag, {
@@ -294,6 +295,122 @@ describe("family renderers", () => {
       show_graph: true,
     });
     expect(markup).toContain(marker);
+  });
+
+  it.each([
+    ["afvalophaling", "sensor.power", "custom-waste-card", "waste-grid"],
+    ["alarm-time", "input_boolean.alarm", "custom-alarm-time", "alarm-time-controls"],
+    ["apexcharts", "sensor.power", "custom-apexcharts", "apex-chart"],
+    ["chromecast", "media_player.tv", "custom-chromecast", "chromecast-controls"],
+    ["damix48-power-details", "sensor.power", "custom-power-details", "power-details-chart"],
+    ["device-tracker", "device_tracker.phone", "custom-device-tracker", "device-tracker-icon"],
+    ["drealine-roomview", "sensor.temperature", "custom-room-view", "room-view-actions"],
+    ["eraycetinay-elapsed-time", "sensor.uptime", "custom-elapsed-time", "ulm-label"],
+    ["eraycetinay-lock", "lock.front_door", "custom-eray-lock", "eray-lock-icon"],
+    ["esh-welcome", "person.joris", "custom-esh-welcome", "esh-welcome-items"],
+    ["haven-washer", "switch.washer", "custom-washer", "washer-stages"],
+    ["heat-pump", "climate.living", "custom-heat-pump", "heat-pump-modes"],
+    ["homeassistant-updates", "update.core", "custom-ha-updates", "ha-update-list"],
+    ["httpedo13-sun", "sun.sun", "custom-sun-card", "sun-arc"],
+    ["httpedo13-thermostat", "climate.living", "custom-compact-thermostat", "compact-thermostat-controls"],
+    ["iabadia-battery-chip", "sensor.battery", "custom-battery-chip", "tone-green"],
+    ["imswel-medias", "media_player.tv", "custom-media-library", "media-platform"],
+    ["imswel-person", "person.joris", "custom-imswel-person", "imswel-person-trackers"],
+    ["input-datetime", "input_datetime.alarm", "custom-input-datetime", "input-datetime-controls"],
+  ])("uses a source-specific %s composition", async (slug, entity, marker, region) => {
+    const tag = `mushroom-addition-custom-card-${slug}`;
+    const markup = await render(tag, {
+      type: `custom:${tag}`,
+      entity,
+      entities: ["sensor.power", "sensor.humidity", "light.kitchen", "binary_sensor.motion"],
+      datetime_entity: "input_datetime.alarm",
+      show_controls: true,
+      show_graph: true,
+    });
+    expect(markup).toContain(marker);
+    expect(markup).toContain(region);
+    expect(markup).not.toContain('class="ulm-metric');
+  });
+
+  it.each([
+    ["input-number", "sensor.power", "custom-input-number", "input-number-controls"],
+    ["irmajavi-entities", "sensor.power", "custom-irmajavi-entities", "irmajavi-four"],
+    ["irmajavi-speedtest", "sensor.power", "custom-irmajavi-speedtest", "speedtest-metrics"],
+    ["irmajavi-weather", "weather.home", "custom-irmajavi-weather", "irmajavi-weather-header"],
+    ["light-colorpick", "light.kitchen", "custom-light-colorpick", "light-color-swatches"],
+    ["media-player-sonos", "media_player.tv", "custom-sonos", "sonos-controls"],
+    ["more-power-outlet", "sensor.power", "custom-more-power-outlet", "ulm-copy"],
+    ["mpse-gauge", "sensor.power", "custom-dual-gauge", "dual-gauge"],
+    ["mpse-printer", "sensor.power", "custom-mpse-printer", "toner-bars"],
+    ["mpse-thermostat", "climate.living", "custom-compact-thermostat", "compact-thermostat-controls"],
+    ["mpse-wifisignal", "sensor.power", "custom-wifi-signal", "ulm-copy"],
+    ["nas", "sensor.power", "custom-nas-info", "ulm-icon"],
+    ["neekster-update", "sensor.power", "custom-neekster-update", "custom-card-heading"],
+    ["nik-clock", "sensor.power", "custom-nik-clock", "custom-nik-clock"],
+    ["nik-door", "binary_sensor.window", "custom-nik-door", "nik-door-controls"],
+    ["nik-nas", "sensor.power", "custom-nik-nas", "nik-nas-metrics"],
+    ["nik-tablet", "sensor.battery", "custom-nik-tablet", "tablet-status-row"],
+    ["paddy-dwd-pollen", "sensor.power", "custom-paddy-pollen", "pollen-icon"],
+    ["paddy-waste-collection", "sensor.power", "custom-paddy-waste", "paddy-waste-icon"],
+    ["paddy-welcome", "person.joris", "custom-paddy-welcome", "Good"],
+    ["person-chip", "person.joris", "custom-person-chip", "person-chip-picture"],
+    ["person-info", "person.joris", "custom-person-info", "person-info-details"],
+    ["playstation", "media_player.tv", "custom-console-card", "console-content"],
+    ["qubino", "sensor.power", "custom-qubino", "ulm-icon"],
+    ["ristou-person", "person.joris", "custom-ristou-person", "ristou-person-main"],
+    ["saxel-fan", "fan.fixture", "custom-saxel-fan", "fan-speed-row"],
+    ["scenes", "scene.relax", "ulm-scenes", "scene-grid"],
+    ["schumijo-car", "sensor.power", "custom-schumijo-car", "car-metrics"],
+    ["schumijo-flower", "sensor.power", "custom-schumijo-flower", "flower-metrics"],
+    ["senoro-win", "binary_sensor.window", "custom-senoro-window", "window-battery"],
+    ["sisimomo-printer", "sensor.power", "custom-sisimomo-printer", "printer-cartridges"],
+    ["speedtest-shogun160", "sensor.power", "custom-speedtest-shogun", "speedtest-three"],
+    ["tpx01-aircondition", "climate.living", "custom-tpx-aircondition", "aircondition-controls"],
+    ["vncntdev-device-tracer", "sensor.power", "custom-device-tracer", "device-tracer-meta"],
+    ["water-heater", "sensor.power", "custom-water-heater", "water-heater-controls"],
+    ["wilbiev-title", "sensor.power", "ulm-title", "variant-divider-title"],
+    ["wsly-pollen", "sensor.power", "custom-wsly-pollen", "--pollen:"],
+    ["yagrasdemonde-lights-count", "sensor.power", "custom-lights-count", "lights on"],
+  ])("uses a dedicated remaining-source %s composition", async (slug, entity, marker, region) => {
+    const tag = `mushroom-addition-custom-card-${slug}`;
+    const markup = await render(tag, {
+      type: `custom:${tag}`,
+      entity,
+      entities: ["sensor.power", "sensor.battery", "light.kitchen", "scene.relax"],
+      show_controls: true,
+      show_graph: true,
+      use_entity_picture: true,
+    });
+    expect(markup).toContain(marker);
+    expect(markup).toContain(region);
+    expect(markup).not.toContain('class="ulm-metric');
+  });
+
+  it("keeps every custom source away from broad generic fallback compositions", async () => {
+    const forbidden = [
+      'class="ulm-metric',
+      "ulm-detail-card",
+      "ulm-device-status",
+      "ulm-schedule-card",
+      "ulm-helper-card",
+    ];
+    for (const source of PARITY_ENTRIES.filter((entry) => entry.upstreamId.startsWith("custom_card_"))) {
+      const slug = source.upstreamId.replaceAll("_", "-");
+      const tag = `mushroom-addition-${slug}`;
+      const markup = await render(tag, {
+        type: `custom:${tag}`,
+        entity: source.upstreamId.includes("person") ? "person.joris"
+          : source.upstreamId.includes("weather") ? "weather.home"
+            : source.upstreamId.includes("thermostat") || source.upstreamId.includes("aircondition") ? "climate.living"
+              : source.upstreamId.includes("light") ? "light.kitchen"
+                : source.upstreamId.includes("media") || source.upstreamId.includes("playstation") || source.upstreamId.includes("chromecast") ? "media_player.tv"
+                  : "sensor.power",
+        entities: ["sensor.power", "sensor.battery", "light.kitchen", "scene.relax"],
+        show_controls: true,
+        show_graph: true,
+      });
+      for (const marker of forbidden) expect(markup, `${source.upstreamId} used ${marker}`).not.toContain(marker);
+    }
   });
 
   it("keeps deterministic family-level visual signatures", async () => {

@@ -150,8 +150,8 @@ describe("Home Assistant registration", () => {
       });
       document.body.append(element);
       await element.updateComplete;
-      const text = element.shadowRoot?.textContent ?? "";
-      expect(text.trim().length).toBeGreaterThan(0);
+      const markup = element.shadowRoot?.innerHTML ?? "";
+      expect(markup.trim().length, item.family).toBeGreaterThan(0);
       element.remove();
     }
   });

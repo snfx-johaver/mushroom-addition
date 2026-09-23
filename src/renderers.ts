@@ -650,21 +650,6 @@ const renderDeviceStatus = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const renderInputNumber = (ctx: RenderContext): TemplateResult => {
-  const min = numeric(attr(ctx.entity, "min")) ?? 0;
-  const max = numeric(attr(ctx.entity, "max")) ?? 100;
-  const value = numeric(ctx.entity?.state) ?? min;
-  return ctx.actionSurface("ulm-helper-card", html`
-    <div class="ulm-row">${iconBubble(ctx, "mdi:tune-variant", "blue")}${heading(ctx, stateLabel(ctx.entity))}</div>
-    <input class="ulm-slider" type="range" .min=${String(min)} .max=${String(max)} .value=${String(value)}
-      @pointerdown=${(event: Event) => event.stopPropagation()}
-      @change=${(event: Event) => ctx.service("input_number", "set_value", {
-        entity_id: ctx.config.entity,
-        value: Number((event.target as HTMLInputElement).value),
-      })}>
-  `);
-};
-
 const renderGauge = (ctx: RenderContext): TemplateResult => {
   const value = numeric(ctx.entity?.state) ?? 0;
   const min = configured<number>(ctx, "ulm_card_gauge_min", "ulm_custom_card_mpse_gauge_min") ?? 0;
@@ -700,6 +685,808 @@ const renderDoor = (ctx: RenderContext): TemplateResult => {
       ctx.service("lock", locked ? "unlock" : "lock", { entity_id: ctx.config.lock_entity });
     }) : nothing}
   `);
+};
+
+const entityFromConfig = (ctx: RenderContext, ...keys: string[]): HassEntity | undefined => {
+  const entityId = configured<string>(ctx, ...keys);
+  return entityId ? ctx.hass.states[entityId] : undefined;
+};
+
+const renderWasteCollection = (ctx: RenderContext): TemplateResult => {
+  const rows = [
+    ["Restafval", "mdi:trash-can", "ulm_card_datum_rest"],
+    ["GFT", "mdi:leaf", "ulm_card_datum_gft"],
+    ["Papier", "mdi:newspaper", "ulm_card_datum_papier"],
+    ["PMD", "mdi:recycle", "ulm_card_datum_pmd"],
+    ["Glas", "mdi:bottle-soda", "ulm_card_datum_glas"],
+  ] as const;
+  return ctx.actionSurface("custom-waste-card", html`
+    <div class="custom-card-heading">
+      ${iconBubble(ctx, "mdi:trash-can-outline", "green")}
+      ${heading(ctx, configured<string>(ctx, "ulm_volgende_ophaling") || "Next collection")}
+    </div>
+    <div class="waste-grid">${rows.map(([label, rowIcon, key]) => {
+      const configuredValue = configured<string>(ctx, key);
+      const entity = configuredValue ? ctx.hass.states[configuredValue] : undefined;
+      const value = entity ? stateLabel(entity) : configuredValue || (label === "Restafval" ? stateLabel(ctx.entity) : "—");
+      return html`<span class="waste-row"><ha-icon .icon=${rowIcon}></ha-icon><b>${label}</b><small>${value}</small></span>`;
+    })}</div>
+  `);
+};
+
+const renderAlarmTimeCard = (ctx: RenderContext): TemplateResult => {
+  const timeEntity = entityFromConfig(ctx, "ulm_card_alarm_time_datetime") ?? linkedState(ctx, "datetime_entity");
+  const step = numeric(configured(ctx, "ulm_card_alarm_time_step")) ?? 15;
+  const current = timeEntity?.state || "00:00:00";
+  const [hours, minutes] = current.split(":").map(Number);
+  const setMinutes = (delta: number) => {
+    const total = ((hours || 0) * 60 + (minutes || 0) + delta + 1440) % 1440;
+    ctx.service("input_datetime", "set_datetime", {
+      entity_id: timeEntity?.entity_id,
+      time: `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}:00`,
+    });
+  };
+  return ctx.actionSurface("custom-alarm-time", html`
+    <div class="custom-card-heading">
+      ${iconBubble(ctx, configured<string>(ctx, "ulm_card_alarm_time_icon") || "mdi:alarm", "grey")}
+      ${heading(ctx, stateLabel(ctx.entity))}
+    </div>
+    <div class="alarm-time-controls">
+      ${button(`Earlier by ${step} minutes`, "mdi:minus", (event) => { event.stopPropagation(); setMinutes(-step); })}
+      <b>${current.slice(0, 5)}</b>
+      ${button(`Later by ${step} minutes`, "mdi:plus", (event) => { event.stopPropagation(); setMinutes(step); })}
+    </div>
+  `);
+};
+
+const renderApexCharts = (ctx: RenderContext): TemplateResult => {
+  const series = [ctx.entity, ...configuredEntities(ctx)].filter((entity): entity is HassEntity => Boolean(entity)).slice(0, 3);
+  const colors = ["green", "red", "orange"];
+  return ctx.actionSurface("custom-apexcharts", html`
+    <div class="apex-legend">${series.map((entity, index) => html`
+      <span class="apex-series tone-${colors[index]}">
+        <i><ha-icon .icon=${entity.attributes.icon || ["mdi:download", "mdi:lan-pending", "mdi:upload"][index]}></ha-icon></i>
+        <b>${displayName({ type: "", entity: entity.entity_id }, entity)}</b>
+        <small>${stateLabel(entity)}</small>
+      </span>
+    `)}</div>
+    <div class="apex-chart">${sparkline(ctx)}<span class="apex-grid-line line-1"></span><span class="apex-grid-line line-2"></span><span class="apex-grid-line line-3"></span></div>
+  `);
+};
+
+const renderChromecast = (ctx: RenderContext): TemplateResult => ctx.actionSurface("custom-chromecast", html`
+  <div class="custom-card-heading">
+    ${iconBubble(ctx, "mdi:cast", "blue")}
+    ${heading(ctx, stateLabel(ctx.entity))}
+  </div>
+  <div class="chromecast-controls">
+    ${button("Power", "mdi:power", (event) => { event.stopPropagation(); ctx.service("media_player", ctx.entity?.state === "off" ? "turn_on" : "turn_off", { entity_id: ctx.config.entity }); })}
+    ${button("Play or pause", "mdi:play", (event) => { event.stopPropagation(); ctx.service("media_player", "media_play_pause", { entity_id: ctx.config.entity }); })}
+    ${button("Source", "mdi:video-input-hdmi", (event) => { event.stopPropagation(); })}
+  </div>
+`);
+
+const renderPowerDetails = (ctx: RenderContext): TemplateResult => {
+  const hours = numeric(configured(ctx, "ulm_card_power_details_hours")) ?? ctx.config.graph_hours ?? 2;
+  return ctx.actionSurface("custom-power-details", html`
+    <div class="power-details-heading">
+      ${iconBubble(ctx, "mdi:flash", "grey")}
+      ${heading(ctx, `${hours === 1 ? "In the last hour" : `In the last ${hours} hours`}`)}
+    </div>
+    <b class="power-details-value">${stateLabel(ctx.entity)}</b>
+    <div class="power-details-chart">${sparkline(ctx, true)}</div>
+  `);
+};
+
+const trackerIcon = (type: string | undefined): string =>
+  type === "bluetooth" ? "mdi:bluetooth" : type === "wifi" ? "mdi:wifi" : "mdi:crosshairs-gps";
+
+const renderDeviceTrackerCard = (ctx: RenderContext): TemplateResult => {
+  const tracker1 = entityFromConfig(ctx, "ulm_custom_card_device_tracker_tracker_1_entity") ?? ctx.entity;
+  const tracker2 = entityFromConfig(ctx, "ulm_custom_card_device_tracker_tracker_2_entity");
+  const present = [tracker1, tracker2].filter(Boolean).some((entity) => entity?.state === "home");
+  return ctx.actionSurface("custom-device-tracker", html`
+    <span class="device-tracker-icon">
+      <ha-icon .icon=${configured<string>(ctx, "ulm_custom_card_device_tracker_icon") || "mdi:cellphone"}></ha-icon>
+      ${tracker1 ? html`<i class="tracker-badge tracker-one"><ha-icon .icon=${trackerIcon(configured(ctx, "ulm_custom_card_device_tracker_tracker_1_type"))}></ha-icon></i>` : nothing}
+      ${tracker2 ? html`<i class="tracker-badge tracker-two"><ha-icon .icon=${trackerIcon(configured(ctx, "ulm_custom_card_device_tracker_tracker_2_type"))}></ha-icon></i>` : nothing}
+    </span>
+    <span class="ulm-copy"><b class="ulm-name">${displayName(ctx.config, ctx.entity)}</b><span class="ulm-label">${present ? "Present" : stateLabel(ctx.entity)}</span></span>
+  `);
+};
+
+const renderRoomView = (ctx: RenderContext): TemplateResult => {
+  const details = configuredEntities(ctx);
+  const humidity = details.find((entity) => entity.entity_id.includes("humidity"));
+  const light = details.find((entity) => entity.entity_id.startsWith("light."));
+  const presence = details.find((entity) => entity.entity_id.startsWith("binary_sensor."));
+  return ctx.actionSurface("custom-room-view", html`
+    <div class="room-view-summary">
+      <span class="room-view-icon"><ha-icon icon="mdi:sofa"></ha-icon><i>!</i></span>
+      <span><b>${stateLabel(ctx.entity)}</b>${humidity ? html`<small><ha-icon icon="mdi:water-percent"></ha-icon>${stateLabel(humidity)}</small>` : nothing}</span>
+    </div>
+    <div class="room-view-status"><ha-icon icon="mdi:door"></ha-icon>${presence?.state === "on" ? html`<i>1</i>` : nothing}</div>
+    <div class="room-view-actions">
+      <span><ha-icon icon="mdi:lightbulb-off"></ha-icon></span>
+      <span class=${light?.state === "on" ? "is-active" : ""}><ha-icon icon="mdi:lightbulb"></ha-icon>${light?.state === "on" ? html`<i>1</i>` : nothing}</span>
+      <span><ha-icon icon="mdi:television"></ha-icon><i>1</i></span>
+    </div>
+  `);
+};
+
+const relativeDuration = (entity: HassEntity | undefined): string => {
+  const raw = entity?.state;
+  if (!raw || (!raw.includes("-") && !raw.includes("T"))) return stateLabel(entity);
+  const then = raw ? Date.parse(raw) : Number.NaN;
+  if (Number.isFinite(then)) {
+    const minutes = Math.max(0, Math.floor((Date.now() - then) / 60_000));
+    if (minutes < 1) return "just now";
+    if (minutes < 60) return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+    const days = Math.floor(hours / 24);
+    return `${days} day${days === 1 ? "" : "s"} ${hours % 24} hours ago`;
+  }
+  return stateLabel(entity);
+};
+
+const renderElapsedTime = (ctx: RenderContext): TemplateResult => ctx.actionSurface("custom-elapsed-time", html`
+  ${iconBubble(ctx, "mdi:timer-sand", "grey")}
+  <span class="ulm-copy"><b class="ulm-name">${displayName(ctx.config, ctx.entity)}</b><span class="ulm-label">${relativeDuration(ctx.entity)}</span></span>
+`);
+
+const renderErayLock = (ctx: RenderContext): TemplateResult => {
+  const door = entityFromConfig(ctx, "ulm_custom_card_eraycetinay_lock_door_open");
+  const battery = entityFromConfig(ctx, "ulm_custom_card_eraycetinay_lock_battery_level") ?? linkedState(ctx, "battery_entity");
+  const locked = ctx.entity?.state === "locked";
+  const low = numeric(battery?.state) !== undefined && Number(battery?.state) <= (numeric(configured(ctx, "ulm_custom_card_eraycetinay_lock_battery_warning")) ?? 20);
+  return ctx.actionSurface(`custom-eray-lock ${locked ? "is-locked" : "is-unlocked"}`, html`
+    <span class="eray-lock-icon"><ha-icon .icon=${locked ? "mdi:lock" : "mdi:lock-open"}></ha-icon>
+      ${door?.state === "on" ? html`<i class="door-badge"><ha-icon icon="mdi:door-open"></ha-icon></i>` : nothing}
+      ${low ? html`<i class="battery-badge"><ha-icon icon="mdi:battery-alert"></ha-icon></i>` : nothing}
+    </span>
+    ${heading(ctx, stateLabel(ctx.entity))}
+  `);
+};
+
+const renderEshWelcome = (ctx: RenderContext): TemplateResult => {
+  const items = configuredEntities(ctx).slice(0, 5);
+  const defaults = [
+    ["mdi:home", "House", "blue"],
+    ["mdi:lightbulb", "Lights", "yellow"],
+    ["mdi:shield", "Secure", "green"],
+    ["mdi:radiator", "Climate", "purple"],
+    ["mdi:flask", "Lab", "red"],
+  ];
+  return ctx.actionSurface("custom-esh-welcome", html`
+    <div class="esh-welcome-toolbar">
+      <span><ha-icon icon="mdi:chevron-up"></ha-icon></span>
+      <span><ha-icon icon="mdi:thermometer"></ha-icon></span>
+      <span><ha-icon icon="mdi:cog"></ha-icon></span>
+    </div>
+    <b class="esh-greeting">Good ${new Date().getHours() < 12 ? "morning" : new Date().getHours() < 18 ? "afternoon" : "evening"},<br>${ctx.config.name || displayName(ctx.config, ctx.entity)}!</b>
+    <div class="esh-welcome-items">${defaults.map(([itemIcon, label, tone], index) => html`
+      <span class="tone-${tone}"><i><ha-icon .icon=${items[index]?.attributes.icon || itemIcon}></ha-icon></i><small>${items[index] ? displayName({ type: "", entity: items[index].entity_id }, items[index]) : label}</small></span>
+    `)}</div>
+  `);
+};
+
+const renderWasher = (ctx: RenderContext): TemplateResult => {
+  const progress = entityFromConfig(ctx, "ulm_custom_card_washer_job_progress");
+  const job = entityFromConfig(ctx, "ulm_custom_card_washer_job_state");
+  const remote = entityFromConfig(ctx, "ulm_custom_card_washer_remote_control");
+  const running = /run|wash|dry/i.test(job?.state || ctx.entity?.state || "");
+  const percent = numeric(progress?.state) ?? (running ? 45 : 0);
+  const stages = ["mdi:water-boiler", "mdi:waves", "mdi:water", "mdi:fan"];
+  return ctx.actionSurface("custom-washer", html`
+    <div class="custom-card-heading">${iconBubble(ctx, "mdi:washing-machine", "blue")}${heading(ctx, job ? stateLabel(job) : stateLabel(ctx.entity))}</div>
+    <div class="washer-stages">${stages.map((stage, index) => html`<span class=${percent >= index * 25 ? "is-active" : ""}><ha-icon .icon=${stage}></ha-icon></span>`)}</div>
+    <div class="washer-controls">
+      ${button("Pause", "mdi:pause", (event) => { event.stopPropagation(); })}
+      ${button("Stop", "mdi:stop", (event) => { event.stopPropagation(); })}
+      ${button("Delay start", "mdi:alarm", (event) => { event.stopPropagation(); })}
+    </div>
+    ${remote ? html`<span class="washer-remote">${stateLabel(remote)}</span>` : nothing}
+  `);
+};
+
+const renderHeatPump = (ctx: RenderContext): TemplateResult => {
+  const target = numeric(attr(ctx.entity, "temperature")) ?? 20;
+  const step = numeric(attr(ctx.entity, "target_temp_step")) ?? 0.5;
+  const modes = [
+    ["off", "mdi:power"], ["heat", "mdi:fire"], ["cool", "mdi:snowflake"],
+    ["heat_cool", "mdi:sync"], ["dry", "mdi:water"], ["fan_only", "mdi:fan"],
+  ];
+  return ctx.actionSurface("custom-heat-pump", html`
+    <div class="custom-card-heading">${iconBubble(ctx, "mdi:thermostat", ctx.entity?.state === "heat" ? "red" : "grey")}${heading(ctx, `${attr(ctx.entity, "current_temperature") ?? "—"}° · ${attr(ctx.entity, "hvac_action") ?? stateLabel(ctx.entity)}`)}</div>
+    <div class="heat-pump-target">
+      ${button("Decrease temperature", "mdi:arrow-down", (event) => { event.stopPropagation(); ctx.service("climate", "set_temperature", { entity_id: ctx.config.entity, temperature: target - step }); })}
+      <b>${target}°C</b>
+      ${button("Increase temperature", "mdi:arrow-up", (event) => { event.stopPropagation(); ctx.service("climate", "set_temperature", { entity_id: ctx.config.entity, temperature: target + step }); })}
+    </div>
+    <div class="heat-pump-modes">${modes.map(([mode, modeIcon]) => html`
+      <button class=${ctx.entity?.state === mode ? "is-active" : ""} @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
+        event.stopPropagation();
+        ctx.service("climate", "set_hvac_mode", { entity_id: ctx.config.entity, hvac_mode: mode });
+      }}><ha-icon .icon=${modeIcon}></ha-icon></button>
+    `)}</div>
+  `);
+};
+
+const updateEntityFor = (ctx: RenderContext, key: string, needle: string): HassEntity | undefined =>
+  entityFromConfig(ctx, key) ??
+  Object.values(ctx.hass.states).find((entity) => entity.entity_id.startsWith("update.") && entity.entity_id.includes(needle));
+
+const renderHomeAssistantUpdates = (ctx: RenderContext): TemplateResult => {
+  const rows = [
+    ["Supervisor", updateEntityFor(ctx, "ulm_card_homeassistant_supervisor", "supervisor")],
+    ["Core", entityFromConfig(ctx, "ulm_card_homeassistant_core") ?? ctx.entity],
+    ["OS", updateEntityFor(ctx, "ulm_card_homeassistant_os", "operating_system")],
+  ] as const;
+  const hasUpdate = rows.some(([, entity]) => entity?.state === "on");
+  return ctx.actionSurface("custom-ha-updates", html`
+    <div class="custom-card-heading">${iconBubble(ctx, "mdi:home-assistant", hasUpdate ? "blue" : "grey")}${heading(ctx, hasUpdate ? "Updates available" : "No updates available")}</div>
+    <div class="ha-update-list">${rows.map(([label, entity]) => html`
+      <span><b>${label}</b><small>${String(attr(entity, "installed_version") ?? stateLabel(entity))}${entity?.state === "on" ? ` → ${String(attr(entity, "latest_version") ?? "new")}` : ""}</small></span>
+    `)}</div>
+    <div class="ha-update-actions"><ha-icon icon="mdi:file-document"></ha-icon><ha-icon icon="mdi:cog"></ha-icon><ha-icon icon="mdi:update"></ha-icon></div>
+  `);
+};
+
+const renderSunCard = (ctx: RenderContext): TemplateResult => {
+  const rising = attr(ctx.entity, "next_rising");
+  const setting = attr(ctx.entity, "next_setting");
+  const format = (value: unknown) => {
+    const date = new Date(String(value ?? ""));
+    return Number.isNaN(date.getTime()) ? "—" : date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+  const above = ctx.entity?.state === "above_horizon";
+  return ctx.actionSurface("custom-sun-card", html`
+    <div class="sun-times"><span><small>Sunrise</small><b>${format(rising)}</b></span><span><small>Sunset</small><b>${format(setting)}</b></span></div>
+    <div class="sun-arc"><svg viewBox="0 0 300 90" preserveAspectRatio="none"><path class="sun-night" d="M0,62 Q60,115 105,62"></path><path class="sun-day" d="M0,62 Q150,-45 300,62"></path><circle cx=${above ? "170" : "28"} cy=${above ? "18" : "70"} r="10"></circle><line x1="0" y1="62" x2="300" y2="62"></line></svg></div>
+    <div class="sun-footer"><span><small>Dawn</small><b>${format(rising)}</b></span><span><small>Solar noon</small><b>12:00</b></span><span><small>Dusk</small><b>${format(setting)}</b></span></div>
+  `);
+};
+
+const renderCompactThermostat = (ctx: RenderContext): TemplateResult => {
+  const heating = attr(ctx.entity, "hvac_action") === "heating";
+  const target = numeric(attr(ctx.entity, "temperature")) ?? 20;
+  return ctx.actionSurface(`custom-compact-thermostat ${heating ? "is-heating" : ""}`, html`
+    <div class="custom-card-heading">${iconBubble(ctx, heating ? "mdi:radiator" : "mdi:radiator-off", "red")}${heading(ctx, stateLabel(ctx.entity))}<b>${attr(ctx.entity, "current_temperature") ?? "—"}°</b></div>
+    <div class="compact-thermostat-controls">
+      ${button("Decrease temperature", "mdi:minus", (event) => { event.stopPropagation(); ctx.service("climate", "set_temperature", { entity_id: ctx.config.entity, temperature: target - 0.5 }); })}
+      <b>${target}°</b>
+      ${button("Increase temperature", "mdi:plus", (event) => { event.stopPropagation(); ctx.service("climate", "set_temperature", { entity_id: ctx.config.entity, temperature: target + 0.5 }); })}
+    </div>
+  `);
+};
+
+const renderBatteryChipCard = (ctx: RenderContext): TemplateResult => {
+  const value = numeric(ctx.entity?.state) ?? 0;
+  const danger = numeric(configured(ctx, "ulm_custom_card_iAbadia_battery_chip_danger")) ?? 10;
+  const warning = numeric(configured(ctx, "ulm_custom_card_iAbadia_battery_chip_warning")) ?? 20;
+  const tone = value <= danger ? "red" : value <= warning ? "yellow" : "green";
+  return ctx.actionSurface(`custom-battery-chip tone-${tone}`, html`
+    <ha-icon .icon=${configured<string>(ctx, "ulm_custom_card_iAbadia_battery_chip_icon") || ctx.config.icon || "mdi:battery"}></ha-icon>
+  `);
+};
+
+const renderMediaLibrary = (ctx: RenderContext): TemplateResult => {
+  const data = Array.isArray(attr(ctx.entity, "data")) ? attr(ctx.entity, "data") as Array<Record<string, unknown>> : [];
+  const index = Math.max(1, numeric(configured(ctx, "ulm_custom_card_imswel_medias_index")) ?? 1);
+  const media = data[index] ?? data.find((item) => item.title) ?? {};
+  const picture = media.fanart || media.poster || attr(ctx.entity, "entity_picture");
+  const platform = configured<string>(ctx, "ulm_custom_card_imswel_medias_platform") || "plex";
+  return ctx.actionSurface("custom-media-library", html`
+    ${picture ? html`<span class="media-library-art" style=${`background-image:url("${String(picture)}")`}></span>` : html`<span class="media-library-art"><ha-icon icon="mdi:movie-open"></ha-icon></span>`}
+    <span class="media-library-overlay">
+      <span class="media-platform"><ha-icon .icon=${platform === "sonarr" ? "mdi:television-classic" : platform === "radarr" ? "mdi:movie" : "mdi:plex"}></ha-icon></span>
+      <span class="ulm-copy">
+        <b class="ulm-name">${String(media.title ?? attr(ctx.entity, "media_title") ?? displayName(ctx.config, ctx.entity))}</b>
+        <span class="ulm-label">${String(media.episode ?? media.release ?? `${platform} · ${stateLabel(ctx.entity)}`)}</span>
+      </span>
+    </span>
+  `);
+};
+
+const renderImswelPerson = (ctx: RenderContext): TemplateResult => {
+  const gps = entityFromConfig(ctx, "ulm_card_imswel_person_gps_tracker");
+  const wifi = entityFromConfig(ctx, "ulm_card_imswel_person_wifi_tracker");
+  const findScript = configured<string>(ctx, "ulm_card_imswel_person_findmy_script");
+  return ctx.actionSurface("custom-imswel-person", html`
+    <div class="imswel-person-main">${attr(ctx.entity, "entity_picture")
+      ? html`<span class="person-picture" style=${`background-image:url("${String(attr(ctx.entity, "entity_picture"))}")`}></span>`
+      : iconBubble(ctx, "mdi:account", ctx.entity?.state === "home" ? "blue" : "grey")}
+      ${heading(ctx, stateLabel(ctx.entity))}
+      ${linkedState(ctx, "battery_entity") ? html`<b>${stateLabel(linkedState(ctx, "battery_entity"))}</b>` : nothing}
+    </div>
+    <div class="imswel-person-trackers">
+      <span><ha-icon icon="mdi:crosshairs-gps"></ha-icon>${stateLabel(gps)}</span>
+      <span><ha-icon icon="mdi:wifi"></ha-icon>${stateLabel(wifi)}</span>
+      <button @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
+        event.stopPropagation();
+        if (findScript) ctx.service("script", "turn_on", { entity_id: findScript });
+      }}><ha-icon icon="mdi:cellphone-marker"></ha-icon></button>
+    </div>
+  `);
+};
+
+const renderInputDateTime = (ctx: RenderContext): TemplateResult => {
+  const state = ctx.entity?.state || "00:00:00";
+  const time = state.split(" ").at(-1) || "00:00:00";
+  const [hours, minutes] = time.split(":").map(Number);
+  const setMinutes = (delta: number) => {
+    const total = ((hours || 0) * 60 + (minutes || 0) + delta + 1440) % 1440;
+    ctx.service("input_datetime", "set_datetime", {
+      entity_id: ctx.config.entity,
+      time: `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}:00`,
+    });
+  };
+  return ctx.actionSurface("custom-input-datetime", html`
+    <div class="custom-card-heading">${iconBubble(ctx, "mdi:calendar-clock", "green")}${heading(ctx, stateLabel(ctx.entity))}</div>
+    <div class="input-datetime-controls">
+      ${button("Earlier", "mdi:arrow-down", (event) => { event.stopPropagation(); setMinutes(-15); })}
+      <b>${time.slice(0, 5)}</b>
+      ${button("Later", "mdi:arrow-up", (event) => { event.stopPropagation(); setMinutes(15); })}
+    </div>
+  `);
+};
+
+const renderInputNumberCard = (ctx: RenderContext): TemplateResult => {
+  const domain = ctx.config.entity?.split(".", 1)[0] ?? "input_number";
+  const decrement = domain === "counter" ? ["counter", "decrement"]
+    : domain === "select" ? ["select", "select_previous"]
+      : domain === "input_select" ? ["input_select", "select_previous"]
+        : ["input_number", "decrement"];
+  const increment = domain === "counter" ? ["counter", "increment"]
+    : domain === "select" ? ["select", "select_next"]
+      : domain === "input_select" ? ["input_select", "select_next"]
+        : ["input_number", "increment"];
+  return ctx.actionSurface("custom-input-number", html`
+    <div class="custom-card-heading">${iconBubble(ctx, "mdi:tune-variant", "blue")}${heading(ctx, stateLabel(ctx.entity))}</div>
+    <div class="input-number-controls">
+      ${button("Previous value", "mdi:arrow-down", (event) => {
+        event.stopPropagation();
+        if (domain === "number") {
+          const step = numeric(attr(ctx.entity, "step")) ?? 1;
+          ctx.service("number", "set_value", { entity_id: ctx.config.entity, value: (numeric(ctx.entity?.state) ?? 0) - step });
+        } else ctx.service(decrement[0], decrement[1], { entity_id: ctx.config.entity });
+      })}
+      <b>${stateLabel(ctx.entity)}</b>
+      ${button("Next value", "mdi:arrow-up", (event) => {
+        event.stopPropagation();
+        if (domain === "number") {
+          const step = numeric(attr(ctx.entity, "step")) ?? 1;
+          ctx.service("number", "set_value", { entity_id: ctx.config.entity, value: (numeric(ctx.entity?.state) ?? 0) + step });
+        } else ctx.service(increment[0], increment[1], { entity_id: ctx.config.entity });
+      })}
+    </div>
+  `);
+};
+
+const renderIrmajaviEntities = (ctx: RenderContext): TemplateResult => {
+  const details = configuredEntities(ctx).slice(0, 4);
+  return ctx.actionSurface("custom-irmajavi-entities", html`
+    <div class="irmajavi-header">${iconBubble(ctx, configured<string>(ctx, "ulm_custom_card_irmajavi_entities_icon") || "mdi:alien", "purple")}${heading(ctx, stateLabel(ctx.entity))}</div>
+    <div class="irmajavi-four">${details.map((entity, index) => html`
+      <span><b>${configured<string>(ctx, `ulm_custom_card_irmajavi_entities_name_${index + 1}`) || displayName({ type: "", entity: entity.entity_id }, entity)}</b><small>${stateLabel(entity)}</small></span>
+    `)}</div>
+  `);
+};
+
+const renderIrmajaviSpeedtest = (ctx: RenderContext): TemplateResult => {
+  const details = configuredEntities(ctx);
+  const download = entityFromConfig(ctx, "ulm_custom_card_irmajavi_speedtest_download_speed_entity") ?? ctx.entity;
+  const upload = entityFromConfig(ctx, "ulm_custom_card_irmajavi_speedtest_upload_speed_entity") ?? details[0];
+  const ping = entityFromConfig(ctx, "ulm_custom_card_irmajavi_speedtest_ping_entity") ?? details[1];
+  return ctx.actionSurface("custom-irmajavi-speedtest", html`
+    <div class="speedtest-router">${iconBubble(ctx, "mdi:router-wireless", "blue")}<span class="ulm-copy"><b class="ulm-name">${configured<string>(ctx, "ulm_custom_card_irmajavi_speedtest_name") || "Router"}</b><span class="ulm-label">${configured<string>(ctx, "ulm_custom_card_irmajavi_speedtest_model") || "Internet connection"}</span></span></div>
+    <button class="speedtest-action" @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
+      event.stopPropagation();
+      for (const entity of [download, upload, ping]) if (entity) ctx.service("homeassistant", "update_entity", { entity_id: entity.entity_id });
+    }}><ha-icon icon="mdi:speedometer"></ha-icon><span>Internet speed test</span></button>
+    <div class="speedtest-metrics">
+      ${[["Download", download], ["Upload", upload], ["Ping", ping]].map(([label, entity]) => html`<span><small>${label}</small><b>${stateLabel(entity as HassEntity | undefined)}</b></span>`)}
+    </div>
+  `);
+};
+
+const renderIrmajaviWeather = (ctx: RenderContext): TemplateResult => {
+  const details = configuredEntities(ctx).slice(0, 4);
+  const temperature = linkedState(ctx, "temperature_entity");
+  const condition = ctx.entity?.state || "unknown";
+  const weatherIcon = weatherIcons[condition]?.[0] || "mdi:weather-partly-cloudy";
+  return ctx.actionSurface("custom-irmajavi-weather", html`
+    <div class="irmajavi-weather-header">
+      <span class="weather-emoji"><ha-icon .icon=${weatherIcon}></ha-icon></span>
+      <span class="ulm-copy"><b class="ulm-name">${new Intl.DateTimeFormat(undefined, { weekday: "long", month: "short", day: "numeric" }).format(new Date())}</b><span class="ulm-label">${condition.replaceAll("-", " ")}</span></span>
+      <b>${temperature ? stateLabel(temperature) : `${attr(ctx.entity, "temperature") ?? "—"}°`}</b>
+    </div>
+    <div class="irmajavi-four">${details.map((entity) => html`<span><b>${displayName({ type: "", entity: entity.entity_id }, entity)}</b><small>${stateLabel(entity)}</small></span>`)}</div>
+  `);
+};
+
+const renderLightColorPick = (ctx: RenderContext): TemplateResult => {
+  const on = ctx.entity?.state === "on";
+  const brightness = numeric(attr(ctx.entity, "brightness"));
+  const percent = brightness === undefined ? 0 : Math.round(brightness / 2.55);
+  const colors = [[255,255,255], [255,0,0], [0,110,255], [0,190,90], [220,0,220], [0,210,220]];
+  return ctx.actionSurface("custom-light-colorpick", html`
+    <div class="light-colorpick-top">
+      <div class="light-header ${on ? "is-active" : ""}">${iconBubble(ctx, "mdi:lightbulb", on ? "yellow" : "grey")}${heading(ctx, `${stateLabel(ctx.entity)} · ${percent}%`)}</div>
+      <div class="ulm-light-slider" style=${`--light-rgb:255,193,7;--light-level:${percent}%`}><i></i><input type="range" min="0" max="100" .value=${String(percent)} @pointerdown=${(event: Event) => event.stopPropagation()} @change=${(event: Event) => ctx.service("light", "turn_on", { entity_id: ctx.config.entity, brightness_pct: Number((event.target as HTMLInputElement).value) })}></div>
+    </div>
+    ${on ? html`<div class="light-color-swatches">${colors.map((rgb) => html`<button style=${`--swatch:rgb(${rgb.join(",")})`} aria-label=${`Set color ${rgb.join(",")}`} @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => { event.stopPropagation(); ctx.service("light", "turn_on", { entity_id: ctx.config.entity, rgb_color: rgb, transition: numeric(configured(ctx, "ulm_card_light_colorpick_transition")) ?? 1 }); }}></button>`)}</div>` : nothing}
+  `);
+};
+
+const renderSonos = (ctx: RenderContext): TemplateResult => {
+  const volume = Math.round((numeric(attr(ctx.entity, "volume_level")) ?? 0) * 100);
+  return ctx.actionSurface("custom-sonos", html`
+    <div class="custom-card-heading">${iconBubble(ctx, "mdi:speaker", ctx.entity?.state === "playing" ? "green" : "grey")}${heading(ctx, `${attr(ctx.entity, "source") ?? stateLabel(ctx.entity)} · ${volume}%`)}</div>
+    <div class="sonos-controls">
+      ${button("Volume down", "mdi:volume-minus", (event) => { event.stopPropagation(); ctx.service("media_player", "volume_down", { entity_id: ctx.config.entity }); })}
+      ${button("Play or pause", ctx.entity?.state === "playing" ? "mdi:pause" : "mdi:play", (event) => { event.stopPropagation(); ctx.service("media_player", "media_play_pause", { entity_id: ctx.config.entity }); })}
+      ${button("Volume up", "mdi:volume-plus", (event) => { event.stopPropagation(); ctx.service("media_player", "volume_up", { entity_id: ctx.config.entity }); })}
+    </div>
+  `);
+};
+
+const renderMorePowerOutlet = (ctx: RenderContext): TemplateResult => {
+  const power = entityFromConfig(ctx, "ulm_card_more_power_outlet_power_sensor") ?? linkedState(ctx, "graph_entity");
+  const energy = entityFromConfig(ctx, "ulm_card_more_power_outlet_energy_sensor");
+  const elapsed = entityFromConfig(ctx, "ulm_card_more_power_outlet_time_sensor");
+  const details = [power ? stateLabel(power) : "", energy ? stateLabel(energy) : "", elapsed ? stateLabel(elapsed) : ""].filter(Boolean).join(" · ");
+  return ctx.actionSurface("custom-more-power-outlet", html`
+    ${iconBubble(ctx, "mdi:power-socket-eu", ctx.entity?.state === "on" ? "yellow" : "grey")}
+    ${heading(ctx, details || stateLabel(ctx.entity))}
+  `);
+};
+
+const renderDualGauge = (ctx: RenderContext): TemplateResult => {
+  const value = numeric(ctx.entity?.state) ?? 0;
+  const min = numeric(configured(ctx, "ulm_card_mpse_gauge_min")) ?? 0;
+  const max = numeric(configured(ctx, "ulm_card_mpse_gauge_max")) ?? 100;
+  const gauge = Math.max(0, Math.min(100, ((value - min) / Math.max(1, max - min)) * 100));
+  return ctx.actionSurface("custom-dual-gauge", html`
+    <div class="custom-card-heading">${iconBubble(ctx, "mdi:gauge", "blue")}${heading(ctx, stateLabel(ctx.entity))}</div>
+    <div class="dual-gauge" style=${`--gauge:${gauge * 1.8}deg`}>
+      <i></i>
+      <span><b>${stateLabel(ctx.entity)}</b><small>${min} - ${max}</small></span>
+    </div>
+  `);
+};
+
+const renderMpsePrinter = (ctx: RenderContext): TemplateResult => {
+  const details = configuredEntities(ctx).slice(0, 4);
+  const colors = ["#111", "#faff00", "#f800ff", "#00ffff"];
+  return ctx.actionSurface("custom-mpse-printer", html`
+    <div class="custom-card-heading">${iconBubble(ctx, "mdi:printer", ctx.entity?.state === "idle" ? "grey" : "blue")}${heading(ctx, stateLabel(ctx.entity))}</div>
+    <div class="toner-bars">${details.map((entity, index) => {
+      const value = Math.max(0, Math.min(100, numeric(entity.state) ?? 0));
+      return html`<span style=${`--toner:${colors[index]};--level:${value}%`}><i><em></em><b>${stateLabel(entity)}</b></i></span>`;
+    })}</div>
+  `);
+};
+
+const renderWifiSignal = (ctx: RenderContext): TemplateResult => {
+  const value = numeric(ctx.entity?.state) ?? -100;
+  const signalIcon = value >= -50 ? "mdi:wifi-strength-4" : value >= -60 ? "mdi:wifi-strength-3" : value >= -70 ? "mdi:wifi-strength-2" : value >= -80 ? "mdi:wifi-strength-1" : "mdi:wifi-strength-off";
+  return ctx.actionSurface("custom-wifi-signal", html`${iconBubble(ctx, signalIcon, "blue")}${heading(ctx, `${value} dBm`)}`);
+};
+
+const renderNasInfo = (ctx: RenderContext): TemplateResult => ctx.actionSurface("custom-nas-info", html`
+  ${iconBubble(ctx, "mdi:nas", "blue")}
+  ${heading(ctx, `${configured<string>(ctx, "ulm_custom_card_nas_text") || ""} ${stateLabel(ctx.entity)}${configured<string>(ctx, "ulm_custom_card_nas_unit", "ulm_custom_cad_nas_unit") || ""}`.trim())}
+`);
+
+const renderNeeksterUpdate = (ctx: RenderContext): TemplateResult => {
+  const updateAvailable = ctx.entity?.state !== "off";
+  const controls = configured<boolean>(ctx, "ulm_custom_card_neekster_update_enable_controls") === true;
+  return ctx.actionSurface("custom-neekster-update", html`
+    <div class="custom-card-heading">${iconBubble(ctx, updateAvailable ? "mdi:cloud-download" : "mdi:cloud-check", updateAvailable ? "yellow" : "green")}${heading(ctx, updateAvailable ? "Update available" : "Up to date")}</div>
+    ${controls && updateAvailable ? html`<div class="update-controls">
+      ${button("Install update", "mdi:update", (event) => { event.stopPropagation(); ctx.service("update", "install", { entity_id: ctx.config.entity }); })}
+      ${button("Skip update", "mdi:skip-next", (event) => { event.stopPropagation(); ctx.service("update", "skip", { entity_id: ctx.config.entity }); })}
+    </div>` : nothing}
+  `);
+};
+
+const renderNikClock = (ctx: RenderContext): TemplateResult => {
+  const now = new Date();
+  return ctx.actionSurface("custom-nik-clock", html`
+    <b>${now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</b>
+    <span>${now.toLocaleDateString(ctx.hass.language, { weekday: "long", day: "numeric", month: "long" })}</span>
+  `);
+};
+
+const renderNikDoor = (ctx: RenderContext): TemplateResult => {
+  const lock = linkedState(ctx, "lock_entity");
+  const battery = linkedState(ctx, "battery_entity");
+  const batteryValue = numeric(battery?.state) ?? 0;
+  return ctx.actionSurface("custom-nik-door", html`
+    <div class="nik-door-heading">
+      <span class="nik-door-icon"><ha-icon .icon=${ctx.entity?.state === "on" ? "mdi:door-open" : "mdi:door-closed"}></ha-icon><i class=${batteryValue <= 40 ? "is-low" : ""}><ha-icon .icon=${batteryValue <= 40 ? "mdi:battery-alert" : "mdi:battery"}></ha-icon></i></span>
+      ${heading(ctx, `${stateLabel(ctx.entity)} · ${stateLabel(lock)}`)}
+    </div>
+    <div class="nik-door-controls">
+      ${button("Unlock", "mdi:lock-open", (event) => { event.stopPropagation(); if (lock) ctx.service("lock", "unlock", { entity_id: lock.entity_id }); })}
+      ${button("Lock", "mdi:lock", (event) => { event.stopPropagation(); if (lock) ctx.service("lock", "lock", { entity_id: lock.entity_id }); })}
+    </div>
+  `);
+};
+
+const renderNikNas = (ctx: RenderContext): TemplateResult => {
+  const details = configuredEntities(ctx).slice(0, 4);
+  const online = !["off", "unavailable", "unknown"].includes(ctx.entity?.state ?? "");
+  if (!online) return ctx.actionSurface("custom-nik-nas is-off", html`${iconBubble(ctx, "mdi:nas", "grey")}${heading(ctx, stateLabel(ctx.entity))}`);
+  return ctx.actionSurface("custom-nik-nas is-on", html`
+    <div class="nik-nas-header">${iconBubble(ctx, "mdi:nas", "blue")}${heading(ctx, stateLabel(ctx.entity))}</div>
+    <div class="nik-nas-metrics">${details.slice(0, 3).map((entity, index) => html`<span class=${`metric-${index + 1}`}><b>${stateLabel(entity)}</b><small>${displayName({ type: "", entity: entity.entity_id }, entity)}</small></span>`)}</div>
+    <div class="nik-nas-chart" style=${`--gauge:${Math.max(0, Math.min(100, numeric(details[0]?.state) ?? 0)) * 3.6}deg`}><ha-icon icon="mdi:nas"></ha-icon></div>
+  `);
+};
+
+const renderNikTablet = (ctx: RenderContext): TemplateResult => {
+  const details = configuredEntities(ctx);
+  const battery = numeric(ctx.entity?.state) ?? 0;
+  return ctx.actionSurface("custom-nik-tablet", html`
+    <div class="custom-card-heading">${iconBubble(ctx, "mdi:tablet", "blue")}${heading(ctx, stateLabel(ctx.entity))}</div>
+    <div class="tablet-status-row">${details.slice(0, 3).map((entity) => html`<span>${stateLabel(entity)}</span>`)}</div>
+    <div class="tablet-action-row"><button><ha-icon icon="mdi:restart"></ha-icon></button><button><ha-icon icon="mdi:reload"></ha-icon></button><button><ha-icon icon="mdi:wrench"></ha-icon></button></div>
+    <div class="tablet-parameter-row">${details.slice(3, 6).map((entity) => html`<span><small>${displayName({ type: "", entity: entity.entity_id }, entity)}</small><b>${stateLabel(entity)}</b></span>`)}</div>
+    <div class="tablet-battery"><i style=${`width:${battery}%`}></i><b>${battery}%</b></div>
+  `);
+};
+
+const pollenSeverity = (value: number): [string, string] => {
+  if (value >= 6) return ["Very high", "#d32f2f"];
+  if (value >= 5) return ["High", "#f44336"];
+  if (value >= 4) return ["Medium", "#ff9800"];
+  if (value >= 3) return ["Moderate", "#fbc02d"];
+  if (value >= 2) return ["Low", "#8bc34a"];
+  if (value >= 1) return ["Very low", "#c5e1a5"];
+  return ["None", "#9e9e9e"];
+};
+
+const renderPaddyPollen = (ctx: RenderContext): TemplateResult => {
+  const value = numeric(ctx.entity?.state) ?? 0;
+  const [label, color] = pollenSeverity(value);
+  return ctx.actionSurface("custom-paddy-pollen", html`
+    <span class="pollen-icon" style=${`--pollen:${color}`}><ha-icon .icon=${ctx.config.icon || "mdi:flower-pollen"}></ha-icon></span>
+    ${valueThenName(ctx, label)}
+  `);
+};
+
+const renderPaddyWaste = (ctx: RenderContext): TemplateResult => {
+  const days = numeric(attr(ctx.entity, "daysTo"));
+  const warning = days === 0 || days === 1 || ctx.entity?.state === "unavailable";
+  return ctx.actionSurface(`custom-paddy-waste ${warning ? "is-warning" : ""}`, html`
+    <span class="paddy-waste-icon">${iconBubble(ctx, "mdi:trash-can", warning ? "red" : "green")}${warning ? html`<i><ha-icon icon="mdi:alert"></ha-icon></i>` : nothing}</span>
+    ${valueThenName(ctx)}
+  `);
+};
+
+const renderPaddyWelcome = (ctx: RenderContext): TemplateResult => {
+  const hour = new Date().getHours();
+  const greeting = hour >= 18 ? "Good evening" : hour >= 12 ? "Good afternoon" : hour >= 5 ? "Good morning" : "Hello";
+  const weather = entityFromConfig(ctx, "ulm_weather") ?? Object.values(ctx.hass.states).find((entity) => entity.entity_id.startsWith("weather."));
+  return ctx.actionSurface("custom-paddy-welcome", html`
+    <b>${greeting}, ${ctx.config.name || displayName(ctx.config, ctx.entity)}!</b>
+    ${weather ? html`<span><ha-icon .icon=${weatherIcons[weather.state]?.[0] || "mdi:weather-partly-cloudy"}></ha-icon>${attr(weather, "temperature") ?? "—"}° · ${weather.state.replaceAll("-", " ")}</span>` : nothing}
+  `);
+};
+
+const renderPersonChip = (ctx: RenderContext): TemplateResult => {
+  const picture = ctx.config.use_entity_picture ? attr(ctx.entity, "entity_picture") : undefined;
+  return ctx.actionSurface("custom-person-chip", html`
+    ${picture ? html`<span class="person-chip-picture" style=${`background-image:url("${String(picture)}")`}></span>` : html`<span><ha-icon icon="mdi:face-man"></ha-icon></span>`}
+    <b>${stateLabel(ctx.entity)}</b>
+  `);
+};
+
+const renderPersonInfo = (ctx: RenderContext): TemplateResult => {
+  const small = ctx.config.variant === "small";
+  const trackers = configuredEntities(ctx);
+  const picture = String(attr(ctx.entity, "entity_picture") || "");
+  if (small) return ctx.actionSurface("custom-person-info-small is-compact", html`
+    <span class="person-info-avatar" style=${picture ? `background-image:url("${picture}")` : ""}><ha-icon icon="mdi:account"></ha-icon></span>
+    ${heading(ctx, `${stateLabel(ctx.entity)}${trackers[0] ? ` · ${stateLabel(trackers[0])}` : ""}`)}
+  `);
+  const battery = entityFromConfig(ctx, "ulm_card_person_battery") ?? linkedState(ctx, "battery_entity") ?? trackers[0];
+  const distance = entityFromConfig(ctx, "ulm_card_person_distance") ?? trackers[1];
+  const zone = entityFromConfig(ctx, "ulm_card_person_zone") ?? trackers[2];
+  return ctx.actionSurface("custom-person-info", html`
+    <div class="person-info-main">
+      <span class="person-info-avatar" style=${picture ? `background-image:url("${picture}")` : ""}><ha-icon icon="mdi:account"></ha-icon></span>
+      ${heading(ctx, stateLabel(ctx.entity))}
+      <span class="person-info-status">${ctx.entity?.state === "home" ? "Home" : ctx.entity?.state || "Unknown"}</span>
+    </div>
+    <div class="person-info-details">
+      <span><ha-icon icon="mdi:battery"></ha-icon><b>${stateLabel(battery)}</b><small>Battery</small></span>
+      <span><ha-icon icon="mdi:map-marker-distance"></ha-icon><b>${stateLabel(distance)}</b><small>Distance</small></span>
+      <span><ha-icon icon="mdi:map-marker-radius"></ha-icon><b>${stateLabel(zone)}</b><small>Zone</small></span>
+    </div>
+  `);
+};
+
+const renderConsoleCard = (ctx: RenderContext): TemplateResult => {
+  const platform = configured<string>(ctx, "console_platform", "platform", "console_type", "variant") === "xbox" ? "xbox" : "playstation";
+  const playing = ctx.entity?.state === "on" || ctx.entity?.state === "playing";
+  const background = configured<string>(ctx, "ulm_custom_card_console_background", "ulm_card_playstation_background");
+  return ctx.actionSurface(`custom-console-card platform-${platform}`, html`
+    ${background ? html`<div class="console-backdrop" style=${`background-image:url("${background}")`}></div>` : nothing}
+    <div class="console-content">
+      <span class="console-logo"><ha-icon .icon=${platform === "xbox" ? "mdi:microsoft-xbox" : "mdi:sony-playstation"}></ha-icon></span>
+      ${heading(ctx, `${playing ? "Playing" : stateLabel(ctx.entity)}${attr(ctx.entity, "source") ? ` · ${String(attr(ctx.entity, "source"))}` : ""}`)}
+      <button @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => { event.stopPropagation(); ctx.service("media_player", playing ? "turn_off" : "turn_on", { entity_id: ctx.config.entity }); }}><ha-icon .icon=${playing ? "mdi:power" : "mdi:play"}></ha-icon></button>
+    </div>
+  `);
+};
+
+const renderQubino = (ctx: RenderContext): TemplateResult => {
+  const power = entityFromConfig(ctx, "ulm_custom_card_qubino_power") ?? configuredEntities(ctx)[0];
+  return ctx.actionSurface("custom-qubino", html`
+    ${iconBubble(ctx, ctx.entity?.state === "on" ? "mdi:radiator" : "mdi:radiator-disabled", ctx.entity?.state === "on" ? "red" : "grey")}
+    ${heading(ctx, `${stateLabel(ctx.entity)}${power ? ` · ${stateLabel(power)}` : ""}`)}
+    <button @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => { event.stopPropagation(); ctx.service("switch", "toggle", { entity_id: ctx.config.entity }); }}><ha-icon icon="mdi:power"></ha-icon></button>
+  `);
+};
+
+const renderRistouPerson = (ctx: RenderContext): TemplateResult => {
+  const picture = String(attr(ctx.entity, "entity_picture") || "");
+  const camera = entityFromConfig(ctx, "ulm_card_ristou_person_camera");
+  const cameraPicture = camera ? String(attr(camera, "entity_picture") || `/api/camera_proxy/${camera.entity_id}`) : "";
+  const map = configured<boolean>(ctx, "ulm_card_ristou_person_show_map") === true;
+  return ctx.actionSurface("custom-ristou-person", html`
+    <div class="ristou-person-main">
+      <span class="person-info-avatar" style=${picture ? `background-image:url("${picture}")` : ""}><ha-icon icon="mdi:account"></ha-icon></span>
+      ${heading(ctx, stateLabel(ctx.entity))}
+    </div>
+    ${cameraPicture ? html`<div class="ristou-camera" style=${`background-image:url("${cameraPicture}")`}></div>` : nothing}
+    ${map ? html`<div class="ristou-map"><ha-icon icon="mdi:map-marker-path"></ha-icon><span>${stateLabel(ctx.entity)}</span></div>` : nothing}
+  `);
+};
+
+const renderSaxelFan = (ctx: RenderContext): TemplateResult => {
+  const on = ctx.entity?.state === "on";
+  const percentage = numeric(attr(ctx.entity, "percentage")) ?? 0;
+  const presets = Array.isArray(attr(ctx.entity, "preset_modes")) ? attr(ctx.entity, "preset_modes") as string[] : [];
+  return ctx.actionSurface("custom-saxel-fan", html`
+    <div class="custom-card-heading">${iconBubble(ctx, "mdi:fan", on ? "blue" : "grey", on ? "spin" : undefined)}${heading(ctx, `${stateLabel(ctx.entity)} · ${percentage}%`)}</div>
+    <div class="fan-speed-row">${[33, 66, 100].map((value, index) => html`<button class=${percentage >= value - 10 ? "is-active" : ""} @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => { event.stopPropagation(); ctx.service("fan", "set_percentage", { entity_id: ctx.config.entity, percentage: value }); }}><ha-icon .icon=${`mdi:fan-speed-${index + 1}`}></ha-icon></button>`)}</div>
+    ${presets.length ? html`<div class="fan-preset-row">${presets.slice(0, 4).map((preset) => html`<button class=${attr(ctx.entity, "preset_mode") === preset ? "is-active" : ""} @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => { event.stopPropagation(); ctx.service("fan", "set_preset_mode", { entity_id: ctx.config.entity, preset_mode: preset }); }}>${preset}</button>`)}</div>` : nothing}
+  `);
+};
+
+const renderCustomScenes = (ctx: RenderContext): TemplateResult => {
+  const scenes = configuredEntities(ctx).slice(0, 5);
+  return ctx.actionSurface("custom-scenes-grid", html`
+    ${scenes.map((entity, index) => html`
+      <button @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => { event.stopPropagation(); ctx.service(entity.entity_id.split(".")[0], "turn_on", { entity_id: entity.entity_id }); }}>
+        <span style=${`--tone:${["255,193,7","33,150,243","156,39,176","76,175,80","244,67,54"][index]}`}><ha-icon .icon=${String(attr(entity, "icon") || "mdi:palette")}></ha-icon></span>
+        <small>${displayName({ type: "", entity: entity.entity_id }, entity)}</small>
+      </button>
+    `)}
+  `);
+};
+
+const renderCar = (ctx: RenderContext): TemplateResult => {
+  const details = configuredEntities(ctx);
+  const fuel = entityFromConfig(ctx, "ulm_custom_card_schumijo_car_fuel") ?? details[0];
+  const range = entityFromConfig(ctx, "ulm_custom_card_schumijo_car_range") ?? ctx.entity;
+  const lock = entityFromConfig(ctx, "ulm_custom_card_schumijo_car_lock") ?? details.find((entity) => entity.entity_id.startsWith("lock.")) ?? details[2];
+  return ctx.actionSurface("custom-schumijo-car", html`
+    <div class="car-hero">${iconBubble(ctx, "mdi:car", "blue")}${heading(ctx, stateLabel(ctx.entity))}<ha-icon .icon=${lock?.state === "locked" ? "mdi:lock" : "mdi:lock-open"}></ha-icon></div>
+    <div class="car-metrics"><span><ha-icon icon="mdi:gas-station"></ha-icon><b>${stateLabel(fuel)}</b></span><span><ha-icon icon="mdi:map-marker-distance"></ha-icon><b>${stateLabel(range)}</b></span></div>
+  `);
+};
+
+const renderFlower = (ctx: RenderContext): TemplateResult => {
+  const details = configuredEntities(ctx);
+  const moisture = entityFromConfig(ctx, "ulm_custom_card_schumijo_flower_moisture") ?? ctx.entity;
+  const conductivity = entityFromConfig(ctx, "ulm_custom_card_schumijo_flower_conductivity") ?? details[0];
+  const temperature = entityFromConfig(ctx, "ulm_custom_card_schumijo_flower_temperature") ?? details[1];
+  const brightness = entityFromConfig(ctx, "ulm_custom_card_schumijo_flower_brightness") ?? details[2];
+  return ctx.actionSurface("custom-schumijo-flower", html`
+    <div class="flower-heading">${iconBubble(ctx, "mdi:flower", "green")}${heading(ctx, stateLabel(ctx.entity))}</div>
+    <div class="flower-metrics">${[["mdi:water-percent", moisture], ["mdi:flash", conductivity], ["mdi:thermometer", temperature], ["mdi:white-balance-sunny", brightness]].map(([icon, entity]) => html`<span><ha-icon .icon=${icon as string}></ha-icon><b>${stateLabel(entity as HassEntity | undefined)}</b></span>`)}</div>
+  `);
+};
+
+const renderSenoroWindow = (ctx: RenderContext): TemplateResult => {
+  const open = ctx.entity?.state === "on";
+  const battery = entityFromConfig(ctx, "ulm_custom_card_senoro_win_battery") ?? configuredEntities(ctx)[0];
+  return ctx.actionSurface(`custom-senoro-window ${open ? "is-open" : ""}`, html`
+    ${iconBubble(ctx, open ? "mdi:window-open-variant" : "mdi:window-closed-variant", open ? "red" : "green")}
+    ${heading(ctx, stateLabel(ctx.entity))}
+    <span class="window-battery"><ha-icon icon="mdi:battery"></ha-icon>${stateLabel(battery)}</span>
+  `);
+};
+
+const renderSisimomoPrinter = (ctx: RenderContext): TemplateResult => {
+  const cartridges = configuredEntities(ctx).slice(0, 6);
+  const colors = ["#111", "#111", "#ffdf55", "#ef4778", "#4a86db", "#8b69bc"];
+  const labels = ["BK", "B", "Y", "M", "C", "PB"];
+  return ctx.actionSurface("custom-sisimomo-printer", html`
+    <div class="printer-summary">${iconBubble(ctx, "mdi:printer", "blue")}${heading(ctx, stateLabel(ctx.entity))}</div>
+    <div class="printer-cartridges">${cartridges.map((entity, index) => {
+      const value = Math.max(0, Math.min(100, numeric(entity.state) ?? 0));
+      return html`<span style=${`--cartridge:${colors[index]};--level:${value}%`}><small>${labels[index]}</small><i><em></em></i><b>${stateLabel(entity)}</b></span>`;
+    })}</div>
+  `);
+};
+
+const renderSpeedtestShogun = (ctx: RenderContext): TemplateResult => {
+  const details = configuredEntities(ctx);
+  const metrics = [ctx.entity, ...details].filter(Boolean).slice(0, 3) as HassEntity[];
+  return ctx.actionSurface("custom-speedtest-shogun", html`
+    <div class="speedtest-three">${metrics.map((entity, index) => html`<span><ha-icon .icon=${["mdi:download", "mdi:upload", "mdi:timer-outline"][index]}></ha-icon><b>${stateLabel(entity)}</b><small>${displayName({ type: "", entity: entity.entity_id }, entity)}</small></span>`)}</div>
+    <div class="speedtest-chart">${sparkline(ctx)}</div>
+  `);
+};
+
+const renderTpxAircondition = (ctx: RenderContext): TemplateResult => {
+  const current = numeric(attr(ctx.entity, "current_temperature"));
+  const target = numeric(attr(ctx.entity, "temperature"));
+  const fan = String(attr(ctx.entity, "fan_mode") || "");
+  const swing = String(attr(ctx.entity, "swing_mode") || "");
+  return ctx.actionSurface("custom-tpx-aircondition", html`
+    <div class="aircondition-main">${iconBubble(ctx, "mdi:air-conditioner", ctx.entity?.state === "off" ? "grey" : "blue")}${heading(ctx, `${current ?? "—"}° · ${ctx.entity?.state || "unknown"}`)}<b>${target ?? "—"}°</b></div>
+    <div class="aircondition-controls">
+      ${button("Decrease", "mdi:minus", (event) => { event.stopPropagation(); ctx.service("climate", "set_temperature", { entity_id: ctx.config.entity, temperature: (target ?? 20) - 0.5 }); })}
+      <span><ha-icon icon="mdi:fan"></ha-icon>${fan || "Auto"}</span>
+      <span><ha-icon icon="mdi:arrow-up-down"></ha-icon>${swing || "Off"}</span>
+      ${button("Increase", "mdi:plus", (event) => { event.stopPropagation(); ctx.service("climate", "set_temperature", { entity_id: ctx.config.entity, temperature: (target ?? 20) + 0.5 }); })}
+    </div>
+  `);
+};
+
+const renderDeviceTracer = (ctx: RenderContext): TemplateResult => {
+  const person = entityFromConfig(ctx, "ulm_custom_card_vncntdev_device_tracer_person");
+  const battery = entityFromConfig(ctx, "ulm_custom_card_vncntdev_device_tracer_battery") ?? configuredEntities(ctx)[0];
+  const source = entityFromConfig(ctx, "ulm_custom_card_vncntdev_device_tracer_source") ?? configuredEntities(ctx)[1];
+  return ctx.actionSurface("custom-device-tracer", html`
+    <span class="device-tracer-icon"><ha-icon icon="mdi:cellphone-marker"></ha-icon></span>
+    ${heading(ctx, `${stateLabel(ctx.entity)}${person ? ` · ${stateLabel(person)}` : ""}`)}
+    <div class="device-tracer-meta"><span><ha-icon icon="mdi:battery"></ha-icon>${stateLabel(battery)}</span><span><ha-icon icon="mdi:crosshairs-gps"></ha-icon>${stateLabel(source)}</span></div>
+  `);
+};
+
+const renderWaterHeater = (ctx: RenderContext): TemplateResult => {
+  const current = numeric(attr(ctx.entity, "current_temperature"));
+  const target = numeric(attr(ctx.entity, "temperature")) ?? numeric(ctx.entity?.state);
+  return ctx.actionSurface("custom-water-heater", html`
+    <div class="water-heater-top">${iconBubble(ctx, "mdi:water-boiler", ctx.entity?.state === "off" ? "grey" : "red")}${heading(ctx, `Current ${current ?? "—"}°`)}<b>${target ?? "—"}°</b></div>
+    <div class="water-heater-controls">
+      ${button("Decrease temperature", "mdi:minus", (event) => { event.stopPropagation(); ctx.service("water_heater", "set_temperature", { entity_id: ctx.config.entity, temperature: (target ?? 50) - 1 }); })}
+      <span>${stateLabel(ctx.entity)}</span>
+      ${button("Increase temperature", "mdi:plus", (event) => { event.stopPropagation(); ctx.service("water_heater", "set_temperature", { entity_id: ctx.config.entity, temperature: (target ?? 50) + 1 }); })}
+    </div>
+  `);
+};
+
+const renderCustomTitle = (ctx: RenderContext): TemplateResult => {
+  const subtitle = ctx.config.variant === "divider-subtitle";
+  return html`<div class=${`custom-wilbiev-title ${subtitle ? "is-subtitle" : ""}`}><span></span><b>${ctx.config.name || (subtitle ? "Subtitle" : "Title")}</b><span></span></div>`;
+};
+
+const renderWslyPollen = (ctx: RenderContext): TemplateResult => {
+  const details = [ctx.entity, ...configuredEntities(ctx)].filter(Boolean).slice(0, 3) as HassEntity[];
+  return ctx.actionSurface("custom-wsly-pollen", html`
+    ${details.map((entity, index) => {
+      const [label, color] = pollenSeverity(numeric(entity.state) ?? 0);
+      return html`<span style=${`--pollen:${color}`}><ha-icon .icon=${["mdi:tree", "mdi:grass", "mdi:flower-pollen"][index]}></ha-icon><b>${stateLabel(entity)}</b><small>${label}</small></span>`;
+    })}
+  `);
+};
+
+const renderLightsCount = (ctx: RenderContext): TemplateResult => {
+  const value = numeric(ctx.entity?.state) ?? 0;
+  const kind = configured<string>(ctx, "ulm_custom_card_yagrasdemonde_lights_count_type") || "light";
+  const icons: Record<string, string> = { light: value === 0 ? "mdi:lightbulb-outline" : "mdi:lightbulb-on", switch: "mdi:toggle-switch", cover: "mdi:blinds" };
+  const noun = value === 1 ? kind : `${kind}s`;
+  return ctx.actionSurface("custom-lights-count", html`${iconBubble(ctx, icons[kind] || icons.light, value > 0 ? "yellow" : "grey")}${heading(ctx, `${value} ${noun} on`)}`);
 };
 
 const renderGeneric = (ctx: RenderContext): TemplateResult => ctx.actionSurface("ulm-row", html`
@@ -755,14 +1542,71 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "card_vacuum": return renderDefaultVacuum(ctx);
     case "card_vertical_button": return renderVerticalButton(ctx);
     case "card_generic": return ctx.config.variant === "swapped" ? renderGenericSwap(ctx) : renderGeneric(ctx);
-    case "custom_card_input_datetime": return renderDetailCard(ctx, "mdi:calendar-clock", "blue");
+    case "custom_card_afvalophaling": return renderWasteCollection(ctx);
+    case "custom_card_alarm_time": return renderAlarmTimeCard(ctx);
+    case "custom_card_apexcharts": return renderApexCharts(ctx);
+    case "custom_card_chromecast": return renderChromecast(ctx);
+    case "custom_card_damix48_power_details": return renderPowerDetails(ctx);
+    case "custom_card_device_tracker": return renderDeviceTrackerCard(ctx);
+    case "custom_card_drealine_roomview": return renderRoomView(ctx);
+    case "custom_card_eraycetinay_elapsed_time": return renderElapsedTime(ctx);
+    case "custom_card_eraycetinay_lock": return renderErayLock(ctx);
+    case "custom_card_esh_welcome": return renderEshWelcome(ctx);
+    case "custom_card_haven_washer": return renderWasher(ctx);
+    case "custom_card_heat_pump": return renderHeatPump(ctx);
+    case "custom_card_homeassistant_updates": return renderHomeAssistantUpdates(ctx);
+    case "custom_card_httpedo13_sun": return renderSunCard(ctx);
+    case "custom_card_httpedo13_thermostat": return renderCompactThermostat(ctx);
+    case "custom_card_iAbadia_battery_chip": return renderBatteryChipCard(ctx);
+    case "custom_card_imswel_medias": return renderMediaLibrary(ctx);
+    case "custom_card_imswel_person": return renderImswelPerson(ctx);
+    case "custom_card_input_datetime": return renderInputDateTime(ctx);
+    case "custom_card_input_number": return renderInputNumberCard(ctx);
+    case "custom_card_irmajavi_entities": return renderIrmajaviEntities(ctx);
+    case "custom_card_irmajavi_speedtest": return renderIrmajaviSpeedtest(ctx);
+    case "custom_card_irmajavi_weather": return renderIrmajaviWeather(ctx);
+    case "custom_card_light_colorpick": return renderLightColorPick(ctx);
+    case "custom_card_media_player_sonos": return renderSonos(ctx);
+    case "custom_card_more_power_outlet": return renderMorePowerOutlet(ctx);
+    case "custom_card_mpse_gauge": return renderDualGauge(ctx);
+    case "custom_card_mpse_printer": return renderMpsePrinter(ctx);
+    case "custom_card_mpse_thermostat": return renderCompactThermostat(ctx);
+    case "custom_card_mpse_wifisignal": return renderWifiSignal(ctx);
+    case "custom_card_nas": return renderNasInfo(ctx);
+    case "custom_card_neekster_update": return renderNeeksterUpdate(ctx);
+    case "custom_card_nik_clock": return renderNikClock(ctx);
+    case "custom_card_nik_door": return renderNikDoor(ctx);
+    case "custom_card_nik_nas": return renderNikNas(ctx);
+    case "custom_card_nik_tablet": return renderNikTablet(ctx);
+    case "custom_card_paddy_dwd_pollen": return renderPaddyPollen(ctx);
+    case "custom_card_paddy_waste_collection": return renderPaddyWaste(ctx);
+    case "custom_card_paddy_welcome": return renderPaddyWelcome(ctx);
+    case "custom_card_person_chip": return renderPersonChip(ctx);
+    case "custom_card_person_info":
+    case "custom_card_person_info_small": return renderPersonInfo(ctx);
+    case "custom_card_playstation": return renderConsoleCard(ctx);
+    case "custom_card_qubino": return renderQubino(ctx);
+    case "custom_card_ristou_person": return renderRistouPerson(ctx);
+    case "custom_card_saxel_fan": return renderSaxelFan(ctx);
+    case "custom_card_scenes": return renderCustomScenes(ctx);
+    case "custom_card_schumijo_car": return renderCar(ctx);
+    case "custom_card_schumijo_flower": return renderFlower(ctx);
+    case "custom_card_senoro_win": return renderSenoroWindow(ctx);
+    case "custom_card_sisimomo_printer": return renderSisimomoPrinter(ctx);
+    case "custom_card_speedtest_shogun160": return renderSpeedtestShogun(ctx);
+    case "custom_card_tpx01_aircondition": return renderTpxAircondition(ctx);
+    case "custom_card_vncntdev_device_tracer": return renderDeviceTracer(ctx);
+    case "custom_card_water_heater": return renderWaterHeater(ctx);
+    case "custom_card_wilbiev_title":
+    case "custom_card_wilbiev_subtitle": return renderCustomTitle(ctx);
+    case "custom_card_wsly_pollen": return renderWslyPollen(ctx);
+    case "custom_card_yagrasdemonde_lights_count": return renderLightsCount(ctx);
     case "card_room":
     case "custom_card_esh_room":
-    case "custom_card_drealine_roomview": return renderRoom(ctx);
+      return renderRoom(ctx);
   }
-  if (/afval|waste_collection|pollen/.test(ctx.descriptor.upstreamId)) return renderScheduleCard(ctx);
-  if (/printer|nik_nas|nik_tablet|haven_washer|homeassistant_updates|neekster_update/.test(ctx.descriptor.upstreamId)) return renderDeviceStatus(ctx);
-  if (ctx.descriptor.upstreamId === "custom_card_input_number") return renderInputNumber(ctx);
+  if (/afval/.test(ctx.descriptor.upstreamId)) return renderScheduleCard(ctx);
+  if (/printer/.test(ctx.descriptor.upstreamId)) return renderDeviceStatus(ctx);
   if (/gauge/.test(ctx.descriptor.upstreamId)) return renderGauge(ctx);
   if (/schumijo_(car|flower)|irmajavi_entities|damix48_power_details/.test(ctx.descriptor.upstreamId)) {
     return renderDetailCard(ctx, /car/.test(ctx.descriptor.upstreamId) ? "mdi:car" : /flower/.test(ctx.descriptor.upstreamId) ? "mdi:flower" : "mdi:view-grid", "purple");
