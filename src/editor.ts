@@ -4,7 +4,7 @@ import type { AdditionConfig, HomeAssistant } from "./types";
 import { CATALOG, getCatalogItem } from "./catalog";
 import { fireEvent } from "./helpers";
 import { localize } from "./localize";
-import { editorSchemaFor } from "./editor-schema";
+import { editorSchemaFor, upstreamEditorSchemaFor } from "./editor-schema";
 
 @customElement("mushroom-addition-editor")
 export class MushroomAdditionEditor extends LitElement {
@@ -78,6 +78,7 @@ export class MushroomAdditionEditor extends LitElement {
     }
     if (!item) return nothing;
     const schema = editorSchemaFor(item);
+    const upstreamSchema = upstreamEditorSchemaFor(item);
     return html`
       <ha-form
         .hass=${this.hass}
@@ -86,6 +87,18 @@ export class MushroomAdditionEditor extends LitElement {
         .computeLabel=${this.computeLabel}
         @value-changed=${this.valueChanged}
       ></ha-form>
+      ${upstreamSchema.length ? html`
+        <ha-expansion-panel outlined>
+          <span slot="header">Upstream parity options (${upstreamSchema.length})</span>
+          <ha-form
+            .hass=${this.hass}
+            .data=${this.config}
+            .schema=${upstreamSchema}
+            .computeLabel=${this.computeLabel}
+            @value-changed=${this.valueChanged}
+          ></ha-form>
+        </ha-expansion-panel>
+      ` : nothing}
     `;
   }
 

@@ -1,4 +1,5 @@
 import type { CatalogItem } from "./types";
+import { PARITY_BY_ID } from "./parity.generated";
 
 export interface EditorField {
   name: string;
@@ -63,3 +64,24 @@ export const editorSchemaFor = (item: CatalogItem): EditorField[] => [
   action("hold_action"),
   action("double_tap_action"),
 ];
+
+export const upstreamEditorSchemaFor = (item: CatalogItem): EditorField[] => {
+  const parity = PARITY_BY_ID.get(item.upstreamId);
+  if (!parity) return [];
+  return parity.variables.map((variable) => {
+    switch (variable.selector) {
+      case "entity": return entity(undefined, variable.name);
+      case "entity-multiple": return {
+        name: variable.name,
+        selector: { entity: { multiple: true } },
+      };
+      case "action": return action(variable.name);
+      case "icon": return { name: variable.name, selector: { icon: {} } };
+      case "color": return { name: variable.name, selector: { ui_color: {} } };
+      case "boolean": return toggle(variable.name);
+      case "number": return number(variable.name, -100000, 100000);
+      case "object": return { name: variable.name, selector: { object: {} } };
+      default: return text(variable.name);
+    }
+  });
+};

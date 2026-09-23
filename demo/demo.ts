@@ -1,5 +1,8 @@
 import "../src/index";
 import type { AdditionConfig, HomeAssistant } from "../src/types";
+import { CATALOG } from "../src/catalog";
+import { createStubConfig } from "../src/stub";
+import { EXAMPLE_CATALOG_IDS } from "../src/example-catalog";
 
 class HaCard extends HTMLElement {}
 if (!customElements.get("ha-card")) customElements.define("ha-card", HaCard);
@@ -46,28 +49,50 @@ const hass: HomeAssistant = {
   },
 };
 
-const fixtures: AdditionConfig[] = [
-  { type: "custom:mushroom-addition-card-weather", entity: "weather.home", show_forecast: true },
-  { type: "custom:mushroom-addition-card-thermostat", entity: "climate.living", show_controls: true },
-  { type: "custom:mushroom-addition-card-light", entity: "light.kitchen", show_controls: true },
-  { type: "custom:mushroom-addition-card-scenes", entity: "scene.relax", entities: ["scene.relax", "scene.movie", "scene.bright"] },
-  { type: "custom:mushroom-addition-card-person", entity: "person.joris" },
-  { type: "custom:mushroom-addition-card-battery", entity: "sensor.battery", show_graph: true },
-  { type: "custom:mushroom-addition-card-power-outlet", entity: "switch.outlet", graph_entity: "sensor.power", show_graph: true },
-  { type: "custom:mushroom-addition-card-media-player", entity: "media_player.tv", show_controls: true },
-  { type: "custom:mushroom-addition-card-cover", entity: "cover.blind", show_controls: true },
-  { type: "custom:mushroom-addition-card-vacuum", entity: "vacuum.robot", show_controls: true },
-  { type: "custom:mushroom-addition-custom-card-alarm-time", entity: "input_boolean.alarm_enabled", datetime_entity: "input_datetime.alarm_time", show_controls: true },
-  { type: "custom:mushroom-addition-card-navigate", name: "Upstairs", secondary: "Open dashboard", navigation_path: "/lovelace/upstairs" },
-];
+const stateForDomain = (domain: string): string => {
+  if (["light", "switch", "input_boolean", "fan"].includes(domain)) return "on";
+  if (domain === "binary_sensor") return "off";
+  if (domain === "lock") return "locked";
+  if (domain === "cover") return "open";
+  if (domain === "person" || domain === "device_tracker") return "home";
+  if (domain === "climate") return "heat";
+  if (domain === "media_player") return "playing";
+  if (domain === "vacuum") return "docked";
+  if (domain === "weather") return "partlycloudy";
+  return "42";
+};
+
+for (const domain of new Set(CATALOG.flatMap((item) => item.preferredDomains ?? []))) {
+  const entityId = `${domain}.fixture`;
+  hass.states[entityId] ??= {
+    entity_id: entityId,
+    state: stateForDomain(domain),
+    attributes: {
+      friendly_name: `${domain.replaceAll("_", " ")} fixture`,
+      unit_of_measurement: domain === "sensor" ? "%" : undefined,
+      temperature: domain === "weather" ? 17 : undefined,
+      humidity: domain === "weather" ? 68 : undefined,
+    },
+  };
+}
 
 const container = document.querySelector("#cards")!;
-for (const config of fixtures) {
-  const element = document.createElement(config.type.replace(/^custom:/, "")) as HTMLElement & {
+for (const upstreamId of EXAMPLE_CATALOG_IDS) {
+  const item = CATALOG.find((candidate) => candidate.upstreamId === upstreamId)!;
+  const config = item.kind === "container"
+    ? { type: `custom:${item.tag}`, chips: [] }
+    : createStubConfig(item, hass, Object.keys(hass.states), Object.keys(hass.states));
+  const wrapper = document.createElement("div");
+  wrapper.className = "catalog-fixture";
+  const label = document.createElement("div");
+  label.className = "catalog-label";
+  label.textContent = `${item.upstreamId} · ${item.family}`;
+  const element = document.createElement(item.tag) as HTMLElement & {
     hass: HomeAssistant;
     setConfig(config: AdditionConfig): void;
   };
   element.hass = hass;
   element.setConfig(config);
-  container.append(element);
+  wrapper.append(label, element);
+  container.append(wrapper);
 }

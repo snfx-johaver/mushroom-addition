@@ -4,6 +4,7 @@ import type { AdditionConfig, CatalogItem, HomeAssistant, WeatherForecast } from
 import { handleAction, normalizeConfig } from "./helpers";
 import { sharedStyles } from "./styles";
 import { renderByFamily } from "./renderers";
+import { PARITY_BY_ID } from "./parity.generated";
 
 export class MushroomAdditionCard extends LitElement {
   public static styles = sharedStyles;
@@ -111,8 +112,13 @@ export class MushroomAdditionCard extends LitElement {
 
   private readonly actionSurface = (classes: string, content: TemplateResult): TemplateResult => {
     const chip = this.descriptor?.kind === "chip";
+    const parity = this.descriptor ? PARITY_BY_ID.get(this.descriptor.upstreamId) : undefined;
+    if (this.descriptor?.kind !== "container" && !parity) {
+      throw new Error(`Missing explicit parity renderer mapping for ${this.descriptor?.upstreamId}`);
+    }
+    const parityClass = parity ? ` parity-${parity.rendererId.replaceAll("_", "-")}` : "";
     const surface = html`
-      <div class="${classes} action-surface" role="button" tabindex="0"
+      <div class="${classes}${parityClass} action-surface" role="button" tabindex="0"
         @click=${this.tap} @dblclick=${this.doubleTap}
         @pointerdown=${this.pointerDown} @pointerup=${this.pointerUp}
         @pointercancel=${this.pointerUp} @keydown=${this.keydown}>

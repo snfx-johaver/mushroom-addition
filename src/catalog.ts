@@ -125,7 +125,7 @@ const preferredDomainsFor = (id: string, family: string): string[] => {
   if (family === "control") {
     if (/fan/.test(id)) return ["fan"];
     if (/script/.test(id)) return ["script"];
-    if (/washer/.test(id)) return ["sensor", "switch"];
+    if (/washer/.test(id)) return ["switch", "sensor"];
     if (/water_heater/.test(id)) return ["water_heater"];
     return ["switch", "input_boolean", "light"];
   }

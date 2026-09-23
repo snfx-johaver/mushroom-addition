@@ -28,6 +28,21 @@ tokens but not a generic layout.
 | Navigation | Direction icon, destination copy and trailing chevron | `card_templates/cards/card_navigate.yaml`, `card_templates/chips/chip_navigate.yaml` |
 | Chips | 34px capsule surface with family-colored circular icon, concise label and state | `card_templates/internal_templates/chips.yaml`, `docs/usage/chips/` |
 
+## Source-derived composition coverage
+
+The parity generator inspects each exact catalog `sourcePath`, including YAML
+and README files in custom-card directories. It records 15 materially distinct
+composition profiles built from button-card, native card, popup, control,
+chart, entities, image, vertical-stack, and horizontal-stack primitives.
+[`catalog-fixture.png`](assets/catalog-fixture.png) contains exactly one
+browser-rendered example of every registered card, chip, and container. It is
+ordered by the checked catalog, labeled with the upstream ID/family, and does
+not add duplicate state galleries or decorative variants.
+
+Every public entry also receives a unique `rendererId` and CSS parity class.
+Shared Lit primitives are reused, but missing metadata is a runtime error and a
+test failure rather than a generic visual fallback.
+
 ## Editor contract
 
 Each family has a separate schema. The primary entity is always `entity`, shown
@@ -37,9 +52,21 @@ are explicit (`temperature_entity`, `humidity_entity`, `battery_entity`,
 only appear for families that use them. Legacy `primary_entity` and known
 Minimalist entity-variable names are migrated to `entity` during normalization.
 
+The editor also contains an expandable **Upstream parity options** section.
+Every variable discovered in the exact upstream source is accepted unchanged
+as a YAML property and receives a native Home Assistant selector inferred from
+its source/default: entity, multi-entity, action, icon, color, boolean, number,
+object, or text. The generated matrix documents each raw upstream key and
+default. Frequently used values such as `*_name`, `*_icon`, `*_color`,
+`*_enable_controls`, `*_enable_buttons`, `*_enable_slider`, and
+`*_enable_horizontal` are normalized into the shared Lit rendering primitives
+without removing the original property.
+
 ## Visual verification
 
-`demo/` provides deterministic representative states for the major renderer
-families. The current browser-rendered fixture is committed at
-[`docs/assets/family-fixture.png`](assets/family-fixture.png), and renderer tests
-assert the weather hierarchy plus distinct markup for each major family.
+`demo/` provides deterministic representative states for the complete checked
+catalog, exactly once per registration. The current browser-rendered fixture is
+committed at [`docs/assets/catalog-fixture.png`](assets/catalog-fixture.png).
+Renderer tests assert the weather hierarchy, distinct family markup, exact
+one-per-registration fixture coverage, explicit per-entry renderer mappings,
+and complete editor-variable coverage.

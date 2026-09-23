@@ -15,15 +15,18 @@
       main { max-width: 1080px; margin: auto; padding: 28px; }
       h1 { margin: 0 0 6px; font-size: 24px; }
       p { margin: 0 0 22px; color: var(--secondary-text-color); }
-      section { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-      @media (max-width: 800px) { section { grid-template-columns: 1fr; } }
+      section { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+      .catalog-fixture { display: grid; gap: 5px; align-content: start; }
+      .catalog-label { color: var(--secondary-text-color); font-size: 10px; overflow-wrap: anywhere; }
+      @media (max-width: 1000px) { section { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+      @media (max-width: 600px) { section { grid-template-columns: 1fr; } }
       ha-icon { font-size: 10px; font-weight: 800; }
     </style>
   </head>
   <body>
     <main>
       <h1>Mushroom Cards Addition</h1>
-      <p>Deterministic family-renderer visual fixture</p>
+      <p>Complete traceable catalog fixture: exactly one example per registered card, chip, and container.</p>
       <section id="cards"></section>
     </main>
     <script type="module" src="/demo/demo.ts"></script>

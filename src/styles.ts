@@ -83,6 +83,9 @@ export const sharedStyles = css`
   }
   .metric-pill ha-icon { --mdc-icon-size: 18px; color: rgba(var(--ulm-grey), .9); }
   .ulm-weather { padding: 12px; }
+  .ulm-weather.has-backdrop {
+    background: linear-gradient(135deg, rgba(var(--ulm-blue), .15), rgba(var(--ulm-yellow), .12));
+  }
   .weather-main { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 14px; }
   .weather-icon { width: 56px; height: 56px; }
   .weather-icon ha-icon { --mdc-icon-size: 30px; }
@@ -98,6 +101,8 @@ export const sharedStyles = css`
   .ulm-light { grid-template-columns: auto minmax(0, 1fr); }
   .ulm-light .ulm-slider { grid-column: 1 / -1; width: 100%; accent-color: rgb(var(--ulm-yellow)); }
   .ulm-light.is-active { background: rgba(var(--ulm-yellow), .08); }
+  .ulm-light.is-collapsed .ulm-slider, .ulm-light.is-collapsed .brightness-presets { display: none; }
+  .brightness-presets { grid-column: 1 / -1; justify-content: center; }
   .ulm-climate { padding-bottom: 12px; }
   .climate-top { padding-bottom: 8px; }
   .climate-target { color: rgb(var(--ulm-red)); font-size: 23px; font-weight: 600; }
@@ -119,6 +124,8 @@ export const sharedStyles = css`
   .battery-value small { font-size: 12px; }
   .battery-track { grid-column: 2 / -1; height: 5px; overflow: hidden; border-radius: 5px; background: rgba(var(--ulm-grey), .12); }
   .battery-track i { display: block; height: 100%; border-radius: inherit; background: rgb(var(--ulm-green)); }
+  .ulm-battery.is-charging .ulm-icon { animation: ulm-charge 1.1s ease-in-out infinite alternate; }
+  @keyframes ulm-charge { from { transform: scale(.92); } to { transform: scale(1.06); } }
   .ulm-metric { padding: 0 12px 12px; }
   .metric-heading { padding-left: 0; padding-right: 0; }
   .metric-value { color: rgb(var(--ulm-blue)); font-size: 20px; font-weight: 650; }
@@ -137,6 +144,47 @@ export const sharedStyles = css`
   .ulm-vacuum .ulm-controls { grid-column: 1 / -1; justify-content: center; }
   .security-status { padding: 5px 9px; border-radius: 10px; background: rgba(var(--ulm-green), .12); color: rgb(var(--ulm-green)); font-size: 11px; font-weight: 700; }
   .ulm-navigation { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px; }
+  .ulm-fan { display: grid; gap: 10px; padding: 0 12px 12px; }
+  .ulm-fan > .ulm-row { padding-left: 0; padding-right: 0; }
+  .ulm-fan > .ulm-slider { width: 100%; accent-color: rgb(var(--ulm-blue)); }
+  .ulm-room { display: grid; gap: 10px; padding: 0 12px 12px; }
+  .ulm-room > .ulm-row { padding-left: 0; padding-right: 0; }
+  .room-entities { display: flex; flex-wrap: wrap; gap: 7px; }
+  .ulm-camera { position: relative; min-height: 150px; overflow: hidden; background: rgba(var(--ulm-grey), .08); }
+  .ulm-camera img { display: block; width: 100%; height: 180px; object-fit: cover; }
+  .camera-placeholder { display: grid; min-height: 150px; place-items: center; }
+  .camera-caption { position: absolute; right: 10px; bottom: 10px; left: 10px; padding: 9px; border-radius: 10px; background: rgba(255,255,255,.88); backdrop-filter: blur(8px); }
+  .ulm-generic-swap { grid-template-columns: minmax(0, 1fr) auto; }
+  .ulm-detail-card, .ulm-schedule-card, .ulm-device-status, .ulm-helper-card {
+    display: grid;
+    gap: 10px;
+    padding: 0 12px 12px;
+  }
+  .ulm-detail-card > .ulm-row, .ulm-schedule-card > .ulm-row,
+  .ulm-device-status > .ulm-row, .ulm-helper-card > .ulm-row {
+    padding-right: 0;
+    padding-left: 0;
+  }
+  .detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+  .detail-grid .metric-pill { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .schedule-list { display: grid; gap: 6px; }
+  .schedule-list span { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 9px; border-radius: 10px; background: rgba(var(--ulm-grey), .07); font-size: 11px; }
+  .schedule-list small { color: var(--secondary-text-color); }
+  .device-value { color: rgb(var(--ulm-blue)); font-size: 18px; }
+  .device-progress { height: 6px; overflow: hidden; border-radius: 6px; background: rgba(var(--ulm-grey), .12); }
+  .device-progress i { display: block; height: 100%; border-radius: inherit; background: rgb(var(--ulm-blue)); }
+  .ulm-helper-card .ulm-slider { width: 100%; accent-color: rgb(var(--ulm-blue)); }
+  .ulm-gauge-card { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 12px; padding: 12px; }
+  .gauge-ring { position: relative; display: grid; width: 64px; height: 64px; place-items: center; border-radius: 50%; background: conic-gradient(rgb(var(--ulm-blue)) var(--gauge), rgba(var(--ulm-grey), .12) 0); }
+  .gauge-ring::before { content: ""; position: absolute; width: 48px; height: 48px; border-radius: 50%; background: var(--card-background-color); }
+  .gauge-ring b { position: relative; z-index: 1; font-size: 11px; }
+  .ulm-title { display: flex; align-items: center; gap: 10px; padding: 8px 2px; box-shadow: none; background: transparent; }
+  .ulm-title .ulm-name { font-size: 18px; }
+  .ulm-vertical-button { display: flex; min-height: 96px; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px; text-align: center; }
+  .ulm-vertical-button .ulm-copy { align-items: center; }
+  .ulm-binary.is-alert { background: rgba(var(--ulm-red), .1); }
+  .chip-icon-only { padding-right: 7px; }
+  .chip-double-state b + b { padding-left: 6px; border-left: 1px solid var(--divider-color); }
   .ulm-chip {
     display: inline-flex;
     align-items: center;

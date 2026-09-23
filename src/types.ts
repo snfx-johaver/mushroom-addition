@@ -34,6 +34,7 @@ export interface WeatherForecast {
   templow?: number;
   temperature_low?: number;
   precipitation?: number;
+  precipitation_probability?: number;
 }
 
 export interface ActionConfig {
@@ -102,6 +103,29 @@ export interface CatalogItem {
   description: string;
   variants?: string[];
   preferredDomains?: string[];
+}
+
+export interface ParityVariable {
+  name: string;
+  defaultValue: string;
+  selector: "entity" | "entity-multiple" | "action" | "icon" | "color" | "boolean" | "number" | "object" | "text";
+}
+
+export interface ParityEntry {
+  upstreamId: string;
+  sourcePath: string;
+  rendererId: string;
+  layoutProfile: string;
+  primitives: readonly string[];
+  customFields: readonly string[];
+  stateDriven: boolean;
+  animated: boolean;
+  actions: readonly string[];
+  variables: readonly ParityVariable[];
+  dependencies: readonly string[];
+  backendRequirements: readonly string[];
+  deviations: readonly string[];
+  sourceDigest: string;
 }
 
 declare global {

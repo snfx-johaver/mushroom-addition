@@ -1,6 +1,6 @@
 {
   "name": "mushroom-cards-addition",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "UI-configurable Mushroom-style Lovelace cards inspired by UI-Lovelace-Minimalist",
   "type": "module",
   "main": "dist/mushroom-cards-addition.js",
@@ -10,12 +10,15 @@
   "scripts": {
     "build": "vite build",
     "check:catalog": "tsx scripts/catalog-doc.ts --check && tsx scripts/check-catalog.ts",
+    "check:parity": "tsx scripts/check-parity.ts",
+    "check:parity-source": "tsx scripts/generate-parity.ts .tmp-ui-minimalist --check",
     "docs:catalog": "tsx scripts/catalog-doc.ts",
+    "docs:parity": "tsx scripts/generate-parity.ts .tmp-ui-minimalist",
     "demo": "vite --host 127.0.0.1",
     "lint": "eslint .",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "validate": "npm run lint && npm run typecheck && npm run check:catalog && npm test && npm run build"
+    "validate": "npm run lint && npm run typecheck && npm run check:catalog && npm run check:parity && npm test && npm run build"
   },
   "keywords": [
     "home-assistant",
@@ -44,6 +47,7 @@
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.44.1",
     "vite": "^7.1.7",
-    "vitest": "^5.0.1"
+    "vitest": "^5.0.1",
+    "yaml": "^2.9.1"
   }
 }
