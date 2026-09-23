@@ -41,10 +41,22 @@ const booleanOptions = new Set([
   "ulm_custom_card_bar_card_indicator",
   "ulm_custom_card_bar_card_show_icon",
   "ulm_custom_card_bar_card_value",
+  "ulm_card_generic_force_background_color",
+  "ulm_card_generic_swap_force_background_color",
+  "ulm_card_light_enable_horizontal_wide",
+  "ulm_card_media_player_collapsible",
+  "ulm_card_media_player_idle_off",
+  "ulm_card_media_player_more_info",
+  "ulm_card_media_player_power_button",
+  "ulm_card_media_player_force_background_color",
 ]);
 const numericBoxOptions = new Set([
   "ulm_custom_card_bar_card_min",
   "ulm_custom_card_bar_card_max",
+  "ulm_card_graph_hours",
+  "ulm_card_graph_line_width",
+  "ulm_card_graph_points",
+  "ulm_card_media_player_enable_volume_adjust",
 ]);
 const homeAssistantUpdateEntities = new Set([
   "ulm_card_homeassistant_entity",

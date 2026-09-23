@@ -121,8 +121,8 @@ describe("Home Assistant registration", () => {
           entity: "light.kitchen",
           name: "Kitchen",
           icon: "mdi:lightbulb",
-          ulm_card_light_enable_slider: true,
-          ulm_card_light_enable_color: true,
+          ulm_card_light_enable_slider: false,
+          ulm_card_light_enable_color: false,
         });
         expect(consoleConstructor.getStubConfig(hass, Object.keys(hass.states), [])).toMatchObject({
           entity: "media_player.xbox",

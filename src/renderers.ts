@@ -177,6 +177,7 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
   const collapsed = configured<boolean>(ctx, "ulm_card_light_enable_collapse") === true && !on;
   const horizontal = ctx.config.layout === "horizontal" ||
     configured<boolean>(ctx, "ulm_card_light_enable_horizontal") === true;
+  const horizontalWide = configured<boolean>(ctx, "ulm_card_light_enable_horizontal_wide") === true;
   const low = configured<number>(ctx, "ulm_card_light_brightness_low") ?? 1;
   const medium = configured<number>(ctx, "ulm_card_light_brightness_medium") ?? 50;
   const high = configured<number>(ctx, "ulm_card_light_brightness_high") ?? 100;
@@ -190,10 +191,10 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
     : "255,152,0";
   const forceBackground = configured<boolean>(ctx, "ulm_card_light_force_background_color") === true && on;
   const lightStyle = `--light-rgb:${rgb};${forceBackground ? `background:rgba(${rgb},.2);` : ""}`;
-  return ctx.actionSurface(`ulm-light-card ${horizontal ? "is-horizontal" : ""} ${collapsed ? "is-collapsed" : ""}`, html`
+  return ctx.actionSurface(`ulm-light-card ${horizontal ? "is-horizontal" : ""} ${horizontalWide ? "is-horizontal-wide" : ""} ${collapsed ? "is-collapsed" : ""}`, html`
     <div class="light-header ${on ? "is-active" : ""}" style=${lightStyle}>
       ${iconBubble(ctx, "mdi:lightbulb", on ? "yellow" : "grey", "light-icon")}
-      ${heading(ctx, percent === undefined ? stateLabel(ctx.entity) : `${stateLabel(ctx.entity)} · ${percent}%`)}
+      ${heading(ctx, on && percent !== undefined ? `${percent}%` : stateLabel(ctx.entity))}
     </div>
     ${!collapsed && slider ? html`
       <div class="ulm-light-slider" style=${`${lightStyle}--light-level:${Math.max(0, Math.min(100, percent ?? 0))}%;`}>
@@ -411,23 +412,79 @@ const renderMedia = (ctx: RenderContext): TemplateResult => {
     : attr(ctx.entity, "entity_picture");
   const consolePlatform = ctx.config.console_platform || ctx.config.variant;
   const consoleIcon = consolePlatform === "xbox" ? "mdi:microsoft-xbox" : "mdi:sony-playstation";
-  const controllable = ctx.config.entity?.startsWith("media_player.") === true;
-  return ctx.actionSurface("ulm-media", html`
-    ${picture ? html`<span class="media-art" style=${`background-image:url("${String(picture)}")`}></span>` : iconBubble(ctx, ctx.descriptor.upstreamId === "custom_card_playstation" ? consoleIcon : "mdi:play-circle", "purple")}
-    ${heading(ctx, String(attr(ctx.entity, "media_title") ?? stateLabel(ctx.entity)))}
-    ${controllable && (ctx.config.show_controls !== false || configured<boolean>(ctx, "ulm_card_media_player_enable_controls") === true) ? html`<div class="ulm-controls">
-      ${button("Previous", "mdi:skip-previous", (event) => { event.stopPropagation(); ctx.service("media_player", "media_previous_track", { entity_id: ctx.config.entity }); })}
-      ${button("Play or pause", "mdi:play-pause", (event) => { event.stopPropagation(); ctx.service("media_player", "media_play_pause", { entity_id: ctx.config.entity }); })}
-      ${button("Next", "mdi:skip-next", (event) => { event.stopPropagation(); ctx.service("media_player", "media_next_track", { entity_id: ctx.config.entity }); })}
+  const controlsEntity = configured<string>(ctx, "ulm_card_media_player_player_controls_entity") || ctx.config.entity;
+  const controlsState = controlsEntity ? ctx.hass.states[controlsEntity] : ctx.entity;
+  const controllable = controlsEntity?.startsWith("media_player.") === true;
+  const collapsed = configured<boolean>(ctx, "ulm_card_media_player_collapsible") === true && (
+    ["off", "standby"].includes(ctx.entity?.state ?? "") ||
+    (configured<boolean>(ctx, "ulm_card_media_player_idle_off") === true && ctx.entity?.state === "idle")
+  );
+  const showControls = !collapsed && (
+    ctx.config.show_controls === true ||
+    configured<boolean>(ctx, "ulm_card_media_player_enable_controls") === true
+  );
+  const volumeStep = configured<number>(ctx, "ulm_card_media_player_enable_volume_adjust") ||
+    (attr(controlsState, "device_class") === "speaker" ? .05 :
+      attr(controlsState, "device_class") === "tv" ? .01 : .025);
+  const volume = Number(attr(controlsState, "volume_level") ?? 0);
+  const sourceAction: ActionConfig = { action: "more-info" };
+  return ctx.actionSurface(`ulm-media ${picture ? "has-art" : ""} ${collapsed ? "is-collapsed" : ""}`, html`
+    ${picture ? html`<span class="media-art" style=${`background-image:url("${String(picture)}")`}></span>` : nothing}
+    <div class="media-summary">
+      ${iconBubble(ctx, ctx.descriptor.upstreamId === "custom_card_playstation" ? consoleIcon : "mdi:speaker", activeStates.has(ctx.entity?.state ?? "") ? "blue" : "grey")}
+      ${heading(ctx, configured<boolean>(ctx, "ulm_card_media_player_more_info") === true
+        ? [attr(ctx.entity, "media_artist"), attr(ctx.entity, "media_album_name")].filter(Boolean).join(" · ") || stateLabel(ctx.entity)
+        : String(attr(ctx.entity, "media_album_name") ?? attr(ctx.entity, "media_artist") ?? stateLabel(ctx.entity)))}
+    </div>
+    ${configured<boolean>(ctx, "ulm_card_media_player_power_button") === true ? html`
+      <div class="media-power">${button("Toggle power", "mdi:power", (event) => {
+        event.stopPropagation();
+        ctx.service("homeassistant", "toggle", { entity_id: ctx.config.entity });
+      })}</div>
+    ` : nothing}
+    ${controllable && showControls ? html`<div class="ulm-controls media-controls">
+      ${button("Previous", "mdi:skip-previous", (event) => { event.stopPropagation(); ctx.service("media_player", "media_previous_track", { entity_id: controlsEntity }); })}
+      ${button(ctx.entity?.state === "playing" ? "Pause" : "Play", ctx.entity?.state === "playing" ? "mdi:pause" : "mdi:play", (event) => {
+        event.stopPropagation();
+        ctx.service("media_player", "media_play_pause", { entity_id: controlsEntity });
+      })}
+      ${button("Next", "mdi:skip-next", (event) => { event.stopPropagation(); ctx.service("media_player", "media_next_track", { entity_id: controlsEntity }); })}
+      ${button("Sources", "mdi:playlist-music", (event) => runControlAction(event, ctx, sourceAction, controlsEntity))}
     </div>` : nothing}
-    ${controllable && configured<boolean>(ctx, "ulm_card_media_player_enable_volume_slider") === true ? html`
+    ${controllable && !collapsed && configured<boolean>(ctx, "ulm_card_media_player_enable_volume_slider") === true ? html`
       <input class="ulm-slider" type="range" min="0" max="100"
-        .value=${String(Math.round(Number(attr(ctx.entity, "volume_level") ?? 0) * 100))}
+        aria-label="Volume"
+        .value=${String(Math.round(volume * 100))}
         @pointerdown=${(event: Event) => event.stopPropagation()}
         @change=${(event: Event) => ctx.service("media_player", "volume_set", {
-          entity_id: ctx.config.entity,
+          entity_id: controlsEntity,
           volume_level: Number((event.target as HTMLInputElement).value) / 100,
         })}>
+    ` : nothing}
+    ${controllable && !collapsed && configured<boolean>(ctx, "ulm_card_media_player_enable_volume_buttons") === true ? html`
+      <div class="ulm-controls media-volume-buttons">
+        ${button("Mute or unmute", "mdi:volume-mute", (event) => {
+          event.stopPropagation();
+          ctx.service("media_player", "volume_mute", {
+            entity_id: controlsEntity,
+            is_volume_muted: attr(controlsState, "is_volume_muted") !== true,
+          });
+        })}
+        ${button("Volume down", "mdi:volume-minus", (event) => {
+          event.stopPropagation();
+          ctx.service("media_player", "volume_set", {
+            entity_id: controlsEntity,
+            volume_level: Math.max(0, volume - volumeStep),
+          });
+        })}
+        ${button("Volume up", "mdi:volume-plus", (event) => {
+          event.stopPropagation();
+          ctx.service("media_player", "volume_set", {
+            entity_id: controlsEntity,
+            volume_level: Math.min(1, volume + volumeStep),
+          });
+        })}
+      </div>
     ` : nothing}
   `);
 };
@@ -498,9 +555,9 @@ const renderNavigation = (ctx: RenderContext): TemplateResult => ctx.actionSurfa
   <ha-icon icon="mdi:chevron-right"></ha-icon>
 `);
 
-const renderDefaultNavigation = (ctx: RenderContext): TemplateResult => ctx.actionSurface("ulm-row ulm-default-navigation", html`
+const renderDefaultNavigation = (ctx: RenderContext): TemplateResult => ctx.actionSurface("ulm-default-navigation", html`
   ${iconBubble(ctx, ctx.config.icon || "mdi:navigation", "blue")}
-  ${heading(ctx, ctx.config.secondary)}
+  <span class="navigation-label">${ctx.config.name || "Navigate"}</span>
 `);
 
 const controlService = (entityId: string | undefined, action: "on" | "off"): [string, string] => {
@@ -1787,13 +1844,13 @@ const renderLightsCount = (ctx: RenderContext): TemplateResult => {
   return ctx.actionSurface("custom-lights-count", html`${iconBubble(ctx, icons[kind] || icons.light, value > 0 ? "yellow" : "grey")}${heading(ctx, `${value} ${noun} on`)}`);
 };
 
-const renderGeneric = (ctx: RenderContext): TemplateResult => ctx.actionSurface("ulm-row", html`
+const renderGeneric = (ctx: RenderContext): TemplateResult => ctx.actionSurface(`ulm-row ulm-generic ${configured<boolean>(ctx, "ulm_card_generic_force_background_color") === true ? "force-background" : ""}`, html`
   ${iconBubble(ctx, "mdi:information-outline", activeStates.has(ctx.entity?.state ?? "") ? "blue" : "grey")}
   ${valueThenName(ctx)}
 `);
 
-const renderGenericSwap = (ctx: RenderContext): TemplateResult => ctx.actionSurface("ulm-row ulm-generic-swap", html`
-  ${valueThenName(ctx)}
+const renderGenericSwap = (ctx: RenderContext): TemplateResult => ctx.actionSurface(`ulm-row ulm-generic-swap ${configured<boolean>(ctx, "ulm_card_generic_swap_force_background_color") === true ? "force-background" : ""}`, html`
+  ${heading(ctx, stateLabel(ctx.entity))}
   ${iconBubble(ctx, "mdi:information-outline", activeStates.has(ctx.entity?.state ?? "") ? "blue" : "grey")}
 `);
 
@@ -1833,6 +1890,8 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "card_binary_sensor": return renderBinary(ctx, ctx.config.variant === "alert");
     case "card_graph": return renderDefaultGraph(ctx);
     case "card_input_boolean": return renderSimpleDefault(ctx, "mdi:toggle-switch", "blue");
+    case "card_light": return renderLight(ctx);
+    case "card_media_player": return renderMedia(ctx);
     case "card_navigate": return renderDefaultNavigation(ctx);
     case "card_power_outlet": return renderSimpleDefault(ctx, "mdi:power-socket-eu", "yellow");
     case "card_script": return renderSimpleDefault(ctx, "mdi:script-text", "blue");

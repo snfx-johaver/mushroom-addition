@@ -21,6 +21,8 @@ const supportedByFamily: Record<string, readonly string[]> = {
     "ulm_card_light_brightness_low",
     "ulm_card_light_brightness_medium",
     "ulm_card_light_brightness_high",
+    "ulm_card_light_enable_horizontal_wide",
+    "ulm_card_light_color",
   ],
   battery: [
     "ulm_card_battery_battery_level_danger",
@@ -31,6 +33,15 @@ const supportedByFamily: Record<string, readonly string[]> = {
     "ulm_card_media_player_enable_art",
     "ulm_card_media_player_enable_controls",
     "ulm_card_media_player_enable_volume_slider",
+    "ulm_card_media_player_enable_volume_buttons",
+    "ulm_card_media_player_enable_volume_adjust",
+    "ulm_card_media_player_collapsible",
+    "ulm_card_media_player_idle_off",
+    "ulm_card_media_player_player_controls_entity",
+    "ulm_card_media_player_more_info",
+    "ulm_card_media_player_power_button",
+    "ulm_card_media_player_force_background_color",
+    "ulm_card_media_player_color",
   ],
   cover: [
     "ulm_card_cover_enable_slider",
@@ -47,6 +58,26 @@ const supportedByFamily: Record<string, readonly string[]> = {
 };
 
 const supportedByItem: Record<string, readonly string[]> = {
+  card_generic: [
+    "ulm_card_generic_color",
+    "ulm_card_generic_force_background_color",
+    "ulm_card_generic_swap_color",
+    "ulm_card_generic_swap_force_background_color",
+  ],
+  card_graph: [
+    "ulm_card_graph_color",
+    "ulm_card_graph_color2",
+    "ulm_card_graph_entity2",
+    "ulm_card_graph_group_by",
+    "ulm_card_graph_hours",
+    "ulm_card_graph_icon_color",
+    "ulm_card_graph_line_width",
+    "ulm_card_graph_points",
+    "ulm_card_graph_type",
+  ],
+  card_navigate: [
+    "ulm_card_navigate_color",
+  ],
   card_binary_sensor: ["ulm_card_binary_sensor_show_last_changed"],
   card_binary_sensor_alert: ["ulm_card_binary_sensor_alert_show_last_changed"],
   custom_card_bar_card: [

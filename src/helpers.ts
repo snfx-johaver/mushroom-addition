@@ -40,9 +40,9 @@ export const handleAction = (
 export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
   const migrated = migrateLegacyConfig(config);
   const upstream = upstreamCompatibility(migrated);
-  const defaultAction = migrated.navigation_path
-    ? { action: "navigate", navigation_path: migrated.navigation_path }
-    : { action: migrated.entity ? "more-info" : "none" };
+  const defaultAction = upstream.navigation_path
+    ? { action: "navigate", navigation_path: upstream.navigation_path }
+    : { action: upstream.entity ? "more-info" : "none" };
   return {
     ...upstream,
     show_icon: upstream.show_icon ?? true,
@@ -77,9 +77,18 @@ const upstreamCompatibility = (config: AdditionConfig): AdditionConfig => {
   const horizontal = configuredValue(config, /_enable_horizontal$/);
   return {
     ...config,
-    name: config.name ?? (typeof name === "string" ? name : undefined),
-    icon: config.icon ?? (typeof icon === "string" ? icon : undefined),
+    name: config.name ?? (
+      typeof config.ulm_card_navigate_title === "string" ? config.ulm_card_navigate_title :
+        typeof name === "string" ? name : undefined
+    ),
+    icon: config.icon ?? (
+      typeof config.ulm_card_navigate_icon === "string" ? config.ulm_card_navigate_icon :
+        typeof icon === "string" ? icon : undefined
+    ),
     icon_color: config.icon_color ?? (typeof color === "string" ? color : undefined),
+    navigation_path: config.navigation_path ?? (
+      typeof config.ulm_card_navigate_path === "string" ? config.ulm_card_navigate_path : undefined
+    ),
     show_controls: config.show_controls ?? (
       typeof controls === "boolean" ? controls :
         typeof slider === "boolean" ? slider : undefined
@@ -96,6 +105,7 @@ const legacyEntityKeys = [
   "ulm_card_thermostat_entity",
   "ulm_card_cover_entity",
   "ulm_card_vacuum_entity",
+  "ulm_card_graph_entity",
 ] as const;
 
 export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {

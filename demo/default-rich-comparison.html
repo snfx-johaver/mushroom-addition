@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Default rich card comparisons</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --primary-text-color: #212121;
+        --secondary-text-color: #757575;
+        --card-background-color: #fff;
+        --ha-card-background: #fff;
+        --divider-color: #e8e8e8;
+        font-family: Roboto, Arial, sans-serif;
+        background: #eef0f2;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 24px; }
+      #comparisons { display: grid; gap: 24px; }
+      .comparison {
+        width: 704px;
+        padding: 16px;
+        border-radius: 18px;
+        background: #f5f5f5;
+        box-shadow: 0 2px 8px rgba(0,0,0,.12);
+      }
+      h2 { margin: 0 0 12px; font-size: 16px; }
+      .columns { display: grid; grid-template-columns: 320px 320px; gap: 16px; align-items: start; }
+      .column-label { margin-bottom: 7px; color: #666; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+      .reference-crop { position: relative; width: 320px; overflow: hidden; background: #eee; }
+      .reference-crop img { position: absolute; max-width: none; transform-origin: left top; }
+      .implementation { width: 320px; }
+      ha-card { display: block; }
+    </style>
+  </head>
+  <body>
+    <main id="comparisons"></main>
+    <script type="module" src="/demo/default-rich-comparison.ts"></script>
+  </body>
+</html>

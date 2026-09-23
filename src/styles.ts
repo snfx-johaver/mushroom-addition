@@ -133,6 +133,7 @@ export const sharedStyles = css`
   .weather-forecast ha-icon { --mdc-icon-size: 17px; color: rgb(var(--ulm-blue)); }
   .ulm-light-card { display: grid; gap: 12px; padding: 12px; }
   .ulm-light-card.is-horizontal { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
+  .ulm-light-card.is-horizontal-wide { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
   .ulm-light-card.is-horizontal .brightness-presets { display: none; }
   .light-header { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px; min-height: 42px; border-radius: 14px; }
   .light-header.is-active .light-icon {
@@ -297,9 +298,18 @@ export const sharedStyles = css`
   .welcome-heading { display: flex; flex-direction: column; gap: 18px; margin-bottom: 14px; }
   .welcome-heading b { max-width: 260px; font-size: 28px; line-height: 1.08; }
   .welcome-heading span { color: var(--primary-text-color); font-size: 18px; font-weight: 700; }
-  .ulm-media { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px; padding: 12px; }
-  .media-art { width: 54px; height: 54px; border-radius: 12px; background-position: center; background-size: cover; }
-  .ulm-media .ulm-controls { grid-column: 1 / -1; justify-content: center; }
+  .ulm-media { position: relative; display: grid; gap: 12px; overflow: hidden; padding: 12px; }
+  .media-art { position: absolute; inset: 0; z-index: 0; background-position: center; background-size: cover; }
+  .media-art::after { position: absolute; inset: 0; background: rgba(0,0,0,.25); content: ""; }
+  .media-summary { position: relative; z-index: 1; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px; }
+  .ulm-media.has-art { color: #fff; }
+  .ulm-media.has-art .ulm-label { color: rgba(255,255,255,.75); }
+  .ulm-media.has-art .ulm-icon, .ulm-media.has-art .ulm-control { color: #fff; background: rgba(0,0,0,.25); }
+  .ulm-media .ulm-controls, .ulm-media .ulm-slider { position: relative; z-index: 1; }
+  .media-controls { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .media-controls .ulm-control { width: 100%; }
+  .media-power { position: absolute; top: 12px; right: 12px; z-index: 2; }
+  .media-volume-buttons { justify-content: center; }
   .ulm-vacuum, .ulm-security { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px; }
   .ulm-vacuum .ulm-controls { grid-column: 1 / -1; justify-content: center; }
   .ulm-default-vacuum { display: grid; min-height: 220px; gap: 22px; padding: 24px; background: #1d222a; color: #fff; }
@@ -343,6 +353,9 @@ export const sharedStyles = css`
   .ulm-camera.has-title img { border-radius: 14px; }
   .camera-placeholder { display: grid; min-height: 150px; place-items: center; }
   .ulm-generic-swap { grid-template-columns: minmax(0, 1fr) auto; }
+  .ulm-generic.force-background, .ulm-generic-swap.force-background {
+    background: rgba(var(--ulm-blue), .16);
+  }
   .ulm-detail-card, .ulm-schedule-card, .ulm-device-status, .ulm-helper-card {
     display: grid;
     gap: 10px;
@@ -374,7 +387,16 @@ export const sharedStyles = css`
   .ulm-vertical-button { display: flex; min-height: 96px; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px; text-align: center; }
   .ulm-vertical-button .ulm-copy { align-items: center; }
   .ulm-binary.is-alert { background: rgba(var(--ulm-red), .1); }
-  .ulm-simple-default, .ulm-default-navigation { grid-template-columns: auto minmax(0, 1fr); }
+  .ulm-simple-default { grid-template-columns: auto minmax(0, 1fr); }
+  .ulm-default-navigation {
+    display: inline-grid;
+    min-height: 66px;
+    grid-template-columns: auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+  }
+  .navigation-label { font-size: 14px; font-weight: 600; white-space: nowrap; }
   .custom-card-heading {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;

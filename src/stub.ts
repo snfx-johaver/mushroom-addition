@@ -61,17 +61,22 @@ export const createStubConfig = (
     secondary: entity ? undefined : isText ? "Example" : "Preview",
     variant: defaultVariant,
     tap_action: tapAction,
-    show_controls: ["climate", "media", "cover", "vacuum", "control"].includes(descriptor.family)
+    show_controls: ["climate", "cover", "vacuum", "control"].includes(descriptor.family) ||
+      (descriptor.family === "media" && descriptor.upstreamId !== "card_media_player")
       ? true
       : undefined,
     show_forecast: descriptor.family === "weather",
     show_graph: ["battery", "energy", "sensor"].includes(descriptor.family),
-    ulm_card_light_enable_slider: descriptor.family === "light" ? true : undefined,
-    ulm_card_light_enable_color: descriptor.family === "light" ? true : undefined,
     ulm_custom_card_bar_card_value: descriptor.family === "bar" ? true : undefined,
     entities: descriptor.variants?.includes("with-sensors")
       ? entitiesFallback.slice(0, 2)
       : undefined,
+    ...(descriptor.upstreamId === "card_navigate"
+      ? {
+        navigation_path: "/lovelace",
+        tap_action: { action: "navigate", navigation_path: "/lovelace" },
+      }
+      : {}),
     ...(descriptor.upstreamId === "custom_card_homeassistant_updates"
       ? {
         ulm_card_homeassistant_core: findEntity(["update", "sensor", "binary_sensor"], ["core"]) ?? entity,

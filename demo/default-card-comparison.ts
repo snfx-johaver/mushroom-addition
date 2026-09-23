@@ -1,4 +1,5 @@
 import "../src/index";
+import * as mdiPaths from "@mdi/js";
 import {
   publicItemForSource,
   UPSTREAM_CATALOG,
@@ -10,8 +11,25 @@ import type { AdditionConfig, HomeAssistant } from "../src/types";
 class HaCard extends HTMLElement {}
 if (!customElements.get("ha-card")) customElements.define("ha-card", HaCard);
 class HaIcon extends HTMLElement {
+  public static get observedAttributes() { return ["icon"]; }
+
+  public constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+  }
+
   public set icon(value: string) {
-    this.textContent = value.replace("mdi:", "").split("-").map((part) => part[0]).join("").slice(0, 3).toUpperCase();
+    const exportName = value.startsWith("mdi:")
+      ? `mdi${value.slice(4).split("-").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join("")}`
+      : "";
+    const path = (mdiPaths as Record<string, unknown>)[exportName];
+    this.shadowRoot!.innerHTML = typeof path === "string"
+      ? `<style>:host{display:inline-flex;width:var(--mdc-icon-size,24px);height:var(--mdc-icon-size,24px);color:inherit}svg{display:block;width:100%;height:100%;fill:currentColor}</style><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${path}"></path></svg>`
+      : `<style>:host{display:inline-flex;width:var(--mdc-icon-size,24px);height:var(--mdc-icon-size,24px)}</style>`;
+  }
+
+  public attributeChangedCallback(_name: string, _oldValue: string | null, value: string | null) {
+    if (value) this.icon = value;
   }
 }
 if (!customElements.get("ha-icon")) customElements.define("ha-icon", HaIcon);

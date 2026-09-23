@@ -901,8 +901,6 @@ describe("family renderers", () => {
           "ulm-copy",
           "ulm-name",
           "ulm-label",
-          "ulm-controls",
-          "ulm-control",
         ],
         "person": [
           "ulm-row",

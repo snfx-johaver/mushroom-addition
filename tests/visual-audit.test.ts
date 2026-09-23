@@ -40,6 +40,7 @@ describe("visual audit manifest", () => {
       liveAccepted: 6,
       total: 86,
     });
+
     expect(VISUAL_AUDIT.filter((entry) => entry.status === "accepted").map((entry) => entry.sourceId))
       .toEqual([
         "custom_card_heat_pump",
@@ -49,6 +50,29 @@ describe("visual audit manifest", () => {
         "custom_card_person_info",
         "custom_card_person_info_small",
       ]);
+  });
+
+  it("certifies only local stages for the six default rich sources", () => {
+    for (const sourceId of [
+      "card_generic",
+      "card_generic_swap",
+      "card_graph",
+      "card_light",
+      "card_media_player",
+      "card_navigate",
+    ]) {
+      expect(VISUAL_AUDIT.find((entry) => entry.sourceId === sourceId)).toMatchObject({
+        status: "pending",
+        pickerAccepted: true,
+        editorAccepted: true,
+        visualAccepted: true,
+        statesAccepted: true,
+        interactionsAccepted: true,
+        liveAccepted: false,
+        fixturePath: "demo/default-rich-comparison.html",
+        widths: [320],
+      });
+    }
   });
 
   it("certifies local stages for the six parent-approved priority visuals", () => {
