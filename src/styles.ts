@@ -383,6 +383,7 @@ export const sharedStyles = css`
     padding: 12px;
   }
   .waste-grid { display: grid; gap: 5px; }
+  .waste-summary { display: flex; flex-wrap: wrap; gap: 2px 10px; text-transform: none; }
   .waste-row {
     display: grid;
     grid-template-columns: 24px 1fr auto;

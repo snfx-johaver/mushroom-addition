@@ -51,6 +51,26 @@ const hass: HomeAssistant = {
       state: "unknown",
       attributes: { friendly_name: "Unknown schedule" },
     },
+    "sensor.today": {
+      entity_id: "sensor.today",
+      state: "residual waste",
+      attributes: { friendly_name: "Trash type today" },
+    },
+    "sensor.tomorrow": {
+      entity_id: "sensor.tomorrow",
+      state: "paper",
+      attributes: { friendly_name: "Trash type tomorrow" },
+    },
+    "sensor.none": {
+      entity_id: "sensor.none",
+      state: "geen",
+      attributes: { friendly_name: "No collection" },
+    },
+    "sensor.cleared": {
+      entity_id: "sensor.cleared",
+      state: "cleared",
+      attributes: { friendly_name: "Cleared collection" },
+    },
     "media_player.tv": {
       entity_id: "media_player.tv",
       state: "playing",
@@ -353,7 +373,41 @@ describe("family renderers", () => {
     expect(markup).toContain("Bulky waste");
     expect(markup).not.toContain("Glass");
     expect(markup.match(/class="waste-row"/g)).toHaveLength(3);
-    expect(markup).toContain("—");
+    expect(markup).not.toContain("configured waste stream");
+  });
+
+  it.each([
+    ["today only", { show_today: true, today_entity: "sensor.today" }, ["Today:", "Residual waste"], ["Tomorrow:"]],
+    ["tomorrow only", { show_tomorrow: true, tomorrow_entity: "sensor.tomorrow" }, ["Tomorrow:", "Paper"], ["Today:"]],
+    ["today and tomorrow", {
+      show_today: true,
+      today_entity: "sensor.today",
+      show_tomorrow: true,
+      tomorrow_entity: "sensor.tomorrow",
+    }, ["Today:", "Residual waste", "Tomorrow:", "Paper"], []],
+    ["sentinel values", {
+      show_today: true,
+      today_entity: "sensor.none",
+      show_tomorrow: true,
+      tomorrow_entity: "sensor.cleared",
+    }, [], ["waste-summary", "Today:", "Tomorrow:", "geen", "cleared"]],
+    ["unavailable values", {
+      show_today: true,
+      today_entity: "sensor.unknown",
+      show_tomorrow: true,
+      tomorrow_entity: "sensor.missing",
+    }, [], ["waste-summary", "Today:", "Tomorrow:", "unknown"]],
+  ])("renders waste header summaries for %s", async (_name, summaryConfig, present, absent) => {
+    const markup = await render("mushroom-addition-custom-card-afvalophaling", {
+      type: "custom:mushroom-addition-custom-card-afvalophaling",
+      entity: "sensor.power",
+      waste_streams: [
+        { enabled: true, entity: "sensor.power", label: "Residual waste" },
+      ],
+      ...summaryConfig,
+    });
+    for (const value of present) expect(markup).toContain(value);
+    for (const value of absent) expect(markup).not.toContain(value);
   });
 
   it.each([

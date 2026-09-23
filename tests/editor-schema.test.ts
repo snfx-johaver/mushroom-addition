@@ -166,6 +166,16 @@ describe("family editor schemas", () => {
     expect(core.find((field) => field.name === "entity")?.selector).toEqual({
       entity: { domain: ["sensor", "calendar"] },
     });
+    expect(core.find((field) => field.name === "today_entity")?.selector).toEqual({
+      entity: { domain: ["sensor"] },
+    });
+    expect(core.find((field) => field.name === "tomorrow_entity")?.selector).toEqual({
+      entity: { domain: ["sensor"] },
+    });
+    expect(core.map((field) => field.name)).toEqual(expect.arrayContaining([
+      "show_today",
+      "show_tomorrow",
+    ]));
     expect(core.map((field) => field.name)).not.toContain("show_graph");
   });
 });

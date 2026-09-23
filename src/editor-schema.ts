@@ -156,7 +156,14 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
 
 export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): EditorField[] => [
   ...(item.upstreamId === "custom_card_afvalophaling"
-    ? [entity(["sensor", "calendar"]), ...presentation()]
+    ? [
+      entity(["sensor", "calendar"]),
+      toggle("show_today"),
+      entity(["sensor"], "today_entity"),
+      toggle("show_tomorrow"),
+      entity(["sensor"], "tomorrow_entity"),
+      ...presentation(),
+    ]
     : (schemas[item.family] ?? schemas.entity)(item, config)),
   action("tap_action"),
   action("hold_action"),

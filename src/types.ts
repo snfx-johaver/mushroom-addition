@@ -76,6 +76,10 @@ export interface AdditionConfig {
   scene_items?: AdditionItemConfig[];
   room_sensors?: AdditionItemConfig[];
   waste_streams?: WasteStreamConfig[];
+  today_entity?: string;
+  tomorrow_entity?: string;
+  show_today?: boolean;
+  show_tomorrow?: boolean;
   collapse_entity?: string;
   collapsed?: boolean;
   temperature_entity?: string;

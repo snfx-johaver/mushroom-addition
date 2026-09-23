@@ -21,6 +21,8 @@ const states: HomeAssistant["states"] = {
   "sensor.afvalinfo_home_pbd": { entity_id: "sensor.afvalinfo_home_pbd", state: "25-09-2026", attributes: { friendly_name: "Plastic cans and drink cartons" } },
   "sensor.afvalinfo_home_restafval": { entity_id: "sensor.afvalinfo_home_restafval", state: "25-09-2026", attributes: { friendly_name: "Residual waste" } },
   "sensor.afvalinfo_home_grofvuil": { entity_id: "sensor.afvalinfo_home_grofvuil", state: "unknown", attributes: { friendly_name: "Bulky waste" } },
+  "sensor.afvalinfo_home_trash_type_today": { entity_id: "sensor.afvalinfo_home_trash_type_today", state: "geen", attributes: { friendly_name: "Trash type today" } },
+  "sensor.afvalinfo_home_trash_type_tomorrow": { entity_id: "sensor.afvalinfo_home_trash_type_tomorrow", state: "geen", attributes: { friendly_name: "Trash type tomorrow" } },
   "input_boolean.alarm": { entity_id: "input_boolean.alarm", state: "on", attributes: { friendly_name: "Alarm" } },
   "input_datetime.alarm": { entity_id: "input_datetime.alarm", state: "08:30:00", attributes: { friendly_name: "Alarm time", has_time: true } },
   "sensor.download": { entity_id: "sensor.download", state: "273.07", attributes: { friendly_name: "Download", unit_of_measurement: "Mbit/s", history: [190, 220, 280, 260, 245, 272, 270, 276] } },
@@ -107,6 +109,10 @@ const fixtures: Array<{ id: string; key?: string; title?: string; entity: string
     entity: "sensor.afvalinfo_home_restafval",
     reference: "ulm_cards/custom_card_afvalophaling_1.png",
     config: {
+      show_today: true,
+      today_entity: "sensor.afvalinfo_home_trash_type_today",
+      show_tomorrow: true,
+      tomorrow_entity: "sensor.afvalinfo_home_trash_type_tomorrow",
       waste_streams: [
         { enabled: true, entity: "sensor.afvalinfo_home_restafval", label: "Residual waste", icon: "mdi:trash-can", color: "#43a047" },
         { enabled: true, entity: "sensor.afvalinfo_home_papier", label: "Paper", icon: "mdi:newspaper-variant", color: "#1e88e5" },
@@ -124,6 +130,10 @@ const fixtures: Array<{ id: string; key?: string; title?: string; entity: string
     entity: "sensor.afvalinfo_home_restafval",
     reference: "ulm_cards/custom_card_afvalophaling_2.png",
     config: {
+      show_today: true,
+      today_entity: "sensor.afvalinfo_home_trash_type_today",
+      show_tomorrow: true,
+      tomorrow_entity: "sensor.afvalinfo_home_trash_type_tomorrow",
       waste_streams: [
         { enabled: true, entity: "sensor.afvalinfo_home_restafval", label: "Residual waste", icon: "mdi:trash-can", color: "#43a047" },
         { enabled: false, entity: "sensor.afvalinfo_home_papier", label: "Paper", icon: "mdi:newspaper-variant", color: "#1e88e5" },

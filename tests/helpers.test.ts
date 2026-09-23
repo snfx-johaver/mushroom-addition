@@ -53,6 +53,8 @@ describe("shared card behavior", () => {
       ulm_card_datum_pmd: "sensor.pbd",
       ulm_card_datum_rest: "sensor.rest",
       ulm_card_datum_papier: "sensor.paper",
+      ulm_card_ophaling_vandaag: "sensor.today",
+      ulm_card_ophaling_morgen: "sensor.tomorrow",
     });
     expect(normalized.waste_streams?.slice(0, 5)).toMatchObject([
       { preset: "residual", entity: "sensor.rest", enabled: true },
@@ -61,6 +63,12 @@ describe("shared card behavior", () => {
       { preset: "organic", entity: "sensor.gft", enabled: true },
       { preset: "glass", entity: undefined },
     ]);
+    expect(normalized).toMatchObject({
+      today_entity: "sensor.today",
+      tomorrow_entity: "sensor.tomorrow",
+      show_today: true,
+      show_tomorrow: true,
+    });
   });
 
   it("defaults navigation cards to a native navigate action", () => {

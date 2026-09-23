@@ -75,6 +75,8 @@ export const populatedDefaultsFor = (
     ...upstreamDefaultsFor(item),
     entity: entityId,
     waste_streams: item.upstreamId === "custom_card_afvalophaling" ? defaultWasteStreams() : undefined,
+    show_today: item.upstreamId === "custom_card_afvalophaling" ? false : undefined,
+    show_tomorrow: item.upstreamId === "custom_card_afvalophaling" ? false : undefined,
     name: entity?.attributes.friendly_name,
     icon: defaultIconFor(item, entity),
     show_icon: true,

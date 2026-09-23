@@ -695,6 +695,19 @@ const entityFromConfig = (ctx: RenderContext, ...keys: string[]): HassEntity | u
 
 const renderWasteCollection = (ctx: RenderContext): TemplateResult => {
   const rows = wasteStreamsForConfig(ctx.config).filter((stream) => stream.enabled !== false && stream.entity);
+  const emptySummaryStates = new Set([
+    "", "unknown", "unavailable", "none", "no", "geen", "clear", "cleared", "null", "-", "n/a", "na",
+    "nothing", "no collection", "no collections", "geen afval", "geen ophaling", "geen ophalingen",
+  ]);
+  const summaryValue = (entityId: string | undefined, enabled: boolean | undefined): string | undefined => {
+    if (enabled !== true || !entityId) return undefined;
+    const state = ctx.hass.states[entityId]?.state?.trim();
+    if (!state || emptySummaryStates.has(state.toLowerCase())) return undefined;
+    const normalized = state.replaceAll("_", " ").replace(/\s+/g, " ");
+    return normalized.charAt(0).toLocaleUpperCase(ctx.hass.language) + normalized.slice(1);
+  };
+  const today = summaryValue(ctx.config.today_entity, ctx.config.show_today);
+  const tomorrow = summaryValue(ctx.config.tomorrow_entity, ctx.config.show_tomorrow);
   const collectionDate = (entity?: HassEntity): string => {
     if (!entity || ["unknown", "unavailable", "none", "geen"].includes(entity.state.toLowerCase())) return "—";
     if (entity.entity_id.startsWith("calendar.")) {
@@ -713,7 +726,12 @@ const renderWasteCollection = (ctx: RenderContext): TemplateResult => {
       ${iconBubble(ctx, "mdi:trash-can-outline", "green")}
       <span class="ulm-copy">
         <span class="ulm-name">${ctx.config.name || configured<string>(ctx, "ulm_volgende_ophaling") || "Next collections"}</span>
-        <span class="ulm-label">${rows.length === 1 ? "1 configured waste stream" : `${rows.length} configured waste streams`}</span>
+        ${today || tomorrow ? html`
+          <span class="ulm-label waste-summary">
+            ${today ? html`<span>Today: ${today}</span>` : nothing}
+            ${tomorrow ? html`<span>Tomorrow: ${tomorrow}</span>` : nothing}
+          </span>
+        ` : nothing}
       </span>
     </div>
     <div class="waste-grid">${rows.map((stream) => {
