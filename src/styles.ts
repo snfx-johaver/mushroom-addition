@@ -9,6 +9,7 @@ export const sharedStyles = css`
     --ulm-orange: 255, 152, 0;
     --ulm-purple: 156, 39, 176;
     --ulm-grey: 120, 120, 120;
+    container-type: inline-size;
     display: block;
     min-width: 0;
   }
@@ -620,6 +621,34 @@ export const sharedStyles = css`
   .nik-nas-ring-track, .nik-nas-ring-value { fill: none; stroke-width: 6; }
   .nik-nas-ring-track { stroke: rgba(var(--ulm-grey), .16); }
   .nik-nas-ring-value { stroke-linecap: round; }
+  @container (max-width: 380px) {
+    .custom-nik-nas { gap: 10px; padding: 12px; }
+    .nik-nas-top { gap: 8px; }
+    .nik-nas-tile {
+      min-width: 0;
+      min-height: 82px;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 9px;
+      padding: 9px 10px;
+      border-width: 2px;
+      border-radius: 24px;
+    }
+    .nik-nas-tile-icon { width: 44px; height: 44px; }
+    .nik-nas-tile b, .nik-nas-metrics b { font-size: 16px; }
+    .nik-nas-tile small, .nik-nas-metrics small { font-size: 13px; }
+    .nik-nas-tile > span:last-child { min-width: 0; overflow: hidden; }
+    .nik-nas-tile b, .nik-nas-tile small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .nik-nas-body { grid-template-columns: minmax(112px, 1fr) minmax(120px, 132px); gap: 8px; }
+    .nik-nas-metrics { gap: 6px; }
+    .nik-nas-metrics > span {
+      min-height: 46px;
+      grid-template-columns: 38px minmax(0, 1fr);
+      gap: 8px;
+    }
+    .nik-nas-metrics i { width: 38px; height: 38px; }
+    .nik-nas-metrics i ha-icon, .nik-nas-tile-icon ha-icon { --mdc-icon-size: 20px; }
+    .nik-nas-rings { width: 132px; max-width: 100%; }
+  }
   .custom-nik-tablet { gap: 14px; padding: 18px; }
   .nik-tablet-header { display: grid; grid-template-columns: 42px minmax(0, 1fr); align-items: center; gap: 12px; }
   .nik-tablet-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-blue), .2); color: rgb(var(--ulm-blue)); }
@@ -631,8 +660,9 @@ export const sharedStyles = css`
   .nik-tablet-controls button ha-icon { --mdc-icon-size: 22px; }
   .nik-tablet-controls button.is-active { background: rgba(var(--tone), .3); box-shadow: inset 0 0 0 2px rgba(var(--tone), .35); }
   .nik-tablet-controls button:disabled { opacity: .3; cursor: not-allowed; }
-  .nik-tablet-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; text-align: center; }
+  .nik-tablet-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: 8px; text-align: center; }
   .nik-tablet-metrics span { display: grid; gap: 2px; }
+  .nik-tablet-metrics span.is-unavailable { opacity: .55; }
   .nik-tablet-metrics b { overflow: hidden; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
   .nik-tablet-metrics small { color: rgba(var(--ulm-grey), .65); font-size: 12px; font-weight: 600; }
   .nik-tablet-battery-row { display: grid; grid-template-columns: 42px minmax(0, 1fr); align-items: center; gap: 12px; }

@@ -1426,11 +1426,20 @@ const renderNikTablet = (ctx: RenderContext): TemplateResult => {
     ["tablet_maintenance_entity", "mdi:account-hard-hat-outline", "orange", "Toggle maintenance mode"],
     ["tablet_reload_entity", "mdi:reload", "blue", "Reload tablet"],
   ] as const;
-  const metricEntities = [
+  const metricCandidates: Array<readonly [string, HassEntity | undefined]> = [
     ["RAM", linkedState(ctx, "tablet_ram_entity")],
     ["Disk", linkedState(ctx, "tablet_disk_entity")],
     ["Power", linkedState(ctx, "tablet_power_entity")],
-  ] as const;
+  ];
+  const metricEntities: Array<readonly [string, HassEntity]> = metricCandidates.flatMap(
+    ([label, entity]) => entity ? [[label, entity] as const] : [],
+  );
+  const configuredControls: Array<readonly [string, string, string, HassEntity]> = controls.flatMap(
+    ([key, controlIcon, tone, label]) => {
+      const entity = linkedState(ctx, key);
+      return entity ? [[controlIcon, tone, label, entity] as const] : [];
+    },
+  );
   const status = ctx.entity?.state === "on" ? "Access" : stateLabel(ctx.entity);
   const activateTabletControl = (event: Event, entity?: HassEntity): void => {
     event.stopPropagation();
@@ -1444,9 +1453,7 @@ const renderNikTablet = (ctx: RenderContext): TemplateResult => {
       <span class="nik-tablet-icon"><ha-icon icon="mdi:tablet"></ha-icon></span>
       <span class="ulm-copy"><span class="ulm-name">${displayName(ctx.config, ctx.entity)}</span><span class="ulm-label">${status}</span></span>
     </div>
-    <div class="nik-tablet-controls">${controls.map(([key, controlIcon, tone, label]) => {
-      const entity = linkedState(ctx, key);
-      if (!entity) return nothing;
+    ${configuredControls.length ? html`<div class="nik-tablet-controls">${configuredControls.map(([controlIcon, tone, label, entity]) => {
       const unavailable = entity.state.toLowerCase() === "unavailable";
       return html`<button class="tone-${tone} ${activeStates.has(entity.state) ? "is-active" : ""}"
         aria-label=${label} ?disabled=${unavailable}
@@ -1454,15 +1461,15 @@ const renderNikTablet = (ctx: RenderContext): TemplateResult => {
         @click=${(event: Event) => activateTabletControl(event, entity)}>
         <ha-icon .icon=${controlIcon}></ha-icon>
       </button>`;
-    })}</div>
-    <div class="nik-tablet-metrics">${metricEntities.map(([label, entity]) => html`
-      <span><b>${stateLabel(entity)}</b><small>${label}</small></span>
-    `)}</div>
-    <div class="nik-tablet-battery-row">
+    })}</div>` : nothing}
+    ${metricEntities.length ? html`<div class="nik-tablet-metrics">${metricEntities.map(([label, entity]) => html`
+      <span class=${entity.state.toLowerCase() === "unavailable" ? "is-unavailable" : ""}><b>${stateLabel(entity)}</b><small>${label}</small></span>
+    `)}</div>` : nothing}
+    ${batteryEntity ? html`<div class="nik-tablet-battery-row">
       <span class="nik-tablet-battery-icon"><ha-icon icon="mdi:battery"></ha-icon></span>
       <span><b>${stateLabel(batteryEntity)}</b><small>Battery</small></span>
     </div>
-    <div class="nik-tablet-battery-bar"><i style=${`width:${battery}%`}></i><b>${battery}%</b></div>
+    <div class="nik-tablet-battery-bar"><i style=${`width:${battery}%`}></i><b>${battery}%</b></div>` : nothing}
   `);
 };
 

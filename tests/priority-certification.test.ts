@@ -445,6 +445,41 @@ describe("priority local certification", () => {
     expect((unavailable.shadowRoot.querySelector('button[aria-label="Toggle USB"]') as HTMLButtonElement).disabled).toBe(true);
   });
 
+  it("hides omitted Tablet metrics and controls but keeps configured unavailable slots explicit", async () => {
+    const partialConfig: AdditionConfig = {
+      type: "custom:mushroom-addition-custom-card-nik-tablet",
+      entity: "binary_sensor.tablet",
+      tablet_power_entity: "binary_sensor.tablet_power",
+      battery_entity: "sensor.tablet_battery",
+    };
+    const partial = await renderCard("mushroom-addition-custom-card-nik-tablet", partialConfig);
+    expect(partial.shadowRoot.querySelector(".nik-tablet-controls")).toBeNull();
+    expect(partial.shadowRoot.querySelectorAll(".nik-tablet-metrics > span")).toHaveLength(1);
+    expect(partial.shadowRoot.textContent).toContain("Power");
+    expect(partial.shadowRoot.textContent).not.toContain("RAM");
+    expect(partial.shadowRoot.textContent).not.toContain("Disk");
+    expect(partial.shadowRoot.textContent).not.toContain("Entity unavailable");
+    expect(partial.shadowRoot.querySelector(".nik-tablet-battery-row")).not.toBeNull();
+    partial.remove();
+
+    const configuredUnavailable = await renderCard("mushroom-addition-custom-card-nik-tablet", {
+      ...partialConfig,
+      tablet_button_usb_entity: "switch.tablet_usb",
+      tablet_ram_entity: "sensor.tablet_ram",
+    }, {
+      ...baseStates,
+      "switch.tablet_usb": { ...baseStates["switch.tablet_usb"], state: "unavailable" },
+      "sensor.tablet_ram": { ...baseStates["sensor.tablet_ram"], state: "unavailable" },
+    });
+    const unavailableButton = configuredUnavailable.shadowRoot.querySelector(
+      'button[aria-label="Toggle USB"]',
+    ) as HTMLButtonElement;
+    expect(unavailableButton.disabled).toBe(true);
+    expect(configuredUnavailable.shadowRoot.querySelectorAll(".nik-tablet-metrics > span")).toHaveLength(2);
+    expect(configuredUnavailable.shadowRoot.querySelector(".nik-tablet-metrics .is-unavailable")).not.toBeNull();
+    expect(configuredUnavailable.shadowRoot.textContent?.toLowerCase()).toContain("unavailable");
+  });
+
   it("covers NAS online, off, unavailable, and configured ring states", async () => {
     const config: AdditionConfig = {
       type: "custom:mushroom-addition-custom-card-nik-nas",

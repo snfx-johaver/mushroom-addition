@@ -239,6 +239,7 @@ const fixtures: Fixture[] = [
   { id: "nik-clock", entity: "sensor.time", reference: "custom_card_nik_clock.png" },
   { id: "nik-door", entity: "binary_sensor.front_door", reference: "custom_card_nik_door.png", config: { lock_entity: "lock.front_door", battery_entity: "sensor.lock_battery" } },
   { id: "nik-nas", entity: "binary_sensor.hn_nas_status", reference: "custom_card_nik_nas_on.png", width: 510, config: { disk_entity: "sensor.hn_nas_disk", temperature_entity: "sensor.hn_nas_temperature", memory_entity: "sensor.hn_nas_memory", cpu_entity: "sensor.hn_nas_cpu" } },
+  { id: "nik-nas", key: "nik-nas-responsive", title: "custom_card_nik_nas — 330px responsive", entity: "binary_sensor.hn_nas_status", width: 330, config: { disk_entity: "sensor.hn_nas_disk", temperature_entity: "sensor.hn_nas_temperature", memory_entity: "sensor.hn_nas_memory", cpu_entity: "sensor.hn_nas_cpu" } },
   { id: "nik-tablet", entity: "binary_sensor.bram_tablet_status", reference: "custom_card_nik_tablet_1.png", width: 390, config: {
     tablet_button_usb_entity: "switch.bram_tablet_usb",
     tablet_button_motion_entity: "switch.bram_tablet_motion",
@@ -248,6 +249,10 @@ const fixtures: Fixture[] = [
     tablet_reload_entity: "button.bram_tablet_reload",
     tablet_ram_entity: "sensor.bram_tablet_ram",
     tablet_disk_entity: "sensor.bram_tablet_disk",
+    tablet_power_entity: "binary_sensor.bram_tablet_power",
+    battery_entity: "sensor.bram_tablet_battery",
+  } },
+  { id: "nik-tablet", key: "nik-tablet-partial", title: "custom_card_nik_tablet — Power and Battery only", entity: "binary_sensor.bram_tablet_status", width: 330, config: {
     tablet_power_entity: "binary_sensor.bram_tablet_power",
     battery_entity: "sensor.bram_tablet_battery",
   } },

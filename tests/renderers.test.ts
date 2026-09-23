@@ -786,7 +786,7 @@ describe("family renderers", () => {
     ["nik-clock", "sensor.power", "custom-nik-clock", "custom-nik-clock"],
     ["nik-door", "binary_sensor.window", "custom-nik-door", "nik-door-controls"],
     ["nik-nas", "sensor.power", "custom-nik-nas", "nik-nas-metrics"],
-    ["nik-tablet", "sensor.battery", "custom-nik-tablet", "nik-tablet-metrics"],
+    ["nik-tablet", "sensor.battery", "custom-nik-tablet", "nik-tablet-header"],
     ["paddy-dwd-pollen", "sensor.power", "custom-paddy-pollen", "pollen-icon"],
     ["paddy-waste-collection", "sensor.power", "custom-paddy-waste", "paddy-waste-icon"],
     ["paddy-welcome", "person.joris", "custom-paddy-welcome", "Good"],
