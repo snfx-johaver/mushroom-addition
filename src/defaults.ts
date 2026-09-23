@@ -71,9 +71,43 @@ export const populatedDefaultsFor = (
   entityId?: string,
 ): AdditionConfig => {
   const entity = entityId ? hass?.states[entityId] : undefined;
+  const sourceDefaults: Record<string, unknown> =
+    item.upstreamId === "custom_card_device_tracker"
+      ? {
+        ulm_custom_card_device_tracker_icon: "mdi:cellphone",
+        ulm_custom_card_device_tracker_tracker_1_type: "lan",
+        ulm_custom_card_device_tracker_tracker_2_type: "bluetooth",
+      }
+      : item.upstreamId === "custom_card_eraycetinay_lock"
+        ? {
+          ulm_custom_card_eraycetinay_lock_tap_control: false,
+          ulm_custom_card_eraycetinay_lock_only_open: false,
+          ulm_custom_card_eraycetinay_lock_battery_warning: 20,
+          ulm_custom_card_eraycetinay_lock_battery_warning_low: 5,
+          ulm_custom_card_eraycetinay_lock_battery_sensor_binary: false,
+          ulm_custom_card_eraycetinay_lock_battery_sensor_binary_low_state: "on",
+        }
+        : item.upstreamId === "custom_card_esh_room"
+          ? {
+            ulm_card_esh_room_light_icon_on: "mdi:lightbulb",
+            ulm_card_esh_room_light_icon_off: "mdi:lightbulb-off",
+            ulm_card_esh_room_cover_icon_open: "mdi:blinds-open",
+            ulm_card_esh_room_cover_icon_closed: "mdi:roller-shade-closed",
+            ulm_card_dynamic_color: false,
+          }
+          : item.upstreamId === "custom_card_esh_welcome"
+            ? {
+              nav_1: "house", icon_1: "mdi:home", name_1: "House", color_1: "blue",
+              nav_2: "lights", icon_2: "mdi:lightbulb", name_2: "Lights", color_2: "yellow",
+              nav_3: "security", icon_3: "mdi:shield", name_3: "Secure", color_3: "green",
+              nav_4: "climate", icon_4: "mdi:radiator", name_4: "Climate", color_4: "purple",
+              nav_5: "network", icon_5: "mdi:flask", name_5: "Lab", color_5: "red",
+            }
+            : {};
   return {
     type: `custom:${item.tag}`,
     ...upstreamDefaultsFor(item),
+    ...sourceDefaults,
     entity: entityId,
     waste_streams: item.upstreamId === "custom_card_afvalophaling" ? defaultWasteStreams() : undefined,
     show_today: item.upstreamId === "custom_card_afvalophaling" ? false : undefined,

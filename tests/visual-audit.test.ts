@@ -32,11 +32,11 @@ describe("visual audit manifest", () => {
   it("reports exact accepted progress without inferring parity from family mappings", () => {
     expect(visualAuditProgress()).toEqual({
       accepted: 6,
-      pickerAccepted: 18,
-      editorAccepted: 18,
-      visualAccepted: 19,
-      statesAccepted: 18,
-      interactionsAccepted: 18,
+      pickerAccepted: 24,
+      editorAccepted: 24,
+      visualAccepted: 25,
+      statesAccepted: 24,
+      interactionsAccepted: 24,
       liveAccepted: 6,
       total: 86,
     });
@@ -103,6 +103,27 @@ describe("visual audit manifest", () => {
       "custom_card_camera",
       "custom_card_chromecast",
       "custom_card_damix48_power_details",
+    ]) {
+      expect(VISUAL_AUDIT.find((entry) => entry.sourceId === sourceId)).toMatchObject({
+        status: "pending",
+        pickerAccepted: true,
+        editorAccepted: true,
+        visualAccepted: true,
+        statesAccepted: true,
+        interactionsAccepted: true,
+        liveAccepted: false,
+      });
+    }
+  });
+
+  it("certifies all five local stages for the six requested source designs", () => {
+    for (const sourceId of [
+      "custom_card_device_tracker",
+      "custom_card_drealine_roomview",
+      "custom_card_eraycetinay_elapsed_time",
+      "custom_card_eraycetinay_lock",
+      "custom_card_esh_room",
+      "custom_card_esh_welcome",
     ]) {
       expect(VISUAL_AUDIT.find((entry) => entry.sourceId === sourceId)).toMatchObject({
         status: "pending",

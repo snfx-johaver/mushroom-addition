@@ -236,6 +236,90 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         toggle("ulm_card_power_details_24hour"),
         ...presentation(),
       ]
+    : item.upstreamId === "custom_card_device_tracker"
+      ? [
+        entity(["device_tracker", "person"]),
+        { name: "ulm_custom_card_device_tracker_icon", selector: { icon: {} } },
+        entity(["device_tracker"], "ulm_custom_card_device_tracker_tracker_1_entity"),
+        select("ulm_custom_card_device_tracker_tracker_1_type", [
+          { value: "default", label: "Home" },
+          { value: "lan", label: "LAN" },
+          { value: "bluetooth", label: "Bluetooth" },
+        ]),
+        entity(["device_tracker"], "ulm_custom_card_device_tracker_tracker_2_entity"),
+        select("ulm_custom_card_device_tracker_tracker_2_type", [
+          { value: "default", label: "Home" },
+          { value: "lan", label: "LAN" },
+          { value: "bluetooth", label: "Bluetooth" },
+        ]),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_drealine_roomview"
+      ? [
+        entity(item.preferredDomains),
+        entity(["group", "light"], "group_lights"),
+        entity(["group", "binary_sensor"], "group_motions"),
+        entity(["group", "binary_sensor"], "group_doors"),
+        entity(["group", "binary_sensor"], "group_windows"),
+        entity(["group", "switch"], "group_outlets"),
+        entity(["group", "media_player"], "group_tv"),
+        entity(["group", "binary_sensor"], "group_water"),
+        entity(["group", "cover"], "group_windows_shutters"),
+        entity(["sensor"], "temperature"),
+        entity(["sensor"], "humidity"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_eraycetinay_elapsed_time"
+      ? [
+        entity(["input_datetime"]),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_eraycetinay_lock"
+      ? [
+        entity(["lock"]),
+        toggle("ulm_custom_card_eraycetinay_lock_tap_control"),
+        toggle("ulm_custom_card_eraycetinay_lock_only_open"),
+        entity(["sensor", "binary_sensor"], "ulm_custom_card_eraycetinay_lock_battery_level"),
+        number("ulm_custom_card_eraycetinay_lock_battery_warning", 0, 100),
+        number("ulm_custom_card_eraycetinay_lock_battery_warning_low", 0, 100),
+        entity(["binary_sensor"], "ulm_custom_card_eraycetinay_lock_door_open"),
+        toggle("ulm_custom_card_eraycetinay_lock_battery_sensor_binary"),
+        select("ulm_custom_card_eraycetinay_lock_battery_sensor_binary_low_state", [
+          { value: "on", label: "On means low" },
+          { value: "off", label: "Off means low" },
+        ]),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_esh_room"
+      ? [
+        entity(),
+        entity(["light"], "ulm_custom_card_esh_room_light_entity"),
+        entity(["climate"], "ulm_custom_card_esh_room_climate_entity"),
+        entity(["cover"], "ulm_custom_card_esh_room_cover_entity"),
+        { name: "ulm_card_esh_room_light_icon_on", selector: { icon: {} } },
+        { name: "ulm_card_esh_room_light_icon_off", selector: { icon: {} } },
+        { name: "ulm_card_esh_room_cover_icon_open", selector: { icon: {} } },
+        { name: "ulm_card_esh_room_cover_icon_closed", selector: { icon: {} } },
+        toggle("ulm_card_dynamic_color"),
+        text("secondary"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_esh_welcome"
+      ? [
+        entity(["person"]),
+        entity(["input_boolean"], "ulm_card_esh_welcome_collapse"),
+        entity(["weather"], "ulm_weather"),
+        ...Array.from({ length: 5 }, (_, index) => index + 1).flatMap((index) => [
+          text(`nav_${index}`),
+          { name: `icon_${index}`, selector: { icon: {} } },
+          text(`name_${index}`),
+          select(`color_${index}`, ["blue", "red", "green", "yellow", "pink", "purple"].map((value) => ({
+            value,
+            label: value[0].toUpperCase() + value.slice(1),
+          }))),
+        ]),
+        ...presentation(),
+      ]
     : item.upstreamId === "custom_card_nik_nas"
       ? [
         entity(["binary_sensor", "sensor", "switch"]),

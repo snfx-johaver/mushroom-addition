@@ -906,56 +906,111 @@ const renderPowerDetails = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const trackerIcon = (type: string | undefined): string =>
-  type === "bluetooth" ? "mdi:bluetooth" : type === "wifi" ? "mdi:wifi" : "mdi:crosshairs-gps";
+const trackerIcon = (type: string | undefined, home: boolean): string =>
+  type === "bluetooth" ? (home ? "mdi:bluetooth" : "mdi:bluetooth-off") :
+    type === "lan" || type === "wifi" ? (home ? "mdi:lan-connect" : "mdi:lan-disconnect") :
+      home ? "mdi:home-variant" : "mdi:home-minus";
 
 const renderDeviceTrackerCard = (ctx: RenderContext): TemplateResult => {
   const tracker1 = entityFromConfig(ctx, "ulm_custom_card_device_tracker_tracker_1_entity") ?? ctx.entity;
   const tracker2 = entityFromConfig(ctx, "ulm_custom_card_device_tracker_tracker_2_entity");
-  const present = [tracker1, tracker2].filter(Boolean).some((entity) => entity?.state === "home");
   return ctx.actionSurface("custom-device-tracker", html`
     <span class="device-tracker-icon">
       <ha-icon .icon=${configured<string>(ctx, "ulm_custom_card_device_tracker_icon") || "mdi:cellphone"}></ha-icon>
-      ${tracker1 ? html`<i class="tracker-badge tracker-one"><ha-icon .icon=${trackerIcon(configured(ctx, "ulm_custom_card_device_tracker_tracker_1_type"))}></ha-icon></i>` : nothing}
-      ${tracker2 ? html`<i class="tracker-badge tracker-two"><ha-icon .icon=${trackerIcon(configured(ctx, "ulm_custom_card_device_tracker_tracker_2_type"))}></ha-icon></i>` : nothing}
+      ${tracker1 ? html`<i class="tracker-badge tracker-one ${tracker1.state === "home" ? "is-home" : "is-away"}" title=${stateLabel(tracker1)}><ha-icon .icon=${trackerIcon(configured(ctx, "ulm_custom_card_device_tracker_tracker_1_type"), tracker1.state === "home")}></ha-icon></i>` : nothing}
+      ${tracker2 ? html`<i class="tracker-badge tracker-two ${tracker2.state === "home" ? "is-home" : "is-away"}" title=${stateLabel(tracker2)}><ha-icon .icon=${trackerIcon(configured(ctx, "ulm_custom_card_device_tracker_tracker_2_type"), tracker2.state === "home")}></ha-icon></i>` : nothing}
     </span>
-    <span class="ulm-copy"><b class="ulm-name">${displayName(ctx.config, ctx.entity)}</b><span class="ulm-label">${present ? "Present" : stateLabel(ctx.entity)}</span></span>
+    <span class="ulm-copy"><b class="ulm-name">${displayName(ctx.config, ctx.entity)}</b><span class="ulm-label">${ctx.entity?.state === "home" ? "Present" : ctx.entity?.state === "not_home" ? "Away" : stateLabel(ctx.entity)}</span></span>
   `);
 };
 
+const groupMembers = (ctx: RenderContext, entity: HassEntity | undefined): HassEntity[] => {
+  const ids = attr(entity, "entity_id");
+  return Array.isArray(ids)
+    ? ids.map(String).map((id) => ctx.hass.states[id]).filter((state): state is HassEntity => Boolean(state))
+    : entity ? [entity] : [];
+};
+
 const renderRoomView = (ctx: RenderContext): TemplateResult => {
-  const details = configuredEntities(ctx);
-  const humidity = details.find((entity) => entity.entity_id.includes("humidity"));
-  const light = details.find((entity) => entity.entity_id.startsWith("light."));
-  const presence = details.find((entity) => entity.entity_id.startsWith("binary_sensor."));
+  const named = (key: string): HassEntity | undefined => entityFromConfig(ctx, key);
+  const temperature = named("temperature");
+  const humidity = named("humidity");
+  const groups = {
+    doors: named("group_doors"), windows: named("group_windows"), motions: named("group_motions"),
+    water: named("group_water"), lights: named("group_lights"), shutters: named("group_windows_shutters"),
+    outlets: named("group_outlets"), tv: named("group_tv"),
+  };
+  const lowBatteries = Object.values(groups).flatMap((group) => groupMembers(ctx, group))
+    .filter((entity) => (numeric(attr(entity, "battery")) ?? 101) <= 20);
+  const unavailable = Object.values(groups).flatMap((group) => groupMembers(ctx, group))
+    .filter((entity) => entity.state === "unavailable");
+  const countOn = (entity: HassEntity | undefined): number =>
+    groupMembers(ctx, entity).filter((member) => member.state === "on" || member.state === "open").length;
+  const moreInfo = (event: Event, entity?: HassEntity): void => {
+    if (entity) runControlAction(event, ctx, { action: "more-info" }, entity.entity_id);
+  };
+  const toggle = (event: Event, entity?: HassEntity): void => {
+    if (entity && entity.state !== "unavailable") runControlAction(event, ctx, { action: "toggle" }, entity.entity_id);
+  };
+  const sensorSlots = [
+    [groups.doors, "mdi:door-open"], [groups.windows, "mdi:window-open-variant"],
+    [groups.motions, "mdi:motion-sensor"], [groups.water, "mdi:water"],
+  ] as const;
+  const deviceSlots = [
+    [groups.lights, groups.lights?.state === "on" ? "mdi:lightbulb-group" : "mdi:lightbulb-group-off"],
+    [groups.shutters, groups.shutters?.state === "on" ? "mdi:window-shutter-open" : "mdi:window-shutter"],
+    [groups.outlets, groups.outlets?.state === "on" ? "mdi:power-plug" : "mdi:power-plug-off"],
+    [groups.tv, groups.tv?.state === "on" ? "mdi:television" : "mdi:television-off"],
+  ] as const;
   return ctx.actionSurface("custom-room-view", html`
-    <div class="room-view-summary">
-      <span class="room-view-icon"><ha-icon icon="mdi:sofa"></ha-icon><i>!</i></span>
-      <span><b>${stateLabel(ctx.entity)}</b>${humidity ? html`<small><ha-icon icon="mdi:water-percent"></ha-icon>${stateLabel(humidity)}</small>` : nothing}</span>
+    <div class="room-view-summary" @click=${(event: Event) => moreInfo(event, temperature ?? humidity)}>
+      <span class="room-view-icon"><ha-icon .icon=${ctx.config.icon || "mdi:home-variant-outline"}></ha-icon>${unavailable.length ? html`<i>${unavailable.length}</i>` : nothing}</span>
+      <span><b><ha-icon icon="mdi:thermometer"></ha-icon>${stateLabel(temperature)}</b><small><ha-icon icon="mdi:water-percent"></ha-icon>${stateLabel(humidity)}</small></span>
     </div>
-    <div class="room-view-status"><ha-icon icon="mdi:door"></ha-icon>${presence?.state === "on" ? html`<i>1</i>` : nothing}</div>
+    <div class="room-view-status">
+      ${sensorSlots.map(([entity, sensorIcon]) => entity && countOn(entity) ? html`<button aria-label=${displayName({ type: "", entity: entity.entity_id }, entity)} @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => moreInfo(event, entity)}><ha-icon .icon=${sensorIcon}></ha-icon>${countOn(entity) > 1 ? html`<i>${countOn(entity)}</i>` : nothing}</button>` : nothing)}
+      ${lowBatteries.length ? html`<button aria-label="Low batteries" @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => moreInfo(event, lowBatteries[0])}><ha-icon icon="mdi:battery-20"></ha-icon><i>${lowBatteries.length}</i></button>` : nothing}
+      ${!sensorSlots.some(([entity]) => countOn(entity)) && !lowBatteries.length ? html`<span class="room-view-clear"><ha-icon icon="mdi:check"></ha-icon></span>` : nothing}
+    </div>
     <div class="room-view-actions">
-      <span><ha-icon icon="mdi:lightbulb-off"></ha-icon></span>
-      <span class=${light?.state === "on" ? "is-active" : ""}><ha-icon icon="mdi:lightbulb"></ha-icon>${light?.state === "on" ? html`<i>1</i>` : nothing}</span>
-      <span><ha-icon icon="mdi:television"></ha-icon><i>1</i></span>
+      ${deviceSlots.map(([entity, deviceIcon]) => entity ? html`
+        <button class=${entity.state === "on" ? "is-active" : ""} aria-label=${displayName({ type: "", entity: entity.entity_id }, entity)}
+          ?disabled=${entity.state === "unavailable"} @pointerdown=${(event: Event) => event.stopPropagation()}
+          @dblclick=${(event: Event) => toggle(event, entity)} @click=${(event: Event) => event.stopPropagation()}>
+          <ha-icon .icon=${entity.state === "unavailable" ? "mdi:exclamation-thick" : deviceIcon}></ha-icon>
+          ${countOn(entity) ? html`<i>${countOn(entity)}</i>` : nothing}
+        </button>` : nothing)}
     </div>
   `);
 };
 
 const relativeDuration = (entity: HassEntity | undefined): string => {
-  const raw = entity?.state;
-  if (!raw || (!raw.includes("-") && !raw.includes("T"))) return stateLabel(entity);
-  const then = raw ? Date.parse(raw) : Number.NaN;
-  if (Number.isFinite(then)) {
-    const minutes = Math.max(0, Math.floor((Date.now() - then) / 60_000));
-    if (minutes < 1) return "just now";
-    if (minutes < 60) return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
-    const days = Math.floor(hours / 24);
-    return `${days} day${days === 1 ? "" : "s"} ${hours % 24} hours ago`;
+  if (!entity) return "Entity unavailable";
+  const hasDate = attr(entity, "has_date") === true;
+  const hasTime = attr(entity, "has_time") === true;
+  let then: number;
+  if (hasDate) then = Date.parse(entity.state.replace(" ", "T"));
+  else {
+    const [stateHour, stateMinute, stateSecond] = entity.state.split(":").map(Number);
+    const date = new Date();
+    date.setHours(
+      numeric(attr(entity, "hour")) ?? stateHour,
+      numeric(attr(entity, "minute")) ?? stateMinute,
+      numeric(attr(entity, "second")) ?? stateSecond ?? 0,
+      0,
+    );
+    then = date.getTime();
   }
-  return stateLabel(entity);
+  if (!Number.isFinite(then)) return stateLabel(entity);
+  const difference = Date.now() - then;
+  const days = Math.trunc(difference / 86_400_000);
+  const hours = Math.trunc(Math.abs(difference) / 3_600_000 % 24);
+  const minutes = Math.trunc(Math.abs(difference) / 60_000 % 60);
+  const parts: string[] = [];
+  if (hasDate && days > 0) parts.push(`${days} day${days > 1 ? "s" : ""}`);
+  if (hasTime && hours > 0) parts.push(`${hours} hour${hours > 1 ? "s" : ""}`);
+  if (hasTime && !hasDate && minutes > 0) parts.push(`${minutes} minute${minutes > 1 ? "s" : ""}`);
+  return parts.length ? `${parts.join(" ")} ago` : "just now";
 };
 
 const renderElapsedTime = (ctx: RenderContext): TemplateResult => ctx.actionSurface("custom-elapsed-time", html`
@@ -966,36 +1021,110 @@ const renderElapsedTime = (ctx: RenderContext): TemplateResult => ctx.actionSurf
 const renderErayLock = (ctx: RenderContext): TemplateResult => {
   const door = entityFromConfig(ctx, "ulm_custom_card_eraycetinay_lock_door_open");
   const battery = entityFromConfig(ctx, "ulm_custom_card_eraycetinay_lock_battery_level") ?? linkedState(ctx, "battery_entity");
-  const locked = ctx.entity?.state === "locked";
-  const low = numeric(battery?.state) !== undefined && Number(battery?.state) <= (numeric(configured(ctx, "ulm_custom_card_eraycetinay_lock_battery_warning")) ?? 20);
+  const state = ctx.entity?.state;
+  const locked = state === "locked";
+  const binaryBattery = configured<boolean>(ctx, "ulm_custom_card_eraycetinay_lock_battery_sensor_binary") === true;
+  const binaryLowState = configured<string>(ctx, "ulm_custom_card_eraycetinay_lock_battery_sensor_binary_low_state") ?? "on";
+  const warning = numeric(configured(ctx, "ulm_custom_card_eraycetinay_lock_battery_warning")) ?? 20;
+  const critical = numeric(configured(ctx, "ulm_custom_card_eraycetinay_lock_battery_warning_low")) ?? 5;
+  const batteryValue = numeric(battery?.state);
+  const low = binaryBattery ? battery?.state === binaryLowState : batteryValue !== undefined && batteryValue <= warning;
+  const criticalLow = !binaryBattery && batteryValue !== undefined && batteryValue <= critical;
+  const tapControl = configured<boolean>(ctx, "ulm_custom_card_eraycetinay_lock_tap_control") === true;
+  const onlyOpen = configured<boolean>(ctx, "ulm_custom_card_eraycetinay_lock_only_open") === true;
+  const activate = (event: Event): void => {
+    event.stopPropagation();
+    if (!ctx.config.entity) return;
+    if (!tapControl) return runControlAction(event, ctx, { action: "more-info" }, ctx.config.entity);
+    if (onlyOpen) ctx.service("lock", "open", { entity_id: ctx.config.entity });
+    else if (state === "locked") ctx.service("lock", "unlock", { entity_id: ctx.config.entity });
+    else if (state === "unlocked") ctx.service("lock", "lock", { entity_id: ctx.config.entity });
+  };
   return ctx.actionSurface(`custom-eray-lock ${locked ? "is-locked" : "is-unlocked"}`, html`
-    <span class="eray-lock-icon"><ha-icon .icon=${locked ? "mdi:lock" : "mdi:lock-open"}></ha-icon>
-      ${door?.state === "on" ? html`<i class="door-badge"><ha-icon icon="mdi:door-open"></ha-icon></i>` : nothing}
-      ${low ? html`<i class="battery-badge"><ha-icon icon="mdi:battery-alert"></ha-icon></i>` : nothing}
-    </span>
-    ${heading(ctx, stateLabel(ctx.entity))}
+    <button class="eray-lock-control" aria-label=${tapControl ? onlyOpen ? "Open lock" : locked ? "Unlock" : "Lock" : "More information"}
+      ?disabled=${!ctx.entity || (tapControl && !onlyOpen && !["locked", "unlocked"].includes(state ?? ""))}
+      @pointerdown=${(event: Event) => event.stopPropagation()} @click=${activate}>
+      <span class="eray-lock-icon"><ha-icon .icon=${locked ? "mdi:lock" : "mdi:lock-open"}></ha-icon>
+        ${locked && door?.state === "on" ? html`<i class="door-badge" title="Door is open while locked"><ha-icon icon="mdi:door-open"></ha-icon></i>` : nothing}
+        ${low ? html`<i class="battery-badge ${criticalLow ? "is-critical" : ""}" title=${binaryBattery ? "Battery is low" : `Battery is at ${batteryValue}%`}><ha-icon icon="mdi:battery-low"></ha-icon></i>` : nothing}
+      </span>
+      ${heading(ctx, stateLabel(ctx.entity))}
+    </button>
   `);
 };
 
 const renderEshWelcome = (ctx: RenderContext): TemplateResult => {
-  const items = configuredEntities(ctx).slice(0, 5);
-  const defaults = [
-    ["mdi:home", "House", "blue"],
-    ["mdi:lightbulb", "Lights", "yellow"],
-    ["mdi:shield", "Secure", "green"],
-    ["mdi:radiator", "Climate", "purple"],
-    ["mdi:flask", "Lab", "red"],
-  ];
+  const collapse = entityFromConfig(ctx, "ulm_card_esh_welcome_collapse");
+  const weather = entityFromConfig(ctx, "ulm_weather");
+  const collapsed = collapse?.state === "on";
+  const items = Array.from({ length: 5 }, (_, index) => index + 1).map((index) => ({
+    nav: configured<string>(ctx, `nav_${index}`),
+    icon: configured<string>(ctx, `icon_${index}`) || "mdi:circle",
+    name: configured<string>(ctx, `name_${index}`) || `Item ${index}`,
+    color: configured<string>(ctx, `color_${index}`) || "blue",
+  })).filter((item) => item.nav);
   return ctx.actionSurface("custom-esh-welcome", html`
     <div class="esh-welcome-toolbar">
-      <span><ha-icon icon="mdi:chevron-up"></ha-icon></span>
-      <span><ha-icon icon="mdi:thermometer"></ha-icon></span>
-      <span><ha-icon icon="mdi:cog"></ha-icon></span>
+      <button aria-label="Toggle welcome navigation" ?disabled=${!collapse}
+        @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => { event.stopPropagation(); if (collapse) ctx.service("input_boolean", "toggle", { entity_id: collapse.entity_id }); }}>
+        <ha-icon .icon=${collapsed ? "mdi:chevron-down" : "mdi:chevron-up"}></ha-icon>
+      </button>
+      <button aria-label="Weather information" ?disabled=${!weather}
+        @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => { if (weather) runControlAction(event, ctx, { action: "more-info" }, weather.entity_id); }}>
+        <ha-icon icon="mdi:thermometer"></ha-icon>
+      </button>
+      <button aria-label="Dashboard settings" @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => runControlAction(event, ctx, { action: "navigate", navigation_path: "/config/dashboard" })}>
+        <ha-icon icon="mdi:cog-outline"></ha-icon>
+      </button>
     </div>
     <b class="esh-greeting">Good ${new Date().getHours() < 12 ? "morning" : new Date().getHours() < 18 ? "afternoon" : "evening"},<br>${ctx.config.name || displayName(ctx.config, ctx.entity)}!</b>
-    <div class="esh-welcome-items">${defaults.map(([itemIcon, label, tone], index) => html`
-      <span class="tone-${tone}"><i><ha-icon .icon=${items[index]?.attributes.icon || itemIcon}></ha-icon></i><small>${items[index] ? displayName({ type: "", entity: items[index].entity_id }, items[index]) : label}</small></span>
-    `)}</div>
+    ${collapsed ? nothing : html`<div class="esh-welcome-items">${items.map((item) => html`
+      <button class="tone-${item.color}" aria-label=${item.name}
+        @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => runControlAction(event, ctx, { action: "navigate", navigation_path: item.nav })}>
+        <i><ha-icon .icon=${item.icon}></ha-icon></i><small>${item.name}</small>
+      </button>
+    `)}</div>`}
+  `);
+};
+
+const renderEshRoom = (ctx: RenderContext): TemplateResult => {
+  const light = entityFromConfig(ctx, "ulm_custom_card_esh_room_light_entity");
+  const climate = entityFromConfig(ctx, "ulm_custom_card_esh_room_climate_entity");
+  const cover = entityFromConfig(ctx, "ulm_custom_card_esh_room_cover_entity");
+  const lightOn = light?.state === "on";
+  const brightness = numeric(attr(light, "brightness"));
+  const label = ctx.config.secondary || (light
+    ? lightOn && brightness ? `${Math.round(brightness / 2.55)}%` : stateLabel(light)
+    : stateLabel(ctx.entity));
+  const rgb = attr(light, "rgb_color");
+  const dynamic = configured<boolean>(ctx, "ulm_card_dynamic_color") === true && lightOn && Array.isArray(rgb);
+  const toggle = (event: Event, entity?: HassEntity): void => {
+    if (entity) runControlAction(event, ctx, { action: "toggle" }, entity.entity_id);
+  };
+  const control = (entity: HassEntity, kind: "light" | "climate" | "cover") => {
+    const iconName = kind === "light"
+      ? configured<string>(ctx, lightOn ? "ulm_card_esh_room_light_icon_on" : "ulm_card_esh_room_light_icon_off") || (lightOn ? "mdi:lightbulb" : "mdi:lightbulb-off")
+      : kind === "cover"
+        ? configured<string>(ctx, entity.state === "closed" ? "ulm_card_esh_room_cover_icon_closed" : "ulm_card_esh_room_cover_icon_open") || (entity.state === "closed" ? "mdi:roller-shade-closed" : "mdi:blinds-open")
+        : ({ auto: "mdi:autorenew", cool: "mdi:snowflake", heat: "mdi:fire", dry: "mdi:water", heat_cool: "mdi:sun-snowflake", fan_only: "mdi:fan", off: "mdi:snowflake-off" }[entity.state] ?? "mdi:thermostat");
+    return html`<button class="esh-room-control ${kind} state-${entity.state}" aria-label=${displayName({ type: "", entity: entity.entity_id }, entity)}
+      ?disabled=${entity.state === "unavailable"} @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => toggle(event, entity)}>
+      <ha-icon .icon=${iconName}></ha-icon>
+    </button>`;
+  };
+  return ctx.actionSurface(`custom-esh-room ${lightOn ? "light-on" : ""} ${dynamic ? "dynamic-color" : ""}`, html`
+    <div class="esh-room-main" style=${dynamic ? `--room-rgb:${rgb.slice(0, 3).join(",")};` : ""}>
+      ${iconBubble(ctx, "mdi:sofa", lightOn ? "yellow" : "grey")}
+      <span class="ulm-copy"><b class="ulm-name">${displayName(ctx.config, ctx.entity)}</b><span class="ulm-label">${label}</span></span>
+    </div>
+    <div class="esh-room-controls">
+      ${light ? control(light, "light") : nothing}
+      ${cover ? control(cover, "cover") : climate ? control(climate, "climate") : nothing}
+    </div>
   `);
 };
 
@@ -1908,6 +2037,7 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "custom_card_drealine_roomview": return renderRoomView(ctx);
     case "custom_card_eraycetinay_elapsed_time": return renderElapsedTime(ctx);
     case "custom_card_eraycetinay_lock": return renderErayLock(ctx);
+    case "custom_card_esh_room": return renderEshRoom(ctx);
     case "custom_card_esh_welcome": return renderEshWelcome(ctx);
     case "custom_card_haven_washer": return renderWasher(ctx);
     case "custom_card_heat_pump": return renderHeatPump(ctx);
@@ -1959,7 +2089,6 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "custom_card_wsly_pollen": return renderWslyPollen(ctx);
     case "custom_card_yagrasdemonde_lights_count": return renderLightsCount(ctx);
     case "card_room":
-    case "custom_card_esh_room":
       return renderRoom(ctx);
   }
   if (/afval/.test(ctx.descriptor.upstreamId)) return renderScheduleCard(ctx);

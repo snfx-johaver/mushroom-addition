@@ -484,42 +484,61 @@ export const sharedStyles = css`
   }
   .custom-device-tracker .ulm-label { color: rgba(255,255,255,.55); }
   .device-tracker-icon { position: relative; display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: rgba(255,255,255,.06); color: #70d67a; }
-  .tracker-badge { position: absolute; display: grid; width: 18px; height: 18px; place-items: center; border-radius: 50%; background: #90caf9; color: #17233b; }
+  .tracker-badge { position: absolute; display: grid; width: 18px; height: 18px; place-items: center; border: 2px solid var(--card-background-color); border-radius: 50%; color: var(--primary-background-color, #fff); }
+  .tracker-badge.is-home { background: rgb(var(--ulm-blue)); }
+  .tracker-badge.is-away { background: rgb(var(--ulm-green)); }
   .tracker-badge ha-icon { --mdc-icon-size: 11px; }
   .tracker-one { top: -3px; right: -6px; }
   .tracker-two { right: -6px; bottom: -3px; }
-  .custom-room-view { display: grid; min-height: 150px; grid-template-columns: 1fr 60px; gap: 10px; padding: 12px; }
+  .custom-room-view { display: grid; min-height: 150px; gap: 8px; padding: 12px; }
   .room-view-summary { display: flex; align-items: center; gap: 10px; }
   .room-view-summary > span:last-child { display: flex; flex-direction: column; gap: 6px; color: var(--secondary-text-color); }
-  .room-view-summary small { display: flex; align-items: center; gap: 3px; }
+  .room-view-summary b, .room-view-summary small { display: flex; align-items: center; gap: 3px; }
   .room-view-icon { position: relative; display: grid; width: 44px; height: 44px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-grey), .1); color: rgba(var(--ulm-grey), .45); }
   .room-view-icon i, .room-view-status i, .room-view-actions i { position: absolute; display: grid; min-width: 16px; height: 16px; place-items: center; border-radius: 9px; background: rgb(var(--ulm-blue)); color: #fff; font-size: 10px; font-style: normal; }
   .room-view-icon i { top: -3px; right: -3px; background: rgb(var(--ulm-red)); }
-  .room-view-status { position: relative; display: grid; place-items: center; }
-  .room-view-status i { top: 28px; right: 8px; }
-  .room-view-actions { display: grid; grid-column: 1 / -1; grid-template-columns: repeat(3, 1fr); gap: 7px; }
-  .room-view-actions span { position: relative; display: grid; height: 52px; place-items: center; border-radius: 16px; background: rgba(var(--ulm-grey), .08); color: rgba(var(--ulm-grey), .45); }
-  .room-view-actions span.is-active { background: rgba(var(--ulm-yellow), .25); color: rgb(var(--ulm-yellow)); }
+  .room-view-status { display: flex; min-height: 28px; align-items: center; justify-content: center; gap: 2px; }
+  .room-view-status button, .room-view-clear { position: relative; display: grid; width: 35px; height: 28px; padding: 0; place-items: center; border: 0; background: transparent; color: rgba(var(--ulm-grey), .7); }
+  .room-view-status button ha-icon { --mdc-icon-size: 20px; }
+  .room-view-actions { display: flex; gap: 7px; }
+  .room-view-actions button { position: relative; display: grid; min-width: 40px; height: 44px; flex: 1; padding: 0; place-items: center; border: 0; border-radius: 14px; background: rgba(var(--ulm-grey), .08); color: rgba(var(--ulm-grey), .7); }
+  .room-view-actions button.is-active { background: rgba(var(--ulm-yellow), .25); color: rgb(var(--ulm-yellow)); }
+  .room-view-actions button:disabled { opacity: .45; }
   .room-view-actions i { top: 5px; right: 30%; }
   .custom-elapsed-time { display: grid; min-height: 72px; grid-template-columns: auto 1fr; align-items: center; gap: 16px; padding: 12px 20px; border-radius: 28px; }
   .custom-elapsed-time .ulm-icon { width: 56px; height: 56px; }
   .custom-elapsed-time .ulm-name { font-size: 19px; }
   .custom-elapsed-time .ulm-label { font-size: 17px; font-weight: 700; }
-  .custom-eray-lock { display: grid; min-height: 66px; grid-template-columns: auto 1fr; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 24px; }
+  .custom-eray-lock { min-height: 66px; padding: 10px 14px; border-radius: 24px; }
+  .eray-lock-control { display: grid; width: 100%; grid-template-columns: auto 1fr; align-items: center; gap: 14px; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; }
   .eray-lock-icon { position: relative; display: grid; width: 44px; height: 44px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-green), .18); color: rgb(var(--ulm-green)); }
   .custom-eray-lock.is-unlocked .eray-lock-icon { background: rgba(var(--ulm-yellow), .22); color: rgb(var(--ulm-yellow)); }
   .door-badge, .battery-badge { position: absolute; display: grid; width: 19px; height: 19px; place-items: center; border: 2px solid var(--card-background-color); border-radius: 50%; background: rgb(var(--ulm-red)); color: #fff; }
   .door-badge { top: -4px; right: -5px; }
   .battery-badge { top: -4px; left: -5px; background: rgb(var(--ulm-yellow)); color: #222; }
+  .battery-badge.is-critical { background: rgb(var(--ulm-red)); color: #fff; }
   .door-badge ha-icon, .battery-badge ha-icon { --mdc-icon-size: 11px; }
   .custom-esh-welcome { display: grid; gap: 18px; padding: 14px; }
   .esh-welcome-toolbar { display: flex; justify-content: space-between; }
-  .esh-welcome-toolbar span { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 50%; box-shadow: 0 2px 7px rgba(0,0,0,.12); }
+  .esh-welcome-toolbar button { display: grid; width: 38px; height: 38px; padding: 0; place-items: center; border: 0; border-radius: 50%; background: var(--card-background-color); color: inherit; box-shadow: 0 2px 7px rgba(0,0,0,.12); }
+  .esh-welcome-toolbar button:disabled { visibility: hidden; }
   .esh-greeting { font-size: 23px; line-height: 1.08; }
   .esh-welcome-items { display: flex; gap: 8px; overflow: hidden; }
-  .esh-welcome-items > span { display: flex; min-width: 52px; flex-direction: column; align-items: center; gap: 6px; padding: 7px 4px 10px; border-radius: 25px; box-shadow: 0 2px 7px rgba(0,0,0,.12); }
+  .esh-welcome-items > button { display: flex; min-width: 52px; flex: 1; flex-direction: column; align-items: center; gap: 6px; padding: 7px 4px 10px; border: 0; border-radius: 25px; background: var(--card-background-color); color: inherit; box-shadow: 0 2px 7px rgba(0,0,0,.12); }
   .esh-welcome-items i { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 50%; background: rgba(var(--tone), .18); color: rgb(var(--tone)); font-style: normal; }
   .esh-welcome-items small { max-width: 48px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 9px; font-weight: 700; }
+  .custom-esh-room { display: grid; min-height: 112px; grid-template-columns: minmax(0, 1fr) 42px; gap: 12px; padding: 12px; border-radius: 20px; }
+  .esh-room-main { display: grid; min-width: 0; grid-template-rows: auto auto; align-content: space-between; gap: 8px; }
+  .esh-room-main .ulm-icon { justify-self: start; }
+  .esh-room-main .ulm-copy { min-width: 0; }
+  .custom-esh-room.light-on { background: rgba(var(--ulm-yellow), .12); }
+  .custom-esh-room.dynamic-color { background: rgba(var(--room-rgb, 255,152,0), .2); }
+  .custom-esh-room.dynamic-color .ulm-icon { background: rgba(var(--room-rgb), .3); color: rgb(var(--room-rgb)); }
+  .esh-room-controls { display: flex; flex-direction: column; gap: 5px; }
+  .esh-room-control { display: grid; width: 42px; height: 42px; padding: 0; place-items: center; border: 0; border-radius: 14px; background: rgba(var(--ulm-grey), .08); color: rgba(var(--ulm-grey), .75); }
+  .esh-room-control.light.state-on { background: rgba(var(--ulm-yellow), .2); color: rgb(var(--ulm-yellow)); }
+  .esh-room-control.climate.state-heat { background: rgba(var(--ulm-red), .2); color: rgb(var(--ulm-red)); }
+  .esh-room-control.climate.state-cool, .esh-room-control.cover.state-closed { background: rgba(var(--ulm-blue), .2); color: rgb(var(--ulm-blue)); }
   .washer-stages { display: grid; grid-template-columns: repeat(4, 1fr); border-radius: 22px; background: rgba(var(--ulm-grey), .08); }
   .washer-stages span { display: grid; height: 42px; place-items: center; color: rgba(var(--ulm-grey), .35); }
   .washer-stages span.is-active { color: var(--primary-text-color); }

@@ -124,6 +124,50 @@ export const createStubConfig = (
         chart_type: "radialBar",
       }
       : {}),
+    ...(descriptor.upstreamId === "custom_card_device_tracker"
+      ? {
+        ulm_custom_card_device_tracker_tracker_1_entity:
+          findEntity(["device_tracker"], ["wifi"]) ?? findEntity(["device_tracker"], ["phone"]) ?? entity,
+        ulm_custom_card_device_tracker_tracker_1_type: "lan",
+        ulm_custom_card_device_tracker_tracker_2_entity:
+          findEntity(["device_tracker"], ["bluetooth"]) ?? findEntity(["device_tracker"], ["ble"]),
+        ulm_custom_card_device_tracker_tracker_2_type: "bluetooth",
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_drealine_roomview"
+      ? {
+        entity: undefined,
+        group_lights: findEntity(["group", "light"], ["lights"]),
+        group_motions: findEntity(["group", "binary_sensor"], ["motions"]),
+        group_doors: findEntity(["group", "binary_sensor"], ["doors"]),
+        group_windows: findEntity(["group", "binary_sensor"], ["windows"]),
+        group_outlets: findEntity(["group", "switch"], ["outlets"]),
+        group_tv: findEntity(["group", "media_player"], ["tv"]),
+        group_water: findEntity(["group", "binary_sensor"], ["water"]),
+        group_windows_shutters: findEntity(["group", "cover"], ["shutters"]),
+        temperature: findEntity(["sensor"], ["room", "temperature"]) ?? findEntity(["sensor"], ["temperature"]),
+        humidity: findEntity(["sensor"], ["room", "humidity"]) ?? findEntity(["sensor"], ["humidity"]),
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_eraycetinay_lock"
+      ? {
+        ulm_custom_card_eraycetinay_lock_battery_level: findEntity(["sensor", "binary_sensor"], ["lock", "battery"]),
+        ulm_custom_card_eraycetinay_lock_door_open: findEntity(["binary_sensor"], ["door"]),
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_esh_room"
+      ? {
+        ulm_custom_card_esh_room_light_entity: findEntity(["light"], ["room"]) ?? findEntity(["light"], []),
+        ulm_custom_card_esh_room_climate_entity: findEntity(["climate"], ["room"]) ?? findEntity(["climate"], []),
+        ulm_custom_card_esh_room_cover_entity: findEntity(["cover"], ["room"]) ?? findEntity(["cover"], []),
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_esh_welcome"
+      ? {
+        ulm_card_esh_welcome_collapse: findEntity(["input_boolean"], ["welcome"]),
+        ulm_weather: findEntity(["weather"], []),
+      }
+      : {}),
     ...(descriptor.upstreamId === "custom_card_person_info"
       ? {
         ulm_card_person_driving_entity: findEntity(["binary_sensor"], ["person", "driving"]),
