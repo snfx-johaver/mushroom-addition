@@ -37,7 +37,15 @@ export const createStubConfig = (
       terms.every((term) => entityId.toLowerCase().includes(term)) &&
       excludedTerms.every((term) => !entityId.toLowerCase().includes(term)));
   const semanticPrimary =
-    descriptor.upstreamId === "custom_card_nik_tablet"
+    descriptor.upstreamId === "card_generic"
+      ? findEntity(["sensor"], ["bedroom", "temperature"])
+      : descriptor.upstreamId === "card_graph"
+        ? findEntity(["sensor"], ["cv", "plug", "power"])
+        : descriptor.upstreamId === "card_light"
+          ? findEntity(["light"], ["joris", "iris"])
+          : descriptor.upstreamId === "card_media_player"
+            ? findEntity(["media_player"], ["office", "joris", "tv"])
+    : descriptor.upstreamId === "custom_card_nik_tablet"
       ? findEntity(["binary_sensor", "sensor", "switch"], ["tablet"])
       : descriptor.upstreamId === "custom_card_homeassistant_updates"
         ? findEntity(["update", "sensor", "binary_sensor"], ["core"])
@@ -73,8 +81,8 @@ export const createStubConfig = (
       : undefined,
     ...(descriptor.upstreamId === "card_navigate"
       ? {
-        navigation_path: "/lovelace",
-        tap_action: { action: "navigate", navigation_path: "/lovelace" },
+        navigation_path: "/config/updates",
+        tap_action: { action: "navigate", navigation_path: "/config/updates" },
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_homeassistant_updates"

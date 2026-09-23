@@ -10972,7 +10972,7 @@ const yo = (e, t, a = [], r = []) => {
   }
   return n[0];
 }, vo = (e) => e.name.replace(/ (Card|Chip)$/, ""), wo = (e, t, a = [], r = []) => {
-  const o = [.../* @__PURE__ */ new Set([...a, ...r, ...Object.keys(t?.states ?? {})])].filter((V) => t?.states?.[V] !== void 0), n = (V, A) => o.find((q) => V.some((D) => q.startsWith(`${D}.`)) && A.every((D) => q.toLowerCase().includes(D))), i = (V, A, q) => o.find((D) => V.some((z) => D.startsWith(`${z}.`)) && A.every((z) => D.toLowerCase().includes(z)) && q.every((z) => !D.toLowerCase().includes(z))), u = (e.upstreamId === "custom_card_nik_tablet" ? n(["binary_sensor", "sensor", "switch"], ["tablet"]) : e.upstreamId === "custom_card_homeassistant_updates" ? n(["update", "sensor", "binary_sensor"], ["core"]) : e.upstreamId === "custom_card_nik_nas" ? n(["switch", "binary_sensor"], ["nas"]) ?? n(["switch", "binary_sensor"], ["status"]) : void 0) ?? yo(e, t, a, r), h = ["text", "navigation"].includes(e.family), f = e.upstreamId === "custom_card_playstation" && u?.toLowerCase().includes("xbox") ? "xbox" : e.variants?.[0], c = u?.split(".", 1)[0], y = ["light", "switch", "input_boolean", "fan"].includes(c ?? "") ? { action: "toggle" } : { action: u ? "more-info" : "none" };
+  const o = [.../* @__PURE__ */ new Set([...a, ...r, ...Object.keys(t?.states ?? {})])].filter((V) => t?.states?.[V] !== void 0), n = (V, A) => o.find((q) => V.some((D) => q.startsWith(`${D}.`)) && A.every((D) => q.toLowerCase().includes(D))), i = (V, A, q) => o.find((D) => V.some((z) => D.startsWith(`${z}.`)) && A.every((z) => D.toLowerCase().includes(z)) && q.every((z) => !D.toLowerCase().includes(z))), u = (e.upstreamId === "card_generic" ? n(["sensor"], ["bedroom", "temperature"]) : e.upstreamId === "card_graph" ? n(["sensor"], ["cv", "plug", "power"]) : e.upstreamId === "card_light" ? n(["light"], ["joris", "iris"]) : e.upstreamId === "card_media_player" ? n(["media_player"], ["office", "joris", "tv"]) : e.upstreamId === "custom_card_nik_tablet" ? n(["binary_sensor", "sensor", "switch"], ["tablet"]) : e.upstreamId === "custom_card_homeassistant_updates" ? n(["update", "sensor", "binary_sensor"], ["core"]) : e.upstreamId === "custom_card_nik_nas" ? n(["switch", "binary_sensor"], ["nas"]) ?? n(["switch", "binary_sensor"], ["status"]) : void 0) ?? yo(e, t, a, r), h = ["text", "navigation"].includes(e.family), f = e.upstreamId === "custom_card_playstation" && u?.toLowerCase().includes("xbox") ? "xbox" : e.variants?.[0], c = u?.split(".", 1)[0], y = ["light", "switch", "input_boolean", "fan"].includes(c ?? "") ? { action: "toggle" } : { action: u ? "more-info" : "none" };
   return {
     ...kt(e, t, u),
     name: u ? t?.states[u]?.attributes.friendly_name : vo(e),
@@ -10985,8 +10985,8 @@ const yo = (e, t, a = [], r = []) => {
     ulm_custom_card_bar_card_value: e.family === "bar" ? !0 : void 0,
     entities: e.variants?.includes("with-sensors") ? r.slice(0, 2) : void 0,
     ...e.upstreamId === "card_navigate" ? {
-      navigation_path: "/lovelace",
-      tap_action: { action: "navigate", navigation_path: "/lovelace" }
+      navigation_path: "/config/updates",
+      tap_action: { action: "navigate", navigation_path: "/config/updates" }
     } : {},
     ...e.upstreamId === "custom_card_homeassistant_updates" ? {
       ulm_card_homeassistant_core: n(["update", "sensor", "binary_sensor"], ["core"]) ?? u,

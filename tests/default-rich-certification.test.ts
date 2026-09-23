@@ -9,6 +9,16 @@ import type { AdditionConfig, HomeAssistant } from "../src/types";
 import "../src/index";
 
 const states: HomeAssistant["states"] = {
+  "sensor.bedroom_temperature_2": {
+    entity_id: "sensor.bedroom_temperature_2",
+    state: "20.8",
+    attributes: { friendly_name: "Bedroom temperature", unit_of_measurement: "°C" },
+  },
+  "sensor.cv_plug_power": {
+    entity_id: "sensor.cv_plug_power",
+    state: "843",
+    attributes: { friendly_name: "CV plug power", unit_of_measurement: "W", history: [700, 760, 843] },
+  },
   "sensor.primary": {
     entity_id: "sensor.primary",
     state: "78.85",
@@ -23,6 +33,11 @@ const states: HomeAssistant["states"] = {
     entity_id: "light.kitchen",
     state: "on",
     attributes: { friendly_name: "Kitchen light", brightness: 128, rgb_color: [255, 145, 0] },
+  },
+  "light.joris_iris_1": {
+    entity_id: "light.joris_iris_1",
+    state: "on",
+    attributes: { friendly_name: "Joris Iris", brightness: 128, rgb_color: [255, 145, 0] },
   },
   "light.kitchen_off": {
     entity_id: "light.kitchen_off",
@@ -46,6 +61,16 @@ const states: HomeAssistant["states"] = {
       is_volume_muted: false,
       device_class: "speaker",
       entity_picture: "/local/cover.jpg",
+    },
+  },
+  "media_player.office_joris_tv_2": {
+    entity_id: "media_player.office_joris_tv_2",
+    state: "playing",
+    attributes: {
+      friendly_name: "Office Joris TV",
+      media_title: "Live TV",
+      volume_level: .3,
+      device_class: "tv",
     },
   },
   "media_player.controls": {
@@ -126,10 +151,10 @@ describe("default rich source certification", () => {
 
   it("creates source-faithful picker defaults for exactly the six certified sources", () => {
     const cases = [
-      ["card_generic", "sensor.primary"],
-      ["card_graph", "sensor.primary"],
-      ["card_light", "light.kitchen"],
-      ["card_media_player", "media_player.living"],
+      ["card_generic", "sensor.bedroom_temperature_2"],
+      ["card_graph", "sensor.cv_plug_power"],
+      ["card_light", "light.joris_iris_1"],
+      ["card_media_player", "media_player.office_joris_tv_2"],
     ] as const;
     const hass = makeHass();
     for (const [sourceId, entity] of cases) {
@@ -174,8 +199,8 @@ describe("default rich source certification", () => {
       getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
     };
     expect(navigateConstructor.getStubConfig(hass, Object.keys(states), [])).toMatchObject({
-      navigation_path: "/lovelace",
-      tap_action: { action: "navigate", navigation_path: "/lovelace" },
+      navigation_path: "/config/updates",
+      tap_action: { action: "navigate", navigation_path: "/config/updates" },
     });
   });
 

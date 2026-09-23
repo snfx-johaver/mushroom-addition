@@ -493,6 +493,7 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
     reviewerNotes: [
       "Manually inspected at a matched 320px width against the pinned source crop with real @mdi/js paths.",
       "The source state-first hierarchy, friendly-name label, active styling options, picker defaults, editor round trip, state rendering, and exact card-surface more-info action are covered by tests/default-rich-certification.test.ts.",
+      "The semantic picker prefers sensor.bedroom_temperature_2 when that prepared live entity is available.",
       "Live Home Assistant E2E was intentionally not claimed.",
     ],
   },
@@ -508,6 +509,7 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
     reviewerNotes: [
       "Manually inspected at a matched 320px width; the previous incorrect state-first ordering is corrected to source name-first/state-second ordering.",
       "Variant picker exposure, swapped editor options, migration, state rendering, and exact card-surface more-info action are covered by tests/default-rich-certification.test.ts.",
+      "The exact live swapped config uses sensor.cv_plug_power; the unified picker opens on the default variant before the user selects Swapped.",
       "Live Home Assistant E2E was intentionally not claimed.",
     ],
   },
@@ -523,6 +525,7 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
     reviewerNotes: [
       "Manually inspected at a matched 320px width against the pinned filled-history composition with real @mdi/js paths.",
       "Graph entity migration, source graph editor controls, available history states, deterministic preview history, and exact card-surface more-info action are covered by tests/default-rich-certification.test.ts.",
+      "The semantic picker prefers sensor.cv_plug_power when that prepared live entity is available.",
       "Live Home Assistant E2E and recorder/statistics querying were intentionally not claimed.",
     ],
   },
@@ -538,6 +541,7 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
     reviewerNotes: [
       "Manually inspected at a matched 320px width against the source slider composition with real @mdi/js paths.",
       "Source-default picker behavior, graphical editor controls, on/off/unavailable/collapsed states, card action, slider, and all three brightness presets pass exact payload assertions.",
+      "The semantic picker prefers light.joris_iris_1 when that prepared live entity is available.",
       "Live Home Assistant E2E was intentionally not claimed.",
     ],
   },
@@ -553,6 +557,7 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
     reviewerNotes: [
       "Manually inspected at a matched 320px width against the pinned artwork/control source design with real @mdi/js paths.",
       "Source-default picker behavior, dedicated media editor options, playing/off/collapsed states, artwork metadata, and all ten visible configured interactions pass exact action/service assertions.",
+      "The semantic picker prefers media_player.office_joris_tv_2 when that prepared live entity is available.",
       "Live Home Assistant E2E was intentionally not claimed.",
     ],
   },
@@ -568,6 +573,7 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
     reviewerNotes: [
       "Manually inspected at a matched 320px width against the pinned icon-plus-label source crop with real @mdi/js paths.",
       "Legacy title/icon/path migration, picker navigation defaults, graphical editor round trip, entity-free rendering, and the exact navigate action payload are covered by tests/default-rich-certification.test.ts.",
+      "The picker default and exact live config navigate to /config/updates.",
       "Live Home Assistant E2E was intentionally not claimed.",
     ],
   },
