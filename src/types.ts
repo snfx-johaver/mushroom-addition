@@ -120,6 +120,7 @@ export interface AdditionConfig {
   max_entity?: string;
   datetime_entity?: string;
   date_entity?: string;
+  level_entity?: string;
   download_entity?: string;
   upload_entity?: string;
   ping_entity?: string;
@@ -130,6 +131,7 @@ export interface AdditionConfig {
   news_entities?: string[];
   qubino_more_info_entity?: string;
   lock_entity?: string;
+  clock_switch_entity?: string;
   tablet_button_usb_entity?: string;
   tablet_button_motion_entity?: string;
   tablet_button_display_entity?: string;

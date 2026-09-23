@@ -93,7 +93,7 @@ const variants: Record<string, string[]> = {
 
 const preferredDomainsFor = (id: string, family: string): string[] => {
   if (id === "custom_card_alarm_time") return ["input_boolean"];
-  if (id === "custom_card_nik_door") return ["sensor"];
+  if (id === "custom_card_nik_door") return ["sensor", "binary_sensor"];
   if (/alarm/.test(id)) return ["alarm_control_panel"];
   if (/lock/.test(id)) return ["lock"];
   if (/power_outlet|more_power_outlet/.test(id)) return ["switch", "light"];

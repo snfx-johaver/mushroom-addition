@@ -21,6 +21,7 @@ export const sharedStyles = css`
     background: var(--ha-card-background, var(--card-background-color, #fff));
     box-shadow: var(--ha-card-box-shadow, 0 2px 8px rgba(0,0,0,.08));
   }
+  .minimalist-card:has(.custom-nik-clock) { background: transparent; box-shadow: none; }
   .minimalist-card:has(.fill-container), .fill-container { height: 100%; }
   .fill-container { min-height: 100%; }
   .action-surface {
@@ -748,8 +749,11 @@ export const sharedStyles = css`
   .custom-light-colorpick.is-active { background: rgba(var(--color-background-yellow, 255, 235, 59), var(--opacity-bg, .16)); }
   .light-color-swatches { display: grid; grid-template-columns: repeat(6, 1fr); gap: 7px; }
   .light-color-swatches button { aspect-ratio: 1; border: 3px solid var(--card-background-color); border-radius: 50%; background: var(--swatch); box-shadow: 0 0 0 1px rgba(var(--ulm-grey), .15); }
-  .custom-more-power-outlet, .custom-wifi-signal, .custom-nas-info, .custom-paddy-pollen, .custom-paddy-waste {
+  .custom-more-power-outlet, .custom-wifi-signal, .custom-nas-info, .custom-paddy-waste {
     display: grid; min-height: 62px; grid-template-columns: 46px minmax(0, 1fr); align-items: center; gap: 10px; padding: 10px 14px;
+  }
+  .custom-paddy-pollen {
+    display: grid; min-height: 62px; grid-template-columns: minmax(0, 1fr) 46px; align-items: center; gap: 10px; padding: 10px 14px;
   }
   .custom-dual-gauge { display: grid; min-height: 210px; gap: 10px; padding: 12px; }
   .dual-gauge { position: relative; align-self: end; justify-self: center; width: min(86%, 240px); height: 108px; overflow: hidden; }
@@ -763,13 +767,25 @@ export const sharedStyles = css`
   .toner-bars em { position: absolute; inset: 0 auto 0 0; width: var(--level); background: var(--toner); }
   .toner-bars b { position: relative; z-index: 1; display: grid; height: 100%; place-items: center; color: color-mix(in srgb, var(--toner) 20%, white); font-size: 17px; font-weight: 500; }
   .update-controls { grid-template-columns: repeat(2, 1fr); }
+  .update-controls .ulm-control { width: 100%; min-height: 54px; border-radius: 18px; }
+  .custom-neekster-update.is-horizontal { grid-template-columns: minmax(0, 1fr) minmax(150px, 1fr); align-items: center; }
+  .custom-neekster-update.is-horizontal.has-narrow-buttons { grid-template-columns: minmax(0, 2fr) minmax(120px, 1fr); }
+  .custom-neekster-update.is-collapsed { gap: 0; }
   .custom-nik-clock { display: grid; min-height: 86px; place-items: center; padding: 12px; text-align: center; }
-  .custom-nik-clock b { font-size: 34px; line-height: 1; } .custom-nik-clock span { color: var(--secondary-text-color); font-size: 12px; }
-  .custom-nik-door { display: grid; grid-template-columns: minmax(0, 1fr) 96px; align-items: center; gap: 10px; padding: 12px; }
-  .nik-door-heading { display: flex; min-width: 0; align-items: center; gap: 10px; }
+  .custom-nik-clock b { font-size: 52px; line-height: 1; } .custom-nik-clock span { color: var(--secondary-text-color); font-size: 20px; }
+  .custom-nik-door { position: relative; display: grid; gap: 14px; padding: 16px; }
+  .nik-door-heading { display: grid; min-width: 0; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; }
   .nik-door-icon { position: relative; display: grid; width: 46px; height: 46px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-blue), .12); color: rgb(var(--ulm-blue)); }
   .nik-door-icon i { position: absolute; right: -3px; bottom: -3px; display: grid; width: 20px; height: 20px; place-items: center; border: 2px solid var(--card-background-color); border-radius: 50%; background: rgb(var(--ulm-green)); color: #fff; }
   .nik-door-icon i.is-low { background: rgb(var(--ulm-red)); } .nik-door-icon i ha-icon { --mdc-icon-size: 13px; } .nik-door-controls { grid-template-columns: repeat(2, 1fr); }
+  .nik-door-lock-status { display: grid; width: 38px; height: 38px; place-items: center; border: 0; background: transparent; color: rgba(var(--ulm-grey), .7); }
+  .nik-door-controls .ulm-control { width: 100%; min-height: 62px; border-radius: 22px; }
+  .custom-nik-door.state-open .nik-door-controls button:first-child { background: rgba(var(--ulm-red), .2); color: rgb(var(--ulm-red)); }
+  .custom-nik-door.state-unlocked .nik-door-controls button:first-child { background: rgba(var(--ulm-yellow), .2); color: rgb(var(--ulm-yellow)); }
+  .custom-nik-door.state-locked .nik-door-controls button:last-child { background: rgba(var(--ulm-green), .25); color: rgb(var(--ulm-green)); }
+  .nik-door-state-tones { display: none; }
+  .pollen-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: var(--pollen); }
+  .pollen-icon ha-icon { --mdc-icon-size: 20px; }
   .custom-nik-nas { gap: 12px; padding: 18px; }
   .nik-nas-top { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .nik-nas-tile { box-sizing: border-box; display: grid; min-height: 102px; grid-template-columns: 64px minmax(0, 1fr); align-items: center; gap: 16px; padding: 12px 18px; border: 3px solid rgba(var(--ulm-grey), .45); border-radius: 30px; background: transparent; color: var(--primary-text-color); text-align: left; }

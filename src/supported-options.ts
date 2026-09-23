@@ -207,6 +207,40 @@ const supportedByItem: Record<string, readonly string[]> = {
     "ulm_custom_card_wilbiev_subtitle_name",
     "ulm_custom_card_wilbiev_title_name",
   ],
+  custom_card_nas: [
+    "ulm_custom_card_nas_sensor",
+    "ulm_custom_card_nas_text",
+    "ulm_custom_card_nas_unit",
+    "ulm_custom_cad_nas_unit",
+  ],
+  custom_card_neekster_update: [
+    "ulm_card_neekster_update_icon",
+    "ulm_card_neekster_update_enable_controls",
+    "ulm_card_neekster_update_collapsible",
+    "ulm_card_neekster_update_horizontal",
+    "ulm_card_neekster_update_narrow_buttons",
+  ],
+  custom_card_nik_clock: [
+    "ulm_custom_card_nik_clock_switch",
+    "ulm_custom_card_nik_clock_switch_enable",
+    "ulm_language",
+  ],
+  custom_card_nik_door: [
+    "ulm_custom_card_entity_1_name",
+    "ulm_custom_card_entity_1_lock",
+    "ulm_custom_card_entity_1_lock_battery",
+  ],
+  custom_card_paddy_dwd_pollen: [
+    "ulm_custom_card_paddy_dwd_pollen_icon",
+    "ulm_custom_card_paddy_dwd_pollen_name",
+    "ulm_custom_card_paddy_dwd_pollen_1",
+    "ulm_custom_card_paddy_dwd_pollen_2",
+    "ulm_custom_card_paddy_dwd_pollen_3",
+    "ulm_custom_card_paddy_dwd_pollen_4",
+    "ulm_custom_card_paddy_dwd_pollen_5",
+    "ulm_custom_card_paddy_dwd_pollen_6",
+    "ulm_custom_card_paddy_dwd_pollen_none",
+  ],
 };
 
 export const supportedUpstreamOption = (item: CatalogItem, name: string): boolean =>

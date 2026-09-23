@@ -45,6 +45,9 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
   const welcomeScenes = type.includes("card-welcome-scenes");
   const weather = type.includes("card-weather");
   const nativeWeather = type.includes("card-weather-ulm") || migrated.variant === "native";
+  const clockSwitchEnabled = type.includes("custom-card-nik-clock") &&
+    upstream.ulm_custom_card_nik_clock_switch_enable === true &&
+    typeof upstream.clock_switch_entity === "string";
   const sourceDefaultAction =
     type.includes("custom-card-httpedo13-sun") || type.includes("custom-card-httpedo13-thermostat")
       ? { action: "none" }
@@ -61,7 +64,15 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
   const isSpeedtest = String(upstream.type).includes("speedtest-shogun160");
   const isWilbievTitle = upstream.variant === "divider-title";
   const isWilbievSubtitle = upstream.variant === "divider-subtitle";
-  const defaultAction = isSpeedtest
+  const defaultAction = clockSwitchEnabled
+    ? {
+      action: "perform-action",
+      perform_action: "input_boolean.toggle",
+      target: { entity_id: upstream.clock_switch_entity },
+    }
+    : type.includes("custom-card-nik-clock")
+      ? { action: "none" }
+      : isSpeedtest
     ? {
       action: "perform-action",
       perform_action: "homeassistant.update_entity",
@@ -103,7 +114,9 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
     show_controls: upstream.show_controls ?? (type.includes("card-vacuum") ? true : undefined),
     show_forecast: upstream.show_forecast ?? (weather ? !nativeWeather : undefined),
     hold_action: upstream.hold_action ?? (
-      String(upstream.type).includes("water-heater") && upstream.entity
+      type.includes("custom-card-neekster-update")
+        ? { action: "more-info" }
+        : String(upstream.type).includes("water-heater") && upstream.entity
         ? { action: "more-info" }
         : upstream.variant === "small" && typeof upstream.ulm_card_person_battery_entity === "string"
         ? { action: "more-info", entity: upstream.ulm_card_person_battery_entity }
@@ -392,6 +405,28 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
       : typeof config.ulm_custom_card_wilbiev_title_name === "string"
         ? config.ulm_custom_card_wilbiev_title_name
         : undefined;
+  }
+  if (String(config.type).includes("custom-card-nas")) {
+    migrated.entity ??= entityId(config.ulm_custom_card_nas_sensor);
+  }
+  if (String(config.type).includes("custom-card-nik-clock")) {
+    migrated.clock_switch_entity ??= entityId(config.ulm_custom_card_nik_clock_switch);
+  }
+  if (String(config.type).includes("custom-card-nik-door")) {
+    migrated.name ??= typeof config.ulm_custom_card_entity_1_name === "string"
+      ? config.ulm_custom_card_entity_1_name
+      : undefined;
+    migrated.lock_entity ??= entityId(config.ulm_custom_card_entity_1_lock);
+    migrated.battery_entity ??= entityId(config.ulm_custom_card_entity_1_lock_battery);
+  }
+  if (String(config.type).includes("custom-card-paddy-dwd-pollen")) {
+    migrated.level_entity ??= entityId(config.level_entity);
+    migrated.name ??= typeof config.ulm_custom_card_paddy_dwd_pollen_name === "string"
+      ? config.ulm_custom_card_paddy_dwd_pollen_name
+      : undefined;
+    migrated.icon ??= typeof config.ulm_custom_card_paddy_dwd_pollen_icon === "string"
+      ? config.ulm_custom_card_paddy_dwd_pollen_icon
+      : undefined;
   }
   return migrated;
 };

@@ -97,6 +97,29 @@ export const populatedDefaultsFor = (
                 icon: "mdi:thermometer",
                 thermostat_minimum_temp_spread: 1,
               }
+              : item.upstreamId === "custom_card_mpse_wifisignal"
+                ? { icon: "mdi:wifi-strength-4" }
+                : item.upstreamId === "custom_card_nas"
+                  ? {
+                    icon: "mdi:nas",
+                    ulm_custom_card_nas_text: "HDD used",
+                    ulm_custom_card_nas_unit: "%",
+                  }
+                  : item.upstreamId === "custom_card_neekster_update"
+                    ? {
+                      ulm_card_neekster_update_enable_controls: false,
+                      ulm_card_neekster_update_collapsible: false,
+                      ulm_card_neekster_update_horizontal: false,
+                      ulm_card_neekster_update_narrow_buttons: false,
+                    }
+                    : item.upstreamId === "custom_card_nik_clock"
+                      ? {
+                        ulm_custom_card_nik_clock_switch_enable: false,
+                      }
+                      : item.upstreamId === "custom_card_paddy_dwd_pollen"
+                        ? {
+                          pollen_language: "en",
+                        }
               : item.upstreamId === "custom_card_device_tracker"
       ? {
         ulm_custom_card_device_tracker_icon: "mdi:cellphone",

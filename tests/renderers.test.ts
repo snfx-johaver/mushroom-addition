@@ -784,7 +784,7 @@ describe("family renderers", () => {
     ["nas", "sensor.power", "custom-nas-info", "ulm-icon"],
     ["neekster-update", "sensor.power", "custom-neekster-update", "custom-card-heading"],
     ["nik-clock", "sensor.power", "custom-nik-clock", "custom-nik-clock"],
-    ["nik-door", "binary_sensor.window", "custom-nik-door", "nik-door-controls"],
+    ["nik-door", "binary_sensor.window", "custom-nik-door", "nik-door-heading"],
     ["nik-nas", "sensor.power", "custom-nik-nas", "nik-nas-metrics"],
     ["nik-tablet", "sensor.battery", "custom-nik-tablet", "nik-tablet-header"],
     ["paddy-dwd-pollen", "sensor.power", "custom-paddy-pollen", "pollen-icon"],

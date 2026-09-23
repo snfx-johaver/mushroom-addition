@@ -11,7 +11,10 @@ describe("family editor schemas", () => {
       expect(schema.filter((field) => field.name === "entity")).toHaveLength(
         item.family === "navigation" ||
           item.upstreamId === "card_scenes" ||
-          (item.family === "text" && item.upstreamId !== "custom_card_homeassistant_updates")
+          (item.family === "text" &&
+            item.upstreamId !== "custom_card_homeassistant_updates" &&
+            item.upstreamId !== "custom_card_nik_clock" &&
+            item.upstreamId !== "custom_card_neekster_update")
           ? 0
           : 1,
       );
@@ -65,7 +68,7 @@ describe("family editor schemas", () => {
       .toContain("datetime_entity");
     expect(byId("custom_card_nik_door")).toMatchObject({
       family: "door",
-      preferredDomains: ["sensor"],
+      preferredDomains: ["sensor", "binary_sensor"],
     });
     expect(editorSchemaFor(byId("custom_card_nik_door")).map((field) => field.name))
       .toEqual(expect.arrayContaining(["lock_entity", "battery_entity"]));

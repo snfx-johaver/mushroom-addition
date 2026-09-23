@@ -60,6 +60,21 @@ export const createStubConfig = (
                     ? findEntity(["fan"], ["air", "purifier"])
                     : descriptor.upstreamId === "card_input_boolean"
                       ? findEntity(["input_boolean"], ["dropdown", "welcome"])
+                      : descriptor.upstreamId === "custom_card_mpse_wifisignal"
+                        ? findEntity(["sensor"], ["signal", "strength"])
+                      : descriptor.upstreamId === "custom_card_nas"
+                        ? findEntity(["sensor"], ["nas", "status"]) ?? findEntity(["sensor"], ["nas"])
+                      : descriptor.upstreamId === "custom_card_neekster_update"
+                        ? findEntity(["update"], ["home", "assistant", "core"]) ?? findEntity(["update"], [])
+                      : descriptor.upstreamId === "custom_card_nik_clock"
+                        ? findEntity(["sensor"], ["time"])
+                      : descriptor.upstreamId === "custom_card_nik_door"
+                        ? findEntity(["binary_sensor", "sensor"], ["all", "doors"]) ??
+                          findEntity(["binary_sensor", "sensor"], ["door"])
+                      : descriptor.upstreamId === "custom_card_paddy_dwd_pollen"
+                        ? findEntity(["sensor"], ["pollen", "grass", "level"]) ??
+                          findEntity(["sensor"], ["pollen", "grass"]) ??
+                          findEntity(["sensor"], ["pollen"])
                         : descriptor.upstreamId === "custom_card_wsly_pollen"
                           ? findEntity(["sensor"], ["pollen", "grass"])
                         : descriptor.upstreamId === "custom_card_yagrasdemonde_lights_count"
@@ -214,6 +229,31 @@ export const createStubConfig = (
         ulm_custom_card_imswel_medias_platform: entity?.includes("sonarr")
           ? "sonarr"
           : entity?.includes("radarr") ? "radarr" : "plex",
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_nas"
+      ? {
+        ulm_custom_card_nas_sensor: entity,
+        ulm_custom_card_nas_text: "NAS status",
+        ulm_custom_card_nas_unit: "",
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_neekster_update"
+      ? {
+        ulm_card_neekster_update_enable_controls: true,
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_nik_clock"
+      ? {
+        date_entity: findEntity(["sensor"], ["date", "time"]) ?? findEntity(["sensor"], ["date"]),
+        tap_action: undefined,
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_paddy_dwd_pollen"
+      ? {
+        entity: findEntity(["sensor"], ["pollen", "grass", "level"]) ?? entity,
+        level_entity: findEntity(["sensor"], ["pollen", "grass", "level"]),
+        pollen_language: "en",
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_nik_tablet"

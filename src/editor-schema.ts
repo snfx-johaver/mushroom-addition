@@ -447,6 +447,58 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         entity(["climate"]),
         ...presentation(),
       ]
+    : item.upstreamId === "custom_card_mpse_wifisignal"
+      ? [
+        entity(["sensor"]),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_nas"
+      ? [
+        entity(["sensor"]),
+        text("ulm_custom_card_nas_text"),
+        text("ulm_custom_card_nas_unit"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_neekster_update"
+      ? [
+        entity(["update"]),
+        toggle("ulm_card_neekster_update_enable_controls"),
+        toggle("ulm_card_neekster_update_collapsible"),
+        toggle("ulm_card_neekster_update_horizontal"),
+        toggle("ulm_card_neekster_update_narrow_buttons"),
+        { name: "ulm_card_neekster_update_icon", selector: { icon: {} } },
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_nik_clock"
+      ? [
+        entity(["sensor"]),
+        entity(["sensor"], "date_entity"),
+        entity(["input_boolean"], "clock_switch_entity"),
+        toggle("ulm_custom_card_nik_clock_switch_enable"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_nik_door"
+      ? [
+        entity(["sensor", "binary_sensor"]),
+        text("ulm_custom_card_entity_1_name"),
+        entity(["lock"], "lock_entity"),
+        entity(["sensor"], "battery_entity"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "custom_card_paddy_dwd_pollen"
+      ? [
+        entity(["sensor"]),
+        entity(["sensor"], "level_entity"),
+        text("ulm_custom_card_paddy_dwd_pollen_name"),
+        { name: "ulm_custom_card_paddy_dwd_pollen_icon", selector: { icon: {} } },
+        select("pollen_language", [
+          { value: "en", label: "English" },
+          { value: "de", label: "German" },
+          { value: "es", label: "Spanish" },
+          { value: "pl", label: "Polish" },
+        ]),
+        ...presentation(),
+      ]
     : item.upstreamId === "custom_card_device_tracker"
       ? [
         entity(["device_tracker", "person"]),

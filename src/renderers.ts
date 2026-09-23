@@ -105,6 +105,45 @@ const button = (label: string, iconName: string, handler: (event: Event) => void
     <ha-icon .icon=${iconName}></ha-icon>
   </button>
 `;
+const buttonWithHold = (
+  label: string,
+  iconName: string,
+  tapHandler: (event: Event) => void,
+  holdHandler?: (target: HTMLElement) => void,
+  disabled = false,
+) => {
+  let holdTimer: number | undefined;
+  let holdFired = false;
+  const pointerDown = (event: PointerEvent): void => {
+    event.stopPropagation();
+    if (disabled || !holdHandler) return;
+    holdFired = false;
+    const target = event.currentTarget as HTMLElement;
+    holdTimer = window.setTimeout(() => {
+      holdFired = true;
+      holdHandler(target);
+    }, 500);
+  };
+  const pointerUp = (event: PointerEvent): void => {
+    event.stopPropagation();
+    if (holdTimer) window.clearTimeout(holdTimer);
+    holdTimer = undefined;
+  };
+  return html`
+    <button class="ulm-control" aria-label=${label} ?disabled=${disabled}
+      @pointerdown=${pointerDown} @pointerup=${pointerUp} @pointercancel=${pointerUp}
+      @click=${(event: Event) => {
+        event.stopPropagation();
+        if (holdFired) {
+          holdFired = false;
+          return;
+        }
+        tapHandler(event);
+      }}>
+      <ha-icon .icon=${iconName}></ha-icon>
+    </button>
+  `;
+};
 const holdButton = (
   label: string,
   content: TemplateResult,
@@ -2296,47 +2335,102 @@ const renderMpseThermostat = (ctx: RenderContext): TemplateResult => {
 const renderWifiSignal = (ctx: RenderContext): TemplateResult => {
   const value = numeric(ctx.entity?.state) ?? -100;
   const signalIcon = value >= -50 ? "mdi:wifi-strength-4" : value >= -60 ? "mdi:wifi-strength-3" : value >= -70 ? "mdi:wifi-strength-2" : value >= -80 ? "mdi:wifi-strength-1" : "mdi:wifi-strength-off";
-  return ctx.actionSurface("custom-wifi-signal", html`${iconBubble(ctx, signalIcon, "blue")}${heading(ctx, `${value} dBm`)}`);
+  return ctx.actionSurface("custom-wifi-signal", html`${sourceIconBubble(ctx, signalIcon, "rgb(var(--ulm-blue))", true)}${heading(ctx, `${value} dBm`)}`);
 };
 
 const renderNasInfo = (ctx: RenderContext): TemplateResult => ctx.actionSurface("custom-nas-info", html`
   ${iconBubble(ctx, "mdi:nas", "blue")}
-  ${heading(ctx, `${configured<string>(ctx, "ulm_custom_card_nas_text") || ""} ${stateLabel(ctx.entity)}${configured<string>(ctx, "ulm_custom_card_nas_unit", "ulm_custom_cad_nas_unit") || ""}`.trim())}
+  <span class="ulm-copy">
+    <span class="ulm-name">${ctx.config.name || "Nas"}</span>
+    <span class="ulm-label">${`${configured<string>(ctx, "ulm_custom_card_nas_text") || ""} ${ctx.entity?.state ?? "Entity unavailable"}${configured<string>(ctx, "ulm_custom_card_nas_unit", "ulm_custom_cad_nas_unit") || ""}`.trim()}</span>
+  </span>
 `);
 
 const renderNeeksterUpdate = (ctx: RenderContext): TemplateResult => {
-  const updateAvailable = ctx.entity?.state !== "off";
-  const controls = configured<boolean>(ctx, "ulm_custom_card_neekster_update_enable_controls") === true;
-  return ctx.actionSurface("custom-neekster-update", html`
-    <div class="custom-card-heading">${iconBubble(ctx, updateAvailable ? "mdi:cloud-download" : "mdi:cloud-check", updateAvailable ? "yellow" : "green")}${heading(ctx, updateAvailable ? "Update available" : "Up to date")}</div>
-    ${controls && updateAvailable ? html`<div class="update-controls">
-      ${button("Install update", "mdi:update", (event) => { event.stopPropagation(); ctx.service("update", "install", { entity_id: ctx.config.entity }); })}
-      ${button("Skip update", "mdi:skip-next", (event) => { event.stopPropagation(); ctx.service("update", "skip", { entity_id: ctx.config.entity }); })}
+  const updateAvailable = ctx.entity?.state === "on";
+  const unavailable = !ctx.entity || ["unknown", "unavailable"].includes(ctx.entity.state);
+  const controls = configured<boolean>(ctx, "ulm_card_neekster_update_enable_controls") === true;
+  const collapsible = configured<boolean>(ctx, "ulm_card_neekster_update_collapsible") === true;
+  const collapsed = collapsible && !updateAvailable;
+  const horizontal = configured<boolean>(ctx, "ulm_card_neekster_update_horizontal") === true;
+  const narrow = configured<boolean>(ctx, "ulm_card_neekster_update_narrow_buttons") === true;
+  return ctx.actionSurface(`custom-neekster-update ${collapsed ? "is-collapsed" : ""} ${horizontal ? "is-horizontal" : ""} ${narrow ? "has-narrow-buttons" : ""}`, html`
+    <div class="custom-card-heading">${iconBubble(ctx, configured<string>(ctx, "ulm_card_neekster_update_icon") || (updateAvailable ? "mdi:cloud-download" : "mdi:cloud-check"), updateAvailable ? "yellow" : "green")}${heading(ctx, unavailable ? "Entity unavailable" : updateAvailable ? "Update Available!" : "Up to Date.")}</div>
+    ${controls && !collapsed ? html`<div class="update-controls">
+      ${buttonWithHold(
+        "Install update",
+        "mdi:package-down",
+        () => ctx.service("update", "install", { entity_id: ctx.config.entity }),
+        (target) => fireEvent(target, "hass-action", {
+          config: { type: ctx.config.type, entity: ctx.config.entity, tap_action: { action: "more-info" } },
+          action: "tap",
+        }),
+        unavailable || !updateAvailable,
+      )}
+      ${buttonWithHold(
+        "Skip update",
+        "mdi:cancel",
+        () => ctx.service("update", "skip", { entity_id: ctx.config.entity }),
+        undefined,
+        unavailable || !updateAvailable,
+      )}
     </div>` : nothing}
   `);
 };
 
 const renderNikClock = (ctx: RenderContext): TemplateResult => {
   const now = new Date();
+  const dateEntity = linkedState(ctx, "date_entity");
+  const time = ctx.entity && !["unknown", "unavailable"].includes(ctx.entity.state)
+    ? ctx.entity.state
+    : now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const date = dateEntity && !["unknown", "unavailable"].includes(dateEntity.state)
+    ? dateEntity.state
+    : now.toLocaleDateString(ctx.hass.language, { weekday: "long", year: "numeric", month: "long", day: "numeric" });
   return ctx.actionSurface("custom-nik-clock", html`
-    <b>${now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</b>
-    <span>${now.toLocaleDateString(ctx.hass.language, { weekday: "long", day: "numeric", month: "long" })}</span>
+    <b>${time}</b>
+    <span>${date}</span>
   `);
 };
 
 const renderNikDoor = (ctx: RenderContext): TemplateResult => {
   const lock = linkedState(ctx, "lock_entity");
   const battery = linkedState(ctx, "battery_entity");
-  const batteryValue = numeric(battery?.state) ?? 0;
-  return ctx.actionSurface("custom-nik-door", html`
+  const batteryValue = numeric(battery?.state);
+  const doorState = ctx.entity?.state ?? "Entity unavailable";
+  const batteryIconName = batteryValue === undefined ? "mdi:battery-off" :
+    batteryValue >= 100 ? "mdi:battery" :
+      batteryValue >= 80 ? "mdi:battery-70" :
+        batteryValue >= 60 ? "mdi:battery-60" :
+          batteryValue >= 50 ? "mdi:battery-50" : "mdi:battery-20";
+  const openState = doorState === "Open" || doorState.toLowerCase() === "open" || doorState === "on";
+  const unlockedState = doorState === "Closed & Unlocked" || doorState.toLowerCase() === "unlocked";
+  const lockedState = doorState === "Closed & Locked" || doorState.toLowerCase() === "locked";
+  const stateClass = openState ? "state-open" : unlockedState ? "state-unlocked" : lockedState ? "state-locked" : "";
+  return ctx.actionSurface(`custom-nik-door ${stateClass}`, html`
     <div class="nik-door-heading">
-      <span class="nik-door-icon"><ha-icon .icon=${ctx.entity?.state === "on" ? "mdi:door-open" : "mdi:door-closed"}></ha-icon><i class=${batteryValue <= 40 ? "is-low" : ""}><ha-icon .icon=${batteryValue <= 40 ? "mdi:battery-alert" : "mdi:battery"}></ha-icon></i></span>
-      ${heading(ctx, `${stateLabel(ctx.entity)} · ${stateLabel(lock)}`)}
+      <span class="nik-door-icon"><ha-icon icon="mdi:door"></ha-icon>${battery ? html`<i class=${(batteryValue ?? 0) <= 40 ? "is-low" : ""}><ha-icon .icon=${batteryIconName}></ha-icon></i>` : nothing}</span>
+      <span class="ulm-copy">
+        <span class="ulm-name">${configured<string>(ctx, "ulm_custom_card_entity_1_name") || displayName(ctx.config, ctx.entity)}</span>
+        <span class="ulm-label">${doorState}</span>
+      </span>
+      ${lock ? html`<button class="nik-door-lock-status" aria-label="Unlock lock with double tap"
+        @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => event.stopPropagation()}
+        @dblclick=${(event: Event) => {
+          event.stopPropagation();
+          ctx.service("lock", "unlock", { entity_id: lock.entity_id });
+        }}>
+        <ha-icon .icon=${lockedState ? "mdi:lock" : "mdi:lock-open-variant"}></ha-icon>
+      </button>` : nothing}
     </div>
-    <div class="nik-door-controls">
-      ${button("Unlock", "mdi:lock-open", (event) => { event.stopPropagation(); if (lock) ctx.service("lock", "unlock", { entity_id: lock.entity_id }); })}
-      ${button("Lock", "mdi:lock", (event) => { event.stopPropagation(); if (lock) ctx.service("lock", "lock", { entity_id: lock.entity_id }); })}
-    </div>
+    ${lock ? html`<div class="nik-door-controls">
+      ${button("Open lock", "mdi:lock-open-variant", (event) => { event.stopPropagation(); ctx.service("lock", "open", { entity_id: lock.entity_id }); }, ["unknown", "unavailable"].includes(lock.state))}
+      ${button("Lock", "mdi:lock", (event) => { event.stopPropagation(); ctx.service("lock", "lock", { entity_id: lock.entity_id }); }, ["unknown", "unavailable"].includes(lock.state))}
+    </div>` : nothing}
+    <span class="nik-door-state-tones" aria-hidden="true">
+      <i class=${openState ? "is-open" : ""}></i><i class=${unlockedState ? "is-unlocked" : ""}></i><i class=${lockedState ? "is-locked" : ""}></i>
+    </span>
   `);
 };
 
@@ -2466,22 +2560,32 @@ const renderNikTablet = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const pollenSeverity = (value: number): [string, string] => {
-  if (value >= 6) return ["Very high", "#d32f2f"];
-  if (value >= 5) return ["High", "#f44336"];
-  if (value >= 4) return ["Medium", "#ff9800"];
-  if (value >= 3) return ["Moderate", "#fbc02d"];
-  if (value >= 2) return ["Low", "#8bc34a"];
-  if (value >= 1) return ["Very low", "#c5e1a5"];
-  return ["None", "#9e9e9e"];
+const pollenLabels: Record<string, string[]> = {
+  en: ["none", "none to low", "low", "low to medium", "medium", "medium to high", "high"],
+  de: ["keine", "keine bis gering", "gering", "gering bis mittel", "mittel", "mittel bis hoch", "hoch"],
+  es: ["ninguno", "ninguno a bajo", "bajo", "bajo a medio", "medio", "medio a alto", "alto"],
+  pl: ["brak", "bardzo słabe", "słabe", "umiarkowane", "średnie", "wysokie", "bardzo wysokie"],
+};
+
+const paddyPollenSeverity = (ctx: RenderContext, value: number): [string, string] => {
+  const level = Math.max(0, Math.min(6, Math.round(value)));
+  const language = configured<string>(ctx, "pollen_language") || ctx.hass.language?.split("-")[0] || "en";
+  const configuredLabel = configured<string>(ctx, `ulm_custom_card_paddy_dwd_pollen_${level || "none"}`);
+  const label = configuredLabel || (pollenLabels[language] ?? pollenLabels.en)[level];
+  const colors = ["transparent", "rgb(219,250,200)", "rgb(254,228,156)", "rgb(254,197,77)", "rgb(254,154,36)", "rgb(240,56,26)", "rgb(190,0,33)"];
+  return [label, colors[level]];
 };
 
 const renderPaddyPollen = (ctx: RenderContext): TemplateResult => {
-  const value = numeric(ctx.entity?.state) ?? 0;
-  const [label, color] = pollenSeverity(value);
+  const levelEntity = linkedState(ctx, "level_entity") ?? ctx.entity;
+  const value = numeric(levelEntity?.state) ?? 0;
+  const [label, color] = paddyPollenSeverity(ctx, value);
   return ctx.actionSurface("custom-paddy-pollen", html`
-    <span class="pollen-icon" style=${`--pollen:${color}`}><ha-icon .icon=${ctx.config.icon || "mdi:flower-pollen"}></ha-icon></span>
-    ${valueThenName(ctx, label)}
+    <span class="ulm-copy">
+      <span class="ulm-name">${configured<string>(ctx, "ulm_custom_card_paddy_dwd_pollen_name") || displayName(ctx.config, ctx.entity)}</span>
+      <span class="ulm-label">${label}</span>
+    </span>
+    <span class="pollen-icon" style=${`--pollen:${color}`}><ha-icon .icon=${configured<string>(ctx, "ulm_custom_card_paddy_dwd_pollen_icon") || ctx.config.icon || ctx.entity?.attributes.icon || "mdi:flower-pollen"}></ha-icon></span>
   `);
 };
 

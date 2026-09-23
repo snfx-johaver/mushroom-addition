@@ -409,6 +409,31 @@ const accepted: Record<string, Partial<VisualAuditEntry>> = {
                 "The provided live mapping omits a navigation path, so its exact live config intentionally has no back button.",
               ],
   } satisfies Partial<VisualAuditEntry>])),
+  ...Object.fromEntries(([
+    ["custom_card_mpse_wifisignal", 520, ["custom-wifi-signal", "source-icon", "ulm-copy"]],
+    ["custom_card_nas", 245, ["custom-nas-info", "ulm-icon", "ulm-copy"]],
+    ["custom_card_neekster_update", 494, ["custom-neekster-update", "custom-card-heading", "update-controls"]],
+    ["custom_card_nik_clock", 366, ["custom-nik-clock"]],
+    ["custom_card_nik_door", 430, ["custom-nik-door", "nik-door-heading", "nik-door-controls"]],
+    ["custom_card_paddy_dwd_pollen", 302, ["custom-paddy-pollen", "pollen-icon", "ulm-copy"]],
+  ] satisfies Array<[string, number, string[]]>).map(([sourceId, width, requiredRegions]) => [sourceId, {
+    ...(acceptedCustoms[sourceId] ?? {}),
+    compositionId: `custom:${sourceId}:source-faithful`,
+    fixturePath: "demo/status-pollen-comparison.html",
+    artifactPath: `docs/assets/visual-audit/${sourceId}-comparison.png`,
+    widths: [width],
+    requiredRegions,
+    status: "pending",
+    deviations: [
+      sourceId === "custom_card_paddy_dwd_pollen"
+        ? "No dedicated upstream screenshot exists; the focused artifact uses the pinned documentation montage and exact YAML composition."
+        : sourceId === "custom_card_nik_clock"
+          ? "The prepared weather entity is omitted because the pinned clock source has no weather field or visible weather surface."
+          : sourceId === "custom_card_nik_door"
+            ? "The prepared live mapping has no lock or battery entity, so live rendering exposes only the source status surface; configured controls are certified locally."
+            : "The dependency-free Lit renderer preserves the pinned source composition and uses real @mdi/js paths in the focused fixture.",
+    ],
+  } satisfies Partial<VisualAuditEntry>])),
   custom_card_afvalophaling: {
     compositionId: "custom:custom_card_afvalophaling:semantic-waste-streams",
     referenceScreenshot: ".tmp-ui-minimalist/docs/assets/img/ulm_cards/custom_card_afvalophaling_1.png",
@@ -908,6 +933,28 @@ const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
       "Live evidence is recorded in docs/assets/visual-audit/final-pollen-lights-live-certification.json and live-final-mushroom-addition-custom-card-yagrasdemonde-lights-count.png.",
     ],
   },
+  ...Object.fromEntries(([
+    ["custom_card_mpse_wifisignal", 520],
+    ["custom_card_nas", 245],
+    ["custom_card_neekster_update", 494],
+    ["custom_card_nik_clock", 366],
+    ["custom_card_nik_door", 430],
+    ["custom_card_paddy_dwd_pollen", 302],
+  ] satisfies Array<[string, number]>).map(([sourceId, width]) => [sourceId, {
+    status: "pending",
+    pickerAccepted: true,
+    editorAccepted: true,
+    visualAccepted: true,
+    statesAccepted: true,
+    interactionsAccepted: true,
+    liveAccepted: false,
+    inspectedAt: "2026-09-23",
+    reviewerNotes: [
+      `Pinned YAML and the focused ${width}px matched-width source/implementation columns were manually inspected.`,
+      "The focused fixture renders real @mdi/js SVG paths; picker defaults, dedicated editor fields, migrations, state matrices, and every visible interaction pass local exact-payload tests.",
+      "The exact prepared Home Assistant config is recorded in status-pollen-local-certification.json; live Home Assistant execution was not performed.",
+    ],
+  } satisfies Partial<VisualAuditEntry>])),
   card_generic: {
     status: "pending",
     pickerAccepted: true,
