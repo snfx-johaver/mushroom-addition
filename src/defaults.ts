@@ -72,8 +72,32 @@ export const populatedDefaultsFor = (
   entityId?: string,
 ): AdditionConfig => {
   const entity = entityId ? hass?.states[entityId] : undefined;
-  const sourceDefaults: Record<string, unknown> =
-    item.upstreamId === "custom_card_device_tracker"
+  const sourceDefaults: Partial<AdditionConfig> =
+    item.upstreamId === "card_person"
+      ? {
+        icon: "mdi:face-man",
+        use_entity_picture: false,
+      }
+      : item.upstreamId === "card_power_outlet"
+        ? {
+          icon: "mdi:power-socket-eu",
+        }
+        : item.upstreamId === "card_room"
+          ? {
+            icon: "mdi:sofa-single",
+            label_use_temperature: true,
+            label_use_brightness: false,
+          }
+          : item.upstreamId === "card_script"
+            ? {
+              icon: "mdi:script-text",
+            }
+            : item.upstreamId === "card_thermostat"
+              ? {
+                icon: "mdi:thermometer",
+                thermostat_minimum_temp_spread: 1,
+              }
+              : item.upstreamId === "custom_card_device_tracker"
       ? {
         ulm_custom_card_device_tracker_icon: "mdi:cellphone",
         ulm_custom_card_device_tracker_tracker_1_type: "lan",
@@ -121,7 +145,7 @@ export const populatedDefaultsFor = (
     show_today: item.upstreamId === "custom_card_afvalophaling" ? false : undefined,
     show_tomorrow: item.upstreamId === "custom_card_afvalophaling" ? false : undefined,
     name: entity?.attributes.friendly_name,
-    icon: sourceDrivenIcon ? undefined : defaultIconFor(item, entity),
+    icon: sourceDrivenIcon ? undefined : sourceDefaults.icon ?? defaultIconFor(item, entity),
     show_icon: true,
     show_state: true,
     layout: "horizontal",

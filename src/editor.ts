@@ -119,7 +119,7 @@ export class MushroomAdditionEditor extends LitElement {
             ></ha-selector>
             <ha-textfield
               label="Label"
-              .value=${item.name ?? ""}
+              .value=${item.name ?? item.label ?? ""}
               @input=${(event: Event) => this.updateItem(key, index, "name", (event.target as HTMLInputElement).value)}
             ></ha-textfield>
             <ha-selector

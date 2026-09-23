@@ -32,11 +32,11 @@ describe("visual audit manifest", () => {
   it("reports exact accepted progress without inferring parity from family mappings", () => {
     expect(visualAuditProgress()).toEqual({
       accepted: 6,
-      pickerAccepted: 30,
-      editorAccepted: 30,
-      visualAccepted: 31,
-      statesAccepted: 30,
-      interactionsAccepted: 30,
+      pickerAccepted: 36,
+      editorAccepted: 36,
+      visualAccepted: 37,
+      statesAccepted: 36,
+      interactionsAccepted: 36,
       liveAccepted: 6,
       total: 86,
     });
@@ -71,6 +71,27 @@ describe("visual audit manifest", () => {
         liveAccepted: false,
         fixturePath: "demo/default-rich-comparison.html",
         widths: [320],
+      });
+    }
+  });
+
+  it("certifies every local stage but never live for queued default batch one", () => {
+    for (const sourceId of [
+      "card_person",
+      "card_power_outlet",
+      "card_room",
+      "card_scenes",
+      "card_script",
+      "card_thermostat",
+    ]) {
+      expect(VISUAL_AUDIT.find((entry) => entry.sourceId === sourceId)).toMatchObject({
+        status: "pending",
+        pickerAccepted: true,
+        editorAccepted: true,
+        visualAccepted: true,
+        statesAccepted: true,
+        interactionsAccepted: true,
+        liveAccepted: false,
       });
     }
   });

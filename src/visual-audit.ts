@@ -243,6 +243,50 @@ const acceptedCustoms = Object.fromEntries(Object.entries(customStructures).map(
 const accepted: Record<string, Partial<VisualAuditEntry>> = {
   ...acceptedDefaults,
   ...acceptedCustoms,
+  ...Object.fromEntries(([
+    ["card_person", 496, ["ulm-source-person", "person-location-badge"]],
+    ["card_power_outlet", 496, ["ulm-source-power-outlet", "power-outlet-icon"]],
+    ["card_room", 340, ["ulm-source-room", "room-copy", "room-sensor"]],
+    ["card_scenes", 486, ["ulm-source-scenes", "scene-grid", "scene-button"]],
+    ["card_script", 496, ["ulm-source-script", "script-title"]],
+    ["card_thermostat", 496, ["ulm-source-thermostat", "thermostat-adjustment"]],
+  ] satisfies Array<[string, number, string[]]>).map(([sourceId, width, requiredRegions]) => [sourceId, {
+    ...(acceptedDefaults[sourceId as string] ?? {}),
+    compositionId: `default:${sourceId}:source-faithful`,
+    fixturePath: "demo/default-batch-one-comparison.html",
+    artifactPath: `docs/assets/visual-audit/${sourceId}-comparison.png`,
+    widths: [width],
+    requiredRegions,
+    status: "pending",
+    pickerAccepted: true,
+    editorAccepted: true,
+    visualAccepted: true,
+    statesAccepted: true,
+    interactionsAccepted: true,
+    liveAccepted: false,
+    inspectedAt: "2026-09-23",
+    reviewerNotes: [
+      "Pinned YAML and the focused matched-width side-by-side artifact were manually inspected.",
+      "Picker defaults, graphical editor fields, migrations, state matrices, and every visible interaction are covered locally with exact Home Assistant payload assertions.",
+      "Live Home Assistant execution was not performed in this child session.",
+    ],
+    deviations: [
+      sourceId === "card_room"
+        ? "The editor uses a semantic room_sensors array instead of the upstream entity_1 through entity_4 variable objects; the configured item colors remain explicit rather than inherited from a dashboard theme."
+        : sourceId === "card_scenes"
+          ? "The editor uses an ordered scene_items array instead of the upstream entity_1 through entity_7 variable objects, and colors are deterministic rather than randomly selected when omitted."
+          : sourceId === "card_power_outlet"
+            ? "Popup variables remain compatible configuration fields, but the card does not embed the upstream browser-mod power statistics popup."
+            : sourceId === "card_thermostat"
+              ? "Popup variables remain compatible configuration fields, but the card does not embed the upstream browser-mod thermostat popup."
+              : sourceId === "card_person"
+                ? "The optional battery ring is shown only when a battery entity is configured; the focused artifact uses the requested live battery mapping."
+                : sourceId === "card_script"
+                  ? "The renderer uses the configured script icon and title in the source icon-only hierarchy; service execution remains configurable through Home Assistant card actions."
+                  : "",
+      "The focused comparison fixture renders real @mdi/js SVG paths rather than text icon abbreviations.",
+    ],
+  } satisfies Partial<VisualAuditEntry>])),
   custom_card_afvalophaling: {
     compositionId: "custom:custom_card_afvalophaling:semantic-waste-streams",
     referenceScreenshot: ".tmp-ui-minimalist/docs/assets/img/ulm_cards/custom_card_afvalophaling_1.png",
@@ -481,6 +525,28 @@ const accepted: Record<string, Partial<VisualAuditEntry>> = {
 };
 
 const manuallyReviewed: Record<string, Partial<VisualAuditEntry>> = {
+  ...Object.fromEntries(([
+    ["card_person", 496],
+    ["card_power_outlet", 496],
+    ["card_room", 340],
+    ["card_scenes", 486],
+    ["card_script", 496],
+    ["card_thermostat", 496],
+  ] satisfies Array<[string, number]>).map(([sourceId, width]) => [sourceId, {
+    status: "pending",
+    pickerAccepted: true,
+    editorAccepted: true,
+    visualAccepted: true,
+    statesAccepted: true,
+    interactionsAccepted: true,
+    liveAccepted: false,
+    inspectedAt: "2026-09-23",
+    reviewerNotes: [
+      `Pinned YAML and the focused ${width}px matched-width source/implementation columns were manually inspected.`,
+      "Picker defaults, graphical editor fields, migrations, state matrices, and every visible interaction are covered locally with exact Home Assistant payload assertions.",
+      "Live Home Assistant execution was not performed in this child session.",
+    ],
+  } satisfies Partial<VisualAuditEntry>])),
   card_generic: {
     status: "pending",
     pickerAccepted: true,

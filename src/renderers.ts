@@ -244,42 +244,196 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
+const thermostatEnabled = (ctx: RenderContext, key: string, fallback = false): boolean =>
+  configured<boolean>(ctx, key) ?? fallback;
+
+const thermostatStep = (ctx: RenderContext): number =>
+  numeric(ctx.config.thermostat_temp_step) ??
+  numeric(configured(ctx, "ulm_card_thermostat_temp_step")) ??
+  numeric(attr(ctx.entity, "target_temp_step")) ??
+  0.5;
+
+const setThermostatTemperature = (
+  ctx: RenderContext,
+  setpoint: "single" | "high" | "low",
+  direction: -1 | 1,
+): void => {
+  const step = thermostatStep(ctx);
+  const temperature = numeric(attr(ctx.entity, "temperature"));
+  const low = numeric(attr(ctx.entity, "target_temp_low"));
+  const high = numeric(attr(ctx.entity, "target_temp_high"));
+  if (low !== undefined && high !== undefined) {
+    const minimumSpread = numeric(ctx.config.thermostat_minimum_temp_spread) ??
+      numeric(configured(ctx, "ulm_card_thermostat_minimum_temp_spread")) ?? 1;
+    if (setpoint === "high") {
+      const nextHigh = high + direction * step;
+      ctx.service("climate", "set_temperature", {
+        entity_id: ctx.config.entity,
+        target_temp_low: direction < 0 && nextHigh - minimumSpread < low ? nextHigh - minimumSpread : low,
+        target_temp_high: nextHigh,
+      });
+    } else {
+      const nextLow = low + direction * step;
+      ctx.service("climate", "set_temperature", {
+        entity_id: ctx.config.entity,
+        target_temp_low: nextLow,
+        target_temp_high: direction > 0 && nextLow + minimumSpread > high ? nextLow + minimumSpread : high,
+      });
+    }
+    return;
+  }
+  if (temperature !== undefined) {
+    ctx.service("climate", "set_temperature", {
+      entity_id: ctx.config.entity,
+      temperature: direction < 0 ? Math.max(temperature - step, 0) : temperature + step,
+    });
+  }
+};
+
+const thermostatAdjustment = (
+  ctx: RenderContext,
+  setpoint: "single" | "high" | "low",
+  value: unknown,
+  label: string,
+) => html`
+  <div class="thermostat-adjustment ${setpoint}">
+    ${button(`Decrease ${label}`, "mdi:minus", (event) => {
+      event.stopPropagation();
+      setThermostatTemperature(ctx, setpoint, -1);
+    })}
+    <b>${String(value ?? "—")}°</b>
+    ${button(`Increase ${label}`, "mdi:plus", (event) => {
+      event.stopPropagation();
+      setThermostatTemperature(ctx, setpoint, 1);
+    })}
+  </div>
+`;
+
+const thermostatModes: Record<string, [string, string]> = {
+  auto: ["mdi:autorenew", "green"],
+  heat: ["mdi:fire", "red"],
+  cool: ["mdi:snowflake", "blue"],
+  dry: ["mdi:water", "yellow"],
+  heat_cool: ["mdi:sun-snowflake", "purple"],
+  fan_only: ["mdi:fan", "green"],
+};
+
 const renderClimate = (ctx: RenderContext): TemplateResult => {
   const current = attr(ctx.entity, "current_temperature") ?? "—";
-  const target = attr(ctx.entity, "temperature") ?? "—";
-  const humidity = linkedState(ctx, "humidity_entity");
-  return ctx.actionSurface("ulm-climate", html`
-    <div class="climate-top">
-      ${iconBubble(ctx, "mdi:thermostat", activeStates.has(ctx.entity?.state ?? "") ? "red" : "blue")}
-      ${heading(ctx, `${ctx.entity?.state ?? "unknown"} · ${current}°`)}
-      <span class="climate-target">${target}°</span>
-    </div>
-    ${humidity ? html`<span class="metric-pill"><ha-icon icon="mdi:water-percent"></ha-icon>${stateLabel(humidity)}</span>` : nothing}
-    ${ctx.config.show_controls ? html`<div class="ulm-controls">
-      ${button("Decrease temperature", "mdi:minus", (event) => {
-        event.stopPropagation();
-        ctx.service("climate", "set_temperature", { entity_id: ctx.config.entity, temperature: Number(target) - 0.5 });
-      })}
-      ${button("Increase temperature", "mdi:plus", (event) => {
-        event.stopPropagation();
-        ctx.service("climate", "set_temperature", { entity_id: ctx.config.entity, temperature: Number(target) + 0.5 });
-      })}
-    </div>` : nothing}
-  `);
+  const target = attr(ctx.entity, "temperature");
+  const targetLow = attr(ctx.entity, "target_temp_low");
+  const targetHigh = attr(ctx.entity, "target_temp_high");
+  const action = String(attr(ctx.entity, "hvac_action") ?? ctx.entity?.state ?? "off");
+  const collapsed = thermostatEnabled(ctx, "ulm_card_thermostat_enable_collapse") && ctx.entity?.state === "off";
+  const controls = !collapsed && thermostatEnabled(
+    ctx,
+    "ulm_card_thermostat_enable_controls",
+    ctx.config.show_controls === true,
+  );
+  const showModes = !collapsed && thermostatEnabled(ctx, "ulm_card_thermostat_enable_hvac_modes");
+  const displayTemperature = thermostatEnabled(ctx, "ulm_card_thermostat_enable_display_temperature");
+  const horizontal = thermostatEnabled(ctx, "ulm_card_thermostat_enable_horizontal");
+  const background = thermostatEnabled(ctx, "ulm_card_thermostat_enable_background_color");
+  const modes = Array.isArray(attr(ctx.entity, "hvac_modes"))
+    ? (attr(ctx.entity, "hvac_modes") as unknown[]).map(String).filter((mode) => thermostatModes[mode])
+    : [];
+  const fanEntityId = ctx.config.fan_entity || configured<string>(ctx, "ulm_card_thermostat_fan_entity");
+  const fanEntity = fanEntityId ? ctx.hass.states[fanEntityId] : undefined;
+  return ctx.actionSurface(
+    `ulm-climate ulm-source-thermostat ${horizontal ? "is-horizontal" : ""} ${background ? `hvac-${action}` : ""}`,
+    html`
+      <div class="climate-top">
+        <span class="ulm-icon tone-${action === "heating" ? "red" : action === "cooling" ? "blue" : "grey"}">
+          <ha-icon .icon=${ctx.config.icon || configured<string>(ctx, "ulm_card_thermostat_icon") || "mdi:thermometer"}></ha-icon>
+        </span>
+        ${heading(ctx, stateLabel(ctx.entity))}
+        ${displayTemperature ? html`<span class="climate-current">${current}°</span>` : nothing}
+      </div>
+      ${controls ? html`
+        <div class="thermostat-controls">
+          ${targetHigh !== undefined && targetLow !== undefined
+            ? html`
+              ${thermostatAdjustment(ctx, "high", targetHigh, "high temperature")}
+              ${thermostatAdjustment(ctx, "low", targetLow, "low temperature")}
+            `
+            : thermostatAdjustment(ctx, "single", target, "temperature")}
+        </div>
+      ` : nothing}
+      ${showModes && (modes.length || fanEntityId) ? html`
+        <div class="thermostat-modes">
+          ${modes.map((mode) => {
+            const [modeIcon, tone] = thermostatModes[mode];
+            return html`<button
+              class="ulm-control thermostat-mode tone-${tone} ${ctx.entity?.state === mode ? "is-active" : ""}"
+              aria-label=${`${mode.replaceAll("_", " ")} mode`}
+              @pointerdown=${(event: Event) => event.stopPropagation()}
+              @click=${(event: Event) => {
+                event.stopPropagation();
+                ctx.service("climate", "set_hvac_mode", { entity_id: ctx.config.entity, hvac_mode: mode });
+              }}
+            ><ha-icon .icon=${modeIcon}></ha-icon></button>`;
+          })}
+          ${!modes.includes("fan_only") && fanEntityId ? html`
+            <button
+              class="ulm-control thermostat-mode tone-green ${fanEntity?.state === "on" ? "is-active" : ""}"
+              aria-label="Toggle fan"
+              @pointerdown=${(event: Event) => event.stopPropagation()}
+              @click=${(event: Event) => {
+                event.stopPropagation();
+                ctx.service("fan", "toggle", { entity_id: fanEntityId });
+              }}
+            ><ha-icon icon="mdi:fan"></ha-icon></button>
+          ` : nothing}
+        </div>
+      ` : nothing}
+    `,
+  );
 };
 
 const renderPerson = (ctx: RenderContext): TemplateResult => {
-  const battery = linkedState(ctx, "battery_entity");
-  const eta = linkedState(ctx, "eta_entity");
-  const address = linkedState(ctx, "address_entity");
+  const battery = linkedState(ctx, "battery_entity") ??
+    (configured<string>(ctx, "ulm_card_person_battery")
+      ? ctx.hass.states[configured<string>(ctx, "ulm_card_person_battery")!]
+      : undefined);
+  const eta = linkedState(ctx, "eta_entity") ??
+    (configured<string>(ctx, "ulm_card_person_eta")
+      ? ctx.hass.states[configured<string>(ctx, "ulm_card_person_eta")!]
+      : undefined);
+  const address = linkedState(ctx, "address_entity") ??
+    (configured<string>(ctx, "ulm_address") ? ctx.hass.states[configured<string>(ctx, "ulm_address")!] : undefined);
   const picture = ctx.config.icon_type === "entity-picture" || ctx.config.use_entity_picture
     ? attr(ctx.entity, "entity_picture")
     : undefined;
-  const compact = ctx.config.variant === "small";
-  return ctx.actionSurface(`ulm-row ulm-person ${compact ? "is-compact" : ""}`, html`
-    ${picture ? html`<span class="person-picture" style=${`background-image:url("${String(picture)}")`}></span>` : iconBubble(ctx, "mdi:account", ctx.entity?.state === "home" ? "blue" : "green")}
-    ${heading(ctx, [address ? stateLabel(address) : stateLabel(ctx.entity), eta ? `ETA ${stateLabel(eta)}` : ""].filter(Boolean).join(" · "))}
-    ${compact ? nothing : battery ? html`<span class="battery-ring">${stateLabel(battery)}</span>` : html`<span class="presence-dot ${ctx.entity?.state === "home" ? "home" : "away"}"></span>`}
+  const zone = Object.values(ctx.hass.states).find((candidate) =>
+    candidate.entity_id.startsWith("zone.") &&
+    Array.isArray(candidate.attributes.persons) &&
+    (candidate.attributes.persons as unknown[]).includes(ctx.entity?.entity_id));
+  const badgeIcon = ctx.entity?.state === "home"
+    ? "mdi:home-variant"
+    : zone?.attributes.icon || (zone ? "mdi:help-circle" : "mdi:home-minus");
+  const batteryValue = battery ? Math.max(0, Math.min(100, Math.round(Number(battery.state)))) : undefined;
+  const circumference = 2 * Math.PI * 20.5;
+  const secondary = `${address ? stateLabel(address) : stateLabel(ctx.entity)}${
+    eta && ctx.entity?.state !== "home" ? ` | ${stateLabel(eta)}` : ""
+  }`;
+  return ctx.actionSurface("ulm-row ulm-person ulm-source-person", html`
+    <span class="person-icon-wrap">
+      ${picture
+        ? html`<span class="person-picture" style=${`background-image:url("${String(picture)}")`}></span>`
+        : html`<span class="ulm-icon tone-grey"><ha-icon .icon=${ctx.config.icon || configured<string>(ctx, "ulm_card_person_icon") || "mdi:face-man"}></ha-icon></span>`}
+      <span class="person-location-badge ${ctx.entity?.state === "home" ? "home" : "away"}">
+        <ha-icon .icon=${String(badgeIcon)}></ha-icon>
+      </span>
+    </span>
+    ${heading(ctx, secondary)}
+    ${batteryValue !== undefined ? html`
+      <svg class="person-battery-ring" viewBox="0 0 50 50" aria-label=${`${batteryValue}% battery`}>
+        <circle cx="25" cy="25" r="20.5"></circle>
+        <circle class="value" cx="25" cy="25" r="20.5"
+          style=${`stroke-dasharray:${circumference};stroke-dashoffset:${circumference - batteryValue / 100 * circumference}`}></circle>
+        <text x="25" y="28">${batteryValue}<tspan>%</tspan></text>
+      </svg>
+    ` : nothing}
   `);
 };
 
@@ -425,7 +579,25 @@ const runItemAction = (ctx: RenderContext, item: AdditionItemConfig): void => {
       return;
     }
   }
-  ctx.service("scene", "turn_on", { entity_id: item.entity });
+  if (item.nav_path) {
+    fireEvent(document.body, "hass-action", {
+      config: { type: ctx.config.type, entity: item.entity, tap_action: { action: "navigate", navigation_path: item.nav_path } },
+      action: "tap",
+    });
+    return;
+  }
+  const domain = item.entity.split(".", 1)[0];
+  if (domain === "scene") ctx.service("scene", "turn_on", { entity_id: item.entity });
+  else if (domain === "media_player") ctx.service("media_player", "media_play_pause", { entity_id: item.entity });
+  else if (domain === "input_select") {
+    ctx.service("input_select", "select_option", {
+      entity_id: item.entity,
+      option: item.state,
+      ...(item.service_data ?? {}),
+    });
+  } else if (domain === "script") {
+    ctx.service("script", "turn_on", { entity_id: item.entity, ...(item.service_data ?? {}) });
+  } else ctx.service("homeassistant", "toggle", { entity_id: item.entity, ...(item.service_data ?? {}) });
 };
 
 const renderScene = (ctx: RenderContext): TemplateResult => {
@@ -434,11 +606,11 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
       ? ctx.config.scene_items
       : (ctx.config.entities?.length ? ctx.config.entities : ctx.config.entity ? [ctx.config.entity] : [])
         .map((entity) => ({ entity }))
-  ).filter((item) => item.entity).slice(0, 6);
+  ).filter((item) => item.entity).slice(0, ctx.descriptor.upstreamId === "card_scenes" ? 7 : 6);
   const welcome = ctx.descriptor.upstreamId === "card_welcome_scenes";
   const collapseEntity = ctx.config.collapse_entity ? ctx.hass.states[ctx.config.collapse_entity] : undefined;
   const collapsed = ctx.config.collapsed === true || collapseEntity?.state === "on";
-  return ctx.actionSurface(`ulm-scenes ${welcome ? "welcome-scenes" : "scene-pills"}`, html`
+  return ctx.actionSurface(`ulm-scenes ${welcome ? "welcome-scenes" : "scene-pills"} ${ctx.descriptor.upstreamId === "card_scenes" ? "ulm-source-scenes" : ""}`, html`
     ${welcome ? html`
       <div class="welcome-toolbar">
         <button class="welcome-toolbar-button" aria-label="Toggle scenes" @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
@@ -454,7 +626,7 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
     ` : nothing}
     ${collapsed ? nothing : html`<div class="scene-grid">${sceneItems.map((item) => {
       const entity = ctx.hass.states[item.entity];
-      const active = entity?.state === (item.active_state || "on") || entity?.state === "playing";
+      const active = entity?.state === (item.active_state || item.state || "on") || entity?.state === "playing";
       const color = configuredColor(item.color, "rgb(var(--ulm-purple))");
       return html`
       <button class="scene-button" @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
@@ -462,7 +634,7 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
         runItemAction(ctx, item);
       }} style=${`--item-color:${color}`} class="scene-button ${active ? "is-active" : ""}">
         <i><ha-icon .icon=${item.icon || entity?.attributes.icon || "mdi:palette"}></ha-icon></i>
-        <span>${item.name || displayName({ type: "", entity: item.entity }, entity)}</span>
+        <span>${item.name || item.label || displayName({ type: "", entity: item.entity }, entity)}</span>
       </button>`;
     })}</div>`}
   `);
@@ -704,6 +876,45 @@ const renderControl = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
+const renderPowerOutlet = (ctx: RenderContext): TemplateResult => {
+  const active = activeStates.has(ctx.entity?.state ?? "");
+  const consumptionEntityId = ctx.config.consumption_entity ||
+    ctx.config.graph_entity ||
+    configured<string>(ctx, "ulm_card_power_outlet_consumption_sensor");
+  const consumption = consumptionEntityId ? ctx.hass.states[consumptionEntityId] : undefined;
+  const color = configuredColor(
+    configured<string>(ctx, "ulm_card_power_outlet_color"),
+    "rgb(var(--ulm-yellow))",
+  );
+  const forceBackground = configured<boolean>(ctx, "ulm_card_power_outlet_force_background_color") === true && active;
+  const label = active && consumption
+    ? `${stateLabel(ctx.entity)} • ${stateLabel(consumption)}`
+    : stateLabel(ctx.entity);
+  return ctx.actionSurface(
+    `ulm-row ulm-power-outlet ulm-source-power-outlet ${active ? "is-active" : ""} ${forceBackground ? "force-background" : ""}`,
+    html`
+      <span class="ulm-icon power-outlet-icon" style=${`--outlet-color:${color}`}>
+        <ha-icon .icon=${icon(ctx, "mdi:power-socket-eu")}></ha-icon>
+      </span>
+      ${heading(ctx, label)}
+    `,
+  );
+};
+
+const renderScript = (ctx: RenderContext): TemplateResult => {
+  const title = configured<string>(ctx, "ulm_card_script_title") ||
+    ctx.config.name ||
+    displayName(ctx.config, ctx.entity);
+  const scriptIcon = configured<string>(ctx, "ulm_card_script_icon") ||
+    ctx.config.icon ||
+    ctx.entity?.attributes.icon ||
+    "mdi:script-text";
+  return ctx.actionSurface("ulm-row ulm-script ulm-source-script", html`
+    <span class="ulm-icon tone-blue"><ha-icon .icon=${scriptIcon}></ha-icon></span>
+    <span class="script-title">${title}</span>
+  `);
+};
+
 const renderFan = (ctx: RenderContext): TemplateResult => {
   const active = ctx.entity?.state === "on";
   const percentage = numeric(attr(ctx.entity, "percentage")) ?? 0;
@@ -748,16 +959,55 @@ const renderFan = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
+const roomHoldTimers = new WeakMap<HTMLElement, number>();
+const roomHoldFired = new WeakSet<HTMLElement>();
+
+const roomAction = (
+  target: HTMLElement,
+  ctx: RenderContext,
+  item: AdditionItemConfig,
+  gesture: "tap" | "hold",
+): void => {
+  const action = gesture === "tap"
+    ? item.tap_action ?? { action: "toggle" }
+    : item.hold_action ?? { action: "more-info" };
+  fireEvent(target, "hass-action", {
+    config: { type: ctx.config.type, entity: item.entity, tap_action: action },
+    action: "tap",
+  });
+};
+
 const renderRoom = (ctx: RenderContext): TemplateResult => {
   const sensorItems: AdditionItemConfig[] = (
     ctx.config.room_sensors?.length
       ? ctx.config.room_sensors
       : (ctx.config.entities ?? []).map((entity) => ({ entity }))
   ).filter((item) => item.entity).slice(0, 4);
-  return ctx.actionSurface("ulm-room", html`
+  const useTemperature = ctx.config.label_use_temperature ??
+    configured<boolean>(ctx, "label_use_temperature") ?? true;
+  const useBrightness = ctx.config.label_use_brightness ??
+    configured<boolean>(ctx, "label_use_brightness") ?? false;
+  const brightness = numeric(attr(ctx.entity, "brightness"));
+  const temperature = attr(ctx.entity, "current_temperature") ??
+    attr(ctx.entity, "temperature") ??
+    attr(ctx.entity, "device_temperature") ??
+    ctx.entity?.state ??
+    "—";
+  const roomLabel = useTemperature
+    ? `${String(temperature)}${String(attr(ctx.entity, "unit_of_measurement") ?? "°C")}`
+    : useBrightness && ctx.entity?.state === "on" && brightness !== undefined
+      ? `${Math.round(brightness / 2.55)}%`
+      : stateLabel(ctx.entity);
+  return ctx.actionSurface(`ulm-room ulm-source-room ${ctx.entity?.state === "unavailable" ? "is-unavailable" : ""}`, html`
     <div class="room-main">
-      ${heading(ctx, stateLabel(ctx.entity))}
-      ${iconBubble(ctx, "mdi:sofa", activeStates.has(ctx.entity?.state ?? "") ? "yellow" : "blue")}
+      <span class="room-copy">
+        <b>${displayName(ctx.config, ctx.entity)}</b>
+        <span>${roomLabel}</span>
+      </span>
+      <span class="ulm-icon tone-blue"><ha-icon .icon=${ctx.config.icon || "mdi:sofa-single"}></ha-icon></span>
+      ${ctx.entity?.state === "unavailable"
+        ? html`<span class="room-unavailable"><ha-icon icon="mdi:exclamation"></ha-icon></span>`
+        : nothing}
     </div>
     ${sensorItems.length ? html`<div class="room-entities">${sensorItems.map((item) => {
       const entity = ctx.hass.states[item.entity];
@@ -766,18 +1016,40 @@ const renderRoom = (ctx: RenderContext): TemplateResult => {
       return html`<button
         class="metric-pill room-sensor ${active ? "is-active" : ""}"
         style=${`--item-color:${color}`}
-        aria-label=${item.name || displayName({ type: "", entity: item.entity }, entity)}
-        @pointerdown=${(event: Event) => event.stopPropagation()}
-        @click=${(event: Event) => {
+        aria-label=${item.name || item.label || displayName({ type: "", entity: item.entity }, entity)}
+        @pointerdown=${(event: PointerEvent) => {
           event.stopPropagation();
-          const action = item.tap_action;
-          const service = action?.service ?? action?.perform_action;
-          if (service) {
-            const [domain, serviceName] = service.split(".", 2);
-            if (domain && serviceName) ctx.service(domain, serviceName, { entity_id: item.entity, ...(action?.service_data ?? action?.data ?? {}) });
-          }
+          const target = event.currentTarget as HTMLElement;
+          roomHoldFired.delete(target);
+          roomHoldTimers.set(target, window.setTimeout(() => {
+            roomHoldFired.add(target);
+            roomAction(target, ctx, item, "hold");
+          }, 500));
         }}
-      ><ha-icon .icon=${item.icon || entity?.attributes.icon || "mdi:circle-small"}></ha-icon><span>${item.name || stateLabel(entity)}</span></button>`;
+        @pointerup=${(event: PointerEvent) => {
+          event.stopPropagation();
+          const target = event.currentTarget as HTMLElement;
+          const timer = roomHoldTimers.get(target);
+          if (timer) window.clearTimeout(timer);
+          roomHoldTimers.delete(target);
+        }}
+        @pointercancel=${(event: PointerEvent) => {
+          const target = event.currentTarget as HTMLElement;
+          const timer = roomHoldTimers.get(target);
+          if (timer) window.clearTimeout(timer);
+          roomHoldTimers.delete(target);
+        }}
+        @click=${(event: Event) => {
+          const target = event.currentTarget as HTMLElement;
+          if (roomHoldFired.has(target)) {
+            roomHoldFired.delete(target);
+            event.stopPropagation();
+            return;
+          }
+          event.stopPropagation();
+          roomAction(target, ctx, item, "tap");
+        }}
+      ><ha-icon .icon=${item.icon || entity?.attributes.icon || "mdi:circle-small"}></ha-icon><span>${item.name || item.label || stateLabel(entity)}</span></button>`;
     })}</div>` : nothing}
   `);
 };
@@ -2153,12 +2425,6 @@ const renderInputBoolean = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const renderSimpleDefault = (ctx: RenderContext, fallbackIcon: string, tone = "blue"): TemplateResult =>
-  ctx.actionSurface("ulm-row ulm-simple-default", html`
-    ${iconBubble(ctx, fallbackIcon, activeStates.has(ctx.entity?.state ?? "") ? tone : "grey")}
-    ${heading(ctx, stateLabel(ctx.entity))}
-  `);
-
 const renderDefaultGraph = (ctx: RenderContext): TemplateResult => ctx.actionSurface("ulm-default-graph", html`
   <div class="metric-heading">${iconBubble(ctx, "mdi:chart-line", "red")}${valueThenName(ctx)}</div>
   ${sparkline(ctx, true)}
@@ -2173,8 +2439,8 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "card_light": return renderLight(ctx);
     case "card_media_player": return renderMedia(ctx);
     case "card_navigate": return renderDefaultNavigation(ctx);
-    case "card_power_outlet": return renderSimpleDefault(ctx, "mdi:power-socket-eu", "yellow");
-    case "card_script": return renderSimpleDefault(ctx, "mdi:script-text", "blue");
+    case "card_power_outlet": return renderPowerOutlet(ctx);
+    case "card_script": return renderScript(ctx);
     case "card_title": return renderTitle(ctx);
     case "card_vacuum": return renderDefaultVacuum(ctx);
     case "card_vertical_button": return renderVerticalButton(ctx);

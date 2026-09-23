@@ -43,6 +43,16 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
   const defaultAction = upstream.navigation_path
     ? { action: "navigate", navigation_path: upstream.navigation_path }
     : { action: upstream.entity ? "more-info" : "none" };
+  const roomDoubleTap = String(config.type).includes("card-room") &&
+    upstream.input_select_entity &&
+    upstream.input_select_option
+    ? {
+      action: "perform-action",
+      perform_action: "input_select.select_option",
+      target: { entity_id: upstream.input_select_entity },
+      data: { option: upstream.input_select_option },
+    }
+    : undefined;
   return {
     ...upstream,
     show_icon: upstream.show_icon ?? true,
@@ -62,6 +72,7 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
         ? { action: "more-info", entity: upstream.ulm_card_person_battery_entity }
         : undefined
     ),
+    double_tap_action: upstream.double_tap_action ?? roomDoubleTap,
   };
 };
 
@@ -124,6 +135,32 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
     entity: wasteMigrated.entity ?? legacy,
     primary_entity: undefined,
   };
+  if (String(config.type).includes("card-person")) {
+    migrated.battery_entity ??= entityId(config.ulm_card_person_battery);
+    migrated.eta_entity ??= entityId(config.ulm_card_person_eta);
+    migrated.address_entity ??= entityId(config.ulm_address);
+    migrated.use_entity_picture ??= typeof config.ulm_card_person_use_entity_picture === "boolean"
+      ? config.ulm_card_person_use_entity_picture
+      : undefined;
+  }
+  if (String(config.type).includes("card-power-outlet")) {
+    migrated.consumption_entity ??= entityId(config.ulm_card_power_outlet_consumption_sensor);
+  }
+  if (String(config.type).includes("card-room")) {
+    migrated.input_select_entity ??= entityId(config.ulm_input_select);
+    migrated.input_select_option ??= typeof config.ulm_input_select_option === "string"
+      ? config.ulm_input_select_option
+      : undefined;
+  }
+  if (String(config.type).includes("card-thermostat")) {
+    migrated.fan_entity ??= entityId(config.ulm_card_thermostat_fan_entity);
+    migrated.thermostat_minimum_temp_spread ??= typeof config.ulm_card_thermostat_minimum_temp_spread === "number"
+      ? config.ulm_card_thermostat_minimum_temp_spread
+      : undefined;
+    migrated.thermostat_temp_step ??= typeof config.ulm_card_thermostat_temp_step === "number"
+      ? config.ulm_card_thermostat_temp_step
+      : undefined;
+  }
   if (String(config.type).includes("nik-nas")) {
     migrated.temperature_entity ??= entityId(config.entity_1);
     migrated.memory_entity ??= entityId(config.entity_2);

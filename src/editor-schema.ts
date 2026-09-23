@@ -190,7 +190,55 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
 };
 
 export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): EditorField[] => [
-  ...(item.upstreamId === "custom_card_afvalophaling"
+  ...(item.upstreamId === "card_person"
+    ? [
+      entity(["person"]),
+      entity(["sensor"], "battery_entity"),
+      entity(["sensor"], "eta_entity"),
+      entity(["sensor"], "address_entity"),
+      toggle("use_entity_picture"),
+      ...presentation(),
+    ]
+    : item.upstreamId === "card_power_outlet"
+      ? [
+        entity(["switch", "light"]),
+        entity(["sensor"], "consumption_entity"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "card_room"
+      ? [
+        entity(),
+        toggle("label_use_temperature"),
+        toggle("label_use_brightness"),
+        entity(["input_select"], "input_select_entity"),
+        text("input_select_option"),
+        ...presentation(),
+      ]
+    : item.upstreamId === "card_scenes"
+      ? [
+        ...(item.variants?.length ? [select("variant", item.variants.map((variant) => ({
+          value: variant,
+          label: item.variantLabels?.[variant] ?? variant,
+        })))] : []),
+        ...presentation(),
+      ]
+    : item.upstreamId === "card_script"
+      ? [entity(["script"]), ...presentation()]
+    : item.upstreamId === "card_thermostat"
+      ? [
+        entity(["climate"]),
+        toggle("ulm_card_thermostat_enable_collapse"),
+        toggle("ulm_card_thermostat_enable_controls"),
+        toggle("ulm_card_thermostat_enable_hvac_modes"),
+        toggle("ulm_card_thermostat_enable_background_color"),
+        toggle("ulm_card_thermostat_enable_display_temperature"),
+        toggle("ulm_card_thermostat_enable_horizontal"),
+        entity(["fan"], "fan_entity"),
+        number("thermostat_minimum_temp_spread", 0, 20),
+        number("thermostat_temp_step", 0.1, 10),
+        ...presentation(),
+      ]
+  : item.upstreamId === "custom_card_afvalophaling"
     ? [
       entity(["sensor", "calendar"]),
       toggle("show_today"),

@@ -183,8 +183,27 @@ export const sharedStyles = css`
   .ulm-climate { padding-bottom: 12px; }
   .climate-top { padding-bottom: 8px; }
   .climate-target { color: rgb(var(--ulm-red)); font-size: 23px; font-weight: 600; }
+  .climate-current { font-size: 18px; font-weight: 700; }
   .ulm-climate > .metric-pill { margin-left: 66px; }
   .ulm-climate > .ulm-controls { float: right; margin: -36px 12px 0 0; }
+  .ulm-source-thermostat { display: grid; gap: 12px; padding: 12px; }
+  .ulm-source-thermostat .climate-top { min-height: 42px; padding: 0; }
+  .ulm-source-thermostat.hvac-heating { background: rgba(255,165,0,.75); }
+  .ulm-source-thermostat.hvac-cooling { background: rgba(0,191,255,.75); }
+  .ulm-source-thermostat.is-horizontal { grid-template-columns: 1fr 1fr; align-items: center; }
+  .thermostat-controls { display: grid; gap: 8px; }
+  .thermostat-adjustment { display: grid; grid-template-columns: 34px 1fr 34px; align-items: center; gap: 7px; }
+  .ulm-source-thermostat .thermostat-adjustment { grid-template-columns: repeat(3, 1fr); }
+  .ulm-source-thermostat .thermostat-adjustment .ulm-control { width: 100%; height: 42px; border-radius: 12px; }
+  .thermostat-adjustment b { text-align: center; }
+  .thermostat-modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(34px, 1fr)); gap: 7px; }
+  .thermostat-mode { width: 100%; }
+  .thermostat-mode.is-active { color: rgb(var(--tone)); background: rgba(var(--tone), .25); }
+  .thermostat-mode.tone-green { --tone: var(--ulm-green); }
+  .thermostat-mode.tone-red { --tone: var(--ulm-red); }
+  .thermostat-mode.tone-blue { --tone: var(--ulm-blue); }
+  .thermostat-mode.tone-yellow { --tone: var(--ulm-yellow); }
+  .thermostat-mode.tone-purple { --tone: var(--ulm-purple); }
   .ulm-person .person-picture {
     width: 42px;
     height: 42px;
@@ -192,6 +211,40 @@ export const sharedStyles = css`
     background-position: center;
     background-size: cover;
   }
+  .person-icon-wrap { position: relative; display: block; width: 42px; height: 42px; }
+  .person-icon-wrap > .ulm-icon, .person-icon-wrap > .person-picture { width: 42px; height: 42px; }
+  .person-location-badge {
+    position: absolute;
+    top: -4px;
+    left: 34px;
+    display: grid;
+    width: 16px;
+    height: 16px;
+    place-items: center;
+    border: 2px solid var(--card-background-color, #fff);
+    border-radius: 50%;
+    color: var(--primary-background-color, #fff);
+  }
+  .person-location-badge.home { background: rgb(var(--ulm-blue)); }
+  .person-location-badge.away { background: rgb(var(--ulm-green)); }
+  .person-location-badge ha-icon { width: 10px; height: 10px; --mdc-icon-size: 10px; }
+  .person-battery-ring { width: 42px; height: 42px; overflow: visible; }
+  .person-battery-ring circle { fill: none; stroke: rgba(var(--ulm-grey), .15); stroke-width: 3; }
+  .person-battery-ring circle.value {
+    stroke: rgb(var(--ulm-green));
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+  }
+  .person-battery-ring text { fill: var(--primary-text-color); font-size: 14px; font-weight: 700; text-anchor: middle; }
+  .person-battery-ring tspan { font-size: 8px; }
+  .ulm-source-person { min-height: 96px; padding: 16px; gap: 18px; }
+  .ulm-source-person .person-icon-wrap,
+  .ulm-source-person .person-icon-wrap > .ulm-icon,
+  .ulm-source-person .person-icon-wrap > .person-picture { width: 64px; height: 64px; }
+  .ulm-source-person .ulm-icon ha-icon { --mdc-icon-size: 32px; }
+  .ulm-source-person .person-location-badge { top: -4px; left: 52px; }
+  .ulm-source-person .ulm-name { font-size: 20px; }
+  .ulm-source-person .ulm-label { font-size: 16px; font-weight: 600; }
   .presence-dot { width: 12px; height: 12px; border: 3px solid var(--card-background-color); border-radius: 50%; }
   .presence-dot.home { background: rgb(var(--ulm-blue)); }
   .presence-dot.away { background: rgb(var(--ulm-green)); }
@@ -301,6 +354,10 @@ export const sharedStyles = css`
   .scene-button i { background: color-mix(in srgb, var(--item-color) 16%, transparent); }
   .scene-button ha-icon { --mdc-icon-size: 22px; color: var(--item-color); }
   .scene-button.is-active { background: color-mix(in srgb, var(--item-color) 12%, var(--ha-card-background, #fff)); }
+  .ulm-source-scenes .scene-grid { flex-wrap: nowrap; justify-content: space-evenly; }
+  .ulm-source-scenes .scene-button { width: 52px; min-width: 52px; min-height: 84px; padding: 5px 5px 7px; border-radius: 50px; }
+  .ulm-source-scenes .scene-button i { width: 42px; height: 42px; }
+  .ulm-source-scenes .scene-button span { font-size: 9.5px; font-weight: 700; }
   .welcome-scenes { padding: 18px; }
   .welcome-toolbar { display: grid; grid-template-columns: 42px 1fr 42px; align-items: center; gap: 10px; margin-bottom: 24px; }
   .welcome-toolbar-button, .welcome-date { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; border: 0; border-radius: 22px; background: var(--ha-card-background, #fff); color: var(--primary-text-color); box-shadow: 0 2px 6px rgba(0,0,0,.12); }
@@ -353,8 +410,13 @@ export const sharedStyles = css`
   .ulm-fan-slider i { position: absolute; inset: 0 auto 0 0; width: var(--fan-level); background: var(--source-color); }
   .ulm-fan-slider input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
   .ulm-room { display: grid; min-height: 210px; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; padding: 14px; }
+  .ulm-source-room { position: relative; aspect-ratio: 1; min-height: 0; padding: 5px; border-radius: 20px; }
   .room-main { display: flex; min-width: 0; flex-direction: column; justify-content: space-between; gap: 12px; }
+  .room-copy { z-index: 1; display: flex; min-width: 0; flex-direction: column; gap: 5px; padding: 12px 0 0 12px; }
+  .room-copy b { overflow: hidden; font-size: 18px; text-overflow: ellipsis; white-space: nowrap; }
+  .room-copy span { overflow: hidden; color: var(--secondary-text-color); font-size: 14px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
   .room-main .ulm-icon { width: 116px; height: 116px; margin: 0 0 -14px -14px; border-radius: 0 58px 0 14px; }
+  .ulm-source-room .room-main .ulm-icon { position: absolute; bottom: 0; left: 0; width: 75%; height: 75%; margin: 0; border-radius: 50%; transform: translate(-25%, 25%); }
   .room-main .ulm-icon ha-icon { --mdc-icon-size: 56px; }
   .room-entities { display: flex; flex-direction: column; justify-content: flex-end; gap: 7px; }
   .room-entities .metric-pill { width: 46px; min-height: 46px; justify-content: center; overflow: hidden; padding: 0; color: transparent; }
@@ -362,6 +424,21 @@ export const sharedStyles = css`
   .room-sensor ha-icon { color: var(--item-color); }
   .room-sensor.is-active { background: color-mix(in srgb, var(--item-color) 18%, transparent); }
   .room-sensor span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .room-unavailable {
+    position: absolute;
+    bottom: 22%;
+    left: 22%;
+    z-index: 2;
+    display: grid;
+    width: 24px;
+    height: 24px;
+    place-items: center;
+    border: 2px solid var(--card-background-color, #fff);
+    border-radius: 50%;
+    background: rgb(var(--ulm-red));
+    color: var(--primary-background-color, #fff);
+  }
+  .room-unavailable ha-icon { --mdc-icon-size: 13px; }
   .ulm-camera { display: grid; min-height: 150px; overflow: hidden; background: rgba(var(--ulm-grey), .08); }
   .ulm-camera.has-title { gap: 12px; padding: 12px; }
   .camera-title { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px; }
@@ -415,6 +492,20 @@ export const sharedStyles = css`
   .navigation-label { font-size: 14px; font-weight: 600; white-space: nowrap; }
   .source-icon-wrap { position: relative; display: inline-grid; }
   .binary-alert-badge { position: absolute; right: -3px; bottom: -3px; --mdc-icon-size: 16px; color: rgb(var(--ulm-red)); }
+  .ulm-power-outlet .power-outlet-icon { color: rgba(var(--ulm-grey), .25); background: rgba(var(--ulm-grey), .05); }
+  .ulm-source-power-outlet { min-height: 96px; padding: 16px; gap: 18px; }
+  .ulm-source-power-outlet .power-outlet-icon { width: 64px; height: 64px; }
+  .ulm-source-power-outlet .power-outlet-icon ha-icon { --mdc-icon-size: 32px; }
+  .ulm-source-power-outlet .ulm-name { font-size: 20px; }
+  .ulm-source-power-outlet .ulm-label { font-size: 16px; font-weight: 600; }
+  .ulm-power-outlet.is-active .power-outlet-icon { color: var(--outlet-color); background: color-mix(in srgb, var(--outlet-color) 20%, transparent); }
+  .ulm-power-outlet.force-background { background: color-mix(in srgb, var(--outlet-color) 20%, transparent); }
+  .ulm-script { grid-template-columns: min-content min-content; justify-content: start; }
+  .ulm-source-script { min-height: 96px; padding: 16px; gap: 18px; }
+  .ulm-source-script .ulm-icon { width: 64px; height: 64px; }
+  .ulm-source-script .ulm-icon ha-icon { --mdc-icon-size: 32px; }
+  .script-title { font-size: 14px; font-weight: 600; white-space: nowrap; }
+  .ulm-source-script .script-title { font-size: 20px; }
   .custom-card-heading {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;

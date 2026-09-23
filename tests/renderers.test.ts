@@ -340,10 +340,10 @@ describe("family renderers", () => {
     ["card_media_player", "mushroom-addition-card-media-player", "media_player.tv", "ulm-media", "sparkline"],
     ["card_navigate", "mushroom-addition-card-navigate", "sensor.power", "ulm-default-navigation", "sparkline"],
     ["card_person", "mushroom-addition-card-person", "person.joris", "ulm-person", "sparkline"],
-    ["card_power_outlet", "mushroom-addition-card-power-outlet", "sensor.power", "ulm-simple-default", "sparkline"],
+    ["card_power_outlet", "mushroom-addition-card-power-outlet", "sensor.power", "ulm-source-power-outlet", "sparkline"],
     ["card_room", "mushroom-addition-card-room", "light.kitchen", "ulm-room", "sparkline"],
     ["card_scenes", "mushroom-addition-card-scenes", "scene.relax", "scene-pills", "sparkline"],
-    ["card_script", "mushroom-addition-card-script", "sensor.power", "ulm-simple-default", "sparkline"],
+    ["card_script", "mushroom-addition-card-script", "sensor.power", "ulm-source-script", "sparkline"],
     ["card_thermostat", "mushroom-addition-card-thermostat", "climate.living", "ulm-climate", "sparkline"],
     ["card_title", "mushroom-addition-card-title", "sensor.power", "ulm-title", "ulm-icon"],
     ["card_vacuum", "mushroom-addition-card-vacuum", "vacuum.robot", "ulm-default-vacuum", "sparkline"],
@@ -873,11 +873,11 @@ describe("family renderers", () => {
         ],
         "climate": [
           "ulm-climate",
+          "ulm-source-thermostat",
           "ulm-icon",
           "ulm-copy",
           "ulm-name",
           "ulm-label",
-          "ulm-controls",
           "ulm-control",
         ],
         "energy": [
@@ -905,6 +905,7 @@ describe("family renderers", () => {
         "person": [
           "ulm-row",
           "ulm-person",
+          "ulm-source-person",
           "ulm-icon",
           "ulm-copy",
           "ulm-name",
@@ -912,6 +913,7 @@ describe("family renderers", () => {
         ],
         "scene": [
           "ulm-scenes",
+          "ulm-source-scenes",
         ],
         "weather": [
           "ulm-weather",

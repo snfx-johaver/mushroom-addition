@@ -61,9 +61,13 @@ export const createStubConfig = (
                           ? findEntity(["update", "sensor", "binary_sensor"], ["core"])
                           : descriptor.upstreamId === "custom_card_nik_nas"
                             ? findEntity(["switch", "binary_sensor"], ["nas"]) ??
-                              findEntity(["switch", "binary_sensor"], ["status"])
-                            : undefined;
-  const entity = semanticPrimary ?? firstMatchingEntity(descriptor, hass, entities, entitiesFallback);
+                                findEntity(["switch", "binary_sensor"], ["status"])
+                              : descriptor.upstreamId === "card_room"
+                                ? findEntity(["light"], [])
+                                : undefined;
+  const entity = descriptor.upstreamId === "card_scenes"
+    ? undefined
+    : semanticPrimary ?? firstMatchingEntity(descriptor, hass, entities, entitiesFallback);
   const isText = ["text", "navigation"].includes(descriptor.family);
   const gameConsole = descriptor.upstreamId === "custom_card_playstation";
   const defaultVariant = gameConsole && entity?.toLowerCase().includes("xbox")
@@ -195,6 +199,42 @@ export const createStubConfig = (
         ulm_card_person_driving_entity: findEntity(["binary_sensor"], ["person", "driving"]),
         ulm_card_person_battery_entity: findEntityExcluding(["sensor"], ["person", "battery"], ["state"]),
         ulm_card_person_battery_state_entity: findEntity(["sensor", "binary_sensor"], ["person", "battery", "state"]),
+      }
+      : {}),
+    ...(descriptor.upstreamId === "card_person"
+      ? {
+        battery_entity: findEntity(["sensor"], ["battery"]),
+        use_entity_picture: Boolean(entity && hass?.states[entity]?.attributes.entity_picture),
+      }
+      : {}),
+    ...(descriptor.upstreamId === "card_power_outlet"
+      ? {
+        consumption_entity: findEntity(["sensor"], ["power"]),
+      }
+      : {}),
+    ...(descriptor.upstreamId === "card_room"
+      ? {
+        room_sensors: [
+          findEntity(["sensor"], ["illuminance"]),
+          findEntity(["sensor"], ["temperature"]),
+        ]
+          .filter((entityId): entityId is string => Boolean(entityId))
+          .map((entityId) => ({ entity: entityId })),
+      }
+      : {}),
+    ...(descriptor.upstreamId === "card_scenes"
+      ? {
+        scene_items: available
+          .filter((entityId) => entityId.startsWith("scene."))
+          .slice(0, 7)
+          .map((entityId) => ({ entity: entityId })),
+      }
+      : {}),
+    ...(descriptor.upstreamId === "card_thermostat"
+      ? {
+        show_controls: true,
+        ulm_card_thermostat_enable_controls: true,
+        ulm_card_thermostat_enable_display_temperature: true,
       }
       : {}),
   };

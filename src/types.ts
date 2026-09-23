@@ -53,10 +53,15 @@ export interface ActionConfig {
 export interface AdditionItemConfig {
   entity: string;
   name?: string;
+  label?: string;
   icon?: string;
   color?: string;
   active_state?: string;
+  state?: string;
+  nav_path?: string;
+  service_data?: Record<string, unknown>;
   tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
 }
 
 export interface WasteStreamConfig {
@@ -85,6 +90,8 @@ export interface AdditionConfig {
   temperature_entity?: string;
   humidity_entity?: string;
   battery_entity?: string;
+  consumption_entity?: string;
+  fan_entity?: string;
   disk_entity?: string;
   memory_entity?: string;
   cpu_entity?: string;
@@ -125,6 +132,12 @@ export interface AdditionConfig {
   show_controls?: boolean;
   show_graph?: boolean;
   use_entity_picture?: boolean;
+  label_use_temperature?: boolean;
+  label_use_brightness?: boolean;
+  input_select_entity?: string;
+  input_select_option?: string;
+  thermostat_minimum_temp_spread?: number;
+  thermostat_temp_step?: number;
   graph_hours?: number;
   console_platform?: "ps5" | "xbox";
   [key: string]: unknown;
