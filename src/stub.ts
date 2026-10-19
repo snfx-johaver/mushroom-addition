@@ -147,7 +147,9 @@ export const createStubConfig = (
                                     ? findEntity(["person"], [])
                                     : descriptor.upstreamId === "custom_card_playstation"
                                       ? findEntity(["media_player"], ["tv"]) ?? findEntity(["media_player"], [])
-                                      : undefined;
+                                    : descriptor.upstreamId === "custom_card_better_thermostat"
+                                      ? findEntity(["climate"], ["living", "room"]) ?? findEntity(["climate"], [])
+                                    : undefined;
   const entity = descriptor.upstreamId === "card_scenes"
       ? undefined
       : semanticPrimary ?? firstMatchingEntity(descriptor, hass, entities, entitiesFallback);
@@ -247,6 +249,13 @@ export const createStubConfig = (
         ulm_custom_card_washer_label_idle: "idle",
         ulm_custom_card_washer_label_configuring: "configure",
         ulm_custom_card_washer_label_running: "run",
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_better_thermostat"
+      ? {
+        window_sensor: findEntity(["binary_sensor"], ["window"]) ?? findEntity(["binary_sensor"], ["door"]),
+        humidity_entity: findEntityByDeviceClass(["humidity"]),
+        battery_entity: findEntityByDeviceClass(["battery"], [], ["phone", "tablet"]),
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_sun"

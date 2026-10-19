@@ -44,7 +44,7 @@ const sourceTotals = UPSTREAM_CATALOG.reduce<Record<string, number>>((result, it
 }, {});
 const expectedSourceTotals = {
   "default-card": 8,
-  "custom-card": 36,
+  "custom-card": 37,
 };
 for (const [category, expected] of Object.entries(expectedSourceTotals)) {
   if (sourceTotals[category] !== expected) {

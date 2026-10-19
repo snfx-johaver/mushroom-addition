@@ -109,6 +109,7 @@ export interface AdditionConfig {
   collapsed?: boolean;
   temperature_entity?: string;
   humidity_entity?: string;
+  window_sensor?: string;
   trees_entity?: string;
   grass_entity?: string;
   weeds_entity?: string;
@@ -199,6 +200,13 @@ export interface AdditionConfig {
   input_select_option?: string;
   thermostat_minimum_temp_spread?: number;
   thermostat_temp_step?: number;
+  show_temperature_control?: boolean;
+  show_humidity?: boolean;
+  show_hvac_modes?: boolean;
+  show_presets?: boolean;
+  show_status?: boolean;
+  collapsible_controls?: boolean;
+  low_battery_threshold?: number;
   graph_hours?: number;
   [key: string]: unknown;
 }

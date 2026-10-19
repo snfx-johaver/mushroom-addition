@@ -394,6 +394,27 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         color("ulm_card_alarm_time_color"),
         ...presentation(),
       ]
+    : item.upstreamId === "custom_card_better_thermostat"
+      ? [
+        entity(["climate"]),
+        select("variant", [
+          { value: "normal", label: "Normal" },
+          { value: "compact", label: "Compact" },
+        ]),
+        ...presentation(),
+        entity(["binary_sensor"], "window_sensor"),
+        entity(["sensor"], "humidity_entity"),
+        entity(["sensor"], "battery_entity"),
+        toggle("show_controls"),
+        toggle("show_temperature_control"),
+        toggle("show_humidity"),
+        toggle("show_hvac_modes"),
+        toggle("show_presets"),
+        toggle("show_status"),
+        toggle("collapsible_controls"),
+        number("thermostat_temp_step", 0.1, 5),
+        percentage("low_battery_threshold"),
+      ]
     : item.upstreamId === "custom_card_apexcharts"
       ? [
         entity(["sensor"]),

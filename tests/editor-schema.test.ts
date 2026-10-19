@@ -94,6 +94,28 @@ describe("family editor schemas", () => {
     ]));
   });
 
+  it("exposes Better Thermostat climate controls and optional sensors", () => {
+    const thermostat = CATALOG.find((item) => item.upstreamId === "custom_card_better_thermostat")!;
+    const schema = flattenSchema(editorSchemaFor(thermostat));
+    expect(schema.find((field) => field.name === "entity")?.selector).toEqual({
+      entity: { domain: ["climate"] },
+    });
+    expect(schema.find((field) => field.name === "variant")?.selector).toMatchObject({
+      select: { options: [{ value: "normal" }, { value: "compact" }] },
+    });
+    expect(schema.map((field) => field.name)).toEqual(expect.arrayContaining([
+      "window_sensor",
+      "humidity_entity",
+      "battery_entity",
+      "show_temperature_control",
+      "show_hvac_modes",
+      "show_presets",
+      "show_status",
+      "thermostat_temp_step",
+      "low_battery_threshold",
+    ]));
+  });
+
   it("exposes clear welcome-scene collapse controls", () => {
     const welcome = CATALOG.find((item) => item.upstreamId === "card_welcome_scenes")!;
     const schema = editorSchemaFor(welcome);

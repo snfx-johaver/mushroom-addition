@@ -4,8 +4,8 @@ This manifest maps the documented card catalog to Mushroom Cards Addition
 registrations. It is generated from `src/catalog.ts`; CI rejects duplicate
 IDs, missing source paths, invalid namespaces, or broken popup mappings.
 
-**Coverage:** 44 documented upstream card sources map to
-42 public card components.
+**Coverage:** 45 documented upstream card sources map to
+43 public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
 of duplicate picker entries. 2 popup templates and
 1 implementation helpers are inventoried but are not
@@ -54,6 +54,7 @@ public registrations.
 | `custom_card_vehicle_status` | custom-card | `custom:mushroom-addition-custom-card-vehicle-status` | sensor | default | `custom_card_vehicle_status` |
 | `custom_card_plant` | custom-card | `custom:mushroom-addition-custom-card-plant` | sensor | default | `custom_card_plant` |
 | `custom_card_speedtest_gauges` | custom-card | `custom:mushroom-addition-custom-card-speedtest-gauges` | energy | default | `custom_card_speedtest_gauges` |
+| `custom_card_better_thermostat` | custom-card | `custom:mushroom-addition-custom-card-better-thermostat` | climate | normal, compact | `custom_card_better_thermostat` |
 | `custom_card_pollen` | custom-card | `custom:mushroom-addition-custom-card-pollen` | weather | default | `custom_card_pollen` |
 
 ## Unified component mapping

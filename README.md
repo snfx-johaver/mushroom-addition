@@ -7,8 +7,8 @@ providing UI-configurable additional Mushroom style cards. The layouts, state st
 controls, variables, and defaults are audited item-by-item while retaining a
 cohesive installation alongside Mushroom.
 
-The release traces **44 documented upstream card sources**—8 default cards and
-36 custom cards—to **42 public card components**. Same-goal aliases and compact or
+The release traces **45 documented card sources**—8 default cards and
+37 custom cards—to **43 public card components**. Same-goal aliases and compact or
 layout alternatives are combined into clear graphical variants instead of
 duplicating picker entries. Every public component has a visual editor and
 remains YAML-configurable. See the
@@ -79,6 +79,26 @@ hold_action:
   action: more-info
 ```
 
+The **Better Thermostat Card** provides normal and compact layouts for any Home
+Assistant `climate` entity. It includes touch-friendly target temperature
+controls, HVAC modes, presets, humidity, heating/cooling state, and optional
+window and battery sensor warnings.
+
+```yaml
+type: custom:mushroom-addition-custom-card-better-thermostat
+entity: climate.living_room
+variant: normal
+window_sensor: binary_sensor.living_room_window
+humidity_entity: sensor.living_room_humidity
+battery_entity: sensor.living_room_thermostat_battery
+```
+
+The card uses Home Assistant's public `climate.set_temperature`,
+`climate.set_hvac_mode`, and `climate.set_preset_mode` services. It is an
+original implementation informed by the documented behavior of
+[Better Thermostat UI Card](https://github.com/KartoffelToby/better-thermostat-ui-card);
+no code, styles, translations, or assets from that AGPL project are bundled.
+
 ## Design and behavior
 
 Registrations share typed configuration, entity/state formatting, action
@@ -94,9 +114,8 @@ existing dashboards continue to render without cluttering the picker.
 ![Representative family renderers](docs/assets/family-fixture.png)
 
 No upstream YAML, JavaScript bundles, or assets are copied. This is an original
-Lit implementation based on documented public behavior. See
-[third-party notices](THIRD_PARTY_NOTICES.md) and the per-item source links in
-the [catalog](docs/CATALOG.md).
+Lit implementation based on documented public behavior. See the per-item source
+links in the [catalog](docs/CATALOG.md).
 The renderer decisions and upstream source references are documented in the
 [visual specification](docs/VISUAL_SPEC.md).
 

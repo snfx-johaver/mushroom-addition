@@ -209,6 +209,47 @@ describe("Home Assistant registration", () => {
     expect(constructor.getStubConfig({ states: {}, callService: async () => undefined }, [], [])).toMatchObject({ icon });
   });
 
+  it("creates a useful Better Thermostat starter configuration", () => {
+    const constructor = customElements.get("mushroom-addition-custom-card-better-thermostat") as typeof HTMLElement & {
+      getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
+    };
+    const hass: HomeAssistant = {
+      states: {
+        "climate.living_room": {
+          entity_id: "climate.living_room",
+          state: "heat",
+          attributes: { friendly_name: "Living room" },
+        },
+        "binary_sensor.living_room_window": {
+          entity_id: "binary_sensor.living_room_window",
+          state: "off",
+          attributes: { friendly_name: "Living room window" },
+        },
+        "sensor.living_room_humidity": {
+          entity_id: "sensor.living_room_humidity",
+          state: "45",
+          attributes: { device_class: "humidity" },
+        },
+        "sensor.thermostat_battery": {
+          entity_id: "sensor.thermostat_battery",
+          state: "78",
+          attributes: { device_class: "battery" },
+        },
+      },
+      callService: async () => undefined,
+    };
+    expect(constructor.getStubConfig(hass, Object.keys(hass.states), [])).toMatchObject({
+      entity: "climate.living_room",
+      window_sensor: "binary_sensor.living_room_window",
+      humidity_entity: "sensor.living_room_humidity",
+      battery_entity: "sensor.thermostat_battery",
+      variant: "normal",
+      show_temperature_control: true,
+      show_hvac_modes: true,
+      show_presets: true,
+    });
+  });
+
   it("populates the weather metrics picker example with healthy weather data", () => {
     const entries: Array<[string, string, Record<string, unknown>]> = [
       ["weather.home", "partlycloudy", { friendly_name: "Home forecast", temperature: 12.5 }],
