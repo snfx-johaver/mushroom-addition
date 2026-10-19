@@ -59,17 +59,18 @@ describe("Home Assistant registration", () => {
       await editor.updateComplete;
       expect(editor.shadowRoot?.textContent).toContain("Add button");
       expect(editor.shadowRoot?.textContent).toContain(itemKey === "scene_items" ? "Scene buttons" : "Room sensor buttons");
+      expect(editor.shadowRoot?.textContent).toContain("Custom name");
+      expect(editor.shadowRoot?.textContent).toContain("Active when state is");
+      const textSelectors = editor.shadowRoot?.querySelectorAll<HTMLElement & {
+        value?: string;
+        selector?: Record<string, unknown>;
+      }>(".item-row .field ha-selector") ?? [];
+      const customName = [...textSelectors].find((selector) => selector.value === "Example");
+      const activeState = [...textSelectors].find((selector) => selector.value === "");
+      expect(customName?.selector).toEqual({ text: {} });
+      expect(activeState?.selector).toEqual({ text: {} });
       if (itemKey === "scene_items") {
-        expect(editor.shadowRoot?.textContent).toContain("Custom name");
         expect(editor.shadowRoot?.textContent).toContain("Defaults to activating scenes");
-        const textSelectors = editor.shadowRoot?.querySelectorAll<HTMLElement & {
-          value?: string;
-          selector?: Record<string, unknown>;
-        }>(".item-row .field ha-selector") ?? [];
-        const customName = [...textSelectors].find((selector) => selector.value === "Example");
-        const activeState = [...textSelectors].find((selector) => selector.value === "");
-        expect(customName?.selector).toEqual({ text: {} });
-        expect(activeState?.selector).toEqual({ text: {} });
         const changed = vi.fn();
         editor.addEventListener("config-changed", changed);
         customName?.dispatchEvent(new CustomEvent("value-changed", {
@@ -120,6 +121,14 @@ describe("Home Assistant registration", () => {
       ".waste-stream-row .wide ha-selector",
     );
     expect([...entitySelectors ?? []].map((selector) => selector.value)).toEqual(["sensor.rest", "sensor.glass"]);
+    const labelSelectors = editor.shadowRoot?.querySelectorAll<HTMLElement & {
+      value?: string;
+      selector?: Record<string, unknown>;
+    }>(".waste-stream-row label.field ha-selector");
+    expect([...labelSelectors ?? []]
+      .filter((selector) => selector.selector && "text" in selector.selector)
+      .map((selector) => selector.value))
+      .toEqual(["Residual waste", "Glass"]);
     editor.remove();
   });
 

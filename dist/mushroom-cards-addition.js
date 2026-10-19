@@ -6676,7 +6676,7 @@ let Se = class extends me {
                 .value=${n.entity}
                 @value-changed=${(l) => this.updateItem(e, s, "entity", l.detail.value)}
               ></ha-selector>
-              <small>Select the entity this button controls. Welcome Scenes supports every Home Assistant domain.</small>
+              <small>${e === "scene_items" ? "Select the entity this button controls. Welcome Scenes supports every Home Assistant domain." : "Select the entity represented by this room sensor button."}</small>
             </label>
             <label class="field">
               <span>Custom name</span>
@@ -6783,11 +6783,15 @@ let Se = class extends me {
                 @value-changed=${(r) => this.updateWasteStream(a, "entity", r.detail.value)}
               ></ha-selector>
             </label>
-            <ha-textfield
-              label="Label"
-              .value=${t.label ?? ""}
-              @input=${(r) => this.updateWasteStream(a, "label", r.target.value)}
-            ></ha-textfield>
+            <label class="field">
+              <span>Label</span>
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ text: {} }}
+                .value=${t.label ?? ""}
+                @value-changed=${(r) => this.updateWasteStream(a, "label", r.detail.value)}
+              ></ha-selector>
+            </label>
             <label class="field">
               <span>Icon</span>
               <ha-selector
