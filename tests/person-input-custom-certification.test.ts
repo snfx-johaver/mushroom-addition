@@ -143,34 +143,21 @@ afterEach(() => {
 });
 
 describe("person and input custom-card certification", () => {
-  it("provides dedicated picker defaults and graphical editor fields for exactly six sources", () => {
+  it("provides dedicated picker defaults and graphical editor fields for retained sources", () => {
     const expected = {
-      custom_card_imswel_person: ["entity", "wifi_tracker_entity", "gps_tracker_entity", "findmy_script_entity", "use_entity_picture"],
-      custom_card_input_datetime: ["entity", "ulm_card_input_datetime_name"],
-      custom_card_input_number: ["entity", "ulm_card_input_number_name"],
-      custom_card_irmajavi_entities: ["entity", "ulm_custom_card_irmajavi_entities_entity_1", "ulm_custom_card_irmajavi_entities_name_4"],
-      custom_card_irmajavi_speedtest: ["entity", "download_entity", "upload_entity", "ping_entity", "ulm_custom_card_irmajavi_speedtest_router_name"],
-      custom_card_irmajavi_weather: ["entity", "temperature_entity", "date_entity", "ulm_custom_card_irmajavi_weather_entity_4"],
+      custom_card_person_location: ["entity", "wifi_tracker_entity", "gps_tracker_entity", "findmy_script_entity"],
+      custom_card_input_datetime: ["entity", "name"],
+      custom_card_entity_overview: ["entity", "ulm_custom_card_entity_overview_entity_1", "ulm_custom_card_entity_overview_name_4"],
+      custom_card_internet_speed: ["entity", "download_entity", "upload_entity", "ping_entity", "ulm_custom_card_internet_speed_router_name"],
+      custom_card_weather_metrics: ["entity", "temperature_entity", "date_entity", "ulm_custom_card_weather_metrics_entity_4"],
     };
     for (const [id, fields] of Object.entries(expected)) {
       const item = descriptor(id);
       expect(editorSchemaFor(item).map(({ name }) => name)).toEqual(expect.arrayContaining(fields));
+      expect(editorSchemaFor(item).map(({ name }) => name)).not.toContain("use_entity_picture");
       expect(upstreamEditorSchemaFor(item).map(({ name }) => name))
         .not.toEqual(expect.arrayContaining(fields));
     }
-
-    const inputNumber = descriptor("custom_card_input_number");
-    expect(editorSchemaFor(inputNumber).find(({ name }) => name === "entity")?.selector).toEqual({
-      entity: { domain: ["input_number", "counter", "select", "input_select"] },
-    });
-    const constructor = customElements.get(inputNumber.tag) as typeof HTMLElement & {
-      getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
-    };
-    expect(constructor.getStubConfig(
-      { states: { "sensor.temperature": states["sensor.temperature"] }, callService: vi.fn() },
-      ["sensor.temperature"],
-      [],
-    ).entity).toBeUndefined();
   });
 
   it("round-trips a dedicated graphical editor field", async () => {
@@ -182,7 +169,7 @@ describe("person and input custom-card certification", () => {
     };
     editor.hass = { states, callService: vi.fn() };
     editor.setConfig({
-      type: `custom:${descriptor("custom_card_irmajavi_speedtest").tag}`,
+      type: `custom:${descriptor("custom_card_internet_speed").tag}`,
       download_entity: "sensor.download",
     });
     document.body.append(editor);
@@ -203,12 +190,12 @@ describe("person and input custom-card certification", () => {
 
   it("migrates every documented legacy entity variable to semantic fields", () => {
     expect(normalizeConfig({
-      type: "custom:mushroom-addition-custom-card-imswel-person",
-      ulm_card_imswel_person_entity: "person.joris",
-      ulm_card_imswel_person_wifi_tracker: "device_tracker.wifi",
-      ulm_card_imswel_person_gps_tracker: "device_tracker.gps",
-      ulm_card_imswel_person_findmy_script: "script.find_phone",
-      ulm_card_imswel_person_use_entity_picture: true,
+      type: "custom:mushroom-addition-custom-card-person-location",
+      ulm_card_person_location_entity: "person.joris",
+      ulm_card_person_location_wifi_tracker: "device_tracker.wifi",
+      ulm_card_person_location_gps_tracker: "device_tracker.gps",
+      ulm_card_person_location_findmy_script: "script.find_phone",
+      ulm_card_person_location_use_entity_picture: true,
     })).toMatchObject({
       entity: "person.joris",
       wifi_tracker_entity: "device_tracker.wifi",
@@ -217,10 +204,10 @@ describe("person and input custom-card certification", () => {
       use_entity_picture: true,
     });
     expect(normalizeConfig({
-      type: "custom:mushroom-addition-custom-card-irmajavi-speedtest",
-      ulm_custom_card_irmajavi_speedtest_download_speed_entity: "sensor.download",
-      ulm_custom_card_irmajavi_speedtest_upload_speed_entity: "sensor.upload",
-      ulm_custom_card_irmajavi_speedtest_ping_entity: "sensor.ping",
+      type: "custom:mushroom-addition-custom-card-internet-speed",
+      ulm_custom_card_internet_speed_download_speed_entity: "sensor.download",
+      ulm_custom_card_internet_speed_upload_speed_entity: "sensor.upload",
+      ulm_custom_card_internet_speed_ping_entity: "sensor.ping",
     })).toMatchObject({
       entity: "sensor.download",
       download_entity: "sensor.download",
@@ -228,11 +215,11 @@ describe("person and input custom-card certification", () => {
       ping_entity: "sensor.ping",
     });
     expect(normalizeConfig({
-      type: "custom:mushroom-addition-custom-card-irmajavi-weather",
-      ulm_custom_card_irmajavi_weather: "weather.home",
-      ulm_custom_card_irmajavi_weather_temperature_outside: "sensor.temperature",
-      ulm_custom_card_irmajavi_weather_date: "sensor.date_long",
-      ulm_custom_card_irmajavi_weather_entity_1: "sensor.wind",
+      type: "custom:mushroom-addition-custom-card-weather-metrics",
+      ulm_custom_card_weather_metrics: "weather.home",
+      ulm_custom_card_weather_metrics_temperature_outside: "sensor.temperature",
+      ulm_custom_card_weather_metrics_date: "sensor.date_long",
+      ulm_custom_card_weather_metrics_entity_1: "sensor.wind",
     })).toMatchObject({
       entity: "weather.home",
       temperature_entity: "sensor.temperature",
@@ -242,12 +229,12 @@ describe("person and input custom-card certification", () => {
   });
 
   it("renders source person states and dispatches its one visible card action", async () => {
-    const card = await renderCard("custom_card_imswel_person", {
+    const card = await renderCard("custom_card_person_location", {
       entity: "person.joris",
       use_entity_picture: false,
     });
     expect(card.shadowRoot.textContent).toContain("Home");
-    expect((card.shadowRoot.querySelector(".imswel-location ha-icon") as HTMLElement & { icon: string }).icon)
+    expect((card.shadowRoot.querySelector(".person-location-marker ha-icon") as HTMLElement & { icon: string }).icon)
       .toBe("mdi:home-variant");
     const action = vi.fn();
     card.addEventListener("hass-action", action);
@@ -257,13 +244,13 @@ describe("person and input custom-card certification", () => {
       config: { entity: "person.joris", tap_action: { action: "more-info" } },
     });
 
-    const office = await renderCard("custom_card_imswel_person", { entity: "person.joris" }, {
+    const office = await renderCard("custom_card_person_location", { entity: "person.joris" }, {
       ...states,
       "person.joris": { ...states["person.joris"], state: "Office" },
     });
-    expect((office.shadowRoot.querySelector(".imswel-location ha-icon") as HTMLElement & { icon: string }).icon)
+    expect((office.shadowRoot.querySelector(".person-location-marker ha-icon") as HTMLElement & { icon: string }).icon)
       .toBe("mdi:briefcase");
-    const unavailable = await renderCard("custom_card_imswel_person", { entity: "person.joris" }, {
+    const unavailable = await renderCard("custom_card_person_location", { entity: "person.joris" }, {
       ...states,
       "person.joris": { ...states["person.joris"], state: "unavailable" },
     });
@@ -297,49 +284,16 @@ describe("person and input custom-card certification", () => {
       .every((control) => control.disabled)).toBe(true);
   });
 
-  it("executes every input-number control and keeps configured-unavailable inert", async () => {
-    const callService = vi.fn(async () => undefined);
-    const card = await renderCard("custom_card_input_number", {
-      entity: "input_number.target",
-    }, states, callService);
-    [...card.shadowRoot.querySelectorAll<HTMLButtonElement>(".input-number-controls button")]
-      .forEach((control) => control.click());
-    expect(callService.mock.calls).toEqual([
-      ["input_number", "decrement", { entity_id: "input_number.target" }],
-      ["cover", "stop_cover", { entity_id: "input_number.target" }],
-      ["input_number", "increment", { entity_id: "input_number.target" }],
-    ]);
-
-    const counterService = vi.fn(async () => undefined);
-    const counter = await renderCard("custom_card_input_number", {
-      entity: "counter.people",
-    }, states, counterService);
-    const counterControls = [...counter.shadowRoot.querySelectorAll<HTMLButtonElement>(".input-number-controls button")];
-    counterControls[0].click();
-    counterControls[2].click();
-    expect(counterService.mock.calls).toEqual([
-      ["counter", "decrement", { entity_id: "counter.people" }],
-      ["counter", "increment", { entity_id: "counter.people" }],
-    ]);
-
-    const unavailable = await renderCard("custom_card_input_number", {
-      entity: "input_number.missing",
-    });
-    expect(unavailable.shadowRoot.textContent).toContain("Entity unavailable");
-    expect([...unavailable.shadowRoot.querySelectorAll<HTMLButtonElement>(".input-number-controls button")]
-      .every((control) => control.disabled)).toBe(true);
-  });
-
   it("renders and dispatches all four Entities detail interactions", async () => {
-    const card = await renderCard("custom_card_irmajavi_entities", {
+    const card = await renderCard("custom_card_entity_overview", {
       entity: "light.lamp",
       entities: ["light.lamp", "sensor.temperature", "switch.plug", "sensor.battery"],
-      ulm_custom_card_irmajavi_entities_name: "System Status",
+      ulm_custom_card_entity_overview_name: "System Status",
     });
-    expect(card.shadowRoot.querySelectorAll(".irmajavi-four button")).toHaveLength(4);
+    expect(card.shadowRoot.querySelectorAll(".metrics-four button")).toHaveLength(4);
     const actions = vi.fn();
     card.addEventListener("hass-action", actions);
-    card.shadowRoot.querySelectorAll<HTMLButtonElement>(".irmajavi-four button")
+    card.shadowRoot.querySelectorAll<HTMLButtonElement>(".metrics-four button")
       .forEach((control) => control.click());
     expect(actions.mock.calls.map(([event]) => (event as CustomEvent).detail.config.entity)).toEqual([
       "light.lamp", "sensor.temperature", "switch.plug", "sensor.battery",
@@ -350,13 +304,13 @@ describe("person and input custom-card certification", () => {
 
   it("uses one exact speedtest update payload and two visible metric actions", async () => {
     const callService = vi.fn(async () => undefined);
-    const card = await renderCard("custom_card_irmajavi_speedtest", {
+    const card = await renderCard("custom_card_internet_speed", {
       entity: "sensor.download",
       download_entity: "sensor.download",
       upload_entity: "sensor.upload",
       ping_entity: "sensor.ping",
-      ulm_custom_card_irmajavi_speedtest_router_name: "Linksys",
-      ulm_custom_card_irmajavi_speedtest_router_model: "EA8549",
+      ulm_custom_card_internet_speed_router_name: "Linksys",
+      ulm_custom_card_internet_speed_router_model: "EA8549",
     }, states, callService);
     (card.shadowRoot.querySelector(".speedtest-action") as HTMLButtonElement).click();
     expect(callService).toHaveBeenCalledWith("homeassistant", "update_entity", {
@@ -372,7 +326,7 @@ describe("person and input custom-card certification", () => {
   });
 
   it("renders weather date/temperature and dispatches all four metric actions", async () => {
-    const card = await renderCard("custom_card_irmajavi_weather", {
+    const card = await renderCard("custom_card_weather_metrics", {
       entity: "weather.home",
       temperature_entity: "sensor.temperature",
       date_entity: "sensor.date_long",
@@ -382,7 +336,7 @@ describe("person and input custom-card certification", () => {
     expect(card.shadowRoot.textContent).toContain("22.4 °C");
     const actions = vi.fn();
     card.addEventListener("hass-action", actions);
-    card.shadowRoot.querySelectorAll<HTMLButtonElement>(".irmajavi-four button")
+    card.shadowRoot.querySelectorAll<HTMLButtonElement>(".metrics-four button")
       .forEach((control) => control.click());
     expect(actions.mock.calls.map(([event]) => (event as CustomEvent).detail.config.entity)).toEqual([
       "sensor.wind", "sensor.precipitation", "sensor.uv", "sensor.humidity",

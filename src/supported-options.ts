@@ -3,12 +3,51 @@ import type { CatalogItem } from "./types";
 export const isRemovedPopupOption = (name: string): boolean =>
   /popup|browser_mod/i.test(name);
 
-const supportedByFamily: Record<string, readonly string[]> = {
-  weather: [
-    "ulm_card_weather_backdrop",
-    "ulm_card_weather_primary_info",
-    "ulm_card_weather_secondary_info",
+const replacedOptions: Partial<Record<string, readonly string[]>> = {
+  card_battery: [
+    "ulm_card_battery_battery_level_danger",
+    "ulm_card_battery_battery_level_warning",
+    "ulm_card_battery_color_battery_level_danger",
+    "ulm_card_battery_color_battery_level_warning",
+    "ulm_card_battery_color_battery_level_ok",
   ],
+  custom_card_speedtest_gauges: [
+    "ulm_custom_card_speedtest_download_speed_color",
+    "ulm_custom_card_speedtest_upload_speed_color",
+    "ulm_custom_card_speedtest_ping_color",
+  ],
+};
+
+export const canonicalNameOptions = new Set([
+  "ulm_card_battery_name",
+  "ulm_card_cover_name",
+  "ulm_card_flower_name",
+  "ulm_card_input_boolean_name",
+  "ulm_card_input_datetime_name",
+  "ulm_card_input_number_name",
+  "ulm_card_media_player_with_controls_name",
+  "ulm_card_power_details_name",
+  "ulm_card_printer_name",
+  "ulm_card_vehicle_status_name",
+  "ulm_custom_card_bar_card_name",
+  "ulm_custom_card_entity_overview_name",
+  "ulm_custom_card_metrics_entitites_name",
+  "ulm_custom_card_pollen_forecast_name",
+  "ulm_custom_card_person_tracker_name",
+]);
+
+const canonicalIconTypeOptions = new Set([
+  "ulm_card_person_location_use_entity_picture",
+  "ulm_card_person_use_entity_picture",
+  "ulm_custom_card_person_tracker_use_entity_picture",
+]);
+
+export const isReplacedUpstreamOption = (item: CatalogItem, name: string): boolean =>
+  canonicalNameOptions.has(name) ||
+  canonicalIconTypeOptions.has(name) ||
+  (replacedOptions[item.upstreamId]?.includes(name) ?? false);
+
+const supportedByFamily: Record<string, readonly string[]> = {
   light: [
     "ulm_card_light_enable_slider",
     "ulm_card_light_enable_slider_minSet",
@@ -68,32 +107,9 @@ const supportedByFamily: Record<string, readonly string[]> = {
     "ulm_card_cover_slider_max",
     "ulm_card_invert_percent",
   ],
-  control: [
-    "ulm_card_fan_button_service",
-    "ulm_card_fan_color",
-    "ulm_card_fan_enable_collapse",
-    "ulm_card_fan_enable_horizontal",
-    "ulm_card_fan_enable_slider",
-    "ulm_card_fan_slider_min",
-    "ulm_card_fan_slider_max",
-    "ulm_card_fan_enable_button",
-    "ulm_card_fan_button_icon",
-    "ulm_card_fan_force_background_color",
-    "ulm_card_fan_hum_attribute",
-    "ulm_card_fan_icon",
-    "ulm_card_fan_name",
-    "ulm_card_fan_oscillate_attribute",
-    "ulm_card_fan_temp_attribute",
-  ],
 };
 
 const supportedByItem: Record<string, readonly string[]> = {
-  card_generic: [
-    "ulm_card_generic_color",
-    "ulm_card_generic_force_background_color",
-    "ulm_card_generic_swap_color",
-    "ulm_card_generic_swap_force_background_color",
-  ],
   card_graph: [
     "ulm_card_graph_color",
     "ulm_card_graph_color2",
@@ -104,29 +120,6 @@ const supportedByItem: Record<string, readonly string[]> = {
     "ulm_card_graph_line_width",
     "ulm_card_graph_points",
     "ulm_card_graph_type",
-  ],
-  card_navigate: [
-    "ulm_card_navigate_color",
-  ],
-  card_binary_sensor: [
-    "ulm_card_binary_sensor_color",
-    "ulm_card_binary_sensor_force_background_color",
-    "ulm_card_binary_sensor_icon",
-    "ulm_card_binary_sensor_name",
-    "ulm_card_binary_sensor_show_last_changed",
-  ],
-  card_binary_sensor_alert: [
-    "ulm_card_binary_sensor_alert_color",
-    "ulm_card_binary_sensor_alert_force_background_color",
-    "ulm_card_binary_sensor_alert_icon",
-    "ulm_card_binary_sensor_alert_name",
-    "ulm_card_binary_sensor_alert_show_last_changed",
-  ],
-  card_input_boolean: [
-    "ulm_card_input_boolean_color",
-    "ulm_card_input_boolean_force_background_color",
-    "ulm_card_input_boolean_icon",
-    "ulm_card_input_boolean_name",
   ],
   custom_card_bar_card: [
     "ulm_custom_card_bar_card_color",
@@ -139,7 +132,7 @@ const supportedByItem: Record<string, readonly string[]> = {
     "ulm_custom_card_bar_card_show_icon",
     "ulm_custom_card_bar_card_value",
   ],
-  custom_card_haven_washer: [
+  custom_card_washer: [
     "ulm_custom_card_washer_power",
     "ulm_custom_card_washer_remote_control",
     "ulm_custom_card_washer_machine_state",
@@ -156,7 +149,7 @@ const supportedByItem: Record<string, readonly string[]> = {
     "ulm_custom_card_washer_pause_action",
     "ulm_custom_card_washer_stop_action",
   ],
-  custom_card_httpedo13_sun: [
+  custom_card_sun: [
     "darkMode",
     "language",
     "showAzimuth",
@@ -164,30 +157,11 @@ const supportedByItem: Record<string, readonly string[]> = {
     "timeFormat",
     "title",
   ],
-  custom_card_iAbadia_battery_chip: [
-    "ulm_custom_card_iAbadia_battery_chip_entity",
-    "ulm_custom_card_iAbadia_battery_chip_icon",
-    "ulm_custom_card_iAbadia_battery_chip_danger",
-    "ulm_custom_card_iAbadia_battery_chip_warning",
+  custom_card_media_library: [
+    "ulm_custom_card_media_library_index",
+    "ulm_custom_card_media_library_platform",
   ],
-  custom_card_imswel_medias: [
-    "ulm_custom_card_imswel_medias_index",
-    "ulm_custom_card_imswel_medias_platform",
-  ],
-  custom_card_yagrasdemonde_lights_count: [
-    "ulm_custom_card_yagrasdemonde_lights_count_color",
-    "ulm_custom_card_yagrasdemonde_lights_count_cover_0",
-    "ulm_custom_card_yagrasdemonde_lights_count_cover_1",
-    "ulm_custom_card_yagrasdemonde_lights_count_cover_many",
-    "ulm_custom_card_yagrasdemonde_lights_count_force_background_color",
-    "ulm_custom_card_yagrasdemonde_lights_count_icon_off",
-    "ulm_custom_card_yagrasdemonde_lights_count_icon_on",
-    "ulm_custom_card_yagrasdemonde_lights_count_light_0",
-    "ulm_custom_card_yagrasdemonde_lights_count_light_1",
-    "ulm_custom_card_yagrasdemonde_lights_count_light_many",
-    "ulm_custom_card_yagrasdemonde_lights_count_type",
-  ],
-  custom_card_speedtest_shogun160: [
+  custom_card_speedtest_gauges: [
     "ulm_custom_card_speedtest_download_speed_color",
     "ulm_custom_card_speedtest_download_speed_entity",
     "ulm_custom_card_speedtest_download_speed_max",
@@ -199,47 +173,16 @@ const supportedByItem: Record<string, readonly string[]> = {
     "ulm_custom_card_speedtest_ping_max",
     "ulm_custom_card_speedtest_round",
   ],
-  custom_card_wilbiev_title: [
-    "ulm_custom_card_wilbiev_title_name",
-    "ulm_custom_card_wilbiev_title_nav",
-  ],
-  custom_card_wilbiev_subtitle: [
-    "ulm_custom_card_wilbiev_subtitle_name",
-    "ulm_custom_card_wilbiev_title_name",
-  ],
-  custom_card_nas: [
-    "ulm_custom_card_nas_sensor",
-    "ulm_custom_card_nas_text",
-    "ulm_custom_card_nas_unit",
-    "ulm_custom_cad_nas_unit",
-  ],
-  custom_card_neekster_update: [
-    "ulm_card_neekster_update_icon",
-    "ulm_card_neekster_update_enable_controls",
-    "ulm_card_neekster_update_collapsible",
-    "ulm_card_neekster_update_horizontal",
-    "ulm_card_neekster_update_narrow_buttons",
-  ],
-  custom_card_nik_clock: [
-    "ulm_custom_card_nik_clock_switch",
-    "ulm_custom_card_nik_clock_switch_enable",
-    "ulm_language",
-  ],
-  custom_card_nik_door: [
-    "ulm_custom_card_entity_1_name",
-    "ulm_custom_card_entity_1_lock",
-    "ulm_custom_card_entity_1_lock_battery",
-  ],
-  custom_card_paddy_dwd_pollen: [
-    "ulm_custom_card_paddy_dwd_pollen_icon",
-    "ulm_custom_card_paddy_dwd_pollen_name",
-    "ulm_custom_card_paddy_dwd_pollen_1",
-    "ulm_custom_card_paddy_dwd_pollen_2",
-    "ulm_custom_card_paddy_dwd_pollen_3",
-    "ulm_custom_card_paddy_dwd_pollen_4",
-    "ulm_custom_card_paddy_dwd_pollen_5",
-    "ulm_custom_card_paddy_dwd_pollen_6",
-    "ulm_custom_card_paddy_dwd_pollen_none",
+  custom_card_pollen_forecast: [
+    "ulm_custom_card_pollen_forecast_icon",
+    "ulm_custom_card_pollen_forecast_name",
+    "ulm_custom_card_pollen_forecast_1",
+    "ulm_custom_card_pollen_forecast_2",
+    "ulm_custom_card_pollen_forecast_3",
+    "ulm_custom_card_pollen_forecast_4",
+    "ulm_custom_card_pollen_forecast_5",
+    "ulm_custom_card_pollen_forecast_6",
+    "ulm_custom_card_pollen_forecast_none",
   ],
 };
 

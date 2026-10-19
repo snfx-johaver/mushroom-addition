@@ -36,7 +36,7 @@ export const defaultWasteStreams = (): WasteStreamConfig[] =>
 
 export const wasteStreamsForConfig = (config: AdditionConfig): WasteStreamConfig[] => {
   if (config.waste_streams?.length) return config.waste_streams.map((stream) => ({ ...stream }));
-  const isWasteCard = config.type.includes("custom-card-afvalophaling");
+  const isWasteCard = config.type.includes("custom-card-trash");
   const hasLegacyStreams = WASTE_STREAM_PRESETS.some((preset) =>
     preset.legacyKey && typeof config[preset.legacyKey] === "string");
   if (!isWasteCard && !hasLegacyStreams) return [];
@@ -50,7 +50,7 @@ export const wasteStreamsForConfig = (config: AdditionConfig): WasteStreamConfig
 };
 
 export const migrateWasteStreamConfig = (config: AdditionConfig): AdditionConfig => {
-  const isWasteCard = config.type.includes("custom-card-afvalophaling");
+  const isWasteCard = config.type.includes("custom-card-trash");
   const todayEntity = config.today_entity ??
     (typeof config.ulm_card_ophaling_vandaag === "string" ? config.ulm_card_ophaling_vandaag : undefined);
   const tomorrowEntity = config.tomorrow_entity ??

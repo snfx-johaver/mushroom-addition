@@ -84,20 +84,6 @@ interface Spec {
 
 const specs: Spec[] = [
   {
-    id: "card_generic",
-    tag: "mushroom-addition-card-generic",
-    reference: "card_generic.png",
-    crop: [55, 55, 1000, 270],
-    config: { type: "custom:mushroom-addition-card-generic", entity: "sensor.ads", variant: "default" },
-  },
-  {
-    id: "card_generic_swap",
-    tag: "mushroom-addition-card-generic-swap",
-    reference: "card_generic_swap.png",
-    crop: [55, 55, 1000, 270],
-    config: { type: "custom:mushroom-addition-card-generic-swap", entity: "sensor.ads", variant: "swapped" },
-  },
-  {
     id: "card_graph",
     tag: "mushroom-addition-card-graph",
     reference: "card_graph.png",
@@ -132,18 +118,6 @@ const specs: Spec[] = [
       ulm_card_media_player_enable_art: true,
       ulm_card_media_player_enable_controls: true,
       ulm_card_media_player_more_info: true,
-    },
-  },
-  {
-    id: "card_navigate",
-    tag: "mushroom-addition-card-navigate",
-    reference: "card_navigate.png",
-    crop: [55, 55, 1000, 270],
-    config: {
-      type: "custom:mushroom-addition-card-navigate",
-      name: "Media",
-      icon: "mdi:account",
-      navigation_path: "/lovelace/media",
     },
   },
 ];

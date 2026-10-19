@@ -1,4 +1,4 @@
-import type { AdditionConfig, HassEntity } from "./types";
+import type { AdditionConfig, EntityNameItem, HassEntity, HomeAssistant } from "./types";
 import { migrateWasteStreamConfig } from "./waste-streams";
 
 export const activeStates = new Set([
@@ -12,10 +12,36 @@ export const stateLabel = (entity?: HassEntity): string => {
   return unit ? `${entity.state} ${String(unit)}` : entity.state.replaceAll("_", " ");
 };
 
-export const displayName = (config: AdditionConfig, entity?: HassEntity): string =>
-  config.name_mode === "none" ? "" :
-    config.name_mode === "entity" ? entity?.attributes.friendly_name || config.entity || "Mushroom Addition" :
-      config.name || entity?.attributes.friendly_name || config.entity || "Mushroom Addition";
+const textOnlyName = (name: EntityNameItem | EntityNameItem[] | string): string | undefined => {
+  if (typeof name === "string") return name;
+  const items = Array.isArray(name) ? name : [name];
+  return items.every((item) => item.type === "text")
+    ? items.map((item) => item.text ?? "").join(" ")
+    : undefined;
+};
+
+export const displayName = (
+  config: AdditionConfig,
+  entity?: HassEntity,
+  hass?: HomeAssistant,
+): string => {
+  const hasMushroomName = config.name !== undefined && typeof config.name !== "string";
+  if (hasMushroomName && entity && hass?.formatEntityName) {
+    return hass.formatEntityName(entity, config.name);
+  }
+  if (hasMushroomName) {
+    return textOnlyName(config.name!) || entity?.attributes.friendly_name || config.entity || "";
+  }
+  if (config.name_mode === "none") return "";
+  if (config.name_mode === "entity") {
+    return entity?.attributes.friendly_name || config.entity || "";
+  }
+  if (config.name && entity && hass?.formatEntityName) {
+    return hass.formatEntityName(entity, config.name);
+  }
+  const configuredName = config.name ? textOnlyName(config.name) : undefined;
+  return configuredName || entity?.attributes.friendly_name || config.entity || "";
+};
 
 export const fireEvent = (
   node: HTMLElement,
@@ -44,41 +70,31 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
   const title = type.includes("card-title");
   const welcomeScenes = type.includes("card-welcome-scenes");
   const weather = type.includes("card-weather");
+  const camera = type.includes("custom-card-camera");
   const nativeWeather = type.includes("card-weather-ulm") || migrated.variant === "native";
-  const clockSwitchEnabled = type.includes("custom-card-nik-clock") &&
-    upstream.ulm_custom_card_nik_clock_switch_enable === true &&
-    typeof upstream.clock_switch_entity === "string";
   const sourceDefaultAction =
-    type.includes("custom-card-httpedo13-sun") || type.includes("custom-card-httpedo13-thermostat")
+    type.includes("custom-card-sun") || type.includes("custom-card-thermostat-controls")
       ? { action: "none" }
       : undefined;
   const qubinoTarget = String(upstream.type).includes("custom-card-qubino")
     ? upstream.qubino_more_info_entity ?? upstream.entity
     : undefined;
-  const sourceDisablesTap = /(?:wsly-pollen|yagrasdemonde-lights-count)/.test(type);
+  const sourceDisablesTap = type.endsWith("custom-card-pollen");
   const speedtestEntities = [
     upstream.download_entity,
     upstream.upload_entity,
     upstream.ping_entity,
   ].filter((value): value is string => typeof value === "string");
-  const isSpeedtest = String(upstream.type).includes("speedtest-shogun160");
-  const isWilbievTitle = upstream.variant === "divider-title";
-  const isWilbievSubtitle = upstream.variant === "divider-subtitle";
-  const defaultAction = clockSwitchEnabled
-    ? {
-      action: "perform-action",
-      perform_action: "input_boolean.toggle",
-      target: { entity_id: upstream.clock_switch_entity },
-    }
-    : type.includes("custom-card-nik-clock")
-      ? { action: "none" }
-      : isSpeedtest
+  const isSpeedtest = String(upstream.type).includes("speedtest-gauges");
+  const isDividerTitle = upstream.variant === "divider-title";
+  const isDividerSubtitle = upstream.variant === "divider-subtitle";
+  const defaultAction = isSpeedtest
     ? {
       action: "perform-action",
       perform_action: "homeassistant.update_entity",
       target: { entity_id: speedtestEntities },
     }
-    : isWilbievSubtitle || (isWilbievTitle && !upstream.navigation_path)
+    : isDividerSubtitle || (isDividerTitle && !upstream.navigation_path)
       ? { action: "none" }
       : sourceDisablesTap
         ? { action: "none" }
@@ -100,23 +116,39 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
   return {
     ...upstream,
     show_icon: upstream.show_icon ?? true,
-    show_state: upstream.show_state ?? true,
-    name_mode: upstream.name_mode ?? (migrated.name ? "custom" : "entity"),
+    show_state: upstream.show_state ?? (
+      camera ? upstream.ulm_custom_card_camera_title !== false : true
+    ),
+    show_name: upstream.show_name ?? (
+      camera ? upstream.ulm_custom_card_camera_title !== false : undefined
+    ),
+    camera_view: upstream.camera_view ?? (camera ? "auto" : undefined),
+    fit_mode: upstream.fit_mode ?? (camera ? "cover" : undefined),
+    aspect_ratio: upstream.aspect_ratio ?? (
+      camera && typeof upstream.ulm_custom_card_camera_aspect_ratio === "string"
+        ? upstream.ulm_custom_card_camera_aspect_ratio
+        : undefined
+    ),
+    name_mode: upstream.primary_info !== undefined || upstream.secondary_info !== undefined
+      ? undefined
+      : upstream.name_mode,
     icon_type: upstream.icon_type ?? (
       migrated.use_entity_picture ? "entity-picture" :
         migrated.show_icon === false ? "none" : "icon"
     ),
     layout: upstream.layout ?? "default",
     fill_container: upstream.fill_container ?? false,
-    primary_info: upstream.primary_info ?? "name",
-    secondary_info: upstream.secondary_info ?? "default",
+    primary_info: upstream.primary_info ?? (
+      camera && upstream.show_name === false ? "none" : undefined
+    ),
+    secondary_info: upstream.secondary_info ?? (
+      camera && upstream.show_state === false ? "none" : undefined
+    ),
     tap_action: upstream.tap_action ?? defaultAction,
     show_controls: upstream.show_controls ?? (type.includes("card-vacuum") ? true : undefined),
     show_forecast: upstream.show_forecast ?? (weather ? !nativeWeather : undefined),
     hold_action: upstream.hold_action ?? (
-      type.includes("custom-card-neekster-update")
-        ? { action: "more-info" }
-        : String(upstream.type).includes("water-heater") && upstream.entity
+      String(upstream.type).includes("water-heater") && upstream.entity
         ? { action: "more-info" }
         : upstream.variant === "small" && typeof upstream.ulm_card_person_battery_entity === "string"
         ? { action: "more-info", entity: upstream.ulm_card_person_battery_entity }
@@ -138,18 +170,10 @@ const upstreamCompatibility = (config: AdditionConfig): AdditionConfig => {
   const horizontal = configuredValue(config, /_enable_horizontal$/);
   return {
     ...config,
-    name: config.name ?? (
-      typeof config.ulm_card_navigate_title === "string" ? config.ulm_card_navigate_title :
-        typeof name === "string" ? name : undefined
-    ),
-    icon: config.icon ?? (
-      typeof config.ulm_card_navigate_icon === "string" ? config.ulm_card_navigate_icon :
-        typeof icon === "string" ? icon : undefined
-    ),
+    name: config.name ?? (typeof name === "string" ? name : undefined),
+    icon: config.icon ?? (typeof icon === "string" ? icon : undefined),
     icon_color: config.icon_color ?? (typeof color === "string" ? color : undefined),
-    navigation_path: config.navigation_path ?? (
-      typeof config.ulm_card_navigate_path === "string" ? config.ulm_card_navigate_path : undefined
-    ),
+    navigation_path: config.navigation_path,
     show_controls: config.show_controls ?? (
       typeof controls === "boolean" ? controls :
         typeof slider === "boolean" ? slider : undefined
@@ -161,16 +185,14 @@ const upstreamCompatibility = (config: AdditionConfig): AdditionConfig => {
 const legacyEntityKeys = [
   "ulm_card_person_entity",
   "ulm_card_light_entity",
-  "ulm_card_weather_entity",
   "ulm_card_media_player_entity",
-  "ulm_card_thermostat_entity",
   "ulm_card_cover_entity",
   "ulm_card_vacuum_entity",
   "ulm_card_graph_entity",
-  "ulm_card_imswel_person_entity",
+  "ulm_card_person_location_entity",
   "ulm_card_input_number_entity",
-  "ulm_custom_card_irmajavi_entities",
-  "ulm_custom_card_irmajavi_weather",
+  "ulm_custom_card_entity_overview",
+  "ulm_custom_card_weather_metrics",
 ] as const;
 
 export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
@@ -206,33 +228,24 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
       ? config.ulm_input_select_option
       : undefined;
   }
-  if (String(config.type).includes("card-thermostat")) {
-    migrated.fan_entity ??= entityId(config.ulm_card_thermostat_fan_entity);
-    migrated.thermostat_minimum_temp_spread ??= typeof config.ulm_card_thermostat_minimum_temp_spread === "number"
-      ? config.ulm_card_thermostat_minimum_temp_spread
-      : undefined;
-    migrated.thermostat_temp_step ??= typeof config.ulm_card_thermostat_temp_step === "number"
-      ? config.ulm_card_thermostat_temp_step
-      : undefined;
-  }
-  if (String(config.type).includes("nik-nas")) {
+  if (String(config.type).includes("nas-metrics")) {
     migrated.temperature_entity ??= entityId(config.entity_1);
     migrated.memory_entity ??= entityId(config.entity_2);
     migrated.cpu_entity ??= entityId(config.entity_3);
     migrated.disk_entity ??= entityId(config.entity_4);
   }
-  if (String(config.type).includes("nik-tablet")) {
-    migrated.entity ??= entityId(config.ulm_custom_card_nik_tablet_main);
-    migrated.battery_entity ??= entityId(config.ulm_custom_card_nik_tablet_battery);
-    migrated.tablet_button_usb_entity ??= entityId(config.ulm_custom_card_nik_tablet_button1);
-    migrated.tablet_button_motion_entity ??= entityId(config.ulm_custom_card_nik_tablet_button2);
-    migrated.tablet_button_display_entity ??= entityId(config.ulm_custom_card_nik_tablet_button3);
-    migrated.tablet_restart_entity ??= entityId(config.ulm_custom_card_nik_tablet_restart);
-    migrated.tablet_reload_entity ??= entityId(config.ulm_custom_card_nik_tablet_reload);
-    migrated.tablet_maintenance_entity ??= entityId(config.ulm_custom_card_nik_tablet_maintenance);
-    migrated.tablet_ram_entity ??= entityId(config.ulm_custom_card_nik_tablet_par1);
-    migrated.tablet_disk_entity ??= entityId(config.ulm_custom_card_nik_tablet_par2);
-    migrated.tablet_power_entity ??= entityId(config.ulm_custom_card_nik_tablet_par3);
+  if (String(config.type).includes("tablet")) {
+    migrated.entity ??= entityId(config.ulm_custom_card_tablet_main);
+    migrated.battery_entity ??= entityId(config.ulm_custom_card_tablet_battery);
+    migrated.tablet_button_usb_entity ??= entityId(config.ulm_custom_card_tablet_button1);
+    migrated.tablet_button_motion_entity ??= entityId(config.ulm_custom_card_tablet_button2);
+    migrated.tablet_button_display_entity ??= entityId(config.ulm_custom_card_tablet_button3);
+    migrated.tablet_restart_entity ??= entityId(config.ulm_custom_card_tablet_restart);
+    migrated.tablet_reload_entity ??= entityId(config.ulm_custom_card_tablet_reload);
+    migrated.tablet_maintenance_entity ??= entityId(config.ulm_custom_card_tablet_maintenance);
+    migrated.tablet_ram_entity ??= entityId(config.ulm_custom_card_tablet_par1);
+    migrated.tablet_disk_entity ??= entityId(config.ulm_custom_card_tablet_par2);
+    migrated.tablet_power_entity ??= entityId(config.ulm_custom_card_tablet_par3);
   }
   if (String(config.type).includes("card-welcome-scenes")) {
     migrated.collapse_entity ??= entityId(config.ulm_card_welcome_scenes_collapse);
@@ -266,49 +279,46 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
       ? config.ulm_card_vertical_button_color
       : "blue";
   }
-  if (String(config.type).includes("imswel-person")) {
-    migrated.entity ??= entityId(config.ulm_card_imswel_person_entity);
-    migrated.wifi_tracker_entity ??= entityId(config.ulm_card_imswel_person_wifi_tracker);
-    migrated.gps_tracker_entity ??= entityId(config.ulm_card_imswel_person_gps_tracker);
-    migrated.findmy_script_entity ??= entityId(config.ulm_card_imswel_person_findmy_script);
-    migrated.use_entity_picture ??= config.ulm_card_imswel_person_use_entity_picture === true;
+  if (String(config.type).includes("person-location")) {
+    migrated.entity ??= entityId(config.ulm_card_person_location_entity);
+    migrated.wifi_tracker_entity ??= entityId(config.ulm_card_person_location_wifi_tracker);
+    migrated.gps_tracker_entity ??= entityId(config.ulm_card_person_location_gps_tracker);
+    migrated.findmy_script_entity ??= entityId(config.ulm_card_person_location_findmy_script);
+    migrated.use_entity_picture ??= config.ulm_card_person_location_use_entity_picture === true;
   }
-  if (String(config.type).includes("irmajavi-entities")) {
-    migrated.entity ??= entityId(config.ulm_custom_card_irmajavi_entities);
+  if (String(config.type).includes("entity-overview")) {
+    migrated.entity ??= entityId(config.ulm_custom_card_entity_overview);
     migrated.entities ??= [1, 2, 3, 4]
-      .map((index) => entityId(config[`ulm_custom_card_irmajavi_entities_entity_${index}`]))
+      .map((index) => entityId(config[`ulm_custom_card_entity_overview_entity_${index}`]))
       .filter((value): value is string => value !== undefined);
   }
-  if (String(config.type).includes("irmajavi-speedtest")) {
-    migrated.download_entity ??= entityId(config.ulm_custom_card_irmajavi_speedtest_download_speed_entity);
-    migrated.upload_entity ??= entityId(config.ulm_custom_card_irmajavi_speedtest_upload_speed_entity);
-    migrated.ping_entity ??= entityId(config.ulm_custom_card_irmajavi_speedtest_ping_entity);
+  if (String(config.type).includes("internet-speed")) {
+    migrated.download_entity ??= entityId(config.ulm_custom_card_internet_speed_download_speed_entity);
+    migrated.upload_entity ??= entityId(config.ulm_custom_card_internet_speed_upload_speed_entity);
+    migrated.ping_entity ??= entityId(config.ulm_custom_card_internet_speed_ping_entity);
     migrated.entity ??= migrated.download_entity;
   }
-  if (String(config.type).includes("irmajavi-weather")) {
-    migrated.entity ??= entityId(config.ulm_custom_card_irmajavi_weather);
-    migrated.temperature_entity ??= entityId(config.ulm_custom_card_irmajavi_weather_temperature_outside);
-    migrated.date_entity ??= entityId(config.ulm_custom_card_irmajavi_weather_date);
+  if (String(config.type).includes("weather-metrics")) {
+    migrated.entity ??= entityId(config.ulm_custom_card_weather_metrics);
+    migrated.temperature_entity ??= entityId(config.ulm_custom_card_weather_metrics_temperature_outside);
+    migrated.date_entity ??= entityId(config.ulm_custom_card_weather_metrics_date);
     migrated.entities ??= [1, 2, 3, 4]
-      .map((index) => entityId(config[`ulm_custom_card_irmajavi_weather_entity_${index}`]))
+      .map((index) => entityId(config[`ulm_custom_card_weather_metrics_entity_${index}`]))
       .filter((value): value is string => value !== undefined);
   }
-  if (String(config.type).includes("custom-card-haven-washer")) {
+  if (String(config.type).includes("custom-card-washer")) {
     migrated.entity ??= entityId(config.ulm_custom_card_washer_machine_state) ??
       entityId(config.ulm_custom_card_washer_power);
     migrated.power_entity ??= entityId(config.ulm_custom_card_washer_power);
     migrated.ulm_custom_card_washer_machine_state ??= migrated.entity;
   }
-  if (String(config.type).includes("custom-card-httpedo13-thermostat")) {
+  if (String(config.type).includes("custom-card-thermostat-controls")) {
     migrated.entity ??= entityId(config.entity);
     migrated.variant ??= "buttons";
   }
-  if (String(config.type).includes("custom-card-iabadia-battery-chip")) {
-    migrated.entity ??= entityId(config.ulm_custom_card_iAbadia_battery_chip_entity);
-  }
-  if (String(config.type).includes("custom-card-imswel-medias")) {
-    const platform = typeof config.ulm_custom_card_imswel_medias_platform === "string"
-      ? config.ulm_custom_card_imswel_medias_platform
+  if (String(config.type).includes("custom-card-media-library")) {
+    const platform = typeof config.ulm_custom_card_media_library_platform === "string"
+      ? config.ulm_custom_card_media_library_platform
       : undefined;
     migrated.variant ??= !platform || platform === "plex" ? "library" : "upcoming";
   }
@@ -330,22 +340,22 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
       config.ulm_card_more_power_outlet_time_sensor,
     );
   }
-  if (String(config.type).includes("mpse-gauge")) {
-    migrated.minimum ??= Number(config.ulm_card_mpse_gauge_min ?? 0);
-    migrated.maximum ??= Number(config.ulm_card_mpse_gauge_max ?? 100);
+  if (String(config.type).includes("gauge")) {
+    migrated.minimum ??= Number(config.ulm_card_gauge_min ?? 0);
+    migrated.maximum ??= Number(config.ulm_card_gauge_max ?? 100);
   }
-  if (String(config.type).includes("mpse-printer")) {
+  if (String(config.type).includes("printer")) {
     migrated.black_entity ??= entityId(config.ulm_card_printer_black_name);
     migrated.yellow_entity ??= entityId(config.ulm_card_printer_yellow_name);
     migrated.magenta_entity ??= entityId(config.ulm_card_printer_magenta_name);
     migrated.cyan_entity ??= entityId(config.ulm_card_printer_cyan_name);
   }
-  if (String(config.type).includes("paddy-welcome")) {
-    migrated.time_entity ??= entityId(config.ulm_custom_card_paddy_welcome_time);
-    migrated.weather_entity ??= entityId(config.ulm_custom_card_paddy_welcome_weather_provider) ??
+  if (String(config.type).includes("welcome-dashboard")) {
+    migrated.time_entity ??= entityId(config.ulm_custom_card_welcome_dashboard_time);
+    migrated.weather_entity ??= entityId(config.ulm_custom_card_welcome_dashboard_weather_provider) ??
       entityId(config.ulm_weather);
-    migrated.news_entities ??= Array.isArray(config.ulm_custom_card_paddy_welcome_news_entities)
-      ? config.ulm_custom_card_paddy_welcome_news_entities.flatMap((item) => {
+    migrated.news_entities ??= Array.isArray(config.ulm_custom_card_welcome_dashboard_news_entities)
+      ? config.ulm_custom_card_welcome_dashboard_news_entities.flatMap((item) => {
         const id = entityId(item);
         return id ? [id] : [];
       })
@@ -356,76 +366,33 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
         ? "weather"
         : "message";
   }
-  if (String(config.type).includes("person-chip")) {
-    migrated.entity ??= entityId(config.ulm_custom_card_person_chip_entity);
-    migrated.use_entity_picture ??= true;
-  }
-  if (String(config.type).includes("custom-card-qubino")) {
-    migrated.qubino_more_info_entity ??= entityId(config.more_info_entity) ??
-      entityId(config.ulm_custom_card_qubino_more_info_entity);
-  }
-  if (String(config.type).includes("ristou-person")) {
-    migrated.ulm_custom_card_ristou_camera_entity_light ??= entityId(config.ulm_card_ristou_person_camera);
-    migrated.ulm_custom_card_ristou_camera_entity_dark ??= entityId(config.ulm_card_ristou_person_camera);
-    migrated.ulm_custom_card_ristou_map_enable ??= typeof config.ulm_card_ristou_person_show_map === "boolean"
-      ? config.ulm_card_ristou_person_show_map
+  if (String(config.type).includes("person-tracker")) {
+    migrated.use_entity_picture ??= config.ulm_custom_card_person_tracker_use_entity_picture === true;
+    migrated.ulm_custom_card_person_tracker_camera_entity_light ??= entityId(config.ulm_card_person_tracker_camera);
+    migrated.ulm_custom_card_person_tracker_camera_entity_dark ??= entityId(config.ulm_card_person_tracker_camera);
+    migrated.ulm_custom_card_person_tracker_map_enable ??= typeof config.ulm_card_person_tracker_show_map === "boolean"
+      ? config.ulm_card_person_tracker_show_map
       : undefined;
   }
-  if (String(config.type).includes("wsly-pollen")) {
-    migrated.trees_entity ??= entityId(config.custom_card_wsly_pollen_tree);
-    migrated.grass_entity ??= entityId(config.custom_card_wsly_pollen_grass);
-    migrated.weeds_entity ??= entityId(config.custom_card_wsly_pollen_weed);
+  if (String(config.type).endsWith("custom-card-pollen")) {
+    migrated.trees_entity ??= entityId(config.custom_card_pollen_tree);
+    migrated.grass_entity ??= entityId(config.custom_card_pollen_grass);
+    migrated.weeds_entity ??= entityId(config.custom_card_pollen_weed);
   }
-  if (String(config.type).includes("speedtest-shogun160")) {
+  if (String(config.type).includes("speedtest-gauges")) {
     migrated.download_entity ??= entityId(config.ulm_custom_card_speedtest_download_speed_entity) ??
       migrated.entity;
     migrated.upload_entity ??= entityId(config.ulm_custom_card_speedtest_upload_speed_entity);
     migrated.ping_entity ??= entityId(config.ulm_custom_card_speedtest_ping_entity);
     migrated.entity = entityId(migrated.download_entity);
   }
-  if (String(config.type).includes("vncntdev-device-tracer")) {
-    migrated.name ??= typeof config.custom_card_vncntdev_device_tracker_name === "string"
-      ? config.custom_card_vncntdev_device_tracker_name
-      : undefined;
-    migrated.icon ??= typeof config.custom_card_vncntdev_device_tracker_icon === "string"
-      ? config.custom_card_vncntdev_device_tracker_icon
-      : undefined;
-  }
-  if (String(config.type).includes("wilbiev-title")) {
-    migrated.name ??= typeof config.ulm_custom_card_wilbiev_title_name === "string"
-      ? config.ulm_custom_card_wilbiev_title_name
-      : undefined;
-    migrated.navigation_path ??= typeof config.ulm_custom_card_wilbiev_title_nav === "string"
-      ? config.ulm_custom_card_wilbiev_title_nav
-      : undefined;
-  }
-  if (String(config.type).includes("wilbiev-subtitle")) {
-    migrated.name ??= typeof config.ulm_custom_card_wilbiev_subtitle_name === "string"
-      ? config.ulm_custom_card_wilbiev_subtitle_name
-      : typeof config.ulm_custom_card_wilbiev_title_name === "string"
-        ? config.ulm_custom_card_wilbiev_title_name
-        : undefined;
-  }
-  if (String(config.type).includes("custom-card-nas")) {
-    migrated.entity ??= entityId(config.ulm_custom_card_nas_sensor);
-  }
-  if (String(config.type).includes("custom-card-nik-clock")) {
-    migrated.clock_switch_entity ??= entityId(config.ulm_custom_card_nik_clock_switch);
-  }
-  if (String(config.type).includes("custom-card-nik-door")) {
-    migrated.name ??= typeof config.ulm_custom_card_entity_1_name === "string"
-      ? config.ulm_custom_card_entity_1_name
-      : undefined;
-    migrated.lock_entity ??= entityId(config.ulm_custom_card_entity_1_lock);
-    migrated.battery_entity ??= entityId(config.ulm_custom_card_entity_1_lock_battery);
-  }
-  if (String(config.type).includes("custom-card-paddy-dwd-pollen")) {
+  if (String(config.type).includes("custom-card-pollen-forecast")) {
     migrated.level_entity ??= entityId(config.level_entity);
-    migrated.name ??= typeof config.ulm_custom_card_paddy_dwd_pollen_name === "string"
-      ? config.ulm_custom_card_paddy_dwd_pollen_name
+    migrated.name ??= typeof config.ulm_custom_card_pollen_forecast_name === "string"
+      ? config.ulm_custom_card_pollen_forecast_name
       : undefined;
-    migrated.icon ??= typeof config.ulm_custom_card_paddy_dwd_pollen_icon === "string"
-      ? config.ulm_custom_card_paddy_dwd_pollen_icon
+    migrated.icon ??= typeof config.ulm_custom_card_pollen_forecast_icon === "string"
+      ? config.ulm_custom_card_pollen_forecast_icon
       : undefined;
   }
   if (String(config.type).includes("custom-card-scenes") || (
@@ -447,33 +414,16 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
     }).filter((item): item is NonNullable<typeof item> => Boolean(item));
     if (!migrated.scene_items?.length && legacyItems.length) migrated.scene_items = legacyItems;
   }
-  if (String(config.type).includes("schumijo-car")) {
-    migrated.entity ??= entityId(config.ulm_card_schumijo_car_tracker);
-    migrated.ulm_card_schumijo_car_tracker ??= migrated.entity;
-    migrated.ulm_card_schumijo_car_energy_level ??= entityId(config.energy_entity) ?? entityId(config.battery_entity);
-    migrated.ulm_card_schumijo_car_range ??= entityId(config.range_entity);
-    migrated.ulm_card_schumijo_car_lock ??= entityId(config.lock_entity) ?? entityId(config.doors_entity);
+  if (String(config.type).includes("vehicle-status")) {
+    migrated.entity ??= entityId(config.ulm_card_vehicle_status_tracker);
+    migrated.ulm_card_vehicle_status_tracker ??= migrated.entity;
+    migrated.ulm_card_vehicle_status_energy_level ??= entityId(config.energy_entity) ?? entityId(config.battery_entity);
+    migrated.ulm_card_vehicle_status_range ??= entityId(config.range_entity);
+    migrated.ulm_card_vehicle_status_lock ??= entityId(config.lock_entity) ?? entityId(config.doors_entity);
   }
-  if (String(config.type).includes("schumijo-flower")) {
+  if (String(config.type).includes("plant")) {
     migrated.entity ??= entityId(config.ulm_card_flower_entity);
     migrated.ulm_card_flower_entity ??= migrated.entity;
-  }
-  if (String(config.type).includes("senoro-win")) {
-    migrated.ulm_custom_card_senoro_win_entity ??= migrated.entity;
-    migrated.ulm_custom_card_senoro_win_handle ??= entityId(config.handle_entity) ??
-      entityId(config.entities?.[0]);
-    migrated.ulm_custom_card_senoro_win_battery_level ??= entityId(config.battery_entity) ??
-      entityId(config.entities?.[1]);
-  }
-  if (String(config.type).includes("sisimomo-printer") && !migrated.cartridges?.length && config.entities?.length) {
-    const colors = ["black", "#427EDE", "#F84B7A", "rgba(var(--color-yellow), 1)", "#9272BE"];
-    const labels = ["BK", "C", "M", "Y", "PB"];
-    migrated.cartridges = config.entities.map((entity, index) => ({
-      label: labels[index] ?? `C${index + 1}`,
-      entity_id: entity,
-      type: "unicolor",
-      color: colors[index] ?? "gray",
-    }));
   }
   return migrated;
 };

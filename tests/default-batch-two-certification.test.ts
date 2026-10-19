@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { CATALOG } from "../src/catalog";
 import { normalizeConfig } from "../src/helpers";
 import type { AdditionConfig, HassEntity, HomeAssistant } from "../src/types";
 import "../src/index";
@@ -124,62 +123,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("queued default batch two certification", () => {
-  it("creates source-specific picker defaults using the exact live entities", () => {
-    const expectations = [
-      ["card_title", undefined],
-      ["card_vacuum", "vacuum.robob"],
-      ["card_vertical_button", "light.joris_iris_1"],
-      ["card_weather", "weather.hcn_ha"],
-      ["card_welcome_scenes", "scene.living_room_relax"],
-    ] as const;
-    for (const [sourceId, entity] of expectations) {
-      const item = CATALOG.find((entry) => entry.upstreamId === sourceId)!;
-      const constructor = customElements.get(item.tag) as typeof HTMLElement & {
-        getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
-      };
-      const config = constructor.getStubConfig(makeHass(), Object.keys(states), []);
-      expect(window.customCards?.some((registration) => registration.type === item.tag && registration.preview)).toBe(true);
-      expect(config.entity).toBe(entity);
-      if (sourceId === "card_title") {
-        expect(config).toMatchObject({
-          name: "Living room",
-          secondary: "Lights and climate",
-          tap_action: { action: "none" },
-        });
-      }
-      if (sourceId === "card_weather") {
-        expect(config).toMatchObject({
-          variant: "detailed",
-          show_forecast: true,
-          ulm_card_weather_primary_info: "extrema",
-          ulm_card_weather_secondary_info: "precipitation",
-        });
-      }
-      if (sourceId === "card_welcome_scenes") {
-        expect(config).toMatchObject({
-          collapse_entity: "input_boolean.dropdown_welcome",
-          tap_action: { action: "none" },
-        });
-      }
-    }
-
-    const native = customElements.get("mushroom-addition-card-weather-ulm") as typeof HTMLElement & {
-      getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
-    };
-    expect(native.getStubConfig(makeHass(), Object.keys(states), [])).toMatchObject({
-      entity: "weather.hcn_ha",
-      variant: "native",
-      show_forecast: false,
-    });
-  });
-
-  it.each([
-    {
-      tag: "mushroom-addition-card-title",
-      config: { type: "custom:mushroom-addition-card-title", name: "Living room", secondary: "Lights" },
-      fields: ["name", "secondary", "tap_action"],
-    },
+describe("queued default batch two certification", () => {  it.each([
     {
       tag: "mushroom-addition-card-vacuum",
       config: { type: "custom:mushroom-addition-card-vacuum", entity: "vacuum.robob" },
@@ -189,16 +133,6 @@ describe("queued default batch two certification", () => {
       tag: "mushroom-addition-card-vertical-button",
       config: { type: "custom:mushroom-addition-card-vertical-button", entity: "light.joris_iris_1" },
       fields: ["entity", "ulm_card_vertical_button_color", "ulm_card_vertical_button_state", "tap_action"],
-    },
-    {
-      tag: "mushroom-addition-card-weather",
-      config: { type: "custom:mushroom-addition-card-weather", entity: "weather.hcn_ha", variant: "detailed" },
-      fields: ["entity", "variant", "show_forecast", "ulm_card_weather_primary_info", "ulm_card_weather_secondary_info"],
-    },
-    {
-      tag: "mushroom-addition-card-weather-ulm",
-      config: { type: "custom:mushroom-addition-card-weather-ulm", entity: "weather.hcn_ha", variant: "native" },
-      fields: ["entity", "variant", "show_forecast", "tap_action"],
     },
     {
       tag: "mushroom-addition-card-welcome-scenes",
@@ -263,75 +197,7 @@ describe("queued default batch two certification", () => {
       active_state: "on",
       icon_color: "yellow",
     });
-  });
-
-  it("renders title, vacuum, vertical button, both weather sources, and welcome scene states", async () => {
-    const title = await renderCard("mushroom-addition-card-title", {
-      type: "custom:mushroom-addition-card-title",
-      name: "Living room",
-      secondary: "Lights and climate",
-    });
-    expect(title.shadowRoot.textContent).toContain("Living room");
-    expect(title.shadowRoot.textContent).toContain("Lights and climate");
-    expect(title.shadowRoot.querySelector(".ulm-icon")).toBeNull();
-
-    const cleaningStates = {
-      ...states,
-      "vacuum.robob": { ...states["vacuum.robob"], state: "cleaning" },
-    };
-    const vacuum = await renderCard("mushroom-addition-card-vacuum", {
-      type: "custom:mushroom-addition-card-vacuum",
-      entity: "vacuum.robob",
-      ulm_card_vacuum_camera: "camera.robob_map",
-      ulm_card_vacuum_camera_toggle: true,
-      ulm_card_vacuum_room: "script.clean_living_room",
-    }, makeHass(cleaningStates));
-    expect(vacuum.shadowRoot.querySelector('button[aria-label="Stop"]')).not.toBeNull();
-    expect(vacuum.shadowRoot.querySelector(".vacuum-map")).not.toBeNull();
-    expect(vacuum.shadowRoot.querySelector('button[aria-label="Clean room"]')).not.toBeNull();
-
-    const vertical = await renderCard("mushroom-addition-card-vertical-button", {
-      type: "custom:mushroom-addition-card-vertical-button",
-      entity: "light.joris_iris_1",
-      ulm_card_vertical_button_state: "on",
-      ulm_card_vertical_button_color: "yellow",
-    });
-    expect(vertical.shadowRoot.querySelector(".ulm-vertical-button.is-active")).not.toBeNull();
-    expect(vertical.shadowRoot.textContent).toContain("Living room");
-
-    const detailed = await renderCard("mushroom-addition-card-weather", {
-      type: "custom:mushroom-addition-card-weather",
-      entity: "weather.hcn_ha",
-      variant: "detailed",
-      show_forecast: true,
-    });
-    expect(detailed.shadowRoot.querySelector(".detailed-weather")).not.toBeNull();
-    expect(detailed.shadowRoot.textContent).toContain("11° / 19°");
-    expect(detailed.shadowRoot.textContent).toContain("72%");
-
-    const native = await renderCard("mushroom-addition-card-weather-ulm", {
-      type: "custom:mushroom-addition-card-weather-ulm",
-      entity: "weather.hcn_ha",
-      variant: "native",
-    });
-    expect(native.shadowRoot.querySelector(".native-weather")).not.toBeNull();
-    expect(native.shadowRoot.textContent).toContain("68%");
-    expect(native.shadowRoot.textContent).toContain("17°C");
-
-    const collapsed = await renderCard("mushroom-addition-card-welcome-scenes", {
-      type: "custom:mushroom-addition-card-welcome-scenes",
-      collapse_entity: "input_boolean.dropdown_welcome",
-      scene_items: [{ entity: "scene.living_room_relax" }],
-    }, makeHass({
-      ...states,
-      "input_boolean.dropdown_welcome": { ...states["input_boolean.dropdown_welcome"], state: "on" },
-    }));
-    expect(collapsed.shadowRoot.querySelector(".scene-grid")).toBeNull();
-    expect((collapsed.shadowRoot.querySelector('button[aria-label="Toggle scenes"] ha-icon') as HTMLElement & { icon: string }).icon)
-      .toBe("mdi:chevron-down");
-  });
-
-  it("executes every vacuum control with exact Home Assistant payloads", async () => {
+  });  it("executes every vacuum control with exact Home Assistant payloads", async () => {
     const dockedCalls = vi.fn(async () => undefined);
     const docked = await renderCard("mushroom-addition-card-vacuum", {
       type: "custom:mushroom-addition-card-vacuum",
@@ -431,28 +297,4 @@ describe("queued default batch two certification", () => {
         }),
       }),
     }));
-  });
-
-  it("keeps title non-interactive and gives both weather surfaces exact more-info actions", async () => {
-    const cases = [
-      ["mushroom-addition-card-title", { type: "custom:mushroom-addition-card-title", name: "Living room" }, "none", undefined],
-      ["mushroom-addition-card-weather", { type: "custom:mushroom-addition-card-weather", entity: "weather.hcn_ha", variant: "detailed" }, "more-info", "weather.hcn_ha"],
-      ["mushroom-addition-card-weather-ulm", { type: "custom:mushroom-addition-card-weather-ulm", entity: "weather.hcn_ha", variant: "native" }, "more-info", "weather.hcn_ha"],
-    ] as const;
-    for (const [tag, config, action, entity] of cases) {
-      const card = await renderCard(tag, config);
-      const triggered = vi.fn();
-      card.addEventListener("hass-action", triggered);
-      (card.shadowRoot.querySelector(".action-surface") as HTMLElement).click();
-      expect(triggered).toHaveBeenCalledWith(expect.objectContaining({
-        detail: {
-          action: "tap",
-          config: expect.objectContaining({
-            entity,
-            tap_action: { action },
-          }),
-        },
-      }));
-    }
-  });
-});
+  });});

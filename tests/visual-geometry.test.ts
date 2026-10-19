@@ -24,10 +24,8 @@ const sizes = (source: string, group: "icons" | "buttons", selector: string): Si
 
 describe("priority visual geometry evidence", () => {
   it.each([
-    "heat-pump",
-    "homeassistant-updates",
-    "nik-nas",
-    "nik-tablet",
+    "nas-metrics",
+    "tablet",
     "person-info",
     "person-info-small",
   ])("captures %s at the matched reference width", (source) => {
@@ -37,29 +35,12 @@ describe("priority visual geometry evidence", () => {
       .toBeLessThanOrEqual(25);
   });
 
-  it("keeps Heat Pump controls and glyphs at source-like dimensions", () => {
-    expect(sizes("heat-pump", "icons", ".heat-pump-modes ha-icon")).toHaveLength(6);
-    expect(sizes("heat-pump", "icons", ".heat-pump-modes ha-icon").every(({ width, height }) =>
-      width === 22 && height === 22)).toBe(true);
-    expect(sizes("heat-pump", "buttons", ".heat-pump-target button").every(({ height }) => height === 44)).toBe(true);
-    expect(sizes("heat-pump", "buttons", ".heat-pump-modes button").every(({ height }) => height === 42)).toBe(true);
-  });
-
-  it("keeps Updates hero and action icons prominent", () => {
-    expect(sizes("homeassistant-updates", "icons", ".ha-updates-icon > ha-icon"))
-      .toEqual([{ width: 28, height: 28 }]);
-    expect(sizes("homeassistant-updates", "icons", ".ha-update-actions ha-icon"))
-      .toEqual(Array.from({ length: 3 }, () => ({ width: 24, height: 24 })));
-    expect(sizes("homeassistant-updates", "buttons", ".ha-update-actions button")
-      .every(({ height }) => height === 55)).toBe(true);
-  });
-
   it("keeps NAS and Tablet semantic controls recognizable", () => {
-    expect(Object.values(geometry["nik-nas"].icons).flat()
+    expect(Object.values(geometry["nas-metrics"].icons).flat()
       .every(({ width, height }) => width === 24 && height === 24)).toBe(true);
-    expect(sizes("nik-tablet", "icons", ".nik-tablet-controls ha-icon"))
+    expect(sizes("tablet", "icons", ".tablet-controls ha-icon"))
       .toEqual(Array.from({ length: 6 }, () => ({ width: 22, height: 22 })));
-    expect(sizes("nik-tablet", "buttons", ".nik-tablet-controls button")
+    expect(sizes("tablet", "buttons", ".tablet-controls button")
       .every(({ height }) => height === 42)).toBe(true);
   });
 

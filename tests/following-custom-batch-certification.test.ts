@@ -144,7 +144,7 @@ const item = (sourceId: string) => CATALOG.find((entry) => entry.upstreamId === 
 afterEach(() => document.body.replaceChildren());
 
 describe("following custom batch certification", () => {
-  it("records deterministic browser evidence for exactly the six requested sources", () => {
+  it("records deterministic browser evidence for exactly the remaining requested sources", () => {
     const evidence = JSON.parse(readFileSync(
       join(process.cwd(), "docs", "assets", "visual-audit", "following-custom-batch-local-certification.json"),
       "utf8",
@@ -155,38 +155,29 @@ describe("following custom batch certification", () => {
     };
     expect(evidence.sources).toEqual([
       "custom_card_bar_card",
-      "custom_card_haven_washer",
-      "custom_card_httpedo13_sun",
-      "custom_card_httpedo13_thermostat",
-      "custom_card_iAbadia_battery_chip",
-      "custom_card_imswel_medias",
+      "custom_card_washer",
+      "custom_card_sun",
+      "custom_card_media_library",
     ]);
-    expect(evidence.configs.custom_card_haven_washer).toMatchObject({
+    expect(evidence.configs.custom_card_washer).toMatchObject({
       entity: "sensor.wasmachine_operation_state",
       power_entity: "sensor.wasmachine_plug_power",
       door_entity: "sensor.wasmachine_door",
       finished_entity: "sensor.wasmachine_program_finished",
     });
-    expect(evidence.interactions.custom_card_httpedo13_thermostat).toBeDefined();
   });
 
   it("creates source-specific picker defaults from the provided live entity mappings", () => {
     const expected = {
       custom_card_bar_card: { entity: "sensor.cv_plug_power" },
-      custom_card_haven_washer: {
+      custom_card_washer: {
         entity: "sensor.wasmachine_operation_state",
         power_entity: "sensor.wasmachine_plug_power",
         door_entity: "sensor.wasmachine_door",
         finished_entity: "sensor.wasmachine_program_finished",
       },
-      custom_card_httpedo13_sun: { entity: "sun.sun", timeFormat: "24h" },
-      custom_card_httpedo13_thermostat: { entity: "climate.living_room", variant: "buttons" },
-      custom_card_iAbadia_battery_chip: {
-        entity: "sensor.yvette_mobile_battery_level",
-        battery_state_entity: "sensor.yvette_mobile_battery_state",
-        charger_type_entity: "sensor.yvette_mobile_charger_type",
-      },
-      custom_card_imswel_medias: {
+      custom_card_sun: { entity: "sun.sun", timeFormat: "24h" },
+      custom_card_media_library: {
         entity: "media_player.office_joris_sonos",
         secondary_entity: "media_player.office_joris_tv_2",
         variant: "library",
@@ -212,19 +203,14 @@ describe("following custom batch certification", () => {
   it("provides dedicated graphical editor fields without unrelated family controls", () => {
     const expectedFields: Record<string, string[]> = {
       custom_card_bar_card: ["entity", "ulm_custom_card_bar_card_min", "ulm_custom_card_bar_card_value"],
-      custom_card_haven_washer: [
+      custom_card_washer: [
         "entity", "power_entity", "door_entity", "finished_entity",
         "ulm_custom_card_washer_start_action", "ulm_custom_card_washer_stop_action",
       ],
-      custom_card_httpedo13_sun: ["entity", "title", "language", "timeFormat", "showAzimuth", "showElevation"],
-      custom_card_httpedo13_thermostat: ["entity", "variant"],
-      custom_card_iAbadia_battery_chip: [
-        "entity", "battery_state_entity", "charger_type_entity",
-        "ulm_custom_card_iAbadia_battery_chip_warning",
-      ],
-      custom_card_imswel_medias: [
+      custom_card_sun: ["entity", "title", "language", "timeFormat", "showAzimuth", "showElevation"],
+      custom_card_media_library: [
         "entity", "secondary_entity", "variant",
-        "ulm_custom_card_imswel_medias_index", "ulm_custom_card_imswel_medias_platform",
+        "ulm_custom_card_media_library_index", "ulm_custom_card_media_library_platform",
       ],
     };
     for (const [sourceId, fields] of Object.entries(expectedFields)) {
@@ -241,7 +227,7 @@ describe("following custom batch certification", () => {
 
   it("migrates required upstream variables into semantic renderer config", () => {
     expect(normalizeConfig({
-      type: "custom:mushroom-addition-custom-card-haven-washer",
+      type: "custom:mushroom-addition-custom-card-washer",
       ulm_custom_card_washer_machine_state: "sensor.wasmachine_operation_state",
       ulm_custom_card_washer_power: "sensor.wasmachine_plug_power",
     })).toMatchObject({
@@ -249,13 +235,9 @@ describe("following custom batch certification", () => {
       power_entity: "sensor.wasmachine_plug_power",
     });
     expect(normalizeConfig({
-      type: "custom:mushroom-addition-custom-card-iabadia-battery-chip",
-      ulm_custom_card_iAbadia_battery_chip_entity: "sensor.yvette_mobile_battery_level",
-    })).toMatchObject({ entity: "sensor.yvette_mobile_battery_level" });
-    expect(normalizeConfig({
-      type: "custom:mushroom-addition-custom-card-imswel-medias",
+      type: "custom:mushroom-addition-custom-card-media-library",
       entity: "media_player.office_joris_sonos",
-      ulm_custom_card_imswel_medias_platform: "plex",
+      ulm_custom_card_media_library_platform: "plex",
     })).toMatchObject({ variant: "library" });
   });
 
@@ -266,28 +248,18 @@ describe("following custom batch certification", () => {
         entity: "sensor.cv_plug_power",
         ulm_custom_card_bar_card_value: true,
       },
-      custom_card_haven_washer: {
-        type: "custom:mushroom-addition-custom-card-haven-washer",
+      custom_card_washer: {
+        type: "custom:mushroom-addition-custom-card-washer",
         entity: "sensor.wasmachine_operation_state",
         power_entity: "sensor.wasmachine_plug_power",
       },
-      custom_card_httpedo13_sun: {
-        type: "custom:mushroom-addition-custom-card-httpedo13-sun",
+      custom_card_sun: {
+        type: "custom:mushroom-addition-custom-card-sun",
         entity: "sun.sun",
         timeFormat: "24h",
       },
-      custom_card_httpedo13_thermostat: {
-        type: "custom:mushroom-addition-custom-card-httpedo13-thermostat",
-        entity: "climate.living_room",
-        variant: "buttons",
-      },
-      custom_card_iAbadia_battery_chip: {
-        type: "custom:mushroom-addition-custom-card-iabadia-battery-chip",
-        entity: "sensor.yvette_mobile_battery_level",
-        battery_state_entity: "sensor.yvette_mobile_battery_state",
-      },
-      custom_card_imswel_medias: {
-        type: "custom:mushroom-addition-custom-card-imswel-medias",
+      custom_card_media_library: {
+        type: "custom:mushroom-addition-custom-card-media-library",
         entity: "media_player.office_joris_sonos",
         variant: "library",
       },
@@ -346,7 +318,7 @@ describe("following custom batch certification", () => {
 
   it("renders Washer stopped, running, progress, stage, delay, and auxiliary states", async () => {
     const config: AdditionConfig = {
-      type: "custom:mushroom-addition-custom-card-haven-washer",
+      type: "custom:mushroom-addition-custom-card-washer",
       entity: "sensor.wasmachine_operation_state",
       power_entity: "sensor.wasmachine_plug_power",
       door_entity: "sensor.wasmachine_door",
@@ -359,7 +331,7 @@ describe("following custom batch certification", () => {
       ulm_custom_card_washer_pause_action: { action: "call-service", service: "switch.turn_on", service_data: { entity_id: "switch.washer_pause" } },
       ulm_custom_card_washer_stop_action: { action: "call-service", service: "switch.turn_on", service_data: { entity_id: "switch.washer_stop" } },
     };
-    const stopped = await renderCard("mushroom-addition-custom-card-haven-washer", config);
+    const stopped = await renderCard("mushroom-addition-custom-card-washer", config);
     expect(stopped.shadowRoot.querySelector('button[aria-label="Start washer"]')).not.toBeNull();
     expect((stopped.shadowRoot.querySelector('button[aria-label="Stop washer"]') as HTMLButtonElement).disabled).toBe(true);
     expect(stopped.shadowRoot.querySelector(".washer-progress")?.textContent).toContain("52%");
@@ -367,7 +339,7 @@ describe("following custom batch certification", () => {
     expect(stopped.shadowRoot.textContent).toContain("08:30:00");
     stopped.remove();
 
-    const running = await renderCard("mushroom-addition-custom-card-haven-washer", config, {
+    const running = await renderCard("mushroom-addition-custom-card-washer", config, {
       ...states,
       "sensor.wasmachine_operation_state": {
         ...states["sensor.wasmachine_operation_state"],
@@ -380,9 +352,9 @@ describe("following custom batch certification", () => {
     expect(running.shadowRoot.querySelector(".washer-delay-controls")).not.toBeNull();
   });
 
-  it("renders all documented Sun options and both Thermostat states", async () => {
-    const sun = await renderCard("mushroom-addition-custom-card-httpedo13-sun", {
-      type: "custom:mushroom-addition-custom-card-httpedo13-sun",
+  it("renders all documented Sun options", async () => {
+    const sun = await renderCard("mushroom-addition-custom-card-sun", {
+      type: "custom:mushroom-addition-custom-card-sun",
       entity: "sun.sun",
       title: "Today",
       language: "en-GB",
@@ -396,64 +368,33 @@ describe("following custom batch certification", () => {
     expect(sun.shadowRoot.textContent).toContain("Azimuth");
     expect(sun.shadowRoot.textContent).toContain("242.5°");
     expect(sun.shadowRoot.textContent).toContain("Elevation");
+    expect(sun.shadowRoot.querySelector(".sun-marker")?.getAttribute("style"))
+      .toContain("--sun-x:56.67%");
+    expect(sun.shadowRoot.querySelector(".sun-arc circle")).toBeNull();
+    sun.remove();
 
-    const thermostat = await renderCard("mushroom-addition-custom-card-httpedo13-thermostat", {
-      type: "custom:mushroom-addition-custom-card-httpedo13-thermostat",
-      entity: "climate.living_room",
-      variant: "buttons",
-    });
-    expect(thermostat.shadowRoot.querySelector(".is-heating")).not.toBeNull();
-    expect(thermostat.shadowRoot.querySelector(".compact-thermostat-controls")).not.toBeNull();
-    thermostat.remove();
-
-    const collapsed = await renderCard("mushroom-addition-custom-card-httpedo13-thermostat", {
-      type: "custom:mushroom-addition-custom-card-httpedo13-thermostat",
-      entity: "climate.living_room",
-      variant: "collapse",
-    }, {
-      ...states,
-      "climate.living_room": {
-        ...states["climate.living_room"],
-        state: "off",
-        attributes: { ...states["climate.living_room"].attributes, hvac_action: "idle" },
-      },
-    });
-    expect(collapsed.shadowRoot.querySelector(".compact-thermostat-controls")).toBeNull();
   });
 
-  it("renders Battery Chip thresholds and source-specific Media variants", async () => {
-    const battery = await renderCard("mushroom-addition-custom-card-iabadia-battery-chip", {
-      type: "custom:mushroom-addition-custom-card-iabadia-battery-chip",
-      entity: "sensor.yvette_mobile_battery_level",
-      battery_state_entity: "sensor.yvette_mobile_battery_state",
-      charger_type_entity: "sensor.yvette_mobile_charger_type",
-      ulm_custom_card_iAbadia_battery_chip_warning: 20,
-      ulm_custom_card_iAbadia_battery_chip_danger: 10,
-    });
-    expect(battery.shadowRoot.querySelector(".tone-yellow")).not.toBeNull();
-    expect((battery.shadowRoot.querySelector("ha-icon") as HTMLElement & { icon: string }).icon)
-      .toBe("mdi:battery-charging");
-    battery.remove();
-
-    const library = await renderCard("mushroom-addition-custom-card-imswel-medias", {
-      type: "custom:mushroom-addition-custom-card-imswel-medias",
+  it("renders source-specific Media variants", async () => {
+    const library = await renderCard("mushroom-addition-custom-card-media-library", {
+      type: "custom:mushroom-addition-custom-card-media-library",
       entity: "media_player.office_joris_sonos",
       secondary_entity: "media_player.office_joris_tv_2",
       variant: "library",
-      ulm_custom_card_imswel_medias_index: 1,
-      ulm_custom_card_imswel_medias_platform: "plex",
+      ulm_custom_card_media_library_index: 1,
+      ulm_custom_card_media_library_platform: "plex",
     });
     expect(library.shadowRoot.querySelector(".is-library")).not.toBeNull();
     expect(library.shadowRoot.textContent).toContain("Recently added");
     expect(library.shadowRoot.textContent).toContain("Ted Lasso S03E02");
     library.remove();
 
-    const upcoming = await renderCard("mushroom-addition-custom-card-imswel-medias", {
-      type: "custom:mushroom-addition-custom-card-imswel-medias",
+    const upcoming = await renderCard("mushroom-addition-custom-card-media-library", {
+      type: "custom:mushroom-addition-custom-card-media-library",
       entity: "media_player.office_joris_sonos",
       variant: "upcoming",
-      ulm_custom_card_imswel_medias_index: 1,
-      ulm_custom_card_imswel_medias_platform: "sonarr",
+      ulm_custom_card_media_library_index: 1,
+      ulm_custom_card_media_library_platform: "sonarr",
     });
     expect(upcoming.shadowRoot.querySelector(".is-upcoming")).not.toBeNull();
     expect(upcoming.shadowRoot.textContent).toContain("Ted Lasso - S03E02");
@@ -461,8 +402,8 @@ describe("following custom batch certification", () => {
 
   it("enumerates every visible control with exact Home Assistant payloads", async () => {
     const washerServices = vi.fn(async () => undefined);
-    const washer = await renderCard("mushroom-addition-custom-card-haven-washer", {
-      type: "custom:mushroom-addition-custom-card-haven-washer",
+    const washer = await renderCard("mushroom-addition-custom-card-washer", {
+      type: "custom:mushroom-addition-custom-card-washer",
       entity: "sensor.wasmachine_operation_state",
       power_entity: "sensor.wasmachine_plug_power",
       ulm_custom_card_washer_remote_control: "sensor.wasmachine_remote_control",
@@ -484,7 +425,7 @@ describe("following custom batch certification", () => {
     expect(washerActions.mock.calls.map(([event]) => event.detail)).toEqual([
       {
         config: {
-          type: "custom:mushroom-addition-custom-card-haven-washer",
+          type: "custom:mushroom-addition-custom-card-washer",
           entity: "sensor.wasmachine_operation_state",
           tap_action: {
             action: "call-service",
@@ -496,7 +437,7 @@ describe("following custom batch certification", () => {
       },
       {
         config: {
-          type: "custom:mushroom-addition-custom-card-haven-washer",
+          type: "custom:mushroom-addition-custom-card-washer",
           entity: "input_boolean.wasmachine_delayed_start",
           tap_action: { action: "toggle" },
         },
@@ -510,8 +451,8 @@ describe("following custom batch certification", () => {
     ]);
     washer.remove();
 
-    const runningWasher = await renderCard("mushroom-addition-custom-card-haven-washer", {
-      type: "custom:mushroom-addition-custom-card-haven-washer",
+    const runningWasher = await renderCard("mushroom-addition-custom-card-washer", {
+      type: "custom:mushroom-addition-custom-card-washer",
       entity: "sensor.wasmachine_operation_state",
       power_entity: "sensor.wasmachine_plug_power",
       ulm_custom_card_washer_remote_control: "sensor.wasmachine_remote_control",
@@ -550,22 +491,6 @@ describe("following custom batch certification", () => {
     ]);
     runningWasher.remove();
 
-    const thermostatServices = vi.fn(async () => undefined);
-    const thermostat = await renderCard("mushroom-addition-custom-card-httpedo13-thermostat", {
-      type: "custom:mushroom-addition-custom-card-httpedo13-thermostat",
-      entity: "climate.living_room",
-      variant: "buttons",
-    }, states, thermostatServices);
-    (thermostat.shadowRoot.querySelector(".thermostat-summary") as HTMLButtonElement).click();
-    (thermostat.shadowRoot.querySelector('button[aria-label="Decrease temperature"]') as HTMLButtonElement).click();
-    (thermostat.shadowRoot.querySelector('button[aria-label="Increase temperature"]') as HTMLButtonElement).click();
-    expect(thermostatServices.mock.calls).toEqual([
-      ["climate", "set_hvac_mode", { entity_id: "climate.living_room", hvac_mode: "off" }],
-      ["climate", "set_temperature", { entity_id: "climate.living_room", temperature: 20.5 }],
-      ["climate", "set_temperature", { entity_id: "climate.living_room", temperature: 21.5 }],
-    ]);
-    thermostat.remove();
-
     for (const [tag, config, expectedAction] of [
       [
         "mushroom-addition-custom-card-bar-card",
@@ -573,18 +498,13 @@ describe("following custom batch certification", () => {
         { action: "more-info" },
       ],
       [
-        "mushroom-addition-custom-card-httpedo13-sun",
-        { type: "custom:mushroom-addition-custom-card-httpedo13-sun", entity: "sun.sun" },
+        "mushroom-addition-custom-card-sun",
+        { type: "custom:mushroom-addition-custom-card-sun", entity: "sun.sun" },
         { action: "none" },
       ],
       [
-        "mushroom-addition-custom-card-iabadia-battery-chip",
-        { type: "custom:mushroom-addition-custom-card-iabadia-battery-chip", entity: "sensor.yvette_mobile_battery_level" },
-        { action: "more-info" },
-      ],
-      [
-        "mushroom-addition-custom-card-imswel-medias",
-        { type: "custom:mushroom-addition-custom-card-imswel-medias", entity: "media_player.office_joris_sonos" },
+        "mushroom-addition-custom-card-media-library",
+        { type: "custom:mushroom-addition-custom-card-media-library", entity: "media_player.office_joris_sonos" },
         { action: "more-info" },
       ],
     ] as const) {

@@ -51,25 +51,18 @@ const fixtures: Array<{
   reference: string;
 }> = [
   {
-    sourceId: "custom_card_paddy_waste_collection",
-    slug: "paddy-waste-collection",
+    sourceId: "custom_card_waste_collection",
+    slug: "waste-collection",
     width: 320,
     config: { entity: "sensor.waste" },
     reference: `<div class="source-card"><div class="source-row"><span class="bubble alert" style="color:#f44336;background:rgb(244 67 54 / 50%)"><ha-icon icon="mdi:trash-can"></ha-icon></span><span class="copy"><b>TODAY</b><small>Paper</small></span></div></div>`,
   },
   {
-    sourceId: "custom_card_paddy_welcome",
-    slug: "paddy-welcome",
+    sourceId: "custom_card_welcome_dashboard",
+    slug: "welcome-dashboard",
     width: 420,
     config: { entity: "person.joris", variant: "weather", time_entity: "sensor.time", weather_entity: "weather.home" },
     reference: `<div class="source-card welcome-source"><div class="greeting">Good evening,<br>Joris!</div><div class="weather-source"><span><ha-icon icon="mdi:weather-partly-cloudy"></ha-icon><span class="copy"><b>partly cloudy</b><small>Home weather</small></span></span><b>18°</b></div></div>`,
-  },
-  {
-    sourceId: "custom_card_person_chip",
-    slug: "person-chip",
-    width: 180,
-    config: { entity: "person.joris", use_entity_picture: true },
-    reference: `<div class="source-card chip-source"><span class="avatar"><ha-icon icon="mdi:face-man"></ha-icon></span><b>Home</b></div>`,
   },
   {
     sourceId: "custom_card_playstation",
@@ -86,18 +79,18 @@ const fixtures: Array<{
     reference: `<div class="source-card qubino-source"><div class="source-row"><span class="bubble"><ha-icon icon="mdi:memory"></ha-icon></span><span class="copy"><b>Pilot wire</b><small>Comfort -1°C · 50</small></span></div></div>`,
   },
   {
-    sourceId: "custom_card_ristou_person",
-    slug: "ristou-person",
+    sourceId: "custom_card_person_tracker",
+    slug: "person-tracker",
     width: 466,
     config: {
       entity: "person.joris",
-      ulm_custom_card_ristou_use_entity_picture: true,
-      ulm_custom_card_ristou_use_badge: true,
-      ulm_custom_card_ristou_zones: ["zone.work"],
-      ulm_custom_card_ristou_find_device_script: "script.find_phone",
-      ulm_custom_card_ristou_map_enable: true,
+      ulm_custom_card_person_tracker_use_entity_picture: true,
+      ulm_custom_card_person_tracker_use_badge: true,
+      ulm_custom_card_person_tracker_zones: ["zone.work"],
+      ulm_custom_card_person_tracker_find_device_script: "script.find_phone",
+      ulm_custom_card_person_tracker_map_enable: true,
     },
-    reference: `<div class="source-card ristou-source"><div class="source-row"><span class="avatar"><ha-icon icon="mdi:face-man"></ha-icon></span><span class="copy"><b>Joris</b><small>home</small></span><span class="find"><ha-icon icon="mdi:cellphone-sound"></ha-icon></span></div><div class="ristou-map"><ha-icon icon="mdi:map-marker-path"></ha-icon></div></div>`,
+    reference: `<div class="source-card person-tracker-source"><div class="source-row"><span class="avatar"><ha-icon icon="mdi:face-man"></ha-icon></span><span class="copy"><b>Joris</b><small>home</small></span><span class="find"><ha-icon icon="mdi:cellphone-sound"></ha-icon></span></div><div class="person-tracker-map"><ha-icon icon="mdi:map-marker-path"></ha-icon></div></div>`,
   },
 ];
 

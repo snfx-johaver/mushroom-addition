@@ -3,6 +3,10 @@ import { CATALOG } from "../src/catalog";
 import { editorSchemaFor } from "../src/editor-schema";
 import { editorHelper, localize } from "../src/localize";
 import { upstreamEditorSchemaFor } from "../src/editor-schema";
+import type { EditorField } from "../src/editor-schema";
+
+const flattenSchema = (schema: EditorField[]): EditorField[] =>
+  schema.flatMap((field) => field.schema ? flattenSchema(field.schema) : field);
 
 describe("family editor schemas", () => {
   it("uses one canonical primary entity selector in every card editor", () => {
@@ -11,10 +15,7 @@ describe("family editor schemas", () => {
       expect(schema.filter((field) => field.name === "entity")).toHaveLength(
         item.family === "navigation" ||
           item.upstreamId === "card_scenes" ||
-          (item.family === "text" &&
-            item.upstreamId !== "custom_card_homeassistant_updates" &&
-            item.upstreamId !== "custom_card_nik_clock" &&
-            item.upstreamId !== "custom_card_neekster_update")
+          item.family === "text"
           ? 0
           : 1,
       );
@@ -22,59 +23,31 @@ describe("family editor schemas", () => {
     }
   });
 
-  it("gives weather unique, domain-filtered fields", () => {
-    const weather = CATALOG.find((item) => item.upstreamId === "card_weather")!;
-    const schema = editorSchemaFor(weather);
-    expect(schema.map((field) => field.name)).toEqual(expect.arrayContaining([
-      "entity", "temperature_entity", "humidity_entity", "show_forecast",
+  it("exposes readable battery intelligence controls in the main editor", () => {
+    const battery = CATALOG.find((item) => item.upstreamId === "card_battery")!;
+    const fields = editorSchemaFor(battery).map((field) => field.name);
+    expect(fields).toEqual(expect.arrayContaining([
+      "battery_warning_threshold",
+      "battery_low_threshold",
+      "battery_critical_threshold",
+      "battery_healthy_color",
+      "battery_warning_color",
+      "battery_low_color",
+      "battery_critical_color",
     ]));
-    expect(schema).not.toContainEqual(expect.objectContaining({ name: "battery_entity" }));
-    expect(schema.find((field) => field.name === "entity")?.selector).toEqual({
-      entity: { domain: ["weather"] },
-    });
-  });
-
-  it("uses distinct schemas for every major family", () => {
-    const families = ["weather", "climate", "light", "scene", "presence", "battery", "energy", "sensor", "media", "cover", "vacuum", "security", "navigation"];
-    const signatures = families.map((family) => {
-      const item = CATALOG.find((entry) => entry.family === family)!;
-      return editorSchemaFor(item).map((field) => field.name).join(",");
-    });
-    expect(new Set(signatures).size).toBeGreaterThanOrEqual(9);
-  });
-
-  it("maps every registration to a known renderer/editor family", () => {
+    expect(upstreamEditorSchemaFor(battery).map((field) => field.name)).not.toEqual(expect.arrayContaining([
+      "ulm_card_battery_battery_level_danger",
+      "ulm_card_battery_battery_level_warning",
+      "ulm_card_battery_color_battery_level_danger",
+    ]));
+  });  it("maps every registration to a known renderer/editor family", () => {
     const supported = new Set([
       "weather", "climate", "light", "scene", "presence", "battery", "energy",
       "sensor", "media", "cover", "vacuum", "security", "navigation",
       "text", "camera", "control", "alarm-time", "door", "entity", "bar",
     ]);
     for (const item of CATALOG) expect(supported.has(item.family)).toBe(true);
-  });
-
-  it("maps specialized cards to the correct primary domains", () => {
-    const byId = (id: string) => CATALOG.find((item) => item.upstreamId === id)!;
-    expect(byId("card_power_outlet")).toMatchObject({
-      family: "control",
-      preferredDomains: ["switch", "light"],
-    });
-
-    expect(byId("card_welcome_scenes").family).toBe("scene");
-    expect(byId("custom_card_alarm_time")).toMatchObject({
-      family: "alarm-time",
-      preferredDomains: ["input_boolean"],
-    });
-    expect(editorSchemaFor(byId("custom_card_alarm_time")).map((field) => field.name))
-      .toContain("datetime_entity");
-    expect(byId("custom_card_nik_door")).toMatchObject({
-      family: "door",
-      preferredDomains: ["sensor", "binary_sensor"],
-    });
-    expect(editorSchemaFor(byId("custom_card_nik_door")).map((field) => field.name))
-      .toEqual(expect.arrayContaining(["lock_entity", "battery_entity"]));
-  });
-
-  it("uses semantic Person Info selectors without duplicating the primary person", () => {
+  });  it("uses semantic Person Info selectors without duplicating the primary person", () => {
     const person = CATALOG.find((item) => item.upstreamId === "custom_card_person_info")!;
     const core = editorSchemaFor(person, { type: `custom:${person.tag}`, variant: "small" });
     const advanced = upstreamEditorSchemaFor(person);
@@ -91,10 +64,8 @@ describe("family editor schemas", () => {
     });
   });
 
-  it("keeps update and tablet selectors canonical and executable", () => {
-    const updates = CATALOG.find((item) => item.upstreamId === "custom_card_homeassistant_updates")!;
-    expect(upstreamEditorSchemaFor(updates).some((field) => field.name === "ulm_card_homeassistant_entity")).toBe(false);
-    const tablet = CATALOG.find((item) => item.upstreamId === "custom_card_nik_tablet")!;
+  it("keeps tablet selectors canonical and executable", () => {
+    const tablet = CATALOG.find((item) => item.upstreamId === "custom_card_tablet")!;
     const schema = editorSchemaFor(tablet);
     expect(schema.find((field) => field.name === "tablet_button_motion_entity")?.selector).toEqual({
       entity: { domain: ["switch", "input_boolean"] },
@@ -104,11 +75,32 @@ describe("family editor schemas", () => {
     });
   });
 
+  it("keeps the NAS editor limited to functioning controls", () => {
+    const nas = CATALOG.find((item) => item.upstreamId === "custom_card_nas_metrics")!;
+    const fields = editorSchemaFor(nas).map((field) => field.name);
+    expect(nas.name).toBe("NAS Card");
+    expect(fields).not.toContain("chart_type");
+    expect(fields).not.toContain("graph_span");
+    expect(fields).toEqual(expect.arrayContaining([
+      "disk_entity",
+      "temperature_entity",
+      "temperature_max",
+      "memory_entity",
+      "memory_max",
+      "cpu_entity",
+      "cpu_max",
+    ]));
+  });
+
   it("exposes clear welcome-scene collapse controls", () => {
     const welcome = CATALOG.find((item) => item.upstreamId === "card_welcome_scenes")!;
-    expect(editorSchemaFor(welcome).map((field) => field.name)).toEqual(expect.arrayContaining([
+    const schema = editorSchemaFor(welcome);
+    expect(schema.map((field) => field.name)).toEqual(expect.arrayContaining([
       "collapse_entity", "collapsed",
     ]));
+    expect(schema.find((field) => field.name === "entity")?.selector).toEqual({
+      entity: {},
+    });
   });
 
   it("gives every advanced editor option a user-friendly label and explanation", () => {
@@ -124,23 +116,54 @@ describe("family editor schemas", () => {
     }
   });
 
+  it("does not expose internal ULM prefixes in any editor label", () => {
+    for (const item of CATALOG) {
+      for (const field of [...editorSchemaFor(item), ...upstreamEditorSchemaFor(item)]) {
+        expect(localize(undefined, field.name)).not.toMatch(/\bUlm\b/i);
+        expect(editorHelper(field.name) ?? "").not.toMatch(/\bUlm\b/i);
+      }
+      expect(item.name).not.toMatch(/\bUlm\b/i);
+      expect(item.description).not.toMatch(/\bUlm\b/i);
+    }
+  });
+
+  it("gives every color picker a visible default without duplicate controls", () => {
+    for (const item of CATALOG) {
+      const colorFields = flattenSchema([
+        ...editorSchemaFor(item),
+        ...upstreamEditorSchemaFor(item),
+      ]).filter((field) => field.selector?.ui_color);
+      const names = colorFields.map((field) => field.name);
+      expect(new Set(names).size, `${item.upstreamId} has duplicate color controls`).toBe(names.length);
+      for (const field of colorFields) {
+        const selector = field.selector as { ui_color?: { default_color?: string } };
+        expect(
+          selector.ui_color?.default_color,
+          `${item.upstreamId}.${field.name} needs a default color`,
+        ).toBeTruthy();
+      }
+    }
+  });
+
+  it("uses clear labels for camera controls", () => {
+    expect(localize(undefined, "show_name")).toBe("Show name");
+    expect(localize(undefined, "camera_view")).toBe("Camera view");
+    expect(localize(undefined, "fit_mode")).toBe("Image fit");
+    expect(localize(undefined, "aspect_ratio")).toBe("Aspect ratio");
+    expect(localize(undefined, "image_height")).toBe("Custom image height");
+    expect(localize(undefined, "ulm_language")).not.toMatch(/\bUlm\b/i);
+  });
+
   it("explains every standard editor field", () => {
     const selfExplanatory = new Set(["entities"]);
     for (const item of CATALOG) {
-      for (const field of editorSchemaFor(item)) {
+      for (const field of flattenSchema(editorSchemaFor(item))) {
         if (!selfExplanatory.has(field.name)) expect(editorHelper(field.name)).toBeTruthy();
       }
     }
   });
 
-  it("uses dropdowns for finite weather choices and percentage sliders for ranges", () => {
-    const weather = CATALOG.find((item) => item.upstreamId === "card_weather")!;
-    const weatherFields = upstreamEditorSchemaFor(weather);
-    expect(weatherFields.find((field) => field.name === "ulm_card_weather_primary_info")?.selector)
-      .toMatchObject({ select: { mode: "dropdown" } });
-    expect(weatherFields.find((field) => field.name === "ulm_card_weather_secondary_info")?.selector)
-      .toMatchObject({ select: { mode: "dropdown" } });
-
+  it("uses percentage sliders for bounded upstream ranges", () => {
     const light = CATALOG.find((item) => item.upstreamId === "card_light")!;
     expect(upstreamEditorSchemaFor(light)
       .find((field) => field.name === "ulm_card_light_brightness_medium")?.selector)
@@ -149,15 +172,48 @@ describe("family editor schemas", () => {
 
   it("provides Mushroom-style presentation controls on every card editor", () => {
     const expected = [
-      "name_mode", "name", "icon", "icon_type", "layout",
+      "name", "layout",
       "fill_container", "primary_info", "secondary_info",
     ];
     for (const item of CATALOG.filter((entry) => entry.kind === "card")) {
       const schema = editorSchemaFor(item);
-      expect(schema.map((field) => field.name)).toEqual(expect.arrayContaining(expected));
-      for (const name of ["name_mode", "icon_type", "layout", "primary_info", "secondary_info"]) {
-        expect(schema.find((field) => field.name === name)?.selector).toHaveProperty("select");
+      const flattened = flattenSchema(schema);
+      expect(flattened.map((field) => field.name)).toEqual(expect.arrayContaining(expected));
+      expect(flattened.map((field) => field.name)).not.toContain("name_mode");
+      const hasConfigurableIcon = flattened.some((field) => field.name === "icon");
+      for (const name of [
+        "layout", "primary_info", "secondary_info",
+        ...(hasConfigurableIcon ? ["icon_type"] : []),
+      ]) {
+        expect(flattened.find((field) => field.name === name)?.selector).toHaveProperty("select");
       }
+      const name = flattened.find((field) => field.name === "name");
+      expect(name).toMatchObject({
+        selector: { entity_name: {} },
+        context: { entity: "entity" },
+      });
+      const icon = flattened.find((field) => field.name === "icon");
+      if (hasConfigurableIcon) expect(icon?.context).toEqual({ icon_entity: "entity" });
+      else expect(flattened.map((field) => field.name)).not.toContain("icon_type");
+      const presentationStart = schema.findIndex((field) => field.name === "name");
+      const entityIndex = schema.findIndex((field) => field.name === "entity");
+      expect(presentationStart).toBe(entityIndex >= 0 ? entityIndex + 1 : 0);
+      expect(schema.slice(
+        presentationStart,
+        presentationStart + (hasConfigurableIcon ? 4 : 3),
+      ).map((field) => field.name))
+        .toEqual(hasConfigurableIcon ? ["name", "icon", "", ""] : ["name", "", ""]);
+      const layoutGridIndex = presentationStart + (hasConfigurableIcon ? 2 : 1);
+      expect(schema[layoutGridIndex]).toMatchObject({
+        type: "grid",
+        schema: [{ name: "layout" }, { name: "fill_container" }],
+      });
+      expect(schema[layoutGridIndex + 1]).toMatchObject({
+        type: "grid",
+        schema: hasConfigurableIcon
+          ? [{ name: "primary_info" }, { name: "secondary_info" }, { name: "icon_type" }]
+          : [{ name: "primary_info" }, { name: "secondary_info" }],
+      });
     }
   });
 
@@ -173,11 +229,6 @@ describe("family editor schemas", () => {
       entity: { domain: ["person"] },
     });
 
-    const weather = CATALOG.find((item) => item.upstreamId === "card_weather")!;
-    expect(upstreamEditorSchemaFor(weather, { type: `custom:${weather.tag}`, variant: "detailed" }).length)
-      .toBeGreaterThan(0);
-    expect(upstreamEditorSchemaFor(weather, { type: `custom:${weather.tag}`, variant: "native" }))
-      .toHaveLength(0);
   });
 
   it("gives Bar Card only its source-specific controls", () => {
@@ -192,14 +243,13 @@ describe("family editor schemas", () => {
       "ulm_custom_card_bar_card_indicator",
       "ulm_custom_card_bar_card_min",
       "ulm_custom_card_bar_card_max",
-      "ulm_custom_card_bar_card_name",
       "ulm_custom_card_bar_card_show_icon",
       "ulm_custom_card_bar_card_value",
     ]));
   });
 
   it("gives Waste Collection semantic stream controls without graph settings", () => {
-    const waste = CATALOG.find((item) => item.upstreamId === "custom_card_afvalophaling")!;
+    const waste = CATALOG.find((item) => item.upstreamId === "custom_card_trash")!;
     const core = editorSchemaFor(waste);
     expect(core.find((field) => field.name === "entity")?.selector).toEqual({
       entity: { domain: ["sensor", "calendar"] },

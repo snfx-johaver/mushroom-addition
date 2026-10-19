@@ -7,6 +7,12 @@ export interface HassEntity {
     unit_of_measurement?: string;
   };
   last_changed?: string;
+  last_updated?: string;
+}
+
+export interface EntityNameItem {
+  type: "entity" | "device" | "area" | "floor" | "text";
+  text?: string;
 }
 
 export interface HomeAssistant {
@@ -14,6 +20,10 @@ export interface HomeAssistant {
   language?: string;
   user?: { name?: string };
   localize?: (key: string) => string;
+  formatEntityName?: (
+    entity: HassEntity,
+    name?: string | EntityNameItem | EntityNameItem[],
+  ) => string;
   callService: (
     domain: string,
     service: string,
@@ -56,6 +66,7 @@ export interface AdditionItemConfig {
   name?: string;
   label?: string;
   icon?: string;
+  icon_type?: "icon" | "entity-picture";
   color?: string;
   active_state?: string;
   state?: string;
@@ -102,6 +113,13 @@ export interface AdditionConfig {
   grass_entity?: string;
   weeds_entity?: string;
   battery_entity?: string;
+  battery_warning_threshold?: number;
+  battery_low_threshold?: number;
+  battery_critical_threshold?: number;
+  battery_healthy_color?: string;
+  battery_warning_color?: string;
+  battery_low_color?: string;
+  battery_critical_color?: string;
   consumption_entity?: string;
   fan_entity?: string;
   battery_state_entity?: string;
@@ -149,7 +167,7 @@ export interface AdditionConfig {
   tablet_ram_entity?: string;
   tablet_disk_entity?: string;
   tablet_power_entity?: string;
-  name?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
   name_mode?: "entity" | "custom" | "none";
   secondary?: string;
   icon?: string;
@@ -157,11 +175,16 @@ export interface AdditionConfig {
   icon_color?: string;
   variant?: string;
   show_state?: boolean;
+  show_name?: boolean;
   show_icon?: boolean;
+  camera_view?: "auto" | "live";
+  fit_mode?: "cover" | "contain" | "fill";
+  aspect_ratio?: string;
+  image_height?: number;
   layout?: "default" | "horizontal" | "vertical";
   fill_container?: boolean;
-  primary_info?: "name" | "state" | "none";
-  secondary_info?: "default" | "state" | "name" | "last-changed" | "none";
+  primary_info?: "name" | "state" | "last-changed" | "last-updated" | "none";
+  secondary_info?: "default" | "name" | "state" | "last-changed" | "last-updated" | "none";
   navigation_path?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
