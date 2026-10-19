@@ -91,9 +91,7 @@ export const populatedDefaultsFor = (
             label_use_temperature: true,
             label_use_brightness: false,
           }
-          : item.upstreamId === "custom_card_wifi_signal"
-            ? { icon: "mdi:wifi-strength-4" }
-            : item.upstreamId === "custom_card_pollen_forecast"
+          : item.upstreamId === "custom_card_pollen_forecast"
               ? {
                 pollen_language: "en",
               }
@@ -186,6 +184,8 @@ export const populatedDefaultsFor = (
     show_state: item.upstreamId === "custom_card_pollen"
       ? false
       : true,
-    layout: "horizontal",
+    layout: "default",
+    primary_info: "name",
+    secondary_info: "state",
   };
 };

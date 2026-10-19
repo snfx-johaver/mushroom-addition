@@ -19,25 +19,6 @@
     "appended": 0
   },
   "sources": {
-    "custom_card_wifi_signal": {
-      "config": {
-        "entity": "sensor.yvette_mobile_signal_strength_sim_1"
-      },
-      "renderedText": "Yvette mobile Signal strength (SIM 1) -108 dBm",
-      "geometry": {
-        "width": 330,
-        "height": 65,
-        "scrollWidth": 330
-      },
-      "pickerRegistered": true,
-      "editorVerified": true,
-      "safeInteraction": {
-        "action": "more-info",
-        "entity": "sensor.yvette_mobile_signal_strength_sim_1"
-      },
-      "screenshot": "live-status-mushroom-addition-custom-card-wifi-signal.png",
-      "liveAccepted": true
-    },
     "custom_card_pollen_forecast": {
       "config": {
         "entity": "sensor.kleenex_pollen_radar_home_grass_level",
@@ -60,7 +41,7 @@
     }
   },
   "result": {
-    "accepted": 2,
+    "accepted": 1,
     "overflowFailures": 0,
     "pickerFailures": 0,
     "editorFailures": 0,

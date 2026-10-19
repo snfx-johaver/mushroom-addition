@@ -14,7 +14,7 @@ const customCards = [
   "media_library", "person_location",
   "input_datetime", "entity_overview", "internet_speed",
   "weather_metrics", "media_player_sonos", "more_power_outlet",
-  "gauge", "printer", "wifi_signal",
+  "gauge", "printer",
   "nas_metrics", "tablet",
   "pollen_forecast", "welcome_dashboard",
   "person_info", "person_info_small", "playstation", "person_tracker",
@@ -39,7 +39,7 @@ const familyFor = (id: string): string => {
   if (/navigate|back/.test(id)) return "navigation";
   if (/battery/.test(id)) return "battery";
   if (/power_outlet|more_power_outlet/.test(id)) return "control";
-  if (/energy|power|gauge|speedtest|wifisignal|graph|apex|bar_card|myenedis/.test(id)) return "energy";
+  if (/energy|power|gauge|speedtest|graph|apex|bar_card|myenedis/.test(id)) return "energy";
   if (/weather|sun|pollen|moon/.test(id)) return "weather";
   if (/scene/.test(id)) return "scene";
   if (/person|tracker|tracer|presence|room|welcome/.test(id)) return "presence";
@@ -131,7 +131,6 @@ const makeItem = (
     custom_card_weather_metrics: "Weather Metrics",
     custom_card_gauge: "Gauge",
     custom_card_printer: "Printer",
-    custom_card_wifi_signal: "WiFi Signal",
     custom_card_nas_metrics: "NAS",
     custom_card_tablet: "Tablet",
     custom_card_plant: "Flower",
@@ -144,7 +143,6 @@ const makeItem = (
     custom_card_weather_metrics: "Mushroom-style weather metrics card.",
     custom_card_gauge: "Mushroom-style sensor gauge card.",
     custom_card_printer: "Mushroom-style printer status and toner level card.",
-    custom_card_wifi_signal: "Mushroom-style WiFi signal status card.",
     custom_card_tablet: "Mushroom-style tablet status and maintenance card.",
     custom_card_plant: "Mushroom-style plant health card.",
     custom_card_pollen: "Mushroom-style pollen level card.",

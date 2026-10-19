@@ -1751,12 +1751,6 @@ const renderPrinter = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const renderWifiSignal = (ctx: RenderContext): TemplateResult => {
-  const value = numeric(ctx.entity?.state) ?? -100;
-  const signalIcon = value >= -50 ? "mdi:wifi-strength-4" : value >= -60 ? "mdi:wifi-strength-3" : value >= -70 ? "mdi:wifi-strength-2" : value >= -80 ? "mdi:wifi-strength-1" : "mdi:wifi-strength-off";
-  return ctx.actionSurface("custom-wifi-signal", html`${sourceIconBubble(ctx, signalIcon, "rgb(var(--ulm-blue))", true)}${heading(ctx, `${value} dBm`)}`);
-};
-
 const renderNasMetrics = (ctx: RenderContext): TemplateResult => {
   const disk = linkedState(ctx, "disk_entity") ?? entityFromConfig(ctx, "entity_4");
   const temperature = linkedState(ctx, "temperature_entity") ?? entityFromConfig(ctx, "entity_1");
@@ -2362,7 +2356,6 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "custom_card_more_power_outlet": return renderMorePowerOutlet(ctx);
     case "custom_card_gauge": return renderDualGauge(ctx);
     case "custom_card_printer": return renderPrinter(ctx);
-    case "custom_card_wifi_signal": return renderWifiSignal(ctx);
     case "custom_card_nas_metrics": return renderNasMetrics(ctx);
     case "custom_card_tablet": return renderTablet(ctx);
     case "custom_card_pollen_forecast": return renderPollenForecast(ctx);

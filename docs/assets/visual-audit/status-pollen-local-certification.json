@@ -5,22 +5,6 @@
   "fixture": "demo/status-pollen-comparison.html",
   "test": "tests/status-pollen-certification.test.ts",
   "sources": {
-    "custom_card_wifi_signal": {
-      "liveConfig": {
-        "entity": "sensor.yvette_mobile_signal_strength_sim_1"
-      },
-      "visibleInteractions": [
-        {
-          "surface": "card",
-          "gesture": "tap",
-          "payload": {
-            "action": "more-info",
-            "entity": "sensor.yvette_mobile_signal_strength_sim_1"
-          }
-        }
-      ],
-      "artifact": "docs/assets/visual-audit/custom_card_wifi_signal-comparison.png"
-    },
     "custom_card_door": {
       "liveConfig": {
         "entity": "binary_sensor.all_doors"

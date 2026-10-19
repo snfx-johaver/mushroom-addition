@@ -29,8 +29,8 @@ describe("catalog coverage", () => {
     const sourceCount = (category: string) =>
       UPSTREAM_CATALOG.filter((item) => item.category === category).length;
     expect(sourceCount("default-card")).toBe(11);
-    expect(sourceCount("custom-card")).toBe(37);
-    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(35);
+    expect(sourceCount("custom-card")).toBe(36);
+    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(34);
   });
 
   it("keeps removed contributor names out of renamed public card metadata", () => {
@@ -41,7 +41,6 @@ describe("catalog coverage", () => {
       "custom_card_weather_metrics",
       "custom_card_gauge",
       "custom_card_printer",
-      "custom_card_wifi_signal",
       "custom_card_nas_metrics",
       "custom_card_tablet",
       "custom_card_plant",
@@ -55,7 +54,6 @@ describe("catalog coverage", () => {
       "Weather Metrics Card",
       "Gauge Card",
       "Printer Card",
-      "WiFi Signal Card",
       "NAS Card",
       "Tablet Card",
       "Flower Card",

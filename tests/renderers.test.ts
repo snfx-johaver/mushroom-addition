@@ -875,7 +875,6 @@ describe("family renderers", () => {
     ["more-power-outlet", "sensor.power", "custom-more-power-outlet", "ulm-copy"],
     ["gauge", "sensor.power", "custom-dual-gauge", "dual-gauge"],
     ["printer", "sensor.power", "custom-printer", "toner-bars"],
-    ["wifi-signal", "sensor.power", "custom-wifi-signal", "ulm-copy"],
     ["nas-metrics", "sensor.power", "custom-nas-metrics", "nas-metrics-metrics"],
     ["tablet", "sensor.battery", "custom-tablet", "tablet-header"],
     ["pollen-forecast", "sensor.power", "custom-pollen-forecast", "pollen-icon"],

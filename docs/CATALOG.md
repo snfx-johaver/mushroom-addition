@@ -4,8 +4,8 @@ This manifest maps the documented card catalog to Mushroom Cards Addition
 registrations. It is generated from `src/catalog.ts`; CI rejects duplicate
 IDs, missing source paths, invalid namespaces, or broken popup mappings.
 
-**Coverage:** 48 documented upstream card sources map to
-46 public card components.
+**Coverage:** 47 documented upstream card sources map to
+45 public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
 of duplicate picker entries. 4 popup templates and
 1 implementation helpers are inventoried but are not
@@ -47,7 +47,6 @@ public registrations.
 | `custom_card_more_power_outlet` | custom-card | `custom:mushroom-addition-custom-card-more-power-outlet` | control | default | `custom_card_more_power_outlet` |
 | `custom_card_gauge` | custom-card | `custom:mushroom-addition-custom-card-gauge` | energy | default | `custom_card_gauge` |
 | `custom_card_printer` | custom-card | `custom:mushroom-addition-custom-card-printer` | sensor | default | `custom_card_printer` |
-| `custom_card_wifi_signal` | custom-card | `custom:mushroom-addition-custom-card-wifi-signal` | sensor | default | `custom_card_wifi_signal` |
 | `custom_card_nas_metrics` | custom-card | `custom:mushroom-addition-custom-card-nas-metrics` | sensor | default | `custom_card_nas_metrics` |
 | `custom_card_tablet` | custom-card | `custom:mushroom-addition-custom-card-tablet` | sensor | default | `custom_card_tablet` |
 | `custom_card_pollen_forecast` | custom-card | `custom:mushroom-addition-custom-card-pollen-forecast` | weather | default | `custom_card_pollen_forecast` |

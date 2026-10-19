@@ -22,7 +22,6 @@ if (!customElements.get("ha-icon")) customElements.define("ha-icon", HaIcon);
 const hass: HomeAssistant = {
   language: "en",
   states: {
-    "sensor.signal": { entity_id: "sensor.signal", state: "-58", attributes: { friendly_name: "Wi-Fi signal", unit_of_measurement: "dBm" } },
     "sensor.nas": { entity_id: "sensor.nas", state: "OK", attributes: { friendly_name: "NAS disks" } },
     "update.core": { entity_id: "update.core", state: "on", attributes: { friendly_name: "Home Assistant Core" } },
     "sensor.time": { entity_id: "sensor.time", state: "22:50", attributes: { friendly_name: "Time" } },
@@ -46,10 +45,6 @@ interface Comparison {
 }
 
 const comparisons: Record<string, Comparison> = {
-  custom_card_wifi_signal: {
-    width: 520, height: 109, reference: "custom_wifisignal.png", referenceWidth: 1141,
-    config: { entity: "sensor.signal", name_mode: "custom", name: "Energy Wifi Signal" },
-  },
   custom_card_door: {
     width: 430, height: 200, reference: "custom_card_door.png", referenceWidth: 430,
     config: { entity: "sensor.door", lock_entity: "lock.door", battery_entity: "sensor.door_battery", name: "Front Door" },
@@ -60,7 +55,7 @@ const comparisons: Record<string, Comparison> = {
   },
 };
 
-const sourceId = new URLSearchParams(location.search).get("source") ?? "custom_card_wifi_signal";
+const sourceId = new URLSearchParams(location.search).get("source") ?? "custom_card_pollen_forecast";
 const comparison = comparisons[sourceId];
 if (!comparison) throw new Error(`Unknown comparison source: ${sourceId}`);
 const item = CATALOG.find((entry) => entry.upstreamId === sourceId);
@@ -71,12 +66,6 @@ document.documentElement.style.setProperty("--height", `${comparison.height}px`)
 document.documentElement.style.setProperty("--reference-width", `${comparison.referenceWidth}px`);
 document.documentElement.style.setProperty("--reference-x", `${comparison.referenceX ?? 0}px`);
 document.documentElement.style.setProperty("--reference-y", `${comparison.referenceY ?? 0}px`);
-if (sourceId === "custom_card_wifi_signal") {
-  document.documentElement.style.setProperty("--primary-text-color", "#ddd");
-  document.documentElement.style.setProperty("--secondary-text-color", "#888");
-  document.documentElement.style.setProperty("--card-background-color", "#1f1f1f");
-  document.documentElement.style.setProperty("--ha-card-background", "#1f1f1f");
-}
 document.querySelector("#title")!.textContent = `${sourceId} pinned source comparison`;
 document.querySelector("#comparison")!.innerHTML = `
   <section class="comparison">

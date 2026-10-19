@@ -2,7 +2,7 @@
 
 This is the source-by-source acceptance ledger for the card catalog.
 
-**Progress: 0/48 fully E2E accepted. Stage totals — picker 0, editor 0, visual 0, states 0, interactions 0, live 0.**
+**Progress: 0/47 fully E2E accepted. Stage totals — picker 0, editor 0, visual 0, states 0, interactions 0, live 0.**
 
 An entry is fully accepted only when all six independent stages pass: picker,
 graphical editor, visual parity, state behavior, interactions, and live Home
@@ -50,7 +50,6 @@ metadata, and structural tests do not constitute acceptance.
 | `custom_card_more_power_outlet` | custom-card | `custom_card_more_power_outlet` | — | `custom_card_more_power_outlet` | Source: `custom_cards/custom_card_more_power_outlet` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_gauge` | custom-card | `custom_card_gauge` | — | `custom_card_gauge` | Source: `custom_cards/custom_card_gauge` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_printer` | custom-card | `custom_card_printer` | — | `custom_card_printer` | Source: `custom_cards/custom_card_printer` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
-| `custom_card_wifi_signal` | custom-card | `custom_card_wifi_signal` | — | `custom_card_wifi_signal` | Source: `custom_cards/custom_card_wifi_signal` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_nas_metrics` | custom-card | `custom_card_nas_metrics` | — | `custom_card_nas_metrics` | Source: `custom_cards/custom_card_nas_metrics` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_tablet` | custom-card | `custom_card_tablet` | — | `custom_card_tablet` | Source: `custom_cards/custom_card_tablet` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_pollen_forecast` | custom-card | `custom_card_pollen_forecast` | — | `custom_card_pollen_forecast` | Source: `custom_cards/custom_card_pollen_forecast` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |

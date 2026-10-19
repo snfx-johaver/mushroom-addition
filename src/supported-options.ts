@@ -13,8 +13,11 @@ const replacedOptions: Partial<Record<string, readonly string[]>> = {
   ],
   custom_card_speedtest_gauges: [
     "ulm_custom_card_speedtest_download_speed_color",
+    "ulm_custom_card_speedtest_download_speed_entity",
     "ulm_custom_card_speedtest_upload_speed_color",
+    "ulm_custom_card_speedtest_upload_speed_entity",
     "ulm_custom_card_speedtest_ping_color",
+    "ulm_custom_card_speedtest_ping_entity",
   ],
 };
 

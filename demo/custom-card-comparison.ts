@@ -326,7 +326,6 @@ const fixtures: Fixture[] = [
       cyan_entity: "sensor.toner_cyan",
     },
   },
-  { id: "wifi-signal", entity: "sensor.signal", reference: "custom_wifisignal.png" },
   { id: "door", entity: "binary_sensor.front_door", reference: "custom_card_door.png", config: { lock_entity: "lock.front_door", battery_entity: "sensor.lock_battery" } },
   { id: "nas-metrics", entity: "binary_sensor.hn_nas_status", reference: "custom_card_nas_metrics_on.png", width: 510, config: { disk_entity: "sensor.hn_nas_disk", temperature_entity: "sensor.hn_nas_temperature", memory_entity: "sensor.hn_nas_memory", cpu_entity: "sensor.hn_nas_cpu" } },
   { id: "nas-metrics", key: "nas-metrics-responsive", title: "custom_card_nas_metrics — 330px responsive", entity: "binary_sensor.hn_nas_status", width: 330, config: { disk_entity: "sensor.hn_nas_disk", temperature_entity: "sensor.hn_nas_temperature", memory_entity: "sensor.hn_nas_memory", cpu_entity: "sensor.hn_nas_cpu" } },

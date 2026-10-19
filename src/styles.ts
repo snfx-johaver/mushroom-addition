@@ -688,7 +688,7 @@ export const sharedStyles = css`
   .metrics-main-name ha-icon { --mdc-icon-size: 18px; }
   .weather-metrics-panel { grid-template-columns: 1fr auto; padding-left: 12px; }
   .weather-metrics-panel .weather-date { font-size: 14px; }
-  .weather-metrics-panel strong { margin-right: 10px; padding: 10px; border-radius: 12px; background: rgba(var(--ulm-grey), .75); color: #000; font-size: 20px; }
+  .weather-metrics-panel strong { margin-right: 12px; color: var(--primary-text-color); font-size: 20px; }
   .metrics-four { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
   .metrics-four > button { display: grid; min-width: 0; min-height: 54px; place-items: center; padding: 6px 3px; border: 0; background: transparent; color: var(--primary-text-color); text-align: center; }
   .metrics-four b, .metrics-four small { overflow: hidden; max-width: 100%; text-overflow: ellipsis; white-space: nowrap; }
@@ -704,7 +704,7 @@ export const sharedStyles = css`
   .speedtest-metrics small { color: var(--secondary-text-color); font-size: 10px; }
   .speedtest-metrics b { display: flex; max-width: 100%; align-items: baseline; justify-content: center; gap: 3px; overflow: hidden; font-size: 23px; text-overflow: ellipsis; white-space: nowrap; }
   .speedtest-metrics b em { color: var(--secondary-text-color); font-size: 10px; font-style: normal; font-weight: 700; }
-  .custom-more-power-outlet, .custom-wifi-signal {
+  .custom-more-power-outlet {
     display: grid; min-height: 62px; grid-template-columns: 46px minmax(0, 1fr); align-items: center; gap: 10px; padding: 10px 14px;
   }
   .custom-pollen-forecast {
@@ -872,7 +872,6 @@ export const sharedStyles = css`
   .flower-bars i { display: block; height: 7px; overflow: hidden; border-radius: 2px; background: rgba(var(--ulm-grey), .1); }
   .flower-bars em { display: block; height: 100%; background: rgb(var(--ulm-green)); }
   .speedtest-three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
-  .speedtest-three span { display: grid; min-width: 0; place-items: center; gap: 3px; padding: 8px; border-radius: 12px; background: rgba(var(--ulm-grey), .07); text-align: center; }
   .speedtest-three ha-icon { color: rgb(var(--ulm-blue)); } .speedtest-three b { font-size: 12px; } .speedtest-three small { overflow: hidden; max-width: 100%; color: var(--secondary-text-color); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
   .speedtest-chart { height: 58px; overflow: hidden; } .speedtest-chart .sparkline { height: 60px; }
   .custom-speedtest-gauges { padding: 8px; }
