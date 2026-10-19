@@ -37,6 +37,7 @@ describe("Home Assistant registration", () => {
   it("renders user-friendly repeatable item controls for scenes and rooms", async () => {
     for (const [type, entity, itemKey] of [
       ["custom:mushroom-addition-card-scenes", "scene.relax", "scene_items"],
+      ["custom:mushroom-addition-card-welcome-scenes", "scene.relax", "scene_items"],
       ["custom:mushroom-addition-card-room", "light.kitchen", "room_sensors"],
     ] as const) {
       const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {
@@ -59,17 +60,19 @@ describe("Home Assistant registration", () => {
       expect(editor.shadowRoot?.textContent).toContain("Add button");
       expect(editor.shadowRoot?.textContent).toContain(itemKey === "scene_items" ? "Scene buttons" : "Room sensor buttons");
       expect(editor.shadowRoot?.textContent).toContain("Custom name");
-      expect(editor.shadowRoot?.textContent).toContain("Active when state is");
+      expect(editor.shadowRoot?.textContent).not.toContain("Active when state is");
       const textSelectors = editor.shadowRoot?.querySelectorAll<HTMLElement & {
         value?: string;
         selector?: Record<string, unknown>;
       }>(".item-row .field ha-selector") ?? [];
       const customName = [...textSelectors].find((selector) => selector.value === "Example");
-      const activeState = [...textSelectors].find((selector) => selector.value === "");
       expect(customName?.selector).toEqual({ text: {} });
-      expect(activeState?.selector).toEqual({ text: {} });
       if (itemKey === "scene_items") {
         expect(editor.shadowRoot?.textContent).toContain("Defaults to activating scenes");
+        expect(editor.shadowRoot?.textContent).toContain("Navigation path");
+        const navigation = [...textSelectors].find((selector) =>
+          Object.prototype.hasOwnProperty.call(selector.selector ?? {}, "navigation"));
+        expect(navigation?.selector).toEqual({ navigation: {} });
         const changed = vi.fn();
         editor.addEventListener("config-changed", changed);
         customName?.dispatchEvent(new CustomEvent("value-changed", {
@@ -77,6 +80,12 @@ describe("Home Assistant registration", () => {
         }));
         const updated = (changed.mock.calls[0][0] as CustomEvent<{ config: AdditionConfig }>).detail.config;
         expect(updated[itemKey]?.[0].name).toBe("Custom scene");
+        changed.mockClear();
+        navigation?.dispatchEvent(new CustomEvent("value-changed", {
+          detail: { value: "/lovelace/scenes" },
+        }));
+        const navigable = (changed.mock.calls[0][0] as CustomEvent<{ config: AdditionConfig }>).detail.config;
+        expect(navigable[itemKey]?.[0].navigation_path).toBe("/lovelace/scenes");
       }
       const iconType = editor.shadowRoot?.querySelector<HTMLElement & {
         value?: string;

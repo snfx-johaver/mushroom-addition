@@ -110,6 +110,9 @@ describe("family editor schemas", () => {
     expect(schema.find((field) => field.name === "entity")?.selector).toEqual({
       entity: {},
     });
+    expect(schema.find((field) => field.name === "settings_path")?.selector).toEqual({
+      navigation: {},
+    });
   });
 
   it("gives every advanced editor option a user-friendly label and explanation", () => {

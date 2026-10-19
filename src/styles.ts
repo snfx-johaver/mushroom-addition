@@ -379,21 +379,6 @@ export const sharedStyles = css`
     outline-offset: 2px;
   }
   .welcome-scenes-more ha-icon { --mdc-icon-size: 20px; }
-  .welcome-scenes .scene-button {
-    border: 1px solid var(--divider-color, rgba(var(--ulm-grey), .2));
-    background: var(--welcome-surface);
-    color: var(--primary-text-color);
-    box-shadow: none;
-  }
-  .welcome-scenes .scene-button i {
-    background: color-mix(in srgb, var(--item-color) 22%, transparent);
-  }
-  .welcome-scenes .scene-button span { color: var(--secondary-text-color); }
-  .welcome-scenes .scene-button.is-active {
-    border-color: color-mix(in srgb, var(--item-color) 45%, var(--divider-color, transparent));
-    background: color-mix(in srgb, var(--item-color) 18%, transparent);
-  }
-  .welcome-scenes .scene-button.is-active span { color: var(--primary-text-color); }
   .ulm-media { position: relative; display: grid; gap: 12px; overflow: hidden; padding: 12px; }
   .media-art { position: absolute; inset: 0; z-index: 0; background-position: center; background-size: cover; }
   .media-art::after { position: absolute; inset: 0; background: rgba(0,0,0,.25); content: ""; }

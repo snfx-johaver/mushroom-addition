@@ -75,6 +75,7 @@ export interface AdditionItemConfig {
   active_state?: string;
   state?: string;
   nav_path?: string;
+  navigation_path?: string;
   service_data?: Record<string, unknown>;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;

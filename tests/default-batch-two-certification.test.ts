@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { normalizeConfig } from "../src/helpers";
+import { sharedStyles } from "../src/styles";
 import type { AdditionConfig, HomeAssistant } from "../src/types";
 import "../src/index";
 
@@ -162,6 +163,7 @@ describe("queued default batch two certification", () => {  it.each([
         name: "Relax",
         icon: "mdi:sofa",
         color: "yellow",
+        nav_path: "/lovelace/scenes",
       },
     })).toMatchObject({
       collapse_entity: "input_boolean.dropdown_welcome",
@@ -170,6 +172,7 @@ describe("queued default batch two certification", () => {  it.each([
         name: "Relax",
         icon: "mdi:sofa",
         color: "yellow",
+        navigation_path: "/lovelace/scenes",
       }],
       tap_action: { action: "none" },
     });
@@ -187,7 +190,7 @@ describe("queued default batch two certification", () => {  it.each([
         { entity: "input_select.mode", name: "Away", state: "Away" },
         { entity: "script.goodnight", name: "Goodnight" },
         { entity: "light.joris_iris_1", name: "Light" },
-        { entity: "scene.living_room_dimmed", name: "Dashboard", nav_path: "/lovelace/scenes" },
+        { entity: "scene.living_room_dimmed", name: "Dashboard", navigation_path: "/lovelace/scenes" },
       ],
     }, makeHass(states, callService));
     const actions = vi.fn();
@@ -220,4 +223,15 @@ describe("queued default batch two certification", () => {  it.each([
         }),
       }),
     }));
-  });});
+  });
+});
+
+describe("scene surface styling", () => {
+  it("uses the same shaded scene-button surface for Welcome Scenes and Scenes", () => {
+    expect(sharedStyles.cssText).toContain(
+      ".scene-button { display: flex; width: 64px; min-width: 64px; min-height: 88px;",
+    );
+    expect(sharedStyles.cssText).toContain("box-shadow: 0 2px 6px rgba(0,0,0,.12)");
+    expect(sharedStyles.cssText).not.toContain(".welcome-scenes .scene-button {");
+  });
+});
