@@ -114,6 +114,103 @@ export const sharedStyles = css`
   .climate-top { padding-bottom: 8px; }
   .climate-target { color: rgb(var(--ulm-red)); font-size: 23px; font-weight: 600; }
   .climate-current { font-size: 18px; font-weight: 700; }
+  .better-thermostat { display: grid; gap: 12px; padding: 14px; }
+  .better-thermostat-header {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+  }
+  .better-thermostat-temperature { display: grid; justify-items: end; gap: 2px; }
+  .better-thermostat-temperature b {
+    font-size: 24px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .better-thermostat-temperature small {
+    display: inline-flex;
+    align-items: center;
+    color: var(--secondary-text-color);
+    font-size: 12px;
+  }
+  .better-thermostat-temperature small ha-icon { --mdc-icon-size: 14px; }
+  .better-thermostat-statuses { display: flex; flex-wrap: wrap; gap: 6px; }
+  .better-thermostat-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 9px;
+    border-radius: 10px;
+    background: rgba(var(--tone, var(--ulm-grey)), .12);
+    color: rgb(var(--tone, var(--ulm-grey)));
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .better-thermostat-status ha-icon { --mdc-icon-size: 15px; }
+  .better-thermostat-target {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+  }
+  .better-thermostat-target label { display: grid; gap: 5px; }
+  .better-thermostat-target label span {
+    color: var(--secondary-text-color);
+    font-size: 11px;
+    text-align: center;
+  }
+  .better-thermostat-target input { width: 100%; accent-color: rgb(var(--tone, var(--ulm-orange))); }
+  .better-thermostat-target input:focus-visible,
+  .better-thermostat-options button:focus-visible {
+    outline: 2px solid rgb(var(--ulm-blue));
+    outline-offset: 2px;
+  }
+  .better-thermostat-target > span {
+    font-size: 18px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    text-align: center;
+  }
+  .better-thermostat-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(66px, 1fr));
+    gap: 7px;
+  }
+  .better-thermostat-options button {
+    display: grid;
+    min-height: 50px;
+    place-items: center;
+    gap: 3px;
+    padding: 7px;
+    border: 0;
+    border-radius: 13px;
+    background: rgba(var(--ulm-grey), .08);
+    color: var(--primary-text-color);
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .better-thermostat-options button:hover { background: rgba(var(--ulm-grey), .14); }
+  .better-thermostat-options button:disabled { cursor: not-allowed; opacity: .55; }
+  .better-thermostat-options button.is-selected {
+    background: rgba(var(--tone, var(--ulm-orange)), .18);
+    color: rgb(var(--tone, var(--ulm-orange)));
+  }
+  .better-thermostat-options button ha-icon { --mdc-icon-size: 20px; }
+  .better-thermostat-options button span { font-size: 11px; font-weight: 700; }
+  .better-thermostat-options.presets button.is-selected {
+    background: rgba(var(--ulm-green), .16);
+    color: rgb(var(--ulm-green));
+  }
+  .better-thermostat.is-compact { gap: 9px; padding: 12px; }
+  .better-thermostat.is-compact .better-thermostat-header { min-height: 42px; }
+  .better-thermostat.is-compact .better-thermostat-options {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .better-thermostat.is-compact .better-thermostat-options::-webkit-scrollbar { display: none; }
+  .better-thermostat.is-compact .better-thermostat-options button { min-width: 68px; min-height: 44px; }
   .ulm-person .person-picture {
     width: var(--mush-icon-size, 40px);
     height: var(--mush-icon-size, 40px);

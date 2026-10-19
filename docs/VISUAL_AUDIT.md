@@ -2,7 +2,7 @@
 
 This is the source-by-source acceptance ledger for the card catalog.
 
-**Progress: 0/44 fully E2E accepted. Stage totals — picker 0, editor 0, visual 0, states 0, interactions 0, live 0.**
+**Progress: 0/45 fully E2E accepted. Stage totals — picker 0, editor 0, visual 0, states 0, interactions 0, live 0.**
 
 An entry is fully accepted only when all six independent stages pass: picker,
 graphical editor, visual parity, state behavior, interactions, and live Home
@@ -59,4 +59,5 @@ metadata, and structural tests do not constitute acceptance.
 | `custom_card_vehicle_status` | custom-card | `custom_card_vehicle_status` | — | `custom_card_vehicle_status` | Source: `custom_cards/custom_card_vehicle_status` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_plant` | custom-card | `custom_card_plant` | — | `custom_card_plant` | Source: `custom_cards/custom_card_plant` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_speedtest_gauges` | custom-card | `custom_card_speedtest_gauges` | — | `custom_card_speedtest_gauges` | Source: `custom_cards/custom_card_speedtest_gauges` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
+| `custom_card_better_thermostat` | custom-card | `custom_card_better_thermostat` | — | `custom_card_better_thermostat` | Source: `https://github.com/KartoffelToby/better-thermostat-ui-card` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_pollen` | custom-card | `custom_card_pollen` | — | `custom_card_pollen` | Source: `custom_cards/custom_card_pollen` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |

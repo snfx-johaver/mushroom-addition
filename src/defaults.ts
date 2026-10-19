@@ -104,6 +104,19 @@ export const populatedDefaultsFor = (
         ulm_custom_card_device_tracker_tracker_1_type: "lan",
         ulm_custom_card_device_tracker_tracker_2_type: "bluetooth",
       }
+      : item.upstreamId === "custom_card_better_thermostat"
+        ? {
+          variant: "normal",
+          show_controls: true,
+          show_temperature_control: true,
+          show_humidity: true,
+          show_hvac_modes: true,
+          show_presets: true,
+          show_status: true,
+          collapsible_controls: false,
+          thermostat_temp_step: 0.5,
+          low_battery_threshold: 20,
+        }
       : item.upstreamId === "custom_card_room_overview"
           ? {
             ulm_card_room_overview_light_icon_on: "mdi:lightbulb",

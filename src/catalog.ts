@@ -19,7 +19,7 @@ const customCards = [
   "pollen_forecast", "welcome_dashboard",
   "person_info", "person_info_small", "playstation", "person_tracker",
   "scenes", "vehicle_status", "plant",
-  "speedtest_gauges",
+  "speedtest_gauges", "better_thermostat",
   "pollen",
 ] as const;
 
@@ -69,6 +69,7 @@ const variants: Record<string, string[]> = {
   card_cover: ["default"],
   custom_card_media_library: ["library", "upcoming"],
   custom_card_welcome_dashboard: ["message", "weather", "news"],
+  custom_card_better_thermostat: ["normal", "compact"],
 };
 
 const preferredDomainsFor = (id: string, family: string): string[] => {
@@ -130,6 +131,7 @@ const makeItem = (
     custom_card_tablet: "Tablet",
     custom_card_plant: "Flower",
     custom_card_pollen: "Pollen",
+    custom_card_better_thermostat: "Better Thermostat",
   };
   const displayDescriptions: Partial<Record<string, string>> = {
     custom_card_trash: "Mushroom-style trash collection schedule card.",
@@ -141,6 +143,7 @@ const makeItem = (
     custom_card_tablet: "Mushroom-style tablet status and maintenance card.",
     custom_card_plant: "Mushroom-style plant health card.",
     custom_card_pollen: "Mushroom-style pollen level card.",
+    custom_card_better_thermostat: "Touch-friendly climate card with Better Thermostat status and controls.",
   };
   return {
     upstreamId,
@@ -190,7 +193,9 @@ export const UPSTREAM_CATALOG: readonly CatalogItem[] = [
   }),
   ...customCards.map((id) => makeItem(
     `custom_card_${id}`,
-    `custom_cards/custom_card_${id}`,
+    id === "better_thermostat"
+      ? "https://github.com/KartoffelToby/better-thermostat-ui-card"
+      : `custom_cards/custom_card_${id}`,
   )),
 ] as const;
 

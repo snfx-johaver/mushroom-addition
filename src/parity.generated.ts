@@ -3484,6 +3484,40 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     ],
     "deviations": [],
     "sourceDigest": "e41b8c1f961cc37f153aa55b2401b0becc2ee49ac0b40ec19c36aaef09c8f98b"
+  },
+  {
+    "upstreamId": "custom_card_better_thermostat",
+    "sourcePath": "https://github.com/KartoffelToby/better-thermostat-ui-card",
+    "publicId": "custom_card_better_thermostat",
+    "rendererId": "custom_card_better_thermostat",
+    "layoutProfile": "card:native-climate-controls",
+    "primitives": [
+      "native-climate-controls"
+    ],
+    "customFields": [
+      "header",
+      "temperature",
+      "status",
+      "hvac_modes",
+      "presets"
+    ],
+    "stateDriven": true,
+    "animated": false,
+    "actions": [
+      "tap_action",
+      "climate.set_temperature",
+      "climate.set_hvac_mode",
+      "climate.set_preset_mode"
+    ],
+    "variables": [],
+    "dependencies": [],
+    "backendRequirements": [
+      "climate entity/services"
+    ],
+    "deviations": [
+      "Original MIT-licensed implementation based only on documented public behavior and Home Assistant climate APIs; no AGPL source code, styles, translations, or assets are copied or bundled."
+    ],
+    "sourceDigest": "0ee9011b60ca98c0d0eb61c69e50b011d7399c08e357040a6445f5dd1e65308f"
   }
 ];
 

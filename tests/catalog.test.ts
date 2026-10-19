@@ -23,14 +23,16 @@ describe("catalog coverage", () => {
   it("includes default and custom cards", () => {
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "card_graph")).toBe(true);
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_camera")).toBe(true);
+    expect(PUBLIC_CATALOG.find((item) => item.upstreamId === "custom_card_better_thermostat"))
+      .toMatchObject({ variants: ["normal", "compact"], preferredDomains: ["climate"] });
   });
 
   it("matches the documented source counts and keeps the custom card catalog public", () => {
     const sourceCount = (category: string) =>
       UPSTREAM_CATALOG.filter((item) => item.category === category).length;
     expect(sourceCount("default-card")).toBe(8);
-    expect(sourceCount("custom-card")).toBe(36);
-    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(34);
+    expect(sourceCount("custom-card")).toBe(37);
+    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(35);
   });
 
   it("keeps removed contributor names out of renamed public card metadata", () => {
