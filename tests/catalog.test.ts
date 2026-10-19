@@ -90,7 +90,7 @@ describe("catalog coverage", () => {
     for (const variant of UPSTREAM_VARIANTS) {
       const component = PUBLIC_CATALOG.find((item) => item.upstreamId === variant.component);
       expect(component?.variants).not.toContain("popup");
-      expect(variant.sourcePath).toContain("/popup_templates/popups/");
+      expect(variant.sourcePath).toContain("/popups/");
     }
   });
 });

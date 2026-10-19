@@ -79,7 +79,7 @@ const fixtures: Array<{
     imageWidth: 368,
     imageX: 0,
     imageY: 0,
-    reference: "https://raw.githubusercontent.com/UI-Lovelace-Minimalist/UI/f8a9cb67a53f91367f1dffe18516aa983b463cb5/docs/assets/img/custom_card_pollen_light.png",
+    reference: "/.tmp-reference-catalog/docs/assets/img/custom_card_pollen_light.png",
     config: {
       type: "custom:mushroom-addition-custom-card-pollen",
       trees_entity: "sensor.kleenex_pollen_radar_home_trees",

@@ -392,8 +392,8 @@ for (const fixture of fixtures) {
     : "";
   const reference = fixture.reference
     ? fixture.referenceCrop
-      ? `<div class="reference-crop"${referenceStyle}><img class="reference reference-natural" src="/.tmp-ui-minimalist/docs/assets/img/${fixture.reference}" alt=""></div>`
-      : `<img class="reference" src="/.tmp-ui-minimalist/docs/assets/img/${fixture.reference}" alt="">`
+      ? `<div class="reference-crop"${referenceStyle}><img class="reference reference-natural" src="/.tmp-reference-catalog/docs/assets/img/${fixture.reference}" alt=""></div>`
+      : `<img class="reference" src="/.tmp-reference-catalog/docs/assets/img/${fixture.reference}" alt="">`
     : `<div class="no-reference">No dedicated upstream screenshot</div>`;
   section.innerHTML = `<h2>${fixture.title ?? `custom_card_${fixture.id.replaceAll("-", "_")}`}</h2><div class="columns"><div><div class="column-label">Upstream reference</div>${reference}</div><div><div class="column-label">Rendered implementation</div><div class="implementation ${fixture.theme === "dark" ? "dark-theme" : ""}"${fixture.width ? ` style="width:${fixture.width}px;max-width:${fixture.width}px"` : ""}></div></div></div>`;
   const element = document.createElement(tag) as HTMLElement & { hass: HomeAssistant; setConfig(config: AdditionConfig): void };

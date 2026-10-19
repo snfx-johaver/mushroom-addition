@@ -68,7 +68,7 @@ const fixtures: Fixture[] = [
     slug: "divider-subtitle",
     width: 500,
     height: 82,
-    reference: "/.tmp-ui-minimalist/docs/assets/img/custom_card_divider_subtitle.png",
+    reference: "/.tmp-reference-catalog/docs/assets/img/custom_card_divider_subtitle.png",
     config: { name: "Living room" },
   },
   {
@@ -76,7 +76,7 @@ const fixtures: Fixture[] = [
     slug: "divider-title",
     width: 500,
     height: 92,
-    reference: "/.tmp-ui-minimalist/docs/assets/img/custom_card_divider_title.png",
+    reference: "/.tmp-reference-catalog/docs/assets/img/custom_card_divider_title.png",
     config: { name: "Home", navigation_path: "/lovelace/home" },
   },
 ];

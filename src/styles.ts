@@ -13,7 +13,7 @@ export const sharedStyles = css`
     display: block;
     min-width: 0;
   }
-  .minimalist-card {
+  .mushroom-addition-card {
     display: block;
     overflow: hidden;
     border: 0;
@@ -21,7 +21,7 @@ export const sharedStyles = css`
     background: var(--ha-card-background, var(--card-background-color, #fff));
     box-shadow: var(--ha-card-box-shadow, 0 2px 8px rgba(0,0,0,.08));
   }
-  .minimalist-card:has(.fill-container), .fill-container { height: 100%; }
+  .mushroom-addition-card:has(.fill-container), .fill-container { height: 100%; }
   .fill-container { min-height: 100%; }
   .action-surface {
     box-sizing: border-box;
@@ -209,7 +209,7 @@ export const sharedStyles = css`
   .ulm-default-battery { grid-template-columns: auto minmax(0, 1fr); }
   .ulm-default-battery.is-charging .source-icon { animation: ulm-charge 3s linear infinite; }
   @keyframes ulm-charge { from { transform: scale(.92); } to { transform: scale(1.06); } }
-  .minimalist-bar-card {
+  .bar-card {
     display: grid;
     min-height: 96px;
     grid-template-rows: minmax(60px, 1fr) 35px;
@@ -217,7 +217,7 @@ export const sharedStyles = css`
     border-radius: 20px;
     background: var(--ha-card-background, var(--card-background-color, #fff));
   }
-  .minimalist-bar-card.bar-only {
+  .bar-card.bar-only {
     min-height: 35px;
     grid-template-rows: 35px;
   }

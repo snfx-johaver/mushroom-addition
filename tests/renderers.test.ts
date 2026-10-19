@@ -490,7 +490,7 @@ describe("family renderers", () => {
       ulm_custom_card_bar_card_color: "#81c995",
       ulm_custom_card_bar_card_icon: "mdi:memory",
     });
-    expect(markup).toContain("minimalist-bar-card");
+    expect(markup).toContain("bar-card");
     expect(markup).toContain("bar-card-header");
     expect(markup).toContain("bar-card-icon");
     expect(markup).toContain("ulm-name");
@@ -528,7 +528,7 @@ describe("family renderers", () => {
     expect(markup).not.toContain(forbidden);
   });
 
-  it("wires the Minimalist light slider to a valid Home Assistant service", async () => {
+  it("wires the light slider to a valid Home Assistant service", async () => {
     const callService = vi.fn(async () => undefined);
     const element = document.createElement("mushroom-addition-card-light") as HTMLElement & {
       hass: HomeAssistant;

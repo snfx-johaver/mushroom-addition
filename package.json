@@ -1,7 +1,7 @@
 {
   "name": "mushroom-cards-addition",
   "version": "1.4.0",
-  "description": "UI-configurable Mushroom-style Lovelace cards inspired by UI-Lovelace-Minimalist",
+  "description": "UI-configurable additional Mushroom-style Lovelace cards",
   "type": "module",
   "main": "dist/mushroom-cards-addition.js",
   "files": [
@@ -11,9 +11,7 @@
     "build": "vite build",
     "check:catalog": "tsx scripts/catalog-doc.ts --check && tsx scripts/check-catalog.ts",
     "check:parity": "tsx scripts/check-parity.ts",
-    "check:parity-source": "tsx scripts/generate-parity.ts .tmp-ui-minimalist --check",
     "docs:catalog": "tsx scripts/catalog-doc.ts",
-    "docs:parity": "tsx scripts/generate-parity.ts .tmp-ui-minimalist",
     "docs:visual-audit": "tsx scripts/visual-audit-doc.ts",
     "demo": "vite --host 127.0.0.1",
     "lint": "eslint .",

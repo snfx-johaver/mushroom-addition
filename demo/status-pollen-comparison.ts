@@ -83,7 +83,7 @@ document.querySelector("#comparison")!.innerHTML = `
     <div class="column">
       <div class="label">Pinned upstream reference</div>
       <div class="reference-frame">
-        <img src="/.tmp-ui-minimalist/docs/assets/img/${comparison.reference}" alt="">
+        <img src="/.tmp-reference-catalog/docs/assets/img/${comparison.reference}" alt="">
       </div>
     </div>
     <div class="column">

@@ -1,17 +1,14 @@
 # Visual and behavior specification
 
-This implementation is informed by the public UI-Lovelace-Minimalist templates
-at upstream commit
-[`f8a9cb6`](https://github.com/UI-Lovelace-Minimalist/UI/commit/f8a9cb67a53f91367f1dffe18516aa983b463cb5).
-It is original Lit/TypeScript code and does not copy upstream YAML or bundled
-assets.
+This implementation is original Lit/TypeScript code built around Home
+Assistant's public custom-card APIs and Mushroom's visual conventions.
 
 The shared visual language is a light card surface with a 14px radius, subtle
 elevation, 12px internal spacing, compact name/state typography, circular
 low-opacity icon fields, and state-driven accent colors. Components share these
 tokens but not a generic layout.
 
-| Family | Recognizable layout and behavior | Primary upstream references |
+| Family | Recognizable layout and behavior | Primary reference IDs |
 |---|---|---|
 | Weather | Condition and date header, outside temperature, and four configurable weather metrics | `custom_cards/custom_card_weather_metrics` |
 | Light | State-colored icon, brightness label, optional full-width brightness slider | `card_templates/cards/card_light.yaml`, `docs/usage/cards/card_light.md` |
@@ -48,7 +45,7 @@ at most once and filtered to suitable Home Assistant domains. Secondary inputs
 are explicit (`temperature_entity`, `humidity_entity`, `battery_entity`,
 `graph_entity`, `eta_entity`, `address_entity`, `min_entity`, `max_entity`) and
 only appear for families that use them. Legacy `primary_entity` and known
-Minimalist entity-variable names are migrated to `entity` during normalization.
+source entity-variable names are migrated to `entity` during normalization.
 
 The editor also contains an expandable **Implemented upstream options**
 section. The parity matrix inventories every discovered source variable, but

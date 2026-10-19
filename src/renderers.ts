@@ -393,7 +393,7 @@ const renderBarCard = (ctx: RenderContext): TemplateResult => {
   const barIcon = configured<string>(ctx, "ulm_custom_card_bar_card_icon") ||
     ctx.config.icon || ctx.entity?.attributes.icon || "mdi:chart-bar";
   const valueText = stateLabel(ctx.entity);
-  return ctx.actionSurface(`minimalist-bar-card ${showHeader ? "has-header" : "bar-only"}`, html`
+  return ctx.actionSurface(`bar-card ${showHeader ? "has-header" : "bar-only"}`, html`
     ${showHeader ? html`
       <div class="bar-card-header">
         <span class="bar-card-icon" style=${`--bar-icon-color:${iconColor}`}>

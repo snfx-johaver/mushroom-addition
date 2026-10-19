@@ -56,13 +56,11 @@ const familyFor = (id: string): string => {
   return "entity";
 };
 
-export const UPSTREAM_COMMIT = "f8a9cb67a53f91367f1dffe18516aa983b463cb5";
-
 export const UPSTREAM_VARIANTS = [
-  { id: "popup_cover", component: "card_cover", sourcePath: "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_cover.yaml" },
-  { id: "popup_light", component: "card_light", sourcePath: "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_light.yaml" },
-  { id: "popup_media_player", component: "card_media_player", sourcePath: "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_media_player.yaml" },
-  { id: "popup_vacuum", component: "card_vacuum", sourcePath: "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_vacuum.yaml" },
+  { id: "popup_cover", component: "card_cover", sourcePath: "reference_catalog/popups/popup_cover.yaml" },
+  { id: "popup_light", component: "card_light", sourcePath: "reference_catalog/popups/popup_light.yaml" },
+  { id: "popup_media_player", component: "card_media_player", sourcePath: "reference_catalog/popups/popup_media_player.yaml" },
+  { id: "popup_vacuum", component: "card_vacuum", sourcePath: "reference_catalog/popups/popup_vacuum.yaml" },
 ] as const;
 
 const variants: Record<string, string[]> = {
@@ -189,13 +187,13 @@ export const SOURCE_ONLY_HELPERS = [
 export const UPSTREAM_CATALOG: readonly CatalogItem[] = [
   ...baseCards.map((id) => {
     const sourcePaths: Partial<Record<typeof id, string>> = {
-      graph: "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/2-line_cards/card_graph.yaml",
-      scenes: "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_scenes_welcome.yaml",
-      vertical_button: "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/vertical_buttons/vertical_buttons.yaml",
+      graph: "reference_catalog/cards/card_graph.yaml",
+      scenes: "reference_catalog/cards/card_scenes_welcome.yaml",
+      vertical_button: "reference_catalog/cards/vertical_buttons.yaml",
     };
     return makeItem(
       `card_${id}`,
-      sourcePaths[id] ?? `custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_${id}.yaml`,
+      sourcePaths[id] ?? `reference_catalog/cards/card_${id}.yaml`,
     );
   }),
   ...customCards.map((id) => makeItem(

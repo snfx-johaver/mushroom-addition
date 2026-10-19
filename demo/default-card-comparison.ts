@@ -248,7 +248,7 @@ for (const source of UPSTREAM_CATALOG.filter((item) =>
   section.className = "comparison";
   section.dataset.source = source.upstreamId;
   section.style.setProperty("--comparison-width", source.upstreamId === "card_cover" ? "309px" : "320px");
-  section.innerHTML = `<h2>${source.upstreamId}</h2><div class="columns"><div><div class="column-label">Upstream reference</div><img class="reference" alt="${source.upstreamId} upstream reference" src="/.tmp-ui-minimalist/docs/assets/img/ulm_cards/${referenceFor[source.upstreamId]}"></div><div><div class="column-label">Rendered implementation</div><div class="implementation"></div></div></div>`;
+  section.innerHTML = `<h2>${source.upstreamId}</h2><div class="columns"><div><div class="column-label">Reference</div><img class="reference" alt="${source.upstreamId} reference" src="/.tmp-reference-catalog/docs/assets/img/ulm_cards/${referenceFor[source.upstreamId]}"></div><div><div class="column-label">Rendered implementation</div><div class="implementation"></div></div></div>`;
   const reference = section.querySelector<HTMLImageElement>(".reference")!;
   reference.addEventListener("load", () => {
     const width = Math.min(reference.naturalWidth, 560);
