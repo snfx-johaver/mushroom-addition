@@ -44,8 +44,8 @@ describe("family editor schemas", () => {
     ]));
   });  it("maps every registration to a known renderer/editor family", () => {
     const supported = new Set([
-      "weather", "climate", "light", "scene", "presence", "battery", "energy",
-      "sensor", "media", "cover", "vacuum", "security", "navigation",
+      "weather", "climate", "scene", "presence", "battery", "energy",
+      "sensor", "media", "cover", "security", "navigation",
       "text", "camera", "control", "alarm-time", "door", "entity", "bar",
     ]);
     for (const item of CATALOG) expect(supported.has(item.family)).toBe(true);
@@ -163,13 +163,6 @@ describe("family editor schemas", () => {
         if (!selfExplanatory.has(field.name)) expect(editorHelper(field.name)).toBeTruthy();
       }
     }
-  });
-
-  it("uses percentage sliders for bounded upstream ranges", () => {
-    const light = CATALOG.find((item) => item.upstreamId === "card_light")!;
-    expect(upstreamEditorSchemaFor(light)
-      .find((field) => field.name === "ulm_card_light_brightness_medium")?.selector)
-      .toEqual({ number: { min: 0, max: 100, step: 1, mode: "slider", unit_of_measurement: "%" } });
   });
 
   it("provides Mushroom-style presentation controls on every card editor", () => {

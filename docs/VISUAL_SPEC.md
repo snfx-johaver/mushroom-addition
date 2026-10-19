@@ -11,7 +11,6 @@ tokens but not a generic layout.
 | Family | Recognizable layout and behavior | Primary reference IDs |
 |---|---|---|
 | Weather | Condition and date header, outside temperature, and four configurable weather metrics | `custom_cards/custom_card_weather_metrics` |
-| Light | State-colored icon, brightness label, optional full-width brightness slider | `card_templates/cards/card_light.yaml`, `docs/usage/cards/card_light.md` |
 | Scene | Compact heading plus a grid of scene activation pills | `card_templates/cards/card_scenes_welcome.yaml`, `docs/usage/cards/card_scenes.md` |
 | Person/presence | Avatar/icon, zone/address/ETA text, presence dot or battery badge | `card_templates/cards/card_person.yaml`, `docs/usage/cards/card_person.md` |
 | Battery | Threshold-colored battery icon, large percentage and level bar | `card_templates/cards/card_battery.yaml`, `docs/usage/cards/card_battery.md` |
@@ -19,7 +18,6 @@ tokens but not a generic layout.
 | Sensor/graph | Current sensor reading plus deterministic compact history/sparkline treatment | `card_templates/2-line_cards/card_graph.yaml`, `docs/usage/cards/card_graph.md` |
 | Media | Artwork or app/device icon, title/state, optional transport controls | `card_templates/cards/card_media_player.yaml`, `docs/usage/cards/card_media_player.md` |
 | Cover | Device/state header and open/stop/close controls | `card_templates/cards/card_cover.yaml`, `docs/usage/cards/card_cover.md` |
-| Vacuum | State-colored robot icon, battery detail and start/pause/home controls | `card_templates/cards/card_vacuum.yaml`, `docs/usage/cards/card_vacuum.md` |
 | Navigation | Direction icon, destination copy and trailing chevron | `card_templates/cards/card_navigate.yaml` |
 
 ## Source-derived composition coverage

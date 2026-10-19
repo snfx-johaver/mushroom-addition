@@ -1,9 +1,9 @@
 import type { CatalogItem } from "./types";
 
 const baseCards = [
-  "battery", "cover", "graph", "light", "media_player",
+  "battery", "cover", "graph", "media_player",
   "person", "room", "scenes",
-  "vacuum", "vertical_button", "welcome_scenes",
+  "welcome_scenes",
 ] as const;
 
 const customCards = [
@@ -58,20 +58,15 @@ const familyFor = (id: string): string => {
 
 export const UPSTREAM_VARIANTS = [
   { id: "popup_cover", component: "card_cover", sourcePath: "reference_catalog/popups/popup_cover.yaml" },
-  { id: "popup_light", component: "card_light", sourcePath: "reference_catalog/popups/popup_light.yaml" },
   { id: "popup_media_player", component: "card_media_player", sourcePath: "reference_catalog/popups/popup_media_player.yaml" },
-  { id: "popup_vacuum", component: "card_vacuum", sourcePath: "reference_catalog/popups/popup_vacuum.yaml" },
 ] as const;
 
 const variants: Record<string, string[]> = {
-  card_light: ["default", "slider", "compact"],
   card_media_player: ["default", "controls", "artwork"],
   card_person: ["default", "small"],
   card_room: ["default", "with-sensors"],
-  card_vertical_button: ["default", "custom-state"],
   card_scenes: ["list", "welcome"],
   card_cover: ["default"],
-  card_vacuum: ["default"],
   custom_card_media_library: ["library", "upcoming"],
   custom_card_welcome_dashboard: ["message", "weather", "news"],
 };
@@ -187,7 +182,6 @@ export const UPSTREAM_CATALOG: readonly CatalogItem[] = [
     const sourcePaths: Partial<Record<typeof id, string>> = {
       graph: "reference_catalog/cards/card_graph.yaml",
       scenes: "reference_catalog/cards/card_scenes_welcome.yaml",
-      vertical_button: "reference_catalog/cards/vertical_buttons.yaml",
     };
     return makeItem(
       `card_${id}`,

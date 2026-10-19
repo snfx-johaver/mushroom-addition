@@ -26,23 +26,6 @@
       "moreInfoEntity": "sensor.cv_plug_power",
       "screenshot": "live-rich-graph.png"
     },
-    "card_light": {
-      "entity": "light.joris_iris_1",
-      "text": "Joris Iris 1 off",
-      "geometry": [
-        330,
-        168.578125
-      ],
-      "overflow": false,
-      "controls": [
-        "Brightness",
-        "1% brightness",
-        "50% brightness",
-        "100% brightness"
-      ],
-      "physicalActionsOperated": false,
-      "screenshot": "live-rich-light.png"
-    },
     "card_media_player": {
       "entity": "media_player.office_joris_tv_2",
       "text": "Office Joris TV idle",
@@ -70,7 +53,6 @@
   "picker": {
     "registrations": [
       "mushroom-addition-card-graph",
-      "mushroom-addition-card-light",
       "mushroom-addition-card-media-player"
     ],
     "allPreviewable": true
@@ -81,11 +63,6 @@
       "ulm_card_graph_hours",
       "ulm_card_graph_type",
       "ulm_card_graph_entity2"
-    ],
-    "lightFields": [
-      "ulm_card_light_enable_slider",
-      "ulm_card_light_enable_buttons",
-      "ulm_card_light_enable_color"
     ],
     "mediaFields": [
       "ulm_card_media_player_enable_controls",

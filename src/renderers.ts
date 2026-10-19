@@ -211,56 +211,6 @@ const weatherIcons: Record<string, [string, string]> = {
   exceptional: ["mdi:weather-sunny-alert", "red"],
 };
 
-const renderLight = (ctx: RenderContext): TemplateResult => {
-  const on = ctx.entity?.state === "on";
-  const brightness = numeric(attr(ctx.entity, "brightness"));
-  const percent = brightness === undefined ? undefined : Math.round(brightness / 2.55);
-  const slider = enabled(ctx, "show_controls", "ulm_card_light_enable_slider");
-  const buttons = configured<boolean>(ctx, "ulm_card_light_enable_buttons") === true;
-  const collapsed = configured<boolean>(ctx, "ulm_card_light_enable_collapse") === true && !on;
-  const horizontal = ctx.config.layout === "horizontal" ||
-    configured<boolean>(ctx, "ulm_card_light_enable_horizontal") === true;
-  const horizontalWide = configured<boolean>(ctx, "ulm_card_light_enable_horizontal_wide") === true;
-  const low = configured<number>(ctx, "ulm_card_light_brightness_low") ?? 1;
-  const medium = configured<number>(ctx, "ulm_card_light_brightness_medium") ?? 50;
-  const high = configured<number>(ctx, "ulm_card_light_brightness_high") ?? 100;
-  const min = configured<number>(ctx, "ulm_card_light_enable_slider_minSet") ?? 0;
-  const max = configured<number>(ctx, "ulm_card_light_enable_slider_maxSet") ?? 100;
-  const entityColor = configured<boolean>(ctx, "ulm_card_light_enable_color") === true
-    ? attr(ctx.entity, "rgb_color")
-    : undefined;
-  const lightColor = Array.isArray(entityColor) && entityColor.length >= 3
-    ? `rgb(${entityColor.slice(0, 3).map(Number).join(",")})`
-    : configuredColor(
-      configured<string>(ctx, "ulm_card_light_color"),
-      "rgb(var(--rgb-yellow, 255, 235, 59))",
-    );
-  const forceBackground = configured<boolean>(ctx, "ulm_card_light_force_background_color") === true && on;
-  const lightStyle = `--light-color:${lightColor};${forceBackground ? `background:color-mix(in srgb, ${lightColor} 20%, transparent);` : ""}`;
-  return ctx.actionSurface(`ulm-light-card ${horizontal ? "is-horizontal" : ""} ${horizontalWide ? "is-horizontal-wide" : ""} ${collapsed ? "is-collapsed" : ""}`, html`
-    <div class="light-header ${on ? "is-active" : ""}" style=${lightStyle}>
-      ${sourceIconBubble(ctx, icon(ctx, "mdi:lightbulb"), lightColor, on, "light-icon")}
-      ${heading(ctx, on && percent !== undefined ? `${percent}%` : stateLabel(ctx.entity))}
-    </div>
-    ${!collapsed && slider ? html`
-      <div class="ulm-light-slider" style=${`${lightStyle}--light-level:${Math.max(0, Math.min(100, percent ?? 0))}%;`}>
-        <i></i>
-        <input type="range" .min=${String(min)} .max=${String(max)} .value=${String(percent ?? 0)}
-          aria-label="Brightness"
-          @pointerdown=${(event: Event) => event.stopPropagation()}
-          @click=${(event: Event) => event.stopPropagation()}
-          @change=${(event: Event) => ctx.service("light", "turn_on", { entity_id: ctx.config.entity, brightness_pct: Number((event.target as HTMLInputElement).value) })}>
-      </div>
-    ` : nothing}
-    ${!collapsed && buttons ? html`<div class="ulm-controls brightness-presets">
-      ${[low, medium, high].map((brightness) => button(`${brightness}% brightness`, "mdi:brightness-6", (event) => {
-        event.stopPropagation();
-        ctx.service("light", "turn_on", { entity_id: ctx.config.entity, brightness_pct: brightness });
-      }))}
-    </div>` : nothing}
-  `);
-};
-
 const renderPerson = (ctx: RenderContext): TemplateResult => {
   const battery = linkedState(ctx, "battery_entity") ??
     (configured<string>(ctx, "ulm_card_person_battery")
@@ -721,50 +671,6 @@ const renderCover = (ctx: RenderContext): TemplateResult => {
     ${button("Open tilt", "mdi:arrow-top-right", (event) => { event.stopPropagation(); ctx.service("cover", "open_cover_tilt", { entity_id: ctx.config.entity }); })}
   </div>` : nothing}
   `, `--source-color:${color}`);
-};
-
-const renderVacuum = (ctx: RenderContext): TemplateResult => ctx.actionSurface("ulm-vacuum", html`
-  ${iconBubble(ctx, "mdi:robot-vacuum", ctx.entity?.state === "cleaning" ? "blue" : "grey")}
-  ${heading(ctx, stateLabel(ctx.entity))}
-  <span class="metric-pill"><ha-icon icon="mdi:battery"></ha-icon>${String(attr(ctx.entity, "battery_level") ?? "—")}%</span>
-  ${ctx.config.show_controls !== false ? html`<div class="ulm-controls">
-    ${button("Start", "mdi:play", (event) => { event.stopPropagation(); ctx.service("vacuum", "start", { entity_id: ctx.config.entity }); })}
-    ${button("Pause", "mdi:pause", (event) => { event.stopPropagation(); ctx.service("vacuum", "pause", { entity_id: ctx.config.entity }); })}
-    ${button("Return home", "mdi:home-map-marker", (event) => { event.stopPropagation(); ctx.service("vacuum", "return_to_base", { entity_id: ctx.config.entity }); })}
-  </div>` : nothing}
-`);
-
-const renderDefaultVacuum = (ctx: RenderContext): TemplateResult => {
-  const state = ctx.entity?.state.toLowerCase() ?? "unknown";
-  const running = ["cleaning", "mopping", "mowing"].includes(state);
-  const tone = configured<string>(ctx, "ulm_card_vacuum_color") ||
-    ({ cleaning: "blue", mowing: "blue", paused: "green", mopping: "yellow", returning: "purple", error: "red" }[state] ?? "grey");
-  const room = configured<string>(ctx, "ulm_card_vacuum_room");
-  const camera = linkedState(ctx, "ulm_card_vacuum_camera");
-  const showCamera = camera && (
-    configured<boolean>(ctx, "ulm_card_vacuum_camera_toggle") !== true || running
-  );
-  return ctx.actionSurface(`ulm-default-vacuum ${configured<boolean>(ctx, "ulm_card_vacuum_force_background_color") && activeStates.has(state) ? `force-background tone-${tone}` : ""}`, html`
-    <div class="vacuum-summary">
-      ${iconBubble(ctx, "mdi:robot-vacuum", tone, "vacuum-icon")}
-      ${heading(ctx, configured<string>(ctx, "ulm_card_vacuum_label") || stateLabel(ctx.entity))}
-    </div>
-    ${showCamera && attr(camera, "entity_picture")
-      ? html`<img class="vacuum-map" src=${String(attr(camera, "entity_picture"))} alt="Vacuum map">`
-      : nothing}
-    ${ctx.config.show_controls !== false ? html`<div class="vacuum-actions">
-      ${button(running ? "Stop" : "Start", running ? "mdi:stop" : "mdi:play", (event) => {
-        event.stopPropagation();
-        ctx.service("vacuum", running ? "stop" : "start", { entity_id: ctx.config.entity });
-      })}
-      ${button("Return home", "mdi:home-map-marker", (event) => { event.stopPropagation(); ctx.service("vacuum", "return_to_base", { entity_id: ctx.config.entity }); })}
-      ${button("Locate", "mdi:map-marker", (event) => { event.stopPropagation(); ctx.service("vacuum", "locate", { entity_id: ctx.config.entity }); })}
-      ${room ? button("Clean room", configured<string>(ctx, "ulm_card_vacuum_room_icon") || "mdi:floor-plan", (event) => {
-        event.stopPropagation();
-        ctx.service("script", "turn_on", { entity_id: room });
-      }) : nothing}
-    </div>` : nothing}
-  `);
 };
 
 const renderSecurity = (ctx: RenderContext): TemplateResult => {
@@ -2265,53 +2171,6 @@ const renderGeneric = (ctx: RenderContext): TemplateResult => {
   `, `--source-color:${color}`);
 };
 
-const renderVerticalButton = (ctx: RenderContext): TemplateResult => {
-  const activeState = configured<string>(ctx, "ulm_card_vertical_button_state", "active_state") || "on";
-  const active = ctx.entity?.state === activeState;
-  const domain = ctx.config.entity?.split(".", 1)[0];
-  const domainIcon: Record<string, string> = {
-    automation: "mdi:robot",
-    button: "mdi:gesture-tap-button",
-    fan: "mdi:fan",
-    input_boolean: "mdi:toggle-switch",
-    input_button: "mdi:gesture-tap-button",
-    input_select: "mdi:format-list-bulleted",
-    light: "mdi:lightbulb",
-    lock: "mdi:lock",
-    script: "mdi:script-text",
-    switch: "mdi:toggle-switch",
-    vacuum: "mdi:robot-vacuum",
-  };
-  const verticalIcon = ctx.config.icon || ctx.entity?.attributes.icon || domainIcon[domain ?? ""] || "mdi:gesture-tap-button";
-  const label = String(attr(ctx.entity, "value") ?? ctx.config.secondary ?? "");
-  const name = domain === "input_select" ? activeState : domain === "input_boolean" ? "" : stateLabel(ctx.entity);
-  const activeColor = configuredColor(
-    configured<string>(ctx, "ulm_card_vertical_button_color"),
-    "rgb(var(--rgb-blue, 33, 150, 243))",
-  );
-  const toggle = (event: Event): void => {
-    event.stopPropagation();
-    if (!ctx.config.entity) return;
-    if (domain === "input_select") {
-      ctx.service("input_select", "select_option", { entity_id: ctx.config.entity, option: activeState });
-    } else if (domain === "input_button" || domain === "button") {
-      ctx.service(domain, "press", { entity_id: ctx.config.entity });
-    } else if (domain === "lock") {
-      ctx.service("lock", ctx.entity?.state === "locked" ? "unlock" : "lock", { entity_id: ctx.config.entity });
-    } else if (domain) {
-      ctx.service(domain, "toggle", { entity_id: ctx.config.entity });
-    }
-  };
-  return ctx.actionSurface(`ulm-vertical-button ${active ? "is-active" : ""}`, html`
-    <button class="vertical-button-control" aria-label="Activate" @pointerdown=${(event: Event) => event.stopPropagation()} @click=${toggle}>
-      ${ctx.config.icon_type === "none"
-        ? nothing
-        : sourceIconBubble(ctx, verticalIcon, activeColor, active)}
-      ${heading(ctx, label || name)}
-    </button>
-  `);
-};
-
 const renderDefaultGraph = (ctx: RenderContext): TemplateResult => {
   const graphColor = configuredColor(
     configured<string>(ctx, "ulm_card_graph_color"),
@@ -2331,10 +2190,7 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
   switch (ctx.descriptor.upstreamId) {
     case "card_battery": return renderDefaultBattery(ctx);
     case "card_graph": return renderDefaultGraph(ctx);
-    case "card_light": return renderLight(ctx);
     case "card_media_player": return renderMedia(ctx);
-    case "card_vacuum": return renderDefaultVacuum(ctx);
-    case "card_vertical_button": return renderVerticalButton(ctx);
     case "custom_card_trash": return renderTrash(ctx);
     case "custom_card_alarm_time": return renderAlarmTimeCard(ctx);
     case "custom_card_apexcharts": return renderApexCharts(ctx);
@@ -2378,7 +2234,6 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     return renderDetailCard(ctx, /vehicle_status/.test(ctx.descriptor.upstreamId) ? "mdi:car" : /plant/.test(ctx.descriptor.upstreamId) ? "mdi:flower" : "mdi:view-grid", "purple");
   }
   switch (ctx.descriptor.family) {
-    case "light": return renderLight(ctx);
     case "scene": return renderScene(ctx);
     case "presence": return renderPerson(ctx);
     case "battery": return renderBattery(ctx);
@@ -2387,7 +2242,6 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "sensor": return renderMetric(ctx);
     case "media": return renderMedia(ctx);
     case "cover": return renderCover(ctx);
-    case "vacuum": return renderVacuum(ctx);
     case "security": return renderSecurity(ctx);
     case "navigation": return renderNavigation(ctx);
     case "control": return renderControl(ctx);

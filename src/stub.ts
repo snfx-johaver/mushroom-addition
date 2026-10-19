@@ -92,15 +92,10 @@ export const createStubConfig = (
         excludedTerms.every((term) => !text.includes(term));
     });
   const semanticPrimary =
-    descriptor.upstreamId === "card_vertical_button"
-        ? findEntity(["light"], []) ??
-          findEntity(["switch", "input_boolean", "fan", "vacuum", "script", "button", "lock"], [])
-      : descriptor.upstreamId === "card_graph"
+    descriptor.upstreamId === "card_graph"
         ? findEntity(["sensor"], ["cv", "plug", "power"]) ??
           findEntityByDeviceClass(["power", "energy"])
-        : descriptor.upstreamId === "card_light"
-          ? findEntity(["light"], ["joris", "iris"])
-          : descriptor.upstreamId === "card_media_player"
+        : descriptor.upstreamId === "card_media_player"
             ? findEntity(["media_player"], ["office", "joris", "tv"])
             : descriptor.upstreamId === "card_battery"
               ? findEntityExcluding(["sensor"], ["battery", "level"], ["state", "charging"]) ??
@@ -433,13 +428,6 @@ export const createStubConfig = (
           .filter((entityId) => entityId.startsWith("scene."))
           .slice(0, 7)
           .map((entityId) => sceneItemDefaultsFor(hass, entityId)),
-      }
-      : {}),
-    ...(descriptor.upstreamId === "card_vertical_button"
-      ? {
-        icon: undefined,
-        ulm_card_vertical_button_color: "blue",
-        ulm_card_vertical_button_state: "on",
       }
       : {}),
     ...(descriptor.upstreamId === "card_welcome_scenes"

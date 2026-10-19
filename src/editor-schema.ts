@@ -39,9 +39,7 @@ const colorDefaults: Record<string, string> = {
   ulm_card_cover_color: "blue",
   ulm_card_graph_color: "red",
   ulm_card_graph_icon_color: "red",
-  ulm_card_light_color: "yellow",
   ulm_card_media_player_color: "blue",
-  ulm_card_vertical_button_color: "blue",
   ulm_card_alarm_time_color: "blue",
   ulm_custom_card_bar_card_color: "blue",
   ulm_custom_card_bar_card_icon_color: "grey",
@@ -67,11 +65,6 @@ const presentationGrid = (schema: EditorField[]): EditorField => ({
 });
 
 const percentageOptions = new Set([
-  "ulm_card_light_enable_slider_minSet",
-  "ulm_card_light_enable_slider_maxSet",
-  "ulm_card_light_brightness_low",
-  "ulm_card_light_brightness_medium",
-  "ulm_card_light_brightness_high",
   "ulm_card_battery_battery_level_danger",
   "ulm_card_battery_battery_level_warning",
   "ulm_card_cover_slider_min",
@@ -82,7 +75,6 @@ const booleanOptions = new Set([
   "ulm_custom_card_bar_card_indicator",
   "ulm_custom_card_bar_card_show_icon",
   "ulm_custom_card_bar_card_value",
-  "ulm_card_light_enable_horizontal_wide",
   "ulm_card_media_player_collapsible",
   "ulm_card_media_player_idle_off",
   "ulm_card_media_player_more_info",
@@ -298,30 +290,9 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
   ],
   bar: (item) => [...common(item)],
   energy: (item) => [...common(item), entity(["sensor"], "min_entity"), entity(["sensor"], "max_entity"), toggle("show_graph")],
-  sensor: (item) => [
-    ...common(item),
-    ...(item.upstreamId === "card_vertical_button"
-      ? [
-        color("ulm_card_vertical_button_color"),
-        text("ulm_card_vertical_button_state"),
-      ]
-      : [toggle("show_graph")]),
-  ],
+  sensor: (item) => [...common(item), toggle("show_graph")],
   media: (item) => [...common(item), toggle("show_controls")],
   cover: (item) => [...common(item), toggle("show_controls")],
-  vacuum: (item) => [
-    ...common(item),
-    toggle("show_controls"),
-    ...(item.upstreamId === "card_vacuum"
-      ? [
-        entity(["camera"], "ulm_card_vacuum_camera"),
-        toggle("ulm_card_vacuum_camera_toggle"),
-        entity(["script"], "ulm_card_vacuum_room"),
-        { name: "ulm_card_vacuum_room_icon", selector: { icon: {} } },
-        toggle("ulm_card_vacuum_force_background_color"),
-      ]
-      : []),
-  ],
   security: (item) => [...common(item)],
   navigation: (item) => [
     ...(item.variants?.length ? [select("variant", item.variants.map((variant) => ({

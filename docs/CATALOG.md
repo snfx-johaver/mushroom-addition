@@ -4,10 +4,10 @@ This manifest maps the documented card catalog to Mushroom Cards Addition
 registrations. It is generated from `src/catalog.ts`; CI rejects duplicate
 IDs, missing source paths, invalid namespaces, or broken popup mappings.
 
-**Coverage:** 47 documented upstream card sources map to
-45 public card components.
+**Coverage:** 44 documented upstream card sources map to
+42 public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
-of duplicate picker entries. 4 popup templates and
+of duplicate picker entries. 2 popup templates and
 1 implementation helpers are inventoried but are not
 public registrations.
 
@@ -16,13 +16,10 @@ public registrations.
 | `card_battery` | default-card | `custom:mushroom-addition-card-battery` | battery | default | `card_battery` |
 | `card_cover` | default-card | `custom:mushroom-addition-card-cover` | cover | default | `card_cover` |
 | `card_graph` | default-card | `custom:mushroom-addition-card-graph` | energy | default | `card_graph` |
-| `card_light` | default-card | `custom:mushroom-addition-card-light` | light | default, slider, compact | `card_light` |
 | `card_media_player` | default-card | `custom:mushroom-addition-card-media-player` | media | default, controls, artwork | `card_media_player` |
 | `card_person` | default-card | `custom:mushroom-addition-card-person` | presence | default, small | `card_person` |
 | `card_room` | default-card | `custom:mushroom-addition-card-room` | presence | default, with-sensors | `card_room` |
 | `card_scenes` | default-card | `custom:mushroom-addition-card-scenes` | scene | welcome-pills, scene-grid | `card_scenes`<br>`custom_card_scenes` |
-| `card_vacuum` | default-card | `custom:mushroom-addition-card-vacuum` | vacuum | default | `card_vacuum` |
-| `card_vertical_button` | default-card | `custom:mushroom-addition-card-vertical-button` | sensor | default, custom-state | `card_vertical_button` |
 | `card_welcome_scenes` | default-card | `custom:mushroom-addition-card-welcome-scenes` | scene | default | `card_welcome_scenes` |
 | `custom_card_trash` | custom-card | `custom:mushroom-addition-custom-card-trash` | sensor | default | `custom_card_trash` |
 | `custom_card_alarm_time` | custom-card | `custom:mushroom-addition-custom-card-alarm-time` | alarm-time | default | `custom_card_alarm_time` |
@@ -78,9 +75,7 @@ Standard Home Assistant actions are used instead.
 | Popup template | Addition component | Public behavior | Reference path |
 |---|---|---|---|
 | `popup_cover` | `card_cover` | Not exposed; use standard card actions | `reference_catalog/popups/popup_cover.yaml` |
-| `popup_light` | `card_light` | Not exposed; use standard card actions | `reference_catalog/popups/popup_light.yaml` |
 | `popup_media_player` | `card_media_player` | Not exposed; use standard card actions | `reference_catalog/popups/popup_media_player.yaml` |
-| `popup_vacuum` | `card_vacuum` | Not exposed; use standard card actions | `reference_catalog/popups/popup_vacuum.yaml` |
 
 ## Source-only helpers
 

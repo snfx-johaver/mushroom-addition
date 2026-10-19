@@ -21,14 +21,14 @@ describe("catalog coverage", () => {
   });
 
   it("includes default and custom cards", () => {
-    expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "card_light")).toBe(true);
+    expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "card_graph")).toBe(true);
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_camera")).toBe(true);
   });
 
   it("matches the documented source counts and keeps the custom card catalog public", () => {
     const sourceCount = (category: string) =>
       UPSTREAM_CATALOG.filter((item) => item.category === category).length;
-    expect(sourceCount("default-card")).toBe(11);
+    expect(sourceCount("default-card")).toBe(8);
     expect(sourceCount("custom-card")).toBe(36);
     expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(34);
   });
@@ -84,7 +84,7 @@ describe("catalog coverage", () => {
   });
 
   it("inventories upstream popups without exposing nonfunctional variants", () => {
-    expect(UPSTREAM_VARIANTS).toHaveLength(4);
+    expect(UPSTREAM_VARIANTS).toHaveLength(2);
     for (const variant of UPSTREAM_VARIANTS) {
       const component = PUBLIC_CATALOG.find((item) => item.upstreamId === variant.component);
       expect(component?.variants).not.toContain("popup");

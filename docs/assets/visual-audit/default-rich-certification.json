@@ -29,40 +29,6 @@
         "sensor.cv_plug_power": "Prepared numeric CV plug power sensor with recorder history."
       }
     },
-    "card_light": {
-      "artifact": "docs/assets/visual-audit/card_light-comparison.png",
-      "artifactSha256": "d77f0f0ed84f02d116c94898de7fefc3775bf039418d0de2e968fda0d5ba745b",
-      "artifactSize": [
-        704,
-        218
-      ],
-      "referenceCrop": [
-        10,
-        82,
-        286,
-        122
-      ],
-      "interactions": [
-        "card surface: configured tap action",
-        "brightness slider: light.turn_on brightness_pct",
-        "low preset: light.turn_on brightness_pct",
-        "medium preset: light.turn_on brightness_pct",
-        "high preset: light.turn_on brightness_pct"
-      ],
-      "liveConfig": {
-        "type": "custom:mushroom-addition-card-light",
-        "entity": "light.joris_iris_1",
-        "tap_action": {
-          "action": "toggle"
-        },
-        "ulm_card_light_enable_slider": true,
-        "ulm_card_light_enable_buttons": true,
-        "ulm_card_light_enable_color": true
-      },
-      "requiredEntities": {
-        "light.joris_iris_1": "Prepared dimmable Iris light; live certification must not operate it."
-      }
-    },
     "card_media_player": {
       "artifact": "docs/assets/visual-audit/card_media_player-comparison.png",
       "artifactSha256": "3a1c80f1b5e87a1afb63c971958928e97450ded7fa379fff0c978afe3d831b87",

@@ -51,21 +51,6 @@ export const isReplacedUpstreamOption = (item: CatalogItem, name: string): boole
   (replacedOptions[item.upstreamId]?.includes(name) ?? false);
 
 const supportedByFamily: Record<string, readonly string[]> = {
-  light: [
-    "ulm_card_light_enable_slider",
-    "ulm_card_light_enable_slider_minSet",
-    "ulm_card_light_enable_slider_maxSet",
-    "ulm_card_light_enable_collapse",
-    "ulm_card_light_enable_horizontal",
-    "ulm_card_light_enable_color",
-    "ulm_card_light_force_background_color",
-    "ulm_card_light_enable_buttons",
-    "ulm_card_light_brightness_low",
-    "ulm_card_light_brightness_medium",
-    "ulm_card_light_brightness_high",
-    "ulm_card_light_enable_horizontal_wide",
-    "ulm_card_light_color",
-  ],
   battery: [
     "ulm_card_battery_attribute",
     "ulm_card_battery_battery_state_entity_id",

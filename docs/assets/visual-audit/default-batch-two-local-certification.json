@@ -3,8 +3,6 @@
   "environment": "Vitest + happy-dom interaction assertions; Microsoft Edge via Playwright CLI for focused visual artifacts",
   "sources": [
     "card_title",
-    "card_vacuum",
-    "card_vertical_button",
     "card_welcome_scenes"
   ],
   "automatedEvidence": {
@@ -12,16 +10,6 @@
     "structuralRegressionTest": "tests/renderers.test.ts"
   },
   "liveConfigs": {
-    "card_vacuum": {
-      "type": "custom:mushroom-addition-card-vacuum",
-      "entity": "vacuum.robob"
-    },
-    "card_vertical_button": {
-      "type": "custom:mushroom-addition-card-vertical-button",
-      "entity": "light.joris_iris_1",
-      "ulm_card_vertical_button_state": "on",
-      "ulm_card_vertical_button_color": "blue"
-    },
     "card_welcome_scenes": {
       "type": "custom:mushroom-addition-card-welcome-scenes",
       "collapse_entity": "input_boolean.dropdown_welcome",
@@ -41,59 +29,6 @@
     }
   },
   "visibleInteractions": {
-    "card_vacuum": [
-      [
-        "vacuum",
-        "start",
-        {
-          "entity_id": "vacuum.robob"
-        }
-      ],
-      [
-        "vacuum",
-        "stop",
-        {
-          "entity_id": "vacuum.robob"
-        }
-      ],
-      [
-        "vacuum",
-        "return_to_base",
-        {
-          "entity_id": "vacuum.robob"
-        }
-      ],
-      [
-        "vacuum",
-        "locate",
-        {
-          "entity_id": "vacuum.robob"
-        }
-      ],
-      [
-        "script",
-        "turn_on",
-        {
-          "entity_id": "script.clean_living_room"
-        }
-      ]
-    ],
-    "card_vertical_button": {
-      "domains": [
-        "input_select",
-        "input_boolean",
-        "switch",
-        "light",
-        "automation",
-        "input_button",
-        "fan",
-        "vacuum",
-        "script",
-        "button",
-        "lock"
-      ],
-      "payloads": "Asserted exactly in tests/default-batch-two-certification.test.ts"
-    },
     "card_welcome_scenes": {
       "collapse": [
         "input_boolean",
@@ -118,8 +53,6 @@
   },
   "artifacts": [
     "docs/assets/visual-audit/card_title-comparison.png",
-    "docs/assets/visual-audit/card_vacuum-comparison.png",
-    "docs/assets/visual-audit/card_vertical_button-comparison.png",
     "docs/assets/visual-audit/card_welcome_scenes-comparison.png"
   ],
   "liveAccepted": false

@@ -96,18 +96,6 @@ const specs: Spec[] = [
     },
   },
   {
-    id: "card_light",
-    tag: "mushroom-addition-card-light",
-    reference: "card_light_combi.png",
-    crop: [10, 82, 286, 122],
-    config: {
-      type: "custom:mushroom-addition-card-light",
-      entity: "light.window",
-      ulm_card_light_enable_slider: true,
-      ulm_card_light_enable_color: true,
-    },
-  },
-  {
     id: "card_media_player",
     tag: "mushroom-addition-card-media-player",
     reference: "card_media_player_art_controls.png",
