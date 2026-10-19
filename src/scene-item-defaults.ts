@@ -26,10 +26,6 @@ export const sceneItemDefaultsFor = (
     icon: entity?.attributes.icon ?? domainIcons[domain] ?? "mdi:gesture-tap-button",
     icon_type: entity?.attributes.entity_picture ? "entity-picture" : "icon",
     color: "purple",
-    active_state: domain === "media_player" ? "playing" :
-      ["automation", "binary_sensor", "fan", "input_boolean", "light", "lock", "switch"].includes(domain)
-        ? "on"
-        : undefined,
     tap_action: { action: "toggle" },
   };
 };

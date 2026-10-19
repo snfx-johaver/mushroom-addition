@@ -17,6 +17,7 @@ const entity = (domains?: string[], name = "entity"): EditorField => ({
   selector: { entity: domains?.length ? { domain: domains } : {} },
 });
 const text = (name: string): EditorField => ({ name, selector: { text: {} } });
+const navigation = (name: string): EditorField => ({ name, selector: { navigation: {} } });
 const toggle = (name: string): EditorField => ({ name, selector: { boolean: {} } });
 const number = (name: string, min = 1, max = 168): EditorField => ({
   name,
@@ -237,7 +238,7 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
       ? [
         entity(["input_boolean"], "collapse_entity"),
         entity(["weather"], "weather_entity"),
-        text("settings_path"),
+        navigation("settings_path"),
         toggle("collapsed"),
       ]
       : []),
@@ -274,7 +275,7 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
       label: item.variantLabels?.[variant] ?? variant,
     })))] : []),
     ...presentation(),
-    text("navigation_path"),
+    navigation("navigation_path"),
   ],
   text: () => [...presentation(), text("secondary")],
   camera: (item) => [...common(item)],

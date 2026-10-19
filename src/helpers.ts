@@ -247,7 +247,11 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
           icon: typeof item.icon === "string" ? item.icon : undefined,
           color: typeof item.color === "string" ? item.color : undefined,
           state: typeof item.state === "string" ? item.state : undefined,
-          nav_path: typeof item.nav_path === "string" ? item.nav_path : undefined,
+          navigation_path: typeof item.navigation_path === "string"
+            ? item.navigation_path
+            : typeof item.nav_path === "string"
+              ? item.nav_path
+              : undefined,
           service_data: item.service_data && typeof item.service_data === "object"
             ? item.service_data as Record<string, unknown>
             : undefined,

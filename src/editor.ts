@@ -200,17 +200,19 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
               <small>Accent color used by the button and its active state.</small>
             </label>
-            <label class="field">
-              <span>Active when state is</span>
-              <ha-selector
-                .hass=${this.hass}
-                .selector=${{ text: {} }}
-                .value=${item.active_state ?? ""}
-                @value-changed=${(event: CustomEvent) =>
-                  this.updateItem(key, index, "active_state", event.detail.value)}
-              ></ha-selector>
-              <small>Optional entity state that highlights this button as active.</small>
-            </label>
+            ${key === "scene_items" ? html`
+              <label class="field">
+                <span>Navigation path</span>
+                <ha-selector
+                  .hass=${this.hass}
+                  .selector=${{ navigation: {} }}
+                  .value=${item.navigation_path ?? item.nav_path ?? ""}
+                  @value-changed=${(event: CustomEvent) =>
+                    this.updateItem(key, index, "navigation_path", event.detail.value)}
+                ></ha-selector>
+                <small>Optional destination selected from your Home Assistant dashboards. It overrides the tap action.</small>
+              </label>
+            ` : nothing}
             <label class="field">
               <span>Tap action</span>
               <ha-selector
@@ -312,7 +314,7 @@ export class MushroomAdditionEditor extends LitElement {
       const oldDefaults = sceneItemDefaultsFor(this.hass, current.entity);
       const newDefaults = sceneItemDefaultsFor(this.hass, value);
       const next = { ...current, entity: value };
-      for (const defaultField of ["name", "icon", "icon_type", "color", "active_state", "tap_action"] as const) {
+      for (const defaultField of ["name", "icon", "icon_type", "color", "tap_action"] as const) {
         if (
           current[defaultField] === undefined ||
           JSON.stringify(current[defaultField]) === JSON.stringify(oldDefaults[defaultField])

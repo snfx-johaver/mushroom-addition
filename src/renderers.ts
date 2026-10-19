@@ -349,8 +349,9 @@ const renderMetric = (ctx: RenderContext): TemplateResult => ctx.actionSurface("
 `);
 
 const runItemAction = (event: Event, ctx: RenderContext, item: AdditionItemConfig): void => {
-  if (item.nav_path) {
-    runControlAction(event, ctx, { action: "navigate", navigation_path: item.nav_path }, item.entity);
+  const navigationPath = item.navigation_path || item.nav_path;
+  if (navigationPath) {
+    runControlAction(event, ctx, { action: "navigate", navigation_path: navigationPath }, item.entity);
     return;
   }
   const action = item.tap_action;
@@ -442,7 +443,11 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
     ` : nothing}
     ${collapsed ? nothing : html`<div class="scene-grid">${visibleItems.map((item) => {
       const entity = ctx.hass.states[item.entity];
-      const active = entity?.state === (item.active_state || item.state || "on") || entity?.state === "playing";
+      const active = item.active_state
+        ? entity?.state === item.active_state
+        : item.state
+          ? entity?.state === item.state
+          : activeStates.has(entity?.state ?? "");
       const color = configuredColor(item.color, "rgb(var(--ulm-purple))");
       const entityPicture = item.icon_type === "entity-picture"
         ? attr(entity, "entity_picture")
