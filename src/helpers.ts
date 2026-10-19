@@ -184,10 +184,8 @@ const upstreamCompatibility = (config: AdditionConfig): AdditionConfig => {
 
 const legacyEntityKeys = [
   "ulm_card_person_entity",
-  "ulm_card_light_entity",
   "ulm_card_media_player_entity",
   "ulm_card_cover_entity",
-  "ulm_card_vacuum_entity",
   "ulm_card_graph_entity",
   "ulm_card_person_location_entity",
   "ulm_card_input_number_entity",
@@ -270,14 +268,6 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
       }).filter((item): item is NonNullable<typeof item> => item !== undefined);
       if (sceneItems.length) migrated.scene_items = sceneItems;
     }
-  }
-  if (String(config.type).includes("card-vertical-button")) {
-    migrated.active_state ??= typeof config.ulm_card_vertical_button_state === "string"
-      ? config.ulm_card_vertical_button_state
-      : "on";
-    migrated.icon_color ??= typeof config.ulm_card_vertical_button_color === "string"
-      ? config.ulm_card_vertical_button_color
-      : "blue";
   }
   if (String(config.type).includes("person-location")) {
     migrated.entity ??= entityId(config.ulm_card_person_location_entity);

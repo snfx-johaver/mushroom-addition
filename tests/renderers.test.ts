@@ -178,7 +178,6 @@ const entityFor = (item: (typeof CATALOG)[number]): string => {
   if (domains.includes("media_player")) return "media_player.tv";
   if (domains.includes("cover")) return "cover.blind";
   if (domains.includes("fan")) return "fan.fixture";
-  if (domains.includes("vacuum")) return "vacuum.robot";
   if (domains.includes("alarm_control_panel")) return "alarm_control_panel.home";
   if (domains.includes("scene")) return "scene.relax";
   return "sensor.power";
@@ -186,26 +185,26 @@ const entityFor = (item: (typeof CATALOG)[number]): string => {
 
 describe("family renderers", () => {
   it("rerenders when Home Assistant updates an existing card config", async () => {
-    const element = document.createElement("mushroom-addition-card-light") as HTMLElement & {
+    const element = document.createElement("mushroom-addition-card-graph") as HTMLElement & {
       hass: HomeAssistant;
       setConfig(config: AdditionConfig): void;
       updateComplete: Promise<boolean>;
       shadowRoot: ShadowRoot;
     };
     element.hass = hass;
-    element.setConfig({ type: "custom:mushroom-addition-card-light", entity: "light.kitchen", name: "First" });
+    element.setConfig({ type: "custom:mushroom-addition-card-graph", entity: "sensor.power", name: "First" });
     document.body.append(element);
     await element.updateComplete;
-    element.setConfig({ type: "custom:mushroom-addition-card-light", entity: "light.kitchen", name: "Updated" });
+    element.setConfig({ type: "custom:mushroom-addition-card-graph", entity: "sensor.power", name: "Updated" });
     await element.updateComplete;
     expect(element.shadowRoot.textContent).toContain("Updated");
     element.remove();
   });
 
   it("applies Mushroom-style layout, fill, icon, and information choices", async () => {
-    const markup = await render("mushroom-addition-card-light", {
-      type: "custom:mushroom-addition-card-light",
-      entity: "light.kitchen",
+    const markup = await render("mushroom-addition-card-graph", {
+      type: "custom:mushroom-addition-card-graph",
+      entity: "sensor.power",
       layout: "vertical",
       fill_container: true,
       icon_type: "none",
@@ -214,7 +213,7 @@ describe("family renderers", () => {
     });
     expect(markup).toContain("layout-vertical");
     expect(markup).toContain("fill-container");
-    expect(markup).not.toContain("light-icon");
+    expect(markup).not.toContain("ulm-icon");
     expect(markup).toContain("on");
     expect(markup).not.toContain("Kitchen");
   });
@@ -508,13 +507,10 @@ describe("family renderers", () => {
     ["card_battery", "mushroom-addition-card-battery", "sensor.battery", "ulm-default-battery", "battery-track"],
     ["card_cover", "mushroom-addition-card-cover", "cover.blind", "ulm-cover", "sparkline"],
     ["card_graph", "mushroom-addition-card-graph", "sensor.power", "ulm-default-graph", "ulm-light-slider"],
-    ["card_light", "mushroom-addition-card-light", "light.kitchen", "ulm-light-card", "sparkline"],
     ["card_media_player", "mushroom-addition-card-media-player", "media_player.tv", "ulm-media", "sparkline"],
     ["card_person", "mushroom-addition-card-person", "person.joris", "ulm-person", "sparkline"],
     ["card_room", "mushroom-addition-card-room", "light.kitchen", "ulm-room", "sparkline"],
     ["card_scenes", "mushroom-addition-card-scenes", "scene.relax", "scene-pills", "sparkline"],
-    ["card_vacuum", "mushroom-addition-card-vacuum", "vacuum.robot", "ulm-default-vacuum", "sparkline"],
-    ["card_vertical_button", "mushroom-addition-card-vertical-button", "light.kitchen", "ulm-vertical-button", "sparkline"],
     ["card_welcome_scenes", "mushroom-addition-card-welcome-scenes", "scene.relax", "welcome-scenes", "sparkline"],
   ])("enforces the %s visual structure", async (_id, tag, entity, required, forbidden) => {
     const markup = await render(tag, {
@@ -522,36 +518,9 @@ describe("family renderers", () => {
       entity,
       entities: entity.startsWith("scene.") ? ["scene.relax"] : undefined,
       show_controls: true,
-      ulm_card_light_enable_slider: true,
     });
     expect(markup).toContain(required);
     expect(markup).not.toContain(forbidden);
-  });
-
-  it("wires the light slider to a valid Home Assistant service", async () => {
-    const callService = vi.fn(async () => undefined);
-    const element = document.createElement("mushroom-addition-card-light") as HTMLElement & {
-      hass: HomeAssistant;
-      setConfig(config: AdditionConfig): void;
-      updateComplete: Promise<boolean>;
-      shadowRoot: ShadowRoot;
-    };
-    element.hass = { ...hass, callService };
-    element.setConfig({
-      type: "custom:mushroom-addition-card-light",
-      entity: "light.kitchen",
-      ulm_card_light_enable_slider: true,
-    });
-    document.body.append(element);
-    await element.updateComplete;
-    const slider = element.shadowRoot.querySelector<HTMLInputElement>(".ulm-light-slider input")!;
-    slider.value = "50";
-    slider.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
-    expect(callService).toHaveBeenCalledWith("light", "turn_on", {
-      entity_id: "light.kitchen",
-      brightness_pct: 50,
-    });
-    element.remove();
   });
 
   it("renders the dedicated NAS tiles, semantic metrics, and three radial rings", async () => {
@@ -653,14 +622,12 @@ describe("family renderers", () => {
   });
 
   it.each([
-    ["light", "mushroom-addition-card-light", "light.kitchen", "ulm-light"],
     ["scene", "mushroom-addition-card-scenes", "scene.relax", "scene-grid"],
     ["person", "mushroom-addition-card-person", "person.joris", "ulm-person"],
     ["battery", "mushroom-addition-card-battery", "sensor.battery", "ulm-default-battery"],
     ["energy", "mushroom-addition-card-graph", "sensor.power", "sparkline"],
     ["media", "mushroom-addition-card-media-player", "media_player.tv", "ulm-media"],
     ["cover", "mushroom-addition-card-cover", "cover.blind", "ulm-controls"],
-    ["vacuum", "mushroom-addition-card-vacuum", "vacuum.robot", "ulm-default-vacuum"],
   ])("renders distinct %s markup", async (_family, tag, entity, marker) => {
     const item = CATALOG.find((entry) => entry.tag === tag)!;
     const markup = await render(tag, {
@@ -931,7 +898,6 @@ describe("family renderers", () => {
 
   it("keeps deterministic family-level visual signatures", async () => {
     const signatures = {
-      light: familySignature(await render("mushroom-addition-card-light", { type: "custom:mushroom-addition-card-light", entity: "light.kitchen", show_controls: true })),
       scene: familySignature(await render("mushroom-addition-card-scenes", { type: "custom:mushroom-addition-card-scenes", entity: "scene.relax", entities: ["scene.relax"] })),
       person: familySignature(await render("mushroom-addition-card-person", { type: "custom:mushroom-addition-card-person", entity: "person.joris" })),
       battery: familySignature(await render("mushroom-addition-card-battery", { type: "custom:mushroom-addition-card-battery", entity: "sensor.battery" })),
@@ -954,14 +920,6 @@ describe("family renderers", () => {
           "ulm-copy",
           "ulm-name",
           "ulm-label",
-        ],
-        "light": [
-          "ulm-light-card",
-          "ulm-icon",
-          "ulm-copy",
-          "ulm-name",
-          "ulm-label",
-          "ulm-light-slider",
         ],
         "media": [
           "ulm-media",

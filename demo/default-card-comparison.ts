@@ -99,13 +99,10 @@ const entityFor: Record<string, string | undefined> = {
   card_generic: "sensor.temperature",
   card_generic_swap: "sensor.temperature",
   card_graph: "sensor.temperature",
-  card_light: "light.kitchen",
   card_media_player: "media_player.tv",
   card_person: "person.joris",
   card_room: "light.kitchen",
   card_scenes: "scene.relax",
-  card_vacuum: "vacuum.robot",
-  card_vertical_button: "light.kitchen",
   card_welcome_scenes: "scene.relax",
 };
 
@@ -117,15 +114,12 @@ const referenceFor: Record<string, string> = {
   card_generic: "card_generic.png",
   card_generic_swap: "card_generic_swap.png",
   card_graph: "card_graph.png",
-  card_light: "card_light_combi.png",
   card_media_player: "card_media_player_art_controls.png",
   card_navigate: "card_navigate.png",
   card_person: "card_person.png",
   card_room: "room-card.png",
   card_scenes: "card_scenes.png",
   card_title: "card_title.png",
-  card_vacuum: "card_vacuum_cleaning.png",
-  card_vertical_button: "card_example.png",
   card_welcome_scenes: "card_welcome_scenes.png",
 };
 
@@ -175,11 +169,6 @@ const variantsFor = (sourceId: string, base: AdditionConfig): AdditionConfig[] =
         ulm_card_cover_enable_controls: true,
         ulm_card_cover_enable_slider: true,
       }];
-    case "card_light": return [
-      { ...base, entity: "light.kitchen_off", layout: "default", show_controls: false, ulm_card_light_enable_slider: false },
-      { ...base, layout: "default", show_controls: true, ulm_card_light_enable_slider: true },
-      { ...base, layout: "horizontal", show_controls: true, ulm_card_light_enable_slider: true, ulm_card_light_enable_horizontal: true },
-    ];
     case "card_media_player": return [
       { ...base, show_controls: false, ulm_card_media_player_enable_art: false },
       { ...base, show_controls: true, ulm_card_media_player_enable_art: true, ulm_card_media_player_enable_controls: true },
@@ -217,14 +206,6 @@ const variantsFor = (sourceId: string, base: AdditionConfig): AdditionConfig[] =
       ],
     }];
     case "card_person": return [{ ...base, entity: "person.joris" }, { ...base, entity: "person.joris_away" }];
-    case "card_vacuum": return [
-      {
-        ...base,
-        entity: "vacuum.robot",
-        ulm_card_vacuum_room: "script.clean_living_room",
-        ulm_card_vacuum_room_icon: "mdi:sofa",
-      },
-    ];
     case "card_title": return [{ ...base, name: "Living Room", secondary: "Light" }];
     case "card_navigate": return [{ ...base, name: "Navigate Card", secondary: "Navigate" }];
     default: return [base];

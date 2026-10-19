@@ -2,7 +2,6 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { CATALOG, LEGACY_ALIASES } from "../src/catalog";
 import "../src/index";
 import type { AdditionConfig, HomeAssistant } from "../src/types";
-import { upstreamDefaultsFor } from "../src/defaults";
 import { createStubConfig } from "../src/stub";
 
 describe("Home Assistant registration", () => {
@@ -176,11 +175,6 @@ describe("Home Assistant registration", () => {
   it("populates picker examples with compatible Home Assistant entities", () => {
         const hass: HomeAssistant = {
           states: {
-            "light.kitchen": {
-              entity_id: "light.kitchen",
-              state: "on",
-              attributes: { friendly_name: "Kitchen" },
-            },
             "media_player.xbox": {
               entity_id: "media_player.xbox",
               state: "playing",
@@ -194,24 +188,25 @@ describe("Home Assistant registration", () => {
           },
           callService: async () => undefined,
         };
-        const lightConstructor = customElements.get("mushroom-addition-card-light") as typeof HTMLElement & {
-          getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
-        };
         const consoleConstructor = customElements.get("mushroom-addition-custom-card-playstation") as typeof HTMLElement & {
           getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
         };
-        expect(lightConstructor.getStubConfig(hass, Object.keys(hass.states), [])).toMatchObject({
-          entity: "light.kitchen",
-          name: "Kitchen",
-          icon: "mdi:lightbulb",
-          ulm_card_light_enable_slider: false,
-          ulm_card_light_enable_color: false,
-        });
         expect(consoleConstructor.getStubConfig(hass, Object.keys(hass.states), [])).toMatchObject({
           entity: "media_player.xbox",
           icon: "mdi:sony-playstation",
           show_controls: false,
         });
+  });
+
+  it.each([
+    ["mushroom-addition-custom-card-trash", "mdi:trash-can-outline"],
+    ["mushroom-addition-custom-card-room-overview", "mdi:sofa"],
+    ["mushroom-addition-custom-card-roomview", "mdi:home-variant-outline"],
+  ])("uses the intended default icon for %s", (tag, icon) => {
+    const constructor = customElements.get(tag) as typeof HTMLElement & {
+      getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
+    };
+    expect(constructor.getStubConfig({ states: {}, callService: async () => undefined }, [], [])).toMatchObject({ icon });
   });
 
   it("populates the weather metrics picker example with healthy weather data", () => {
@@ -388,21 +383,6 @@ describe("Home Assistant registration", () => {
         });
   });
 
-  it("hydrates implemented upstream defaults without popup options", () => {
-    const light = CATALOG.find((item) => item.upstreamId === "card_light")!;
-    expect(upstreamDefaultsFor(light)).toMatchObject({
-      ulm_card_light_enable_slider: false,
-      ulm_card_light_enable_collapse: false,
-      ulm_card_light_enable_horizontal: false,
-      ulm_card_light_enable_color: false,
-      ulm_card_light_enable_buttons: false,
-      ulm_card_light_brightness_low: 1,
-      ulm_card_light_brightness_medium: 50,
-      ulm_card_light_brightness_high: 100,
-    });
-    expect(Object.keys(upstreamDefaultsFor(light)).some((key) => key.includes("popup"))).toBe(false);
-  });
-
   it("renders a representative from every component family", async () => {
     const hass: HomeAssistant = {
       states: {
@@ -436,14 +416,14 @@ describe("Home Assistant registration", () => {
 
   it("dispatches only the double-tap action for a double click", async () => {
     vi.useFakeTimers();
-    const element = document.createElement("mushroom-addition-card-light") as HTMLElement & {
+    const element = document.createElement("mushroom-addition-card-graph") as HTMLElement & {
       hass: HomeAssistant;
       setConfig(config: AdditionConfig): void;
       updateComplete: Promise<boolean>;
     };
     element.hass = { states: {}, callService: async () => undefined };
     element.setConfig({
-      type: "custom:mushroom-addition-card-light",
+      type: "custom:mushroom-addition-card-graph",
       tap_action: { action: "toggle" },
       double_tap_action: { action: "more-info" },
     });
@@ -463,14 +443,14 @@ describe("Home Assistant registration", () => {
 
   it("supports hold actions on cards without also tapping", async () => {
     vi.useFakeTimers();
-    const element = document.createElement("mushroom-addition-card-light") as HTMLElement & {
+    const element = document.createElement("mushroom-addition-card-graph") as HTMLElement & {
       hass: HomeAssistant;
       setConfig(config: AdditionConfig): void;
       updateComplete: Promise<boolean>;
     };
     element.hass = { states: {}, callService: async () => undefined };
     element.setConfig({
-      type: "custom:mushroom-addition-card-light",
+      type: "custom:mushroom-addition-card-graph",
       tap_action: { action: "more-info" },
       hold_action: { action: "assist" },
     });

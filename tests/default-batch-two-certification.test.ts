@@ -1,14 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { normalizeConfig } from "../src/helpers";
-import type { AdditionConfig, HassEntity, HomeAssistant } from "../src/types";
+import type { AdditionConfig, HomeAssistant } from "../src/types";
 import "../src/index";
 
 const states: HomeAssistant["states"] = {
-  "vacuum.robob": {
-    entity_id: "vacuum.robob",
-    state: "docked",
-    attributes: { friendly_name: "Robob", icon: "mdi:robot-vacuum" },
-  },
   "camera.robob_map": {
     entity_id: "camera.robob_map",
     state: "streaming",
@@ -125,16 +120,6 @@ afterEach(() => {
 
 describe("queued default batch two certification", () => {  it.each([
     {
-      tag: "mushroom-addition-card-vacuum",
-      config: { type: "custom:mushroom-addition-card-vacuum", entity: "vacuum.robob" },
-      fields: ["entity", "show_controls", "ulm_card_vacuum_room", "ulm_card_vacuum_camera", "tap_action"],
-    },
-    {
-      tag: "mushroom-addition-card-vertical-button",
-      config: { type: "custom:mushroom-addition-card-vertical-button", entity: "light.joris_iris_1" },
-      fields: ["entity", "ulm_card_vertical_button_color", "ulm_card_vertical_button_state", "tap_action"],
-    },
-    {
       tag: "mushroom-addition-card-welcome-scenes",
       config: { type: "custom:mushroom-addition-card-welcome-scenes", collapse_entity: "input_boolean.dropdown_welcome" },
       fields: ["collapse_entity", "weather_entity", "settings_path", "collapsed", "tap_action"],
@@ -188,68 +173,6 @@ describe("queued default batch two certification", () => {  it.each([
       }],
       tap_action: { action: "none" },
     });
-    expect(normalizeConfig({
-      type: "custom:mushroom-addition-card-vertical-button",
-      entity: "light.joris_iris_1",
-      ulm_card_vertical_button_state: "on",
-      ulm_card_vertical_button_color: "yellow",
-    })).toMatchObject({
-      active_state: "on",
-      icon_color: "yellow",
-    });
-  });  it("executes every vacuum control with exact Home Assistant payloads", async () => {
-    const dockedCalls = vi.fn(async () => undefined);
-    const docked = await renderCard("mushroom-addition-card-vacuum", {
-      type: "custom:mushroom-addition-card-vacuum",
-      entity: "vacuum.robob",
-      ulm_card_vacuum_room: "script.clean_living_room",
-    }, makeHass(states, dockedCalls));
-    click(docked, 'button[aria-label="Start"]');
-    click(docked, 'button[aria-label="Return home"]');
-    click(docked, 'button[aria-label="Locate"]');
-    click(docked, 'button[aria-label="Clean room"]');
-    expect(dockedCalls.mock.calls).toEqual([
-      ["vacuum", "start", { entity_id: "vacuum.robob" }],
-      ["vacuum", "return_to_base", { entity_id: "vacuum.robob" }],
-      ["vacuum", "locate", { entity_id: "vacuum.robob" }],
-      ["script", "turn_on", { entity_id: "script.clean_living_room" }],
-    ]);
-
-    const cleaningCalls = vi.fn(async () => undefined);
-    const cleaning = await renderCard("mushroom-addition-card-vacuum", {
-      type: "custom:mushroom-addition-card-vacuum",
-      entity: "vacuum.robob",
-    }, makeHass({
-      ...states,
-      "vacuum.robob": { ...states["vacuum.robob"], state: "cleaning" },
-    }, cleaningCalls));
-    click(cleaning, 'button[aria-label="Stop"]');
-    expect(cleaningCalls).toHaveBeenCalledWith("vacuum", "stop", { entity_id: "vacuum.robob" });
-  });
-
-  it.each([
-    ["input_select.mode", "input_select", "select_option", { entity_id: "input_select.mode", option: "Away" }, "Home"],
-    ["input_boolean.test", "input_boolean", "toggle", { entity_id: "input_boolean.test" }, "off"],
-    ["switch.test", "switch", "toggle", { entity_id: "switch.test" }, "off"],
-    ["light.test", "light", "toggle", { entity_id: "light.test" }, "off"],
-    ["automation.test", "automation", "toggle", { entity_id: "automation.test" }, "off"],
-    ["input_button.test", "input_button", "press", { entity_id: "input_button.test" }, "unknown"],
-    ["fan.test", "fan", "toggle", { entity_id: "fan.test" }, "off"],
-    ["vacuum.test", "vacuum", "toggle", { entity_id: "vacuum.test" }, "docked"],
-    ["script.test", "script", "toggle", { entity_id: "script.test" }, "off"],
-    ["button.test", "button", "press", { entity_id: "button.test" }, "unknown"],
-    ["lock.test", "lock", "unlock", { entity_id: "lock.test" }, "locked"],
-    ["lock.test", "lock", "lock", { entity_id: "lock.test" }, "unlocked"],
-  ])("executes the vertical button action for %s", async (entity, domain, service, data, state) => {
-    const callService = vi.fn(async () => undefined);
-    const entityState: HassEntity = { entity_id: entity, state, attributes: { friendly_name: entity } };
-    const card = await renderCard("mushroom-addition-card-vertical-button", {
-      type: "custom:mushroom-addition-card-vertical-button",
-      entity,
-      ulm_card_vertical_button_state: entity.startsWith("input_select.") ? "Away" : "on",
-    }, makeHass({ [entity]: entityState }, callService));
-    click(card, 'button[aria-label="Activate"]');
-    expect(callService).toHaveBeenCalledWith(domain, service, data);
   });
 
   it("executes every welcome-scenes control and item domain with exact payloads", async () => {

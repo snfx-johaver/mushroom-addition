@@ -2,7 +2,7 @@
 
 This is the source-by-source acceptance ledger for the card catalog.
 
-**Progress: 0/47 fully E2E accepted. Stage totals — picker 0, editor 0, visual 0, states 0, interactions 0, live 0.**
+**Progress: 0/44 fully E2E accepted. Stage totals — picker 0, editor 0, visual 0, states 0, interactions 0, live 0.**
 
 An entry is fully accepted only when all six independent stages pass: picker,
 graphical editor, visual parity, state behavior, interactions, and live Home
@@ -19,13 +19,10 @@ metadata, and structural tests do not constitute acceptance.
 | `card_battery` | default-card | `card_battery` | — | `card_battery` | Source: `reference_catalog/cards/card_battery.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `card_cover` | default-card | `card_cover` | — | `card_cover` | Source: `reference_catalog/cards/card_cover.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `card_graph` | default-card | `card_graph` | — | `card_graph` | Source: `reference_catalog/cards/card_graph.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
-| `card_light` | default-card | `card_light` | — | `card_light` | Source: `reference_catalog/cards/card_light.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `card_media_player` | default-card | `card_media_player` | — | `card_media_player` | Source: `reference_catalog/cards/card_media_player.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `card_person` | default-card | `card_person` | — | `card_person` | Source: `reference_catalog/cards/card_person.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `card_room` | default-card | `card_room` | — | `card_room` | Source: `reference_catalog/cards/card_room.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `card_scenes` | default-card | `card_scenes` | welcome-pills | `card_scenes:welcome-pills` | Source: `reference_catalog/cards/card_scenes_welcome.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
-| `card_vacuum` | default-card | `card_vacuum` | — | `card_vacuum` | Source: `reference_catalog/cards/card_vacuum.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
-| `card_vertical_button` | default-card | `card_vertical_button` | — | `card_vertical_button` | Source: `reference_catalog/cards/vertical_buttons.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `card_welcome_scenes` | default-card | `card_welcome_scenes` | — | `card_welcome_scenes` | Source: `reference_catalog/cards/card_welcome_scenes.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_trash` | custom-card | `custom_card_trash` | — | `custom_card_trash` | Source: `custom_cards/custom_card_trash` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_alarm_time` | custom-card | `custom_card_alarm_time` | — | `custom_card_alarm_time` | Source: `custom_cards/custom_card_alarm_time` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |

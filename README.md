@@ -7,8 +7,8 @@ providing UI-configurable additional Mushroom style cards. The layouts, state st
 controls, variables, and defaults are audited item-by-item while retaining a
 cohesive installation alongside Mushroom.
 
-The release traces **47 documented upstream card sources**—11 default cards and
-36 custom cards—to **45 public card components**. Same-goal aliases and compact or
+The release traces **44 documented upstream card sources**—8 default cards and
+36 custom cards—to **42 public card components**. Same-goal aliases and compact or
 layout alternatives are combined into clear graphical variants instead of
 duplicating picker entries. Every public component has a visual editor and
 remains YAML-configurable. See the
@@ -70,13 +70,11 @@ label, icon, and color. Empty or disabled rows are omitted from the rendered car
 legacy `ulm_card_datum_*` variables are migrated automatically.
 
 ```yaml
-type: custom:mushroom-addition-card-light
-entity: light.kitchen
-name: Kitchen
-icon_color: amber
-variant: slider
+type: custom:mushroom-addition-custom-card-trash
+entity: sensor.next_collection
+name: Waste collection
 tap_action:
-  action: toggle
+  action: more-info
 hold_action:
   action: more-info
 ```

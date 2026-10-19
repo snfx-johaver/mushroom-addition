@@ -111,46 +111,6 @@ export const sharedStyles = css`
     font-size: 13px;
   }
   .metric-pill ha-icon { --mdc-icon-size: 18px; color: rgba(var(--ulm-grey), .9); }
-  .ulm-light-card { display: grid; gap: 12px; padding: 12px; }
-  .ulm-light-card.is-horizontal { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
-  .ulm-light-card.is-horizontal-wide { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
-  .ulm-light-card.is-horizontal .brightness-presets { display: none; }
-  .light-header { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px; min-height: 42px; border-radius: 14px; }
-  .light-header.is-active .light-icon {
-    background: color-mix(in srgb, var(--light-color) 20%, transparent);
-    color: var(--light-color);
-  }
-  .light-header:not(.is-active) .light-icon {
-    background: rgba(var(--ulm-grey), .06);
-    color: rgba(var(--ulm-grey), .35);
-  }
-  .ulm-light-slider {
-    position: relative;
-    height: 42px;
-    overflow: hidden;
-    border-radius: 14px;
-    background: color-mix(in srgb, var(--light-color) 20%, transparent);
-  }
-  .ulm-light-slider i {
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: var(--light-level);
-    border-radius: inherit;
-    background: var(--light-color);
-    pointer-events: none;
-  }
-  .ulm-light-slider input {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    cursor: pointer;
-    opacity: 0;
-  }
-  .ulm-light-card.is-collapsed .ulm-light-slider,
-  .ulm-light-card.is-collapsed .brightness-presets { display: none; }
-  .brightness-presets { justify-content: center; }
   .climate-top { padding-bottom: 8px; }
   .climate-target { color: rgb(var(--ulm-red)); font-size: 23px; font-weight: 600; }
   .climate-current { font-size: 18px; font-weight: 700; }
@@ -385,14 +345,7 @@ export const sharedStyles = css`
   .media-controls .ulm-control { width: 100%; }
   .media-power { position: absolute; top: 12px; right: 12px; z-index: 2; }
   .media-volume-buttons { justify-content: center; }
-  .ulm-vacuum, .ulm-security { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px; }
-  .ulm-vacuum .ulm-controls { grid-column: 1 / -1; justify-content: center; }
-  .ulm-default-vacuum { display: grid; gap: 12px; padding: 12px; }
-  .vacuum-summary { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 12px; }
-  .vacuum-map { display: block; width: 100%; max-height: 220px; border-radius: 20px; object-fit: cover; }
-  .vacuum-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
-  .vacuum-actions .ulm-control { width: 100%; background: rgba(var(--ulm-grey), .08); }
-  .ulm-default-vacuum.force-background { background: rgba(var(--ulm-blue), .14); }
+  .ulm-security { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px; }
   .security-status { padding: 5px 9px; border-radius: 10px; background: rgba(var(--ulm-green), .12); color: rgb(var(--ulm-green)); font-size: 11px; font-weight: 700; }
   .ulm-navigation { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px; }
   .ulm-cover { display: grid; gap: 8px; padding: 0 12px 12px; }
@@ -481,12 +434,6 @@ export const sharedStyles = css`
   .gauge-ring { position: relative; display: grid; width: 64px; height: 64px; place-items: center; border-radius: 50%; background: conic-gradient(rgb(var(--ulm-blue)) var(--gauge), rgba(var(--ulm-grey), .12) 0); }
   .gauge-ring::before { content: ""; position: absolute; width: 48px; height: 48px; border-radius: 50%; background: var(--card-background-color); }
   .gauge-ring b { position: relative; z-index: 1; font-size: 11px; }
-  .ulm-vertical-button { min-height: 82px; padding: 10px 0 8px; text-align: center; }
-  .vertical-button-control { display: grid; width: 100%; place-items: center; gap: 0; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
-  .vertical-button-control .ulm-icon { width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); }
-  .vertical-button-control .ulm-icon > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
-  .vertical-button-control .ulm-name { margin-top: 10px; font-size: 14px; font-weight: 700; }
-  .vertical-button-control .ulm-label { align-self: start; justify-self: center; font-size: 12px; font-weight: 800; opacity: .4; }
   .ulm-simple-default { grid-template-columns: auto minmax(0, 1fr); }
   .script-title { font-size: 14px; font-weight: 600; white-space: nowrap; }
   .custom-card-heading {
