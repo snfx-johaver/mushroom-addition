@@ -54,36 +54,11 @@
       },
       "imageLoaded": true,
       "moreInfoEntity": "camera.frontyard_high_resolution_channel"
-    },
-    "custom_card_chromecast": {
-      "live": true,
-      "geometry": {
-        "width": 330,
-        "height": 132.578125,
-        "clientWidth": 330,
-        "scrollWidth": 330
-      },
-      "moreInfoEntity": "media_player.office_joris_google_2",
-      "configuredMissingPlayerControls": [
-        {
-          "ariaLabel": "Toggle power",
-          "disabled": true
-        },
-        {
-          "ariaLabel": "Play or pause",
-          "disabled": true
-        },
-        {
-          "ariaLabel": "Toggle input",
-          "disabled": true
-        }
-      ],
-      "physicalMediaControlsNotOperatedLive": true
     }
   },
   "editorAndPicker": {
-    "registrationsFound": 4,
-    "graphicalSchemasLoaded": 4,
-    "semanticConfigRoundTripsPassed": 4
+    "registrationsFound": 3,
+    "graphicalSchemasLoaded": 3,
+    "semanticConfigRoundTripsPassed": 3
   }
 }

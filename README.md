@@ -7,8 +7,8 @@ providing UI-configurable additional Mushroom style cards. The layouts, state st
 controls, variables, and defaults are audited item-by-item while retaining a
 cohesive installation alongside Mushroom.
 
-The release traces **35 documented card sources**—6 default cards and
-29 custom cards—to **34 public card components**. Same-goal aliases and compact or
+The release traces **34 documented card sources**—6 default cards and
+28 custom cards—to **33 public card components**. Same-goal aliases and compact or
 layout alternatives are combined into clear graphical variants instead of
 duplicating picker entries. Every public component has a visual editor and
 remains YAML-configurable. See the

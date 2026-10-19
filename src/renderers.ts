@@ -912,22 +912,6 @@ const renderAlarmTimeCard = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const renderChromecast = (ctx: RenderContext): TemplateResult => {
-  const unavailable = !ctx.entity || ctx.entity.state === "unavailable";
-  const playing = ctx.entity?.state === "playing";
-  return ctx.actionSurface("custom-chromecast", html`
-    <div class="custom-card-heading">
-      ${iconBubble(ctx, "mdi:cast", unavailable ? "grey" : "blue")}
-      ${heading(ctx, stateLabel(ctx.entity))}
-    </div>
-    <div class="chromecast-controls">
-      ${button("Toggle power", "mdi:power", (event) => { event.stopPropagation(); ctx.service("media_player", "toggle", { entity_id: ctx.config.entity }); }, unavailable)}
-      ${button("Play or pause", playing ? "mdi:pause" : "mdi:play", (event) => { event.stopPropagation(); ctx.service("media_player", "media_play_pause", { entity_id: ctx.config.entity }); }, unavailable)}
-      ${button("Toggle input", "mdi:video-input-hdmi", (event) => { event.stopPropagation(); ctx.service("media_player", "toggle", { entity_id: ctx.config.entity }); }, unavailable)}
-    </div>
-  `);
-};
-
 const groupMembers = (ctx: RenderContext, entity: HassEntity | undefined): HassEntity[] => {
   const ids = attr(entity, "entity_id");
   return Array.isArray(ids)
@@ -2061,7 +2045,6 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "card_media_player": return renderMedia(ctx);
     case "custom_card_trash": return renderTrash(ctx);
     case "custom_card_alarm_time": return renderAlarmTimeCard(ctx);
-    case "custom_card_chromecast": return renderChromecast(ctx);
     case "custom_card_roomview": return renderRoomView(ctx);
     case "custom_card_room_overview": return renderRoomOverview(ctx);
     case "custom_card_welcome": return renderWelcome(ctx);

@@ -24,13 +24,14 @@ const removedSources = new Set([
   "card_light",
   "card_vacuum",
   "card_vertical_button",
+  "custom_card_chromecast",
 ]);
 
 describe("visual audit manifest", () => {
   it("contains one audit record for every retained source", () => {
-    expect(VISUAL_AUDIT).toHaveLength(35);
-    expect(new Set(VISUAL_AUDIT.map((entry) => entry.sourceId)).size).toBe(35);
-    expect(visualAuditProgress()).toMatchObject({ total: 35 });
+    expect(VISUAL_AUDIT).toHaveLength(34);
+    expect(new Set(VISUAL_AUDIT.map((entry) => entry.sourceId)).size).toBe(34);
+    expect(visualAuditProgress()).toMatchObject({ total: 34 });
   });
 
   it("does not expose audit records for deleted sources", () => {

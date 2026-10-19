@@ -381,11 +381,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         text("aspect_ratio"),
         number("image_height", 80, 1200),
       ]
-    : item.upstreamId === "custom_card_chromecast"
-      ? [
-        entity(["media_player"]),
-        ...presentation(),
-      ]
     : item.upstreamId === "custom_card_media_player_sonos"
       ? [
         entity(["media_player"]),

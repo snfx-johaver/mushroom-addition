@@ -2,7 +2,7 @@
 
 This is the source-by-source acceptance ledger for the card catalog.
 
-**Progress: 0/35 fully E2E accepted. Stage totals — picker 0, editor 0, visual 0, states 0, interactions 0, live 0.**
+**Progress: 0/34 fully E2E accepted. Stage totals — picker 0, editor 0, visual 0, states 0, interactions 0, live 0.**
 
 An entry is fully accepted only when all six independent stages pass: picker,
 graphical editor, visual parity, state behavior, interactions, and live Home
@@ -26,7 +26,6 @@ metadata, and structural tests do not constitute acceptance.
 | `custom_card_alarm_time` | custom-card | `custom_card_alarm_time` | — | `custom_card_alarm_time` | Source: `custom_cards/custom_card_alarm_time` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_bar_card` | custom-card | `custom_card_bar_card` | — | `custom_card_bar_card` | Source: `custom_cards/custom_card_bar_card` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_camera` | custom-card | `custom_card_camera` | — | `custom_card_camera` | Source: `custom_cards/custom_card_camera` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
-| `custom_card_chromecast` | custom-card | `custom_card_chromecast` | — | `custom_card_chromecast` | Source: `custom_cards/custom_card_chromecast` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_roomview` | custom-card | `custom_card_roomview` | — | `custom_card_roomview` | Source: `custom_cards/custom_card_roomview` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_room_overview` | custom-card | `custom_card_room_overview` | — | `custom_card_room_overview` | Source: `custom_cards/custom_card_room_overview` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_welcome` | custom-card | `custom_card_welcome` | — | `custom_card_welcome` | Source: `custom_cards/custom_card_welcome` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |

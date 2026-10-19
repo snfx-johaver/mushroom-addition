@@ -122,32 +122,6 @@
           "action": "tap"
         }
       ]
-    },
-    "custom_card_chromecast": {
-      "controlsClicked": 3,
-      "serviceCalls": [
-        [
-          "media_player",
-          "toggle",
-          {
-            "entity_id": "media_player.chromecast"
-          }
-        ],
-        [
-          "media_player",
-          "media_play_pause",
-          {
-            "entity_id": "media_player.chromecast"
-          }
-        ],
-        [
-          "media_player",
-          "toggle",
-          {
-            "entity_id": "media_player.chromecast"
-          }
-        ]
-      ]
     }
   },
   "geometry": {
@@ -174,14 +148,6 @@
       "regions": {
         ".camera-title": 1,
         "img": 1
-      }
-    },
-    "custom_card_chromecast": {
-      "width": 608,
-      "height": 130,
-      "regions": {
-        ".custom-card-heading": 1,
-        ".chromecast-controls button": 3
       }
     }
   }
