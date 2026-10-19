@@ -199,27 +199,12 @@ describe("priority local certification", () => {
         ["button", "press", { entity_id: "button.bram_tablet_reload" }],
       ]),
     });
-    expect(evidence.browserInteractions.custom_card_person_info_small).toMatchObject({
-      controlsClicked: 0,
-      cardSurfaceActions: [
-        { gesture: "tap", action: "more-info", entity: "person.joris" },
-        { gesture: "hold", action: "more-info", entity: "sensor.phone_battery" },
-      ],
-    });
-    expect(evidence.browserInteractions.custom_card_person_info).toMatchObject({
-      controlsClicked: 0,
-      cardSurfaceActions: [
-        { gesture: "tap", action: "more-info", entity: "person.joris" },
-        { gesture: "hold", action: "more-info", entity: "sensor.person_full_battery" },
-      ],
-    });
   });
 
   it("creates populated picker previews for the remaining visually accepted sources", () => {
     const cases = [
       ["custom_card_nas_metrics", "binary_sensor.nas"],
       ["custom_card_tablet", "binary_sensor.tablet"],
-      ["custom_card_person_info", "person.joris"],
     ] as const;
     for (const [sourceId, expectedEntity] of cases) {
       const item = CATALOG.find((entry) => entry.upstreamId === sourceId)!;
@@ -234,12 +219,6 @@ describe("priority local certification", () => {
         name: baseStates[expectedEntity].attributes.friendly_name,
       });
     }
-    const person = CATALOG.find((entry) => entry.upstreamId === "custom_card_person_info")!;
-    const personConstructor = customElements.get(person.tag) as typeof HTMLElement & {
-      getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
-    };
-    expect(personConstructor.getStubConfig(hass(), Object.keys(baseStates), []).variant).toBe("full");
-    expect(person.variants).toContain("small");
     const nas = CATALOG.find((entry) => entry.upstreamId === "custom_card_nas_metrics")!;
     const nasConstructor = customElements.get(nas.tag) as typeof HTMLElement & {
       getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
@@ -270,22 +249,6 @@ describe("priority local certification", () => {
       type: "custom:mushroom-addition-custom-card-tablet",
       entity: "binary_sensor.tablet",
       fields: ["entity", "tablet_button_usb_entity", "tablet_button_display_entity", "tablet_ram_entity", "battery_entity"],
-    },
-    {
-      type: "custom:mushroom-addition-custom-card-person-info",
-      entity: "person.joris",
-      variant: "full",
-      fields: [
-        "entity", "variant", "ulm_card_person_zone1", "ulm_address", "ulm_address_locality",
-        "ulm_card_person_driving_entity", "ulm_card_person_battery_entity",
-        "ulm_card_person_battery_state_entity", "ulm_card_person_commute_entity", "ulm_multiline", "hold_action",
-      ],
-    },
-    {
-      type: "custom:mushroom-addition-custom-card-person-info",
-      entity: "person.joris",
-      variant: "small",
-      fields: ["entity", "variant", "ulm_card_person_zone1", "ulm_card_person_battery_entity", "hold_action"],
     },
   ])("round-trips $type through its graphical editor", async ({ fields, ...config }) => {
     const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {
@@ -411,104 +374,7 @@ describe("priority local certification", () => {
     }
   });
 
-  it("covers compact Person Info home, driving, zone, charging, and threshold states", async () => {
-    const config: AdditionConfig = {
-      type: "custom:mushroom-addition-custom-card-person-info-small",
-      entity: "person.joris",
-      ulm_card_person_battery_entity: "sensor.person_battery",
-      ulm_card_person_battery_state_entity: "sensor.person_battery_state",
-      ulm_card_person_driving_entity: "binary_sensor.person_driving",
-      ulm_card_person_zone1: "zone.work",
-      ulm_card_battery_battery_level_danger: 15,
-      ulm_card_battery_battery_level_warning: 30,
-    };
-    const home = await renderCard("mushroom-addition-custom-card-person-info-small", config);
-    expect((home.shadowRoot.querySelector(".person-info-badge ha-icon") as HTMLElement & { icon: string }).icon)
-      .toBe("mdi:home-variant");
-    expect(home.shadowRoot.querySelector(".person-info-small-battery")?.classList.contains("tone-green")).toBe(true);
-    home.remove();
-
-    const driving = await renderCard("mushroom-addition-custom-card-person-info-small", config, {
-      ...baseStates,
-      "binary_sensor.person_driving": { ...baseStates["binary_sensor.person_driving"], state: "on" },
-      "sensor.person_battery_state": { ...baseStates["sensor.person_battery_state"], state: "charging" },
-    });
-    expect((driving.shadowRoot.querySelector(".person-info-badge ha-icon") as HTMLElement & { icon: string }).icon)
-      .toBe("mdi:car");
-    expect((driving.shadowRoot.querySelector(".person-info-small-battery ha-icon") as HTMLElement & { icon: string }).icon)
-      .toBe("mdi:battery-charging");
-    driving.remove();
-
-    const work = await renderCard("mushroom-addition-custom-card-person-info-small", config, {
-      ...baseStates,
-      "person.joris": { ...baseStates["person.joris"], state: "Work" },
-      "sensor.person_battery": { ...baseStates["sensor.person_battery"], state: "10" },
-    });
-    expect((work.shadowRoot.querySelector(".person-info-badge ha-icon") as HTMLElement & { icon: string }).icon)
-      .toBe("mdi:briefcase");
-    expect(work.shadowRoot.querySelector(".person-info-small-battery")?.classList.contains("tone-red")).toBe(true);
-  });
-
-  it("covers full Person Info address, multiline, zone, driving, charging, threshold, and commute states", async () => {
-    const config: AdditionConfig = {
-      type: "custom:mushroom-addition-custom-card-person-info",
-      entity: "person.joris",
-      variant: "full",
-      ulm_card_person_use_entity_picture: true,
-      ulm_card_person_zone1: "zone.work",
-      ulm_address: "sensor.person_address",
-      ulm_address_locality: "sensor.person_locality",
-      ulm_card_person_driving_entity: "binary_sensor.person_driving",
-      ulm_card_person_battery_entity: "sensor.person_battery",
-      ulm_card_person_battery_state_entity: "sensor.person_battery_state",
-      ulm_card_person_commute_entity: "sensor.person_commute",
-      ulm_multiline: true,
-      ulm_card_battery_battery_level_danger: 15,
-      ulm_card_battery_battery_level_warning: 30,
-    };
-    const addressed = await renderCard("mushroom-addition-custom-card-person-info", config);
-    expect(addressed.shadowRoot.querySelector(".custom-person-info")?.classList.contains("is-multiline")).toBe(true);
-    expect(addressed.shadowRoot.textContent).toContain("12 Main Street");
-    expect(addressed.shadowRoot.textContent).toContain("24 min");
-    expect(addressed.shadowRoot.querySelector(".person-info-detail")?.classList.contains("tone-green")).toBe(true);
-    addressed.remove();
-
-    const zone = await renderCard("mushroom-addition-custom-card-person-info", {
-      ...config,
-      ulm_address: undefined,
-      ulm_address_locality: undefined,
-      ulm_multiline: false,
-    }, {
-      ...baseStates,
-      "person.joris": { ...baseStates["person.joris"], state: "Work" },
-      "sensor.person_battery": { ...baseStates["sensor.person_battery"], state: "22" },
-    });
-    expect(zone.shadowRoot.querySelector(".custom-person-info")?.classList.contains("is-inline")).toBe(true);
-    expect((zone.shadowRoot.querySelector(".person-info-badge ha-icon") as HTMLElement & { icon: string }).icon)
-      .toBe("mdi:briefcase");
-    expect(zone.shadowRoot.querySelector(".person-info-detail")?.classList.contains("tone-yellow")).toBe(true);
-    zone.remove();
-
-    const driving = await renderCard("mushroom-addition-custom-card-person-info", {
-      ...config,
-      ulm_address: undefined,
-      ulm_address_locality: undefined,
-    }, {
-      ...baseStates,
-      "person.joris": { ...baseStates["person.joris"], state: "away" },
-      "binary_sensor.person_driving": { ...baseStates["binary_sensor.person_driving"], state: "on" },
-      "sensor.person_battery": { ...baseStates["sensor.person_battery"], state: "10" },
-      "sensor.person_battery_state": { ...baseStates["sensor.person_battery_state"], state: "charging" },
-    });
-    expect((driving.shadowRoot.querySelector(".person-info-badge ha-icon") as HTMLElement & { icon: string }).icon)
-      .toBe("mdi:car");
-    expect(driving.shadowRoot.textContent).toContain("Driving - away");
-    expect((driving.shadowRoot.querySelector(".person-info-detail ha-icon") as HTMLElement & { icon: string }).icon)
-      .toBe("mdi:battery-charging");
-    expect(driving.shadowRoot.querySelector(".person-info-detail")?.classList.contains("tone-red")).toBe(true);
-  });
-
-  it("dispatches NAS status/outer actions and full Person tap/configured hold actions", async () => {
+  it("dispatches NAS status and outer actions", async () => {
     vi.useFakeTimers();
     const nas = await renderCard("mushroom-addition-custom-card-nas-metrics", {
       type: "custom:mushroom-addition-custom-card-nas-metrics",
@@ -523,44 +389,5 @@ describe("priority local certification", () => {
       expect.objectContaining({ action: "tap", config: expect.objectContaining({ entity: "binary_sensor.nas" }) }),
     ]);
     nas.remove();
-
-    const person = await renderCard("mushroom-addition-custom-card-person-info", {
-      type: "custom:mushroom-addition-custom-card-person-info",
-      entity: "person.joris",
-      variant: "full",
-      ulm_card_person_battery_entity: "sensor.person_battery",
-      hold_action: { action: "more-info", entity: "sensor.person_battery" },
-    });
-    const personActions: Array<{ action: string; config: AdditionConfig }> = [];
-    person.addEventListener("hass-action", (event) => personActions.push((event as CustomEvent).detail));
-    const surface = person.shadowRoot.querySelector(".action-surface") as HTMLElement;
-    surface.click();
-    surface.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
-    await vi.advanceTimersByTimeAsync(500);
-    surface.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
-    expect(personActions).toEqual([
-      expect.objectContaining({ action: "tap", config: expect.objectContaining({ entity: "person.joris" }) }),
-      expect.objectContaining({ action: "hold", config: expect.objectContaining({ entity: "sensor.person_battery" }) }),
-    ]);
-  });
-
-  it("dispatches compact Person Info tap and battery-targeted hold actions", async () => {
-    vi.useFakeTimers();
-    const card = await renderCard("mushroom-addition-custom-card-person-info-small", {
-      type: "custom:mushroom-addition-custom-card-person-info-small",
-      entity: "person.joris",
-      ulm_card_person_battery_entity: "sensor.person_battery",
-    });
-    const actions: Array<{ action: string; config: AdditionConfig }> = [];
-    card.addEventListener("hass-action", (event) => actions.push((event as CustomEvent).detail));
-    const surface = card.shadowRoot.querySelector(".action-surface") as HTMLElement;
-    surface.click();
-    surface.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
-    await vi.advanceTimersByTimeAsync(500);
-    surface.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
-    expect(actions).toEqual([
-      expect.objectContaining({ action: "tap", config: expect.objectContaining({ entity: "person.joris" }) }),
-      expect.objectContaining({ action: "hold", config: expect.objectContaining({ entity: "sensor.person_battery" }) }),
-    ]);
   });
 });

@@ -78,20 +78,6 @@ const fixtures: Array<{
     config: { entity: "light.qubino", qubino_more_info_entity: "input_select.ordres_fil_pilote" },
     reference: `<div class="source-card qubino-source"><div class="source-row"><span class="bubble"><ha-icon icon="mdi:memory"></ha-icon></span><span class="copy"><b>Pilot wire</b><small>Comfort -1°C · 50</small></span></div></div>`,
   },
-  {
-    sourceId: "custom_card_person_tracker",
-    slug: "person-tracker",
-    width: 466,
-    config: {
-      entity: "person.joris",
-      ulm_custom_card_person_tracker_use_entity_picture: true,
-      ulm_custom_card_person_tracker_use_badge: true,
-      ulm_custom_card_person_tracker_zones: ["zone.work"],
-      ulm_custom_card_person_tracker_find_device_script: "script.find_phone",
-      ulm_custom_card_person_tracker_map_enable: true,
-    },
-    reference: `<div class="source-card person-tracker-source"><div class="source-row"><span class="avatar"><ha-icon icon="mdi:face-man"></ha-icon></span><span class="copy"><b>Joris</b><small>home</small></span><span class="find"><ha-icon icon="mdi:cellphone-sound"></ha-icon></span></div><div class="person-tracker-map"><ha-icon icon="mdi:map-marker-path"></ha-icon></div></div>`,
-  },
 ];
 
 const main = document.querySelector("#comparisons")!;

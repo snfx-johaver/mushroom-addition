@@ -4,17 +4,16 @@ This manifest maps the documented card catalog to Mushroom Cards Addition
 registrations. It is generated from `src/catalog.ts`; CI rejects duplicate
 IDs, missing source paths, invalid namespaces, or broken popup mappings.
 
-**Coverage:** 39 documented upstream card sources map to
-37 public card components.
+**Coverage:** 35 documented upstream card sources map to
+34 public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
-of duplicate picker entries. 2 popup templates and
+of duplicate picker entries. 1 popup templates and
 1 implementation helpers are inventoried but are not
 public registrations.
 
 | Public ID | Category | Addition type | Family | UI variants | Covered source IDs |
 |---|---|---|---|---|---|
 | `card_battery` | default-card | `custom:mushroom-addition-card-battery` | battery | default | `card_battery` |
-| `card_cover` | default-card | `custom:mushroom-addition-card-cover` | cover | default | `card_cover` |
 | `card_graph` | default-card | `custom:mushroom-addition-card-graph` | energy | default | `card_graph` |
 | `card_media_player` | default-card | `custom:mushroom-addition-card-media-player` | media | default, controls, artwork | `card_media_player` |
 | `card_room` | default-card | `custom:mushroom-addition-card-room` | presence | default, with-sensors | `card_room` |
@@ -42,9 +41,7 @@ public registrations.
 | `custom_card_tablet` | custom-card | `custom:mushroom-addition-custom-card-tablet` | sensor | default | `custom_card_tablet` |
 | `custom_card_pollen_forecast` | custom-card | `custom:mushroom-addition-custom-card-pollen-forecast` | weather | default | `custom_card_pollen_forecast` |
 | `custom_card_welcome_dashboard` | custom-card | `custom:mushroom-addition-custom-card-welcome-dashboard` | presence | message, weather, news | `custom_card_welcome_dashboard` |
-| `custom_card_person_info` | custom-card | `custom:mushroom-addition-custom-card-person-info` | presence | full, small | `custom_card_person_info`<br>`custom_card_person_info_small` |
 | `custom_card_playstation` | custom-card | `custom:mushroom-addition-custom-card-playstation` | media | default | `custom_card_playstation` |
-| `custom_card_person_tracker` | custom-card | `custom:mushroom-addition-custom-card-person-tracker` | presence | default | `custom_card_person_tracker` |
 | `custom_card_vehicle_status` | custom-card | `custom:mushroom-addition-custom-card-vehicle-status` | sensor | default | `custom_card_vehicle_status` |
 | `custom_card_plant` | custom-card | `custom:mushroom-addition-custom-card-plant` | sensor | default | `custom_card_plant` |
 | `custom_card_speedtest_gauges` | custom-card | `custom:mushroom-addition-custom-card-speedtest-gauges` | energy | default | `custom_card_speedtest_gauges` |
@@ -56,7 +53,6 @@ public registrations.
 | Public component | Source → variant |
 |---|---|
 | `card_scenes` | `card_scenes` → `welcome-pills`<br>`custom_card_scenes` → `scene-grid` |
-| `custom_card_person_info` | `custom_card_person_info` → `full`<br>`custom_card_person_info_small` → `small` |
 
 Old custom-element tags for non-canonical sources remain registered as hidden
 compatibility aliases. They normalize to the public component and variant but do
@@ -69,7 +65,6 @@ Standard Home Assistant actions are used instead.
 
 | Popup template | Addition component | Public behavior | Reference path |
 |---|---|---|---|
-| `popup_cover` | `card_cover` | Not exposed; use standard card actions | `reference_catalog/popups/popup_cover.yaml` |
 | `popup_media_player` | `card_media_player` | Not exposed; use standard card actions | `reference_catalog/popups/popup_media_player.yaml` |
 
 ## Source-only helpers

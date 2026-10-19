@@ -150,8 +150,6 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
     hold_action: upstream.hold_action ?? (
       String(upstream.type).includes("water-heater") && upstream.entity
         ? { action: "more-info" }
-        : upstream.variant === "small" && typeof upstream.ulm_card_person_battery_entity === "string"
-        ? { action: "more-info", entity: upstream.ulm_card_person_battery_entity }
         : undefined
     ),
     double_tap_action: upstream.double_tap_action ?? roomDoubleTap,
@@ -183,11 +181,8 @@ const upstreamCompatibility = (config: AdditionConfig): AdditionConfig => {
 };
 
 const legacyEntityKeys = [
-  "ulm_card_person_entity",
   "ulm_card_media_player_entity",
-  "ulm_card_cover_entity",
   "ulm_card_graph_entity",
-  "ulm_card_person_location_entity",
   "ulm_card_input_number_entity",
   "ulm_custom_card_entity_overview",
   "ulm_custom_card_weather_metrics",
@@ -260,13 +255,6 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
       }).filter((item): item is NonNullable<typeof item> => item !== undefined);
       if (sceneItems.length) migrated.scene_items = sceneItems;
     }
-  }
-  if (String(config.type).includes("person-location")) {
-    migrated.entity ??= entityId(config.ulm_card_person_location_entity);
-    migrated.wifi_tracker_entity ??= entityId(config.ulm_card_person_location_wifi_tracker);
-    migrated.gps_tracker_entity ??= entityId(config.ulm_card_person_location_gps_tracker);
-    migrated.findmy_script_entity ??= entityId(config.ulm_card_person_location_findmy_script);
-    migrated.use_entity_picture ??= config.ulm_card_person_location_use_entity_picture === true;
   }
   if (String(config.type).includes("entity-overview")) {
     migrated.entity ??= entityId(config.ulm_custom_card_entity_overview);
@@ -341,14 +329,6 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
       : migrated.weather_entity
         ? "weather"
         : "message";
-  }
-  if (String(config.type).includes("person-tracker")) {
-    migrated.use_entity_picture ??= config.ulm_custom_card_person_tracker_use_entity_picture === true;
-    migrated.ulm_custom_card_person_tracker_camera_entity_light ??= entityId(config.ulm_card_person_tracker_camera);
-    migrated.ulm_custom_card_person_tracker_camera_entity_dark ??= entityId(config.ulm_card_person_tracker_camera);
-    migrated.ulm_custom_card_person_tracker_map_enable ??= typeof config.ulm_card_person_tracker_show_map === "boolean"
-      ? config.ulm_card_person_tracker_show_map
-      : undefined;
   }
   if (String(config.type).endsWith("custom-card-pollen")) {
     migrated.trees_entity ??= entityId(config.custom_card_pollen_tree);

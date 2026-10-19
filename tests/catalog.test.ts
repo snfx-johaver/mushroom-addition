@@ -30,9 +30,9 @@ describe("catalog coverage", () => {
   it("matches the documented source counts and keeps the custom card catalog public", () => {
     const sourceCount = (category: string) =>
       UPSTREAM_CATALOG.filter((item) => item.category === category).length;
-    expect(sourceCount("default-card")).toBe(7);
-    expect(sourceCount("custom-card")).toBe(32);
-    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(30);
+    expect(sourceCount("default-card")).toBe(6);
+    expect(sourceCount("custom-card")).toBe(29);
+    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(28);
   });
 
   it("keeps removed contributor names out of renamed public card metadata", () => {
@@ -71,11 +71,6 @@ describe("catalog coverage", () => {
   });
 
   it("groups only explicit same-goal sources and preserves hidden migration aliases", () => {
-    expect(COMPONENT_GROUPS.find((group) => group.canonical === "custom_card_person_info")?.sources)
-      .toEqual({
-        custom_card_person_info: "full",
-        custom_card_person_info_small: "small",
-      });
     expect(LEGACY_ALIASES).toHaveLength(
       COMPONENT_GROUPS.reduce((total, group) => total + Object.keys(group.sources).length - 1, 0),
     );
@@ -86,7 +81,7 @@ describe("catalog coverage", () => {
   });
 
   it("inventories upstream popups without exposing nonfunctional variants", () => {
-    expect(UPSTREAM_VARIANTS).toHaveLength(2);
+    expect(UPSTREAM_VARIANTS).toHaveLength(1);
     for (const variant of UPSTREAM_VARIANTS) {
       const component = PUBLIC_CATALOG.find((item) => item.upstreamId === variant.component);
       expect(component?.variants).not.toContain("popup");

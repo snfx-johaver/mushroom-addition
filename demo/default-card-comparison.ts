@@ -95,7 +95,6 @@ const entityFor: Record<string, string | undefined> = {
   card_battery: "sensor.battery",
   card_binary_sensor: "binary_sensor.window",
   card_binary_sensor_alert: "binary_sensor.window",
-  card_cover: "cover.blind",
   card_generic: "sensor.temperature",
   card_generic_swap: "sensor.temperature",
   card_graph: "sensor.temperature",
@@ -109,7 +108,6 @@ const referenceFor: Record<string, string> = {
   card_battery: "card_battery.png",
   card_binary_sensor: "card_binary_sensor.png",
   card_binary_sensor_alert: "card_binary_sensor_alert.png",
-  card_cover: "card_cover_controls.png",
   card_generic: "card_generic.png",
   card_generic_swap: "card_generic_swap.png",
   card_graph: "card_graph.png",
@@ -161,12 +159,6 @@ const variantsFor = (sourceId: string, base: AdditionConfig): AdditionConfig[] =
       { ...base, entity: "binary_sensor.window" },
       { ...base, entity: "binary_sensor.window_closed" },
     ];
-    case "card_cover": return [{
-        ...base,
-        show_controls: true,
-        ulm_card_cover_enable_controls: true,
-        ulm_card_cover_enable_slider: true,
-      }];
     case "card_media_player": return [
       { ...base, show_controls: false, ulm_card_media_player_enable_art: false },
       { ...base, show_controls: true, ulm_card_media_player_enable_art: true, ulm_card_media_player_enable_controls: true },
@@ -225,7 +217,7 @@ for (const source of UPSTREAM_CATALOG.filter((item) =>
   const section = document.createElement("section");
   section.className = "comparison";
   section.dataset.source = source.upstreamId;
-  section.style.setProperty("--comparison-width", source.upstreamId === "card_cover" ? "309px" : "320px");
+  section.style.setProperty("--comparison-width", "320px");
   section.innerHTML = `<h2>${source.upstreamId}</h2><div class="columns"><div><div class="column-label">Reference</div><img class="reference" alt="${source.upstreamId} reference" src="/.tmp-reference-catalog/docs/assets/img/ulm_cards/${referenceFor[source.upstreamId]}"></div><div><div class="column-label">Rendered implementation</div><div class="implementation"></div></div></div>`;
   const reference = section.querySelector<HTMLImageElement>(".reference")!;
   reference.addEventListener("load", () => {

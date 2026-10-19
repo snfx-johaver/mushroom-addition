@@ -12,12 +12,10 @@ tokens but not a generic layout.
 |---|---|---|
 | Weather | Condition and date header, outside temperature, and four configurable weather metrics | `custom_cards/custom_card_weather_metrics` |
 | Scene | Compact heading plus a grid of scene activation pills | `card_templates/cards/card_scenes_welcome.yaml`, `docs/usage/cards/card_scenes.md` |
-| Person/presence | Avatar/icon, zone/address/ETA text, presence dot or battery badge | Retained Person Info and Person Tracker card behavior |
 | Battery | Threshold-colored battery icon, large percentage and level bar | `card_templates/cards/card_battery.yaml`, `docs/usage/cards/card_battery.md` |
 | Energy/power | Current value emphasis, source-specific graph, gauge, or bar composition | `custom_cards/custom_card_more_power_outlet/`, `custom_cards/custom_card_bar_card/` |
 | Sensor/graph | Current sensor reading plus deterministic compact history/sparkline treatment | `card_templates/2-line_cards/card_graph.yaml`, `docs/usage/cards/card_graph.md` |
 | Media | Artwork or app/device icon, title/state, optional transport controls | `card_templates/cards/card_media_player.yaml`, `docs/usage/cards/card_media_player.md` |
-| Cover | Device/state header and open/stop/close controls | `card_templates/cards/card_cover.yaml`, `docs/usage/cards/card_cover.md` |
 | Navigation | Direction icon, destination copy and trailing chevron | `card_templates/cards/card_navigate.yaml` |
 
 ## Source-derived composition coverage

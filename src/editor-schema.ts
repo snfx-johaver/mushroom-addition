@@ -36,7 +36,6 @@ const colorDefaults: Record<string, string> = {
   battery_warning_color: "yellow",
   battery_low_color: "orange",
   battery_critical_color: "red",
-  ulm_card_cover_color: "blue",
   ulm_card_graph_color: "red",
   ulm_card_graph_icon_color: "red",
   ulm_card_media_player_color: "blue",
@@ -67,9 +66,6 @@ const presentationGrid = (schema: EditorField[]): EditorField => ({
 const percentageOptions = new Set([
   "ulm_card_battery_battery_level_danger",
   "ulm_card_battery_battery_level_warning",
-  "ulm_card_cover_slider_min",
-  "ulm_card_cover_slider_max",
-  "ulm_card_cover_favorite_percentage",
 ]);
 const booleanOptions = new Set([
   "ulm_custom_card_bar_card_indicator",
@@ -88,20 +84,6 @@ const numericBoxOptions = new Set([
   "ulm_card_graph_line_width",
   "ulm_card_graph_points",
   "ulm_card_media_player_enable_volume_adjust",
-]);
-const iconOptions = new Set([
-  "ulm_card_cover_icon",
-]);
-const personInfoEntities = new Set([
-  "ulm_card_person_entity",
-  "ulm_card_person_zone1",
-  "ulm_card_person_zone2",
-  "ulm_address",
-  "ulm_address_locality",
-  "ulm_card_person_driving_entity",
-  "ulm_card_person_battery_entity",
-  "ulm_card_person_battery_state_entity",
-  "ulm_card_person_commute_entity",
 ]);
 const certifiedCoreVariables = new Set([
   "ulm_card_input_datetime_name",
@@ -351,22 +333,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         entity(["media_player", "sensor"]),
         ...presentation(),
       ]
-    : item.upstreamId === "custom_card_person_tracker"
-      ? [
-        entity(["person", "device_tracker"]),
-        toggle("ulm_custom_card_person_tracker_use_badge"),
-        entity(["sensor"], "battery_entity"),
-        entity(["binary_sensor"], "ulm_custom_card_person_tracker_driving_entity"),
-        { name: "ulm_custom_card_person_tracker_zones", selector: { entity: { multiple: true } } },
-        entity(["script", "button"], "ulm_custom_card_person_tracker_find_device_script"),
-        toggle("ulm_custom_card_person_tracker_map_enable"),
-        text("ulm_custom_card_person_tracker_map_aspect_ratio"),
-        number("ulm_custom_card_person_tracker_map_hours_to_show", 0, 168),
-        number("ulm_custom_card_person_tracker_map_default_zoom", 1, 20),
-        entity(["camera"], "ulm_custom_card_person_tracker_camera_entity_light"),
-        entity(["camera"], "ulm_custom_card_person_tracker_camera_entity_dark"),
-        ...presentation(),
-      ]
     : item.upstreamId === "custom_card_alarm_time"
       ? [
         entity(["input_boolean", "switch"]),
@@ -424,6 +390,20 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
       ? [
         entity(["media_player"]),
         ...presentation(),
+        entity(["switch"], "crossfade_entity"),
+        entity(["switch"], "night_sound_entity"),
+        entity(["switch"], "speech_enhancement_entity"),
+        entity(["switch"], "subwoofer_entity"),
+        entity(["switch"], "surrounds_entity"),
+        entity(["switch"], "loudness_entity"),
+        entity(["switch"], "surround_full_entity"),
+        entity(["number"], "audio_delay_entity"),
+        entity(["number"], "balance_entity"),
+        entity(["number"], "bass_entity"),
+        entity(["number"], "treble_entity"),
+        entity(["number"], "sub_gain_entity"),
+        entity(["number"], "surround_level_entity"),
+        entity(["number"], "music_surround_level_entity"),
       ]
     : item.upstreamId === "custom_card_more_power_outlet"
       ? [
@@ -673,31 +653,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
           entity(["sensor"], "battery_entity"),
           ...presentation(),
         ]
-        : item.upstreamId === "custom_card_person_info"
-          ? [
-            entity(["person"]),
-            ...(item.variants?.length ? [select("variant", item.variants.map((variant) => ({
-              value: variant,
-              label: item.variantLabels?.[variant] ?? variant,
-            })))] : []),
-            entity(["zone"], "ulm_card_person_zone1"),
-            entity(["zone"], "ulm_card_person_zone2"),
-            ...(config?.variant === "small"
-              ? []
-              : [
-                entity(["sensor"], "ulm_card_person_commute_entity"),
-                { name: "ulm_card_person_cummute_icon", selector: { icon: {} } },
-                toggle("ulm_multiline"),
-              ]),
-            entity(["sensor"], "ulm_address"),
-            entity(["sensor"], "ulm_address_locality"),
-            entity(["binary_sensor"], "ulm_card_person_driving_entity"),
-            entity(["sensor"], "ulm_card_person_battery_entity"),
-            entity(["sensor", "binary_sensor"], "ulm_card_person_battery_state_entity"),
-            number("ulm_card_battery_battery_level_danger", 0, 100),
-            number("ulm_card_battery_battery_level_warning", 0, 100),
-            ...presentation(),
-          ]
       : (schemas[item.family] ?? schemas.entity)(item, config)),
   ];
   const supportedFields = fixedIconSources.has(item.upstreamId)
@@ -727,26 +682,9 @@ export const upstreamEditorSchemaFor = (item: CatalogItem, config?: AdditionConf
     .filter((variable) => supportedUpstreamOption(item, variable.name))
     .filter((variable) => !isReplacedUpstreamOption(item, variable.name))
     .filter((variable) => !certifiedCoreVariables.has(variable.name))
-    .filter((variable) => !(item.upstreamId === "custom_card_person_info" && (
-      personInfoEntities.has(variable.name) ||
-      variable.name === "ulm_card_person_use_entity_picture" ||
-      variable.name === "ulm_card_person_cummute_icon" ||
-      variable.name === "ulm_multiline" ||
-      variable.name === "ulm_card_battery_battery_level_danger" ||
-      variable.name === "ulm_card_battery_battery_level_warning"
-    )))
     .map((variable) => {
-    if (item.upstreamId === "custom_card_person_info" && personInfoEntities.has(variable.name)) {
-      const domains =
-        variable.name === "ulm_card_person_entity" ? ["person"] :
-          variable.name.startsWith("ulm_card_person_zone") ? ["zone"] :
-            variable.name === "ulm_card_person_driving_entity" ? ["binary_sensor"] :
-              ["sensor", "binary_sensor"];
-      return entity(domains, variable.name);
-    }
     const choices = choiceOptions[variable.name];
     if (choices) return select(variable.name, choices);
-    if (iconOptions.has(variable.name)) return { name: variable.name, selector: { icon: {} } };
     if (booleanOptions.has(variable.name)) return toggle(variable.name);
     if (numericBoxOptions.has(variable.name)) return number(variable.name, -100000, 100000);
     if (percentageOptions.has(variable.name)) {

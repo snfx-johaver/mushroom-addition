@@ -211,51 +211,6 @@ export const sharedStyles = css`
   }
   .better-thermostat.is-compact .better-thermostat-options::-webkit-scrollbar { display: none; }
   .better-thermostat.is-compact .better-thermostat-options button { min-width: 68px; min-height: 44px; }
-  .ulm-person .person-picture {
-    width: var(--mush-icon-size, 40px);
-    height: var(--mush-icon-size, 40px);
-    border-radius: 50%;
-    background-position: center;
-    background-size: cover;
-  }
-  .person-icon-wrap { position: relative; display: block; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); }
-  .person-icon-wrap > .ulm-icon, .person-icon-wrap > .person-picture { width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); }
-  .person-location-badge {
-    position: absolute;
-    top: -4px;
-    left: 34px;
-    display: grid;
-    width: 16px;
-    height: 16px;
-    place-items: center;
-    border: 2px solid var(--card-background-color, #fff);
-    border-radius: 50%;
-    color: var(--primary-background-color, #fff);
-  }
-  .person-location-badge.home { background: rgb(var(--ulm-blue)); }
-  .person-location-badge.away { background: rgb(var(--ulm-green)); }
-  .person-location-badge ha-icon { width: 10px; height: 10px; --mdc-icon-size: 10px; }
-  .person-battery-ring { width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); overflow: visible; }
-  .person-battery-ring circle { fill: none; stroke: rgba(var(--ulm-grey), .15); stroke-width: 3; }
-  .person-battery-ring circle.value {
-    stroke: rgb(var(--ulm-green));
-    transform: rotate(-90deg);
-    transform-origin: 50% 50%;
-  }
-  .person-battery-ring text { fill: var(--primary-text-color); font-size: 14px; font-weight: 700; text-anchor: middle; }
-  .person-battery-ring tspan { font-size: 8px; }
-  .ulm-source-person { min-height: 96px; padding: 16px; gap: 18px; }
-  .ulm-source-person .person-icon-wrap,
-  .ulm-source-person .person-icon-wrap > .ulm-icon,
-  .ulm-source-person .person-icon-wrap > .person-picture { width: 64px; height: 64px; }
-  .ulm-source-person .ulm-icon ha-icon { --mdc-icon-size: 32px; }
-  .ulm-source-person .person-location-badge { top: -4px; left: 52px; }
-  .ulm-source-person .ulm-name { font-size: 20px; }
-  .ulm-source-person .ulm-label { font-size: 16px; font-weight: 600; }
-  .presence-dot { width: 12px; height: 12px; border: 3px solid var(--card-background-color); border-radius: 50%; }
-  .presence-dot.home { background: rgb(var(--ulm-blue)); }
-  .presence-dot.away { background: rgb(var(--ulm-green)); }
-  .ulm-person.is-compact { min-height: 52px; padding-top: 7px; padding-bottom: 7px; }
   .battery-ring, .battery-value { color: rgb(var(--ulm-green)); font-weight: 700; }
   .ulm-battery { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 12px; }
   .battery-value { font-size: 24px; }
@@ -454,15 +409,6 @@ export const sharedStyles = css`
   .ulm-security { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px; }
   .security-status { padding: 5px 9px; border-radius: 10px; background: rgba(var(--ulm-green), .12); color: rgb(var(--ulm-green)); font-size: 11px; font-weight: 700; }
   .ulm-navigation { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px; }
-  .ulm-cover { display: grid; gap: 8px; padding: 0 12px 12px; }
-  .ulm-cover > .ulm-row { padding-right: 0; padding-left: 0; }
-  .cover-controls { display: grid; grid-template-columns: repeat(3, 1fr); }
-  .cover-controls:has(.ulm-control:nth-child(4)) { grid-template-columns: repeat(4, 1fr); }
-  .cover-controls .ulm-control { width: 100%; height: 32px; border-radius: 12px; }
-  .ulm-cover-slider { position: relative; height: 42px; overflow: hidden; border-radius: 14px; background: rgba(var(--ulm-grey), .12); }
-  .ulm-cover-slider i { position: absolute; inset: 0 auto 0 0; width: var(--cover-level); background: rgba(var(--ulm-blue), .8); }
-  .ulm-cover-slider input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
-  .ulm-cover.is-horizontal { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
   .ulm-room { display: grid; min-height: 210px; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; padding: 14px; }
   .ulm-source-room { position: relative; aspect-ratio: 1; min-height: 0; padding: 5px; border-radius: 20px; }
   .room-main { display: flex; min-width: 0; flex-direction: column; justify-content: space-between; gap: 12px; }
@@ -665,6 +611,33 @@ export const sharedStyles = css`
   .sonos-controls button {
     min-height: 42px; border: 0; border-radius: 13px; background: rgba(var(--ulm-grey), .08); color: var(--primary-text-color);
   }
+  .sonos-details { min-width: 0; }
+  .sonos-details summary {
+    display: flex; min-height: 40px; align-items: center; justify-content: space-between; padding: 0 4px;
+    color: var(--primary-text-color); cursor: pointer; font-size: 14px; font-weight: 700; list-style: none;
+  }
+  .sonos-details summary::-webkit-details-marker { display: none; }
+  .sonos-details summary ha-icon { --mdc-icon-size: 20px; transition: transform .2s ease; }
+  .sonos-details[open] summary ha-icon { transform: rotate(180deg); }
+  .sonos-switches { display: flex; flex-wrap: wrap; gap: 8px; padding: 4px 0 10px; }
+  .sonos-switches button {
+    display: inline-flex; min-height: 40px; align-items: center; gap: 6px; padding: 0 12px;
+    border: 1px solid var(--divider-color); border-radius: 20px; background: var(--card-background-color, var(--ha-card-background, #fff));
+    color: var(--primary-text-color); font: inherit; font-size: 12px; font-weight: 700;
+  }
+  .sonos-switches button.is-active {
+    border-color: rgb(var(--rgb-blue, 3, 169, 244)); background: rgba(var(--rgb-blue, 3, 169, 244), .12);
+  }
+  .sonos-switches button:disabled, .sonos-sliders input:disabled { cursor: not-allowed; opacity: .45; }
+  .sonos-switches ha-icon { --mdc-icon-size: 18px; color: rgb(var(--rgb-blue, 3, 169, 244)); }
+  .sonos-sliders { display: grid; gap: 8px; padding-top: 4px; }
+  .sonos-sliders label {
+    display: grid; grid-template-columns: 26px minmax(112px, .8fr) minmax(120px, 1fr) 34px;
+    min-height: 40px; align-items: center; gap: 8px; color: var(--primary-text-color); font-size: 13px;
+  }
+  .sonos-sliders label > ha-icon { --mdc-icon-size: 18px; color: rgb(var(--rgb-blue, 3, 169, 244)); }
+  .sonos-sliders input { width: 100%; accent-color: rgb(var(--rgb-blue, 3, 169, 244)); }
+  .sonos-sliders output { color: var(--primary-text-color); text-align: right; font-variant-numeric: tabular-nums; }
   .speedtest-action:disabled, .metrics-four button:disabled { cursor: not-allowed; opacity: .45; }
   .speedtest-router, .nas-metrics-header {
     display: flex; min-width: 0; align-items: center; gap: 10px;
@@ -794,30 +767,10 @@ export const sharedStyles = css`
   .welcome-dashboard-news { display: grid; gap: 4px; }
   .welcome-dashboard-news button { display: grid; grid-template-columns: 28px 1fr; align-items: center; gap: 8px; padding: 7px 8px; border: 0; border-radius: 10px; background: transparent; color: var(--primary-text-color); text-align: left; }
   .welcome-dashboard-news button span { display: grid; } .welcome-dashboard-news small, .welcome-dashboard-empty { color: var(--secondary-text-color); font-size: 11px; }
-  .custom-person-info, .custom-person-tracker, .custom-vehicle-status,
-  .custom-plant { display: grid; gap: 10px; padding: 12px; }
-  .custom-person-info-small { display: grid; min-height: 118px; gap: 8px; padding: 12px; }
-  .person-info-main, .person-tracker-main, .car-hero, .flower-heading {
+  .custom-vehicle-status, .custom-plant { display: grid; gap: 10px; padding: 12px; }
+  .car-hero, .flower-heading {
     display: flex; min-width: 0; align-items: center; gap: 10px;
   }
-  .person-info-avatar { position: relative; display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); flex: 0 0 auto; place-items: center; border-radius: 50%; background: rgba(var(--ulm-blue), .12) center/cover; color: rgb(var(--ulm-blue)); }
-  .person-info-avatar > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
-  .person-info-avatar.has-picture > ha-icon { display: none; }
-  .person-info-badge { position: absolute; top: -3px; right: -3px; display: grid; width: 16px; height: 16px; place-items: center; border: 2px solid var(--card-background-color); border-radius: 50%; background: rgb(var(--tone)); color: #fff; }
-  .person-info-badge ha-icon { --mdc-icon-size: 10px; }
-  .person-info-small-top { display: flex; align-items: flex-start; justify-content: space-between; }
-  .person-info-small-battery { display: grid; width: 30px; height: 30px; place-items: center; border: 2px solid var(--card-background-color); border-radius: 50%; background: rgba(var(--ulm-grey), .05); color: rgb(var(--tone)); }
-  .person-info-small-battery ha-icon { --mdc-icon-size: 25px; }
-  .person-info-small-copy { display: grid; text-align: center; }
-  .person-info-small-copy b { font-size: 14px; }
-  .person-info-small-copy small { color: var(--secondary-text-color); font-size: 12px; text-transform: capitalize; }
-  .custom-person-info { min-height: 68px; grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
-  .custom-person-info.is-multiline { min-height: 105px; grid-template-columns: minmax(0, 1fr); gap: 12px; }
-  .custom-person-info.is-multiline .person-info-details { padding-left: 4px; }
-  .person-info-details { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  .person-info-detail { display: flex; align-items: center; gap: 4px; font-size: 12px; }
-  .person-info-detail ha-icon { --mdc-icon-size: 16px; color: rgb(var(--tone, var(--ulm-green))); }
-  .commute-detail ha-icon { color: rgb(var(--ulm-yellow)); }
   .flower-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
   .flower-metrics > span { display: grid; min-width: 0; min-height: 52px; place-items: center; padding: 6px; border-radius: 12px; background: rgba(var(--ulm-grey), .07); text-align: center; }
   .flower-metrics ha-icon { --mdc-icon-size: 17px; color: rgb(var(--ulm-blue)); }
@@ -835,14 +788,6 @@ export const sharedStyles = css`
   .console-logo { display: grid; width: 52px; height: 52px; place-items: center; border-radius: 50%; background: rgba(255,255,255,.1); }
   .console-logo ha-icon { --mdc-icon-size: 32px; } .state-idle .console-logo { color: rgb(var(--ulm-blue)); background: rgba(var(--ulm-blue), .2); } .state-standby .console-logo { color: rgba(var(--ulm-grey), .35); background: rgba(var(--ulm-grey), .05); }
   .has-artwork .console-content .ulm-label { color: rgba(255,255,255,.75); }
-  .person-tracker-main { grid-template-columns: min-content minmax(0,1fr) auto; align-items: center; }
-  .person-tracker-avatar { position: relative; display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: rgba(var(--ulm-grey), .05); background-position: center; background-size: cover; }
-  .person-tracker-avatar > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
-  .person-tracker-avatar > i { position: absolute; top: -3px; right: -3px; display: grid; width: 16px; height: 16px; place-items: center; border: 2px solid var(--card-background-color); border-radius: 50%; color: #fff; }
-  .person-tracker-avatar > i ha-icon { --mdc-icon-size: 10px; } .person-tracker-avatar > i.tone-red { background: rgb(var(--ulm-red)); } .person-tracker-avatar > i.tone-green { background: rgb(var(--ulm-green)); } .person-tracker-avatar > i.tone-yellow { background: rgb(var(--ulm-yellow)); } .person-tracker-avatar > i.tone-blue { background: rgb(var(--ulm-blue)); }
-  .person-tracker-find-device { display: grid; width: 42px; height: 42px; place-items: center; border: 0; border-radius: 12px; background: rgba(var(--ulm-blue), .2); color: rgb(var(--ulm-blue)); }
-  .person-tracker-camera { min-height: 130px; border-radius: 15px; background: rgba(var(--ulm-grey), .08) center/cover; }
-  .person-tracker-map { display: flex; min-height: 42px; align-items: center; justify-content: center; gap: 7px; border-radius: 13px; background: rgba(var(--ulm-blue), .1); color: rgb(var(--ulm-blue)); font-size: 11px; font-weight: 700; }
   .source-scene-grid .scene-grid { display: grid; grid-template-columns: repeat(5, 52px); justify-content: space-between; gap: 12px; }
   .source-scene-grid .scene-button { width: 52px; min-width: 52px; min-height: 84px; padding: 5px 5px 7px; border-radius: 50px; }
   .source-scene-grid .scene-button i { width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); }

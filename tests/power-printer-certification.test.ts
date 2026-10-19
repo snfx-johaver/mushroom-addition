@@ -18,6 +18,81 @@ const states: HomeAssistant["states"] = {
     state: "playing",
     attributes: { friendly_name: "Office Sonos", source: "Spotify", volume_level: 0.42 },
   },
+  "media_player.office_sonos_2": {
+    entity_id: "media_player.office_sonos_2",
+    state: "playing",
+    attributes: { friendly_name: "Office Sonos controls", source: "Spotify", volume_level: 0.42 },
+  },
+  "switch.office_sonos_crossfade": {
+    entity_id: "switch.office_sonos_crossfade",
+    state: "on",
+    attributes: { friendly_name: "Office Sonos Crossfade" },
+  },
+  "switch.office_sonos_night_sound": {
+    entity_id: "switch.office_sonos_night_sound",
+    state: "off",
+    attributes: { friendly_name: "Office Sonos Night sound" },
+  },
+  "switch.office_sonos_speech_enhancement": {
+    entity_id: "switch.office_sonos_speech_enhancement",
+    state: "off",
+    attributes: { friendly_name: "Office Sonos Speech enhancement" },
+  },
+  "switch.office_sonos_subwoofer_enabled": {
+    entity_id: "switch.office_sonos_subwoofer_enabled",
+    state: "on",
+    attributes: { friendly_name: "Office Sonos Subwoofer" },
+  },
+  "switch.office_sonos_surround_enabled": {
+    entity_id: "switch.office_sonos_surround_enabled",
+    state: "on",
+    attributes: { friendly_name: "Office Sonos Surrounds" },
+  },
+  "switch.office_sonos_loudness": {
+    entity_id: "switch.office_sonos_loudness",
+    state: "on",
+    attributes: { friendly_name: "Office Sonos Loudness" },
+  },
+  "switch.office_sonos_surround_music_full_volume": {
+    entity_id: "switch.office_sonos_surround_music_full_volume",
+    state: "off",
+    attributes: { friendly_name: "Office Sonos Surround full" },
+  },
+  "number.office_sonos_audio_delay": {
+    entity_id: "number.office_sonos_audio_delay",
+    state: "0",
+    attributes: { friendly_name: "Office Sonos Audio delay", min: 0, max: 5, step: 1 },
+  },
+  "number.office_sonos_balance": {
+    entity_id: "number.office_sonos_balance",
+    state: "0",
+    attributes: { friendly_name: "Office Sonos Balance", min: -100, max: 100, step: 1 },
+  },
+  "number.office_sonos_bass": {
+    entity_id: "number.office_sonos_bass",
+    state: "1",
+    attributes: { friendly_name: "Office Sonos Bass", min: -10, max: 10, step: 1 },
+  },
+  "number.office_sonos_treble": {
+    entity_id: "number.office_sonos_treble",
+    state: "2",
+    attributes: { friendly_name: "Office Sonos Treble", min: -10, max: 10, step: 1 },
+  },
+  "number.office_sonos_sub_gain": {
+    entity_id: "number.office_sonos_sub_gain",
+    state: "3",
+    attributes: { friendly_name: "Office Sonos Sub gain", min: -15, max: 15, step: 1 },
+  },
+  "number.office_sonos_surround_level": {
+    entity_id: "number.office_sonos_surround_level",
+    state: "4",
+    attributes: { friendly_name: "Office Sonos Surround level", min: -15, max: 15, step: 1 },
+  },
+  "number.office_sonos_music_surround_level": {
+    entity_id: "number.office_sonos_music_surround_level",
+    state: "5",
+    attributes: { friendly_name: "Office Sonos Music surround level", min: -15, max: 15, step: 1 },
+  },
   "switch.office_plug": {
     entity_id: "switch.office_plug",
     state: "on",
@@ -70,6 +145,14 @@ const states: HomeAssistant["states"] = {
   },
 };
 
+const sonosRegistry: NonNullable<HomeAssistant["entities"]> = Object.fromEntries([
+  ["media_player.office_sonos", { device_id: "sonos-player" }],
+  ["media_player.office_sonos_2", { device_id: "sonos-controls" }],
+  ...Object.keys(states)
+    .filter((entityId) => entityId.startsWith("switch.office_sonos_") || entityId.startsWith("number.office_sonos_"))
+    .map((entityId) => [entityId, { device_id: "sonos-controls" }]),
+]);
+
 interface TestCard extends HTMLElement {
   hass: HomeAssistant;
   setConfig(config: AdditionConfig): void;
@@ -82,9 +165,10 @@ const renderCard = async (
   config: AdditionConfig,
   overrides: HomeAssistant["states"] = states,
   callService = vi.fn(async () => undefined),
+  entities?: HomeAssistant["entities"],
 ): Promise<TestCard> => {
   const element = document.createElement(tag) as TestCard;
-  element.hass = { states: overrides, callService };
+  element.hass = { states: overrides, entities, callService };
   element.setConfig(config);
   document.body.append(element);
   await element.updateComplete;
@@ -154,7 +238,7 @@ describe("power and printer custom batch certification", () => {
       ["custom_card_gauge", "sensor.office_plug_power"],
       ["custom_card_printer", "binary_sensor.printer_online"],
     ] as const;
-    const hass: HomeAssistant = { states, callService: vi.fn(async () => undefined) };
+    const hass: HomeAssistant = { states, entities: sonosRegistry, callService: vi.fn(async () => undefined) };
     for (const [sourceId, entity] of cases) {
       const descriptor = item(sourceId);
       const constructor = customElements.get(descriptor.tag) as typeof HTMLElement & {
@@ -173,9 +257,24 @@ describe("power and printer custom batch certification", () => {
       power_entity: "sensor.office_plug_power",
       energy_entity: "sensor.office_plug_energy",
     });
+    const sonos = customElements.get(item("custom_card_media_player_sonos").tag) as typeof HTMLElement & {
+      getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
+    };
+    expect(sonos.getStubConfig(hass, Object.keys(states), [])).toMatchObject({
+      entity: "media_player.office_sonos",
+      crossfade_entity: "switch.office_sonos_crossfade",
+      surround_full_entity: "switch.office_sonos_surround_music_full_volume",
+      audio_delay_entity: "number.office_sonos_audio_delay",
+      music_surround_level_entity: "number.office_sonos_music_surround_level",
+    });
   });
   it.each([
-    ["custom_card_media_player_sonos", ["entity"]],
+    ["custom_card_media_player_sonos", [
+      "entity", "crossfade_entity", "night_sound_entity", "speech_enhancement_entity",
+      "subwoofer_entity", "surrounds_entity", "loudness_entity", "surround_full_entity",
+      "audio_delay_entity", "balance_entity", "bass_entity", "treble_entity", "sub_gain_entity",
+      "surround_level_entity", "music_surround_level_entity",
+    ]],
     ["custom_card_more_power_outlet", ["entity", "power_entity", "energy_entity", "time_entity"]],
     ["custom_card_gauge", ["entity", "minimum", "maximum"]],
     ["custom_card_printer", ["entity", "black_entity", "yellow_entity", "magenta_entity", "cyan_entity"]],
@@ -205,7 +304,7 @@ describe("power and printer custom batch certification", () => {
         updateComplete: Promise<boolean>;
         shadowRoot: ShadowRoot;
       };
-      editor.hass = { states, callService: vi.fn(async () => undefined) };
+      editor.hass = { states, entities: sonosRegistry, callService: vi.fn(async () => undefined) };
       editor.setConfig({ type: `custom:${descriptor.tag}`, entity: Object.keys(states)[0] });
       document.body.append(editor);
       await editor.updateComplete;
@@ -222,6 +321,35 @@ describe("power and printer custom batch certification", () => {
       }));
       editor.remove();
     }
+  });
+
+  it("re-discovers automatic Sonos controls when the primary entity changes", async () => {
+    const descriptor = item("custom_card_media_player_sonos");
+    const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {
+      hass: HomeAssistant;
+      setConfig(config: AdditionConfig): void;
+      updateComplete: Promise<boolean>;
+      shadowRoot: ShadowRoot;
+    };
+    editor.hass = { states, entities: sonosRegistry, callService: vi.fn(async () => undefined) };
+    editor.setConfig({ type: `custom:${descriptor.tag}`, entity: "media_player.office_sonos" });
+    document.body.append(editor);
+    await editor.updateComplete;
+    const form = editor.shadowRoot.querySelector<HTMLElement & { data: AdditionConfig }>("ha-form")!;
+    const changed = vi.fn();
+    editor.addEventListener("config-changed", changed);
+    form.dispatchEvent(new CustomEvent("value-changed", {
+      bubbles: true,
+      composed: true,
+      detail: { value: { ...form.data, entity: "media_player.office_sonos_2" } },
+    }));
+    expect(changed).toHaveBeenCalledWith(expect.objectContaining({
+      detail: {
+        config: expect.not.objectContaining({
+          crossfade_entity: "switch.office_sonos_crossfade",
+        }),
+      },
+    }));
   });
 
   it("migrates every pinned legacy variable to its canonical field", () => {
@@ -267,7 +395,7 @@ describe("power and printer custom batch certification", () => {
       type: "custom:mushroom-addition-custom-card-media-player-sonos",
       entity: "media_player.office_sonos",
       ulm_card_media_player_with_controls_name: "Office",
-    }, states, callService);
+    }, states, callService, sonosRegistry);
     expect(card.shadowRoot.textContent).toContain("Spotify • 42%");
     const controls = [...card.shadowRoot.querySelectorAll<HTMLButtonElement>(".sonos-controls button")];
     controls.forEach((control) => control.click());
@@ -275,6 +403,19 @@ describe("power and printer custom batch certification", () => {
       ["media_player", "volume_down", { entity_id: "media_player.office_sonos" }],
       ["media_player", "media_play_pause", { entity_id: "media_player.office_sonos" }],
       ["media_player", "volume_up", { entity_id: "media_player.office_sonos" }],
+    ]);
+    expect(card.shadowRoot.querySelector("details.sonos-details")).not.toBeNull();
+    expect(card.shadowRoot.querySelectorAll(".sonos-switches button")).toHaveLength(7);
+    expect(card.shadowRoot.querySelectorAll(".sonos-sliders input")).toHaveLength(7);
+    callService.mockClear();
+    card.shadowRoot.querySelector<HTMLButtonElement>(".sonos-switches button")!.click();
+    const bass = [...card.shadowRoot.querySelectorAll<HTMLInputElement>(".sonos-sliders input")]
+      .find((input) => input.getAttribute("aria-label") === "Bass")!;
+    bass.value = "6";
+    bass.dispatchEvent(new Event("change"));
+    expect(callService.mock.calls).toEqual([
+      ["homeassistant", "toggle", { entity_id: "switch.office_sonos_crossfade" }],
+      ["number", "set_value", { entity_id: "number.office_sonos_bass", value: 6 }],
     ]);
     card.remove();
 

@@ -1,7 +1,7 @@
 import type { AdditionConfig, CatalogItem, HomeAssistant } from "./types";
 import { populatedDefaultsFor } from "./defaults";
-import { personInfoDefaultsFor } from "./person-info-defaults";
 import { sceneItemDefaultsFor } from "./scene-item-defaults";
+import { sonosControlCount } from "./sonos-controls";
 
 const firstMatchingEntity = (
   descriptor: CatalogItem,
@@ -91,6 +91,9 @@ export const createStubConfig = (
         terms.every((term) => text.includes(term)) &&
         excludedTerms.every((term) => !text.includes(term));
     });
+  const sonosPlayer = available
+    .filter((entityId) => entityId.startsWith("media_player.") && entityText(entityId).includes("sonos"))
+    .sort((left, right) => sonosControlCount(hass, right) - sonosControlCount(hass, left))[0];
   const semanticPrimary =
     descriptor.upstreamId === "card_graph"
         ? findEntity(["sensor"], ["cv", "plug", "power"]) ??
@@ -100,9 +103,7 @@ export const createStubConfig = (
             : descriptor.upstreamId === "card_battery"
               ? findEntityExcluding(["sensor"], ["battery", "level"], ["state", "charging"]) ??
                 findEntityByDeviceClass(["battery"], [], ["state", "charging"])
-              : descriptor.upstreamId === "card_cover"
-                  ? findEntity(["cover"], ["sunscreen"])
-                  : descriptor.upstreamId === "custom_card_pollen_forecast"
+              : descriptor.upstreamId === "custom_card_pollen_forecast"
                         ? findEntity(["sensor"], ["pollen", "grass", "level"]) ??
                           findEntity(["sensor"], ["pollen", "grass"]) ??
                           findEntity(["sensor"], ["pollen"])
@@ -122,7 +123,7 @@ export const createStubConfig = (
                                 : descriptor.upstreamId === "custom_card_sun"
                                   ? findEntity(["sun"], [])
                                   : descriptor.upstreamId === "custom_card_media_player_sonos"
-                                        ? findEntity(["media_player"], ["sonos"])
+                                        ? sonosPlayer
                                       : descriptor.upstreamId === "custom_card_more_power_outlet"
                                         ? findEntity(["switch", "light"], ["outlet"]) ??
                                           findEntity(["switch", "light"], ["plug"])
@@ -139,8 +140,7 @@ export const createStubConfig = (
                                     ? findEntity(["sensor"], ["model"]) ?? findEntity(["device_tracker"], [])
                                     : descriptor.upstreamId === "custom_card_plant"
                                       ? findEntity(["plant"], []) ?? findEntity(["sensor"], ["soil", "humidity"])
-                                      : descriptor.upstreamId === "custom_card_welcome_dashboard" ||
-                                      descriptor.upstreamId === "custom_card_person_tracker"
+                                      : descriptor.upstreamId === "custom_card_welcome_dashboard"
                                     ? findEntity(["person"], [])
                                     : descriptor.upstreamId === "custom_card_playstation"
                                       ? findEntity(["media_player"], ["tv"]) ?? findEntity(["media_player"], [])
@@ -208,14 +208,12 @@ export const createStubConfig = (
     secondary: entity ? undefined : isText ? "Example" : "Preview",
     variant: defaultVariant,
     tap_action: tapAction,
-    show_controls: ["climate", "cover", "vacuum", "control"].includes(descriptor.family) ||
+    show_controls: ["climate", "vacuum", "control"].includes(descriptor.family) ||
       (descriptor.family === "media" && descriptor.upstreamId !== "card_media_player")
       ? true
       : undefined,
     show_forecast: descriptor.family === "weather",
     show_graph: ["battery", "energy", "sensor"].includes(descriptor.family),
-    ulm_card_cover_enable_controls: descriptor.upstreamId === "card_cover" ? true : undefined,
-    ulm_card_cover_enable_slider: descriptor.upstreamId === "card_cover" ? true : undefined,
     ulm_custom_card_bar_card_value: descriptor.family === "bar" ? true : undefined,
     entities: descriptor.variants?.includes("with-sensors")
       ? entitiesFallback.slice(0, 2)
@@ -357,9 +355,6 @@ export const createStubConfig = (
         tap_action: { action: "none" },
       }
       : {}),
-    ...(descriptor.upstreamId === "custom_card_person_info"
-      ? personInfoDefaultsFor(hass, entity)
-      : {}),
     ...(descriptor.upstreamId === "custom_card_vehicle_status"
       ? {
         entity,
@@ -481,14 +476,6 @@ export const createStubConfig = (
     ...(descriptor.upstreamId === "custom_card_playstation"
       ? {
         show_controls: false,
-        tap_action: { action: entity ? "more-info" : "none", entity },
-      }
-      : {}),
-    ...(descriptor.upstreamId === "custom_card_person_tracker"
-      ? {
-        ulm_custom_card_person_tracker_driving_entity: findEntity(["binary_sensor"], ["driving"]),
-        ulm_custom_card_person_tracker_find_device_script: findEntity(["script"], ["find"]),
-        ulm_custom_card_person_tracker_zones: available.filter((id) => id.startsWith("zone.")),
         tap_action: { action: entity ? "more-info" : "none", entity },
       }
       : {}),

@@ -17,6 +17,10 @@ export interface EntityNameItem {
 
 export interface HomeAssistant {
   states: Record<string, HassEntity>;
+  entities?: Record<string, {
+    device_id?: string | null;
+    platform?: string;
+  }>;
   language?: string;
   user?: { name?: string };
   localize?: (key: string) => string;
@@ -135,6 +139,20 @@ export interface AdditionConfig {
   graph_entity?: string;
   energy_entity?: string;
   time_entity?: string;
+  crossfade_entity?: string;
+  night_sound_entity?: string;
+  speech_enhancement_entity?: string;
+  subwoofer_entity?: string;
+  surrounds_entity?: string;
+  loudness_entity?: string;
+  surround_full_entity?: string;
+  audio_delay_entity?: string;
+  balance_entity?: string;
+  bass_entity?: string;
+  treble_entity?: string;
+  sub_gain_entity?: string;
+  surround_level_entity?: string;
+  music_surround_level_entity?: string;
   black_entity?: string;
   yellow_entity?: string;
   magenta_entity?: string;

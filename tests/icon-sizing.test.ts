@@ -25,8 +25,6 @@ describe("default Mushroom icon sizing", () => {
     ".pollen-icon",
     ".tablet-icon",
     ".tablet-battery-icon",
-    ".person-info-avatar",
-    ".person-tracker-avatar",
     ".pollen-item-icon",
   ])("keeps %s aligned with the shared icon shape", (selector) => {
     expect(ruleFor(selector)).toContain("width: var(--mush-icon-size, 40px)");
