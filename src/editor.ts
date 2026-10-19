@@ -154,7 +154,9 @@ export class MushroomAdditionEditor extends LitElement {
                 .value=${item.entity}
                 @value-changed=${(event: CustomEvent) => this.updateItem(key, index, "entity", event.detail.value)}
               ></ha-selector>
-              <small>Select the entity this button controls. Welcome Scenes supports every Home Assistant domain.</small>
+              <small>${key === "scene_items"
+                ? "Select the entity this button controls. Welcome Scenes supports every Home Assistant domain."
+                : "Select the entity represented by this room sensor button."}</small>
             </label>
             <label class="field">
               <span>Custom name</span>
@@ -265,11 +267,16 @@ export class MushroomAdditionEditor extends LitElement {
                 @value-changed=${(event: CustomEvent) => this.updateWasteStream(index, "entity", event.detail.value)}
               ></ha-selector>
             </label>
-            <ha-textfield
-              label="Label"
-              .value=${stream.label ?? ""}
-              @input=${(event: Event) => this.updateWasteStream(index, "label", (event.target as HTMLInputElement).value)}
-            ></ha-textfield>
+            <label class="field">
+              <span>Label</span>
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ text: {} }}
+                .value=${stream.label ?? ""}
+                @value-changed=${(event: CustomEvent) =>
+                  this.updateWasteStream(index, "label", event.detail.value)}
+              ></ha-selector>
+            </label>
             <label class="field">
               <span>Icon</span>
               <ha-selector
