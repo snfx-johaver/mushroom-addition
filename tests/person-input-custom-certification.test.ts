@@ -145,7 +145,6 @@ afterEach(() => {
 describe("person and input custom-card certification", () => {
   it("provides dedicated picker defaults and graphical editor fields for retained sources", () => {
     const expected = {
-      custom_card_person_location: ["entity", "wifi_tracker_entity", "gps_tracker_entity", "findmy_script_entity"],
       custom_card_input_datetime: ["entity", "name"],
       custom_card_entity_overview: ["entity", "ulm_custom_card_entity_overview_entity_1", "ulm_custom_card_entity_overview_name_4"],
       custom_card_internet_speed: ["entity", "download_entity", "upload_entity", "ping_entity", "ulm_custom_card_internet_speed_router_name"],
@@ -190,20 +189,6 @@ describe("person and input custom-card certification", () => {
 
   it("migrates every documented legacy entity variable to semantic fields", () => {
     expect(normalizeConfig({
-      type: "custom:mushroom-addition-custom-card-person-location",
-      ulm_card_person_location_entity: "person.joris",
-      ulm_card_person_location_wifi_tracker: "device_tracker.wifi",
-      ulm_card_person_location_gps_tracker: "device_tracker.gps",
-      ulm_card_person_location_findmy_script: "script.find_phone",
-      ulm_card_person_location_use_entity_picture: true,
-    })).toMatchObject({
-      entity: "person.joris",
-      wifi_tracker_entity: "device_tracker.wifi",
-      gps_tracker_entity: "device_tracker.gps",
-      findmy_script_entity: "script.find_phone",
-      use_entity_picture: true,
-    });
-    expect(normalizeConfig({
       type: "custom:mushroom-addition-custom-card-internet-speed",
       ulm_custom_card_internet_speed_download_speed_entity: "sensor.download",
       ulm_custom_card_internet_speed_upload_speed_entity: "sensor.upload",
@@ -226,35 +211,6 @@ describe("person and input custom-card certification", () => {
       date_entity: "sensor.date_long",
       entities: ["sensor.wind"],
     });
-  });
-
-  it("renders source person states and dispatches its one visible card action", async () => {
-    const card = await renderCard("custom_card_person_location", {
-      entity: "person.joris",
-      use_entity_picture: false,
-    });
-    expect(card.shadowRoot.textContent).toContain("Home");
-    expect((card.shadowRoot.querySelector(".person-location-marker ha-icon") as HTMLElement & { icon: string }).icon)
-      .toBe("mdi:home-variant");
-    const action = vi.fn();
-    card.addEventListener("hass-action", action);
-    (card.shadowRoot.querySelector(".action-surface") as HTMLElement).click();
-    expect((action.mock.calls[0][0] as CustomEvent).detail).toMatchObject({
-      action: "tap",
-      config: { entity: "person.joris", tap_action: { action: "more-info" } },
-    });
-
-    const office = await renderCard("custom_card_person_location", { entity: "person.joris" }, {
-      ...states,
-      "person.joris": { ...states["person.joris"], state: "Office" },
-    });
-    expect((office.shadowRoot.querySelector(".person-location-marker ha-icon") as HTMLElement & { icon: string }).icon)
-      .toBe("mdi:briefcase");
-    const unavailable = await renderCard("custom_card_person_location", { entity: "person.joris" }, {
-      ...states,
-      "person.joris": { ...states["person.joris"], state: "unavailable" },
-    });
-    expect(unavailable.shadowRoot.textContent).toContain("Unavailable");
   });
 
   it("executes all four datetime source interactions with exact payloads", async () => {

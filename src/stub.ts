@@ -158,18 +158,6 @@ export const createStubConfig = (
     : { action: entity ? "more-info" : "none" };
   const uniqueEntities = (candidates: Array<string | undefined>, limit: number): string[] =>
     [...new Set(candidates.filter((value): value is string => Boolean(value)))].slice(0, limit);
-  const primaryDeviceTracker =
-    findHealthyEntity(["device_tracker"], ["wifi"]) ??
-    findHealthyEntity(["device_tracker"], ["phone"]) ??
-    findHealthyEntity(["device_tracker"], []) ??
-    entity;
-  const secondaryDeviceTracker =
-    findHealthyEntity(["device_tracker"], ["bluetooth"]) ??
-    findHealthyEntity(["device_tracker"], ["ble"]) ??
-    available.find((entityId) =>
-      entityId.startsWith("device_tracker.") &&
-      isHealthy(entityId) &&
-      entityId !== primaryDeviceTracker);
   const weatherTemperature = findEntity(["sensor"], ["outdoor", "temperature"]) ??
     findEntity(["sensor"], ["outside", "temperature"]) ??
     findEntity(["sensor"], ["garden", "temperature"]) ??
@@ -309,14 +297,6 @@ export const createStubConfig = (
         cpu_max: 100,
       }
       : {}),
-    ...(descriptor.upstreamId === "custom_card_device_tracker"
-      ? {
-        ulm_custom_card_device_tracker_tracker_1_entity: primaryDeviceTracker,
-        ulm_custom_card_device_tracker_tracker_1_type: "lan",
-        ulm_custom_card_device_tracker_tracker_2_entity: secondaryDeviceTracker,
-        ulm_custom_card_device_tracker_tracker_2_type: "bluetooth",
-      }
-      : {}),
     ...(descriptor.upstreamId === "custom_card_speedtest_gauges"
       ? {
         download_entity: findEntity(["sensor"], ["speedtest", "download"]) ??
@@ -402,12 +382,6 @@ export const createStubConfig = (
         tap_action: { action: "more-info" },
       }
       : {}),
-    ...(descriptor.upstreamId === "card_person"
-      ? {
-        battery_entity: findEntity(["sensor"], ["battery"]),
-        use_entity_picture: Boolean(entity && hass?.states[entity]?.attributes.entity_picture),
-      }
-      : {}),
     ...(descriptor.upstreamId === "card_room"
       ? {
         room_sensors: [
@@ -438,15 +412,6 @@ export const createStubConfig = (
           .slice(0, 5)
           .map((entityId) => sceneItemDefaultsFor(hass, entityId)),
         tap_action: { action: "none" },
-      }
-      : {}),
-    ...(descriptor.upstreamId === "custom_card_person_location"
-      ? {
-        wifi_tracker_entity: findEntity(["device_tracker"], ["wifi"]),
-        gps_tracker_entity: findEntity(["device_tracker"], ["gps"]),
-        findmy_script_entity: findEntity(["script"], ["find"]),
-        battery_entity: findEntityExcluding(["sensor"], ["battery"], ["state"]),
-        use_entity_picture: false,
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_internet_speed"

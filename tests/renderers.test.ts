@@ -394,15 +394,6 @@ describe("family renderers", () => {
     });
     expect(waste).toContain('class="ulm-icon');
 
-    const person = await render("mushroom-addition-card-person", {
-      type: "custom:mushroom-addition-card-person",
-      entity: "person.joris",
-      use_entity_picture: true,
-      icon_type: "icon",
-    });
-    expect(person).toContain('class="ulm-icon');
-    expect(person).not.toContain("person-picture");
-
     const personTracker = await render("mushroom-addition-custom-card-person-tracker", {
       type: "custom:mushroom-addition-custom-card-person-tracker",
       entity: "person.joris",
@@ -508,7 +499,6 @@ describe("family renderers", () => {
     ["card_cover", "mushroom-addition-card-cover", "cover.blind", "ulm-cover", "sparkline"],
     ["card_graph", "mushroom-addition-card-graph", "sensor.power", "ulm-default-graph", "ulm-light-slider"],
     ["card_media_player", "mushroom-addition-card-media-player", "media_player.tv", "ulm-media", "sparkline"],
-    ["card_person", "mushroom-addition-card-person", "person.joris", "ulm-person", "sparkline"],
     ["card_room", "mushroom-addition-card-room", "light.kitchen", "ulm-room", "sparkline"],
     ["card_scenes", "mushroom-addition-card-scenes", "scene.relax", "scene-pills", "sparkline"],
     ["card_welcome_scenes", "mushroom-addition-card-welcome-scenes", "scene.relax", "welcome-scenes", "sparkline"],
@@ -623,7 +613,6 @@ describe("family renderers", () => {
 
   it.each([
     ["scene", "mushroom-addition-card-scenes", "scene.relax", "scene-grid"],
-    ["person", "mushroom-addition-card-person", "person.joris", "ulm-person"],
     ["battery", "mushroom-addition-card-battery", "sensor.battery", "ulm-default-battery"],
     ["energy", "mushroom-addition-card-graph", "sensor.power", "sparkline"],
     ["media", "mushroom-addition-card-media-player", "media_player.tv", "ulm-media"],
@@ -644,12 +633,10 @@ describe("family renderers", () => {
     ["trash", "sensor.power", "custom-waste-card", "waste-grid"],
     ["alarm-time", "input_boolean.alarm", "custom-alarm-time", "alarm-time-controls"],
     ["chromecast", "media_player.tv", "custom-chromecast", "chromecast-controls"],
-    ["device-tracker", "device_tracker.phone", "custom-device-tracker", "device-tracker-icon"],
     ["roomview", "sensor.temperature", "custom-room-view", "room-view-actions"],
     ["welcome", "person.joris", "custom-welcome", "welcome-items"],
     ["washer", "switch.washer", "custom-washer", "washer-stages"],
     ["sun", "sun.sun", "custom-sun-card", "sun-arc"],
-    ["person-location", "person.joris", "custom-person-location", "person-location-marker"],
     ["input-datetime", "input_datetime.alarm", "custom-input-datetime", "input-datetime-controls"],
   ])("uses a source-specific %s composition", async (slug, entity, marker, region) => {
     const tag = `mushroom-addition-custom-card-${slug}`;
@@ -896,7 +883,6 @@ describe("family renderers", () => {
   it("keeps deterministic family-level visual signatures", async () => {
     const signatures = {
       scene: familySignature(await render("mushroom-addition-card-scenes", { type: "custom:mushroom-addition-card-scenes", entity: "scene.relax", entities: ["scene.relax"] })),
-      person: familySignature(await render("mushroom-addition-card-person", { type: "custom:mushroom-addition-card-person", entity: "person.joris" })),
       battery: familySignature(await render("mushroom-addition-card-battery", { type: "custom:mushroom-addition-card-battery", entity: "sensor.battery" })),
       energy: familySignature(await render("mushroom-addition-card-graph", { type: "custom:mushroom-addition-card-graph", entity: "sensor.power" })),
       media: familySignature(await render("mushroom-addition-card-media-player", { type: "custom:mushroom-addition-card-media-player", entity: "media_player.tv" })),
@@ -920,15 +906,6 @@ describe("family renderers", () => {
         ],
         "media": [
           "ulm-media",
-          "ulm-icon",
-          "ulm-copy",
-          "ulm-name",
-          "ulm-label",
-        ],
-        "person": [
-          "ulm-row",
-          "ulm-person",
-          "ulm-source-person",
           "ulm-icon",
           "ulm-copy",
           "ulm-name",

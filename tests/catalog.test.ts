@@ -30,9 +30,9 @@ describe("catalog coverage", () => {
   it("matches the documented source counts and keeps the custom card catalog public", () => {
     const sourceCount = (category: string) =>
       UPSTREAM_CATALOG.filter((item) => item.category === category).length;
-    expect(sourceCount("default-card")).toBe(8);
-    expect(sourceCount("custom-card")).toBe(34);
-    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(32);
+    expect(sourceCount("default-card")).toBe(7);
+    expect(sourceCount("custom-card")).toBe(32);
+    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(30);
   });
 
   it("keeps removed contributor names out of renamed public card metadata", () => {

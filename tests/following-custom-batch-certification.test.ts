@@ -283,6 +283,8 @@ describe("following custom batch certification", () => {
     const styles = readFileSync(join(process.cwd(), "src", "styles.ts"), "utf8");
     expect(styles).toContain("grid-template-rows: minmax(60px, 1fr) 35px");
     expect(styles).toContain("height: 35px");
+    expect(styles).toContain("var(--card-background-color, var(--ha-card-background, #fff))");
+    expect(styles).toContain("clip-path: inset(0 calc(100% - var(--bar-percentage)) 0 0)");
     const card = await renderCard("mushroom-addition-custom-card-bar-card", {
       type: "custom:mushroom-addition-custom-card-bar-card",
       entity: "sensor.cv_plug_power",
@@ -293,6 +295,7 @@ describe("following custom batch certification", () => {
     });
     expect((card.shadowRoot.querySelector(".bar-card-fill") as HTMLElement).style.width).toBe("17.7%");
     expect(card.shadowRoot.querySelector(".bar-card-indicator")).not.toBeNull();
+    expect(card.shadowRoot.querySelectorAll(".bar-card-inside-value")).toHaveLength(2);
     expect(card.shadowRoot.querySelector(".bar-card-inside-value")?.textContent).toContain("17.7 W");
   });
 

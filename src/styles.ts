@@ -316,7 +316,11 @@ export const sharedStyles = css`
     position: relative;
     height: 35px;
     overflow: hidden;
-    background: color-mix(in srgb, var(--bar-fill) 16%, var(--ha-card-background, #202124));
+    background: color-mix(
+      in srgb,
+      var(--bar-fill) 16%,
+      var(--card-background-color, var(--ha-card-background, #fff))
+    );
   }
   .bar-card-fill {
     position: absolute;
@@ -325,12 +329,17 @@ export const sharedStyles = css`
   }
   .bar-card-inside-value {
     position: absolute;
-    top: 50%;
-    right: 8px;
+    inset: 0 8px 0 0;
     z-index: 1;
     color: var(--primary-text-color);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
     font-size: 12px;
-    transform: translateY(-50%);
+  }
+  .bar-card-inside-value-filled {
+    color: var(--text-primary-color, #fff);
+    clip-path: inset(0 calc(100% - var(--bar-percentage)) 0 0);
   }
   .bar-card-indicator {
     position: absolute;
@@ -575,26 +584,6 @@ export const sharedStyles = css`
   .custom-chromecast { display: grid; gap: 16px; padding: 12px; }
   .chromecast-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .chromecast-controls .ulm-control { width: 100%; height: 48px; border-radius: 16px; }
-  .custom-device-tracker {
-    display: grid;
-    min-height: 64px;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
-    border-radius: 24px;
-    background: #1f1f1f;
-    color: #fff;
-  }
-  .custom-device-tracker .ulm-label { color: rgba(255,255,255,.55); }
-  .device-tracker-icon { position: relative; display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: rgba(255,255,255,.06); color: #70d67a; }
-  .device-tracker-icon > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
-  .tracker-badge { position: absolute; display: grid; width: 18px; height: 18px; place-items: center; border: 2px solid var(--card-background-color); border-radius: 50%; color: var(--primary-background-color, #fff); }
-  .tracker-badge.is-home { background: rgb(var(--ulm-blue)); }
-  .tracker-badge.is-away { background: rgb(var(--ulm-green)); }
-  .tracker-badge ha-icon { --mdc-icon-size: 11px; }
-  .tracker-one { top: -3px; right: -6px; }
-  .tracker-two { right: -6px; bottom: -3px; }
   .custom-room-view { display: grid; min-height: 150px; gap: 8px; padding: 12px; }
   .room-view-summary { display: flex; align-items: center; gap: 10px; }
   .room-view-summary > span:last-child { display: flex; flex-direction: column; gap: 6px; color: var(--secondary-text-color); }
@@ -664,14 +653,6 @@ export const sharedStyles = css`
     transform: translate(-50%, -50%);
   }
   .media-platform { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-purple), .75); color: #fff; }
-  .custom-person-location { display: grid; padding: 12px; }
-  .person-location-main { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; }
-  .person-location-main .person-picture { width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); border-radius: 50%; background-position: center; background-size: cover; }
-  .person-location-marker { display: grid; width: 16px; height: 16px; place-items: center; border: 2px solid var(--card-background-color); border-radius: 50%; color: #fff; }
-  .person-location-marker ha-icon { --mdc-icon-size: 10px; }
-  .person-location-marker.is-home { background: rgb(var(--ulm-blue)); }
-  .person-location-marker.is-away { background: rgb(var(--ulm-green)); }
-  .person-location-marker.is-unavailable { background: rgb(var(--ulm-red)); }
   .input-datetime-controls { display: grid; grid-template-columns: repeat(3, 1fr); align-items: center; gap: 7px; }
   .input-datetime-controls .ulm-control { width: 100%; height: 42px; border-radius: 14px; }
   .input-datetime-controls .hold-control { font-size: 16px; font-weight: 700; }

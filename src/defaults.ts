@@ -82,11 +82,6 @@ export const populatedDefaultsFor = (
         battery_low_color: "orange",
         battery_critical_color: "red",
       }
-      : item.upstreamId === "card_person"
-      ? {
-        icon: "mdi:face-man",
-        use_entity_picture: false,
-      }
       : item.upstreamId === "card_room"
           ? {
             icon: "mdi:sofa-single",
@@ -97,13 +92,7 @@ export const populatedDefaultsFor = (
               ? {
                 pollen_language: "en",
               }
-              : item.upstreamId === "custom_card_device_tracker"
-      ? {
-        ulm_custom_card_device_tracker_icon: "mdi:cellphone",
-        ulm_custom_card_device_tracker_tracker_1_type: "lan",
-        ulm_custom_card_device_tracker_tracker_2_type: "bluetooth",
-      }
-      : item.upstreamId === "custom_card_better_thermostat"
+              : item.upstreamId === "custom_card_better_thermostat"
         ? {
           variant: "normal",
           show_controls: true,
@@ -200,7 +189,5 @@ export const populatedDefaultsFor = (
       ? false
       : true,
     layout: "default",
-    primary_info: "name",
-    secondary_info: "state",
   };
 };

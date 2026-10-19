@@ -128,15 +128,6 @@ interface Comparison {
 }
 
 const comparisons: Record<string, Comparison> = {
-  card_person: {
-    width: 496,
-    referenceHeight: 160,
-    referenceWidth: 1090,
-    referenceX: 0,
-    referenceY: 0,
-    reference: "card_person.png",
-    config: { entity: "person.joris", battery_entity: "sensor.joris_mobile_battery_level" },
-  },
   card_room: {
     width: 340,
     referenceHeight: 360,
@@ -175,7 +166,7 @@ const comparisons: Record<string, Comparison> = {
   },
 };
 
-const sourceId = new URLSearchParams(location.search).get("source") ?? "card_person";
+const sourceId = new URLSearchParams(location.search).get("source") ?? "card_room";
 const comparison = comparisons[sourceId];
 if (!comparison) throw new Error(`Unknown comparison source: ${sourceId}`);
 const item = CATALOG.find((entry) => entry.upstreamId === sourceId);
