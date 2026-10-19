@@ -23,7 +23,6 @@ const replacedOptions: Partial<Record<string, readonly string[]>> = {
 
 export const canonicalNameOptions = new Set([
   "ulm_card_battery_name",
-  "ulm_card_cover_name",
   "ulm_card_flower_name",
   "ulm_card_input_boolean_name",
   "ulm_card_input_datetime_name",
@@ -35,17 +34,10 @@ export const canonicalNameOptions = new Set([
   "ulm_custom_card_entity_overview_name",
   "ulm_custom_card_metrics_entitites_name",
   "ulm_custom_card_pollen_forecast_name",
-  "ulm_custom_card_person_tracker_name",
-]);
-
-const canonicalIconTypeOptions = new Set([
-  "ulm_card_person_use_entity_picture",
-  "ulm_custom_card_person_tracker_use_entity_picture",
 ]);
 
 export const isReplacedUpstreamOption = (item: CatalogItem, name: string): boolean =>
   canonicalNameOptions.has(name) ||
-  canonicalIconTypeOptions.has(name) ||
   (replacedOptions[item.upstreamId]?.includes(name) ?? false);
 
 const supportedByFamily: Record<string, readonly string[]> = {
@@ -74,24 +66,6 @@ const supportedByFamily: Record<string, readonly string[]> = {
     "ulm_card_media_player_power_button",
     "ulm_card_media_player_force_background_color",
     "ulm_card_media_player_color",
-  ],
-  cover: [
-    "ulm_card_cover_color",
-    "ulm_card_cover_display_left_right",
-    "ulm_card_cover_enable_controls",
-    "ulm_card_cover_enable_horizontal",
-    "ulm_card_cover_enable_slider",
-    "ulm_card_cover_enable_tilt",
-    "ulm_card_cover_favorite_percentage",
-    "ulm_card_cover_force_background_color",
-    "ulm_card_cover_garage_large",
-    "ulm_card_cover_icon",
-    "ulm_card_cover_invert_percent",
-    "ulm_card_cover_name",
-    "ulm_card_cover_show_last_changed",
-    "ulm_card_cover_slider_min",
-    "ulm_card_cover_slider_max",
-    "ulm_card_invert_percent",
   ],
 };
 

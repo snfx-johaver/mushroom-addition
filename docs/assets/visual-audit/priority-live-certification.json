@@ -42,22 +42,6 @@
           "disabled": true
         }
       ]
-    },
-    "custom_card_person_info": {
-      "live": true,
-      "rendered": true,
-      "tapMoreInfoEntity": "person.joris",
-      "holdMoreInfoEntity": "sensor.joris_mobile_battery_level"
-    },
-    "custom_card_person_info_small": {
-      "live": true,
-      "rendered": true,
-      "geometry": {
-        "width": 330,
-        "height": 118
-      },
-      "tapMoreInfoEntity": "person.joris",
-      "holdMoreInfoEntity": "sensor.joris_mobile_battery_level"
     }
   }
 }

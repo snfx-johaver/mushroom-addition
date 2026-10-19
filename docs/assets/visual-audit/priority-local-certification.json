@@ -71,36 +71,6 @@
         ]
       ],
       "cardActionsTriggered": 0
-    },
-    "custom_card_person_info_small": {
-      "controlsClicked": 0,
-      "cardSurfaceActions": [
-        {
-          "gesture": "tap",
-          "action": "more-info",
-          "entity": "person.joris"
-        },
-        {
-          "gesture": "hold",
-          "action": "more-info",
-          "entity": "sensor.phone_battery"
-        }
-      ]
-    },
-    "custom_card_person_info": {
-      "controlsClicked": 0,
-      "cardSurfaceActions": [
-        {
-          "gesture": "tap",
-          "action": "more-info",
-          "entity": "person.joris"
-        },
-        {
-          "gesture": "hold",
-          "action": "more-info",
-          "entity": "sensor.person_full_battery"
-        }
-      ]
     }
   }
 }

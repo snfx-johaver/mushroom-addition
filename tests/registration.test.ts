@@ -338,65 +338,6 @@ describe("Home Assistant registration", () => {
     }
   });
 
-  it("selects Person Info defaults linked to the chosen person's tracker", () => {
-    const entries: Array<[string, string, Record<string, unknown>]> = [
-      ["person.joris", "home", {
-        friendly_name: "Joris",
-        source: "device_tracker.joris_mobile",
-        device_trackers: ["device_tracker.joris_mobile"],
-        entity_picture: "/api/image/joris",
-      }],
-      ["device_tracker.joris_mobile", "home", { friendly_name: "Joris Mobile" }],
-      ["sensor.office_joris_motion_battery", "100", {
-        friendly_name: "Office Joris motion Battery",
-        device_class: "battery",
-      }],
-      ["sensor.joris_mobile_battery_level", "91", {
-        friendly_name: "Joris Mobile Battery level",
-        device_class: "battery",
-      }],
-      ["sensor.joris_mobile_battery_state", "charging", {
-        friendly_name: "Joris Mobile Battery state",
-        device_class: "enum",
-      }],
-      ["sensor.joris_mobile_geocoded_location", "12 Main Street", {
-        friendly_name: "Joris Mobile Geocoded Location",
-        Locality: "Amsterdam",
-      }],
-      ["binary_sensor.joris_mobile_android_auto", "off", {
-        friendly_name: "Joris Mobile Android Auto",
-      }],
-      ["sensor.joris_mobile_commute", "24", {
-        friendly_name: "Joris Mobile Commute",
-        unit_of_measurement: "min",
-      }],
-      ["zone.work", "0", { friendly_name: "Work" }],
-    ];
-    const states: HomeAssistant["states"] = Object.fromEntries(entries.map(([entity_id, state, attributes]) => [
-      entity_id,
-      { entity_id, state, attributes },
-    ]));
-    const hass: HomeAssistant = { states, callService: async () => undefined };
-    const descriptor = CATALOG.find((item) => item.upstreamId === "custom_card_person_info")!;
-    const config = createStubConfig(descriptor, hass, Object.keys(states), []);
-
-    expect(config).toMatchObject({
-      entity: "person.joris",
-      icon_type: "entity-picture",
-      ulm_card_person_zone1: "zone.work",
-      ulm_address: "sensor.joris_mobile_geocoded_location",
-      ulm_address_locality: "sensor.joris_mobile_geocoded_location",
-      ulm_card_person_driving_entity: "binary_sensor.joris_mobile_android_auto",
-      ulm_card_person_battery_entity: "sensor.joris_mobile_battery_level",
-      ulm_card_person_battery_state_entity: "sensor.joris_mobile_battery_state",
-      ulm_card_person_commute_entity: "sensor.joris_mobile_commute",
-      hold_action: {
-        action: "more-info",
-        entity: "sensor.joris_mobile_battery_level",
-      },
-    });
-  });
-
   it("exposes the pinned PS4 source without invented console variants", () => {
         const consoleCard = CATALOG.find((item) => item.upstreamId === "custom_card_playstation");
         expect(consoleCard).toMatchObject({

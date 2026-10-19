@@ -26,8 +26,6 @@ describe("priority visual geometry evidence", () => {
   it.each([
     "nas-metrics",
     "tablet",
-    "person-info",
-    "person-info-small",
   ])("captures %s at the matched reference width", (source) => {
     expect(Math.abs(geometry[source].implementation.width - geometry[source].reference.width))
       .toBeLessThanOrEqual(14);
@@ -44,12 +42,4 @@ describe("priority visual geometry evidence", () => {
       .every(({ height }) => height === 42)).toBe(true);
   });
 
-  it("matches the source Person Info badge and battery/detail icon hierarchy", () => {
-    expect(sizes("person-info", "icons", ".person-info-badge ha-icon"))
-      .toEqual([{ width: 10, height: 10 }]);
-    expect(sizes("person-info", "icons", ".person-info-detail ha-icon"))
-      .toEqual([{ width: 16, height: 16 }, { width: 16, height: 16 }]);
-    expect(sizes("person-info-small", "icons", ".person-info-small-battery ha-icon"))
-      .toEqual([{ width: 25, height: 25 }]);
-  });
 });

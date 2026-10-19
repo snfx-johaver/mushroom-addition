@@ -1,7 +1,7 @@
 import type { CatalogItem } from "./types";
 
 const baseCards = [
-  "battery", "cover", "graph", "media_player",
+  "battery", "graph", "media_player",
   "room", "scenes",
   "welcome_scenes",
 ] as const;
@@ -16,7 +16,7 @@ const customCards = [
   "gauge", "printer",
   "nas_metrics", "tablet",
   "pollen_forecast", "welcome_dashboard",
-  "person_info", "person_info_small", "playstation", "person_tracker",
+  "playstation",
   "scenes", "vehicle_status", "plant",
   "speedtest_gauges", "better_thermostat",
   "pollen",
@@ -56,7 +56,6 @@ const familyFor = (id: string): string => {
 };
 
 export const UPSTREAM_VARIANTS = [
-  { id: "popup_cover", component: "card_cover", sourcePath: "reference_catalog/popups/popup_cover.yaml" },
   { id: "popup_media_player", component: "card_media_player", sourcePath: "reference_catalog/popups/popup_media_player.yaml" },
 ] as const;
 
@@ -64,7 +63,6 @@ const variants: Record<string, string[]> = {
   card_media_player: ["default", "controls", "artwork"],
   card_room: ["default", "with-sensors"],
   card_scenes: ["list", "welcome"],
-  card_cover: ["default"],
   custom_card_welcome_dashboard: ["message", "weather", "news"],
   custom_card_better_thermostat: ["normal", "compact"],
 };
@@ -212,16 +210,6 @@ export const COMPONENT_GROUPS: readonly ComponentGroup[] = [
     variants: ["welcome-pills", "scene-grid"],
     variantLabels: { "welcome-pills": "Welcome scene pills", "scene-grid": "Scene button grid" },
     name: "Scenes Card",
-  },
-  {
-    canonical: "custom_card_person_info",
-    sources: {
-      custom_card_person_info: "full",
-      custom_card_person_info_small: "small",
-    },
-    variants: ["full", "small"],
-    variantLabels: { full: "Full person details", small: "Compact person details" },
-    name: "Person Info Card",
   },
 ] as const;
 

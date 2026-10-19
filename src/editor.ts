@@ -3,11 +3,11 @@ import { customElement, property, state } from "lit/decorators.js";
 import type { AdditionConfig, AdditionItemConfig, HomeAssistant, WasteStreamConfig } from "./types";
 import { CATALOG, getCatalogItem, LEGACY_ALIASES } from "./catalog";
 import { fireEvent } from "./helpers";
+import { SONOS_CONTROLS } from "./sonos-controls";
 import { editorHelper, localize } from "./localize";
 import { additionalEditorSchemaFor, editorSchemaFor } from "./editor-schema";
 import { populatedDefaultsFor } from "./defaults";
 import { wasteStreamsForConfig } from "./waste-streams";
-import { PERSON_INFO_RELATED_FIELDS, personInfoDefaultsFor } from "./person-info-defaults";
 import { sceneItemDefaultsFor } from "./scene-item-defaults";
 
 @customElement("mushroom-addition-editor")
@@ -48,12 +48,8 @@ export class MushroomAdditionEditor extends LitElement {
     const upstreamSchema = additionalEditorSchemaFor(item, this.config).filter((field) =>
       item.upstreamId !== "custom_card_trash" ||
       (!field.name.startsWith("ulm_card_datum_") && !field.name.includes("ophaling")));
-    const contextualDefaults = item.upstreamId === "custom_card_person_info"
-      ? personInfoDefaultsFor(this.hass, this.config.entity)
-      : {};
     const formData = {
       ...populatedDefaultsFor(item, this.hass, this.config.entity),
-      ...contextualDefaults,
       ...this.config,
     };
     return html`
@@ -104,24 +100,20 @@ export class MushroomAdditionEditor extends LitElement {
     if (!this.config || !event.detail.value) return;
     const value = event.detail.value as Record<string, unknown>;
     const next = { ...this.config, ...value } as AdditionConfig;
-    const item = getCatalogItem(this.config.type.replace(/^custom:/, ""));
-    if (
-      item?.upstreamId === "custom_card_person_info" &&
-      typeof value.entity === "string" &&
-      value.entity !== this.config.entity
-    ) {
-      const defaults = personInfoDefaultsFor(this.hass, value.entity);
-      for (const field of PERSON_INFO_RELATED_FIELDS) {
-        if (defaults[field] !== undefined) Object.assign(next, { [field]: defaults[field] });
-        else delete next[field];
-      }
-      if (this.config.icon_type === undefined) next.icon_type = defaults.icon_type;
-    }
     if (
       Object.prototype.hasOwnProperty.call(value, "name") &&
       JSON.stringify(value.name) !== JSON.stringify(this.config.name)
     ) {
       delete next.name_mode;
+    }
+    if (
+      this.config.type.includes("media-player-sonos") &&
+      typeof value.entity === "string" &&
+      value.entity !== this.config.entity
+    ) {
+      for (const { configKey } of SONOS_CONTROLS) {
+        if (this.config[configKey] === undefined) delete next[configKey];
+      }
     }
     this.config = next;
     fireEvent(this, "config-changed", { config: next });

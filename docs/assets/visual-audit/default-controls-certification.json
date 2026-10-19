@@ -14,13 +14,6 @@
         "ulm_card_battery_battery_level_danger": 20,
         "ulm_card_battery_battery_level_warning": 50
       }
-    },
-    "card_cover": {
-      "type": "custom:mushroom-addition-card-cover",
-      "entity": "cover.sunscreen",
-      "ulm_card_cover_enable_controls": false,
-      "ulm_card_cover_enable_slider": false,
-      "ulm_card_cover_enable_tilt": false
     }
   },
   "sources": {
@@ -32,74 +25,6 @@
         "keyboard"
       ],
       "controls": []
-    },
-    "card_cover": {
-      "cardSurface": [
-        "tap",
-        "hold",
-        "double_tap",
-        "keyboard"
-      ],
-      "controls": [
-        {
-          "label": "Close",
-          "service": "cover.close_cover",
-          "data": {
-            "entity_id": "cover.blind"
-          }
-        },
-        {
-          "label": "Stop",
-          "service": "cover.stop_cover",
-          "data": {
-            "entity_id": "cover.blind"
-          }
-        },
-        {
-          "label": "Open",
-          "service": "cover.open_cover",
-          "data": {
-            "entity_id": "cover.blind"
-          }
-        },
-        {
-          "label": "Move to 35%",
-          "service": "cover.set_cover_position",
-          "data": {
-            "entity_id": "cover.blind",
-            "position": 35
-          }
-        },
-        {
-          "label": "Cover position",
-          "service": "cover.set_cover_position",
-          "data": {
-            "entity_id": "cover.blind",
-            "position": 55
-          }
-        },
-        {
-          "label": "Close tilt",
-          "service": "cover.close_cover_tilt",
-          "data": {
-            "entity_id": "cover.blind"
-          }
-        },
-        {
-          "label": "Stop tilt",
-          "service": "cover.stop_cover_tilt",
-          "data": {
-            "entity_id": "cover.blind"
-          }
-        },
-        {
-          "label": "Open tilt",
-          "service": "cover.open_cover_tilt",
-          "data": {
-            "entity_id": "cover.blind"
-          }
-        }
-      ]
     }
   }
 }

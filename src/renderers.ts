@@ -4,7 +4,11 @@ import { activeStates, displayName, fireEvent, stateLabel } from "./helpers";
 import { wasteStreamsForConfig } from "./waste-streams";
 import { defaultIconFor } from "./defaults";
 import { resolveColor } from "./colors";
-import { personInfoDefaultsFor } from "./person-info-defaults";
+import {
+  resolveSonosControlEntities,
+  SONOS_NUMBER_CONTROLS,
+  SONOS_SWITCH_CONTROLS,
+} from "./sonos-controls";
 
 export interface RenderContext {
   config: AdditionConfig;
@@ -65,8 +69,6 @@ const configured = <T>(ctx: RenderContext, ...keys: string[]): T | undefined => 
   }
   return undefined;
 };
-const enabled = (ctx: RenderContext, canonical: keyof AdditionConfig, ...upstreamKeys: string[]): boolean =>
-  configured<boolean>(ctx, String(canonical), ...upstreamKeys) === true;
 const icon = (ctx: RenderContext, fallback: string): string =>
   ctx.config.icon || ctx.entity?.attributes.icon || defaultIconFor(ctx.descriptor, ctx.entity) || fallback;
 const iconBubble = (ctx: RenderContext, fallback: string, tone = "blue", extraClass = "") => {
@@ -209,53 +211,6 @@ const weatherIcons: Record<string, [string, string]> = {
   sunny: ["mdi:weather-sunny", "yellow"],
   windy: ["mdi:weather-windy", "grey"],
   exceptional: ["mdi:weather-sunny-alert", "red"],
-};
-
-const renderPerson = (ctx: RenderContext): TemplateResult => {
-  const battery = linkedState(ctx, "battery_entity") ??
-    (configured<string>(ctx, "ulm_card_person_battery")
-      ? ctx.hass.states[configured<string>(ctx, "ulm_card_person_battery")!]
-      : undefined);
-  const eta = linkedState(ctx, "eta_entity") ??
-    (configured<string>(ctx, "ulm_card_person_eta")
-      ? ctx.hass.states[configured<string>(ctx, "ulm_card_person_eta")!]
-      : undefined);
-  const address = linkedState(ctx, "address_entity") ??
-    (configured<string>(ctx, "ulm_address") ? ctx.hass.states[configured<string>(ctx, "ulm_address")!] : undefined);
-  const picture = ctx.config.icon_type === "entity-picture"
-    ? attr(ctx.entity, "entity_picture")
-    : undefined;
-  const zone = Object.values(ctx.hass.states).find((candidate) =>
-    candidate.entity_id.startsWith("zone.") &&
-    Array.isArray(candidate.attributes.persons) &&
-    (candidate.attributes.persons as unknown[]).includes(ctx.entity?.entity_id));
-  const badgeIcon = ctx.entity?.state === "home"
-    ? "mdi:home-variant"
-    : zone?.attributes.icon || (zone ? "mdi:help-circle" : "mdi:home-minus");
-  const batteryValue = battery ? Math.max(0, Math.min(100, Math.round(Number(battery.state)))) : undefined;
-  const circumference = 2 * Math.PI * 20.5;
-  const secondary = `${address ? stateLabel(address) : stateLabel(ctx.entity)}${
-    eta && ctx.entity?.state !== "home" ? ` | ${stateLabel(eta)}` : ""
-  }`;
-  return ctx.actionSurface("ulm-row ulm-person ulm-source-person", html`
-    ${ctx.config.icon_type === "none" ? nothing : html`<span class="person-icon-wrap">
-      ${picture
-        ? html`<span class="person-picture" style=${`background-image:url("${String(picture)}")`}></span>`
-        : html`<span class="ulm-icon tone-grey"><ha-icon .icon=${ctx.config.icon || configured<string>(ctx, "ulm_card_person_icon") || "mdi:face-man"}></ha-icon></span>`}
-      <span class="person-location-badge ${ctx.entity?.state === "home" ? "home" : "away"}">
-        <ha-icon .icon=${String(badgeIcon)}></ha-icon>
-      </span>
-    </span>`}
-    ${heading(ctx, secondary)}
-    ${batteryValue !== undefined ? html`
-      <svg class="person-battery-ring" viewBox="0 0 50 50" aria-label=${`${batteryValue}% battery`}>
-        <circle cx="25" cy="25" r="20.5"></circle>
-        <circle class="value" cx="25" cy="25" r="20.5"
-          style=${`stroke-dasharray:${circumference};stroke-dashoffset:${circumference - batteryValue / 100 * circumference}`}></circle>
-        <text x="25" y="28">${batteryValue}<tspan>%</tspan></text>
-      </svg>
-    ` : nothing}
-  `);
 };
 
 const renderBattery = (ctx: RenderContext): TemplateResult => {
@@ -601,79 +556,6 @@ const renderMedia = (ctx: RenderContext): TemplateResult => {
       </div>
     ` : nothing}
   `);
-};
-
-const renderCover = (ctx: RenderContext): TemplateResult => {
-  const controllable = ctx.config.entity?.startsWith("cover.") === true;
-  const controls = controllable && enabled(ctx, "show_controls", "ulm_card_cover_enable_controls");
-  const slider = controllable && configured<boolean>(ctx, "ulm_card_cover_enable_slider") === true;
-  const tilt = controllable && configured<boolean>(ctx, "ulm_card_cover_enable_tilt") === true;
-  const horizontal = configured<boolean>(ctx, "ulm_card_cover_enable_horizontal") === true;
-  const invert = configured<boolean>(ctx, "ulm_card_cover_invert_percent", "ulm_card_invert_percent") === true;
-  const position = numeric(attr(ctx.entity, "current_position"));
-  const displayedPosition = position === undefined ? undefined : invert ? 100 - position : position;
-  const open = invert ? position !== 100 : ctx.entity?.state !== "closed";
-  const color = configuredColor(configured<string>(ctx, "ulm_card_cover_color"), "rgba(var(--color-blue, 3, 169, 244), 1)");
-  const forceBackground = configured<boolean>(ctx, "ulm_card_cover_force_background_color") === true && open;
-  const deviceClass = String(attr(ctx.entity, "device_class") ?? "");
-  const openIcons: Record<string, string> = {
-    awning: "mdi:window-open", blind: "mdi:blinds-open", curtain: "mdi:curtains",
-    damper: "mdi:circle-outline", door: "mdi:door-open", garage: configured<boolean>(ctx, "ulm_card_cover_garage_large") ? "mdi:garage-open-variant" : "mdi:garage-open",
-    gate: "mdi:gate-open", shade: "mdi:roller-shade", shutter: "mdi:window-shutter-open", window: "mdi:window-open",
-  };
-  const closedIcons: Record<string, string> = {
-    awning: "mdi:window-closed", blind: "mdi:blinds", curtain: "mdi:curtains-closed",
-    damper: "mdi:circle-slice-8", door: "mdi:door-closed", garage: configured<boolean>(ctx, "ulm_card_cover_garage_large") ? "mdi:garage-variant" : "mdi:garage",
-    gate: "mdi:gate", shade: "mdi:roller-shade-closed", shutter: "mdi:window-shutter", window: "mdi:window-closed",
-  };
-  const configuredIcon = configured<string | boolean>(ctx, "ulm_card_cover_icon");
-  const coverIcon = typeof configuredIcon === "string"
-    ? configuredIcon
-    : (open ? openIcons[deviceClass] : closedIcons[deviceClass]) || String(attr(ctx.entity, "icon") ?? "mdi:help-circle");
-  const showLastChanged = configured<boolean>(ctx, "ulm_card_cover_show_last_changed") === true;
-  const secondary = showLastChanged && ctx.entity?.last_changed
-    ? new Date(ctx.entity.last_changed).toLocaleString()
-    : displayedPosition !== undefined && !["unknown", "unavailable", "closed"].includes(ctx.entity?.state ?? "")
-      ? `${stateLabel(ctx.entity)} · ${displayedPosition}%`
-      : stateLabel(ctx.entity);
-  const sideways = configured<boolean>(ctx, "ulm_card_cover_display_left_right") === true;
-  const closeIcon = sideways ? "mdi:arrow-left" : ["curtain", "gate", "awning"].includes(deviceClass) ? "mdi:arrow-collapse-horizontal" : "mdi:arrow-down";
-  const openIcon = sideways ? "mdi:arrow-right" : ["curtain", "gate", "awning"].includes(deviceClass) ? "mdi:arrow-expand-horizontal" : "mdi:arrow-up";
-  const favorite = numeric(configured(ctx, "ulm_card_cover_favorite_percentage"));
-  return ctx.actionSurface(`ulm-cover ${horizontal ? "is-horizontal" : ""} ${forceBackground ? "is-source-background" : ""}`, html`
-  <div class="ulm-row">
-    ${sourceIconBubble(ctx, coverIcon, color, open)}
-    ${heading(ctx, secondary)}
-  </div>
-  ${controls ? html`<div class="ulm-controls cover-controls">
-    ${button("Close", closeIcon, (event) => { event.stopPropagation(); ctx.service("cover", "close_cover", { entity_id: ctx.config.entity }); })}
-    ${button("Stop", "mdi:stop", (event) => { event.stopPropagation(); ctx.service("cover", "stop_cover", { entity_id: ctx.config.entity }); })}
-    ${button("Open", openIcon, (event) => { event.stopPropagation(); ctx.service("cover", "open_cover", { entity_id: ctx.config.entity }); })}
-    ${favorite !== undefined ? button(`Move to ${favorite}%`, "mdi:star", (event) => {
-      event.stopPropagation();
-      ctx.service("cover", "set_cover_position", { entity_id: ctx.config.entity, position: favorite });
-    }) : nothing}
-  </div>` : nothing}
-  ${slider ? html`
-    <div class="ulm-cover-slider" style=${`--cover-level:${position ?? 0}%`}>
-    <i></i><input type="range" aria-label="Cover position"
-      min=${String(configured<number>(ctx, "ulm_card_cover_slider_min") ?? 0)}
-      max=${String(configured<number>(ctx, "ulm_card_cover_slider_max") ?? 100)}
-      .value=${String(position ?? 0)}
-      @pointerdown=${(event: Event) => event.stopPropagation()}
-      @click=${(event: Event) => event.stopPropagation()}
-      @change=${(event: Event) => ctx.service("cover", "set_cover_position", {
-        entity_id: ctx.config.entity,
-        position: Number((event.target as HTMLInputElement).value),
-      })}>
-    </div>
-  ` : nothing}
-  ${tilt ? html`<div class="ulm-controls cover-controls cover-tilt-controls">
-    ${button("Close tilt", "mdi:arrow-bottom-left", (event) => { event.stopPropagation(); ctx.service("cover", "close_cover_tilt", { entity_id: ctx.config.entity }); })}
-    ${button("Stop tilt", "mdi:stop", (event) => { event.stopPropagation(); ctx.service("cover", "stop_cover_tilt", { entity_id: ctx.config.entity }); })}
-    ${button("Open tilt", "mdi:arrow-top-right", (event) => { event.stopPropagation(); ctx.service("cover", "open_cover_tilt", { entity_id: ctx.config.entity }); })}
-  </div>` : nothing}
-  `, `--source-color:${color}`);
 };
 
 const renderSecurity = (ctx: RenderContext): TemplateResult => {
@@ -1465,6 +1347,17 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
   const label = ["idle", "paused", "unavailable"].includes(ctx.entity?.state ?? "")
     ? stateLabel(ctx.entity)
     : `${source ? String(source) : stateLabel(ctx.entity)} • ${volume}%`;
+  const controls = resolveSonosControlEntities(ctx.hass, ctx.config.entity, ctx.config);
+  const switches = SONOS_SWITCH_CONTROLS.flatMap((control) => {
+    const entityId = controls[control.configKey];
+    const entity = entityId ? ctx.hass.states[entityId] : undefined;
+    return entity ? [{ control, entity }] : [];
+  });
+  const numbers = SONOS_NUMBER_CONTROLS.flatMap((control) => {
+    const entityId = controls[control.configKey];
+    const entity = entityId ? ctx.hass.states[entityId] : undefined;
+    return entity ? [{ control, entity }] : [];
+  });
   return ctx.actionSurface("custom-sonos", html`
     <div class="custom-card-heading">
       ${iconBubble(ctx, "mdi:speaker", ctx.entity?.state === "playing" ? "green" : "grey")}
@@ -1475,6 +1368,53 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
       ${button("Play or pause", ["paused", "off"].includes(ctx.entity?.state ?? "") ? "mdi:play" : "mdi:pause", (event) => { event.stopPropagation(); ctx.service("media_player", "media_play_pause", { entity_id: ctx.config.entity }); }, unavailable)}
       ${button("Volume up", "mdi:volume-plus", (event) => { event.stopPropagation(); ctx.service("media_player", "volume_up", { entity_id: ctx.config.entity }); }, unavailable)}
     </div>
+    ${switches.length || numbers.length ? html`
+      <details class="sonos-details" @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => event.stopPropagation()}>
+        <summary>
+          <span>More details</span>
+          <ha-icon icon="mdi:chevron-down"></ha-icon>
+        </summary>
+        ${switches.length ? html`<div class="sonos-switches">
+          ${switches.map(({ control, entity }) => html`
+            <button class=${entity.state === "on" ? "is-active" : ""} aria-pressed=${entity.state === "on"}
+              ?disabled=${entity.state === "unavailable"}
+              @click=${(event: Event) => {
+                event.stopPropagation();
+                ctx.service("homeassistant", "toggle", { entity_id: entity.entity_id });
+              }}>
+              <ha-icon .icon=${control.icon}></ha-icon>
+              <span>${control.label}</span>
+            </button>
+          `)}
+        </div>` : nothing}
+        ${numbers.length ? html`<div class="sonos-sliders">
+          ${numbers.map(({ control, entity }) => {
+            const value = numeric(entity.state) ?? 0;
+            const min = numeric(attr(entity, "min")) ?? -100;
+            const max = numeric(attr(entity, "max")) ?? 100;
+            const step = numeric(attr(entity, "step")) ?? 1;
+            return html`
+              <label>
+                <ha-icon .icon=${control.icon}></ha-icon>
+                <span>${control.label}</span>
+                <input type="range" min=${min} max=${max} step=${step} .value=${String(value)}
+                  ?disabled=${entity.state === "unavailable"}
+                  aria-label=${control.label}
+                  @change=${(event: Event) => {
+                    event.stopPropagation();
+                    ctx.service("number", "set_value", {
+                      entity_id: entity.entity_id,
+                      value: Number((event.currentTarget as HTMLInputElement).value),
+                    });
+                  }}>
+                <output>${value}</output>
+              </label>
+            `;
+          })}
+        </div>` : nothing}
+      </details>
+    ` : nothing}
   `);
 };
 
@@ -1733,71 +1673,6 @@ const renderWelcomeDashboard = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const renderPersonInfo = (ctx: RenderContext): TemplateResult => {
-  const small = ctx.config.variant === "small";
-  const automatic = personInfoDefaultsFor(ctx.hass, ctx.config.entity);
-  const automaticEntity = (key: string): HassEntity | undefined => {
-    const entityId = ctx.config[key] ?? automatic[key];
-    return typeof entityId === "string" ? ctx.hass.states[entityId] : undefined;
-  };
-  const battery = automaticEntity("ulm_card_person_battery_entity") ?? linkedState(ctx, "battery_entity");
-  const batteryState = automaticEntity("ulm_card_person_battery_state_entity");
-  const driving = automaticEntity("ulm_card_person_driving_entity");
-  const zone1 = automaticEntity("ulm_card_person_zone1");
-  const zone2 = automaticEntity("ulm_card_person_zone2");
-  const address = automaticEntity("ulm_address");
-  const locality = automaticEntity("ulm_address_locality");
-  const commute = automaticEntity("ulm_card_person_commute_entity");
-  const usePicture = (ctx.config.icon_type ?? automatic.icon_type) === "entity-picture";
-  const picture = usePicture ? String(attr(ctx.entity, "entity_picture") || "") : "";
-  const batteryLevel = numeric(battery?.state);
-  const charging = batteryState?.state.toLowerCase() === "charging";
-  const danger = configured<number>(ctx, "ulm_card_battery_battery_level_danger") ?? 15;
-  const warning = configured<number>(ctx, "ulm_card_battery_battery_level_warning") ?? 30;
-  const batteryTone = batteryLevel === undefined ? "grey" : batteryLevel <= danger ? "red" : batteryLevel <= warning ? "yellow" : "green";
-  const batteryIcon = batteryLevel === undefined ? "mdi:battery-off" :
-    charging ? "mdi:battery-charging" :
-      batteryLevel >= 95 ? "mdi:battery" :
-        batteryLevel < 10 ? "mdi:battery-outline" :
-          `mdi:battery-${Math.floor(batteryLevel / 10) * 10}`;
-  const personState = ctx.entity?.state ?? "unknown";
-  const zoneForState = [zone1, zone2].find((zone) => zone?.attributes.friendly_name === personState);
-  const drivingNow = driving?.state === "on";
-  const badgeIcon = drivingNow ? "mdi:car" :
-    personState === "home" ? "mdi:home-variant" :
-      zoneForState ? String(attr(zoneForState, "icon") || "mdi:map-marker") : "mdi:home-minus";
-  const badgeTone = drivingNow ? "red" : personState === "home" ? "blue" : "yellow";
-  const location = address ? stateLabel(address) :
-    locality && typeof attr(locality, "Locality") === "string" ? String(attr(locality, "Locality")) :
-      drivingNow ? `Driving - ${personState.replaceAll("_", " ")}` :
-        personState.replaceAll("_", " ");
-  const avatar = ctx.config.icon_type === "none" ? nothing : html`
-    <span class="person-info-avatar ${picture ? "has-picture" : ""}" style=${picture ? `background-image:url("${picture}")` : ""}>
-      ${picture ? nothing : html`<ha-icon .icon=${configured<string>(ctx, "ulm_card_person_icon") || "mdi:face-man"}></ha-icon>`}
-      <i class="person-info-badge tone-${badgeTone}"><ha-icon .icon=${badgeIcon}></ha-icon></i>
-    </span>`;
-  if (small) return ctx.actionSurface("custom-person-info-small is-compact", html`
-    <div class="person-info-small-top">
-      ${avatar}
-      <span class="person-info-small-battery tone-${batteryTone}">
-        <ha-icon .icon=${batteryIcon}></ha-icon>
-      </span>
-    </div>
-    <span class="person-info-small-copy">${heading(ctx, location)}</span>
-  `);
-  const multiline = configured<boolean>(ctx, "ulm_multiline") ?? true;
-  return ctx.actionSurface(`custom-person-info ${multiline ? "is-multiline" : "is-inline"}`, html`
-    <div class="person-info-main">
-      ${avatar}
-      ${heading(ctx, location)}
-    </div>
-    <div class="person-info-details">
-      ${battery ? html`<span class="person-info-detail tone-${batteryTone}"><ha-icon .icon=${batteryIcon}></ha-icon><b>${batteryLevel ?? "—"}%</b></span>` : nothing}
-      ${commute ? html`<span class="person-info-detail commute-detail"><ha-icon .icon=${configured<string>(ctx, "ulm_card_person_cummute_icon") || "mdi:car"}></ha-icon><b>${stateLabel(commute)}${commute.attributes.unit_of_measurement ? "" : " min"}</b></span>` : nothing}
-    </div>
-  `);
-};
-
 const renderConsoleCard = (ctx: RenderContext): TemplateResult => {
   const state = ctx.entity?.state ?? "unknown";
   const artwork = attr(ctx.entity, "entity_picture");
@@ -1814,51 +1689,6 @@ const renderConsoleCard = (ctx: RenderContext): TemplateResult => {
           : displayName(ctx.config, ctx.entity, ctx.hass),
       )}
     </div>
-  `);
-};
-
-const renderPersonTracker = (ctx: RenderContext): TemplateResult => {
-  const usePicture = ctx.config.icon_type === "entity-picture";
-  const useBadge = configured<boolean>(ctx, "ulm_custom_card_person_tracker_use_badge") !== false;
-  const picture = usePicture ? String(attr(ctx.entity, "entity_picture") || "") : "";
-  const driving = entityFromConfig(ctx, "ulm_custom_card_person_tracker_driving_entity");
-  const drivingNow = driving?.state === "on" || driving?.state === "true";
-  const zones = configured<string[]>(ctx, "ulm_custom_card_person_tracker_zones") ?? [];
-  const zone = zones.map((id) => ctx.hass.states[id]).find((entity) => entity?.attributes.friendly_name === ctx.entity?.state);
-  const locationIcon = drivingNow
-    ? "mdi:car"
-    : ctx.entity?.state === "home"
-      ? "mdi:home-variant"
-      : ctx.entity?.state === "not_home"
-        ? "mdi:home-minus"
-        : String(attr(zone, "icon") || "mdi:help-circle");
-  const tone = drivingNow ? "red" : ctx.entity?.state === "home" ? "green" : zone ? "yellow" : "blue";
-  const label = drivingNow
-    ? configured<string>(ctx, "ulm_custom_card_person_tracker_driving") || "Driving"
-    : stateLabel(ctx.entity);
-  const findDevice = configured<string>(ctx, "ulm_custom_card_person_tracker_find_device_script");
-  const lightCamera = entityFromConfig(ctx, "ulm_custom_card_person_tracker_camera_entity_light");
-  const darkCamera = entityFromConfig(ctx, "ulm_custom_card_person_tracker_camera_entity_dark");
-  const camera = lightCamera && darkCamera ? lightCamera : undefined;
-  const cameraPicture = camera ? String(attr(camera, "entity_picture") || `/api/camera_proxy/${camera.entity_id}`) : "";
-  const map = configured<boolean>(ctx, "ulm_custom_card_person_tracker_map_enable") === true;
-  return ctx.actionSurface("custom-person-tracker", html`
-    <div class="person-tracker-main">
-      ${ctx.config.icon_type === "none" ? nothing : html`<span class="person-tracker-avatar ${picture ? "has-picture" : ""}" style=${picture ? `background-image:url("${picture}")` : ""}>
-        ${picture ? nothing : html`<ha-icon .icon=${useBadge ? "mdi:face-man" : locationIcon}></ha-icon>`}
-        ${useBadge ? html`<i class=${`tone-${tone}`}><ha-icon .icon=${locationIcon}></ha-icon></i>` : nothing}
-      </span>`}
-      ${heading(ctx, label)}
-      ${findDevice ? html`<button class="person-tracker-find-device" aria-label="Find device"
-        @pointerdown=${(event: Event) => event.stopPropagation()}
-        @click=${(event: Event) => { event.stopPropagation(); ctx.service("homeassistant", "toggle", { entity_id: findDevice }); }}>
-        <ha-icon .icon=${configured<string>(ctx, "ulm_custom_card_person_tracker_icon") || "mdi:cellphone-sound"}></ha-icon>
-      </button>` : nothing}
-    </div>
-    ${cameraPicture ? html`<div class="person-tracker-camera" style=${`background-image:url("${cameraPicture}")`}></div>` : nothing}
-    ${map ? html`<div class="person-tracker-map" style=${`aspect-ratio:${String(configured(ctx, "ulm_custom_card_person_tracker_map_aspect_ratio") || "466 / 200").replace(":", " / ")}`}>
-      <ha-icon icon="mdi:map-marker-path"></ha-icon><span>${label}</span>
-    </div>` : nothing}
   `);
 };
 
@@ -2249,10 +2079,7 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "custom_card_tablet": return renderTablet(ctx);
     case "custom_card_pollen_forecast": return renderPollenForecast(ctx);
     case "custom_card_welcome_dashboard": return renderWelcomeDashboard(ctx);
-    case "custom_card_person_info":
-    case "custom_card_person_info_small": return renderPersonInfo(ctx);
     case "custom_card_playstation": return renderConsoleCard(ctx);
-    case "custom_card_person_tracker": return renderPersonTracker(ctx);
     case "custom_card_vehicle_status": return renderCar(ctx);
     case "custom_card_plant": return renderFlower(ctx);
     case "custom_card_speedtest_gauges": return renderSpeedtestGauges(ctx);
@@ -2269,13 +2096,11 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
   }
   switch (ctx.descriptor.family) {
     case "scene": return renderScene(ctx);
-    case "presence": return renderPerson(ctx);
     case "battery": return renderBattery(ctx);
     case "bar": return renderBarCard(ctx);
     case "energy":
     case "sensor": return renderMetric(ctx);
     case "media": return renderMedia(ctx);
-    case "cover": return renderCover(ctx);
     case "security": return renderSecurity(ctx);
     case "navigation": return renderNavigation(ctx);
     case "control": return renderControl(ctx);

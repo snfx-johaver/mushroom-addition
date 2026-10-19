@@ -25,32 +25,17 @@
       "overflow": false,
       "moreInfoEntity": "sensor.yvette_mobile_battery_level",
       "screenshot": "live-controls-battery.png"
-    },
-    "card_cover": {
-      "entity": "cover.sunscreen",
-      "text": "Sunscreen closed",
-      "geometry": [
-        330,
-        102
-      ],
-      "overflow": false,
-      "moreInfoEntity": "cover.sunscreen",
-      "controlsDisabledByLiveConfig": true,
-      "physicalActionsOperated": false,
-      "screenshot": "live-controls-cover.png"
     }
   },
   "picker": {
     "registrations": [
-      "mushroom-addition-card-battery",
-      "mushroom-addition-card-cover"
+      "mushroom-addition-card-battery"
     ],
     "allPreviewable": true
   },
   "editor": {
     "batterySemanticEntities": true,
     "binaryAlertVariantFields": true,
-    "coverSafetyAndControlFields": true,
     "fanSafetyAndControlFields": true,
     "inputBooleanActionFields": true
   },

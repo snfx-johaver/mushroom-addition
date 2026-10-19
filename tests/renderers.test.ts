@@ -394,79 +394,6 @@ describe("family renderers", () => {
     });
     expect(waste).toContain('class="ulm-icon');
 
-    const personTracker = await render("mushroom-addition-custom-card-person-tracker", {
-      type: "custom:mushroom-addition-custom-card-person-tracker",
-      entity: "person.joris",
-      ulm_custom_card_person_tracker_use_entity_picture: true,
-      icon_type: "icon",
-    });
-    expect(personTracker).toContain("person-tracker-avatar");
-    expect(personTracker).not.toContain("has-picture");
-  });
-
-  it("normalizes hidden legacy tags to their unified component variant", async () => {
-    const markup = await render("mushroom-addition-custom-card-person-info-small", {
-      type: "custom:mushroom-addition-custom-card-person-info-small",
-      entity: "person.joris",
-    });
-    expect(markup).toContain("variant-small");
-    expect(markup).toContain("is-compact");
-  });
-
-  it("renders source-specific full and small Person Info compositions", async () => {
-    const config = {
-      entity: "person.joris",
-      ulm_card_person_use_entity_picture: true,
-      ulm_card_person_battery_entity: "sensor.battery",
-      ulm_card_person_driving_entity: "binary_sensor.driving",
-      ulm_address: "sensor.person_address",
-    };
-    const full = await render("mushroom-addition-custom-card-person-info", {
-      type: "custom:mushroom-addition-custom-card-person-info",
-      ...config,
-      ulm_card_person_commute_entity: "sensor.commute",
-    });
-    const small = await render("mushroom-addition-custom-card-person-info-small", {
-      type: "custom:mushroom-addition-custom-card-person-info-small",
-      ...config,
-    });
-    expect(full).toContain("custom-person-info");
-    expect(full).toContain("person-info-details");
-    expect(full).toContain("24 min");
-    expect(small).toContain("custom-person-info-small");
-    expect(small).toContain("person-info-small-battery");
-    expect(small).toContain("Home");
-    expect(small).not.toContain("person-info-details");
-  });
-
-  it("uses the battery entity for the small Person Info default hold action", async () => {
-    const element = document.createElement("mushroom-addition-custom-card-person-info-small") as HTMLElement & {
-      hass: HomeAssistant;
-      setConfig(config: AdditionConfig): void;
-      updateComplete: Promise<boolean>;
-      shadowRoot: ShadowRoot;
-    };
-    element.hass = hass;
-    element.setConfig({
-      type: "custom:mushroom-addition-custom-card-person-info-small",
-      entity: "person.joris",
-      ulm_card_person_battery_entity: "sensor.battery",
-    });
-    document.body.append(element);
-    await element.updateComplete;
-    const action = vi.fn();
-    element.addEventListener("hass-action", action);
-    const surface = element.shadowRoot.querySelector(".action-surface") as HTMLElement;
-    surface.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
-    await new Promise((resolve) => window.setTimeout(resolve, 525));
-    surface.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
-    expect(action).toHaveBeenCalledWith(expect.objectContaining({
-      detail: expect.objectContaining({
-        action: "hold",
-        config: expect.objectContaining({ entity: "sensor.battery" }),
-      }),
-    }));
-    element.remove();
   });
 
   it("renders Bar Card as a compact header and 35px progress bar without graph regions", async () => {
@@ -496,7 +423,6 @@ describe("family renderers", () => {
 
   it.each([
     ["card_battery", "mushroom-addition-card-battery", "sensor.battery", "ulm-default-battery", "battery-track"],
-    ["card_cover", "mushroom-addition-card-cover", "cover.blind", "ulm-cover", "sparkline"],
     ["card_graph", "mushroom-addition-card-graph", "sensor.power", "ulm-default-graph", "ulm-light-slider"],
     ["card_media_player", "mushroom-addition-card-media-player", "media_player.tv", "ulm-media", "sparkline"],
     ["card_room", "mushroom-addition-card-room", "light.kitchen", "ulm-room", "sparkline"],
@@ -600,23 +526,11 @@ describe("family renderers", () => {
       element.remove();
   });
 
-  it("does not render service controls for incompatible entity domains", async () => {
-    const markup = await render("mushroom-addition-card-cover", {
-      type: "custom:mushroom-addition-card-cover",
-      entity: "sensor.power",
-      show_controls: true,
-      ulm_card_cover_enable_slider: true,
-    });
-    expect(markup).not.toContain("ulm-control");
-    expect(markup).not.toContain("ulm-light-slider");
-  });
-
   it.each([
     ["scene", "mushroom-addition-card-scenes", "scene.relax", "scene-grid"],
     ["battery", "mushroom-addition-card-battery", "sensor.battery", "ulm-default-battery"],
     ["energy", "mushroom-addition-card-graph", "sensor.power", "sparkline"],
     ["media", "mushroom-addition-card-media-player", "media_player.tv", "ulm-media"],
-    ["cover", "mushroom-addition-card-cover", "cover.blind", "ulm-controls"],
   ])("renders distinct %s markup", async (_family, tag, entity, marker) => {
     const item = CATALOG.find((entry) => entry.tag === tag)!;
     const markup = await render(tag, {
@@ -830,9 +744,7 @@ describe("family renderers", () => {
     ["tablet", "sensor.battery", "custom-tablet", "tablet-header"],
     ["pollen-forecast", "sensor.power", "custom-pollen-forecast", "pollen-icon"],
     ["welcome-dashboard", "person.joris", "custom-welcome-dashboard", "welcome-dashboard-message"],
-    ["person-info", "person.joris", "custom-person-info", "person-info-details"],
     ["playstation", "media_player.tv", "custom-console-card", "console-content"],
-    ["person-tracker", "person.joris", "custom-person-tracker", "person-tracker-main"],
     ["scenes", "scene.relax", "ulm-scenes", "scene-grid"],
     ["vehicle-status", "sensor.power", "custom-vehicle-status", "car-metrics"],
     ["plant", "sensor.power", "custom-plant", "flower-bars"],

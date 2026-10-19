@@ -2,6 +2,7 @@ import { PARITY_BY_ID } from "./parity.generated";
 import type { AdditionConfig, CatalogItem, HassEntity, HomeAssistant } from "./types";
 import { supportedUpstreamOption } from "./supported-options";
 import { defaultWasteStreams } from "./waste-streams";
+import { resolveSonosControlEntities } from "./sonos-controls";
 
 const defaultIcons: Array<[RegExp, string]> = [
   [/input_boolean/, "mdi:toggle-switch"],
@@ -105,6 +106,8 @@ export const populatedDefaultsFor = (
           thermostat_temp_step: 0.5,
           low_battery_threshold: 20,
         }
+      : item.upstreamId === "custom_card_media_player_sonos"
+        ? resolveSonosControlEntities(hass, entityId)
       : item.upstreamId === "custom_card_room_overview"
           ? {
             ulm_card_room_overview_light_icon_on: "mdi:lightbulb",
@@ -144,16 +147,7 @@ export const populatedDefaultsFor = (
                     icon: "mdi:sony-playstation",
                     show_controls: false,
                   }
-                  : item.upstreamId === "custom_card_person_tracker"
-                      ? {
-                        ulm_custom_card_person_tracker_use_entity_picture: false,
-                        ulm_custom_card_person_tracker_use_badge: true,
-                        ulm_custom_card_person_tracker_map_enable: false,
-                        ulm_custom_card_person_tracker_map_aspect_ratio: "466:200",
-                        ulm_custom_card_person_tracker_map_hours_to_show: 0,
-                        ulm_custom_card_person_tracker_map_default_zoom: 11,
-                      }
-                      : item.upstreamId === "custom_card_pollen"
+                  : item.upstreamId === "custom_card_pollen"
                         ? {
                           icon: undefined,
                           show_state: false,
@@ -171,7 +165,6 @@ export const populatedDefaultsFor = (
                             : {};
   const sourceDrivenIcon = new Set([
     "card_battery",
-    "card_cover",
     "custom_card_pollen",
   ]).has(item.upstreamId);
   return {

@@ -106,42 +106,6 @@
       "unavailableIntegrations": [
         "The mapped switch has no brightness attribute and no input_select.ordres_fil_pilote equivalent was supplied; live rendering would show Unavailable while the source brightness thresholds and dedicated more-info target are certified locally."
       ]
-    },
-    "custom_card_person_tracker": {
-      "config": {
-        "entity": "person.joris",
-        "ulm_custom_card_person_tracker_use_entity_picture": true,
-        "ulm_custom_card_person_tracker_use_badge": true,
-        "battery_entity": "sensor.joris_mobile_battery_level"
-      },
-      "interactions": [
-        {
-          "surface": "card surface",
-          "payload": {
-            "event": "hass-action",
-            "action": "tap",
-            "config": {
-              "entity": "person.joris",
-              "tap_action": {
-                "action": "more-info"
-              }
-            }
-          }
-        },
-        {
-          "surface": "find-device button",
-          "payload": [
-            "homeassistant",
-            "toggle",
-            {
-              "entity_id": "script.find_joris_phone"
-            }
-          ]
-        }
-      ],
-      "unavailableIntegrations": [
-        "No driving sensor, find-device script, paired light/dark static-map cameras, or zone list was supplied by the live mapping; those optional states and payloads are certified locally."
-      ]
     }
   }
 }

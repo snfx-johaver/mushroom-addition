@@ -89,11 +89,6 @@ describe("shared card behavior", () => {
       show_icon: false,
       icon_type: "icon",
     }).icon_type).toBe("icon");
-    expect(normalizeConfig({
-      type: "custom:mushroom-addition-custom-card-person-tracker",
-      ulm_custom_card_person_tracker_use_entity_picture: true,
-      icon_type: "icon",
-    }).icon_type).toBe("icon");
   });
 
   it("migrates legacy primary entity fields without retaining duplicates", () => {
