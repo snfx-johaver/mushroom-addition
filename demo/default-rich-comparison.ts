@@ -136,7 +136,7 @@ for (const spec of specs) {
         <div class="column-label">Pinned upstream reference</div>
         <div class="reference-crop" style="height:${Math.round(height * scale)}px">
           <img alt="${spec.id} pinned upstream crop"
-            src="/.tmp-ui-minimalist/docs/assets/img/ulm_cards/${spec.reference}"
+            src="/.tmp-reference-catalog/docs/assets/img/ulm_cards/${spec.reference}"
             style="left:${-x * scale}px;top:${-y * scale}px;transform:scale(${scale})">
         </div>
       </div>

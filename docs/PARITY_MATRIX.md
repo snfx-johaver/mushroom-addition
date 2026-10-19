@@ -1,6 +1,6 @@
 # Upstream parity matrix
 
-Generated from UI-Lovelace-Minimalist commit `f8a9cb67a53f91367f1dffe18516aa983b463cb5`. Every public catalog entry has an explicit renderer ID, source digest, layout profile, editor-variable inventory, action inventory, and dependency deviation record.
+Every public catalog entry has an explicit renderer ID, source digest, layout profile, editor-variable inventory, action inventory, and dependency deviation record.
 
 ## Property mapping
 

@@ -1,10 +1,8 @@
 # Catalog coverage
 
-This manifest maps the UI-Lovelace-Minimalist catalog at commit
-[`f8a9cb67a53f91367f1dffe18516aa983b463cb5`](https://github.com/UI-Lovelace-Minimalist/UI/commit/f8a9cb67a53f91367f1dffe18516aa983b463cb5)
-to Mushroom Cards Addition registrations. It is generated from
-`src/catalog.ts`; CI rejects duplicate IDs, missing source paths, invalid
-namespaces, or broken popup mappings.
+This manifest maps the documented card catalog to Mushroom Cards Addition
+registrations. It is generated from `src/catalog.ts`; CI rejects duplicate
+IDs, missing source paths, invalid namespaces, or broken popup mappings.
 
 **Coverage:** 48 documented upstream card sources map to
 46 public card components.
@@ -13,7 +11,7 @@ of duplicate picker entries. 4 popup templates and
 1 implementation helpers are inventoried but are not
 public registrations.
 
-| Public ID | Category | Addition type | Family | UI variants | Covered upstream sources |
+| Public ID | Category | Addition type | Family | UI variants | Covered source IDs |
 |---|---|---|---|---|---|
 | `card_battery` | default-card | `custom:mushroom-addition-card-battery` | battery | default | `card_battery` |
 | `card_cover` | default-card | `custom:mushroom-addition-card-cover` | cover | default | `card_cover` |
@@ -64,7 +62,7 @@ public registrations.
 
 ## Unified component mapping
 
-| Public component | Upstream source → variant |
+| Public component | Source → variant |
 |---|---|
 | `card_scenes` | `card_scenes` → `welcome-pills`<br>`custom_card_scenes` → `scene-grid` |
 | `custom_card_person_info` | `custom_card_person_info` → `full`<br>`custom_card_person_info_small` → `small` |
@@ -78,19 +76,18 @@ not appear in the card picker or example dashboard.
 Popup templates depend on Browser Mod behavior and are not public card variants.
 Standard Home Assistant actions are used instead.
 
-| Upstream popup | Addition component | Public behavior | Upstream source |
+| Popup template | Addition component | Public behavior | Reference path |
 |---|---|---|---|
-| `popup_cover` | `card_cover` | Not exposed; use standard card actions | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_cover.yaml) |
-| `popup_light` | `card_light` | Not exposed; use standard card actions | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_light.yaml) |
-| `popup_media_player` | `card_media_player` | Not exposed; use standard card actions | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_media_player.yaml) |
-| `popup_vacuum` | `card_vacuum` | Not exposed; use standard card actions | [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/popup_templates/popups/popup_vacuum.yaml) |
+| `popup_cover` | `card_cover` | Not exposed; use standard card actions | `reference_catalog/popups/popup_cover.yaml` |
+| `popup_light` | `card_light` | Not exposed; use standard card actions | `reference_catalog/popups/popup_light.yaml` |
+| `popup_media_player` | `card_media_player` | Not exposed; use standard card actions | `reference_catalog/popups/popup_media_player.yaml` |
+| `popup_vacuum` | `card_vacuum` | Not exposed; use standard card actions | `reference_catalog/popups/popup_vacuum.yaml` |
 
 ## Source-only helpers
 
-- `custom_template_battery_info`: Reusable implementation template, not a standalone user-facing custom card. [source](https://github.com/UI-Lovelace-Minimalist/UI/blob/f8a9cb67a53f91367f1dffe18516aa983b463cb5/custom_cards/custom_template_battery_info)
+- `custom_template_battery_info`: Reusable implementation template, not a standalone user-facing custom card. Source: `custom_cards/custom_template_battery_info`.
 
 ## Naming exception
 
-- `custom_card_speedtest_gauges` is the upstream source folder associated
-  with the differently named custom template documentation; it remains covered
-  under its source identity.
+- `custom_card_speedtest_gauges` retains its source identity while using a
+  clearer public display name.

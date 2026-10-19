@@ -42,15 +42,13 @@ const rows = VISUAL_AUDIT.map((entry) => {
 
 const markdown = `# Visual and interaction audit index
 
-This is the source-by-source acceptance ledger for the card-only
-UI-Lovelace-Minimalist catalog pinned at
-\`f8a9cb67a53f91367f1dffe18516aa983b463cb5\`.
+This is the source-by-source acceptance ledger for the card catalog.
 
 **Progress: ${progress.accepted}/${progress.total} fully E2E accepted. Stage totals — picker ${progress.pickerAccepted}, editor ${progress.editorAccepted}, visual ${progress.visualAccepted}, states ${progress.statesAccepted}, interactions ${progress.interactionsAccepted}, live ${progress.liveAccepted}.**
 
 An entry is fully accepted only when all six independent stages pass: picker,
 graphical editor, visual parity, state behavior, interactions, and live Home
-Assistant E2E. \`visualAccepted\` requires manual inspection of the upstream
+Assistant E2E. \`visualAccepted\` requires manual inspection of the reference
 source and a focused side-by-side artifact at the recorded theme and width.
 \`interactionsAccepted\` requires enumerating every visible source interaction
 and exercising it through click tests with exact Home Assistant payload
