@@ -158,11 +158,13 @@ export class MushroomAdditionEditor extends LitElement {
             </label>
             <label class="field">
               <span>Custom name</span>
-              <ha-textfield
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ text: {} }}
                 .value=${item.name ?? item.label ?? ""}
-                placeholder="Use entity name"
-                @input=${(event: Event) => this.updateItem(key, index, "name", (event.target as HTMLInputElement).value)}
-              ></ha-textfield>
+                @value-changed=${(event: CustomEvent) =>
+                  this.updateItem(key, index, "name", event.detail.value)}
+              ></ha-selector>
               <small>Text shown below the button. Change it independently for every button.</small>
             </label>
             <label class="field">
@@ -206,11 +208,13 @@ export class MushroomAdditionEditor extends LitElement {
             </label>
             <label class="field">
               <span>Active when state is</span>
-              <ha-textfield
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ text: {} }}
                 .value=${item.active_state ?? ""}
-                placeholder="For example: on"
-                @input=${(event: Event) => this.updateItem(key, index, "active_state", (event.target as HTMLInputElement).value)}
-              ></ha-textfield>
+                @value-changed=${(event: CustomEvent) =>
+                  this.updateItem(key, index, "active_state", event.detail.value)}
+              ></ha-selector>
               <small>Optional entity state that highlights this button as active.</small>
             </label>
             <label class="field">

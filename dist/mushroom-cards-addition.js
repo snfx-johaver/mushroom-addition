@@ -6680,11 +6680,12 @@ let Se = class extends me {
             </label>
             <label class="field">
               <span>Custom name</span>
-              <ha-textfield
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ text: {} }}
                 .value=${n.name ?? n.label ?? ""}
-                placeholder="Use entity name"
-                @input=${(l) => this.updateItem(e, s, "name", l.target.value)}
-              ></ha-textfield>
+                @value-changed=${(l) => this.updateItem(e, s, "name", l.detail.value)}
+              ></ha-selector>
               <small>Text shown below the button. Change it independently for every button.</small>
             </label>
             <label class="field">
@@ -6727,11 +6728,12 @@ let Se = class extends me {
             </label>
             <label class="field">
               <span>Active when state is</span>
-              <ha-textfield
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ text: {} }}
                 .value=${n.active_state ?? ""}
-                placeholder="For example: on"
-                @input=${(l) => this.updateItem(e, s, "active_state", l.target.value)}
-              ></ha-textfield>
+                @value-changed=${(l) => this.updateItem(e, s, "active_state", l.detail.value)}
+              ></ha-selector>
               <small>Optional entity state that highlights this button as active.</small>
             </label>
             <label class="field">
