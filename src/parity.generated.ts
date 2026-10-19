@@ -850,58 +850,6 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "abf5b29b835da6e7501c6229a49c7dffa6a3e7e83a351398a04878d3b2b04334"
   },
   {
-    "upstreamId": "custom_card_chromecast",
-    "sourcePath": "custom_cards/custom_card_chromecast",
-    "publicId": "custom_card_chromecast",
-    "rendererId": "custom_card_chromecast",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [
-      "icon",
-      "item1",
-      "item2",
-      "item3",
-      "state"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_card_media_player_with_controls_entity",
-        "defaultValue": "<documented/inherited>",
-        "selector": "entity"
-      },
-      {
-        "name": "ulm_card_media_player_with_controls_name",
-        "defaultValue": "\"No name set\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [
-      "media entity/services"
-    ],
-    "deviations": [],
-    "sourceDigest": "bb8f062dbddf46ec1d4763c55e6ef7bf625790e1bce8630632ff2d3730ce3721"
-  },
-  {
     "upstreamId": "custom_card_roomview",
     "sourcePath": "custom_cards/custom_card_roomview",
     "publicId": "custom_card_roomview",

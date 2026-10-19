@@ -15,7 +15,6 @@ const states: HomeAssistant["states"] = {
   "sensor.ping": { entity_id: "sensor.ping", state: "24", attributes: { friendly_name: "Ping", unit_of_measurement: "ms" } },
   "sensor.upload": { entity_id: "sensor.upload", state: "17.19", attributes: { friendly_name: "Upload", unit_of_measurement: "Mbit/s" } },
   "camera.driveway": { entity_id: "camera.driveway", state: "streaming", attributes: { friendly_name: "Driveway", entity_picture: "/api/camera_proxy/camera.driveway" } },
-  "media_player.chromecast": { entity_id: "media_player.chromecast", state: "playing", attributes: { friendly_name: "Chromecast" } },
   "sensor.power": { entity_id: "sensor.power", state: "2577.8", attributes: { friendly_name: "Power", unit_of_measurement: "W", history: [120, 100, 1900] } },
 };
 
@@ -60,16 +59,7 @@ describe("first pending custom batch certification", () => {
         ["input_datetime", "set_datetime", { entity_id: "input_datetime.alarm", time: "08:45:00" }],
       ],
     });
-    expect(evidence.browserInteractions.custom_card_chromecast).toMatchObject({
-      controlsClicked: 3,
-      serviceCalls: [
-        ["media_player", "toggle", { entity_id: "media_player.chromecast" }],
-        ["media_player", "media_play_pause", { entity_id: "media_player.chromecast" }],
-        ["media_player", "toggle", { entity_id: "media_player.chromecast" }],
-      ],
-    });
     expect(evidence.geometry.custom_card_camera.width).toBe(250);
-    expect(evidence.geometry.custom_card_chromecast.width).toBe(608);
   });
 
   it("provides source-specific picker defaults and graphical editor fields", () => {
@@ -77,7 +67,6 @@ describe("first pending custom batch certification", () => {
       "custom_card_trash",
       "custom_card_alarm_time",
       "custom_card_camera",
-      "custom_card_chromecast",
     ]) {
       const descriptor = item(id);
       const constructor = customElements.get(descriptor.tag) as typeof HTMLElement & {
@@ -181,31 +170,6 @@ describe("first pending custom batch certification", () => {
     expect(imageOnly.shadowRoot.querySelector(".camera-overlay")).toBeNull();
     expect(imageOnly.shadowRoot.querySelector(".camera-media")?.getAttribute("style")).toContain("height:320px");
     expect(imageOnly.shadowRoot.querySelector("img")).not.toBeNull();
-  });
-
-  it("makes all Chromecast controls functional and disables unavailable controls", async () => {
-    const callService = vi.fn(async () => undefined);
-    const config: AdditionConfig = {
-      type: "custom:mushroom-addition-custom-card-chromecast",
-      entity: "media_player.chromecast",
-    };
-    const card = await renderCard("mushroom-addition-custom-card-chromecast", config, states, callService);
-    const controls = [...card.shadowRoot.querySelectorAll<HTMLButtonElement>(".chromecast-controls button")];
-    controls.forEach((control) => control.click());
-    expect(callService.mock.calls).toEqual([
-      ["media_player", "toggle", { entity_id: "media_player.chromecast" }],
-      ["media_player", "media_play_pause", { entity_id: "media_player.chromecast" }],
-      ["media_player", "toggle", { entity_id: "media_player.chromecast" }],
-    ]);
-    expect((controls[1].querySelector("ha-icon") as HTMLElement & { icon: string }).icon).toBe("mdi:pause");
-    card.remove();
-
-    const unavailable = await renderCard("mushroom-addition-custom-card-chromecast", config, {
-      ...states,
-      "media_player.chromecast": { ...states["media_player.chromecast"], state: "unavailable" },
-    });
-    expect([...unavailable.shadowRoot.querySelectorAll<HTMLButtonElement>(".chromecast-controls button")]
-      .every((control) => control.disabled)).toBe(true);
   });
 
 });

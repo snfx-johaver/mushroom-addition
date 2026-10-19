@@ -453,7 +453,7 @@ const helpers: Record<string, string> = {
   ulm_custom_card_camera_name: "Legacy camera name. Use Custom name for new cards.",
   ulm_custom_card_camera_label: "Legacy camera state label. Use Show state for new cards.",
   ulm_custom_card_camera_aspect_ratio: "Legacy image ratio. Use Aspect ratio for new cards.",
-  ulm_card_media_player_with_controls_name: "Friendly name shown for the Chromecast or media player.",
+  ulm_card_media_player_with_controls_name: "Friendly name shown for the media player.",
   temperature: "Temperature sensor shown in the RoomView header.",
   humidity: "Humidity sensor shown in the RoomView header.",
   group_lights: "Named Home Assistant group containing the room lights.",

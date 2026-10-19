@@ -527,9 +527,6 @@ export const sharedStyles = css`
   }
   .alarm-time-controls > b { text-align: center; font-size: 18px; }
   .custom-alarm-time.is-horizontal { grid-template-columns: minmax(0, 1fr) minmax(180px, 1fr); align-items: center; }
-  .custom-chromecast { display: grid; gap: 16px; padding: 12px; }
-  .chromecast-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .chromecast-controls .ulm-control { width: 100%; height: 48px; border-radius: 16px; }
   .custom-room-view { display: grid; min-height: 150px; gap: 8px; padding: 12px; }
   .room-view-summary { display: flex; align-items: center; gap: 10px; }
   .room-view-summary > span:last-child { display: flex; flex-direction: column; gap: 6px; color: var(--secondary-text-color); }

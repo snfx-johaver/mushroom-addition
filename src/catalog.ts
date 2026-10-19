@@ -7,7 +7,7 @@ const baseCards = [
 ] as const;
 
 const customCards = [
-  "trash", "alarm_time", "bar_card", "camera", "chromecast",
+  "trash", "alarm_time", "bar_card", "camera",
   "roomview",
   "room_overview", "welcome",
   "washer", "sun",
@@ -42,7 +42,7 @@ const familyFor = (id: string): string => {
   if (/weather|sun|pollen|moon/.test(id)) return "weather";
   if (/scene/.test(id)) return "scene";
   if (/person|tracker|tracer|presence|room|welcome/.test(id)) return "presence";
-  if (/media|chromecast|playstation/.test(id)) return "media";
+  if (/media|playstation/.test(id)) return "media";
   if (/thermostat|heat_pump|aircondition|temperature|simple_temp/.test(id)) return "climate";
   if (/cover|door|garage/.test(id)) return "cover";
   if (/vacuum/.test(id)) return "vacuum";
@@ -78,7 +78,7 @@ const preferredDomainsFor = (id: string, family: string): string[] => {
   if (id.includes("input_number")) return ["input_number", "counter", "select", "input_select"];
   if (id.includes("input_datetime")) return ["input_datetime"];
   if (id.includes("light")) return ["light"];
-  if (/media|chromecast|playstation/.test(id)) return ["media_player", "sensor"];
+  if (/media|playstation/.test(id)) return ["media_player", "sensor"];
   if (/thermostat|heat_pump|aircondition/.test(id)) return ["climate"];
   if (/scene/.test(id)) return ["scene"];
   if (/script/.test(id)) return ["script"];

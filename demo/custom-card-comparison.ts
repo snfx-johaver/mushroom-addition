@@ -46,7 +46,7 @@ const states: HomeAssistant["states"] = {
   "sensor.download": { entity_id: "sensor.download", state: "273.07", attributes: { friendly_name: "Download", unit_of_measurement: "Mbit/s", history: [190, 220, 280, 260, 245, 272, 270, 276] } },
   "sensor.ping": { entity_id: "sensor.ping", state: "24", attributes: { friendly_name: "Ping", unit_of_measurement: "ms", history: [35, 31, 28, 27, 24, 24, 23, 24] } },
   "sensor.upload": { entity_id: "sensor.upload", state: "17.19", attributes: { friendly_name: "Upload", unit_of_measurement: "Mbit/s", history: [19, 17, 17.5, 16, 15, 16, 17, 17.19] } },
-  "media_player.chromecast": { entity_id: "media_player.chromecast", state: "off", attributes: { friendly_name: "Chromecast" } },
+  "media_player.television": { entity_id: "media_player.television", state: "off", attributes: { friendly_name: "Television" } },
   "camera.driveway": { entity_id: "camera.driveway", state: "streaming", attributes: {
     friendly_name: "Driveway",
     entity_picture: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='360'%3E%3Crect width='640' height='360' fill='%233b5266'/%3E%3Cpath d='M0 280L180 150L320 245L470 100L640 250V360H0Z' fill='%236b8798'/%3E%3Ccircle cx='520' cy='72' r='34' fill='%23f3d27a'/%3E%3C/svg%3E",
@@ -68,7 +68,7 @@ const states: HomeAssistant["states"] = {
   "group.room_motions": { entity_id: "group.room_motions", state: "on", attributes: { friendly_name: "Room motions", entity_id: ["binary_sensor.room_motion"] } },
   "group.room_doors": { entity_id: "group.room_doors", state: "off", attributes: { friendly_name: "Room doors", entity_id: ["binary_sensor.front_door"] } },
   "group.room_outlets": { entity_id: "group.room_outlets", state: "on", attributes: { friendly_name: "Room outlets", entity_id: ["switch.outlet"] } },
-  "group.room_tv": { entity_id: "group.room_tv", state: "off", attributes: { friendly_name: "Room TV", entity_id: ["media_player.chromecast"] } },
+  "group.room_tv": { entity_id: "group.room_tv", state: "off", attributes: { friendly_name: "Room TV", entity_id: ["media_player.television"] } },
   "group.room_shutters": { entity_id: "group.room_shutters", state: "closed", attributes: { friendly_name: "Room shutters", entity_id: ["cover.room"] } },
   "cover.room": { entity_id: "cover.room", state: "closed", attributes: { friendly_name: "Room cover" } },
   "switch.washer": { entity_id: "switch.washer", state: "on", attributes: { friendly_name: "Washing machine" } },
@@ -250,7 +250,6 @@ const fixtures: Fixture[] = [
   },
   { id: "alarm-time", entity: "input_boolean.alarm", config: { datetime_entity: "input_datetime.alarm", ulm_card_alarm_time_step: 15 } },
   { id: "camera", entity: "camera.driveway", reference: "screenshot_custom_camera1.png", width: 250, config: { name: "Driveway", show_name: true, show_state: true, aspect_ratio: "16:9", fit_mode: "cover" } },
-  { id: "chromecast", entity: "media_player.chromecast", reference: "chromecast.png", width: 608 },
   { id: "roomview", entity: "", reference: "custom_card_roomview_1.png", width: 320, config: {
     icon: "mdi:home-variant-outline",
     group_lights: "group.room_lights",

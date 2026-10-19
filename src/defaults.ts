@@ -14,7 +14,7 @@ const defaultIcons: Array<[RegExp, string]> = [
   [/weather/, "mdi:weather-partly-cloudy"],
   [/battery/, "mdi:battery"],
   [/person|presence|tracker|tracer/, "mdi:account"],
-  [/media|chromecast/, "mdi:play-circle"],
+  [/media/, "mdi:play-circle"],
   [/playstation/, "mdi:sony-playstation"],
   [/scene/, "mdi:palette"],
   [/alarm|lock/, "mdi:shield-lock"],

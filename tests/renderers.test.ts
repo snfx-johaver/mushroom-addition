@@ -546,7 +546,6 @@ describe("family renderers", () => {
   it.each([
     ["trash", "sensor.power", "custom-waste-card", "waste-grid"],
     ["alarm-time", "input_boolean.alarm", "custom-alarm-time", "alarm-time-controls"],
-    ["chromecast", "media_player.tv", "custom-chromecast", "chromecast-controls"],
     ["roomview", "sensor.temperature", "custom-room-view", "room-view-actions"],
     ["welcome", "person.joris", "custom-welcome", "welcome-items"],
     ["washer", "switch.washer", "custom-washer", "washer-stages"],
@@ -782,7 +781,7 @@ describe("family renderers", () => {
           : source.upstreamId.includes("weather") ? "weather.home"
             : source.upstreamId.includes("thermostat") || source.upstreamId.includes("aircondition") ? "climate.living"
               : source.upstreamId.includes("light") ? "light.kitchen"
-                : source.upstreamId.includes("media") || source.upstreamId.includes("playstation") || source.upstreamId.includes("chromecast") ? "media_player.tv"
+                : source.upstreamId.includes("media") || source.upstreamId.includes("playstation") ? "media_player.tv"
                   : "sensor.power",
         entities: ["sensor.power", "sensor.battery", "light.kitchen", "scene.relax"],
         show_controls: true,
