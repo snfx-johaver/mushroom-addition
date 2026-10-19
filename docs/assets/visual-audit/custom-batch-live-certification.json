@@ -10,7 +10,7 @@
     "dashboardBackupSuffix": "20260923-222142"
   },
   "results": {
-    "custom_card_afvalophaling": {
+    "custom_card_trash": {
       "live": true,
       "geometry": {
         "width": 330,
@@ -95,7 +95,7 @@
       ],
       "physicalMediaControlsNotOperatedLive": true
     },
-    "custom_card_damix48_power_details": {
+    "custom_card_power_details": {
       "live": true,
       "geometry": {
         "width": 330,

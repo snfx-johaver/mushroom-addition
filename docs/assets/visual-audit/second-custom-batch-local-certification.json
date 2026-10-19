@@ -8,37 +8,37 @@
       "width": 320,
       "height": 64,
       "scrollWidth": 320,
-      "regions": { ".tracker-badge": 2, ".device-tracker-icon": 1 }
+      "regions": {
+        ".tracker-badge": 2,
+        ".device-tracker-icon": 1
+      }
     },
-    "custom_card_drealine_roomview": {
+    "custom_card_roomview": {
       "width": 320,
       "height": 166,
       "scrollWidth": 320,
-      "regions": { ".room-view-actions button": 4, ".room-view-status button": 1 }
+      "regions": {
+        ".room-view-actions button": 4,
+        ".room-view-status button": 1
+      }
     },
-    "custom_card_eraycetinay_elapsed_time": {
-      "width": 320,
-      "height": 80,
-      "scrollWidth": 320,
-      "regions": { ".custom-elapsed-time": 1, ".ulm-label": 1 }
-    },
-    "custom_card_eraycetinay_lock": {
-      "width": 320,
-      "height": 66,
-      "scrollWidth": 320,
-      "regions": { ".eray-lock-control": 1, ".battery-badge": 1 }
-    },
-    "custom_card_esh_room": {
+    "custom_card_room_overview": {
       "width": 320,
       "height": 113,
       "scrollWidth": 320,
-      "regions": { ".esh-room-control": 2, ".esh-room-controls": 1 }
+      "regions": {
+        ".room-overview-control": 2,
+        ".room-overview-controls": 1
+      }
     },
-    "custom_card_esh_welcome": {
+    "custom_card_welcome": {
       "width": 420,
       "height": 223,
       "scrollWidth": 420,
-      "regions": { ".esh-welcome-items button": 5, ".esh-welcome-toolbar button": 3 }
+      "regions": {
+        ".welcome-items button": 5,
+        ".welcome-toolbar button": 3
+      }
     }
   },
   "browserInteractions": {
@@ -46,55 +46,136 @@
       "controlsClicked": 1,
       "serviceCalls": [],
       "cardActions": [
-        { "action": "tap", "entity": "device_tracker.phone", "tap_action": { "action": "more-info" } }
+        {
+          "action": "tap",
+          "entity": "device_tracker.phone",
+          "tap_action": {
+            "action": "more-info"
+          }
+        }
       ]
     },
-    "custom_card_drealine_roomview": {
+    "custom_card_roomview": {
       "controlsClicked": 4,
       "serviceCalls": [],
       "cardActions": [
-        { "action": "tap", "entity": "group.room_lights", "tap_action": { "action": "toggle" } },
-        { "action": "tap", "entity": "group.room_shutters", "tap_action": { "action": "toggle" } },
-        { "action": "tap", "entity": "group.room_outlets", "tap_action": { "action": "toggle" } },
-        { "action": "tap", "entity": "group.room_tv", "tap_action": { "action": "toggle" } }
+        {
+          "action": "tap",
+          "entity": "group.room_lights",
+          "tap_action": {
+            "action": "toggle"
+          }
+        },
+        {
+          "action": "tap",
+          "entity": "group.room_shutters",
+          "tap_action": {
+            "action": "toggle"
+          }
+        },
+        {
+          "action": "tap",
+          "entity": "group.room_outlets",
+          "tap_action": {
+            "action": "toggle"
+          }
+        },
+        {
+          "action": "tap",
+          "entity": "group.room_tv",
+          "tap_action": {
+            "action": "toggle"
+          }
+        }
       ]
     },
-    "custom_card_eraycetinay_elapsed_time": {
-      "controlsClicked": 1,
+    "custom_card_room_overview": {
+      "controlsClicked": 2,
       "serviceCalls": [],
       "cardActions": [
-        { "action": "tap", "entity": "input_datetime.cat_litter", "tap_action": { "action": "more-info" } }
+        {
+          "action": "tap",
+          "entity": "light.room",
+          "tap_action": {
+            "action": "toggle"
+          }
+        },
+        {
+          "action": "tap",
+          "entity": "cover.room",
+          "tap_action": {
+            "action": "toggle"
+          }
+        }
       ]
     },
-    "custom_card_eraycetinay_lock": {
-      "controlsClicked": 2,
-      "serviceCalls": [
-        ["lock", "unlock", { "entity_id": "lock.front_door" }],
-        ["lock", "open", { "entity_id": "lock.front_door" }]
-      ],
-      "cardActions": []
-    },
-    "custom_card_esh_room": {
-      "controlsClicked": 2,
-      "serviceCalls": [],
-      "cardActions": [
-        { "action": "tap", "entity": "light.room", "tap_action": { "action": "toggle" } },
-        { "action": "tap", "entity": "cover.room", "tap_action": { "action": "toggle" } }
-      ]
-    },
-    "custom_card_esh_welcome": {
+    "custom_card_welcome": {
       "controlsClicked": 8,
       "serviceCalls": [
-        ["input_boolean", "toggle", { "entity_id": "input_boolean.welcome_toggle" }]
+        [
+          "input_boolean",
+          "toggle",
+          {
+            "entity_id": "input_boolean.welcome_toggle"
+          }
+        ]
       ],
       "cardActions": [
-        { "action": "tap", "entity": "weather.home", "tap_action": { "action": "more-info" } },
-        { "action": "tap", "entity": "person.lewis", "tap_action": { "action": "navigate", "navigation_path": "/config/dashboard" } },
-        { "action": "tap", "entity": "person.lewis", "tap_action": { "action": "navigate", "navigation_path": "house" } },
-        { "action": "tap", "entity": "person.lewis", "tap_action": { "action": "navigate", "navigation_path": "lights" } },
-        { "action": "tap", "entity": "person.lewis", "tap_action": { "action": "navigate", "navigation_path": "security" } },
-        { "action": "tap", "entity": "person.lewis", "tap_action": { "action": "navigate", "navigation_path": "climate" } },
-        { "action": "tap", "entity": "person.lewis", "tap_action": { "action": "navigate", "navigation_path": "network" } }
+        {
+          "action": "tap",
+          "entity": "weather.home",
+          "tap_action": {
+            "action": "more-info"
+          }
+        },
+        {
+          "action": "tap",
+          "entity": "person.lewis",
+          "tap_action": {
+            "action": "navigate",
+            "navigation_path": "/config/dashboard"
+          }
+        },
+        {
+          "action": "tap",
+          "entity": "person.lewis",
+          "tap_action": {
+            "action": "navigate",
+            "navigation_path": "house"
+          }
+        },
+        {
+          "action": "tap",
+          "entity": "person.lewis",
+          "tap_action": {
+            "action": "navigate",
+            "navigation_path": "lights"
+          }
+        },
+        {
+          "action": "tap",
+          "entity": "person.lewis",
+          "tap_action": {
+            "action": "navigate",
+            "navigation_path": "security"
+          }
+        },
+        {
+          "action": "tap",
+          "entity": "person.lewis",
+          "tap_action": {
+            "action": "navigate",
+            "navigation_path": "climate"
+          }
+        },
+        {
+          "action": "tap",
+          "entity": "person.lewis",
+          "tap_action": {
+            "action": "navigate",
+            "navigation_path": "network"
+          }
+        }
       ]
     }
   },
@@ -106,37 +187,25 @@
       "ulm_custom_card_device_tracker_tracker_1_entity": "device_tracker.joris_mobile",
       "ulm_custom_card_device_tracker_tracker_1_type": "gps"
     },
-    "custom_card_drealine_roomview": {
-      "type": "custom:mushroom-addition-custom-card-drealine-roomview",
+    "custom_card_roomview": {
+      "type": "custom:mushroom-addition-custom-card-roomview",
       "name": "Living room",
       "icon": "mdi:sofa",
       "group_lights": "light.living_room_color3",
       "temperature": "sensor.living_room_temperature_3",
       "humidity": "sensor.living_room_humidity_3"
     },
-    "custom_card_eraycetinay_elapsed_time": {
-      "type": "custom:mushroom-addition-custom-card-eraycetinay-elapsed-time",
-      "entity": "sensor.uptime",
-      "name": "Uptime",
-      "icon": "mdi:timer-sand"
-    },
-    "custom_card_eraycetinay_lock": {
-      "type": "custom:mushroom-addition-custom-card-eraycetinay-lock",
-      "entity": "lock.front_door_lock",
-      "ulm_custom_card_eraycetinay_lock_tap_control": false,
-      "ulm_custom_card_eraycetinay_lock_only_open": false
-    },
-    "custom_card_esh_room": {
-      "type": "custom:mushroom-addition-custom-card-esh-room",
+    "custom_card_room_overview": {
+      "type": "custom:mushroom-addition-custom-card-room-overview",
       "entity": "light.joris_iris_1",
       "name": "Office",
       "icon": "mdi:desk",
       "secondary": "Office",
-      "ulm_custom_card_esh_room_light_entity": "light.joris_iris_1",
+      "ulm_custom_card_room_overview_light_entity": "light.joris_iris_1",
       "ulm_card_dynamic_color": true
     },
-    "custom_card_esh_welcome": {
-      "type": "custom:mushroom-addition-custom-card-esh-welcome",
+    "custom_card_welcome": {
+      "type": "custom:mushroom-addition-custom-card-welcome",
       "entity": "person.joris",
       "name": "Joris",
       "ulm_weather": "weather.hcn_ha"

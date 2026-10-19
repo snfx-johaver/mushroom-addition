@@ -22,23 +22,6 @@
       ],
       "artifact": "docs/assets/visual-audit/card_person-comparison.png"
     },
-    "card_power_outlet": {
-      "liveConfig": {
-        "entity": "switch.cv_plug",
-        "consumption_entity": "sensor.cv_plug_power"
-      },
-      "visibleInteractions": [
-        {
-          "surface": "card",
-          "gesture": "tap",
-          "payload": {
-            "action": "more-info",
-            "entity": "switch.cv_plug"
-          }
-        }
-      ],
-      "artifact": "docs/assets/visual-audit/card_power_outlet-comparison.png"
-    },
     "card_room": {
       "liveConfig": {
         "entity": "light.joris_iris_1",
@@ -148,71 +131,6 @@
         }
       ],
       "artifact": "docs/assets/visual-audit/card_scenes-comparison.png"
-    },
-    "card_script": {
-      "liveConfig": {
-        "entity": "script.welcome_home_briefing"
-      },
-      "visibleInteractions": [
-        {
-          "surface": "card",
-          "gesture": "tap",
-          "payload": {
-            "action": "more-info",
-            "entity": "script.welcome_home_briefing"
-          }
-        }
-      ],
-      "artifact": "docs/assets/visual-audit/card_script-comparison.png"
-    },
-    "card_thermostat": {
-      "liveConfig": {
-        "entity": "climate.living_room"
-      },
-      "visibleInteractions": [
-        {
-          "control": "temperature decrease/increase",
-          "service": "climate.set_temperature",
-          "data": {
-            "entity_id": "climate.living_room",
-            "temperature": "<current target plus or minus configured step>"
-          }
-        },
-        {
-          "control": "dual setpoint decrease/increase",
-          "service": "climate.set_temperature",
-          "data": {
-            "entity_id": "climate.living_room",
-            "target_temp_low": "<adjusted low>",
-            "target_temp_high": "<adjusted high respecting minimum spread>"
-          }
-        },
-        {
-          "control": "HVAC mode",
-          "service": "climate.set_hvac_mode",
-          "data": {
-            "entity_id": "climate.living_room",
-            "hvac_mode": "<visible supported mode>"
-          }
-        },
-        {
-          "control": "external fan",
-          "service": "fan.toggle",
-          "data": {
-            "entity_id": "<fan_entity>"
-          },
-          "visibility": "only when fan_entity is configured and fan_only is unsupported"
-        },
-        {
-          "surface": "card",
-          "gesture": "tap",
-          "payload": {
-            "action": "more-info",
-            "entity": "climate.living_room"
-          }
-        }
-      ],
-      "artifact": "docs/assets/visual-audit/card_thermostat-comparison.png"
     }
   }
 }

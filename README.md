@@ -3,13 +3,12 @@
 [![CI](https://github.com/snfx-johaver/mushroom-cards-addition/actions/workflows/ci.yml/badge.svg)](https://github.com/snfx-johaver/mushroom-cards-addition/actions/workflows/ci.yml)
 
 Mushroom Cards Addition is a HACS-installable Home Assistant frontend plugin
-providing UI-configurable Lit implementations of the user-facing
-UI-Lovelace-Minimalist card catalog. The layouts, state styling,
+providing UI-configurable additional Mushroom style cards. The layouts, state styling,
 controls, variables, and defaults are audited item-by-item while retaining a
 cohesive installation alongside Mushroom.
 
-The release traces **86 documented upstream card sources**—24 default cards and
-62 custom cards—to **79 public card components**. Same-goal aliases and compact or
+The release traces **48 documented upstream card sources**—11 default cards and
+37 custom cards—to **46 public card components**. Same-goal aliases and compact or
 layout alternatives are combined into clear graphical variants instead of
 duplicating picker entries. Every public component has a visual editor and
 remains YAML-configurable. See the
@@ -136,6 +135,5 @@ a pull request.
 
 ## License
 
-Mushroom Cards Addition is MIT licensed. UI-Lovelace-Minimalist is also MIT
-licensed and attributed in [THIRD_PARTY_NOTICES.md]. Mushroom and Home Assistant
+Mushroom Cards Addition is MIT licensed. Mushroom and Home Assistant
 are independent projects and trademarks of their respective owners.

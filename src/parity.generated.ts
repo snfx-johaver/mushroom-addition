@@ -121,211 +121,6 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "af55091a8c7e957582a315c1d6dc8dde0015681ce99c1abbc534e8abfe9b9372"
   },
   {
-    "upstreamId": "card_binary_sensor",
-    "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_binary_sensor.yaml",
-    "publicId": "card_binary_sensor",
-    "variant": "default",
-    "rendererId": "card_binary_sensor",
-    "layoutProfile": "card:button-card+popup",
-    "primitives": [
-      "button-card",
-      "popup"
-    ],
-    "customFields": [
-      "icon",
-      "item1",
-      "item2",
-      "label",
-      "state"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [],
-    "variables": [
-      {
-        "name": "ulm_active_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_binary_sensor_color",
-        "defaultValue": "\"blue\"",
-        "selector": "color"
-      },
-      {
-        "name": "ulm_card_binary_sensor_force_background_color",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_binary_sensor_icon",
-        "defaultValue": "\"[[[ return entity.attributes.icon ]]]\"",
-        "selector": "icon"
-      },
-      {
-        "name": "ulm_card_binary_sensor_name",
-        "defaultValue": "\"[[[ return entity.attributes.friendly_name ]]]\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_card_binary_sensor_show_last_changed",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_custom_popup",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_outlet_power_enable_popup",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_popup_power_outlet_graph_sensor",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_popup_power_outlet_sensor1",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_popup_power_outlet_sensor2",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_templates",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "00203340c0476322672d6e8f3b3062985cfdb010bcf39a0b971a1e4facc5bdbf"
-  },
-  {
-    "upstreamId": "card_binary_sensor_alert",
-    "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_binary_sensor_alert.yaml",
-    "publicId": "card_binary_sensor",
-    "variant": "alert",
-    "rendererId": "card_binary_sensor",
-    "layoutProfile": "card:button-card+popup",
-    "primitives": [
-      "button-card",
-      "popup"
-    ],
-    "customFields": [
-      "icon",
-      "item1",
-      "item2",
-      "label",
-      "state"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [],
-    "variables": [
-      {
-        "name": "ulm_active_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_binary_sensor_alert_color",
-        "defaultValue": "\"blue\"",
-        "selector": "color"
-      },
-      {
-        "name": "ulm_card_binary_sensor_alert_force_background_color",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_binary_sensor_alert_icon",
-        "defaultValue": "\"[[[ return entity.attributes.icon ]]]\"",
-        "selector": "icon"
-      },
-      {
-        "name": "ulm_card_binary_sensor_alert_name",
-        "defaultValue": "\"[[[ return entity.attributes.friendly_name ]]]\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_card_binary_sensor_alert_show_last_changed",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_custom_popup",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_icon_alert_color",
-        "defaultValue": "\"[[[ return variables.ulm_card_binary_sensor_alert_color ]]]\"",
-        "selector": "color"
-      },
-      {
-        "name": "ulm_outlet_power_enable_popup",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_popup_power_outlet_graph_sensor",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_popup_power_outlet_sensor1",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_popup_power_outlet_sensor2",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_templates",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "032b6c2834edc24f97da4d4569768905e148859814001145d3e6b96b7c9f12c3"
-  },
-  {
     "upstreamId": "card_cover",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_cover.yaml",
     "publicId": "card_cover",
@@ -478,342 +273,6 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "37b380f5d8445b95e68fa7c65fa296f3bd027a1bb9d6d82539f5d51bfeafc9c8"
   },
   {
-    "upstreamId": "card_fan",
-    "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_fan.yaml",
-    "publicId": "card_fan",
-    "rendererId": "card_fan",
-    "layoutProfile": "card:button-card+control",
-    "primitives": [
-      "button-card",
-      "control"
-    ],
-    "customFields": [
-      "button",
-      "icon",
-      "item1",
-      "item2",
-      "label",
-      "slider",
-      "state"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_active_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_fan_button_icon",
-        "defaultValue": "\"mdi:rotate-3d-variant\"",
-        "selector": "icon"
-      },
-      {
-        "name": "ulm_card_fan_button_service",
-        "defaultValue": "\"fan.oscillate\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_card_fan_color",
-        "defaultValue": "\"blue\"",
-        "selector": "color"
-      },
-      {
-        "name": "ulm_card_fan_enable_button",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_fan_enable_collapse",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_fan_enable_horizontal",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_fan_enable_slider",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_fan_force_background_color",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_fan_hum_attribute",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_fan_icon",
-        "defaultValue": "\"[[[ return entity.attributes.icon ]]]\"",
-        "selector": "icon"
-      },
-      {
-        "name": "ulm_card_fan_name",
-        "defaultValue": "\"[[[ return entity.attributes.friendly_name ]]]\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_card_fan_oscillate_attribute",
-        "defaultValue": "\"oscillate\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_card_fan_slider_max",
-        "defaultValue": "100",
-        "selector": "number"
-      },
-      {
-        "name": "ulm_card_fan_slider_min",
-        "defaultValue": "0",
-        "selector": "number"
-      },
-      {
-        "name": "ulm_card_fan_temp_attribute",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_light_force_background_color",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_templates",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_off",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_on",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_unavailable",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card",
-      "my-slider"
-    ],
-    "backendRequirements": [],
-    "deviations": [
-      "Upstream embeds custom:my-slider; this plugin provides an original Lit equivalent without requiring that frontend dependency."
-    ],
-    "sourceDigest": "6bd7973b62f1208ab5c3500f7c87deba2fe0dd66c873f23e2a14c06b2ecda063"
-  },
-  {
-    "upstreamId": "card_generic",
-    "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_generic.yaml",
-    "publicId": "card_generic",
-    "variant": "default",
-    "rendererId": "card_generic",
-    "layoutProfile": "card:button-card+popup",
-    "primitives": [
-      "button-card",
-      "popup"
-    ],
-    "customFields": [
-      "icon",
-      "item1",
-      "item2",
-      "label",
-      "state"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [],
-    "variables": [
-      {
-        "name": "ulm_active_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_generic_color",
-        "defaultValue": "\"blue\"",
-        "selector": "color"
-      },
-      {
-        "name": "ulm_card_generic_force_background_color",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_generic_icon",
-        "defaultValue": "\"[[[ return entity.attributes.icon ]]]\"",
-        "selector": "icon"
-      },
-      {
-        "name": "ulm_card_generic_name",
-        "defaultValue": "\"[[[ return entity.attributes.friendly_name ]]]\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_popup",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_outlet_power_enable_popup",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_popup_power_outlet_graph_sensor",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_popup_power_outlet_sensor1",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_popup_power_outlet_sensor2",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_templates",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "d34b6a2c2d7dff2182520362fe82b012f3ecb18188bc4aca7e72244fb8f81476"
-  },
-  {
-    "upstreamId": "card_generic_swap",
-    "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_generic_swap.yaml",
-    "publicId": "card_generic",
-    "variant": "swapped",
-    "rendererId": "card_generic",
-    "layoutProfile": "card:button-card+popup",
-    "primitives": [
-      "button-card",
-      "popup"
-    ],
-    "customFields": [
-      "icon",
-      "item1",
-      "item2",
-      "label",
-      "state"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [],
-    "variables": [
-      {
-        "name": "ulm_active_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_generic_swap_color",
-        "defaultValue": "\"blue\"",
-        "selector": "color"
-      },
-      {
-        "name": "ulm_card_generic_swap_force_background_color",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_generic_swap_icon",
-        "defaultValue": "\"[[[ return entity.attributes.icon ]]]\"",
-        "selector": "icon"
-      },
-      {
-        "name": "ulm_card_generic_swap_name",
-        "defaultValue": "\"[[[ return entity.attributes.friendly_name ]]]\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_popup",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_outlet_power_enable_popup",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_popup_power_outlet_graph_sensor",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_popup_power_outlet_sensor1",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_popup_power_outlet_sensor2",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_templates",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "4064fef2de37e4fdf8d239064dc965e71be90abdef1213bb8fda76dba2849600"
-  },
-  {
     "upstreamId": "card_graph",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/2-line_cards/card_graph.yaml",
     "publicId": "card_graph",
@@ -920,100 +379,6 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
       "Exact historical series requires Home Assistant recorder/statistics data; the fixture and preview use deterministic sample data when history is unavailable."
     ],
     "sourceDigest": "01217c554ddca97d6527ab117629b7317348bbec922e858596dc61240ed594d0"
-  },
-  {
-    "upstreamId": "card_input_boolean",
-    "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_input_boolean.yaml",
-    "publicId": "card_input_boolean",
-    "rendererId": "card_input_boolean",
-    "layoutProfile": "card:button-card+popup",
-    "primitives": [
-      "button-card",
-      "popup"
-    ],
-    "customFields": [
-      "icon",
-      "item1",
-      "item2",
-      "label",
-      "state"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [],
-    "variables": [
-      {
-        "name": "ulm_active_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_input_boolean_color",
-        "defaultValue": "\"blue\"",
-        "selector": "color"
-      },
-      {
-        "name": "ulm_card_input_boolean_force_background_color",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_input_boolean_icon",
-        "defaultValue": "\"[[[ return entity.attributes.icon ]]]\"",
-        "selector": "icon"
-      },
-      {
-        "name": "ulm_card_input_boolean_name",
-        "defaultValue": "\"[[[ return entity.attributes.friendly_name ]]]\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_popup",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_outlet_power_enable_popup",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_popup_power_outlet_graph_sensor",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_popup_power_outlet_sensor1",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_popup_power_outlet_sensor2",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_templates",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "53ce37b2c1640faa3a4417faad3c4f639860b6c680589382bb964fc100cce61c"
   },
   {
     "upstreamId": "card_light",
@@ -1312,56 +677,6 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "98d764b1b0ef8d266aa3ea592fbfdae0a1b8b37edf4944dfd0735e06f354578e"
   },
   {
-    "upstreamId": "card_navigate",
-    "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_navigate.yaml",
-    "publicId": "card_navigate",
-    "rendererId": "card_navigate",
-    "layoutProfile": "card:native-card",
-    "primitives": [
-      "native-card"
-    ],
-    "customFields": [
-      "icon",
-      "label"
-    ],
-    "stateDriven": false,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_card_navigate_color",
-        "defaultValue": "\"var(--color-blue)\"",
-        "selector": "color"
-      },
-      {
-        "name": "ulm_card_navigate_icon",
-        "defaultValue": "<documented/inherited>",
-        "selector": "icon"
-      },
-      {
-        "name": "ulm_card_navigate_path",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_card_navigate_title",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_templates",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "b9046dbb7f7666cdb0c3c33b8019cd8e9b72a9dde6cb401e247ffc138f41245f"
-  },
-  {
     "upstreamId": "card_person",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_person.yaml",
     "publicId": "card_person",
@@ -1426,105 +741,6 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     ],
     "deviations": [],
     "sourceDigest": "3b8e43f4ee9d9c8fcf18eaf06cd8e5aea7366eb04b3814f97dc25f9ddf4533ab"
-  },
-  {
-    "upstreamId": "card_power_outlet",
-    "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_power_outlet.yaml",
-    "publicId": "card_power_outlet",
-    "rendererId": "card_power_outlet",
-    "layoutProfile": "card:button-card+popup",
-    "primitives": [
-      "button-card",
-      "popup"
-    ],
-    "customFields": [
-      "icon",
-      "item1",
-      "item2",
-      "label",
-      "state"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [],
-    "variables": [
-      {
-        "name": "ulm_active_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_power_outlet_color",
-        "defaultValue": "\"yellow\"",
-        "selector": "color"
-      },
-      {
-        "name": "ulm_card_power_outlet_consumption_sensor",
-        "defaultValue": "<null>",
-        "selector": "entity"
-      },
-      {
-        "name": "ulm_card_power_outlet_force_background_color",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_power_outlet_icon",
-        "defaultValue": "\"[[[ return entity.attributes.icon ]]]\"",
-        "selector": "icon"
-      },
-      {
-        "name": "ulm_card_power_outlet_name",
-        "defaultValue": "\"[[[ return entity.attributes.friendly_name ]]]\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_popup",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_outlet_power_enable_popup",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_popup_power_outlet_graph_sensor",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_popup_power_outlet_sensor1",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_popup_power_outlet_sensor2",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_templates",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "ceb80e214599fb3b0fe4a10dbb045f6d0eeaf73501882b6d054436dbba8d90aa"
   },
   {
     "upstreamId": "card_room",
@@ -1616,191 +832,6 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "backendRequirements": [],
     "deviations": [],
     "sourceDigest": "02a01ff5d4873eaa8c953ac4d39061c9daf661dc1156139a87982e37bb91892f"
-  },
-  {
-    "upstreamId": "card_script",
-    "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_script.yaml",
-    "publicId": "card_script",
-    "rendererId": "card_script",
-    "layoutProfile": "card:native-card",
-    "primitives": [
-      "native-card"
-    ],
-    "customFields": [
-      "icon",
-      "label"
-    ],
-    "stateDriven": false,
-    "animated": false,
-    "actions": [],
-    "variables": [
-      {
-        "name": "ulm_card_script_icon",
-        "defaultValue": "<documented/inherited>",
-        "selector": "icon"
-      },
-      {
-        "name": "ulm_card_script_title",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_templates",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "75b808a26f6768118f2aeac5c127118ad790be66c34f160f1076a9f20cc39548"
-  },
-  {
-    "upstreamId": "card_thermostat",
-    "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_thermostat.yaml",
-    "publicId": "card_thermostat",
-    "rendererId": "card_thermostat",
-    "layoutProfile": "card:button-card+popup",
-    "primitives": [
-      "button-card",
-      "popup"
-    ],
-    "customFields": [
-      "icon",
-      "item1",
-      "item2",
-      "item3",
-      "item4",
-      "state"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_card_thermostat_enable_background_color",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_thermostat_enable_collapse",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_thermostat_enable_controls",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_thermostat_enable_display_temperature",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_thermostat_enable_horizontal",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_thermostat_enable_hvac_modes",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_thermostat_enable_popup",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_thermostat_fan_entity",
-        "defaultValue": "<null>",
-        "selector": "entity"
-      },
-      {
-        "name": "ulm_card_thermostat_icon",
-        "defaultValue": "\"[[[ return 'mdi:thermometer' ]]]\"",
-        "selector": "icon"
-      },
-      {
-        "name": "ulm_card_thermostat_minimum_temp_spread",
-        "defaultValue": "1",
-        "selector": "number"
-      },
-      {
-        "name": "ulm_card_thermostat_name",
-        "defaultValue": "\"[[[ return entity.attributes.friendly_name ]]]\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_card_thermostat_preset_mode",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_thermostat_temp_step",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_popup",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_templates",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "58e810bb79cdee380a82551ae9576cbc7d206f3d1781fe20f99c8e3ac6ae540a"
-  },
-  {
-    "upstreamId": "card_title",
-    "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/title/card_title.yaml",
-    "publicId": "card_title",
-    "variant": "title-and-subtitle",
-    "rendererId": "card_title",
-    "layoutProfile": "card:native-card",
-    "primitives": [
-      "native-card"
-    ],
-    "customFields": [
-      "label"
-    ],
-    "stateDriven": false,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_templates",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "40f86677440e2369876cea2dc350851cd771c5a600535a500d9f7c92a869ba1f"
   },
   {
     "upstreamId": "card_vacuum",
@@ -1939,127 +970,6 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "7b93758fc74faf4d4a8cdd8469adfa72f359fcc27ebfda16870581738ccf6935"
   },
   {
-    "upstreamId": "card_weather",
-    "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_weather.yaml",
-    "publicId": "card_weather",
-    "variant": "detailed",
-    "rendererId": "card_weather",
-    "layoutProfile": "card:native-card",
-    "primitives": [
-      "native-card"
-    ],
-    "customFields": [
-      "item1"
-    ],
-    "stateDriven": false,
-    "animated": false,
-    "actions": [],
-    "variables": [
-      {
-        "name": "ulm_actions_card_overlay",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_card_weather_backdrop",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_weather_custom",
-        "defaultValue": "[{\"temp\":\"[[[ return entity.attributes.temperature ]]]\"}]",
-        "selector": "object"
-      },
-      {
-        "name": "ulm_card_weather_name",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_card_weather_primary_info",
-        "defaultValue": "\"extrema\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_card_weather_secondary_info",
-        "defaultValue": "\"precipitation\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_templates",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "simple-weather-card"
-    ],
-    "backendRequirements": [
-      "weather entity/forecast API"
-    ],
-    "deviations": [
-      "Upstream embeds custom:simple-weather-card; this plugin provides an original Lit equivalent without requiring that frontend dependency."
-    ],
-    "sourceDigest": "7297f7ab74d3643e8a79edf548b1860c4e0ba71effe636be939212c017d96a0f"
-  },
-  {
-    "upstreamId": "card_weather_ulm",
-    "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_weather_ulm.yaml",
-    "publicId": "card_weather",
-    "variant": "native",
-    "rendererId": "card_weather",
-    "layoutProfile": "card:button-card+popup",
-    "primitives": [
-      "button-card",
-      "popup"
-    ],
-    "customFields": [
-      "icon",
-      "item1",
-      "item2"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_card_weather_ulm_enable_popup",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_custom_popup",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_templates",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_weather_popup_surpress_first_forecast",
-        "defaultValue": "false",
-        "selector": "boolean"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [
-      "weather entity/forecast API"
-    ],
-    "deviations": [],
-    "sourceDigest": "fe9880b8ca3367512c51d65acbf3757025725d474a70a80918143569f61739d3"
-  },
-  {
     "upstreamId": "card_welcome_scenes",
     "sourcePath": "custom_components/ui_lovelace_minimalist/lovelace/ulm_templates/card_templates/cards/card_welcome_scenes.yaml",
     "publicId": "card_welcome_scenes",
@@ -2155,10 +1065,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "055cc3323c175f8b1414ff9f86ce9cbc1762d5358f20797581dd0b0cda0afd90"
   },
   {
-    "upstreamId": "custom_card_afvalophaling",
-    "sourcePath": "custom_cards/custom_card_afvalophaling",
-    "publicId": "custom_card_afvalophaling",
-    "rendererId": "custom_card_afvalophaling",
+    "upstreamId": "custom_card_trash",
+    "sourcePath": "custom_cards/custom_card_trash",
+    "publicId": "custom_card_trash",
+    "rendererId": "custom_card_trash",
     "layoutProfile": "card:button-card",
     "primitives": [
       "button-card"
@@ -2544,10 +1454,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "bb8f062dbddf46ec1d4763c55e6ef7bf625790e1bce8630632ff2d3730ce3721"
   },
   {
-    "upstreamId": "custom_card_damix48_power_details",
-    "sourcePath": "custom_cards/custom_card_damix48_power_details",
-    "publicId": "custom_card_damix48_power_details",
-    "rendererId": "custom_card_damix48_power_details",
+    "upstreamId": "custom_card_power_details",
+    "sourcePath": "custom_cards/custom_card_power_details",
+    "publicId": "custom_card_power_details",
+    "rendererId": "custom_card_power_details",
     "layoutProfile": "card:button-card+chart",
     "primitives": [
       "button-card",
@@ -2597,27 +1507,27 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_damix48_power_details_hour",
+        "name": "ulm_custom_card_power_details_hour",
         "defaultValue": "\"timmen\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_damix48_power_details_hours",
+        "name": "ulm_custom_card_power_details_hours",
         "defaultValue": "\"timmarna\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_damix48_power_details_in_the_last",
+        "name": "ulm_custom_card_power_details_in_the_last",
         "defaultValue": "\"Den senaste\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_damix48_power_details_in_the_lasts",
+        "name": "ulm_custom_card_power_details_in_the_lasts",
         "defaultValue": "\"De senaste\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_damix48_power_details_language_variables",
+        "name": "ulm_custom_card_power_details_language_variables",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       }
@@ -2699,10 +1609,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "c9efd2a8ef99a5335e0d4dd510f6fb5679b4b0d42adad5268d1ed317aaedcb0d"
   },
   {
-    "upstreamId": "custom_card_drealine_roomview",
-    "sourcePath": "custom_cards/custom_card_drealine_roomview",
-    "publicId": "custom_card_drealine_roomview",
-    "rendererId": "custom_card_drealine_roomview",
+    "upstreamId": "custom_card_roomview",
+    "sourcePath": "custom_cards/custom_card_roomview",
+    "publicId": "custom_card_roomview",
+    "rendererId": "custom_card_roomview",
     "layoutProfile": "card:button-card",
     "primitives": [
       "button-card"
@@ -2754,198 +1664,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "a8781de5079b414542ff3cc6653c01448336db8433e9dcbdcb2aa6900d2cf7c8"
   },
   {
-    "upstreamId": "custom_card_eraycetinay_elapsed_time",
-    "sourcePath": "custom_cards/custom_card_eraycetinay_elapsed_time",
-    "publicId": "custom_card_eraycetinay_elapsed_time",
-    "rendererId": "custom_card_eraycetinay_elapsed_time",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [],
-    "variables": [
-      {
-        "name": "ulm_custom_card_eraycetinay_elapsed_time_ago",
-        "defaultValue": "\"önce\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_elapsed_time_day",
-        "defaultValue": "\"gün\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_elapsed_time_days",
-        "defaultValue": "\"gün\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_elapsed_time_hour",
-        "defaultValue": "\"saat\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_elapsed_time_hours",
-        "defaultValue": "\"saat\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_elapsed_time_justnow",
-        "defaultValue": "\"az önce\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_elapsed_time_language_variables",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_elapsed_time_minute",
-        "defaultValue": "\"dakika\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_elapsed_time_minutes",
-        "defaultValue": "\"dakika\"",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "a824f0bc9e6f852e0c14af881f7dfe0fe665dbf6bde3773713b5355969494460"
-  },
-  {
-    "upstreamId": "custom_card_eraycetinay_lock",
-    "sourcePath": "custom_cards/custom_card_eraycetinay_lock",
-    "publicId": "custom_card_eraycetinay_lock",
-    "rendererId": "custom_card_eraycetinay_lock",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [
-      "icon"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_custom_card_eraycetinay_lock_battery_is_at",
-        "defaultValue": "\"pil\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_lock_battery_is_low",
-        "defaultValue": "\"pil zayıf\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_lock_battery_level",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_lock_battery_sensor_binary",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_lock_battery_sensor_binary_low_state",
-        "defaultValue": "\"on\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_lock_battery_warning",
-        "defaultValue": "20",
-        "selector": "number"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_lock_battery_warning_low",
-        "defaultValue": "5",
-        "selector": "number"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_lock_door_open",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_lock_jammed",
-        "defaultValue": "\"sıkışmış\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_lock_locked",
-        "defaultValue": "\"kilitli\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_lock_locked_and_opened",
-        "defaultValue": "\"Kapı kilitli ama hala açık\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_lock_locking",
-        "defaultValue": "\"kilitleniyor\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_lock_only_open",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_lock_tap_control",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_lock_unavailable",
-        "defaultValue": "\"müsait değil\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_lock_unlocked",
-        "defaultValue": "\"kilitli değil\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_eraycetinay_lock_unlocking",
-        "defaultValue": "\"kilit açılıyor\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "49675223ef2a9b1d6e5ad86328c35e44afeb9e9f8486c697f81507db840cbf92"
-  },
-  {
-    "upstreamId": "custom_card_esh_room",
-    "sourcePath": "custom_cards/custom_card_esh_room",
-    "publicId": "custom_card_esh_room",
-    "rendererId": "custom_card_esh_room",
+    "upstreamId": "custom_card_room_overview",
+    "sourcePath": "custom_cards/custom_card_room_overview",
+    "publicId": "custom_card_room_overview",
+    "rendererId": "custom_card_room_overview",
     "layoutProfile": "card:button-card+popup",
     "primitives": [
       "button-card",
@@ -2978,32 +1700,32 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
         "selector": "boolean"
       },
       {
-        "name": "ulm_card_esh_room_cover_icon_closed",
+        "name": "ulm_card_room_overview_cover_icon_closed",
         "defaultValue": "\"mdi:roller-shade-closed\"",
         "selector": "text"
       },
       {
-        "name": "ulm_card_esh_room_cover_icon_closing",
+        "name": "ulm_card_room_overview_cover_icon_closing",
         "defaultValue": "\"mdi:blinds\"",
         "selector": "text"
       },
       {
-        "name": "ulm_card_esh_room_cover_icon_open",
+        "name": "ulm_card_room_overview_cover_icon_open",
         "defaultValue": "\"mdi:blinds-open\"",
         "selector": "text"
       },
       {
-        "name": "ulm_card_esh_room_cover_icon_opening",
+        "name": "ulm_card_room_overview_cover_icon_opening",
         "defaultValue": "\"mdi:blinds\"",
         "selector": "text"
       },
       {
-        "name": "ulm_card_esh_room_light_icon_off",
+        "name": "ulm_card_room_overview_light_icon_off",
         "defaultValue": "\"mdi:lightbulb-off\"",
         "selector": "text"
       },
       {
-        "name": "ulm_card_esh_room_light_icon_on",
+        "name": "ulm_card_room_overview_light_icon_on",
         "defaultValue": "\"mdi:lightbulb\"",
         "selector": "text"
       },
@@ -3023,17 +1745,17 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
         "selector": "action"
       },
       {
-        "name": "ulm_custom_card_esh_room_climate_entity",
+        "name": "ulm_custom_card_room_overview_climate_entity",
         "defaultValue": "<null>",
         "selector": "entity"
       },
       {
-        "name": "ulm_custom_card_esh_room_cover_entity",
+        "name": "ulm_custom_card_room_overview_cover_entity",
         "defaultValue": "<null>",
         "selector": "entity"
       },
       {
-        "name": "ulm_custom_card_esh_room_light_entity",
+        "name": "ulm_custom_card_room_overview_light_entity",
         "defaultValue": "<null>",
         "selector": "entity"
       },
@@ -3076,10 +1798,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "05d6591e9fc47e3c4664d249a8d6b7e8cfa3b4175487c776042dd67dcaf8f60e"
   },
   {
-    "upstreamId": "custom_card_esh_welcome",
-    "sourcePath": "custom_cards/custom_card_esh_welcome",
-    "publicId": "custom_card_esh_welcome",
-    "rendererId": "custom_card_esh_welcome",
+    "upstreamId": "custom_card_welcome",
+    "sourcePath": "custom_cards/custom_card_welcome",
+    "publicId": "custom_card_welcome",
+    "rendererId": "custom_card_welcome",
     "layoutProfile": "card:button-card",
     "primitives": [
       "button-card"
@@ -3106,8 +1828,8 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
         "selector": "text"
       },
       {
-        "name": "ulm_card_esh_welcome_collapse",
-        "defaultValue": "\"[[[ return variables.ulm_card_esh_welcome_collapse ]]]\"",
+        "name": "ulm_card_welcome_collapse",
+        "defaultValue": "\"[[[ return variables.ulm_card_welcome_collapse ]]]\"",
         "selector": "boolean"
       },
       {
@@ -3149,10 +1871,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "93ce63eb03a118784aa4f2635eafa416641871139cd30adb7e0c533d0ea75708"
   },
   {
-    "upstreamId": "custom_card_haven_washer",
-    "sourcePath": "custom_cards/custom_card_haven_washer",
-    "publicId": "custom_card_haven_washer",
-    "rendererId": "custom_card_haven_washer",
+    "upstreamId": "custom_card_washer",
+    "sourcePath": "custom_cards/custom_card_washer",
+    "publicId": "custom_card_washer",
+    "rendererId": "custom_card_washer",
     "layoutProfile": "card:button-card+chart",
     "primitives": [
       "button-card",
@@ -3284,128 +2006,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "04947fa4908ab93e6b7d876a855a33c7a698a4ea2eb6b037c433473d35ecf55f"
   },
   {
-    "upstreamId": "custom_card_heat_pump",
-    "sourcePath": "custom_cards/custom_card_heat_pump",
-    "publicId": "custom_card_heat_pump",
-    "rendererId": "custom_card_heat_pump",
-    "layoutProfile": "card:button-card+horizontal-stack",
-    "primitives": [
-      "button-card",
-      "horizontal-stack"
-    ],
-    "customFields": [
-      "icon",
-      "item1",
-      "item2",
-      "item3",
-      "state"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "hold_action",
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "323a228cf98660ce626ed0db984e7499d853d548cc57f06a7bee8ddb9d70b299"
-  },
-  {
-    "upstreamId": "custom_card_homeassistant_updates",
-    "sourcePath": "custom_cards/custom_card_homeassistant_updates",
-    "publicId": "custom_card_homeassistant_updates",
-    "rendererId": "custom_card_homeassistant_updates",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [
-      "icon",
-      "item1",
-      "item2",
-      "item3",
-      "label",
-      "state"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_card_homeassistant_core",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_card_homeassistant_entity",
-        "defaultValue": "<documented/inherited>",
-        "selector": "entity"
-      },
-      {
-        "name": "ulm_card_homeassistant_os",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_card_homeassistant_supervisor",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_cards",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_language",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_language_variables",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_no_updates_available",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_updates_available",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "c3c80a295c28742ee65b13f648cc4dcf33ee48757b9a7f9fbf4cd251cb72a073"
-  },
-  {
-    "upstreamId": "custom_card_httpedo13_sun",
-    "sourcePath": "custom_cards/custom_card_httpedo13_sun",
-    "publicId": "custom_card_httpedo13_sun",
-    "rendererId": "custom_card_httpedo13_sun",
+    "upstreamId": "custom_card_sun",
+    "sourcePath": "custom_cards/custom_card_sun",
+    "publicId": "custom_card_sun",
+    "rendererId": "custom_card_sun",
     "layoutProfile": "card:button-card",
     "primitives": [
       "button-card"
@@ -3428,96 +2032,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "074c33e0590eba8959925a6a4a03dddf73472fea73d7ed59cb43bdf209cb1aca"
   },
   {
-    "upstreamId": "custom_card_httpedo13_thermostat",
-    "sourcePath": "custom_cards/custom_card_httpedo13_thermostat",
-    "publicId": "custom_card_httpedo13_thermostat",
-    "rendererId": "custom_card_httpedo13_thermostat",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [
-      "icon",
-      "item1",
-      "item2",
-      "item3",
-      "label"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "dec54ab169b686bd864dde53957be0faa3b0b1d941bba3e26d728ba22eec7038"
-  },
-  {
-    "upstreamId": "custom_card_iAbadia_battery_chip",
-    "sourcePath": "custom_cards/custom_card_iAbadia_battery_chip",
-    "publicId": "custom_card_iAbadia_battery_chip",
-    "rendererId": "custom_card_iAbadia_battery_chip",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [
-      "icon"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_custom_card_iAbadia_battery_chip_danger",
-        "defaultValue": "\"10\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_iAbadia_battery_chip_entity",
-        "defaultValue": "\"\"",
-        "selector": "entity"
-      },
-      {
-        "name": "ulm_custom_card_iAbadia_battery_chip_icon",
-        "defaultValue": "\"\"",
-        "selector": "icon"
-      },
-      {
-        "name": "ulm_custom_card_iAbadia_battery_chip_warning",
-        "defaultValue": "\"20\"",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "f159cf2a199cfb197a2e3544d30c58505bc33d3548733da3761cd2fc2aa600ac"
-  },
-  {
-    "upstreamId": "custom_card_imswel_medias",
-    "sourcePath": "custom_cards/custom_card_imswel_medias",
-    "publicId": "custom_card_imswel_medias",
-    "rendererId": "custom_card_imswel_medias",
+    "upstreamId": "custom_card_media_library",
+    "sourcePath": "custom_cards/custom_card_media_library",
+    "publicId": "custom_card_media_library",
+    "rendererId": "custom_card_media_library",
     "layoutProfile": "card:button-card",
     "primitives": [
       "button-card"
@@ -3532,42 +2050,42 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "actions": [],
     "variables": [
       {
-        "name": "ulm_custom_card_imswel_in_theaters",
+        "name": "ulm_custom_card_media_library_in_theaters",
         "defaultValue": "\"au cinéma\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_imswel_locale",
+        "name": "ulm_custom_card_media_library_locale",
         "defaultValue": "\"fr-FR\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_imswel_medias_index",
+        "name": "ulm_custom_card_media_library_index",
         "defaultValue": "1",
         "selector": "number"
       },
       {
-        "name": "ulm_custom_card_imswel_medias_platform",
+        "name": "ulm_custom_card_media_library_platform",
         "defaultValue": "\"[[[\\n  if (entity.entity_id.includes(\\\"sonarr\\\")){\\n    return \\\"sonarr\\\";\\n  } else if(entity.entity_id.includes(\\\"plex\\\")){\\n    return \\\"plex\\\";\\n  } else{\\n    return \\\"radarr\\\";\\n  }\\n]]]\\n\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_imswel_recentlyadded",
+        "name": "ulm_custom_card_media_library_recentlyadded",
         "defaultValue": "\"Récemment ajouté\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_imswel_today",
+        "name": "ulm_custom_card_media_library_today",
         "defaultValue": "\"Aujourd'hui\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_imswel_tommorow",
+        "name": "ulm_custom_card_media_library_tommorow",
         "defaultValue": "\"Demain\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_imswel_weekday",
+        "name": "ulm_custom_card_media_library_weekday",
         "defaultValue": "\"[[[\\n  return [\\\"Dimanche\\\",\\\"Lundi\\\",\\\"Mardi\\\",\\\"Mercredi\\\",\\\"Jeudi\\\",\\\"Vendredi\\\",\\\"Samedi\\\"];\\n]]]\\n\"",
         "selector": "text"
       },
@@ -3592,10 +2110,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "0c6ae5e28570083204008c10238f083d121130eea72c2f689439e77fc1c22239"
   },
   {
-    "upstreamId": "custom_card_imswel_person",
-    "sourcePath": "custom_cards/custom_card_imswel_person",
-    "publicId": "custom_card_imswel_person",
-    "rendererId": "custom_card_imswel_person",
+    "upstreamId": "custom_card_person_location",
+    "sourcePath": "custom_cards/custom_card_person_location",
+    "publicId": "custom_card_person_location",
+    "rendererId": "custom_card_person_location",
     "layoutProfile": "card:button-card+vertical-stack+horizontal-stack+entities+popup",
     "primitives": [
       "button-card",
@@ -3614,47 +2132,47 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     ],
     "variables": [
       {
-        "name": "ulm_card_imswel_person_entity",
+        "name": "ulm_card_person_location_entity",
         "defaultValue": "<documented/inherited>",
         "selector": "entity"
       },
       {
-        "name": "ulm_card_imswel_person_findmy_script",
+        "name": "ulm_card_person_location_findmy_script",
         "defaultValue": "<documented/inherited>",
         "selector": "entity"
       },
       {
-        "name": "ulm_card_imswel_person_gps_tracker",
+        "name": "ulm_card_person_location_gps_tracker",
         "defaultValue": "<documented/inherited>",
         "selector": "entity"
       },
       {
-        "name": "ulm_card_imswel_person_use_entity_picture",
+        "name": "ulm_card_person_location_use_entity_picture",
         "defaultValue": "false",
         "selector": "boolean"
       },
       {
-        "name": "ulm_card_imswel_person_wifi_tracker",
+        "name": "ulm_card_person_location_wifi_tracker",
         "defaultValue": "<documented/inherited>",
         "selector": "entity"
       },
       {
-        "name": "ulm_custom_card_imswel_person_findmy",
+        "name": "ulm_custom_card_person_location_findmy",
         "defaultValue": "\"Encontrar meu celular\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_imswel_person_home",
+        "name": "ulm_custom_card_person_location_home",
         "defaultValue": "\"Aqui\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_imswel_person_language_variables",
+        "name": "ulm_custom_card_person_location_language_variables",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_imswel_person_not_home",
+        "name": "ulm_custom_card_person_location_not_home",
         "defaultValue": "\"Ausente\"",
         "selector": "text"
       },
@@ -3727,59 +2245,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "209eb00bb2ff7a561326bbb3377ae486d3959816f5916ffc63cbf3e70b4e1645"
   },
   {
-    "upstreamId": "custom_card_input_number",
-    "sourcePath": "custom_cards/custom_card_input_number",
-    "publicId": "custom_card_input_number",
-    "rendererId": "custom_card_input_number",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [
-      "item1",
-      "item2",
-      "item3",
-      "state"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_card_input_number_entity",
-        "defaultValue": "<documented/inherited>",
-        "selector": "entity"
-      },
-      {
-        "name": "ulm_card_input_number_name",
-        "defaultValue": "\"[[[ return entity.attributes.friendly_name ]]]\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "4fcb357fb905e2a4f2766edff102cccab1dc61a075ed543ee6992ca25e47b3b9"
-  },
-  {
-    "upstreamId": "custom_card_irmajavi_entities",
-    "sourcePath": "custom_cards/custom_card_irmajavi_entities",
-    "publicId": "custom_card_irmajavi_entities",
-    "rendererId": "custom_card_irmajavi_entities",
+    "upstreamId": "custom_card_entity_overview",
+    "sourcePath": "custom_cards/custom_card_entity_overview",
+    "publicId": "custom_card_entity_overview",
+    "rendererId": "custom_card_entity_overview",
     "layoutProfile": "card:button-card",
     "primitives": [
       "button-card"
@@ -3796,62 +2265,62 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "actions": [],
     "variables": [
       {
-        "name": "ulm_custom_card_irmajavi_entities",
+        "name": "ulm_custom_card_entity_overview",
         "defaultValue": "<documented/inherited>",
         "selector": "entity-multiple"
       },
       {
-        "name": "ulm_custom_card_irmajavi_entities_entity_1",
+        "name": "ulm_custom_card_entity_overview_entity_1",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_entities_entity_2",
+        "name": "ulm_custom_card_entity_overview_entity_2",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_entities_entity_3",
+        "name": "ulm_custom_card_entity_overview_entity_3",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_entities_entity_4",
+        "name": "ulm_custom_card_entity_overview_entity_4",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_entities_icon",
+        "name": "ulm_custom_card_entity_overview_icon",
         "defaultValue": "<documented/inherited>",
         "selector": "icon"
       },
       {
-        "name": "ulm_custom_card_irmajavi_entities_name",
+        "name": "ulm_custom_card_entity_overview_name",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_entities_name_1",
+        "name": "ulm_custom_card_entity_overview_name_1",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_entities_name_2",
+        "name": "ulm_custom_card_entity_overview_name_2",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_entities_name_3",
+        "name": "ulm_custom_card_entity_overview_name_3",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_entities_name_4",
+        "name": "ulm_custom_card_entity_overview_name_4",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_entitites_name",
+        "name": "ulm_custom_card_metrics_entitites_name",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
@@ -3874,10 +2343,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "fc79ef9de6d5fdd2474f301594d8fe32433576b67ba1d9f01c0a049c1825fb21"
   },
   {
-    "upstreamId": "custom_card_irmajavi_speedtest",
-    "sourcePath": "custom_cards/custom_card_irmajavi_speedtest",
-    "publicId": "custom_card_irmajavi_speedtest",
-    "rendererId": "custom_card_irmajavi_speedtest",
+    "upstreamId": "custom_card_internet_speed",
+    "sourcePath": "custom_cards/custom_card_internet_speed",
+    "publicId": "custom_card_internet_speed",
+    "rendererId": "custom_card_internet_speed",
     "layoutProfile": "card:button-card",
     "primitives": [
       "button-card"
@@ -3896,52 +2365,52 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     ],
     "variables": [
       {
-        "name": "ulm_custom_card_irmajavi_speedtest_color",
+        "name": "ulm_custom_card_internet_speed_color",
         "defaultValue": "\"blue\"",
         "selector": "color"
       },
       {
-        "name": "ulm_custom_card_irmajavi_speedtest_download",
+        "name": "ulm_custom_card_internet_speed_download",
         "defaultValue": "\"Prędkość pobierania\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_speedtest_download_speed_entity",
+        "name": "ulm_custom_card_internet_speed_download_speed_entity",
         "defaultValue": "<documented/inherited>",
         "selector": "entity"
       },
       {
-        "name": "ulm_custom_card_irmajavi_speedtest_language_variables",
+        "name": "ulm_custom_card_internet_speed_language_variables",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_speedtest_ping_entity",
+        "name": "ulm_custom_card_internet_speed_ping_entity",
         "defaultValue": "<documented/inherited>",
         "selector": "entity"
       },
       {
-        "name": "ulm_custom_card_irmajavi_speedtest_router_model",
+        "name": "ulm_custom_card_internet_speed_router_model",
         "defaultValue": "\"router_model\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_speedtest_router_name",
+        "name": "ulm_custom_card_internet_speed_router_name",
         "defaultValue": "\"router_name\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_speedtest_speedtest",
+        "name": "ulm_custom_card_internet_speed_speedtest",
         "defaultValue": "\"Test prędkości Internetu\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_speedtest_upload",
+        "name": "ulm_custom_card_internet_speed_upload",
         "defaultValue": "\"Prędkość wysyłania\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_speedtest_upload_speed_entity",
+        "name": "ulm_custom_card_internet_speed_upload_speed_entity",
         "defaultValue": "<documented/inherited>",
         "selector": "entity"
       }
@@ -3954,10 +2423,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "5188e9eb19a25cae7ff693051c0bc2c426af398bb12a9501e3cfee1ea715d40f"
   },
   {
-    "upstreamId": "custom_card_irmajavi_weather",
-    "sourcePath": "custom_cards/custom_card_irmajavi_weather",
-    "publicId": "custom_card_irmajavi_weather",
-    "rendererId": "custom_card_irmajavi_weather",
+    "upstreamId": "custom_card_weather_metrics",
+    "sourcePath": "custom_cards/custom_card_weather_metrics",
+    "publicId": "custom_card_weather_metrics",
+    "rendererId": "custom_card_weather_metrics",
     "layoutProfile": "card:button-card",
     "primitives": [
       "button-card"
@@ -3974,57 +2443,57 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "actions": [],
     "variables": [
       {
-        "name": "ulm_custom_card_irmajavi_weather",
+        "name": "ulm_custom_card_weather_metrics",
         "defaultValue": "<documented/inherited>",
         "selector": "entity"
       },
       {
-        "name": "ulm_custom_card_irmajavi_weather_date",
+        "name": "ulm_custom_card_weather_metrics_date",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_weather_entity_1",
+        "name": "ulm_custom_card_weather_metrics_entity_1",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_weather_entity_2",
+        "name": "ulm_custom_card_weather_metrics_entity_2",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_weather_entity_3",
+        "name": "ulm_custom_card_weather_metrics_entity_3",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_weather_entity_4",
+        "name": "ulm_custom_card_weather_metrics_entity_4",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_weather_name_1",
+        "name": "ulm_custom_card_weather_metrics_name_1",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_weather_name_2",
+        "name": "ulm_custom_card_weather_metrics_name_2",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_weather_name_3",
+        "name": "ulm_custom_card_weather_metrics_name_3",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_weather_name_4",
+        "name": "ulm_custom_card_weather_metrics_name_4",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_irmajavi_weather_temperature_outside",
+        "name": "ulm_custom_card_weather_metrics_temperature_outside",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       }
@@ -4037,63 +2506,6 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     ],
     "deviations": [],
     "sourceDigest": "5dd798c6cf0f8cb996bb3b522079d1c52aadbb523e217f35e2c35a66459b5956"
-  },
-  {
-    "upstreamId": "custom_card_light_colorpick",
-    "sourcePath": "custom_cards/custom_card_light_colorpick",
-    "publicId": "custom_card_light_colorpick",
-    "rendererId": "custom_card_light_colorpick",
-    "layoutProfile": "card:button-card+control",
-    "primitives": [
-      "button-card",
-      "control"
-    ],
-    "customFields": [
-      "item1",
-      "item2",
-      "item3"
-    ],
-    "stateDriven": true,
-    "animated": true,
-    "actions": [],
-    "variables": [
-      {
-        "name": "ulm_card_light_colorpick_name",
-        "defaultValue": "\"[[[ return entity.attributes.friendly_name ]]]\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_card_light_colorpick_transition",
-        "defaultValue": "1",
-        "selector": "number"
-      },
-      {
-        "name": "ulm_card_light_slider_horizontal_name",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card",
-      "my-slider",
-      "rgb-light-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [
-      "Upstream embeds custom:my-slider; this plugin provides an original Lit equivalent without requiring that frontend dependency.",
-      "Upstream embeds custom:rgb-light-card; this plugin provides an original Lit equivalent without requiring that frontend dependency."
-    ],
-    "sourceDigest": "8e2056c0ea0ade6fa37e0d0b26eae67e8c61e2901f466f278596ed1e4bfbbe0d"
   },
   {
     "upstreamId": "custom_card_media_player_sonos",
@@ -4185,10 +2597,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "997d3cb2e78fb34cfbb3bbaff72badc08d1a6d04c4cb5339e0762080fba3c553"
   },
   {
-    "upstreamId": "custom_card_mpse_gauge",
-    "sourcePath": "custom_cards/custom_card_mpse_gauge",
-    "publicId": "custom_card_mpse_gauge",
-    "rendererId": "custom_card_mpse_gauge",
+    "upstreamId": "custom_card_gauge",
+    "sourcePath": "custom_cards/custom_card_gauge",
+    "publicId": "custom_card_gauge",
+    "rendererId": "custom_card_gauge",
     "layoutProfile": "card:button-card+chart",
     "primitives": [
       "button-card",
@@ -4203,12 +2615,12 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "actions": [],
     "variables": [
       {
-        "name": "ulm_card_mpse_gauge_max",
+        "name": "ulm_card_gauge_max",
         "defaultValue": "100",
         "selector": "number"
       },
       {
-        "name": "ulm_card_mpse_gauge_min",
+        "name": "ulm_card_gauge_min",
         "defaultValue": "0",
         "selector": "number"
       }
@@ -4224,10 +2636,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "25d0a61887381d4ec2ecce9487c4cca767146bb35a093de79d047295e8ee2275"
   },
   {
-    "upstreamId": "custom_card_mpse_printer",
-    "sourcePath": "custom_cards/custom_card_mpse_printer",
-    "publicId": "custom_card_mpse_printer",
-    "rendererId": "custom_card_mpse_printer",
+    "upstreamId": "custom_card_printer",
+    "sourcePath": "custom_cards/custom_card_printer",
+    "publicId": "custom_card_printer",
+    "rendererId": "custom_card_printer",
     "layoutProfile": "card:button-card+chart",
     "primitives": [
       "button-card",
@@ -4283,52 +2695,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "900ec6ff5ac98c1bc5e1ec6d5c751649c9b44681dd363daa67bd7a6450cf72e1"
   },
   {
-    "upstreamId": "custom_card_mpse_thermostat",
-    "sourcePath": "custom_cards/custom_card_mpse_thermostat",
-    "publicId": "custom_card_mpse_thermostat",
-    "rendererId": "custom_card_mpse_thermostat",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [
-      "icon",
-      "item1",
-      "item2",
-      "item3",
-      "label",
-      "state"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "hold_action",
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "650f933f8ca2023f1f58b7eb367d69fd1316e37fc91087f667a2882fcdedaf24"
-  },
-  {
-    "upstreamId": "custom_card_mpse_wifisignal",
-    "sourcePath": "custom_cards/custom_card_mpse_wifisignal",
-    "publicId": "custom_card_mpse_wifisignal",
-    "rendererId": "custom_card_mpse_wifisignal",
+    "upstreamId": "custom_card_wifi_signal",
+    "sourcePath": "custom_cards/custom_card_wifi_signal",
+    "publicId": "custom_card_wifi_signal",
+    "rendererId": "custom_card_wifi_signal",
     "layoutProfile": "card:button-card",
     "primitives": [
       "button-card"
@@ -4346,206 +2716,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "f8c52bb16f5c28d2205d395a9a234d7c6a2c9328dcc863fe5a04f7229d40f1a8"
   },
   {
-    "upstreamId": "custom_card_nas",
-    "sourcePath": "custom_cards/custom_card_nas",
-    "publicId": "custom_card_nas",
-    "rendererId": "custom_card_nas",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [
-      "label"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_custom_cad_nas_unit",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_nas_sensor",
-        "defaultValue": "<documented/inherited>",
-        "selector": "entity"
-      },
-      {
-        "name": "ulm_custom_card_nas_text",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_nas_unit",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "30cdd273b02221b4902cd0dff75fb952af71e16ca2cd72fc7836a9c42f83e3a1"
-  },
-  {
-    "upstreamId": "custom_card_neekster_update",
-    "sourcePath": "custom_cards/custom_card_neekster_update",
-    "publicId": "custom_card_neekster_update",
-    "rendererId": "custom_card_neekster_update",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [
-      "item1",
-      "item2",
-      "label",
-      "state"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "hold_action",
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_card_neekster_update_collapsible",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_neekster_update_enable_controls",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_neekster_update_horizontal",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_neekster_update_icon",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_neekster_update_narrow_buttons",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_language_variables",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "1f136c353e40887e92d643470b26b443efabd3b7089e174fa665afb726f42a96"
-  },
-  {
-    "upstreamId": "custom_card_nik_clock",
-    "sourcePath": "custom_cards/custom_card_nik_clock",
-    "publicId": "custom_card_nik_clock",
-    "rendererId": "custom_card_nik_clock",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [
-      "label"
-    ],
-    "stateDriven": false,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_custom_card_nik_clock_switch",
-        "defaultValue": "<null>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_nik_clock_switch_enable",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_language",
-        "defaultValue": "\"[[[\\n  return hass[\\\"language\\\"];\\n]]]\\n\"",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "67d20d7743e0ee686479988045914b455a8cf2d671f83c59dfca3838bf34a99d"
-  },
-  {
-    "upstreamId": "custom_card_nik_door",
-    "sourcePath": "custom_cards/custom_card_nik_door",
-    "publicId": "custom_card_nik_door",
-    "rendererId": "custom_card_nik_door",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [
-      "icon",
-      "item1",
-      "item2",
-      "state"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_custom_card_entity_1_lock",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_entity_1_lock ]]]\"",
-        "selector": "entity"
-      },
-      {
-        "name": "ulm_custom_card_entity_1_lock_battery",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_entity_1_lock_battery ]]]\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_entity_1_name",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_entity_1_name ]]]\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_language_variables",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "2ec1ce2e0a8e4eaaddc283bd991c1e803183b376b71b676036e47ce931492464"
-  },
-  {
-    "upstreamId": "custom_card_nik_nas",
-    "sourcePath": "custom_cards/custom_card_nik_nas",
-    "publicId": "custom_card_nik_nas",
-    "rendererId": "custom_card_nik_nas",
+    "upstreamId": "custom_card_nas_metrics",
+    "sourcePath": "custom_cards/custom_card_nas_metrics",
+    "publicId": "custom_card_nas_metrics",
+    "rendererId": "custom_card_nas_metrics",
     "layoutProfile": "card:button-card+horizontal-stack+chart",
     "primitives": [
       "button-card",
@@ -4612,10 +2786,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "342ce893e03052a243cca28238250035167fc30a6df076783393c50b516dd968"
   },
   {
-    "upstreamId": "custom_card_nik_tablet",
-    "sourcePath": "custom_cards/custom_card_nik_tablet",
-    "publicId": "custom_card_nik_tablet",
-    "rendererId": "custom_card_nik_tablet",
+    "upstreamId": "custom_card_tablet",
+    "sourcePath": "custom_cards/custom_card_tablet",
+    "publicId": "custom_card_tablet",
+    "rendererId": "custom_card_tablet",
     "layoutProfile": "card:button-card+chart",
     "primitives": [
       "button-card",
@@ -4637,7 +2811,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "variables": [
       {
         "name": "ulm_card_generic_name",
-        "defaultValue": "\"[[[ return variables.ulm_custom_bar_card_nik_tablet_card_name != '' ? variables.ulm_custom_bar_card_nik_tablet_card_name : '' ]]]\"",
+        "defaultValue": "\"[[[ return variables.ulm_custom_bar_card_tablet_card_name != '' ? variables.ulm_custom_bar_card_tablet_card_name : '' ]]]\"",
         "selector": "text"
       },
       {
@@ -4647,107 +2821,107 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
       },
       {
         "name": "ulm_card_input_boolean_name",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_nik_tablet_name ]]]\"",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_tablet_name ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_bar_card_nik_tablet_card_entity",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_nik_tablet_battery ]]]\"",
+        "name": "ulm_custom_bar_card_tablet_card_entity",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_tablet_battery ]]]\"",
         "selector": "entity"
       },
       {
-        "name": "ulm_custom_bar_card_nik_tablet_card_indicator",
+        "name": "ulm_custom_bar_card_tablet_card_indicator",
         "defaultValue": "false",
         "selector": "boolean"
       },
       {
-        "name": "ulm_custom_bar_card_nik_tablet_card_name",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_nik_tablet_battery_name ]]]\"",
+        "name": "ulm_custom_bar_card_tablet_card_name",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_tablet_battery_name ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_bar_card_nik_tablet_card_value",
+        "name": "ulm_custom_bar_card_tablet_card_value",
         "defaultValue": "true",
         "selector": "boolean"
       },
       {
-        "name": "ulm_custom_card_nik_tablet_battery",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_nik_tablet_battery ]]]\"",
+        "name": "ulm_custom_card_tablet_battery",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_tablet_battery ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_nik_tablet_battery_name",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_nik_tablet_battery_name ]]]\"",
+        "name": "ulm_custom_card_tablet_battery_name",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_tablet_battery_name ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_nik_tablet_button1",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_nik_tablet_button1 ]]]\"",
+        "name": "ulm_custom_card_tablet_button1",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_tablet_button1 ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_nik_tablet_button2",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_nik_tablet_button2 ]]]\"",
+        "name": "ulm_custom_card_tablet_button2",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_tablet_button2 ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_nik_tablet_button3",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_nik_tablet_button3 ]]]\"",
+        "name": "ulm_custom_card_tablet_button3",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_tablet_button3 ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_nik_tablet_main",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_nik_tablet_main ]]]\"",
+        "name": "ulm_custom_card_tablet_main",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_tablet_main ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_nik_tablet_maintenance",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_nik_tablet_maintenance ]]]\"",
+        "name": "ulm_custom_card_tablet_maintenance",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_tablet_maintenance ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_nik_tablet_name",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_nik_tablet_name ]]]\"",
+        "name": "ulm_custom_card_tablet_name",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_tablet_name ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_nik_tablet_par1",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_nik_tablet_par1 ]]]\"",
+        "name": "ulm_custom_card_tablet_par1",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_tablet_par1 ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_nik_tablet_par1_name",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_nik_tablet_par1_name ]]]\"",
+        "name": "ulm_custom_card_tablet_par1_name",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_tablet_par1_name ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_nik_tablet_par2",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_nik_tablet_par2 ]]]\"",
+        "name": "ulm_custom_card_tablet_par2",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_tablet_par2 ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_nik_tablet_par2_name",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_nik_tablet_par2_name ]]]\"",
+        "name": "ulm_custom_card_tablet_par2_name",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_tablet_par2_name ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_nik_tablet_par3",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_nik_tablet_par3 ]]]\"",
+        "name": "ulm_custom_card_tablet_par3",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_tablet_par3 ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_nik_tablet_par3_name",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_nik_tablet_par3_name ]]]\"",
+        "name": "ulm_custom_card_tablet_par3_name",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_tablet_par3_name ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_nik_tablet_reload",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_nik_tablet_reload ]]]\"",
+        "name": "ulm_custom_card_tablet_reload",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_tablet_reload ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_nik_tablet_restart",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_nik_tablet_restart ]]]\"",
+        "name": "ulm_custom_card_tablet_restart",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_tablet_restart ]]]\"",
         "selector": "text"
       },
       {
@@ -4767,10 +2941,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "14f3979bde156f30d644eb1240a24b96801d13af74929c521817fcb9f62a40aa"
   },
   {
-    "upstreamId": "custom_card_paddy_dwd_pollen",
-    "sourcePath": "custom_cards/custom_card_paddy_dwd_pollen",
-    "publicId": "custom_card_paddy_dwd_pollen",
-    "rendererId": "custom_card_paddy_dwd_pollen",
+    "upstreamId": "custom_card_pollen_forecast",
+    "sourcePath": "custom_cards/custom_card_pollen_forecast",
+    "publicId": "custom_card_pollen_forecast",
+    "rendererId": "custom_card_pollen_forecast",
     "layoutProfile": "card:button-card",
     "primitives": [
       "button-card"
@@ -4787,61 +2961,61 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "variables": [
       {
         "name": "ulm_card_generic_swap_icon",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_paddy_dwd_pollen_icon; ]]]\"",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_pollen_forecast_icon; ]]]\"",
         "selector": "icon"
       },
       {
         "name": "ulm_card_generic_swap_name",
-        "defaultValue": "\"[[[ return variables.ulm_custom_card_paddy_dwd_pollen_name; ]]]\"",
+        "defaultValue": "\"[[[ return variables.ulm_custom_card_pollen_forecast_name; ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_paddy_dwd_pollen_1",
+        "name": "ulm_custom_card_pollen_forecast_1",
         "defaultValue": "\"bardzo słabe\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_paddy_dwd_pollen_2",
+        "name": "ulm_custom_card_pollen_forecast_2",
         "defaultValue": "\"słabe\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_paddy_dwd_pollen_3",
+        "name": "ulm_custom_card_pollen_forecast_3",
         "defaultValue": "\"umiarkowane\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_paddy_dwd_pollen_4",
+        "name": "ulm_custom_card_pollen_forecast_4",
         "defaultValue": "\"średnie\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_paddy_dwd_pollen_5",
+        "name": "ulm_custom_card_pollen_forecast_5",
         "defaultValue": "\"wysokie\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_paddy_dwd_pollen_6",
+        "name": "ulm_custom_card_pollen_forecast_6",
         "defaultValue": "\"bardzo wysokie\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_paddy_dwd_pollen_icon",
+        "name": "ulm_custom_card_pollen_forecast_icon",
         "defaultValue": "<documented/inherited>",
         "selector": "icon"
       },
       {
-        "name": "ulm_custom_card_paddy_dwd_pollen_language_variables",
+        "name": "ulm_custom_card_pollen_forecast_language_variables",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_paddy_dwd_pollen_name",
+        "name": "ulm_custom_card_pollen_forecast_name",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_paddy_dwd_pollen_none",
+        "name": "ulm_custom_card_pollen_forecast_none",
         "defaultValue": "\"brak\"",
         "selector": "text"
       }
@@ -4856,49 +3030,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "7d010b9fb174f912f80454cff866815a8485cd93ab71eccdbc62b5629fdb760d"
   },
   {
-    "upstreamId": "custom_card_paddy_waste_collection",
-    "sourcePath": "custom_cards/custom_card_paddy_waste_collection",
-    "publicId": "custom_card_paddy_waste_collection",
-    "rendererId": "custom_card_paddy_waste_collection",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [
-      "icon",
-      "item1",
-      "item2",
-      "state"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [],
-    "variables": [
-      {
-        "name": "ulm_card_generic_swap_icon",
-        "defaultValue": "\"[[[ return entity.icon; ]]]\"",
-        "selector": "icon"
-      },
-      {
-        "name": "ulm_card_generic_swap_name",
-        "defaultValue": "\"[[[ return entity.name; ]]]\"",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [
-      "provider-specific sensor attributes"
-    ],
-    "deviations": [],
-    "sourceDigest": "71392973a3b737b220f0c439526895b851a03ec7f985043eea1d993504c4b471"
-  },
-  {
-    "upstreamId": "custom_card_paddy_welcome",
-    "sourcePath": "custom_cards/custom_card_paddy_welcome",
-    "publicId": "custom_card_paddy_welcome",
-    "rendererId": "custom_card_paddy_welcome",
+    "upstreamId": "custom_card_welcome_dashboard",
+    "sourcePath": "custom_cards/custom_card_welcome_dashboard",
+    "publicId": "custom_card_welcome_dashboard",
+    "rendererId": "custom_card_welcome_dashboard",
     "layoutProfile": "card:button-card+horizontal-stack",
     "primitives": [
       "button-card",
@@ -4920,17 +3055,17 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_paddy_welcome_news_entities",
+        "name": "ulm_custom_card_welcome_dashboard_news_entities",
         "defaultValue": "<documented/inherited>",
         "selector": "entity-multiple"
       },
       {
-        "name": "ulm_custom_card_paddy_welcome_time",
+        "name": "ulm_custom_card_welcome_dashboard_time",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_paddy_welcome_weather_provider",
+        "name": "ulm_custom_card_welcome_dashboard_weather_provider",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
@@ -4969,44 +3104,6 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
       "Upstream embeds custom:home-feed-card; this plugin provides an original Lit equivalent without requiring that frontend dependency."
     ],
     "sourceDigest": "8b6905f1f49207f8dcd66668e452775f49abaa9db16827c327bd7194a6c1c9d2"
-  },
-  {
-    "upstreamId": "custom_card_person_chip",
-    "sourcePath": "custom_cards/custom_card_person_chip",
-    "publicId": "custom_card_person_chip",
-    "rendererId": "custom_card_person_chip",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [
-      "icon"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_custom_card_person_chip_entity",
-        "defaultValue": "<documented/inherited>",
-        "selector": "entity"
-      },
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [
-      "person/device-tracker entities"
-    ],
-    "deviations": [],
-    "sourceDigest": "299b1adddca9cb862e6801a240e32af298992484ccf93264b0ff33b527abfdc8"
   },
   {
     "upstreamId": "custom_card_person_info",
@@ -5271,31 +3368,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "6a896e28456967bb271ab188f8006fdb87fd560f6a3749ead10719ebd51fdf06"
   },
   {
-    "upstreamId": "custom_card_qubino",
-    "sourcePath": "custom_cards/custom_card_qubino",
-    "publicId": "custom_card_qubino",
-    "rendererId": "custom_card_qubino",
-    "layoutProfile": "card:native-card",
-    "primitives": [
-      "native-card"
-    ],
-    "customFields": [],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [],
-    "dependencies": [],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "10cef3de98c223293f1383b63cf5e73ecf2db90ba287cb54e7f0792c1db74c63"
-  },
-  {
-    "upstreamId": "custom_card_ristou_person",
-    "sourcePath": "custom_cards/custom_card_ristou_person",
-    "publicId": "custom_card_ristou_person",
-    "rendererId": "custom_card_ristou_person",
+    "upstreamId": "custom_card_person_tracker",
+    "sourcePath": "custom_cards/custom_card_person_tracker",
+    "publicId": "custom_card_person_tracker",
+    "rendererId": "custom_card_person_tracker",
     "layoutProfile": "card:button-card+image",
     "primitives": [
       "button-card",
@@ -5320,82 +3396,82 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_ristou_camera_entity_dark",
+        "name": "ulm_custom_card_person_tracker_camera_entity_dark",
         "defaultValue": "\"\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_ristou_camera_entity_light",
+        "name": "ulm_custom_card_person_tracker_camera_entity_light",
         "defaultValue": "\"\"",
         "selector": "entity"
       },
       {
-        "name": "ulm_custom_card_ristou_find_device_script",
+        "name": "ulm_custom_card_person_tracker_find_device_script",
         "defaultValue": "\"\"",
         "selector": "entity"
       },
       {
-        "name": "ulm_custom_card_ristou_icon",
+        "name": "ulm_custom_card_person_tracker_icon",
         "defaultValue": "\"[[[ return entity.attributes.icon ]]]\"",
         "selector": "icon"
       },
       {
-        "name": "ulm_custom_card_ristou_map_aspect_ratio",
+        "name": "ulm_custom_card_person_tracker_map_aspect_ratio",
         "defaultValue": "\"466:200\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_ristou_map_default_zoom",
+        "name": "ulm_custom_card_person_tracker_map_default_zoom",
         "defaultValue": "11",
         "selector": "number"
       },
       {
-        "name": "ulm_custom_card_ristou_map_enable",
+        "name": "ulm_custom_card_person_tracker_map_enable",
         "defaultValue": "false",
         "selector": "boolean"
       },
       {
-        "name": "ulm_custom_card_ristou_map_hours_to_show",
+        "name": "ulm_custom_card_person_tracker_map_hours_to_show",
         "defaultValue": "0",
         "selector": "boolean"
       },
       {
-        "name": "ulm_custom_card_ristou_name",
+        "name": "ulm_custom_card_person_tracker_name",
         "defaultValue": "\"[[[ return entity.attributes.friendly_name ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_ristou_person_driving",
+        "name": "ulm_custom_card_person_tracker_driving",
         "defaultValue": "\"Porusza się\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_ristou_person_driving_entity",
+        "name": "ulm_custom_card_person_tracker_driving_entity",
         "defaultValue": "\"\"",
         "selector": "entity"
       },
       {
-        "name": "ulm_custom_card_ristou_person_language_variables",
+        "name": "ulm_custom_card_person_tracker_language_variables",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_ristou_person_language_variables1",
+        "name": "ulm_custom_card_person_tracker_language_variables1",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_ristou_use_badge",
+        "name": "ulm_custom_card_person_tracker_use_badge",
         "defaultValue": "true",
         "selector": "boolean"
       },
       {
-        "name": "ulm_custom_card_ristou_use_entity_picture",
+        "name": "ulm_custom_card_person_tracker_use_entity_picture",
         "defaultValue": "false",
         "selector": "boolean"
       },
       {
-        "name": "ulm_custom_card_ristou_zones",
+        "name": "ulm_custom_card_person_tracker_zones",
         "defaultValue": "<null>",
         "selector": "text"
       },
@@ -5418,98 +3494,6 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     ],
     "deviations": [],
     "sourceDigest": "66d46f0235430e2d736028e70d54494a6a7a86657216eabcce15d4b75722946c"
-  },
-  {
-    "upstreamId": "custom_card_saxel_fan",
-    "sourcePath": "custom_cards/custom_card_saxel_fan",
-    "publicId": "custom_card_saxel_fan",
-    "rendererId": "custom_card_saxel_fan",
-    "layoutProfile": "card:button-card+control",
-    "primitives": [
-      "button-card",
-      "control"
-    ],
-    "customFields": [
-      "button",
-      "icon",
-      "label",
-      "mainSliderColor",
-      "secondarySliderColor",
-      "slider",
-      "state"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "hold_action",
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_button_icon",
-        "defaultValue": "\"mdi:rotate-3d-variant\"",
-        "selector": "icon"
-      },
-      {
-        "name": "ulm_button_service",
-        "defaultValue": "\"fan.oscillate\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_card_fan_horizontal",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_card_fan_hum_attribute",
-        "defaultValue": "\"hum\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_card_fan_temp_attribute",
-        "defaultValue": "\"temp\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_language_variables",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_off",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_on",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_show_button",
-        "defaultValue": "true",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_unavailable",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card",
-      "my-slider"
-    ],
-    "backendRequirements": [],
-    "deviations": [
-      "Upstream embeds custom:my-slider; this plugin provides an original Lit equivalent without requiring that frontend dependency."
-    ],
-    "sourceDigest": "3102287d8e218262aaa3c04d5bc2953d83fe59e14e435bdee42c37703211c6b4"
   },
   {
     "upstreamId": "custom_card_scenes",
@@ -5544,10 +3528,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "c2613ff61eb10100b101b380086774366b5ee38194a468becca5bcaf57d618e1"
   },
   {
-    "upstreamId": "custom_card_schumijo_car",
-    "sourcePath": "custom_cards/custom_card_schumijo_car",
-    "publicId": "custom_card_schumijo_car",
-    "rendererId": "custom_card_schumijo_car",
+    "upstreamId": "custom_card_vehicle_status",
+    "sourcePath": "custom_cards/custom_card_vehicle_status",
+    "publicId": "custom_card_vehicle_status",
+    "rendererId": "custom_card_vehicle_status",
     "layoutProfile": "card:button-card+popup",
     "primitives": [
       "button-card",
@@ -5566,52 +3550,52 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     ],
     "variables": [
       {
-        "name": "ulm_card_schumijo_car_energy_level",
+        "name": "ulm_card_vehicle_status_energy_level",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_card_schumijo_car_lock",
-        "defaultValue": "\"[[[ return variables.ulm_card_schumijo_car_lock ]]]\"",
+        "name": "ulm_card_vehicle_status_lock",
+        "defaultValue": "\"[[[ return variables.ulm_card_vehicle_status_lock ]]]\"",
         "selector": "entity"
       },
       {
-        "name": "ulm_card_schumijo_car_name",
-        "defaultValue": "\"[[[ return variables.ulm_card_schumijo_car_name ]]]\"",
+        "name": "ulm_card_vehicle_status_name",
+        "defaultValue": "\"[[[ return variables.ulm_card_vehicle_status_name ]]]\"",
         "selector": "text"
       },
       {
-        "name": "ulm_card_schumijo_car_range",
+        "name": "ulm_card_vehicle_status_range",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_card_schumijo_car_tracker",
-        "defaultValue": "\"[[[ return variables.ulm_card_schumijo_car_tracker ]]]\"",
+        "name": "ulm_card_vehicle_status_tracker",
+        "defaultValue": "\"[[[ return variables.ulm_card_vehicle_status_tracker ]]]\"",
         "selector": "entity"
       },
       {
-        "name": "ulm_custom_card_schumijo_ca_popup",
+        "name": "ulm_custom_card_vehicle_status_popup",
         "defaultValue": "<documented/inherited>",
         "selector": "boolean"
       },
       {
-        "name": "ulm_custom_card_schumijo_car_default_name",
+        "name": "ulm_custom_card_vehicle_status_default_name",
         "defaultValue": "\"O meu carro\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_schumijo_car_energy_level",
+        "name": "ulm_custom_card_vehicle_status_energy_level",
         "defaultValue": "\"Nível de energia\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_schumijo_car_language_variables",
+        "name": "ulm_custom_card_vehicle_status_language_variables",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_schumijo_car_range",
+        "name": "ulm_custom_card_vehicle_status_range",
         "defaultValue": "\"Alcance\"",
         "selector": "text"
       }
@@ -5628,10 +3612,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "1932419ed4a9c15ed073b5bdb41ba76fe027ce25ad3b5dcfdc6b3717cb99e129"
   },
   {
-    "upstreamId": "custom_card_schumijo_flower",
-    "sourcePath": "custom_cards/custom_card_schumijo_flower",
-    "publicId": "custom_card_schumijo_flower",
-    "rendererId": "custom_card_schumijo_flower",
+    "upstreamId": "custom_card_plant",
+    "sourcePath": "custom_cards/custom_card_plant",
+    "publicId": "custom_card_plant",
+    "rendererId": "custom_card_plant",
     "layoutProfile": "card:button-card",
     "primitives": [
       "button-card"
@@ -5668,17 +3652,17 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_schumijo_flower_correct",
+        "name": "ulm_custom_card_plant_correct",
         "defaultValue": "\"Correto\"",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_schumijo_flower_language_variables",
+        "name": "ulm_custom_card_plant_language_variables",
         "defaultValue": "<documented/inherited>",
         "selector": "text"
       },
       {
-        "name": "ulm_custom_card_schumijo_flower_problem",
+        "name": "ulm_custom_card_plant_problem",
         "defaultValue": "\"Problema\"",
         "selector": "text"
       }
@@ -5694,186 +3678,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "02ae73a2485419633c91da2a275442d8ef179bff1e0887eafe5ebbe155bd7622"
   },
   {
-    "upstreamId": "custom_card_senoro_win",
-    "sourcePath": "custom_cards/custom_card_senoro_win",
-    "publicId": "custom_card_senoro_win",
-    "rendererId": "custom_card_senoro_win",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [
-      "icon"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [],
-    "variables": [
-      {
-        "name": "ulm_custom_card_senoro_win_battery_is_at",
-        "defaultValue": "\"Battery is at\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_senoro_win_battery_level",
-        "defaultValue": "\"\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_senoro_win_battery_warning",
-        "defaultValue": "20",
-        "selector": "number"
-      },
-      {
-        "name": "ulm_custom_card_senoro_win_battery_warning_low",
-        "defaultValue": "5",
-        "selector": "number"
-      },
-      {
-        "name": "ulm_custom_card_senoro_win_closed",
-        "defaultValue": "\"Closed\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_senoro_win_color",
-        "defaultValue": "\"blue\"",
-        "selector": "color"
-      },
-      {
-        "name": "ulm_custom_card_senoro_win_entity",
-        "defaultValue": "\"[[[ return entity.entity_id ]]]\"",
-        "selector": "entity"
-      },
-      {
-        "name": "ulm_custom_card_senoro_win_force_background_color",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_custom_card_senoro_win_handle",
-        "defaultValue": "\"\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_senoro_win_icon",
-        "defaultValue": "\"\"",
-        "selector": "icon"
-      },
-      {
-        "name": "ulm_custom_card_senoro_win_language_variables",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_senoro_win_locked",
-        "defaultValue": "\"Locked\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_senoro_win_manipulated",
-        "defaultValue": "\"Manipulated\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_senoro_win_name",
-        "defaultValue": "\"\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_senoro_win_open",
-        "defaultValue": "\"Open\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_senoro_win_tilted",
-        "defaultValue": "\"Tilted\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_language_variables",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_show_last_changed",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_unavailable",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "b0769244997ee14782a133104820c978f171c3922367f1545f9691314cb7401e"
-  },
-  {
-    "upstreamId": "custom_card_sisimomo_printer",
-    "sourcePath": "custom_cards/custom_card_sisimomo_printer",
-    "publicId": "custom_card_sisimomo_printer",
-    "rendererId": "custom_card_sisimomo_printer",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [
-      "label",
-      "printer_state"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_card_printer_name",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_idle",
-        "defaultValue": "\"idle\"",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_language_variables",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_unavailable",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_unavailable",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "f6bf17876ec8f3efb8f722114000b01103bef7179bfaedf942ffe0a171b38fae"
-  },
-  {
-    "upstreamId": "custom_card_speedtest_shogun160",
-    "sourcePath": "custom_cards/custom_card_speedtest_shogun160",
-    "publicId": "custom_card_speedtest_shogun160",
-    "rendererId": "custom_card_speedtest_shogun160",
+    "upstreamId": "custom_card_speedtest_gauges",
+    "sourcePath": "custom_cards/custom_card_speedtest_gauges",
+    "publicId": "custom_card_speedtest_gauges",
+    "rendererId": "custom_card_speedtest_gauges",
     "layoutProfile": "card:button-card+chart",
     "primitives": [
       "button-card",
@@ -5958,188 +3766,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "70e47e2c8ce62a205c6c41e956435432292e5ff0322c638d92f529fc8083859d"
   },
   {
-    "upstreamId": "custom_card_tpx01_aircondition",
-    "sourcePath": "custom_cards/custom_card_tpx01_aircondition",
-    "publicId": "custom_card_tpx01_aircondition",
-    "rendererId": "custom_card_tpx01_aircondition",
-    "layoutProfile": "card:button-card+horizontal-stack",
-    "primitives": [
-      "button-card",
-      "horizontal-stack"
-    ],
-    "customFields": [
-      "icon",
-      "item1",
-      "item2",
-      "item3",
-      "label"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "a6a13c8ba588f0c28f7641d5a6dc49dcdc7dddfa527e53302bb028b6e37d8b82"
-  },
-  {
-    "upstreamId": "custom_card_vncntdev_device_tracer",
-    "sourcePath": "custom_cards/custom_card_vncntdev_device_tracer",
-    "publicId": "custom_card_vncntdev_device_tracer",
-    "rendererId": "custom_card_vncntdev_device_tracer",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [
-      "icon",
-      "item1",
-      "item2"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [],
-    "variables": [],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [
-      "person/device-tracker entities"
-    ],
-    "deviations": [],
-    "sourceDigest": "d06e7d1af82a0f813bcb0a7e77d637c8a603a0578c78132a0507364ffaf32c48"
-  },
-  {
-    "upstreamId": "custom_card_water_heater",
-    "sourcePath": "custom_cards/custom_card_water_heater",
-    "publicId": "custom_card_water_heater",
-    "rendererId": "custom_card_water_heater",
-    "layoutProfile": "card:native-card",
-    "primitives": [
-      "native-card"
-    ],
-    "customFields": [
-      "icon",
-      "label"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "hold_action",
-      "tap_action"
-    ],
-    "variables": [],
-    "dependencies": [],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "958d37f4830db5f762e7b43a65898f60178b2215257ca0ca7ae9d0dcb372fcd5"
-  },
-  {
-    "upstreamId": "custom_card_wilbiev_subtitle",
-    "sourcePath": "custom_cards/custom_card_wilbiev_subtitle",
-    "publicId": "card_title",
-    "variant": "divider-subtitle",
-    "rendererId": "card_title",
-    "layoutProfile": "card:button-card+entities",
-    "primitives": [
-      "button-card",
-      "entities"
-    ],
-    "customFields": [
-      "item1"
-    ],
-    "stateDriven": false,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_custom_card_wilbiev_subtitle_name",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_wilbiev_title_name",
-        "defaultValue": "\"Subtitle\"",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card",
-      "text-divider-row"
-    ],
-    "backendRequirements": [],
-    "deviations": [
-      "Upstream embeds custom:text-divider-row; this plugin provides an original Lit equivalent without requiring that frontend dependency."
-    ],
-    "sourceDigest": "e8c58209fed509770ec70248b107bd4a2fb7a8f7a31eefa0ac5dadf5a2157633"
-  },
-  {
-    "upstreamId": "custom_card_wilbiev_title",
-    "sourcePath": "custom_cards/custom_card_wilbiev_title",
-    "publicId": "card_title",
-    "variant": "divider-title",
-    "rendererId": "card_title",
-    "layoutProfile": "card:button-card+entities",
-    "primitives": [
-      "button-card",
-      "entities"
-    ],
-    "customFields": [
-      "item1",
-      "item2"
-    ],
-    "stateDriven": false,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_custom_card_wilbiev_title_name",
-        "defaultValue": "\"Title\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_wilbiev_title_nav",
-        "defaultValue": "\"\"",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card",
-      "mushroom-chips-card",
-      "text-divider-row"
-    ],
-    "backendRequirements": [],
-    "deviations": [
-      "Upstream embeds custom:mushroom-chips-card; this plugin provides an original Lit equivalent without requiring that frontend dependency.",
-      "Upstream embeds custom:text-divider-row; this plugin provides an original Lit equivalent without requiring that frontend dependency."
-    ],
-    "sourceDigest": "664d0990b1c404e6e9a14caadd090a466c4ed10a6bf9e7ee1d6573fa8ca23819"
-  },
-  {
-    "upstreamId": "custom_card_wsly_pollen",
-    "sourcePath": "custom_cards/custom_card_wsly_pollen",
-    "publicId": "custom_card_wsly_pollen",
-    "rendererId": "custom_card_wsly_pollen",
+    "upstreamId": "custom_card_pollen",
+    "sourcePath": "custom_cards/custom_card_pollen",
+    "publicId": "custom_card_pollen",
+    "rendererId": "custom_card_pollen",
     "layoutProfile": "card:button-card",
     "primitives": [
       "button-card"
@@ -6162,102 +3792,6 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     ],
     "deviations": [],
     "sourceDigest": "e41b8c1f961cc37f153aa55b2401b0becc2ee49ac0b40ec19c36aaef09c8f98b"
-  },
-  {
-    "upstreamId": "custom_card_yagrasdemonde_lights_count",
-    "sourcePath": "custom_cards/custom_card_yagrasdemonde_lights_count",
-    "publicId": "custom_card_yagrasdemonde_lights_count",
-    "rendererId": "custom_card_yagrasdemonde_lights_count",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [
-      "icon"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_custom_card_yagrasdemonde_lights_count_color",
-        "defaultValue": "\"yellow\"",
-        "selector": "color"
-      },
-      {
-        "name": "ulm_custom_card_yagrasdemonde_lights_count_cover_0",
-        "defaultValue": "\"Нет открытых ворот\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_yagrasdemonde_lights_count_cover_1",
-        "defaultValue": "\"1 ворота открыты\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_yagrasdemonde_lights_count_cover_many",
-        "defaultValue": "\"ворот открыты\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_yagrasdemonde_lights_count_force_background_color",
-        "defaultValue": "false",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_custom_card_yagrasdemonde_lights_count_icon_off",
-        "defaultValue": "\"mdi:lightbulb-outline\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_yagrasdemonde_lights_count_icon_on",
-        "defaultValue": "\"[[[ return entity.attributes.icon ]]]\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_yagrasdemonde_lights_count_language_variables",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_yagrasdemonde_lights_count_light_0",
-        "defaultValue": "\"Свет отключен\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_yagrasdemonde_lights_count_light_1",
-        "defaultValue": "\"1 лампа включена\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_yagrasdemonde_lights_count_light_many",
-        "defaultValue": "\"лампы включены\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_yagrasdemonde_lights_count_type",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_engine",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_translation_state",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "420acb3fd6a76df25cc45c74128ac55892aa22f652fb560c0179b83ecd35f306"
   }
 ];
 

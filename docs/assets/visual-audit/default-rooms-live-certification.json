@@ -14,26 +14,28 @@
       "entity": "person.joris",
       "batteryEntity": "sensor.joris_mobile_battery_level",
       "text": "Joris home 7 %",
-      "geometry": [330, 96],
+      "geometry": [
+        330,
+        96
+      ],
       "overflow": false,
       "moreInfoEntity": "person.joris",
       "screenshot": "live-rooms-person.png"
     },
-    "card_power_outlet": {
-      "entity": "switch.cv_plug",
-      "consumptionEntity": "sensor.cv_plug_power",
-      "text": "CV plug on • 2.0 W",
-      "geometry": [330, 96],
-      "overflow": false,
-      "moreInfoEntity": "switch.cv_plug",
-      "physicalActionsOperated": false,
-      "screenshot": "live-rooms-power-outlet.png"
-    },
     "card_room": {
       "entity": "light.joris_iris_1",
-      "sensorEntities": ["sensor.office_joris_motion_illuminance", "sensor.bedroom_temperature_2"],
-      "sensorLabels": ["Light", "Temperature"],
-      "geometry": [330, 330],
+      "sensorEntities": [
+        "sensor.office_joris_motion_illuminance",
+        "sensor.bedroom_temperature_2"
+      ],
+      "sensorLabels": [
+        "Light",
+        "Temperature"
+      ],
+      "geometry": [
+        330,
+        330
+      ],
       "overflow": false,
       "moreInfoEntity": "light.joris_iris_1",
       "physicalLightActionOperated": false,
@@ -41,39 +43,24 @@
     },
     "card_scenes": {
       "variant": "welcome-pills",
-      "buttons": ["Relax", "Dimmed"],
-      "geometry": [330, 108],
+      "buttons": [
+        "Relax",
+        "Dimmed"
+      ],
+      "geometry": [
+        330,
+        108
+      ],
       "overflow": false,
       "sceneActionsOperated": false,
       "screenshot": "live-rooms-scenes.png"
-    },
-    "card_script": {
-      "entity": "script.welcome_home_briefing",
-      "text": "Welcome Home Briefing",
-      "geometry": [330, 96],
-      "overflow": false,
-      "moreInfoEntity": "script.welcome_home_briefing",
-      "scriptExecuted": false,
-      "screenshot": "live-rooms-script.png"
-    },
-    "card_thermostat": {
-      "entity": "climate.living_room",
-      "text": "Living room off",
-      "geometry": [330, 68.578125],
-      "overflow": false,
-      "moreInfoEntity": "climate.living_room",
-      "hvacActionsOperated": false,
-      "screenshot": "live-rooms-thermostat.png"
     }
   },
   "picker": {
     "registrations": [
       "mushroom-addition-card-person",
-      "mushroom-addition-card-power-outlet",
       "mushroom-addition-card-room",
-      "mushroom-addition-card-scenes",
-      "mushroom-addition-card-script",
-      "mushroom-addition-card-thermostat"
+      "mushroom-addition-card-scenes"
     ],
     "allPreviewable": true
   },

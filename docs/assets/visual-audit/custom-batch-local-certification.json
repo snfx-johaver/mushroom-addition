@@ -1,12 +1,12 @@
 {
-  "capturedAt": "2026-09-23T20:14:52.660Z",
+  "capturedAt": "2026-09-23T20:14:52.66Z",
   "browserInteractions": {
-    "custom_card_afvalophaling": {
+    "custom_card_trash": {
       "visibleControls": 0,
       "cardActions": [
         {
           "config": {
-            "type": "custom:mushroom-addition-custom-card-afvalophaling",
+            "type": "custom:mushroom-addition-custom-card-trash",
             "entity": "sensor.afvalinfo_home_restafval",
             "show_icon": true,
             "show_state": true,
@@ -177,12 +177,12 @@
         ]
       ]
     },
-    "custom_card_damix48_power_details": {
+    "custom_card_power_details": {
       "visibleControls": 0,
       "cardActions": [
         {
           "config": {
-            "type": "custom:mushroom-addition-custom-card-damix48-power-details",
+            "type": "custom:mushroom-addition-custom-card-power-details",
             "entity": "sensor.power",
             "show_icon": true,
             "show_state": true,
@@ -206,7 +206,7 @@
     }
   },
   "geometry": {
-    "custom_card_afvalophaling": {
+    "custom_card_trash": {
       "width": 320,
       "height": 248,
       "regions": {
@@ -248,7 +248,7 @@
         ".chromecast-controls button": 3
       }
     },
-    "custom_card_damix48_power_details": {
+    "custom_card_power_details": {
       "width": 385,
       "height": 270,
       "regions": {

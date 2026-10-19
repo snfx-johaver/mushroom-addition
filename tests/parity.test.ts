@@ -3,7 +3,11 @@ import { CATALOG, publicItemForSource, PUBLIC_CATALOG, UPSTREAM_CATALOG } from "
 import { upstreamEditorSchemaFor } from "../src/editor-schema";
 import { PARITY_BY_ID, PARITY_ENTRIES } from "../src/parity.generated";
 import { EXAMPLE_CATALOG_IDS } from "../src/example-catalog";
-import { isRemovedPopupOption, supportedUpstreamOption } from "../src/supported-options";
+import {
+  isRemovedPopupOption,
+  isReplacedUpstreamOption,
+  supportedUpstreamOption,
+} from "../src/supported-options";
 
 describe("upstream parity manifest", () => {
   it("has one source-derived mapping per documented upstream source", () => {
@@ -28,24 +32,10 @@ describe("upstream parity manifest", () => {
       expect(new Set(variables).size, item.upstreamId).toBe(variables.length);
       for (const variable of variables) {
         expect(editorFields.has(variable), `${item.upstreamId}: ${variable}`)
-          .toBe(supportedUpstreamOption(item, variable));
+          .toBe(supportedUpstreamOption(item, variable) && !isReplacedUpstreamOption(item, variable));
       }
     }
-  });
-
-  it("preserves upstream defaults and assigns precise graphical selectors", () => {
-    const binary = PARITY_BY_ID.get("card_binary_sensor")!;
-    const variable = (name: string) => binary.variables.find((entry) => entry.name === name);
-    expect(variable("ulm_card_binary_sensor_color")?.selector).toBe("color");
-    expect(variable("ulm_card_binary_sensor_icon")?.selector).toBe("icon");
-    expect(variable("ulm_card_binary_sensor_name")?.selector).toBe("text");
-    expect(variable("ulm_card_binary_sensor_force_background_color")?.selector).toBe("boolean");
-    const battery = PARITY_BY_ID.get("card_battery")!;
-    expect(battery.variables.find((entry) => entry.name === "ulm_card_battery_battery_level_danger")?.defaultValue)
-      .toBe("<null>");
-  });
-
-  it("removes unsupported popup options from every graphical editor", () => {
+  });  it("removes unsupported popup options from every graphical editor", () => {
     for (const item of PUBLIC_CATALOG) {
       expect(upstreamEditorSchemaFor(item).some((field) => isRemovedPopupOption(field.name))).toBe(false);
       expect(item.variants?.includes("popup")).not.toBe(true);

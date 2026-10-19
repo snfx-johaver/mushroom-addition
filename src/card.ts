@@ -1,9 +1,9 @@
 import { LitElement, html, nothing, type TemplateResult } from "lit";
-import { property } from "lit/decorators.js";
+import { property, state } from "lit/decorators.js";
 import type { AdditionConfig, CatalogItem, HomeAssistant, WeatherForecast } from "./types";
 import { handleAction, normalizeConfig } from "./helpers";
 import { sharedStyles } from "./styles";
-import { renderByFamily } from "./renderers";
+import { renderAutomaticPresentation, renderByFamily, type RenderContext } from "./renderers";
 import { PARITY_BY_ID } from "./parity.generated";
 
 export class MushroomAdditionCard extends LitElement {
@@ -19,12 +19,14 @@ export class MushroomAdditionCard extends LitElement {
   private unsubscribeForecast?: () => void;
   private forecastGeneration = 0;
   private forecast: WeatherForecast[] = [];
+  @state() private sceneOverflowExpanded = false;
 
   public setConfig(config: AdditionConfig): void {
     if (!config || typeof config !== "object") throw new Error("A card configuration is required.");
     const normalized = normalizeConfig(config);
     const previousKey = this.forecastKey(this.config);
     this.config = normalized;
+    this.sceneOverflowExpanded = false;
     if (previousKey !== this.forecastKey(normalized)) this.stopForecastSubscription();
     this.requestUpdate();
     void this.subscribeForecast();
@@ -35,7 +37,7 @@ export class MushroomAdditionCard extends LitElement {
   }
 
   public static getStubConfig(): AdditionConfig {
-    return { type: "custom:mushroom-addition-card-generic", show_icon: true, show_state: true };
+    return { type: "custom:mushroom-addition-card-battery", show_icon: true, show_state: true };
   }
 
   public getCardSize(): number {
@@ -47,15 +49,28 @@ export class MushroomAdditionCard extends LitElement {
     if (!this.config || !this.descriptor) return nothing;
     if (!this.hass) return html`<ha-card><div class="preview">Mushroom Addition preview</div></ha-card>`;
     const entity = this.config.entity ? this.hass.states[this.config.entity] : undefined;
-    return renderByFamily({
+    const presentation = { rendered: false };
+    const context: RenderContext = {
       config: this.config,
       descriptor: this.descriptor,
       hass: this.hass,
       entity,
       forecast: this.forecast,
-      actionSurface: this.actionSurface,
+      presentation,
+      sceneOverflowExpanded: this.sceneOverflowExpanded,
+      toggleSceneOverflow: () => {
+        this.sceneOverflowExpanded = !this.sceneOverflowExpanded;
+      },
+      actionSurface: (classes, content, style) => this.actionSurface(
+        classes,
+        presentation.rendered
+          ? content
+          : html`${renderAutomaticPresentation(context)}${content}`,
+        style,
+      ),
       service: (domain, service, data) => void this.hass?.callService(domain, service, data),
-    });
+    };
+    return renderByFamily(context);
   }
 
   protected updated(): void {
@@ -109,7 +124,7 @@ export class MushroomAdditionCard extends LitElement {
     }
   }
 
-  private readonly actionSurface = (classes: string, content: TemplateResult): TemplateResult => {
+  private readonly actionSurface = (classes: string, content: TemplateResult, style = ""): TemplateResult => {
     const parity = this.descriptor ? PARITY_BY_ID.get(this.descriptor.upstreamId) : undefined;
     if (!parity) {
       throw new Error(`Missing explicit parity renderer mapping for ${this.descriptor?.upstreamId}`);
@@ -119,7 +134,7 @@ export class MushroomAdditionCard extends LitElement {
     const fillClass = this.config?.fill_container ? " fill-container" : "";
     const variantClass = this.config?.variant ? ` variant-${this.config.variant}` : "";
     const surface = html`
-      <div class="${classes}${parityClass}${layoutClass}${fillClass}${variantClass} action-surface" role="button" tabindex="0"
+      <div class="${classes}${parityClass}${layoutClass}${fillClass}${variantClass} action-surface" style=${style} role="button" tabindex="0"
         @click=${this.tap} @dblclick=${this.doubleTap}
         @pointerdown=${this.pointerDown} @pointerup=${this.pointerUp}
         @pointercancel=${this.pointerUp} @keydown=${this.keydown}>

@@ -5,7 +5,7 @@
   "fixture": "demo/status-pollen-comparison.html",
   "test": "tests/status-pollen-certification.test.ts",
   "sources": {
-    "custom_card_mpse_wifisignal": {
+    "custom_card_wifi_signal": {
       "liveConfig": {
         "entity": "sensor.yvette_mobile_signal_strength_sim_1"
       },
@@ -19,110 +19,9 @@
           }
         }
       ],
-      "artifact": "docs/assets/visual-audit/custom_card_mpse_wifisignal-comparison.png"
+      "artifact": "docs/assets/visual-audit/custom_card_wifi_signal-comparison.png"
     },
-    "custom_card_nas": {
-      "liveConfig": {
-        "entity": "sensor.all_nas_disks_status",
-        "ulm_custom_card_nas_text": "NAS status",
-        "ulm_custom_card_nas_unit": ""
-      },
-      "visibleInteractions": [
-        {
-          "surface": "card",
-          "gesture": "tap",
-          "payload": {
-            "action": "more-info",
-            "entity": "sensor.all_nas_disks_status"
-          }
-        }
-      ],
-      "artifact": "docs/assets/visual-audit/custom_card_nas-comparison.png"
-    },
-    "custom_card_neekster_update": {
-      "liveConfig": {
-        "entity": "update.home_assistant_core_update",
-        "ulm_card_neekster_update_enable_controls": true
-      },
-      "visibleInteractions": [
-        {
-          "surface": "card",
-          "gesture": "tap",
-          "payload": {
-            "action": "more-info",
-            "entity": "update.home_assistant_core_update"
-          }
-        },
-        {
-          "surface": "card",
-          "gesture": "hold",
-          "payload": {
-            "action": "more-info",
-            "entity": "update.home_assistant_core_update"
-          }
-        },
-        {
-          "control": "install",
-          "service": "update.install",
-          "data": {
-            "entity_id": "update.home_assistant_core_update"
-          }
-        },
-        {
-          "control": "skip",
-          "service": "update.skip",
-          "data": {
-            "entity_id": "update.home_assistant_core_update"
-          }
-        },
-        {
-          "control": "install",
-          "gesture": "hold",
-          "payload": {
-            "action": "more-info",
-            "entity": "update.home_assistant_core_update"
-          }
-        },
-        {
-          "control": "skip",
-          "gesture": "hold",
-          "payload": null,
-          "deviation": "The pinned source spells this action cperform-action, so the gesture is intentionally a no-op rather than inventing an executable service."
-        }
-      ],
-      "artifact": "docs/assets/visual-audit/custom_card_neekster_update-comparison.png"
-    },
-    "custom_card_nik_clock": {
-      "liveConfig": {
-        "entity": "sensor.time",
-        "date_entity": "sensor.date_time"
-      },
-      "visibleInteractions": [
-        {
-          "surface": "card",
-          "gesture": "tap",
-          "payload": {
-            "action": "none"
-          },
-          "visibility": "default source configuration"
-        },
-        {
-          "surface": "card",
-          "gesture": "tap",
-          "payload": {
-            "action": "perform-action",
-            "perform_action": "input_boolean.toggle",
-            "target": {
-              "entity_id": "<clock_switch_entity>"
-            }
-          },
-          "visibility": "only when clock_switch_entity and ulm_custom_card_nik_clock_switch_enable are configured"
-        }
-      ],
-      "mappingAdaptation": "The provided weather_entity is not used because the pinned clock source has no weather field or surface.",
-      "artifact": "docs/assets/visual-audit/custom_card_nik_clock-comparison.png"
-    },
-    "custom_card_nik_door": {
+    "custom_card_door": {
       "liveConfig": {
         "entity": "binary_sensor.all_doors"
       },
@@ -161,9 +60,9 @@
           "visibility": "only when lock_entity is configured"
         }
       ],
-      "artifact": "docs/assets/visual-audit/custom_card_nik_door-comparison.png"
+      "artifact": "docs/assets/visual-audit/custom_card_door-comparison.png"
     },
-    "custom_card_paddy_dwd_pollen": {
+    "custom_card_pollen_forecast": {
       "liveConfig": {
         "entity": "sensor.kleenex_pollen_radar_home_grass_level",
         "level_entity": "sensor.kleenex_pollen_radar_home_grass_level"
@@ -179,7 +78,7 @@
         }
       ],
       "mappingAdaptation": "The provided level_entity becomes the source card entity because the pinned DWD template requires a numeric 0-6 state; the non-level grass sensor is not rendered.",
-      "artifact": "docs/assets/visual-audit/custom_card_paddy_dwd_pollen-comparison.png"
+      "artifact": "docs/assets/visual-audit/custom_card_pollen_forecast-comparison.png"
     }
   }
 }

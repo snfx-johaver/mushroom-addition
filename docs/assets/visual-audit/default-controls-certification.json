@@ -15,72 +15,91 @@
         "ulm_card_battery_battery_level_warning": 50
       }
     },
-    "card_binary_sensor": {
-      "type": "custom:mushroom-addition-card-binary-sensor",
-      "entity": "binary_sensor.all_doors"
-    },
-    "card_binary_sensor_alert": {
-      "type": "custom:mushroom-addition-card-binary-sensor",
-      "variant": "alert",
-      "entity": "binary_sensor.all_smoke_sensors"
-    },
     "card_cover": {
       "type": "custom:mushroom-addition-card-cover",
       "entity": "cover.sunscreen",
       "ulm_card_cover_enable_controls": false,
       "ulm_card_cover_enable_slider": false,
       "ulm_card_cover_enable_tilt": false
-    },
-    "card_fan": {
-      "type": "custom:mushroom-addition-card-fan",
-      "entity": "fan.air_purifier",
-      "ulm_card_fan_enable_slider": false,
-      "ulm_card_fan_enable_button": false
-    },
-    "card_input_boolean": {
-      "type": "custom:mushroom-addition-card-input-boolean",
-      "entity": "input_boolean.dropdown_welcome",
-      "tap_action": {
-        "action": "toggle"
-      }
     }
   },
   "sources": {
     "card_battery": {
-      "cardSurface": ["tap", "hold", "double_tap", "keyboard"],
-      "controls": []
-    },
-    "card_binary_sensor": {
-      "cardSurface": ["tap", "hold", "double_tap", "keyboard"],
-      "controls": []
-    },
-    "card_binary_sensor_alert": {
-      "cardSurface": ["tap", "hold", "double_tap", "keyboard"],
+      "cardSurface": [
+        "tap",
+        "hold",
+        "double_tap",
+        "keyboard"
+      ],
       "controls": []
     },
     "card_cover": {
-      "cardSurface": ["tap", "hold", "double_tap", "keyboard"],
+      "cardSurface": [
+        "tap",
+        "hold",
+        "double_tap",
+        "keyboard"
+      ],
       "controls": [
-        { "label": "Close", "service": "cover.close_cover", "data": { "entity_id": "cover.blind" } },
-        { "label": "Stop", "service": "cover.stop_cover", "data": { "entity_id": "cover.blind" } },
-        { "label": "Open", "service": "cover.open_cover", "data": { "entity_id": "cover.blind" } },
-        { "label": "Move to 35%", "service": "cover.set_cover_position", "data": { "entity_id": "cover.blind", "position": 35 } },
-        { "label": "Cover position", "service": "cover.set_cover_position", "data": { "entity_id": "cover.blind", "position": 55 } },
-        { "label": "Close tilt", "service": "cover.close_cover_tilt", "data": { "entity_id": "cover.blind" } },
-        { "label": "Stop tilt", "service": "cover.stop_cover_tilt", "data": { "entity_id": "cover.blind" } },
-        { "label": "Open tilt", "service": "cover.open_cover_tilt", "data": { "entity_id": "cover.blind" } }
+        {
+          "label": "Close",
+          "service": "cover.close_cover",
+          "data": {
+            "entity_id": "cover.blind"
+          }
+        },
+        {
+          "label": "Stop",
+          "service": "cover.stop_cover",
+          "data": {
+            "entity_id": "cover.blind"
+          }
+        },
+        {
+          "label": "Open",
+          "service": "cover.open_cover",
+          "data": {
+            "entity_id": "cover.blind"
+          }
+        },
+        {
+          "label": "Move to 35%",
+          "service": "cover.set_cover_position",
+          "data": {
+            "entity_id": "cover.blind",
+            "position": 35
+          }
+        },
+        {
+          "label": "Cover position",
+          "service": "cover.set_cover_position",
+          "data": {
+            "entity_id": "cover.blind",
+            "position": 55
+          }
+        },
+        {
+          "label": "Close tilt",
+          "service": "cover.close_cover_tilt",
+          "data": {
+            "entity_id": "cover.blind"
+          }
+        },
+        {
+          "label": "Stop tilt",
+          "service": "cover.stop_cover_tilt",
+          "data": {
+            "entity_id": "cover.blind"
+          }
+        },
+        {
+          "label": "Open tilt",
+          "service": "cover.open_cover_tilt",
+          "data": {
+            "entity_id": "cover.blind"
+          }
+        }
       ]
-    },
-    "card_fan": {
-      "cardSurface": ["tap", "hold", "double_tap", "keyboard"],
-      "controls": [
-        { "label": "Fan speed", "service": "fan.set_percentage", "data": { "entity_id": "fan.bedroom", "percentage": 65 } },
-        { "label": "Toggle oscillation", "service": "fan.oscillate", "data": { "entity_id": "fan.bedroom", "oscillating": false } }
-      ]
-    },
-    "card_input_boolean": {
-      "cardSurface": ["tap", "hold", "double_tap", "keyboard"],
-      "controls": []
     }
   }
 }

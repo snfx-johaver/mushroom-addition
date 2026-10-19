@@ -19,41 +19,7 @@
     "appended": 0
   },
   "sources": {
-    "custom_card_paddy_waste_collection": {
-      "config": {
-        "entity": "sensor.afvalinfo_home_trash_type_today"
-      },
-      "renderedText": "geen Trash type today",
-      "geometry": {
-        "width": 330,
-        "height": 65,
-        "clientWidth": 330,
-        "scrollWidth": 330
-      },
-      "pickerRegistered": true,
-      "editorFields": [
-        "entity",
-        "name_mode",
-        "name",
-        "icon",
-        "icon_type",
-        "layout",
-        "fill_container",
-        "primary_info",
-        "secondary_info",
-        "tap_action",
-        "hold_action",
-        "double_tap_action"
-      ],
-      "safeInteraction": {
-        "action": "more-info",
-        "entity": "sensor.afvalinfo_home_trash_type_today",
-        "verifiedBy": "Home Assistant more-info URL"
-      },
-      "screenshot": "live-welcome-mushroom-addition-custom-card-paddy-waste-collection.png",
-      "liveAccepted": true
-    },
-    "custom_card_paddy_welcome": {
+    "custom_card_welcome_dashboard": {
       "config": {
         "entity": "person.joris",
         "variant": "weather",
@@ -92,43 +58,7 @@
         "entity": "weather.hcn_ha",
         "verifiedBy": "Home Assistant more-info URL"
       },
-      "screenshot": "live-welcome-mushroom-addition-custom-card-paddy-welcome.png",
-      "liveAccepted": true
-    },
-    "custom_card_person_chip": {
-      "config": {
-        "entity": "person.joris",
-        "use_entity_picture": true
-      },
-      "renderedText": "Home",
-      "geometry": {
-        "width": 330,
-        "height": 45,
-        "surfaceWidth": 90,
-        "surfaceScrollWidth": 90
-      },
-      "pickerRegistered": true,
-      "editorFields": [
-        "entity",
-        "use_entity_picture",
-        "name_mode",
-        "name",
-        "icon",
-        "icon_type",
-        "layout",
-        "fill_container",
-        "primary_info",
-        "secondary_info",
-        "tap_action",
-        "hold_action",
-        "double_tap_action"
-      ],
-      "safeInteraction": {
-        "action": "more-info",
-        "entity": "person.joris",
-        "verifiedBy": "Home Assistant more-info URL"
-      },
-      "screenshot": "live-welcome-mushroom-addition-custom-card-person-chip.png",
+      "screenshot": "live-welcome-mushroom-addition-custom-card-welcome-dashboard.png",
       "liveAccepted": true
     },
     "custom_card_playstation": {
@@ -166,52 +96,11 @@
       "screenshot": "live-welcome-mushroom-addition-custom-card-playstation.png",
       "liveAccepted": true
     },
-    "custom_card_qubino": {
-      "config": {
-        "entity": "switch.cv_plug"
-      },
-      "renderedText": "CV plug Unavailable",
-      "geometry": {
-        "width": 330,
-        "height": 65,
-        "clientWidth": 330,
-        "scrollWidth": 330
-      },
-      "pickerRegistered": true,
-      "editorFields": [
-        "entity",
-        "qubino_more_info_entity",
-        "name_mode",
-        "name",
-        "icon",
-        "icon_type",
-        "layout",
-        "fill_container",
-        "primary_info",
-        "secondary_info",
-        "tap_action",
-        "hold_action",
-        "double_tap_action"
-      ],
-      "editorEntityDomains": [
-        "light",
-        "switch"
-      ],
-      "safeInteraction": {
-        "action": "more-info",
-        "entity": "switch.cv_plug",
-        "verifiedBy": "Home Assistant more-info URL"
-      },
-      "physicalActionsOperated": false,
-      "limitation": "The mapped switch exposes no source brightness attribute or pilot-wire input_select, so the truthful live state is Unavailable.",
-      "screenshot": "live-welcome-mushroom-addition-custom-card-qubino.png",
-      "liveAccepted": true
-    },
-    "custom_card_ristou_person": {
+    "custom_card_person_tracker": {
       "config": {
         "entity": "person.joris",
-        "ulm_custom_card_ristou_use_entity_picture": true,
-        "ulm_custom_card_ristou_use_badge": true,
+        "ulm_custom_card_person_tracker_use_entity_picture": true,
+        "ulm_custom_card_person_tracker_use_badge": true,
         "battery_entity": "sensor.joris_mobile_battery_level"
       },
       "renderedText": "Joris home",
@@ -224,18 +113,18 @@
       "pickerRegistered": true,
       "editorFields": [
         "entity",
-        "ulm_custom_card_ristou_use_entity_picture",
-        "ulm_custom_card_ristou_use_badge",
+        "ulm_custom_card_person_tracker_use_entity_picture",
+        "ulm_custom_card_person_tracker_use_badge",
         "battery_entity",
-        "ulm_custom_card_ristou_person_driving_entity",
-        "ulm_custom_card_ristou_zones",
-        "ulm_custom_card_ristou_find_device_script",
-        "ulm_custom_card_ristou_map_enable",
-        "ulm_custom_card_ristou_map_aspect_ratio",
-        "ulm_custom_card_ristou_map_hours_to_show",
-        "ulm_custom_card_ristou_map_default_zoom",
-        "ulm_custom_card_ristou_camera_entity_light",
-        "ulm_custom_card_ristou_camera_entity_dark",
+        "ulm_custom_card_person_tracker_driving_entity",
+        "ulm_custom_card_person_tracker_zones",
+        "ulm_custom_card_person_tracker_find_device_script",
+        "ulm_custom_card_person_tracker_map_enable",
+        "ulm_custom_card_person_tracker_map_aspect_ratio",
+        "ulm_custom_card_person_tracker_map_hours_to_show",
+        "ulm_custom_card_person_tracker_map_default_zoom",
+        "ulm_custom_card_person_tracker_camera_entity_light",
+        "ulm_custom_card_person_tracker_camera_entity_dark",
         "name_mode",
         "name",
         "icon",
@@ -257,7 +146,7 @@
         "verifiedBy": "Home Assistant more-info URL"
       },
       "findDeviceOperated": false,
-      "screenshot": "live-welcome-mushroom-addition-custom-card-ristou-person.png",
+      "screenshot": "live-welcome-mushroom-addition-custom-card-person-tracker.png",
       "liveAccepted": true
     }
   },
@@ -270,7 +159,7 @@
     ]
   },
   "result": {
-    "accepted": 6,
+    "accepted": 3,
     "overflowFailures": 0,
     "pickerFailures": 0,
     "editorFailures": 0,

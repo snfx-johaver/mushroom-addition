@@ -6,61 +6,100 @@
     "interactionUnitTest": "tests/renderers.test.ts"
   },
   "browserInteractions": {
-    "custom_card_heat_pump": {
-      "controlsClicked": 8,
-      "serviceCalls": [
-        ["climate", "set_temperature", { "entity_id": "climate.heat_pump", "temperature": 19 }],
-        ["climate", "set_temperature", { "entity_id": "climate.heat_pump", "temperature": 21 }],
-        ["climate", "set_hvac_mode", { "entity_id": "climate.heat_pump", "hvac_mode": "heat" }],
-        ["climate", "set_hvac_mode", { "entity_id": "climate.heat_pump", "hvac_mode": "heat" }],
-        ["climate", "set_hvac_mode", { "entity_id": "climate.heat_pump", "hvac_mode": "cool" }],
-        ["climate", "set_hvac_mode", { "entity_id": "climate.heat_pump", "hvac_mode": "heat_cool" }],
-        ["climate", "set_hvac_mode", { "entity_id": "climate.heat_pump", "hvac_mode": "dry" }],
-        ["climate", "set_hvac_mode", { "entity_id": "climate.heat_pump", "hvac_mode": "fan_only" }]
-      ],
-      "cardActionsTriggered": 0
-    },
-    "custom_card_homeassistant_updates": {
-      "controlsClicked": 3,
-      "actions": [
-        { "action": "url", "url_path": "https://www.home-assistant.io/latest-release-notes/" },
-        { "action": "navigate", "navigation_path": "/config/updates" },
-        { "action": "more-info", "entity": "update.core" }
-      ],
-      "outerCardActionsTriggered": 0
-    },
-    "custom_card_nik_nas": {
+    "custom_card_nas_metrics": {
       "controlsClicked": 1,
       "cardSurfaceClicks": 1,
       "actions": [
-        { "gesture": "tap", "source": "status tile", "action": "more-info", "entity": "binary_sensor.hn_nas_status" },
-        { "gesture": "tap", "source": "card surface", "action": "more-info", "entity": "binary_sensor.hn_nas_status" }
+        {
+          "gesture": "tap",
+          "source": "status tile",
+          "action": "more-info",
+          "entity": "binary_sensor.hn_nas_status"
+        },
+        {
+          "gesture": "tap",
+          "source": "card surface",
+          "action": "more-info",
+          "entity": "binary_sensor.hn_nas_status"
+        }
       ]
     },
-    "custom_card_nik_tablet": {
+    "custom_card_tablet": {
       "controlsClicked": 6,
       "serviceCalls": [
-        ["homeassistant", "toggle", { "entity_id": "switch.bram_tablet_usb" }],
-        ["homeassistant", "toggle", { "entity_id": "switch.bram_tablet_motion" }],
-        ["homeassistant", "toggle", { "entity_id": "switch.bram_tablet_display" }],
-        ["button", "press", { "entity_id": "button.bram_tablet_restart" }],
-        ["homeassistant", "toggle", { "entity_id": "switch.bram_tablet_maintenance" }],
-        ["button", "press", { "entity_id": "button.bram_tablet_reload" }]
+        [
+          "homeassistant",
+          "toggle",
+          {
+            "entity_id": "switch.bram_tablet_usb"
+          }
+        ],
+        [
+          "homeassistant",
+          "toggle",
+          {
+            "entity_id": "switch.bram_tablet_motion"
+          }
+        ],
+        [
+          "homeassistant",
+          "toggle",
+          {
+            "entity_id": "switch.bram_tablet_display"
+          }
+        ],
+        [
+          "button",
+          "press",
+          {
+            "entity_id": "button.bram_tablet_restart"
+          }
+        ],
+        [
+          "homeassistant",
+          "toggle",
+          {
+            "entity_id": "switch.bram_tablet_maintenance"
+          }
+        ],
+        [
+          "button",
+          "press",
+          {
+            "entity_id": "button.bram_tablet_reload"
+          }
+        ]
       ],
       "cardActionsTriggered": 0
     },
     "custom_card_person_info_small": {
       "controlsClicked": 0,
       "cardSurfaceActions": [
-        { "gesture": "tap", "action": "more-info", "entity": "person.joris" },
-        { "gesture": "hold", "action": "more-info", "entity": "sensor.phone_battery" }
+        {
+          "gesture": "tap",
+          "action": "more-info",
+          "entity": "person.joris"
+        },
+        {
+          "gesture": "hold",
+          "action": "more-info",
+          "entity": "sensor.phone_battery"
+        }
       ]
     },
     "custom_card_person_info": {
       "controlsClicked": 0,
       "cardSurfaceActions": [
-        { "gesture": "tap", "action": "more-info", "entity": "person.joris" },
-        { "gesture": "hold", "action": "more-info", "entity": "sensor.person_full_battery" }
+        {
+          "gesture": "tap",
+          "action": "more-info",
+          "entity": "person.joris"
+        },
+        {
+          "gesture": "hold",
+          "action": "more-info",
+          "entity": "sensor.person_full_battery"
+        }
       ]
     }
   }

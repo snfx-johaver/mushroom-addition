@@ -14,23 +14,19 @@
     "backupSuffix": "20260923-225231"
   },
   "sources": {
-    "custom_card_light_colorpick": {
-      "entity": "light.joris_iris_1",
-      "text": "Joris Iris 1 off",
-      "geometry": [330, 68.578125],
-      "overflow": false,
-      "brightnessControlPresent": true,
-      "colorControlsCollapsedWhileOff": true,
-      "moreInfoEntity": "light.joris_iris_1",
-      "physicalActionsOperated": false,
-      "screenshot": "live-power-light-colorpick.png"
-    },
     "custom_card_media_player_sonos": {
       "entity": "media_player.office_joris_sonos",
       "text": "Office Joris Sonos TV • 34%",
-      "geometry": [330, 120.578125],
+      "geometry": [
+        330,
+        120.578125
+      ],
       "overflow": false,
-      "controls": ["Volume down", "Play or pause", "Volume up"],
+      "controls": [
+        "Volume down",
+        "Play or pause",
+        "Volume up"
+      ],
       "moreInfoEntity": "media_player.office_joris_sonos",
       "mediaActionsOperated": false,
       "screenshot": "live-power-media-player-sonos.png"
@@ -40,39 +36,38 @@
       "powerEntity": "sensor.office_joris_plug_4_power",
       "energyEntity": "sensor.office_joris_plug_4_energy",
       "text": "Office Joris plug 4 Printer 2.1W • 6.749kWh",
-      "geometry": [330, 64.578125],
+      "geometry": [
+        330,
+        64.578125
+      ],
       "overflow": false,
       "moreInfoEntity": "switch.office_joris_plug_4",
       "physicalActionsOperated": false,
       "screenshot": "live-power-more-power-outlet.png"
     },
-    "custom_card_mpse_gauge": {
+    "custom_card_gauge": {
       "entity": "sensor.office_joris_humidity_3",
       "text": "Office Joris Humidity 52.83 %",
-      "geometry": [330, 145],
+      "geometry": [
+        330,
+        145
+      ],
       "overflow": false,
       "moreInfoEntity": "sensor.office_joris_humidity_3",
-      "screenshot": "live-power-mpse-gauge.png"
+      "screenshot": "live-power-gauge.png"
     },
-    "custom_card_mpse_printer": {
+    "custom_card_printer": {
       "entity": "binary_sensor.x1c_00m09d521700185_online",
       "text": "X1C_00M09D521700185 Online on",
-      "geometry": [330, 78.578125],
+      "geometry": [
+        330,
+        78.578125
+      ],
       "overflow": false,
       "tonerSlotsOmittedWithoutConfiguredSensors": true,
       "moreInfoEntity": "binary_sensor.x1c_00m09d521700185_online",
       "printerPowerOperated": false,
-      "screenshot": "live-power-mpse-printer.png"
-    },
-    "custom_card_mpse_thermostat": {
-      "entity": "climate.office_joris",
-      "text": "Office Joris 22.9° • off (off) 5°C",
-      "geometry": [330, 110.578125],
-      "overflow": false,
-      "controls": ["Decrease temperature", "Increase temperature"],
-      "moreInfoEntity": "climate.office_joris",
-      "hvacActionsOperated": false,
-      "screenshot": "live-power-mpse-thermostat.png"
+      "screenshot": "live-power-printer.png"
     }
   },
   "picker": {

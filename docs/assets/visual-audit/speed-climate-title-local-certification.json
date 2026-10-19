@@ -4,45 +4,18 @@
   "fixture": "demo/speed-climate-title-comparison.html",
   "sourceCommit": "6ff8d57",
   "geometry": {
-    "custom_card_speedtest_shogun160": {
+    "custom_card_speedtest_gauges": {
       "width": 498,
       "height": 128,
       "scrollWidth": 498,
-      "regions": { ".speedtest-metric": 3, ".speedtest-ring": 3 }
-    },
-    "custom_card_tpx01_aircondition": {
-      "width": 320,
-      "height": 118,
-      "scrollWidth": 320,
-      "regions": { ".aircondition-controls button": 2, ".aircondition-target": 1 }
-    },
-    "custom_card_vncntdev_device_tracer": {
-      "width": 320,
-      "height": 66,
-      "scrollWidth": 320,
-      "regions": { ".device-tracer-icon": 1, ".ulm-copy": 1 }
-    },
-    "custom_card_water_heater": {
-      "width": 320,
-      "height": 66,
-      "scrollWidth": 320,
-      "regions": { ".source-icon": 1, ".ulm-copy": 1 }
-    },
-    "custom_card_wilbiev_subtitle": {
-      "width": 500,
-      "height": 43,
-      "scrollWidth": 500,
-      "regions": { ".wilbiev-divider": 1, ".wilbiev-bottom-divider": 1 }
-    },
-    "custom_card_wilbiev_title": {
-      "width": 500,
-      "height": 70,
-      "scrollWidth": 500,
-      "regions": { ".wilbiev-back": 1, ".wilbiev-divider": 1 }
+      "regions": {
+        ".speedtest-metric": 3,
+        ".speedtest-ring": 3
+      }
     }
   },
   "browserInteractions": {
-    "custom_card_speedtest_shogun160": {
+    "custom_card_speedtest_gauges": {
       "controlsClicked": 1,
       "serviceCalls": [],
       "cardActions": [
@@ -61,88 +34,20 @@
           }
         }
       ]
-    },
-    "custom_card_tpx01_aircondition": {
-      "controlsClicked": 4,
-      "serviceCalls": [
-        ["climate", "set_hvac_mode", { "entity_id": "climate.living_room", "hvac_mode": "cool" }],
-        ["script", "decrease_climate_temperature", { "entity_id": "climate.living_room" }],
-        ["script", "increment_climate_temperature", { "entity_id": "climate.living_room" }]
-      ],
-      "cardActions": [
-        { "action": "tap", "entity": "climate.living_room", "tap_action": { "action": "more-info" } }
-      ]
-    },
-    "custom_card_vncntdev_device_tracer": {
-      "controlsClicked": 1,
-      "serviceCalls": [],
-      "cardActions": [
-        { "action": "tap", "entity": "device_tracker.joris_mobile", "tap_action": { "action": "more-info" } }
-      ]
-    },
-    "custom_card_water_heater": {
-      "controlsClicked": 2,
-      "serviceCalls": [],
-      "cardActions": [
-        { "action": "tap", "entity": "water_heater.hot_water", "tap_action": { "action": "more-info" } },
-        { "action": "hold", "entity": "water_heater.hot_water", "hold_action": { "action": "more-info" } }
-      ]
-    },
-    "custom_card_wilbiev_subtitle": {
-      "controlsClicked": 1,
-      "serviceCalls": [],
-      "cardActions": [
-        { "action": "tap", "tap_action": { "action": "none" } }
-      ]
-    },
-    "custom_card_wilbiev_title": {
-      "controlsClicked": 2,
-      "serviceCalls": [],
-      "cardActions": [
-        { "action": "tap", "tap_action": { "action": "navigate", "navigation_path": "/lovelace/home" } },
-        { "action": "tap", "tap_action": { "action": "navigate", "navigation_path": "/lovelace/home" } }
-      ]
     }
   },
   "semanticLiveConfigs": {
-    "custom_card_speedtest_shogun160": {
-      "type": "custom:mushroom-addition-custom-card-speedtest-shogun160",
+    "custom_card_speedtest_gauges": {
+      "type": "custom:mushroom-addition-custom-card-speedtest-gauges",
       "entity": "sensor.speedtest_download",
       "download_entity": "sensor.speedtest_download",
       "upload_entity": "sensor.speedtest_upload",
       "ping_entity": "sensor.speedtest_ping"
-    },
-    "custom_card_tpx01_aircondition": {
-      "type": "custom:mushroom-addition-custom-card-tpx01-aircondition",
-      "entity": "climate.living_room"
-    },
-    "custom_card_vncntdev_device_tracer": {
-      "type": "custom:mushroom-addition-custom-card-vncntdev-device-tracer",
-      "entity": "device_tracker.joris_mobile"
-    },
-    "custom_card_water_heater": {
-      "type": "custom:mushroom-addition-custom-card-water-heater",
-      "entity": "water_heater.hot_water"
-    },
-    "custom_card_wilbiev_subtitle": {
-      "type": "custom:mushroom-addition-custom-card-wilbiev-subtitle",
-      "name": "Living room"
-    },
-    "custom_card_wilbiev_title": {
-      "type": "custom:mushroom-addition-custom-card-wilbiev-title",
-      "name": "Home"
     }
   },
   "artifacts": {
     "batch": "docs/assets/visual-audit/speed-climate-title-batch-comparison.png",
-    "custom_card_speedtest_shogun160": "docs/assets/visual-audit/custom-card-speedtest-shogun160-comparison.png",
-    "custom_card_tpx01_aircondition": "docs/assets/visual-audit/custom-card-tpx01-aircondition-comparison.png",
-    "custom_card_tpx01_aircondition_source": "docs/assets/visual-audit/custom-card-tpx01-aircondition-source-blueprint.png",
-    "custom_card_vncntdev_device_tracer": "docs/assets/visual-audit/custom-card-vncntdev-device-tracer-comparison.png",
-    "custom_card_water_heater": "docs/assets/visual-audit/custom-card-water-heater-comparison.png",
-    "custom_card_water_heater_source": "docs/assets/visual-audit/custom-card-water-heater-source-blueprint.png",
-    "custom_card_wilbiev_subtitle": "docs/assets/visual-audit/custom-card-wilbiev-subtitle-comparison.png",
-    "custom_card_wilbiev_title": "docs/assets/visual-audit/custom-card-wilbiev-title-comparison.png"
+    "custom_card_speedtest_gauges": "docs/assets/visual-audit/custom-card-speedtest-gauges-comparison.png"
   },
   "manualReview": {
     "inspected": true,
@@ -150,27 +55,9 @@
     "liveAccepted": false
   },
   "deviations": {
-    "custom_card_speedtest_shogun160": [
+    "custom_card_speedtest_gauges": [
       "The original ApexCharts dependency is replaced by source-shaped Lit SVG radial gauges.",
       "The source documentation image uses different sample measurements; the local comparison uses deterministic mapped entity values."
-    ],
-    "custom_card_tpx01_aircondition": [
-      "No dedicated upstream screenshot exists; the matched-width reference is a real-MDI blueprint derived from the pinned YAML.",
-      "The source depends on script.decrease_climate_temperature and script.increment_climate_temperature; exact payloads are certified locally but were not invoked live."
-    ],
-    "custom_card_vncntdev_device_tracer": [
-      "The pinned screenshot contains two separate example cards; the comparison matches one semantic online card at 320px."
-    ],
-    "custom_card_water_heater": [
-      "No dedicated upstream screenshot exists; the matched-width reference is a real-MDI blueprint derived from the pinned YAML.",
-      "The pinned source hard-codes a power sensor. This implementation exposes optional power_entity instead; the provided live mapping contains only the water_heater entity, so live rendering would honestly show Inactif unless a power sensor is configured."
-    ],
-    "custom_card_wilbiev_subtitle": [
-      "The text-divider-row dependency is replaced by an original Lit divider."
-    ],
-    "custom_card_wilbiev_title": [
-      "The text-divider-row and mushroom-chips-card dependencies are replaced by original Lit divider and back-button elements.",
-      "The provided live mapping has no navigation path, so the exact live config intentionally omits the back button."
     ]
   }
 }

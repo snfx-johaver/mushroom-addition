@@ -46,38 +46,21 @@ interface Comparison {
 }
 
 const comparisons: Record<string, Comparison> = {
-  custom_card_mpse_wifisignal: {
+  custom_card_wifi_signal: {
     width: 520, height: 109, reference: "custom_wifisignal.png", referenceWidth: 1141,
     config: { entity: "sensor.signal", name_mode: "custom", name: "Energy Wifi Signal" },
   },
-  custom_card_nas: {
-    width: 245, height: 75, reference: "custom_card_nas.png", referenceWidth: 245,
-    config: { entity: "sensor.nas", ulm_custom_card_nas_text: "Disk status", ulm_custom_card_nas_unit: "" },
-  },
-  custom_card_neekster_update: {
-    width: 494, height: 110, reference: "custom_card_neekster_update.png", referenceWidth: 989, referenceY: -190,
-    config: {
-      entity: "update.core",
-      ulm_card_neekster_update_enable_controls: true,
-      ulm_card_neekster_update_horizontal: true,
-      ulm_card_neekster_update_narrow_buttons: true,
-    },
-  },
-  custom_card_nik_clock: {
-    width: 366, height: 133, reference: "custom_card_nik_clock.png", referenceWidth: 366,
-    config: { entity: "sensor.time", date_entity: "sensor.date_time" },
-  },
-  custom_card_nik_door: {
-    width: 430, height: 200, reference: "custom_card_nik_door.png", referenceWidth: 430,
+  custom_card_door: {
+    width: 430, height: 200, reference: "custom_card_door.png", referenceWidth: 430,
     config: { entity: "sensor.door", lock_entity: "lock.door", battery_entity: "sensor.door_battery", name: "Front Door" },
   },
-  custom_card_paddy_dwd_pollen: {
+  custom_card_pollen_forecast: {
     width: 302, height: 141, reference: "cards.png", referenceWidth: 604,
     config: { entity: "sensor.grass_pollen", level_entity: "sensor.grass_pollen", pollen_language: "en" },
   },
 };
 
-const sourceId = new URLSearchParams(location.search).get("source") ?? "custom_card_mpse_wifisignal";
+const sourceId = new URLSearchParams(location.search).get("source") ?? "custom_card_wifi_signal";
 const comparison = comparisons[sourceId];
 if (!comparison) throw new Error(`Unknown comparison source: ${sourceId}`);
 const item = CATALOG.find((entry) => entry.upstreamId === sourceId);
@@ -88,7 +71,7 @@ document.documentElement.style.setProperty("--height", `${comparison.height}px`)
 document.documentElement.style.setProperty("--reference-width", `${comparison.referenceWidth}px`);
 document.documentElement.style.setProperty("--reference-x", `${comparison.referenceX ?? 0}px`);
 document.documentElement.style.setProperty("--reference-y", `${comparison.referenceY ?? 0}px`);
-if (sourceId === "custom_card_mpse_wifisignal") {
+if (sourceId === "custom_card_wifi_signal") {
   document.documentElement.style.setProperty("--primary-text-color", "#ddd");
   document.documentElement.style.setProperty("--secondary-text-color", "#888");
   document.documentElement.style.setProperty("--card-background-color", "#1f1f1f");

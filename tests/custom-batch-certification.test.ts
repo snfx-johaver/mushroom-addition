@@ -74,17 +74,17 @@ describe("first pending custom batch certification", () => {
     });
     expect(evidence.geometry.custom_card_camera.width).toBe(250);
     expect(evidence.geometry.custom_card_chromecast.width).toBe(608);
-    expect(evidence.geometry.custom_card_damix48_power_details.width).toBe(385);
+    expect(evidence.geometry.custom_card_power_details.width).toBe(385);
   });
 
   it("provides source-specific picker defaults and graphical editor fields", () => {
     for (const id of [
-      "custom_card_afvalophaling",
+      "custom_card_trash",
       "custom_card_alarm_time",
       "custom_card_apexcharts",
       "custom_card_camera",
       "custom_card_chromecast",
-      "custom_card_damix48_power_details",
+      "custom_card_power_details",
     ]) {
       const descriptor = item(id);
       const constructor = customElements.get(descriptor.tag) as typeof HTMLElement & {
@@ -101,14 +101,16 @@ describe("first pending custom batch certification", () => {
     expect(editorSchemaFor(item("custom_card_apexcharts")).map(({ name }) => name))
       .toEqual(expect.arrayContaining(["series_2_entity", "series_3_entity"]));
     expect(editorSchemaFor(item("custom_card_camera")).map(({ name }) => name))
-      .toEqual(expect.arrayContaining(["ulm_custom_card_camera_title", "ulm_custom_card_camera_aspect_ratio"]));
-    expect(editorSchemaFor(item("custom_card_damix48_power_details")).map(({ name }) => name))
+      .toEqual(expect.arrayContaining(["name", "icon", "camera_view", "fit_mode", "aspect_ratio", "image_height"]));
+    expect(editorSchemaFor(item("custom_card_camera")).map(({ name }) => name))
+      .not.toEqual(expect.arrayContaining(["show_name", "show_state"]));
+    expect(editorSchemaFor(item("custom_card_power_details")).map(({ name }) => name))
       .toEqual(expect.arrayContaining(["ulm_card_power_details_entity", "ulm_card_power_details_hours"]));
   });
 
   it("renders full and partial waste streams without sentinel summary text", async () => {
-    const card = await renderCard("mushroom-addition-custom-card-afvalophaling", {
-      type: "custom:mushroom-addition-custom-card-afvalophaling",
+    const card = await renderCard("mushroom-addition-custom-card-trash", {
+      type: "custom:mushroom-addition-custom-card-trash",
       entity: "sensor.rest",
       show_today: true,
       today_entity: "sensor.none",
@@ -173,20 +175,32 @@ describe("first pending custom batch certification", () => {
     const titled = await renderCard("mushroom-addition-custom-card-camera", {
       type: "custom:mushroom-addition-custom-card-camera",
       entity: "camera.driveway",
-      ulm_custom_card_camera_title: true,
-      ulm_custom_card_camera_name: "Driveway",
-      ulm_custom_card_camera_label: "Live camera",
-      ulm_custom_card_camera_aspect_ratio: "16 / 9",
+      name: "Driveway camera",
+      show_name: true,
+      show_state: true,
+      aspect_ratio: "16 / 9",
     });
-    expect(titled.shadowRoot.querySelector(".camera-title")).not.toBeNull();
-    expect(titled.shadowRoot.querySelector("img")?.getAttribute("style")).toContain("16 / 9");
+    expect(titled.shadowRoot.querySelector(".camera-overlay")?.textContent).toContain("Driveway camera");
+    expect(titled.shadowRoot.querySelector(".camera-media")?.getAttribute("style")).toContain("16 / 9");
     titled.remove();
+
+    const colonRatio = await renderCard("mushroom-addition-custom-card-camera", {
+      type: "custom:mushroom-addition-custom-card-camera",
+      entity: "camera.driveway",
+      aspect_ratio: "21:9",
+    });
+    expect(colonRatio.shadowRoot.querySelector(".camera-media")?.getAttribute("style")).toContain("21 / 9");
+    colonRatio.remove();
 
     const imageOnly = await renderCard("mushroom-addition-custom-card-camera", {
       type: "custom:mushroom-addition-custom-card-camera",
       entity: "camera.driveway",
+      show_name: false,
+      show_state: false,
+      image_height: 320,
     });
-    expect(imageOnly.shadowRoot.querySelector(".camera-title")).toBeNull();
+    expect(imageOnly.shadowRoot.querySelector(".camera-overlay")).toBeNull();
+    expect(imageOnly.shadowRoot.querySelector(".camera-media")?.getAttribute("style")).toContain("height:320px");
     expect(imageOnly.shadowRoot.querySelector("img")).not.toBeNull();
   });
 
@@ -216,8 +230,8 @@ describe("first pending custom batch certification", () => {
   });
 
   it("uses the configured Power Details history entity and dispatches outer actions", async () => {
-    const power = await renderCard("mushroom-addition-custom-card-damix48-power-details", {
-      type: "custom:mushroom-addition-custom-card-damix48-power-details",
+    const power = await renderCard("mushroom-addition-custom-card-power-details", {
+      type: "custom:mushroom-addition-custom-card-power-details",
       entity: "sensor.download",
       ulm_card_power_details_entity: "sensor.power",
       ulm_card_power_details_hours: 1,

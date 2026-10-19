@@ -25,12 +25,42 @@ describe("catalog coverage", () => {
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_camera")).toBe(true);
   });
 
-  it("matches the documented source counts and keeps 50+ custom cards public", () => {
+  it("matches the documented source counts and keeps the custom card catalog public", () => {
     const sourceCount = (category: string) =>
       UPSTREAM_CATALOG.filter((item) => item.category === category).length;
-    expect(sourceCount("default-card")).toBe(24);
-    expect(sourceCount("custom-card")).toBe(62);
-    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(58);
+    expect(sourceCount("default-card")).toBe(11);
+    expect(sourceCount("custom-card")).toBe(37);
+    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(35);
+  });
+
+  it("keeps removed contributor names out of renamed public card metadata", () => {
+    const renamedSources = [
+      "custom_card_trash",
+      "custom_card_entity_overview",
+      "custom_card_internet_speed",
+      "custom_card_weather_metrics",
+      "custom_card_gauge",
+      "custom_card_printer",
+      "custom_card_wifi_signal",
+      "custom_card_nas_metrics",
+      "custom_card_tablet",
+      "custom_card_plant",
+      "custom_card_pollen",
+    ];
+    const renamedItems = PUBLIC_CATALOG.filter((candidate) => renamedSources.includes(candidate.upstreamId));
+    expect(renamedItems.map((item) => item.name)).toEqual([
+      "Trash Card",
+      "Entity Overview Card",
+      "Internet Speed Card",
+      "Weather Metrics Card",
+      "Gauge Card",
+      "Printer Card",
+      "WiFi Signal Card",
+      "NAS Card",
+      "Tablet Card",
+      "Flower Card",
+      "Pollen Card",
+    ]);
   });
 
   it("keeps implementation helpers out of the public picker", () => {
@@ -56,7 +86,7 @@ describe("catalog coverage", () => {
   });
 
   it("inventories upstream popups without exposing nonfunctional variants", () => {
-    expect(UPSTREAM_VARIANTS).toHaveLength(7);
+    expect(UPSTREAM_VARIANTS).toHaveLength(4);
     for (const variant of UPSTREAM_VARIANTS) {
       const component = PUBLIC_CATALOG.find((item) => item.upstreamId === variant.component);
       expect(component?.variants).not.toContain("popup");

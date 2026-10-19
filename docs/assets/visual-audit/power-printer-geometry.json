@@ -1,54 +1,4 @@
 {
-  "light-colorpick": {
-    "implementation": {
-      "width": 320,
-      "height": 119.5
-    },
-    "surface": {
-      "width": 320,
-      "height": 119.5
-    },
-    "regions": {
-      ".light-colorpick-top": [
-        {
-          "width": 296,
-          "height": 42
-        }
-      ],
-      ".ulm-light-slider": [
-        {
-          "width": 143,
-          "height": 42
-        }
-      ],
-      ".light-color-swatches button": [
-        {
-          "width": 43.5,
-          "height": 43.5
-        },
-        {
-          "width": 43.5,
-          "height": 43.5
-        },
-        {
-          "width": 43.5,
-          "height": 43.5
-        },
-        {
-          "width": 43.5,
-          "height": 43.5
-        },
-        {
-          "width": 43.5,
-          "height": 43.5
-        },
-        {
-          "width": 43.5,
-          "height": 43.5
-        }
-      ]
-    }
-  },
   "media-player-sonos": {
     "implementation": {
       "width": 507,
@@ -105,7 +55,7 @@
       ]
     }
   },
-  "mpse-gauge": {
+  "gauge": {
     "implementation": {
       "width": 197,
       "height": 145
@@ -129,7 +79,7 @@
       ]
     }
   },
-  "mpse-printer": {
+  "printer": {
     "implementation": {
       "width": 256,
       "height": 183
@@ -161,34 +111,6 @@
         {
           "width": 232,
           "height": 20
-        }
-      ]
-    }
-  },
-  "mpse-thermostat": {
-    "implementation": {
-      "width": 246,
-      "height": 108
-    },
-    "surface": {
-      "width": 246,
-      "height": 108
-    },
-    "regions": {
-      ".custom-card-heading": [
-        {
-          "width": 230,
-          "height": 42
-        }
-      ],
-      ".compact-thermostat-controls button": [
-        {
-          "width": 70,
-          "height": 42
-        },
-        {
-          "width": 70,
-          "height": 42
         }
       ]
     }

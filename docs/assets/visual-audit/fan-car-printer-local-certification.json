@@ -6,130 +6,137 @@
   "fixture": "demo/fan-car-printer-comparison.html",
   "test": "tests/fan-car-printer-certification.test.ts",
   "geometry": {
-    "custom_card_saxel_fan": {
-      "width": 249,
-      "height": 118,
-      "regions": { "summary": 1, "slider": 1, "oscillate": 1 }
-    },
     "custom_card_scenes": {
       "width": 486,
       "height": 108,
-      "regions": { "grid": 1, "buttons": 5 }
+      "regions": {
+        "grid": 1,
+        "buttons": 5
+      }
     },
-    "custom_card_schumijo_car": {
+    "custom_card_vehicle_status": {
       "width": 313,
       "height": 142,
-      "regions": { "hero": 1, "badges": 2, "metrics": 2 }
+      "regions": {
+        "hero": 1,
+        "badges": 2,
+        "metrics": 2
+      }
     },
-    "custom_card_schumijo_flower": {
+    "custom_card_plant": {
       "width": 274,
       "height": 112,
-      "regions": { "heading": 1, "bars": 4 }
+      "regions": {
+        "heading": 1,
+        "bars": 4
+      }
     },
-    "custom_card_senoro_win": {
+    "custom_card_window": {
       "width": 200,
       "height": 64,
-      "regions": { "icon": 1, "stateBadge": 1, "batteryBadge": 0 }
-    },
-    "custom_card_sisimomo_printer": {
-      "width": 500,
-      "height": 304,
-      "regions": { "summary": 1, "cartridges": 6 }
+      "regions": {
+        "icon": 1,
+        "stateBadge": 1,
+        "batteryBadge": 0
+      }
     }
   },
   "sources": {
-    "custom_card_saxel_fan": {
-      "liveConfig": {
-        "entity": "fan.air_purifier",
-        "collapsable": true,
-        "ulm_card_fan_horizontal": false,
-        "ulm_show_button": true,
-        "ulm_button_service": "fan.oscillate",
-        "oscillate_attribute": "oscillate",
-        "tap_action": { "action": "toggle" },
-        "hold_action": { "action": "more-info" }
-      },
-      "visibleInteractions": [
-        { "surface": "card", "gesture": "tap", "payload": { "action": "toggle", "entity": "fan.air_purifier" } },
-        { "surface": "card", "gesture": "hold", "payload": { "action": "more-info", "entity": "fan.air_purifier" } },
-        { "control": "speed slider", "service": "fan.set_percentage", "data": { "entity_id": "fan.air_purifier", "percentage": "<selected integer>" } },
-        { "control": "oscillation button", "service": "fan.oscillate", "data": { "entity_id": "fan.air_purifier", "oscillating": "<inverse oscillate attribute>" } }
-      ],
-      "artifact": "docs/assets/visual-audit/custom-card-saxel-fan-comparison.png",
-      "liveSafety": "Render only. Do not operate the physical purifier."
-    },
     "custom_card_scenes": {
       "liveConfig": {
         "variant": "scene-grid",
         "scene_items": [
-          { "entity": "scene.living_room_relax", "label": "Relax" },
-          { "entity": "scene.living_room_dimmed", "label": "Dimmed" }
+          {
+            "entity": "scene.living_room_relax",
+            "label": "Relax"
+          },
+          {
+            "entity": "scene.living_room_dimmed",
+            "label": "Dimmed"
+          }
         ]
       },
       "visibleInteractions": [
-        { "entityDomain": "automation", "service": "automation.trigger", "data": { "entity_id": "<scene_items[n].entity>" } },
-        { "entityDomain": "all other domains", "service": "homeassistant.turn_on", "data": { "entity_id": "<scene_items[n].entity>" } }
+        {
+          "entityDomain": "automation",
+          "service": "automation.trigger",
+          "data": {
+            "entity_id": "<scene_items[n].entity>"
+          }
+        },
+        {
+          "entityDomain": "all other domains",
+          "service": "homeassistant.turn_on",
+          "data": {
+            "entity_id": "<scene_items[n].entity>"
+          }
+        }
       ],
       "artifact": "docs/assets/visual-audit/custom-card-scenes-comparison.png",
       "liveSafety": "No live scene, script, automation, or device action was performed."
     },
-    "custom_card_schumijo_car": {
+    "custom_card_vehicle_status": {
       "liveConfig": {
         "entity": "sensor.hn_etronq6_model",
-        "ulm_card_schumijo_car_tracker": "sensor.hn_etronq6_model",
-        "ulm_card_schumijo_car_lock": "binary_sensor.hn_etronq6_doors",
-        "ulm_card_schumijo_car_energy_level": "sensor.hn_etronq6_primary_engine_percent",
-        "ulm_card_schumijo_car_range": "sensor.hn_etronq6_range",
-        "ulm_card_schumijo_car_name": "HN e-tron Q6"
+        "ulm_card_vehicle_status_tracker": "sensor.hn_etronq6_model",
+        "ulm_card_vehicle_status_lock": "binary_sensor.hn_etronq6_doors",
+        "ulm_card_vehicle_status_energy_level": "sensor.hn_etronq6_primary_engine_percent",
+        "ulm_card_vehicle_status_range": "sensor.hn_etronq6_range",
+        "ulm_card_vehicle_status_name": "HN e-tron Q6"
       },
       "visibleInteractions": [
-        { "surface": "car summary", "gesture": "tap", "payload": { "action": "more-info", "entity": "sensor.hn_etronq6_model" } }
+        {
+          "surface": "car summary",
+          "gesture": "tap",
+          "payload": {
+            "action": "more-info",
+            "entity": "sensor.hn_etronq6_model"
+          }
+        }
       ],
-      "artifact": "docs/assets/visual-audit/custom-card-schumijo-car-comparison.png",
+      "artifact": "docs/assets/visual-audit/custom-card-vehicle-status-comparison.png",
       "deviations": [
         "The prepared instance has model, range, energy, doors, and windows entities but no vehicle device_tracker or lock entity; model and doors are used in the corresponding read-only source slots.",
         "The removed browser_mod map popup is represented by standard more-info on the configured tracker slot.",
         "binary_sensor.hn_etronq6_windows has no source field and is intentionally not configured."
       ]
     },
-    "custom_card_schumijo_flower": {
+    "custom_card_plant": {
       "liveConfig": {
         "entity": "sensor.frontyard_plants_soil_soil_humidity",
         "ulm_card_flower_entity": "sensor.frontyard_plants_soil_soil_humidity",
         "ulm_card_flower_name": "Frontyard soil",
-        "ulm_card_flower_show_bars": ["moisture"]
+        "ulm_card_flower_show_bars": [
+          "moisture"
+        ]
       },
       "visibleInteractions": [
-        { "surface": "plant summary", "gesture": "tap", "payload": { "action": "more-info", "entity": "sensor.frontyard_plants_soil_soil_humidity" } }
+        {
+          "surface": "plant summary",
+          "gesture": "tap",
+          "payload": {
+            "action": "more-info",
+            "entity": "sensor.frontyard_plants_soil_soil_humidity"
+          }
+        }
       ],
-      "artifact": "docs/assets/visual-audit/custom-card-schumijo-flower-comparison.png",
+      "artifact": "docs/assets/visual-audit/custom-card-plant-comparison.png",
       "deviations": [
         "The prepared instance has separate soil humidity, temperature, and battery sensors rather than the source-required plant entity with flower-card attributes; the humidity sensor is used as the plant slot and rendered as the moisture bar.",
         "The source has no separate temperature_entity or battery_entity fields, so those candidates are intentionally not mis-mapped."
       ]
     },
-    "custom_card_senoro_win": {
+    "custom_card_window": {
       "liveConfig": {
         "entity": "binary_sensor.office_joris_window",
-        "tap_action": { "action": "none" }
+        "tap_action": {
+          "action": "none"
+        }
       },
       "visibleInteractions": [],
-      "artifact": "docs/assets/visual-audit/custom-card-senoro-win-comparison.png",
+      "artifact": "docs/assets/visual-audit/custom-card-window-comparison.png",
       "deviations": [
         "The prepared instance has only a contact entity and no required Closed/Tilted/Open handle-position sensor, so live rendering would honestly show unavailable rather than inventing a handle mapping."
-      ]
-    },
-    "custom_card_sisimomo_printer": {
-      "liveConfig": {
-        "entity": "binary_sensor.x1c_00m09d521700185_online",
-        "ulm_card_printer_name": "Bambu Lab X1C"
-      },
-      "visibleInteractions": [
-        { "surface": "printer summary", "gesture": "tap", "payload": { "action": "more-info", "entity": "binary_sensor.x1c_00m09d521700185_online" } }
-      ],
-      "artifact": "docs/assets/visual-audit/custom-card-sisimomo-printer-comparison.png",
-      "deviations": [
-        "The prepared error and power entities are not 0-100 ink cartridge sensors and are intentionally not placed in the source cartridges array."
       ]
     }
   },

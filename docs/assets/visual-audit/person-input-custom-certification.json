@@ -4,26 +4,41 @@
   "width": 320,
   "live": false,
   "geometry": {
-    "custom_card_imswel_person": { "referenceWidth": 320, "implementationWidth": 320, "implementationHeight": 66 },
-    "custom_card_input_datetime": { "referenceWidth": 320, "implementationWidth": 320, "implementationHeight": 120 },
-    "custom_card_input_number": { "referenceWidth": 320, "implementationWidth": 320, "implementationHeight": 118 },
-    "custom_card_irmajavi_entities": { "referenceWidth": 320, "implementationWidth": 320, "implementationHeight": 160 },
-    "custom_card_irmajavi_speedtest": { "referenceWidth": 320, "implementationWidth": 320, "implementationHeight": 274 },
-    "custom_card_irmajavi_weather": { "referenceWidth": 320, "implementationWidth": 320, "implementationHeight": 160 }
+    "custom_card_person_location": {
+      "referenceWidth": 320,
+      "implementationWidth": 320,
+      "implementationHeight": 66
+    },
+    "custom_card_input_datetime": {
+      "referenceWidth": 320,
+      "implementationWidth": 320,
+      "implementationHeight": 120
+    },
+    "custom_card_entity_overview": {
+      "referenceWidth": 320,
+      "implementationWidth": 320,
+      "implementationHeight": 160
+    },
+    "custom_card_internet_speed": {
+      "referenceWidth": 320,
+      "implementationWidth": 320,
+      "implementationHeight": 274
+    },
+    "custom_card_weather_metrics": {
+      "referenceWidth": 320,
+      "implementationWidth": 320,
+      "implementationHeight": 160
+    }
   },
   "configs": {
-    "custom_card_imswel_person": {
+    "custom_card_person_location": {
       "entity": "person.joris",
       "battery_entity": "sensor.joris_mobile_battery_level"
     },
     "custom_card_input_datetime": {
       "entity": "input_datetime.quiet_time_start"
     },
-    "custom_card_input_number": {
-      "entity": "input_number.missing",
-      "configuredUnavailable": true
-    },
-    "custom_card_irmajavi_entities": {
+    "custom_card_entity_overview": {
       "entity": "light.joris_iris_1",
       "entities": [
         "light.joris_iris_1",
@@ -31,18 +46,18 @@
         "switch.office_joris_plug_3"
       ]
     },
-    "custom_card_irmajavi_speedtest": {
+    "custom_card_internet_speed": {
       "entity": "sensor.speedtest_download",
       "ping_entity": "sensor.speedtest_ping",
       "download_entity": "sensor.speedtest_download",
       "upload_entity": "sensor.speedtest_upload"
     },
-    "custom_card_irmajavi_weather": {
+    "custom_card_weather_metrics": {
       "entity": "weather.hcn_ha"
     }
   },
   "visibleInteractions": {
-    "custom_card_imswel_person": [
+    "custom_card_person_location": [
       {
         "surface": "card",
         "event": "hass-action",
@@ -55,27 +70,81 @@
       }
     ],
     "custom_card_input_datetime": [
-      ["input_datetime", "set_datetime", { "entity_id": "input_datetime.quiet_time_start", "timeDeltaMinutes": -15 }],
-      ["input_datetime", "set_datetime", { "entity_id": "input_datetime.quiet_time_start", "timeDeltaMinutes": 1 }],
-      ["input_datetime", "set_datetime", { "entity_id": "input_datetime.quiet_time_start", "timeDeltaMinutes": -1, "gesture": "hold" }],
-      ["input_datetime", "set_datetime", { "entity_id": "input_datetime.quiet_time_start", "timeDeltaMinutes": 15 }]
+      [
+        "input_datetime",
+        "set_datetime",
+        {
+          "entity_id": "input_datetime.quiet_time_start",
+          "timeDeltaMinutes": -15
+        }
+      ],
+      [
+        "input_datetime",
+        "set_datetime",
+        {
+          "entity_id": "input_datetime.quiet_time_start",
+          "timeDeltaMinutes": 1
+        }
+      ],
+      [
+        "input_datetime",
+        "set_datetime",
+        {
+          "entity_id": "input_datetime.quiet_time_start",
+          "timeDeltaMinutes": -1,
+          "gesture": "hold"
+        }
+      ],
+      [
+        "input_datetime",
+        "set_datetime",
+        {
+          "entity_id": "input_datetime.quiet_time_start",
+          "timeDeltaMinutes": 15
+        }
+      ]
     ],
-    "custom_card_input_number": [
-      ["input_number", "decrement", { "entity_id": "input_number.missing" }],
-      ["cover", "stop_cover", { "entity_id": "input_number.missing" }],
-      ["input_number", "increment", { "entity_id": "input_number.missing" }]
+    "custom_card_entity_overview": [
+      [
+        "hass-action",
+        "more-info",
+        "light.joris_iris_1"
+      ],
+      [
+        "hass-action",
+        "more-info",
+        "sensor.office_joris_temperature_3"
+      ],
+      [
+        "hass-action",
+        "more-info",
+        "switch.office_joris_plug_3"
+      ]
     ],
-    "custom_card_irmajavi_entities": [
-      ["hass-action", "more-info", "light.joris_iris_1"],
-      ["hass-action", "more-info", "sensor.office_joris_temperature_3"],
-      ["hass-action", "more-info", "switch.office_joris_plug_3"]
+    "custom_card_internet_speed": [
+      [
+        "homeassistant",
+        "update_entity",
+        {
+          "entity_id": [
+            "sensor.speedtest_download",
+            "sensor.speedtest_upload",
+            "sensor.speedtest_ping"
+          ]
+        }
+      ],
+      [
+        "hass-action",
+        "more-info",
+        "sensor.speedtest_download"
+      ],
+      [
+        "hass-action",
+        "more-info",
+        "sensor.speedtest_upload"
+      ]
     ],
-    "custom_card_irmajavi_speedtest": [
-      ["homeassistant", "update_entity", { "entity_id": ["sensor.speedtest_download", "sensor.speedtest_upload", "sensor.speedtest_ping"] }],
-      ["hass-action", "more-info", "sensor.speedtest_download"],
-      ["hass-action", "more-info", "sensor.speedtest_upload"]
-    ],
-    "custom_card_irmajavi_weather": [
+    "custom_card_weather_metrics": [
       {
         "surface": "configured weather metric",
         "event": "hass-action",
@@ -88,20 +157,12 @@
       }
     ]
   },
-  "liveBehavior": {
-    "custom_card_input_number": {
-      "entity": "input_number.missing",
-      "renderedState": "Entity unavailable",
-      "controlsDisabled": true,
-      "serviceCalls": []
-    }
-  },
+  "liveBehavior": {},
   "deviations": {
-    "custom_card_imswel_person": "The source Browser Mod popup, history graph, map, tracker glances, and find-my-phone control are dependency-backed popup content and are not reproduced inside the card surface.",
+    "custom_card_person_location": "The source Browser Mod popup, history graph, map, tracker glances, and find-my-phone control are dependency-backed popup content and are not reproduced inside the card surface.",
     "custom_card_input_datetime": "The renderer computes the documented -15/+1/-1/+15 minute behavior directly from the entity state instead of reproducing the source's timezone-offset timestamp arithmetic.",
-    "custom_card_input_number": "The source's unusual center cover.stop_cover action is preserved. Live controls remain disabled because the configured entity does not exist.",
-    "custom_card_irmajavi_entities": "Missing fourth live metric renders as configured-unavailable rather than inventing an entity.",
-    "custom_card_irmajavi_speedtest": "The source Polish fallback labels are retained from pinned defaults when the user does not override them.",
-    "custom_card_irmajavi_weather": "Without configured linked sensors, the date and four metric slots stay unavailable; current temperature falls back to the weather entity attribute as a deliberate usability deviation."
+    "custom_card_entity_overview": "Missing fourth live metric renders as configured-unavailable rather than inventing an entity.",
+    "custom_card_internet_speed": "The source Polish fallback labels are retained from pinned defaults when the user does not override them.",
+    "custom_card_weather_metrics": "Without configured linked sensors, the date and four metric slots stay unavailable; current temperature falls back to the weather entity attribute as a deliberate usability deviation."
   }
 }

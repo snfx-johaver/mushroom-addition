@@ -19,7 +19,7 @@
     "appended": 0
   },
   "sources": {
-    "custom_card_wsly_pollen": {
+    "custom_card_pollen": {
       "config": {
         "entity": "sensor.kleenex_pollen_radar_home_grass",
         "trees_entity": "sensor.kleenex_pollen_radar_home_trees",
@@ -40,14 +40,14 @@
       "editorFields": [
         "entity",
         "trees_entity",
-        "custom_card_wsly_pollen_tree_name",
-        "custom_card_wsly_pollen_tree_icon",
+        "custom_card_pollen_tree_name",
+        "custom_card_pollen_tree_icon",
         "grass_entity",
-        "custom_card_wsly_pollen_grass_name",
-        "custom_card_wsly_pollen_grass_icon",
+        "custom_card_pollen_grass_name",
+        "custom_card_pollen_grass_icon",
         "weeds_entity",
-        "custom_card_wsly_pollen_weed_name",
-        "custom_card_wsly_pollen_weed_icon",
+        "custom_card_pollen_weed_name",
+        "custom_card_pollen_weed_icon",
         "name_mode",
         "name",
         "icon",
@@ -78,64 +78,12 @@
         }
       ],
       "serviceCalls": [],
-      "screenshot": "live-final-mushroom-addition-custom-card-wsly-pollen.png",
-      "liveAccepted": true
-    },
-    "custom_card_yagrasdemonde_lights_count": {
-      "config": {
-        "entity": "sensor.number_of_lights_on",
-        "ulm_custom_card_yagrasdemonde_lights_count_type": "light",
-        "ulm_custom_card_yagrasdemonde_lights_count_icon_off": "mdi:lightbulb-outline",
-        "ulm_custom_card_yagrasdemonde_lights_count_color": "yellow",
-        "ulm_custom_card_yagrasdemonde_lights_count_force_background_color": false,
-        "tap_action": {
-          "action": "none"
-        }
-      },
-      "renderedText": "44 lights on",
-      "geometry": {
-        "width": 330,
-        "height": 84,
-        "clientWidth": 330,
-        "scrollWidth": 330
-      },
-      "pickerRegistered": true,
-      "editorFields": [
-        "entity",
-        "ulm_custom_card_yagrasdemonde_lights_count_type",
-        "ulm_custom_card_yagrasdemonde_lights_count_icon_on",
-        "ulm_custom_card_yagrasdemonde_lights_count_icon_off",
-        "ulm_custom_card_yagrasdemonde_lights_count_color",
-        "ulm_custom_card_yagrasdemonde_lights_count_force_background_color",
-        "ulm_custom_card_yagrasdemonde_lights_count_cover_0",
-        "ulm_custom_card_yagrasdemonde_lights_count_cover_1",
-        "ulm_custom_card_yagrasdemonde_lights_count_cover_many",
-        "ulm_custom_card_yagrasdemonde_lights_count_light_0",
-        "ulm_custom_card_yagrasdemonde_lights_count_light_1",
-        "ulm_custom_card_yagrasdemonde_lights_count_light_many",
-        "name_mode",
-        "name",
-        "icon",
-        "icon_type",
-        "layout",
-        "fill_container",
-        "primary_info",
-        "secondary_info",
-        "tap_action",
-        "hold_action",
-        "double_tap_action"
-      ],
-      "safeInteraction": {
-        "action": "none",
-        "moreInfoEntity": null
-      },
-      "serviceCalls": [],
-      "screenshot": "live-final-mushroom-addition-custom-card-yagrasdemonde-lights-count.png",
+      "screenshot": "live-final-mushroom-addition-custom-card-pollen.png",
       "liveAccepted": true
     }
   },
   "result": {
-    "accepted": 2,
+    "accepted": 1,
     "overflowFailures": 0,
     "pickerFailures": 0,
     "editorFailures": 0,

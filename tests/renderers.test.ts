@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { CATALOG } from "../src/catalog";
+import { editorSchemaFor } from "../src/editor-schema";
 import "../src/index";
+import { stateLabel } from "../src/helpers";
 import { PARITY_ENTRIES } from "../src/parity.generated";
 import type { AdditionConfig, HomeAssistant } from "../src/types";
 
@@ -167,21 +169,22 @@ const familySignature = (markup: string): string[] =>
     .filter((className) => className.startsWith("ulm-"))
     .filter((className, index, all) => all.indexOf(className) === index);
 
-describe("family renderers", () => {
-  it("renders the Minimalist weather hierarchy and details", async () => {
-    const markup = await render("mushroom-addition-card-weather", {
-      type: "custom:mushroom-addition-card-weather",
-      entity: "weather.home",
-      show_forecast: true,
-    });
-    expect(markup).toContain("ulm-weather");
-    expect(markup).toContain("detailed-weather-main");
-    expect(markup).toContain("detailed-weather-details");
-    expect(markup).toContain("17");
-    expect(markup).toContain("partlycloudy");
-    expect((document.createElement("mushroom-addition-card-weather") as HTMLElement).tagName).toBe("MUSHROOM-ADDITION-CARD-WEATHER");
-  });
+const entityFor = (item: (typeof CATALOG)[number]): string => {
+  const domains = item.preferredDomains ?? [];
+  if (domains.includes("weather")) return "weather.home";
+  if (domains.includes("climate")) return "climate.living";
+  if (domains.includes("light")) return "light.kitchen";
+  if (domains.includes("person")) return "person.joris";
+  if (domains.includes("media_player")) return "media_player.tv";
+  if (domains.includes("cover")) return "cover.blind";
+  if (domains.includes("fan")) return "fan.fixture";
+  if (domains.includes("vacuum")) return "vacuum.robot";
+  if (domains.includes("alarm_control_panel")) return "alarm_control_panel.home";
+  if (domains.includes("scene")) return "scene.relax";
+  return "sensor.power";
+};
 
+describe("family renderers", () => {
   it("rerenders when Home Assistant updates an existing card config", async () => {
     const element = document.createElement("mushroom-addition-card-light") as HTMLElement & {
       hass: HomeAssistant;
@@ -214,6 +217,201 @@ describe("family renderers", () => {
     expect(markup).not.toContain("light-icon");
     expect(markup).toContain("on");
     expect(markup).not.toContain("Kitchen");
+  });
+
+  it("honors Mushroom name and information fields in every card renderer", async () => {
+    for (const item of CATALOG.filter((entry) => entry.kind === "card")) {
+      const entity = entityFor(item);
+      const element = document.createElement(item.tag) as HTMLElement & {
+        hass: HomeAssistant;
+        setConfig(config: AdditionConfig): void;
+        updateComplete: Promise<boolean>;
+      };
+      element.hass = hass;
+      element.setConfig({
+        type: `custom:${item.tag}`,
+        entity,
+        entities: item.family === "scene" ? ["scene.relax"] : undefined,
+        name: { type: "text", text: "Custom presentation name" },
+        primary_info: "state",
+        secondary_info: "name",
+      });
+      document.body.append(element);
+      await element.updateComplete;
+      const presentation = element.shadowRoot?.querySelector(".shared-presentation");
+      expect(presentation, `${item.upstreamId} must render shared presentation information`).not.toBeNull();
+      expect(
+        presentation?.querySelector(".ulm-name")?.textContent?.trim(),
+        `${item.upstreamId} must apply Primary information`,
+      ).toBe(stateLabel(hass.states[entity]));
+      expect(
+        presentation?.querySelector(".ulm-label")?.textContent?.trim(),
+        `${item.upstreamId} must apply the custom Name as Secondary information`,
+      ).toBe("Custom presentation name");
+      element.remove();
+    }
+  });
+
+  it("uses a configured Name as the default primary information in every card", async () => {
+    for (const item of CATALOG.filter((entry) => entry.kind === "card")) {
+      const entity = entityFor(item);
+      const element = document.createElement(item.tag) as HTMLElement & {
+        hass: HomeAssistant;
+        setConfig(config: AdditionConfig): void;
+        updateComplete: Promise<boolean>;
+      };
+      element.hass = hass;
+      element.setConfig({
+        type: `custom:${item.tag}`,
+        entity,
+        entities: item.family === "scene" ? ["scene.relax"] : undefined,
+        name: { type: "text", text: "Custom card name" },
+      });
+      document.body.append(element);
+      await element.updateComplete;
+      expect(
+        element.shadowRoot?.querySelector(".shared-presentation .ulm-name")?.textContent?.trim(),
+        `${item.upstreamId} must apply Name without requiring an information override`,
+      ).toBe("Custom card name");
+      element.remove();
+    }
+  });
+
+  it("makes Icon type affect every card renderer", async () => {
+    for (const item of CATALOG.filter((entry) => entry.kind === "card")) {
+      const entity = entityFor(item);
+      const base = {
+        type: `custom:${item.tag}`,
+        entity,
+        entities: item.family === "scene" ? ["scene.relax"] : undefined,
+        icon: "mdi:test-tube",
+      };
+      const icon = await render(item.tag, { ...base, icon_type: "icon" });
+      const none = await render(item.tag, { ...base, icon_type: "none" });
+      const schemaNames = editorSchemaFor(item).flatMap((field) =>
+        field.schema ? field.schema.map((nested) => nested.name) : [field.name]
+      );
+      if (none === icon) {
+        expect(schemaNames, `${item.upstreamId} exposes an ineffective Icon field`).not.toContain("icon");
+        expect(schemaNames, `${item.upstreamId} exposes an ineffective Icon type field`).not.toContain("icon_type");
+      } else {
+        expect(schemaNames, `${item.upstreamId} must expose its functional Icon field`).toContain("icon");
+        expect(schemaNames, `${item.upstreamId} must expose its functional Icon type field`).toContain("icon_type");
+      }
+    }
+  });
+
+  it("applies a custom Name on cards whose primary entity is optional", async () => {
+    const markup = await render("mushroom-addition-custom-card-trash", {
+      type: "custom:mushroom-addition-custom-card-trash",
+      name: { type: "text", text: "My waste schedule" },
+      primary_info: "name",
+      secondary_info: "none",
+      waste_streams: [{ enabled: true, entity: "sensor.today", label: "Today" }],
+    });
+    expect(markup).toContain("My waste schedule");
+    expect(markup).not.toContain(">Mushroom Addition<");
+  });
+
+  it("applies the Waste card UI Name over a stale legacy name mode", async () => {
+    const element = document.createElement("mushroom-addition-custom-card-trash") as HTMLElement & {
+      hass: HomeAssistant;
+      setConfig(config: AdditionConfig): void;
+      updateComplete: Promise<boolean>;
+    };
+    element.hass = {
+      ...hass,
+      formatEntityName: (_entity, name) => {
+        const items = Array.isArray(name) ? name : [name];
+        return items.map((item) => typeof item === "string" ? item : item?.text ?? "Home").join(" ");
+      },
+    };
+    element.setConfig({
+      type: "custom:mushroom-addition-custom-card-trash",
+      entity: "sensor.today",
+      name_mode: "entity",
+      name: [{ type: "text", text: "Joris" }, { type: "area" }],
+      primary_info: "name",
+      secondary_info: "default",
+      icon_type: "icon",
+      waste_streams: [],
+    });
+    document.body.append(element);
+    await element.updateComplete;
+    expect(element.shadowRoot?.querySelector(".ulm-name")?.textContent?.trim()).toBe("Joris Home");
+    element.remove();
+
+    const custom = await render("mushroom-addition-custom-card-trash", {
+      type: "custom:mushroom-addition-custom-card-trash",
+      entity: "sensor.today",
+      name_mode: "entity",
+      name: "pietjeds",
+      primary_info: "name",
+      secondary_info: "default",
+      waste_streams: [],
+    });
+    expect(custom).toContain("pietjeds");
+    expect(custom).not.toContain(">Trash type today<");
+  });
+
+  it("applies every Icon type on the Waste Collection card", async () => {
+    const icon = await render("mushroom-addition-custom-card-trash", {
+      type: "custom:mushroom-addition-custom-card-trash",
+      icon_type: "icon",
+      waste_streams: [],
+    });
+    expect(icon).toContain('class="ulm-icon');
+
+    const none = await render("mushroom-addition-custom-card-trash", {
+      type: "custom:mushroom-addition-custom-card-trash",
+      icon_type: "none",
+      waste_streams: [],
+    });
+    expect(none).not.toContain('class="ulm-icon');
+
+    const unavailablePicture = await render("mushroom-addition-custom-card-trash", {
+      type: "custom:mushroom-addition-custom-card-trash",
+      icon_type: "entity-picture",
+      waste_streams: [],
+    });
+    expect(unavailablePicture).toContain('class="ulm-icon');
+
+    const picture = await render("mushroom-addition-custom-card-trash", {
+      type: "custom:mushroom-addition-custom-card-trash",
+      entity: "person.joris",
+      icon_type: "entity-picture",
+      waste_streams: [],
+    });
+    expect(picture).toContain("entity-picture");
+    expect(picture).toContain("/local/joris.jpg");
+  });
+
+  it("gives Icon type precedence over legacy icon settings", async () => {
+    const waste = await render("mushroom-addition-custom-card-trash", {
+      type: "custom:mushroom-addition-custom-card-trash",
+      show_icon: false,
+      icon_type: "icon",
+      waste_streams: [],
+    });
+    expect(waste).toContain('class="ulm-icon');
+
+    const person = await render("mushroom-addition-card-person", {
+      type: "custom:mushroom-addition-card-person",
+      entity: "person.joris",
+      use_entity_picture: true,
+      icon_type: "icon",
+    });
+    expect(person).toContain('class="ulm-icon');
+    expect(person).not.toContain("person-picture");
+
+    const personTracker = await render("mushroom-addition-custom-card-person-tracker", {
+      type: "custom:mushroom-addition-custom-card-person-tracker",
+      entity: "person.joris",
+      ulm_custom_card_person_tracker_use_entity_picture: true,
+      icon_type: "icon",
+    });
+    expect(personTracker).toContain("person-tracker-avatar");
+    expect(personTracker).not.toContain("has-picture");
   });
 
   it("normalizes hidden legacy tags to their unified component variant", async () => {
@@ -281,26 +479,6 @@ describe("family renderers", () => {
     element.remove();
   });
 
-  it("renders detailed and native weather variants distinctly", async () => {
-    const detailed = await render("mushroom-addition-card-weather", {
-      type: "custom:mushroom-addition-card-weather",
-      entity: "weather.home",
-      variant: "detailed",
-      show_forecast: true,
-    });
-    const native = await render("mushroom-addition-card-weather", {
-      type: "custom:mushroom-addition-card-weather",
-      entity: "weather.home",
-      variant: "native",
-      show_forecast: true,
-    });
-    expect(detailed).toContain("detailed-weather");
-    expect(detailed).toContain("detailed-weather-main");
-    expect(detailed).toContain("detailed-weather-details");
-    expect(native).toContain("weather-metrics");
-    expect(native).toContain("native-weather");
-  });
-
   it("renders Bar Card as a compact header and 35px progress bar without graph regions", async () => {
     const markup = await render("mushroom-addition-custom-card-bar-card", {
       type: "custom:mushroom-addition-custom-card-bar-card",
@@ -315,8 +493,8 @@ describe("family renderers", () => {
     expect(markup).toContain("minimalist-bar-card");
     expect(markup).toContain("bar-card-header");
     expect(markup).toContain("bar-card-icon");
-    expect(markup).toContain("bar-card-primary-value");
-    expect(markup).toContain("bar-card-name");
+    expect(markup).toContain("ulm-name");
+    expect(markup).toContain("ulm-label");
     expect(markup).toContain("bar-card-track");
     expect(markup).toContain("bar-card-fill");
     expect(markup).toContain("bar-card-inside-value");
@@ -328,28 +506,15 @@ describe("family renderers", () => {
 
   it.each([
     ["card_battery", "mushroom-addition-card-battery", "sensor.battery", "ulm-default-battery", "battery-track"],
-    ["card_binary_sensor", "mushroom-addition-card-binary-sensor", "binary_sensor.window", "ulm-binary", "sparkline"],
-    ["card_binary_sensor_alert", "mushroom-addition-card-binary-sensor-alert", "binary_sensor.window", "variant-alert", "sparkline"],
     ["card_cover", "mushroom-addition-card-cover", "cover.blind", "ulm-cover", "sparkline"],
-    ["card_fan", "mushroom-addition-card-fan", "fan.fixture", "ulm-fan", "sparkline"],
-    ["card_generic", "mushroom-addition-card-generic", "sensor.power", "value-first", "sparkline"],
-    ["card_generic_swap", "mushroom-addition-card-generic-swap", "sensor.power", "ulm-generic-swap", "sparkline"],
     ["card_graph", "mushroom-addition-card-graph", "sensor.power", "ulm-default-graph", "ulm-light-slider"],
-    ["card_input_boolean", "mushroom-addition-card-input-boolean", "sensor.power", "ulm-simple-default", "sparkline"],
     ["card_light", "mushroom-addition-card-light", "light.kitchen", "ulm-light-card", "sparkline"],
     ["card_media_player", "mushroom-addition-card-media-player", "media_player.tv", "ulm-media", "sparkline"],
-    ["card_navigate", "mushroom-addition-card-navigate", "sensor.power", "ulm-default-navigation", "sparkline"],
     ["card_person", "mushroom-addition-card-person", "person.joris", "ulm-person", "sparkline"],
-    ["card_power_outlet", "mushroom-addition-card-power-outlet", "sensor.power", "ulm-source-power-outlet", "sparkline"],
     ["card_room", "mushroom-addition-card-room", "light.kitchen", "ulm-room", "sparkline"],
     ["card_scenes", "mushroom-addition-card-scenes", "scene.relax", "scene-pills", "sparkline"],
-    ["card_script", "mushroom-addition-card-script", "sensor.power", "ulm-source-script", "sparkline"],
-    ["card_thermostat", "mushroom-addition-card-thermostat", "climate.living", "ulm-climate", "sparkline"],
-    ["card_title", "mushroom-addition-card-title", "sensor.power", "ulm-title", "ulm-icon"],
     ["card_vacuum", "mushroom-addition-card-vacuum", "vacuum.robot", "ulm-default-vacuum", "sparkline"],
     ["card_vertical_button", "mushroom-addition-card-vertical-button", "light.kitchen", "ulm-vertical-button", "sparkline"],
-    ["card_weather", "mushroom-addition-card-weather", "weather.home", "detailed-weather", "ulm-light-slider"],
-    ["card_weather_ulm", "mushroom-addition-card-weather-ulm", "weather.home", "weather-metrics", "detailed-weather"],
     ["card_welcome_scenes", "mushroom-addition-card-welcome-scenes", "scene.relax", "welcome-scenes", "sparkline"],
   ])("enforces the %s visual structure", async (_id, tag, entity, required, forbidden) => {
     const markup = await render(tag, {
@@ -357,7 +522,6 @@ describe("family renderers", () => {
       entity,
       entities: entity.startsWith("scene.") ? ["scene.relax"] : undefined,
       show_controls: true,
-      ulm_card_fan_enable_slider: true,
       ulm_card_light_enable_slider: true,
     });
     expect(markup).toContain(required);
@@ -390,204 +554,34 @@ describe("family renderers", () => {
     element.remove();
   });
 
-  it("executes every Heat Pump control with exact climate service payloads", async () => {
-      const callService = vi.fn(async () => undefined);
-      const element = document.createElement("mushroom-addition-custom-card-heat-pump") as HTMLElement & {
-        hass: HomeAssistant;
-        setConfig(config: AdditionConfig): void;
-        updateComplete: Promise<boolean>;
-        shadowRoot: ShadowRoot;
-      };
-      element.hass = {
-        ...hass,
-        callService,
-        states: {
-          ...hass.states,
-          "climate.living": {
-            ...hass.states["climate.living"],
-            attributes: {
-              ...hass.states["climate.living"].attributes,
-              hvac_modes: ["off", "heat", "cool", "heat_cool", "dry", "fan_only"],
-              fan_modes: ["auto", "high"],
-              target_temp_step: 0.5,
-            },
-          },
-        },
-      };
-      element.setConfig({ type: "custom:mushroom-addition-custom-card-heat-pump", entity: "climate.living" });
-      document.body.append(element);
-      await element.updateComplete;
-
-      const click = async (label: string) => {
-        (element.shadowRoot.querySelector(`button[aria-label="${label}"]`) as HTMLButtonElement).click();
-        await Promise.resolve();
-      };
-      await click("Decrease target temperature");
-      await click("Increase target temperature");
-      await click("Turn off");
-      await click("Heat mode");
-      await click("Cool mode");
-      await click("Automatic mode");
-      await click("Dry mode");
-      await click("Fan mode");
-
-      expect(callService.mock.calls).toEqual([
-        ["climate", "set_temperature", { entity_id: "climate.living", temperature: 20.5 }],
-        ["climate", "set_temperature", { entity_id: "climate.living", temperature: 21.5 }],
-        ["climate", "set_hvac_mode", { entity_id: "climate.living", hvac_mode: "off" }],
-        ["climate", "set_hvac_mode", { entity_id: "climate.living", hvac_mode: "heat" }],
-        ["climate", "set_hvac_mode", { entity_id: "climate.living", hvac_mode: "cool" }],
-        ["climate", "set_hvac_mode", { entity_id: "climate.living", hvac_mode: "heat_cool" }],
-        ["climate", "set_hvac_mode", { entity_id: "climate.living", hvac_mode: "dry" }],
-        ["climate", "set_hvac_mode", { entity_id: "climate.living", hvac_mode: "fan_only" }],
-      ]);
-      element.remove();
-  });
-
-  it("disables unsupported Heat Pump modes and uses set_fan_mode when only fan modes exist", async () => {
-      const callService = vi.fn(async () => undefined);
-      const element = document.createElement("mushroom-addition-custom-card-heat-pump") as HTMLElement & {
-        hass: HomeAssistant;
-        setConfig(config: AdditionConfig): void;
-        updateComplete: Promise<boolean>;
-        shadowRoot: ShadowRoot;
-      };
-      element.hass = {
-        ...hass,
-        callService,
-        states: {
-          ...hass.states,
-          "climate.living": {
-            ...hass.states["climate.living"],
-            attributes: {
-              ...hass.states["climate.living"].attributes,
-              hvac_modes: ["off", "heat"],
-              fan_modes: ["auto"],
-            },
-          },
-        },
-      };
-      element.setConfig({ type: "custom:mushroom-addition-custom-card-heat-pump", entity: "climate.living" });
-      document.body.append(element);
-      await element.updateComplete;
-      expect((element.shadowRoot.querySelector('button[aria-label="Cool mode"]') as HTMLButtonElement).disabled).toBe(true);
-      expect((element.shadowRoot.querySelector('button[aria-label="Automatic mode"]') as HTMLButtonElement).disabled).toBe(true);
-      expect((element.shadowRoot.querySelector('button[aria-label="Dry mode"]') as HTMLButtonElement).disabled).toBe(true);
-      (element.shadowRoot.querySelector('button[aria-label="Fan mode"]') as HTMLButtonElement).click();
-      expect(callService).toHaveBeenCalledWith("climate", "set_fan_mode", {
-        entity_id: "climate.living",
-        fan_mode: "auto",
-      });
-      element.remove();
-  });
-
-  it("executes all Home Assistant Updates controls without triggering the card action", async () => {
-      const element = document.createElement("mushroom-addition-custom-card-homeassistant-updates") as HTMLElement & {
-        hass: HomeAssistant;
-        setConfig(config: AdditionConfig): void;
-        updateComplete: Promise<boolean>;
-        shadowRoot: ShadowRoot;
-      };
-      element.hass = hass;
-      element.setConfig({
-        type: "custom:mushroom-addition-custom-card-homeassistant-updates",
-        entity: "update.core",
-        ulm_card_homeassistant_core: "update.core",
-        ulm_card_homeassistant_supervisor: "update.supervisor",
-        ulm_card_homeassistant_os: "update.operating_system",
-      });
-      const actions: Array<{ config: AdditionConfig; action: string }> = [];
-      element.addEventListener("hass-action", (event) => {
-        actions.push((event as CustomEvent).detail);
-      });
-      document.body.append(element);
-      await element.updateComplete;
-      for (const label of ["Open Home Assistant release notes", "Open update settings", "Open available update"]) {
-        (element.shadowRoot.querySelector(`button[aria-label="${label}"]`) as HTMLButtonElement).click();
-      }
-      expect(actions).toEqual([
-        {
-          action: "tap",
-          config: {
-            type: "custom:mushroom-addition-custom-card-homeassistant-updates",
-            entity: "update.core",
-            tap_action: { action: "url", url_path: "https://www.home-assistant.io/latest-release-notes/" },
-          },
-        },
-        {
-          action: "tap",
-          config: {
-            type: "custom:mushroom-addition-custom-card-homeassistant-updates",
-            entity: "update.core",
-            tap_action: { action: "navigate", navigation_path: "/config/updates" },
-          },
-        },
-        {
-          action: "tap",
-          config: {
-            type: "custom:mushroom-addition-custom-card-homeassistant-updates",
-            entity: "update.core",
-            tap_action: { action: "more-info" },
-          },
-        },
-      ]);
-      element.remove();
-  });
-
-  it("disables update details when every configured update entity is unavailable", async () => {
-      const element = document.createElement("mushroom-addition-custom-card-homeassistant-updates") as HTMLElement & {
-        hass: HomeAssistant;
-        setConfig(config: AdditionConfig): void;
-        updateComplete: Promise<boolean>;
-        shadowRoot: ShadowRoot;
-      };
-      const unavailable = {
-        entity_id: "update.unavailable",
-        state: "unavailable",
-        attributes: { friendly_name: "Unavailable update" },
-      };
-      element.hass = { ...hass, states: { "update.unavailable": unavailable } };
-      element.setConfig({
-        type: "custom:mushroom-addition-custom-card-homeassistant-updates",
-        entity: "update.unavailable",
-        ulm_card_homeassistant_core: "update.unavailable",
-        ulm_card_homeassistant_supervisor: "update.unavailable",
-        ulm_card_homeassistant_os: "update.unavailable",
-      });
-      document.body.append(element);
-      await element.updateComplete;
-      expect((element.shadowRoot.querySelector('button[aria-label="Open available update"]') as HTMLButtonElement).disabled).toBe(true);
-      element.remove();
-  });
-
-  it("renders the dedicated Nik NAS tiles, semantic metrics, and three radial rings", async () => {
-      const markup = await render("mushroom-addition-custom-card-nik-nas", {
-        type: "custom:mushroom-addition-custom-card-nik-nas",
+  it("renders the dedicated NAS tiles, semantic metrics, and three radial rings", async () => {
+      const markup = await render("mushroom-addition-custom-card-nas-metrics", {
+        type: "custom:mushroom-addition-custom-card-nas-metrics",
         entity: "binary_sensor.nas",
         disk_entity: "sensor.nas_disk",
         temperature_entity: "sensor.nas_temp",
         memory_entity: "sensor.nas_memory",
         cpu_entity: "sensor.nas_cpu",
       });
-      expect(markup).toContain("nik-nas-top");
+      expect(markup).toContain("nas-metrics-top");
       expect(markup).toContain("status-tile");
       expect(markup).toContain("disk-tile");
-      expect(markup).toContain("nik-nas-metrics");
-      expect(markup).toContain("nik-nas-rings");
-      expect(markup.match(/nik-nas-ring-value/g)).toHaveLength(3);
-      expect(markup).not.toContain("nik-nas-chart");
+      expect(markup).toContain("nas-metrics-metrics");
+      expect(markup).toContain("nas-metrics-rings");
+      expect(markup.match(/nas-metrics-ring-value/g)).toHaveLength(3);
+      expect(markup).not.toContain("nas-metrics-chart");
       expect(markup).not.toContain("metric-1");
   });
 
   it("opens NAS status more-info without firing the outer card action", async () => {
-      const element = document.createElement("mushroom-addition-custom-card-nik-nas") as HTMLElement & {
+      const element = document.createElement("mushroom-addition-custom-card-nas-metrics") as HTMLElement & {
         hass: HomeAssistant;
         setConfig(config: AdditionConfig): void;
         updateComplete: Promise<boolean>;
         shadowRoot: ShadowRoot;
       };
       element.hass = hass;
-      element.setConfig({ type: "custom:mushroom-addition-custom-card-nik-nas", entity: "binary_sensor.nas" });
+      element.setConfig({ type: "custom:mushroom-addition-custom-card-nas-metrics", entity: "binary_sensor.nas" });
       const actions: unknown[] = [];
       element.addEventListener("hass-action", (event) => actions.push((event as CustomEvent).detail));
       document.body.append(element);
@@ -596,7 +590,7 @@ describe("family renderers", () => {
       expect(actions).toEqual([{
         action: "tap",
         config: {
-          type: "custom:mushroom-addition-custom-card-nik-nas",
+          type: "custom:mushroom-addition-custom-card-nas-metrics",
           entity: "binary_sensor.nas",
           tap_action: { action: "more-info" },
         },
@@ -604,9 +598,9 @@ describe("family renderers", () => {
       element.remove();
   });
 
-  it("renders and executes all six semantic Nik Tablet controls", async () => {
+  it("renders and executes all six semantic Tablet controls", async () => {
       const callService = vi.fn(async () => undefined);
-      const element = document.createElement("mushroom-addition-custom-card-nik-tablet") as HTMLElement & {
+      const element = document.createElement("mushroom-addition-custom-card-tablet") as HTMLElement & {
         hass: HomeAssistant;
         setConfig(config: AdditionConfig): void;
         updateComplete: Promise<boolean>;
@@ -614,7 +608,7 @@ describe("family renderers", () => {
       };
       element.hass = { ...hass, callService };
       element.setConfig({
-        type: "custom:mushroom-addition-custom-card-nik-tablet",
+        type: "custom:mushroom-addition-custom-card-tablet",
         entity: "binary_sensor.tablet",
         tablet_button_usb_entity: "switch.tablet_usb",
         tablet_button_motion_entity: "switch.tablet_motion",
@@ -629,8 +623,8 @@ describe("family renderers", () => {
       });
       document.body.append(element);
       await element.updateComplete;
-      expect(element.shadowRoot.querySelectorAll(".nik-tablet-controls button")).toHaveLength(6);
-      expect(element.shadowRoot.querySelectorAll(".nik-tablet-metrics > span")).toHaveLength(3);
+      expect(element.shadowRoot.querySelectorAll(".tablet-controls button")).toHaveLength(6);
+      expect(element.shadowRoot.querySelectorAll(".tablet-metrics > span")).toHaveLength(3);
       for (const label of [
         "Toggle USB", "Toggle motion", "Toggle display", "Restart tablet", "Toggle maintenance mode", "Reload tablet",
       ]) {
@@ -659,7 +653,6 @@ describe("family renderers", () => {
   });
 
   it.each([
-    ["climate", "mushroom-addition-card-thermostat", "climate.living", "ulm-climate"],
     ["light", "mushroom-addition-card-light", "light.kitchen", "ulm-light"],
     ["scene", "mushroom-addition-card-scenes", "scene.relax", "scene-grid"],
     ["person", "mushroom-addition-card-person", "person.joris", "ulm-person"],
@@ -668,7 +661,6 @@ describe("family renderers", () => {
     ["media", "mushroom-addition-card-media-player", "media_player.tv", "ulm-media"],
     ["cover", "mushroom-addition-card-cover", "cover.blind", "ulm-controls"],
     ["vacuum", "mushroom-addition-card-vacuum", "vacuum.robot", "ulm-default-vacuum"],
-    ["security", "mushroom-addition-custom-card-eraycetinay-lock", "lock.front_door", "custom-eray-lock"],
   ])("renders distinct %s markup", async (_family, tag, entity, marker) => {
     const item = CATALOG.find((entry) => entry.tag === tag)!;
     const markup = await render(tag, {
@@ -682,24 +674,18 @@ describe("family renderers", () => {
   });
 
   it.each([
-    ["afvalophaling", "sensor.power", "custom-waste-card", "waste-grid"],
+    ["trash", "sensor.power", "custom-waste-card", "waste-grid"],
     ["alarm-time", "input_boolean.alarm", "custom-alarm-time", "alarm-time-controls"],
     ["apexcharts", "sensor.power", "custom-apexcharts", "apex-chart"],
     ["chromecast", "media_player.tv", "custom-chromecast", "chromecast-controls"],
-    ["damix48-power-details", "sensor.power", "custom-power-details", "power-details-chart"],
+    ["power-details", "sensor.power", "custom-power-details", "power-details-chart"],
     ["device-tracker", "device_tracker.phone", "custom-device-tracker", "device-tracker-icon"],
-    ["drealine-roomview", "sensor.temperature", "custom-room-view", "room-view-actions"],
-    ["eraycetinay-elapsed-time", "sensor.uptime", "custom-elapsed-time", "ulm-label"],
-    ["eraycetinay-lock", "lock.front_door", "custom-eray-lock", "eray-lock-icon"],
-    ["esh-welcome", "person.joris", "custom-esh-welcome", "esh-welcome-items"],
-    ["haven-washer", "switch.washer", "custom-washer", "washer-stages"],
-    ["heat-pump", "climate.living", "custom-heat-pump", "heat-pump-modes"],
-    ["homeassistant-updates", "update.core", "custom-ha-updates", "ha-update-list"],
-    ["httpedo13-sun", "sun.sun", "custom-sun-card", "sun-arc"],
-    ["httpedo13-thermostat", "climate.living", "custom-compact-thermostat", "compact-thermostat-controls"],
-    ["iabadia-battery-chip", "sensor.battery", "custom-battery-chip", "tone-green"],
-    ["imswel-medias", "media_player.tv", "custom-media-library", "media-platform"],
-    ["imswel-person", "person.joris", "custom-imswel-person", "imswel-location"],
+    ["roomview", "sensor.temperature", "custom-room-view", "room-view-actions"],
+    ["welcome", "person.joris", "custom-welcome", "welcome-items"],
+    ["washer", "switch.washer", "custom-washer", "washer-stages"],
+    ["sun", "sun.sun", "custom-sun-card", "sun-arc"],
+    ["media-library", "media_player.tv", "custom-media-library", "media-platform"],
+    ["person-location", "person.joris", "custom-person-location", "person-location-marker"],
     ["input-datetime", "input_datetime.alarm", "custom-input-datetime", "input-datetime-controls"],
   ])("uses a source-specific %s composition", async (slug, entity, marker, region) => {
     const tag = `mushroom-addition-custom-card-${slug}`;
@@ -717,8 +703,8 @@ describe("family renderers", () => {
   });
 
   it("renders only enabled configured waste streams and handles unknown dates", async () => {
-    const markup = await render("mushroom-addition-custom-card-afvalophaling", {
-      type: "custom:mushroom-addition-custom-card-afvalophaling",
+    const markup = await render("mushroom-addition-custom-card-trash", {
+      type: "custom:mushroom-addition-custom-card-trash",
       entity: "sensor.power",
       waste_streams: [
         { enabled: true, entity: "sensor.power", label: "Residual waste", icon: "mdi:trash-can", color: "#43a047" },
@@ -733,6 +719,118 @@ describe("family renderers", () => {
     expect(markup).not.toContain("Glass");
     expect(markup.match(/class="waste-row"/g)).toHaveLength(3);
     expect(markup).not.toContain("configured waste stream");
+  });
+
+  it("applies Home Assistant theme colors to room sensor buttons", async () => {
+    const markup = await render("mushroom-addition-card-room", {
+      type: "custom:mushroom-addition-card-room",
+      entity: "light.kitchen",
+      room_sensors: [
+        {
+          entity: "binary_sensor.window",
+          color: "deep-purple",
+        },
+      ],
+    });
+    expect(markup).toContain("--item-color:rgb(var(--rgb-deep-purple, 110, 65, 171))");
+    expect(markup).not.toContain("--color-deep-purple");
+  });
+
+  it("supports entity pictures on individual room sensor buttons", async () => {
+    const picture = await render("mushroom-addition-card-room", {
+      type: "custom:mushroom-addition-card-room",
+      entity: "light.kitchen",
+      room_sensors: [{
+        entity: "person.joris",
+        icon: "mdi:account",
+        icon_type: "entity-picture",
+      }],
+    });
+    expect(picture).toContain("room-sensor-picture");
+    expect(picture).toContain("/local/joris.jpg");
+
+    const fallback = document.createElement("mushroom-addition-card-room") as HTMLElement & {
+      hass: HomeAssistant;
+      setConfig(config: AdditionConfig): void;
+      updateComplete: Promise<boolean>;
+    };
+    fallback.hass = hass;
+    fallback.setConfig({
+      type: "custom:mushroom-addition-card-room",
+      entity: "light.kitchen",
+      room_sensors: [{
+        entity: "sensor.battery",
+        icon: "mdi:battery",
+        icon_type: "entity-picture",
+      }],
+    });
+    document.body.append(fallback);
+    await fallback.updateComplete;
+    expect(fallback.shadowRoot?.querySelector(".room-sensor-picture")).toBeNull();
+    expect((fallback.shadowRoot?.querySelector(".room-sensor ha-icon") as HTMLElement & { icon: string }).icon)
+      .toBe("mdi:battery");
+    fallback.remove();
+  });
+
+  it("supports entity pictures on individual Welcome Scenes buttons", async () => {
+    const card = document.createElement("mushroom-addition-card-welcome-scenes") as HTMLElement & {
+      hass: HomeAssistant;
+      setConfig(config: AdditionConfig): void;
+      updateComplete: Promise<boolean>;
+    };
+    card.hass = hass;
+    card.setConfig({
+      type: "custom:mushroom-addition-card-welcome-scenes",
+      scene_items: [{
+        entity: "person.joris",
+        icon: "mdi:account",
+        icon_type: "entity-picture",
+      }, {
+        entity: "sensor.battery",
+        icon: "mdi:battery",
+        icon_type: "entity-picture",
+      }],
+    });
+    document.body.append(card);
+    await card.updateComplete;
+    const buttons = card.shadowRoot?.querySelectorAll(".scene-button") ?? [];
+    expect(buttons[0].querySelector(".scene-entity-picture")?.getAttribute("style"))
+      .toContain("/local/joris.jpg");
+    expect((buttons[1].querySelector("ha-icon") as HTMLElement & { icon: string }).icon)
+      .toBe("mdi:battery");
+    card.remove();
+  });
+
+  it("expands and collapses additional Welcome Scenes from the overflow button", async () => {
+    const tag = "mushroom-addition-card-welcome-scenes";
+    const element = document.createElement(tag) as HTMLElement & {
+      hass: HomeAssistant;
+      setConfig(config: AdditionConfig): void;
+      updateComplete: Promise<boolean>;
+    };
+    element.hass = hass;
+    element.setConfig({
+      type: `custom:${tag}`,
+      scene_items: Array.from({ length: 9 }, (_, index) => ({
+        entity: "scene.relax",
+        name: `Scene ${index + 1}`,
+      })),
+    });
+    document.body.append(element);
+    await element.updateComplete;
+
+    expect(element.shadowRoot?.querySelectorAll(".scene-button")).toHaveLength(7);
+    const more = element.shadowRoot?.querySelector<HTMLButtonElement>(".welcome-scenes-more");
+    expect(more?.getAttribute("aria-expanded")).toBe("false");
+    more?.click();
+    await element.updateComplete;
+    expect(element.shadowRoot?.querySelectorAll(".scene-button")).toHaveLength(9);
+    expect(element.shadowRoot?.querySelector(".welcome-scenes-more")?.getAttribute("aria-expanded")).toBe("true");
+
+    element.shadowRoot?.querySelector<HTMLButtonElement>(".welcome-scenes-more")?.click();
+    await element.updateComplete;
+    expect(element.shadowRoot?.querySelectorAll(".scene-button")).toHaveLength(7);
+    element.remove();
   });
 
   it.each([
@@ -757,8 +855,8 @@ describe("family renderers", () => {
       tomorrow_entity: "sensor.missing",
     }, [], ["waste-summary", "Today:", "Tomorrow:", "unknown"]],
   ])("renders waste header summaries for %s", async (_name, summaryConfig, present, absent) => {
-    const markup = await render("mushroom-addition-custom-card-afvalophaling", {
-      type: "custom:mushroom-addition-custom-card-afvalophaling",
+    const markup = await render("mushroom-addition-custom-card-trash", {
+      type: "custom:mushroom-addition-custom-card-trash",
       entity: "sensor.power",
       waste_streams: [
         { enabled: true, entity: "sensor.power", label: "Residual waste" },
@@ -770,44 +868,26 @@ describe("family renderers", () => {
   });
 
   it.each([
-    ["input-number", "sensor.power", "custom-input-number", "input-number-controls"],
-    ["irmajavi-entities", "sensor.power", "custom-irmajavi-entities", "irmajavi-four"],
-    ["irmajavi-speedtest", "sensor.power", "custom-irmajavi-speedtest", "speedtest-metrics"],
-    ["irmajavi-weather", "weather.home", "custom-irmajavi-weather", "irmajavi-weather-panel"],
-    ["light-colorpick", "light.kitchen", "custom-light-colorpick", "light-color-swatches"],
+    ["entity-overview", "sensor.power", "custom-entity-overview", "metrics-four"],
+    ["internet-speed", "sensor.power", "custom-internet-speed", "speedtest-metrics"],
+    ["weather-metrics", "weather.home", "custom-weather-metrics", "weather-metrics-panel"],
     ["media-player-sonos", "media_player.tv", "custom-sonos", "sonos-controls"],
     ["more-power-outlet", "sensor.power", "custom-more-power-outlet", "ulm-copy"],
-    ["mpse-gauge", "sensor.power", "custom-dual-gauge", "dual-gauge"],
-    ["mpse-printer", "sensor.power", "custom-mpse-printer", "toner-bars"],
-    ["mpse-thermostat", "climate.living", "custom-compact-thermostat", "compact-thermostat-controls"],
-    ["mpse-wifisignal", "sensor.power", "custom-wifi-signal", "ulm-copy"],
-    ["nas", "sensor.power", "custom-nas-info", "ulm-icon"],
-    ["neekster-update", "sensor.power", "custom-neekster-update", "custom-card-heading"],
-    ["nik-clock", "sensor.power", "custom-nik-clock", "custom-nik-clock"],
-    ["nik-door", "binary_sensor.window", "custom-nik-door", "nik-door-heading"],
-    ["nik-nas", "sensor.power", "custom-nik-nas", "nik-nas-metrics"],
-    ["nik-tablet", "sensor.battery", "custom-nik-tablet", "nik-tablet-header"],
-    ["paddy-dwd-pollen", "sensor.power", "custom-paddy-pollen", "pollen-icon"],
-    ["paddy-waste-collection", "sensor.power", "custom-paddy-waste", "paddy-waste-icon"],
-    ["paddy-welcome", "person.joris", "custom-paddy-welcome", "Good"],
-    ["person-chip", "person.joris", "custom-person-chip", "person-chip-picture"],
+    ["gauge", "sensor.power", "custom-dual-gauge", "dual-gauge"],
+    ["printer", "sensor.power", "custom-printer", "toner-bars"],
+    ["wifi-signal", "sensor.power", "custom-wifi-signal", "ulm-copy"],
+    ["nas-metrics", "sensor.power", "custom-nas-metrics", "nas-metrics-metrics"],
+    ["tablet", "sensor.battery", "custom-tablet", "tablet-header"],
+    ["pollen-forecast", "sensor.power", "custom-pollen-forecast", "pollen-icon"],
+    ["welcome-dashboard", "person.joris", "custom-welcome-dashboard", "welcome-dashboard-message"],
     ["person-info", "person.joris", "custom-person-info", "person-info-details"],
     ["playstation", "media_player.tv", "custom-console-card", "console-content"],
-    ["qubino", "sensor.power", "custom-qubino", "ulm-icon"],
-    ["ristou-person", "person.joris", "custom-ristou-person", "ristou-person-main"],
-    ["saxel-fan", "fan.fixture", "custom-saxel-fan", "saxel-fan-controls"],
+    ["person-tracker", "person.joris", "custom-person-tracker", "person-tracker-main"],
     ["scenes", "scene.relax", "ulm-scenes", "scene-grid"],
-    ["schumijo-car", "sensor.power", "custom-schumijo-car", "car-metrics"],
-    ["schumijo-flower", "sensor.power", "custom-schumijo-flower", "flower-bars"],
-    ["senoro-win", "binary_sensor.window", "custom-senoro-window", "senoro-state-badge"],
-    ["sisimomo-printer", "sensor.power", "custom-sisimomo-printer", "printer-summary"],
-    ["speedtest-shogun160", "sensor.power", "custom-speedtest-shogun", "speedtest-three"],
-    ["tpx01-aircondition", "climate.living", "custom-tpx-aircondition", "aircondition-controls"],
-    ["vncntdev-device-tracer", "sensor.power", "custom-device-tracer", "device-tracer-icon"],
-    ["water-heater", "sensor.power", "custom-water-heater", "source-icon"],
-    ["wilbiev-title", "sensor.power", "custom-wilbiev-title", "variant-divider-title"],
-    ["wsly-pollen", "sensor.power", "custom-wsly-pollen", "--pollen:"],
-    ["yagrasdemonde-lights-count", "sensor.power", "custom-lights-count", "lights on"],
+    ["vehicle-status", "sensor.power", "custom-vehicle-status", "car-metrics"],
+    ["plant", "sensor.power", "custom-plant", "flower-bars"],
+    ["speedtest-gauges", "sensor.power", "custom-speedtest-gauges", "speedtest-three"],
+    ["pollen", "sensor.power", "custom-pollen", "--pollen:"],
   ])("uses a dedicated remaining-source %s composition", async (slug, entity, marker, region) => {
     const tag = `mushroom-addition-custom-card-${slug}`;
     const markup = await render(tag, {
@@ -852,8 +932,6 @@ describe("family renderers", () => {
 
   it("keeps deterministic family-level visual signatures", async () => {
     const signatures = {
-      weather: familySignature(await render("mushroom-addition-card-weather", { type: "custom:mushroom-addition-card-weather", entity: "weather.home", show_forecast: true })),
-      climate: familySignature(await render("mushroom-addition-card-thermostat", { type: "custom:mushroom-addition-card-thermostat", entity: "climate.living", show_controls: true })),
       light: familySignature(await render("mushroom-addition-card-light", { type: "custom:mushroom-addition-card-light", entity: "light.kitchen", show_controls: true })),
       scene: familySignature(await render("mushroom-addition-card-scenes", { type: "custom:mushroom-addition-card-scenes", entity: "scene.relax", entities: ["scene.relax"] })),
       person: familySignature(await render("mushroom-addition-card-person", { type: "custom:mushroom-addition-card-person", entity: "person.joris" })),
@@ -870,15 +948,6 @@ describe("family renderers", () => {
           "ulm-copy",
           "ulm-name",
           "ulm-label",
-        ],
-        "climate": [
-          "ulm-climate",
-          "ulm-source-thermostat",
-          "ulm-icon",
-          "ulm-copy",
-          "ulm-name",
-          "ulm-label",
-          "ulm-control",
         ],
         "energy": [
           "ulm-default-graph",
@@ -914,9 +983,9 @@ describe("family renderers", () => {
         "scene": [
           "ulm-scenes",
           "ulm-source-scenes",
-        ],
-        "weather": [
-          "ulm-weather",
+          "ulm-copy",
+          "ulm-name",
+          "ulm-label",
         ],
       }
     `);

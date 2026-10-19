@@ -2,7 +2,7 @@
   "upstreamCommit": "f8a9cb67a53f91367f1dffe18516aa983b463cb5",
   "live": false,
   "sources": {
-    "custom_card_paddy_waste_collection": {
+    "custom_card_waste_collection": {
       "config": {
         "entity": "sensor.afvalinfo_home_trash_type_today"
       },
@@ -22,7 +22,7 @@
         }
       ]
     },
-    "custom_card_paddy_welcome": {
+    "custom_card_welcome_dashboard": {
       "config": {
         "entity": "person.joris",
         "variant": "weather",
@@ -59,27 +59,6 @@
       ],
       "unavailableIntegrations": [
         "home-feed-card templating is not embedded; configured entity IDs render as a compact local feed."
-      ]
-    },
-    "custom_card_person_chip": {
-      "config": {
-        "entity": "person.joris",
-        "use_entity_picture": true
-      },
-      "interactions": [
-        {
-          "surface": "chip surface",
-          "payload": {
-            "event": "hass-action",
-            "action": "tap",
-            "config": {
-              "entity": "person.joris",
-              "tap_action": {
-                "action": "more-info"
-              }
-            }
-          }
-        }
       ]
     },
     "custom_card_playstation": {
@@ -128,11 +107,11 @@
         "The mapped switch has no brightness attribute and no input_select.ordres_fil_pilote equivalent was supplied; live rendering would show Unavailable while the source brightness thresholds and dedicated more-info target are certified locally."
       ]
     },
-    "custom_card_ristou_person": {
+    "custom_card_person_tracker": {
       "config": {
         "entity": "person.joris",
-        "ulm_custom_card_ristou_use_entity_picture": true,
-        "ulm_custom_card_ristou_use_badge": true,
+        "ulm_custom_card_person_tracker_use_entity_picture": true,
+        "ulm_custom_card_person_tracker_use_badge": true,
         "battery_entity": "sensor.joris_mobile_battery_level"
       },
       "interactions": [

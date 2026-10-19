@@ -3,18 +3,14 @@
   "inspectedAt": "2026-09-23",
   "liveAccepted": false,
   "liveMappings": {
-    "custom_card_wsly_pollen": {
+    "custom_card_pollen": {
       "trees_entity": "sensor.kleenex_pollen_radar_home_trees",
       "grass_entity": "sensor.kleenex_pollen_radar_home_grass",
       "weeds_entity": "sensor.kleenex_pollen_radar_home_weeds"
-    },
-    "custom_card_yagrasdemonde_lights_count": {
-      "entity": "sensor.number_of_lights_on",
-      "ulm_custom_card_yagrasdemonde_lights_count_type": "light"
     }
   },
   "geometry": {
-    "custom_card_wsly_pollen": {
+    "custom_card_pollen": {
       "referenceWidth": 368,
       "implementationWidth": 368,
       "implementationHeight": 108,
@@ -22,56 +18,40 @@
         ".pollen-item": 3,
         ".pollen-extreme": 1
       }
-    },
-    "custom_card_yagrasdemonde_lights_count": {
-      "referenceWidth": 486,
-      "implementationWidth": 486,
-      "implementationHeight": 84,
-      "regions": {
-        ".lights-count-icon": 1,
-        ".lights-count-name": 1
-      }
     }
   },
   "interactions": {
-    "custom_card_wsly_pollen": {
+    "custom_card_pollen": {
       "serviceCalls": [],
       "cardActions": [
         {
           "action": "tap",
           "config": {
-            "type": "custom:mushroom-addition-custom-card-wsly-pollen",
+            "type": "custom:mushroom-addition-custom-card-pollen",
             "entity": "sensor.kleenex_pollen_radar_home_trees",
-            "tap_action": { "action": "more-info" }
+            "tap_action": {
+              "action": "more-info"
+            }
           }
         },
         {
           "action": "tap",
           "config": {
-            "type": "custom:mushroom-addition-custom-card-wsly-pollen",
+            "type": "custom:mushroom-addition-custom-card-pollen",
             "entity": "sensor.kleenex_pollen_radar_home_grass",
-            "tap_action": { "action": "more-info" }
+            "tap_action": {
+              "action": "more-info"
+            }
           }
         },
         {
           "action": "tap",
           "config": {
-            "type": "custom:mushroom-addition-custom-card-wsly-pollen",
+            "type": "custom:mushroom-addition-custom-card-pollen",
             "entity": "sensor.kleenex_pollen_radar_home_weeds",
-            "tap_action": { "action": "more-info" }
-          }
-        }
-      ]
-    },
-    "custom_card_yagrasdemonde_lights_count": {
-      "serviceCalls": [],
-      "cardActions": [
-        {
-          "action": "tap",
-          "config": {
-            "type": "custom:mushroom-addition-custom-card-yagrasdemonde-lights-count",
-            "entity": "sensor.number_of_lights_on",
-            "tap_action": { "action": "none" }
+            "tap_action": {
+              "action": "more-info"
+            }
           }
         }
       ]

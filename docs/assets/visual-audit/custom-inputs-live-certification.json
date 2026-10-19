@@ -14,61 +14,83 @@
     "backupSuffix": "20260923-224324"
   },
   "sources": {
-    "custom_card_imswel_person": {
+    "custom_card_person_location": {
       "entity": "person.joris",
       "batteryEntity": "sensor.joris_mobile_battery_level",
       "text": "Joris Home",
-      "geometry": [330, 68.578125],
+      "geometry": [
+        330,
+        68.578125
+      ],
       "overflow": false,
       "moreInfoEntity": "person.joris",
-      "screenshot": "live-inputs-imswel-person.png"
+      "screenshot": "live-inputs-person-location.png"
     },
     "custom_card_input_datetime": {
       "entity": "input_datetime.quiet_time_start",
       "text": "Quiet time start 21:30:00 21:30",
-      "geometry": [330, 122.578125],
+      "geometry": [
+        330,
+        122.578125
+      ],
       "overflow": false,
-      "controls": ["15 minutes earlier", "One minute later; hold for one minute earlier", "15 minutes later"],
-      "stateTransition": ["21:30:00", "21:15:00", "21:30:00"],
+      "controls": [
+        "15 minutes earlier",
+        "One minute later; hold for one minute earlier",
+        "15 minutes later"
+      ],
+      "stateTransition": [
+        "21:30:00",
+        "21:15:00",
+        "21:30:00"
+      ],
       "restored": true,
       "screenshot": "live-inputs-input-datetime.png"
     },
-    "custom_card_input_number": {
-      "entity": "input_number.missing",
-      "text": "Entity unavailable",
-      "geometry": [330, 120.578125],
-      "overflow": false,
-      "allThreeControlsDisabled": true,
-      "serviceCalls": [],
-      "screenshot": "live-inputs-input-number.png"
-    },
-    "custom_card_irmajavi_entities": {
+    "custom_card_entity_overview": {
       "entity": "light.joris_iris_1",
-      "entities": ["light.joris_iris_1", "sensor.office_joris_temperature_3", "switch.office_joris_plug_3"],
-      "geometry": [330, 160],
+      "entities": [
+        "light.joris_iris_1",
+        "sensor.office_joris_temperature_3",
+        "switch.office_joris_plug_3"
+      ],
+      "geometry": [
+        330,
+        160
+      ],
       "overflow": false,
-      "moreInfoEntities": ["light.joris_iris_1", "sensor.office_joris_temperature_3", "switch.office_joris_plug_3"],
+      "moreInfoEntities": [
+        "light.joris_iris_1",
+        "sensor.office_joris_temperature_3",
+        "switch.office_joris_plug_3"
+      ],
       "missingFourthSlotDisabled": true,
-      "screenshot": "live-inputs-irmajavi-entities.png"
+      "screenshot": "live-inputs-entity-overview.png"
     },
-    "custom_card_irmajavi_speedtest": {
+    "custom_card_internet_speed": {
       "downloadEntity": "sensor.speedtest_download",
       "uploadEntity": "sensor.speedtest_upload",
       "pingEntity": "sensor.speedtest_ping",
-      "geometry": [330, 280.578125],
+      "geometry": [
+        330,
+        280.578125
+      ],
       "overflow": false,
       "downloadMoreInfoEntity": "sensor.speedtest_download",
       "uploadMoreInfoEntity": "sensor.speedtest_upload",
       "updateActionOperated": false,
-      "screenshot": "live-inputs-irmajavi-speedtest.png"
+      "screenshot": "live-inputs-internet-speed.png"
     },
-    "custom_card_irmajavi_weather": {
+    "custom_card_weather_metrics": {
       "entity": "weather.hcn_ha",
       "text": "Date unavailable 16° Entity unavailable",
-      "geometry": [330, 160],
+      "geometry": [
+        330,
+        160
+      ],
       "overflow": false,
       "unconfiguredMetricButtonsDisabled": true,
-      "screenshot": "live-inputs-irmajavi-weather.png"
+      "screenshot": "live-inputs-weather-metrics.png"
     }
   },
   "picker": {

@@ -17,57 +17,51 @@
     "custom_card_bar_card": {
       "entity": "sensor.cv_plug_power",
       "text": "2.0 W CV plug Power",
-      "geometry": [330, 97],
+      "geometry": [
+        330,
+        97
+      ],
       "overflow": false,
       "moreInfoEntity": "sensor.cv_plug_power",
       "screenshot": "live-devices-bar-card.png"
     },
-    "custom_card_haven_washer": {
+    "custom_card_washer": {
       "entity": "sensor.wasmachine_operation_state",
       "powerEntity": "sensor.wasmachine_plug_power",
       "doorEntity": "sensor.wasmachine_door",
       "finishedEntity": "sensor.wasmachine_program_finished",
       "text": "Wasmachine Operation state run 1.2 W open off",
-      "geometry": [330, 152.171875],
+      "geometry": [
+        330,
+        152.171875
+      ],
       "overflow": false,
       "moreInfoEntity": "sensor.wasmachine_operation_state",
       "applianceActionsOperated": false,
-      "screenshot": "live-devices-haven-washer.png"
+      "screenshot": "live-devices-washer.png"
     },
-    "custom_card_httpedo13_sun": {
+    "custom_card_sun": {
       "entity": "sun.sun",
       "text": "Sunrise 07:28 Sunset 19:33 Dawn 06:54 Solar noon 13:31 Dusk 20:07",
-      "geometry": [330, 247.125],
+      "geometry": [
+        330,
+        247.125
+      ],
       "overflow": false,
-      "screenshot": "live-devices-httpedo13-sun.png"
+      "screenshot": "live-devices-sun.png"
     },
-    "custom_card_httpedo13_thermostat": {
-      "entity": "climate.living_room",
-      "text": "Living room off 21.7 °C 5 °C",
-      "geometry": [330, 134],
-      "overflow": false,
-      "controls": ["Turn thermostat on", "Decrease temperature", "Increase temperature"],
-      "hvacActionsOperated": false,
-      "screenshot": "live-devices-httpedo13-thermostat.png"
-    },
-    "custom_card_iAbadia_battery_chip": {
-      "entity": "sensor.yvette_mobile_battery_level",
-      "batteryStateEntity": "sensor.yvette_mobile_battery_state",
-      "chargerTypeEntity": "sensor.yvette_mobile_charger_type",
-      "geometry": [330, 58],
-      "overflow": false,
-      "moreInfoEntity": "sensor.yvette_mobile_battery_level",
-      "screenshot": "live-devices-iabadia-battery-chip.png"
-    },
-    "custom_card_imswel_medias": {
+    "custom_card_media_library": {
       "entity": "media_player.office_joris_sonos",
       "secondaryEntity": "media_player.office_joris_tv_2",
       "text": "Recently added TV Audio",
-      "geometry": [330, 132],
+      "geometry": [
+        330,
+        132
+      ],
       "overflow": false,
       "moreInfoEntity": "media_player.office_joris_sonos",
       "mediaActionsOperated": false,
-      "screenshot": "live-devices-imswel-medias.png"
+      "screenshot": "live-devices-media-library.png"
     }
   },
   "picker": {

@@ -18,58 +18,63 @@
       "entity": "device_tracker.joris_mobile",
       "tracker1Type": "gps",
       "text": "Joris Mobile Present",
-      "geometry": [330, 64.578125],
+      "geometry": [
+        330,
+        64.578125
+      ],
       "overflow": false,
       "moreInfoEntity": "device_tracker.joris_mobile",
       "screenshot": "live-second-device-tracker.png"
     },
-    "custom_card_drealine_roomview": {
+    "custom_card_roomview": {
       "name": "Living room",
       "temperatureEntity": "sensor.living_room_temperature_3",
       "humidityEntity": "sensor.living_room_humidity_3",
       "lightsEntity": "light.living_room_color3",
       "text": "23.42 °C 61.0 % 1",
-      "geometry": [330, 166],
+      "geometry": [
+        330,
+        166
+      ],
       "overflow": false,
       "physicalActionsOperated": false,
-      "screenshot": "live-second-drealine-roomview.png"
+      "screenshot": "live-second-roomview.png"
     },
-    "custom_card_eraycetinay_elapsed_time": {
+    "custom_card_elapsed_time": {
       "entity": "sensor.uptime",
       "text": "Uptime 2026-09-23T17:08:44+00:00",
-      "geometry": [330, 84.578125],
+      "geometry": [
+        330,
+        84.578125
+      ],
       "overflow": false,
       "moreInfoEntity": "sensor.uptime",
-      "screenshot": "live-second-eraycetinay-elapsed-time.png"
+      "screenshot": "live-second-elapsed-time.png"
     },
-    "custom_card_eraycetinay_lock": {
-      "entity": "lock.front_door_lock",
-      "text": "Front door lock locked",
-      "geometry": [330, 66],
-      "overflow": false,
-      "tapControl": false,
-      "moreInfoEntity": "lock.front_door_lock",
-      "lockActionsOperated": false,
-      "screenshot": "live-second-eraycetinay-lock.png"
-    },
-    "custom_card_esh_room": {
+    "custom_card_room_overview": {
       "entity": "light.joris_iris_1",
       "text": "Office Office",
-      "geometry": [330, 118.578125],
+      "geometry": [
+        330,
+        118.578125
+      ],
       "overflow": false,
       "physicalActionsOperated": false,
-      "screenshot": "live-second-esh-room.png"
+      "screenshot": "live-second-room-overview.png"
     },
-    "custom_card_esh_welcome": {
+    "custom_card_welcome": {
       "entity": "person.joris",
       "weatherEntity": "weather.hcn_ha",
       "text": "Good evening , Joris !",
-      "geometry": [330, 151.65625],
+      "geometry": [
+        330,
+        151.65625
+      ],
       "overflow": false,
       "navigationToggleDisabledWithoutConfiguredLinks": true,
       "weatherMoreInfoEntity": "weather.hcn_ha",
       "settingsNavigation": "/config/dashboard",
-      "screenshot": "live-second-esh-welcome.png"
+      "screenshot": "live-second-welcome.png"
     }
   },
   "picker": {

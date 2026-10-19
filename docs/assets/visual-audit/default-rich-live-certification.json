@@ -15,27 +15,13 @@
     "backupSuffix": "20260923-223432"
   },
   "sources": {
-    "card_generic": {
-      "entity": "sensor.bedroom_temperature_2",
-      "text": "21.97 °C Bedroom Temperature",
-      "geometry": [330, 68.578125],
-      "overflow": false,
-      "moreInfoEntity": "sensor.bedroom_temperature_2",
-      "screenshot": "live-rich-generic.png"
-    },
-    "card_generic_swap": {
-      "entity": "sensor.cv_plug_power",
-      "variant": "swapped",
-      "text": "CV plug Power 2.0 W",
-      "geometry": [330, 68.578125],
-      "overflow": false,
-      "moreInfoEntity": "sensor.cv_plug_power",
-      "screenshot": "live-rich-generic-swap.png"
-    },
     "card_graph": {
       "entity": "sensor.cv_plug_power",
       "text": "2.0 W CV plug Power",
-      "geometry": [330, 153.390625],
+      "geometry": [
+        330,
+        153.390625
+      ],
       "overflow": false,
       "moreInfoEntity": "sensor.cv_plug_power",
       "screenshot": "live-rich-graph.png"
@@ -43,47 +29,70 @@
     "card_light": {
       "entity": "light.joris_iris_1",
       "text": "Joris Iris 1 off",
-      "geometry": [330, 168.578125],
+      "geometry": [
+        330,
+        168.578125
+      ],
       "overflow": false,
-      "controls": ["Brightness", "1% brightness", "50% brightness", "100% brightness"],
+      "controls": [
+        "Brightness",
+        "1% brightness",
+        "50% brightness",
+        "100% brightness"
+      ],
       "physicalActionsOperated": false,
       "screenshot": "live-rich-light.png"
     },
     "card_media_player": {
       "entity": "media_player.office_joris_tv_2",
       "text": "Office Joris TV idle",
-      "geometry": [330, 192.578125],
+      "geometry": [
+        330,
+        192.578125
+      ],
       "overflow": false,
-      "controls": ["Toggle power", "Previous", "Play", "Next", "Sources", "Volume", "Mute or unmute", "Volume down", "Volume up"],
+      "controls": [
+        "Toggle power",
+        "Previous",
+        "Play",
+        "Next",
+        "Sources",
+        "Volume",
+        "Mute or unmute",
+        "Volume down",
+        "Volume up"
+      ],
       "moreInfoEntity": "media_player.office_joris_tv_2",
       "physicalActionsOperated": false,
       "screenshot": "live-rich-media-player.png"
-    },
-    "card_navigate": {
-      "text": "Media",
-      "geometry": [330, 66],
-      "overflow": false,
-      "navigatedTo": "http://192.168.1.4:8123/config/updates",
-      "returnedToDashboard": true,
-      "screenshot": "live-rich-navigate.png"
     }
   },
   "picker": {
     "registrations": [
-      "mushroom-addition-card-generic",
       "mushroom-addition-card-graph",
       "mushroom-addition-card-light",
-      "mushroom-addition-card-media-player",
-      "mushroom-addition-card-navigate"
+      "mushroom-addition-card-media-player"
     ],
-    "allPreviewable": true,
-    "card_generic_swap": "Exposed through the graphical Generic Card variant selector."
+    "allPreviewable": true
   },
   "editor": {
     "genericVariantField": true,
-    "graphFields": ["ulm_card_graph_hours", "ulm_card_graph_type", "ulm_card_graph_entity2"],
-    "lightFields": ["ulm_card_light_enable_slider", "ulm_card_light_enable_buttons", "ulm_card_light_enable_color"],
-    "mediaFields": ["ulm_card_media_player_enable_controls", "ulm_card_media_player_enable_volume_slider", "ulm_card_media_player_enable_volume_buttons", "ulm_card_media_player_power_button"],
+    "graphFields": [
+      "ulm_card_graph_hours",
+      "ulm_card_graph_type",
+      "ulm_card_graph_entity2"
+    ],
+    "lightFields": [
+      "ulm_card_light_enable_slider",
+      "ulm_card_light_enable_buttons",
+      "ulm_card_light_enable_color"
+    ],
+    "mediaFields": [
+      "ulm_card_media_player_enable_controls",
+      "ulm_card_media_player_enable_volume_slider",
+      "ulm_card_media_player_enable_volume_buttons",
+      "ulm_card_media_player_power_button"
+    ],
     "navigateField": "navigation_path"
   },
   "accepted": true

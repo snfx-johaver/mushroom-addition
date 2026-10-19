@@ -51,7 +51,7 @@ describe("priority live regression evidence", () => {
   it.each([
     ["510px", evidence.nas510, 510],
     ["330px", evidence.nas330, 330],
-  ] as const)("keeps Nik NAS inside its %s card surface", (_label, geometry, expectedWidth) => {
+  ] as const)("keeps NAS inside its %s card surface", (_label, geometry, expectedWidth) => {
     expect(geometry.card.width).toBe(expectedWidth);
     expect(geometry.surface.width).toBe(expectedWidth);
     expect(geometry.surfaceClientWidth).toBe(expectedWidth);
@@ -61,7 +61,7 @@ describe("priority live regression evidence", () => {
     expectInside(geometry.rings, geometry.surface);
   });
 
-  it("preserves the accepted 510px Nik NAS composition while compacting at 330px", () => {
+  it("preserves the accepted 510px NAS composition while compacting at 330px", () => {
     expect(evidence.nas510.card.height).toBe(360);
     expect(evidence.nas510.tiles.map(({ width }) => width)).toEqual([231, 231]);
     expect(evidence.nas510.rings.width).toBe(190);

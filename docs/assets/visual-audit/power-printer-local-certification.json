@@ -4,12 +4,6 @@
   "live": false,
   "liveSafety": "Physical light, media, outlet, printer-power, and HVAC controls were not operated. Exact payloads are certified locally.",
   "exactLiveConfigs": {
-    "custom_card_light_colorpick": {
-      "type": "custom:mushroom-addition-custom-card-light-colorpick",
-      "entity": "light.joris_iris_1",
-      "ulm_card_light_colorpick_name": "Joris Iris 1",
-      "ulm_card_light_colorpick_transition": 1
-    },
     "custom_card_media_player_sonos": {
       "type": "custom:mushroom-addition-custom-card-media-player-sonos",
       "entity": "media_player.office_joris_sonos",
@@ -21,46 +15,21 @@
       "power_entity": "sensor.office_joris_plug_4_power",
       "energy_entity": "sensor.office_joris_plug_4_energy"
     },
-    "custom_card_mpse_gauge": {
-      "type": "custom:mushroom-addition-custom-card-mpse-gauge",
+    "custom_card_gauge": {
+      "type": "custom:mushroom-addition-custom-card-gauge",
       "entity": "sensor.office_joris_humidity_3",
       "minimum": 0,
       "maximum": 100
     },
-    "custom_card_mpse_printer": {
-      "type": "custom:mushroom-addition-custom-card-mpse-printer",
+    "custom_card_printer": {
+      "type": "custom:mushroom-addition-custom-card-printer",
       "entity": "binary_sensor.x1c_00m09d521700185_online",
       "power_entity": "switch.office_joris_plug_4",
       "power_sensor": "sensor.office_joris_plug_4_power",
       "error_entity": "binary_sensor.x1c_00m09d521700185_hms_errors"
-    },
-    "custom_card_mpse_thermostat": {
-      "type": "custom:mushroom-addition-custom-card-mpse-thermostat",
-      "entity": "climate.office_joris"
     }
   },
   "interactions": {
-    "custom_card_light_colorpick": {
-      "visibleInteractions": [
-        "Card/header tap opens light more-info",
-        "Brightness slider changes brightness",
-        "White color button",
-        "Red color button",
-        "Blue color button",
-        "Green color button",
-        "Magenta color button",
-        "Cyan color button"
-      ],
-      "exactPayloads": [
-        ["light", "turn_on", { "entity_id": "light.joris_iris_1", "brightness_pct": "selected integer 0-100" }],
-        ["light", "turn_on", { "entity_id": "light.joris_iris_1", "rgb_color": [255, 255, 255], "transition": 1 }],
-        ["light", "turn_on", { "entity_id": "light.joris_iris_1", "rgb_color": [245, 68, 54], "transition": 1 }],
-        ["light", "turn_on", { "entity_id": "light.joris_iris_1", "rgb_color": [51, 102, 204], "transition": 1 }],
-        ["light", "turn_on", { "entity_id": "light.joris_iris_1", "rgb_color": [51, 204, 51], "transition": 1 }],
-        ["light", "turn_on", { "entity_id": "light.joris_iris_1", "rgb_color": [255, 0, 255], "transition": 1 }],
-        ["light", "turn_on", { "entity_id": "light.joris_iris_1", "rgb_color": [0, 255, 255], "transition": 1 }]
-      ]
-    },
     "custom_card_media_player_sonos": {
       "visibleInteractions": [
         "Header/card tap opens media-player more-info",
@@ -69,34 +38,46 @@
         "Volume up button"
       ],
       "exactPayloads": [
-        ["media_player", "volume_down", { "entity_id": "media_player.office_joris_sonos" }],
-        ["media_player", "media_play_pause", { "entity_id": "media_player.office_joris_sonos" }],
-        ["media_player", "volume_up", { "entity_id": "media_player.office_joris_sonos" }]
+        [
+          "media_player",
+          "volume_down",
+          {
+            "entity_id": "media_player.office_joris_sonos"
+          }
+        ],
+        [
+          "media_player",
+          "media_play_pause",
+          {
+            "entity_id": "media_player.office_joris_sonos"
+          }
+        ],
+        [
+          "media_player",
+          "volume_up",
+          {
+            "entity_id": "media_player.office_joris_sonos"
+          }
+        ]
       ]
     },
     "custom_card_more_power_outlet": {
-      "visibleInteractions": ["Card tap opens outlet more-info"],
-      "exactPayloads": []
-    },
-    "custom_card_mpse_gauge": {
-      "visibleInteractions": ["Card/header tap opens sensor more-info"],
-      "exactPayloads": []
-    },
-    "custom_card_mpse_printer": {
-      "visibleInteractions": ["Card/header tap opens printer-status more-info"],
-      "exactPayloads": []
-    },
-    "custom_card_mpse_thermostat": {
       "visibleInteractions": [
-        "Header/card tap opens climate more-info",
-        "Card hold opens climate more-info",
-        "Decrease target-temperature button",
-        "Increase target-temperature button"
+        "Card tap opens outlet more-info"
       ],
-      "exactPayloads": [
-        ["climate", "set_temperature", { "entity_id": "climate.office_joris", "temperature": "target - target_temp_step" }],
-        ["climate", "set_temperature", { "entity_id": "climate.office_joris", "temperature": "target + target_temp_step" }]
-      ]
+      "exactPayloads": []
+    },
+    "custom_card_gauge": {
+      "visibleInteractions": [
+        "Card/header tap opens sensor more-info"
+      ],
+      "exactPayloads": []
+    },
+    "custom_card_printer": {
+      "visibleInteractions": [
+        "Card/header tap opens printer-status more-info"
+      ],
+      "exactPayloads": []
     }
   }
 }

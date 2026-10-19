@@ -7,24 +7,7 @@
     "sha256": "9BFD1C99278F5BC98DE1F7BC2A3AB6B9506219E609B476C6F29CD602A150A27E"
   },
   "results": {
-    "custom_card_heat_pump": {
-      "live": true,
-      "rendered": true,
-      "moreInfoEntity": "climate.den_airco_room_temperature",
-      "temperatureInteraction": {
-        "before": 23.5,
-        "afterDecrease": 23,
-        "restored": 23.5
-      }
-    },
-    "custom_card_homeassistant_updates": {
-      "live": true,
-      "rendered": true,
-      "releaseNotesUrl": "https://www.home-assistant.io/blog/2026/09/02/release-20269/#202693---september-18",
-      "settingsUrl": "/config/updates",
-      "updateMoreInfo": true
-    },
-    "custom_card_nik_nas": {
+    "custom_card_nas_metrics": {
       "live": true,
       "rendered": true,
       "statusMoreInfoEntity": "switch.nas_plug",
@@ -36,7 +19,7 @@
       },
       "responsiveResult": "Both top tiles and the radial rings fit without clipping or horizontal overflow."
     },
-    "custom_card_nik_tablet": {
+    "custom_card_tablet": {
       "live": true,
       "rendered": true,
       "moreInfoEntity": "device_tracker.bram_tablet_2",

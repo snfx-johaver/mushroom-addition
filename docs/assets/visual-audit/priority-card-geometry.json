@@ -1,155 +1,5 @@
 {
-  "heat-pump": {
-    "capturedAt": "2026-09-23T19:31:23.440Z",
-    "implementation": {
-      "width": 475,
-      "height": 176
-    },
-    "reference": {
-      "width": 488,
-      "height": 186
-    },
-    "surface": {
-      "width": 475,
-      "height": 176
-    },
-    "icons": {
-      ".heat-pump-icon ha-icon": [
-        {
-          "width": 22,
-          "height": 22
-        }
-      ],
-      ".heat-pump-target ha-icon": [
-        {
-          "width": 22,
-          "height": 22
-        },
-        {
-          "width": 22,
-          "height": 22
-        }
-      ],
-      ".heat-pump-modes ha-icon": [
-        {
-          "width": 22,
-          "height": 22
-        },
-        {
-          "width": 22,
-          "height": 22
-        },
-        {
-          "width": 22,
-          "height": 22
-        },
-        {
-          "width": 22,
-          "height": 22
-        },
-        {
-          "width": 22,
-          "height": 22
-        },
-        {
-          "width": 22,
-          "height": 22
-        }
-      ]
-    },
-    "buttons": {
-      ".heat-pump-target button": [
-        {
-          "width": 178.5,
-          "height": 44
-        },
-        {
-          "width": 178.5,
-          "height": 44
-        }
-      ],
-      ".heat-pump-modes button": [
-        {
-          "width": 68.5,
-          "height": 42
-        },
-        {
-          "width": 68.5,
-          "height": 42
-        },
-        {
-          "width": 68.5,
-          "height": 42
-        },
-        {
-          "width": 68.5,
-          "height": 42
-        },
-        {
-          "width": 68.5,
-          "height": 42
-        },
-        {
-          "width": 68.5,
-          "height": 42
-        }
-      ]
-    }
-  },
-  "homeassistant-updates": {
-    "capturedAt": "2026-09-23T19:31:23.440Z",
-    "implementation": {
-      "width": 650,
-      "height": 198
-    },
-    "reference": {
-      "width": 659.47,
-      "height": 201.09
-    },
-    "surface": {
-      "width": 650,
-      "height": 198
-    },
-    "icons": {
-      ".ha-updates-icon > ha-icon": [
-        {
-          "width": 28,
-          "height": 28
-        }
-      ],
-      ".ha-update-actions ha-icon": [
-        {
-          "width": 24,
-          "height": 24
-        },
-        {
-          "width": 24,
-          "height": 24
-        },
-        {
-          "width": 24,
-          "height": 24
-        }
-      ]
-    },
-    "buttons": {
-      ".ha-update-actions button": [
-        {
-          "width": 196.66,
-          "height": 55
-        },
-        {
-          "width": 196.67,
-          "height": 55
-        },
-        {
-          "width": 196.67,
-          "height": 55
-        }
-      ]
-    }
-  },
-  "nik-nas": {
+  "nas-metrics": {
     "capturedAt": "2026-09-23T19:40:51.006Z",
     "implementation": {
       "width": 510,
@@ -164,7 +14,7 @@
       "height": 360
     },
     "icons": {
-      ".nik-nas-tile-icon ha-icon": [
+      ".nas-metrics-tile-icon ha-icon": [
         {
           "width": 24,
           "height": 24
@@ -174,7 +24,7 @@
           "height": 24
         }
       ],
-      ".nik-nas-metrics ha-icon": [
+      ".nas-metrics-metrics ha-icon": [
         {
           "width": 24,
           "height": 24
@@ -190,7 +40,7 @@
       ]
     },
     "buttons": {
-      ".nik-nas-tile": [
+      ".nas-metrics-tile": [
         {
           "width": 231,
           "height": 102
@@ -202,8 +52,8 @@
       ]
     }
   },
-  "nik-tablet": {
-    "capturedAt": "2026-09-23T19:31:23.440Z",
+  "tablet": {
+    "capturedAt": "2026-09-23T19:31:23.44Z",
     "implementation": {
       "width": 390,
       "height": 340
@@ -217,13 +67,13 @@
       "height": 340
     },
     "icons": {
-      ".nik-tablet-icon ha-icon": [
+      ".tablet-icon ha-icon": [
         {
           "width": 22,
           "height": 22
         }
       ],
-      ".nik-tablet-controls ha-icon": [
+      ".tablet-controls ha-icon": [
         {
           "width": 22,
           "height": 22
@@ -249,7 +99,7 @@
           "height": 22
         }
       ],
-      ".nik-tablet-battery-icon ha-icon": [
+      ".tablet-battery-icon ha-icon": [
         {
           "width": 22,
           "height": 22
@@ -257,7 +107,7 @@
       ]
     },
     "buttons": {
-      ".nik-tablet-controls button": [
+      ".tablet-controls button": [
         {
           "width": 112.66,
           "height": 42
@@ -320,7 +170,7 @@
     "buttons": {}
   },
   "person-info-small": {
-    "capturedAt": "2026-09-23T19:31:23.440Z",
+    "capturedAt": "2026-09-23T19:31:23.44Z",
     "implementation": {
       "width": 155,
       "height": 118

@@ -2,34 +2,24 @@
   "capturedAt": "2026-09-23T22:27:24.595+02:00",
   "sources": [
     "custom_card_bar_card",
-    "custom_card_haven_washer",
-    "custom_card_httpedo13_sun",
-    "custom_card_httpedo13_thermostat",
-    "custom_card_iAbadia_battery_chip",
-    "custom_card_imswel_medias"
+    "custom_card_washer",
+    "custom_card_sun",
+    "custom_card_media_library"
   ],
   "configs": {
     "custom_card_bar_card": {
       "entity": "sensor.cv_plug_power"
     },
-    "custom_card_haven_washer": {
+    "custom_card_washer": {
       "entity": "sensor.wasmachine_operation_state",
       "power_entity": "sensor.wasmachine_plug_power",
       "door_entity": "sensor.wasmachine_door",
       "finished_entity": "sensor.wasmachine_program_finished"
     },
-    "custom_card_httpedo13_sun": {
+    "custom_card_sun": {
       "entity": "sun.sun"
     },
-    "custom_card_httpedo13_thermostat": {
-      "entity": "climate.living_room"
-    },
-    "custom_card_iAbadia_battery_chip": {
-      "entity": "sensor.yvette_mobile_battery_level",
-      "battery_state_entity": "sensor.yvette_mobile_battery_state",
-      "charger_type_entity": "sensor.yvette_mobile_charger_type"
-    },
-    "custom_card_imswel_medias": {
+    "custom_card_media_library": {
       "entity": "media_player.office_joris_sonos",
       "secondary_entity": "media_player.office_joris_tv_2"
     }
@@ -45,8 +35,7 @@
             "entity": "sensor.cv_plug_power",
             "tap_action": {
               "action": "more-info"
-            }
-            ,
+            },
             "browserEvidence": {
               "custom_card_bar_card": {
                 "cards": 2,
@@ -55,7 +44,7 @@
                 "trackHeight": 35,
                 "mdiPathsPerCard": 1
               },
-              "custom_card_haven_washer": {
+              "custom_card_washer": {
                 "width": 375,
                 "height": 255,
                 "visibleButtons": 3,
@@ -67,51 +56,13 @@
                   "outer more-info"
                 ]
               },
-              "custom_card_httpedo13_sun": {
+              "custom_card_sun": {
                 "width": 500,
                 "height": 231,
                 "visibleButtons": 0,
                 "actionExercised": "none"
               },
-              "custom_card_httpedo13_thermostat": {
-                "width": 360,
-                "height": 134,
-                "visibleButtons": 3,
-                "mdiPaths": 3,
-                "serviceCalls": [
-                  [
-                    "climate",
-                    "set_hvac_mode",
-                    {
-                      "entity_id": "climate.living",
-                      "hvac_mode": "off"
-                    }
-                  ],
-                  [
-                    "climate",
-                    "set_temperature",
-                    {
-                      "entity_id": "climate.living",
-                      "temperature": 20.5
-                    }
-                  ],
-                  [
-                    "climate",
-                    "set_temperature",
-                    {
-                      "entity_id": "climate.living",
-                      "temperature": 21.5
-                    }
-                  ]
-                ]
-              },
-              "custom_card_iAbadia_battery_chip": {
-                "width": 42,
-                "height": 58,
-                "mdiPaths": 1,
-                "actionExercised": "more-info"
-              },
-              "custom_card_imswel_medias": {
+              "custom_card_media_library": {
                 "width": 488,
                 "height": 195,
                 "mdiPaths": 1,
@@ -122,7 +73,7 @@
         }
       }
     ],
-    "custom_card_haven_washer": [
+    "custom_card_washer": [
       {
         "control": "start-or-pause",
         "event": "hass-action",
@@ -210,7 +161,7 @@
         }
       }
     ],
-    "custom_card_httpedo13_sun": [
+    "custom_card_sun": [
       {
         "surface": "card",
         "event": "hass-action",
@@ -225,48 +176,7 @@
         }
       }
     ],
-    "custom_card_httpedo13_thermostat": [
-      {
-        "control": "summary",
-        "service": "climate.set_hvac_mode",
-        "data": {
-          "entity_id": "climate.living_room",
-          "hvac_mode": "off"
-        }
-      },
-      {
-        "control": "decrease",
-        "service": "climate.set_temperature",
-        "data": {
-          "entity_id": "climate.living_room",
-          "temperature": 20.5
-        }
-      },
-      {
-        "control": "increase",
-        "service": "climate.set_temperature",
-        "data": {
-          "entity_id": "climate.living_room",
-          "temperature": 21.5
-        }
-      }
-    ],
-    "custom_card_iAbadia_battery_chip": [
-      {
-        "surface": "card",
-        "event": "hass-action",
-        "payload": {
-          "action": "tap",
-          "config": {
-            "entity": "sensor.yvette_mobile_battery_level",
-            "tap_action": {
-              "action": "more-info"
-            }
-          }
-        }
-      }
-    ],
-    "custom_card_imswel_medias": [
+    "custom_card_media_library": [
       {
         "surface": "card",
         "event": "hass-action",

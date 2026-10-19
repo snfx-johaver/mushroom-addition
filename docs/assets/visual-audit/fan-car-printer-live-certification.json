@@ -20,35 +20,6 @@
     "appended": 0
   },
   "sources": {
-    "custom_card_saxel_fan": {
-      "config": {
-        "entity": "fan.air_purifier",
-        "collapsable": true,
-        "ulm_card_fan_horizontal": false,
-        "ulm_show_button": true,
-        "ulm_button_service": "fan.oscillate",
-        "oscillate_attribute": "oscillate",
-        "tap_action": {
-          "action": "toggle"
-        },
-        "hold_action": {
-          "action": "more-info"
-        }
-      },
-      "renderedText": "Air purifier off",
-      "geometry": {
-        "width": 330,
-        "height": 69,
-        "scrollWidth": 330
-      },
-      "pickerRegistered": true,
-      "editorVerified": true,
-      "collapsedState": true,
-      "physicalActionsOperated": false,
-      "reason": "The purifier was off and the source collapsable behavior truthfully hid speed and oscillation controls; toggle/slider/oscillation were not operated.",
-      "screenshot": "live-final-six-mushroom-addition-custom-card-saxel-fan.png",
-      "liveAccepted": true
-    },
     "custom_card_scenes": {
       "config": {
         "variant": "scene-grid",
@@ -86,14 +57,14 @@
       "screenshot": "live-final-six-mushroom-addition-custom-card-scenes.png",
       "liveAccepted": true
     },
-    "custom_card_schumijo_car": {
+    "custom_card_vehicle_status": {
       "config": {
         "entity": "sensor.hn_etronq6_model",
-        "ulm_card_schumijo_car_tracker": "sensor.hn_etronq6_model",
-        "ulm_card_schumijo_car_lock": "binary_sensor.hn_etronq6_doors",
-        "ulm_card_schumijo_car_energy_level": "sensor.hn_etronq6_primary_engine_percent",
-        "ulm_card_schumijo_car_range": "sensor.hn_etronq6_range",
-        "ulm_card_schumijo_car_name": "HN e-tron Q6"
+        "ulm_card_vehicle_status_tracker": "sensor.hn_etronq6_model",
+        "ulm_card_vehicle_status_lock": "binary_sensor.hn_etronq6_doors",
+        "ulm_card_vehicle_status_energy_level": "sensor.hn_etronq6_primary_engine_percent",
+        "ulm_card_vehicle_status_range": "sensor.hn_etronq6_range",
+        "ulm_card_vehicle_status_name": "HN e-tron Q6"
       },
       "renderedText": "HN-ETRONQ6 Model 243 minutes ago 30% Nível de energia 109km Alcance",
       "geometry": {
@@ -108,10 +79,10 @@
         "entity": "sensor.hn_etronq6_model"
       },
       "physicalActionsOperated": false,
-      "screenshot": "live-final-six-mushroom-addition-custom-card-schumijo-car.png",
+      "screenshot": "live-final-six-mushroom-addition-custom-card-vehicle-status.png",
       "liveAccepted": true
     },
-    "custom_card_schumijo_flower": {
+    "custom_card_plant": {
       "config": {
         "entity": "sensor.frontyard_plants_soil_soil_humidity",
         "ulm_card_flower_entity": "sensor.frontyard_plants_soil_soil_humidity",
@@ -132,57 +103,12 @@
         "action": "more-info",
         "entity": "sensor.frontyard_plants_soil_soil_humidity"
       },
-      "screenshot": "live-final-six-mushroom-addition-custom-card-schumijo-flower.png",
-      "liveAccepted": true
-    },
-    "custom_card_senoro_win": {
-      "config": {
-        "entity": "binary_sensor.office_joris_window",
-        "tap_action": {
-          "action": "none"
-        }
-      },
-      "renderedText": "binary_sensor.office_joris_window Unavailable",
-      "geometry": {
-        "width": 330,
-        "height": 65,
-        "scrollWidth": 330
-      },
-      "pickerRegistered": true,
-      "editorVerified": true,
-      "safeInteraction": {
-        "action": "none",
-        "urlChanged": false
-      },
-      "limitation": "No required Closed/Tilted/Open handle-position sensor was supplied, so the truthful live state is Unavailable.",
-      "screenshot": "live-final-six-mushroom-addition-custom-card-senoro-win.png",
-      "liveAccepted": true
-    },
-    "custom_card_sisimomo_printer": {
-      "config": {
-        "entity": "binary_sensor.x1c_00m09d521700185_online",
-        "ulm_card_printer_name": "Bambu Lab X1C"
-      },
-      "renderedText": "X1C_00M09D521700185 Online on",
-      "geometry": {
-        "width": 330,
-        "height": 66,
-        "scrollWidth": 330
-      },
-      "pickerRegistered": true,
-      "editorVerified": true,
-      "safeInteraction": {
-        "action": "more-info",
-        "entity": "binary_sensor.x1c_00m09d521700185_online"
-      },
-      "physicalActionsOperated": false,
-      "limitation": "No valid 0-100 cartridge sensors were supplied, so no toner bars were invented.",
-      "screenshot": "live-final-six-mushroom-addition-custom-card-sisimomo-printer.png",
+      "screenshot": "live-final-six-mushroom-addition-custom-card-plant.png",
       "liveAccepted": true
     }
   },
   "result": {
-    "accepted": 6,
+    "accepted": 3,
     "overflowFailures": 0,
     "pickerFailures": 0,
     "editorFailures": 0,

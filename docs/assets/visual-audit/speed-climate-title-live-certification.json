@@ -19,7 +19,7 @@
     "appended": 2
   },
   "sources": {
-    "custom_card_speedtest_shogun160": {
+    "custom_card_speedtest_gauges": {
       "config": {
         "entity": "sensor.speedtest_download",
         "download_entity": "sensor.speedtest_download",
@@ -36,145 +36,12 @@
       "editorVerified": true,
       "liveActionOperated": false,
       "reason": "homeassistant.update_entity payload is exactly covered locally; live certification did not trigger entity updates.",
-      "screenshot": "live-speed-mushroom-addition-custom-card-speedtest-shogun160.png",
-      "liveAccepted": true
-    },
-    "custom_card_tpx01_aircondition": {
-      "config": {
-        "entity": "climate.living_room"
-      },
-      "renderedText": "Living room 21.7° · off 5°C",
-      "geometry": {
-        "width": 330,
-        "height": 121,
-        "scrollWidth": 330
-      },
-      "pickerRegistered": true,
-      "editorVerified": true,
-      "controls": [
-        {
-          "ariaLabel": "Turn on cooling",
-          "disabled": false
-        },
-        {
-          "ariaLabel": "Decrease temperature",
-          "disabled": false
-        },
-        {
-          "ariaLabel": "Increase temperature",
-          "disabled": false
-        }
-      ],
-      "safeInteraction": {
-        "action": "more-info",
-        "entity": "climate.living_room"
-      },
-      "physicalActionsOperated": false,
-      "screenshot": "live-speed-mushroom-addition-custom-card-tpx01-aircondition.png",
-      "liveAccepted": true
-    },
-    "custom_card_vncntdev_device_tracer": {
-      "config": {
-        "entity": "device_tracker.joris_mobile"
-      },
-      "renderedText": "Joris Mobile Online",
-      "geometry": {
-        "width": 330,
-        "height": 69,
-        "scrollWidth": 330
-      },
-      "pickerRegistered": true,
-      "editorVerified": true,
-      "safeInteraction": {
-        "action": "more-info",
-        "entity": "device_tracker.joris_mobile"
-      },
-      "screenshot": "live-speed-mushroom-addition-custom-card-vncntdev-device-tracer.png",
-      "liveAccepted": true
-    },
-    "custom_card_water_heater": {
-      "config": {
-        "entity": "water_heater.hot_water"
-      },
-      "renderedText": "Hot Water Inactif",
-      "geometry": {
-        "width": 330,
-        "height": 69,
-        "scrollWidth": 330
-      },
-      "pickerRegistered": true,
-      "editorVerified": true,
-      "safeInteraction": {
-        "action": "more-info",
-        "entity": "water_heater.hot_water"
-      },
-      "physicalActionsOperated": false,
-      "limitation": "No optional power_entity was supplied, so the source-faithful inactive state is shown.",
-      "screenshot": "live-speed-mushroom-addition-custom-card-water-heater.png",
-      "liveAccepted": true
-    },
-    "custom_card_wilbiev_subtitle": {
-      "config": {
-        "name": "Living room",
-        "variant": "divider-subtitle"
-      },
-      "renderedText": "Living room",
-      "geometry": {
-        "width": 330,
-        "height": 43,
-        "scrollWidth": 330
-      },
-      "picker": {
-        "canonicalType": "mushroom-addition-card-title",
-        "registered": true,
-        "variant": "divider-subtitle"
-      },
-      "editorVerified": true,
-      "safeInteraction": {
-        "action": "none",
-        "urlChanged": false
-      },
-      "screenshot": "live-speed-mushroom-addition-custom-card-wilbiev-subtitle.png",
-      "liveAccepted": true
-    },
-    "custom_card_wilbiev_title": {
-      "config": {
-        "name": "Home",
-        "variant": "divider-title"
-      },
-      "renderedText": "Home",
-      "geometry": {
-        "width": 330,
-        "height": 70,
-        "scrollWidth": 330
-      },
-      "picker": {
-        "canonicalType": "mushroom-addition-card-title",
-        "registered": true,
-        "variant": "divider-title"
-      },
-      "editorVerified": true,
-      "safeInteraction": {
-        "action": "none",
-        "urlChanged": false
-      },
-      "limitation": "No navigation path was provided, so the live title intentionally has no back button.",
-      "screenshot": "live-speed-mushroom-addition-custom-card-wilbiev-title.png",
+      "screenshot": "live-speed-mushroom-addition-custom-card-speedtest-gauges.png",
       "liveAccepted": true
     }
   },
-  "canonicalTitlePicker": {
-    "type": "mushroom-addition-card-title",
-    "name": "Mushroom Addition: Heading Card",
-    "preview": true,
-    "variants": [
-      "title-and-subtitle",
-      "divider-title",
-      "divider-subtitle"
-    ]
-  },
   "result": {
-    "accepted": 6,
+    "accepted": 1,
     "overflowFailures": 0,
     "pickerFailures": 0,
     "editorFailures": 0,

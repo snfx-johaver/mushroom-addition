@@ -2,22 +2,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { CATALOG } from "../src/catalog";
-import type { AdditionConfig, HassEntity, HomeAssistant } from "../src/types";
+import type { AdditionConfig, HomeAssistant } from "../src/types";
 import "../src/index";
 
 const baseStates: HomeAssistant["states"] = {
-  "climate.heat_pump": {
-    entity_id: "climate.heat_pump",
-    state: "off",
-    attributes: {
-      friendly_name: "Air conditioner",
-      current_temperature: null,
-      temperature: 20,
-      target_temp_step: 1,
-      hvac_action: "off",
-      hvac_modes: ["off", "heat", "cool", "heat_cool", "dry", "fan_only"],
-    },
-  },
   "update.core": {
     entity_id: "update.core",
     state: "on",
@@ -198,26 +186,14 @@ describe("priority local certification", () => {
         cardSurfaceActions?: unknown[];
       }>;
     };
-    expect(evidence.browserInteractions.custom_card_heat_pump).toMatchObject({
-      controlsClicked: 8,
-      serviceCalls: expect.arrayContaining([
-        ["climate", "set_hvac_mode", { entity_id: "climate.heat_pump", hvac_mode: "fan_only" }],
-      ]),
-    });
-    expect(evidence.browserInteractions.custom_card_homeassistant_updates).toMatchObject({
-      controlsClicked: 3,
-      actions: expect.arrayContaining([
-        { action: "navigate", navigation_path: "/config/updates" },
-      ]),
-    });
-    expect(evidence.browserInteractions.custom_card_nik_nas).toMatchObject({
+    expect(evidence.browserInteractions.custom_card_nas_metrics).toMatchObject({
       controlsClicked: 1,
       actions: [
         { gesture: "tap", source: "status tile", action: "more-info", entity: "binary_sensor.hn_nas_status" },
         { gesture: "tap", source: "card surface", action: "more-info", entity: "binary_sensor.hn_nas_status" },
       ],
     });
-    expect(evidence.browserInteractions.custom_card_nik_tablet).toMatchObject({
+    expect(evidence.browserInteractions.custom_card_tablet).toMatchObject({
       controlsClicked: 6,
       serviceCalls: expect.arrayContaining([
         ["button", "press", { entity_id: "button.bram_tablet_reload" }],
@@ -239,12 +215,10 @@ describe("priority local certification", () => {
     });
   });
 
-  it("creates populated picker previews for the four visually accepted sources", () => {
+  it("creates populated picker previews for the remaining visually accepted sources", () => {
     const cases = [
-      ["custom_card_heat_pump", "climate.heat_pump"],
-      ["custom_card_homeassistant_updates", "update.core"],
-      ["custom_card_nik_nas", "binary_sensor.nas"],
-      ["custom_card_nik_tablet", "binary_sensor.tablet"],
+      ["custom_card_nas_metrics", "binary_sensor.nas"],
+      ["custom_card_tablet", "binary_sensor.tablet"],
       ["custom_card_person_info", "person.joris"],
     ] as const;
     for (const [sourceId, expectedEntity] of cases) {
@@ -266,7 +240,7 @@ describe("priority local certification", () => {
     };
     expect(personConstructor.getStubConfig(hass(), Object.keys(baseStates), []).variant).toBe("full");
     expect(person.variants).toContain("small");
-    const nas = CATALOG.find((entry) => entry.upstreamId === "custom_card_nik_nas")!;
+    const nas = CATALOG.find((entry) => entry.upstreamId === "custom_card_nas_metrics")!;
     const nasConstructor = customElements.get(nas.tag) as typeof HTMLElement & {
       getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
     };
@@ -279,32 +253,21 @@ describe("priority local certification", () => {
       temperature_max: 100,
       memory_max: 100,
       cpu_max: 100,
-      graph_span: "1d",
-      chart_type: "radialBar",
     });
+    expect(nas.name).toBe("NAS Card");
   });
 
   it.each([
     {
-      type: "custom:mushroom-addition-custom-card-heat-pump",
-      entity: "climate.heat_pump",
-      fields: ["entity", "humidity_entity", "show_controls", "tap_action"],
-    },
-    {
-      type: "custom:mushroom-addition-custom-card-homeassistant-updates",
-      entity: "update.core",
-      fields: ["entity", "ulm_card_homeassistant_core", "ulm_card_homeassistant_supervisor", "ulm_card_homeassistant_os"],
-    },
-    {
-      type: "custom:mushroom-addition-custom-card-nik-nas",
+      type: "custom:mushroom-addition-custom-card-nas-metrics",
       entity: "binary_sensor.nas",
       fields: [
         "entity", "disk_entity", "disk_name", "temperature_entity", "temperature_max",
-        "memory_entity", "memory_max", "cpu_entity", "cpu_max", "graph_span", "chart_type",
+        "memory_entity", "memory_max", "cpu_entity", "cpu_max",
       ],
     },
     {
-      type: "custom:mushroom-addition-custom-card-nik-tablet",
+      type: "custom:mushroom-addition-custom-card-tablet",
       entity: "binary_sensor.tablet",
       fields: ["entity", "tablet_button_usb_entity", "tablet_button_display_entity", "tablet_ram_entity", "battery_entity"],
     },
@@ -353,73 +316,9 @@ describe("priority local certification", () => {
     }));
   });
 
-  it("covers Heat Pump off, active, and unsupported mode states", async () => {
-    const off = await renderCard("mushroom-addition-custom-card-heat-pump", {
-      type: "custom:mushroom-addition-custom-card-heat-pump",
-      entity: "climate.heat_pump",
-    });
-    expect((off.shadowRoot.querySelector(".heat-pump-icon ha-icon") as HTMLElement & { icon: string }).icon)
-      .toBe("mdi:thermostat");
-    expect(off.shadowRoot.querySelector('button[aria-label="Turn on"]')).not.toBeNull();
-    off.remove();
-
-    const heatEntity: HassEntity = {
-      ...baseStates["climate.heat_pump"],
-      state: "heat",
-      attributes: { ...baseStates["climate.heat_pump"].attributes, hvac_action: "heating" },
-    };
-    const active = await renderCard("mushroom-addition-custom-card-heat-pump", {
-      type: "custom:mushroom-addition-custom-card-heat-pump",
-      entity: "climate.heat_pump",
-    }, { ...baseStates, "climate.heat_pump": heatEntity });
-    expect(active.shadowRoot.querySelector('button[aria-label="Heat mode"]')?.classList.contains("is-active")).toBe(true);
-    active.remove();
-
-    const limited: HassEntity = {
-      ...heatEntity,
-      attributes: { ...heatEntity.attributes, hvac_modes: ["off", "heat"] },
-    };
-    const unsupported = await renderCard("mushroom-addition-custom-card-heat-pump", {
-      type: "custom:mushroom-addition-custom-card-heat-pump",
-      entity: "climate.heat_pump",
-    }, { ...baseStates, "climate.heat_pump": limited });
-    expect((unsupported.shadowRoot.querySelector('button[aria-label="Cool mode"]') as HTMLButtonElement).disabled).toBe(true);
-  });
-
-  it("covers Updates available, clear, and unavailable states", async () => {
-    const config: AdditionConfig = {
-      type: "custom:mushroom-addition-custom-card-homeassistant-updates",
-      entity: "update.core",
-      ulm_card_homeassistant_core: "update.core",
-      ulm_card_homeassistant_supervisor: "update.supervisor",
-      ulm_card_homeassistant_os: "update.operating_system",
-    };
-    const available = await renderCard("mushroom-addition-custom-card-homeassistant-updates", config);
-    expect(available.shadowRoot.textContent).toContain("Updates available!");
-    expect(available.shadowRoot.querySelector(".ha-updates-badge")).not.toBeNull();
-    available.remove();
-
-    const clearStates = Object.fromEntries(Object.entries(baseStates).map(([id, entity]) => [
-      id,
-      id.startsWith("update.") ? { ...entity, state: "off" } : entity,
-    ]));
-    const clear = await renderCard("mushroom-addition-custom-card-homeassistant-updates", config, clearStates);
-    expect(clear.shadowRoot.textContent).toContain("No updates available");
-    expect(clear.shadowRoot.querySelector(".ha-updates-badge")).toBeNull();
-    clear.remove();
-
-    const unavailableStates = Object.fromEntries(Object.entries(baseStates).map(([id, entity]) => [
-      id,
-      id.startsWith("update.") ? { ...entity, state: "unavailable" } : entity,
-    ]));
-    const unavailable = await renderCard("mushroom-addition-custom-card-homeassistant-updates", config, unavailableStates);
-    expect((unavailable.shadowRoot.querySelector('button[aria-label="Open available update"]') as HTMLButtonElement).disabled)
-      .toBe(true);
-  });
-
   it("covers Tablet active, inactive, unavailable, and battery states", async () => {
     const config: AdditionConfig = {
-      type: "custom:mushroom-addition-custom-card-nik-tablet",
+      type: "custom:mushroom-addition-custom-card-tablet",
       entity: "binary_sensor.tablet",
       tablet_button_usb_entity: "switch.tablet_usb",
       tablet_button_motion_entity: "switch.tablet_motion",
@@ -432,13 +331,13 @@ describe("priority local certification", () => {
       tablet_power_entity: "binary_sensor.tablet_power",
       battery_entity: "sensor.tablet_battery",
     };
-    const card = await renderCard("mushroom-addition-custom-card-nik-tablet", config);
+    const card = await renderCard("mushroom-addition-custom-card-tablet", config);
     expect(card.shadowRoot.querySelector('button[aria-label="Toggle USB"]')?.classList.contains("is-active")).toBe(true);
     expect(card.shadowRoot.querySelector('button[aria-label="Toggle motion"]')?.classList.contains("is-active")).toBe(false);
-    expect((card.shadowRoot.querySelector(".nik-tablet-battery-bar i") as HTMLElement).style.width).toBe("91%");
+    expect((card.shadowRoot.querySelector(".tablet-battery-bar i") as HTMLElement).style.width).toBe("91%");
     card.remove();
 
-    const unavailable = await renderCard("mushroom-addition-custom-card-nik-tablet", config, {
+    const unavailable = await renderCard("mushroom-addition-custom-card-tablet", config, {
       ...baseStates,
       "switch.tablet_usb": { ...baseStates["switch.tablet_usb"], state: "unavailable" },
     });
@@ -447,22 +346,22 @@ describe("priority local certification", () => {
 
   it("hides omitted Tablet metrics and controls but keeps configured unavailable slots explicit", async () => {
     const partialConfig: AdditionConfig = {
-      type: "custom:mushroom-addition-custom-card-nik-tablet",
+      type: "custom:mushroom-addition-custom-card-tablet",
       entity: "binary_sensor.tablet",
       tablet_power_entity: "binary_sensor.tablet_power",
       battery_entity: "sensor.tablet_battery",
     };
-    const partial = await renderCard("mushroom-addition-custom-card-nik-tablet", partialConfig);
-    expect(partial.shadowRoot.querySelector(".nik-tablet-controls")).toBeNull();
-    expect(partial.shadowRoot.querySelectorAll(".nik-tablet-metrics > span")).toHaveLength(1);
+    const partial = await renderCard("mushroom-addition-custom-card-tablet", partialConfig);
+    expect(partial.shadowRoot.querySelector(".tablet-controls")).toBeNull();
+    expect(partial.shadowRoot.querySelectorAll(".tablet-metrics > span")).toHaveLength(1);
     expect(partial.shadowRoot.textContent).toContain("Power");
     expect(partial.shadowRoot.textContent).not.toContain("RAM");
     expect(partial.shadowRoot.textContent).not.toContain("Disk");
     expect(partial.shadowRoot.textContent).not.toContain("Entity unavailable");
-    expect(partial.shadowRoot.querySelector(".nik-tablet-battery-row")).not.toBeNull();
+    expect(partial.shadowRoot.querySelector(".tablet-battery-row")).not.toBeNull();
     partial.remove();
 
-    const configuredUnavailable = await renderCard("mushroom-addition-custom-card-nik-tablet", {
+    const configuredUnavailable = await renderCard("mushroom-addition-custom-card-tablet", {
       ...partialConfig,
       tablet_button_usb_entity: "switch.tablet_usb",
       tablet_ram_entity: "sensor.tablet_ram",
@@ -475,14 +374,14 @@ describe("priority local certification", () => {
       'button[aria-label="Toggle USB"]',
     ) as HTMLButtonElement;
     expect(unavailableButton.disabled).toBe(true);
-    expect(configuredUnavailable.shadowRoot.querySelectorAll(".nik-tablet-metrics > span")).toHaveLength(2);
-    expect(configuredUnavailable.shadowRoot.querySelector(".nik-tablet-metrics .is-unavailable")).not.toBeNull();
+    expect(configuredUnavailable.shadowRoot.querySelectorAll(".tablet-metrics > span")).toHaveLength(2);
+    expect(configuredUnavailable.shadowRoot.querySelector(".tablet-metrics .is-unavailable")).not.toBeNull();
     expect(configuredUnavailable.shadowRoot.textContent?.toLowerCase()).toContain("unavailable");
   });
 
   it("covers NAS online, off, unavailable, and configured ring states", async () => {
     const config: AdditionConfig = {
-      type: "custom:mushroom-addition-custom-card-nik-nas",
+      type: "custom:mushroom-addition-custom-card-nas-metrics",
       entity: "binary_sensor.nas",
       disk_entity: "sensor.nas_disk",
       disk_name: "Storage",
@@ -492,22 +391,20 @@ describe("priority local certification", () => {
       memory_max: 100,
       cpu_entity: "sensor.nas_cpu",
       cpu_max: 50,
-      graph_span: "1d",
-      chart_type: "radialBar",
     };
-    const online = await renderCard("mushroom-addition-custom-card-nik-nas", config);
-    expect(online.shadowRoot.querySelector(".custom-nik-nas")?.classList.contains("is-on")).toBe(true);
+    const online = await renderCard("mushroom-addition-custom-card-nas-metrics", config);
+    expect(online.shadowRoot.querySelector(".custom-nas-metrics")?.classList.contains("is-on")).toBe(true);
     expect(online.shadowRoot.textContent).toContain("Storage");
-    expect(online.shadowRoot.querySelectorAll(".nik-nas-ring-value")).toHaveLength(3);
+    expect(online.shadowRoot.querySelectorAll(".nas-metrics-ring-value")).toHaveLength(3);
     online.remove();
 
     for (const state of ["off", "unavailable"]) {
-      const collapsed = await renderCard("mushroom-addition-custom-card-nik-nas", config, {
+      const collapsed = await renderCard("mushroom-addition-custom-card-nas-metrics", config, {
         ...baseStates,
         "binary_sensor.nas": { ...baseStates["binary_sensor.nas"], state },
       });
-      expect(collapsed.shadowRoot.querySelector(".custom-nik-nas")?.classList.contains("is-off")).toBe(true);
-      expect(collapsed.shadowRoot.querySelector(".nik-nas-body")).toBeNull();
+      expect(collapsed.shadowRoot.querySelector(".custom-nas-metrics")?.classList.contains("is-off")).toBe(true);
+      expect(collapsed.shadowRoot.querySelector(".nas-metrics-body")).toBeNull();
       expect(collapsed.shadowRoot.querySelectorAll(".status-tile")).toHaveLength(1);
       if (state === "unavailable") expect(collapsed.shadowRoot.textContent?.toLowerCase()).toContain("unavailable");
       collapsed.remove();
@@ -613,8 +510,8 @@ describe("priority local certification", () => {
 
   it("dispatches NAS status/outer actions and full Person tap/configured hold actions", async () => {
     vi.useFakeTimers();
-    const nas = await renderCard("mushroom-addition-custom-card-nik-nas", {
-      type: "custom:mushroom-addition-custom-card-nik-nas",
+    const nas = await renderCard("mushroom-addition-custom-card-nas-metrics", {
+      type: "custom:mushroom-addition-custom-card-nas-metrics",
       entity: "binary_sensor.nas",
     });
     const nasActions: Array<{ action: string; config: AdditionConfig }> = [];

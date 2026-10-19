@@ -57,7 +57,7 @@ ${SOURCE_ONLY_HELPERS.map((helper) => `- \`${helper.id}\`: ${helper.reason} [sou
 
 ## Naming exception
 
-- \`custom_card_speedtest_shogun160\` is the upstream source folder associated
+- \`custom_card_speedtest_gauges\` is the upstream source folder associated
   with the differently named custom template documentation; it remains covered
   under its source identity.
 `;

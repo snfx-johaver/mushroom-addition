@@ -112,14 +112,6 @@ interface Comparison {
 }
 
 const comparisons: Record<string, Comparison> = {
-  custom_card_saxel_fan: {
-    width: 249, referenceHeight: 127, referenceWidth: 499, referenceX: 0, referenceY: 0,
-    reference: "custom_fan_light_theme.png",
-    config: {
-      entity: "fan.air_purifier", name: "Fan", collapsable: false, ulm_show_button: true,
-      ulm_button_service: "fan.oscillate", oscillate_attribute: "oscillate", tap_action: { action: "toggle" },
-    },
-  },
   custom_card_scenes: {
     width: 486, referenceHeight: 120, referenceWidth: 486, referenceX: 0, referenceY: 0,
     reference: "card_scenes.png",
@@ -135,20 +127,20 @@ const comparisons: Record<string, Comparison> = {
       tap_action: { action: "none" },
     },
   },
-  custom_card_schumijo_car: {
+  custom_card_vehicle_status: {
     width: 313, referenceHeight: 137, referenceWidth: 313, referenceX: 0, referenceY: 0,
     reference: "car.png",
     config: {
       entity: "sensor.hn_etronq6_model",
-      ulm_card_schumijo_car_tracker: "sensor.hn_etronq6_model",
-      ulm_card_schumijo_car_lock: "binary_sensor.hn_etronq6_doors",
-      ulm_card_schumijo_car_energy_level: "sensor.hn_etronq6_primary_engine_percent",
-      ulm_card_schumijo_car_range: "sensor.hn_etronq6_range",
-      ulm_card_schumijo_car_name: "Audi Q3",
+      ulm_card_vehicle_status_tracker: "sensor.hn_etronq6_model",
+      ulm_card_vehicle_status_lock: "binary_sensor.hn_etronq6_doors",
+      ulm_card_vehicle_status_energy_level: "sensor.hn_etronq6_primary_engine_percent",
+      ulm_card_vehicle_status_range: "sensor.hn_etronq6_range",
+      ulm_card_vehicle_status_name: "Audi Q3",
       tap_action: { action: "none" },
     },
   },
-  custom_card_schumijo_flower: {
+  custom_card_plant: {
     width: 274, referenceHeight: 117, referenceWidth: 274, referenceX: 0, referenceY: 0,
     reference: "flower.png",
     config: {
@@ -158,36 +150,19 @@ const comparisons: Record<string, Comparison> = {
       tap_action: { action: "none" },
     },
   },
-  custom_card_senoro_win: {
+  custom_card_window: {
     width: 200, referenceHeight: 80, referenceWidth: 200, referenceX: 0, referenceY: 0,
-    reference: "senoro_win_card.png",
+    reference: "window_card.png",
     config: {
       entity: "binary_sensor.office_window",
-      ulm_custom_card_senoro_win_handle: "sensor.office_window_handle",
-      ulm_custom_card_senoro_win_battery_level: "sensor.office_window_battery",
+      ulm_custom_card_window_handle: "sensor.office_window_handle",
+      ulm_custom_card_window_battery_level: "sensor.office_window_battery",
       tap_action: { action: "none" },
-    },
-  },
-  custom_card_sisimomo_printer: {
-    width: 500, referenceHeight: 295, referenceWidth: 1000, referenceX: -500, referenceY: 0,
-    reference: "custom_card_sisimomo_printer.png",
-    config: {
-      entity: "sensor.printer_status",
-      ulm_card_printer_name: "HP LaserJet MFP M28w",
-      tap_action: { action: "none" },
-      cartridges: [
-        { label: "BK", entity_id: "sensor.toner_black", type: "unicolor", color: "black" },
-        { label: "B", entity_id: "sensor.toner_photo_black", type: "unicolor", color: "black" },
-        { label: "Y", entity_id: "sensor.toner_yellow", type: "unicolor", color: "#ffd55f" },
-        { label: "M", entity_id: "sensor.toner_magenta", type: "unicolor", color: "#f84b7a" },
-        { label: "C", entity_id: "sensor.toner_cyan", type: "unicolor", color: "#427ede" },
-        { label: "PB", entity_id: "sensor.toner_photo_blue", type: "unicolor", color: "#9272be" },
-      ],
     },
   },
 };
 
-const sourceId = new URLSearchParams(location.search).get("source") ?? "custom_card_saxel_fan";
+const sourceId = new URLSearchParams(location.search).get("source") ?? "custom_card_scenes";
 const comparison = comparisons[sourceId];
 if (!comparison) throw new Error(`Unknown comparison source: ${sourceId}`);
 const item = publicItemForSource(sourceId);

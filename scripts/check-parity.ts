@@ -1,7 +1,7 @@
 import { publicItemForSource, UPSTREAM_CATALOG } from "../src/catalog";
 import { upstreamEditorSchemaFor } from "../src/editor-schema";
 import { PARITY_BY_ID, PARITY_ENTRIES } from "../src/parity.generated";
-import { supportedUpstreamOption } from "../src/supported-options";
+import { isReplacedUpstreamOption, supportedUpstreamOption } from "../src/supported-options";
 
 const failures: string[] = [];
 if (PARITY_ENTRIES.length !== UPSTREAM_CATALOG.length) {
@@ -21,7 +21,11 @@ for (const source of UPSTREAM_CATALOG) {
   if (parity.rendererId !== item.upstreamId) failures.push(`${source.upstreamId}: renderer mapping is not explicit.`);
   const fields = new Set(upstreamEditorSchemaFor(item).map((field) => field.name));
   for (const variable of parity.variables) {
-    if (supportedUpstreamOption(item, variable.name) && !fields.has(variable.name)) {
+    if (
+      supportedUpstreamOption(item, variable.name) &&
+      !isReplacedUpstreamOption(item, variable.name) &&
+      !fields.has(variable.name)
+    ) {
       failures.push(`${source.upstreamId}: implemented option ${variable.name} is not exposed by the editor.`);
     }
   }

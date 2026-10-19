@@ -5,8 +5,6 @@
     "card_title",
     "card_vacuum",
     "card_vertical_button",
-    "card_weather",
-    "card_weather_ulm",
     "card_welcome_scenes"
   ],
   "automatedEvidence": {
@@ -14,13 +12,6 @@
     "structuralRegressionTest": "tests/renderers.test.ts"
   },
   "liveConfigs": {
-    "card_title": {
-      "type": "custom:mushroom-addition-card-title",
-      "name": "Living room",
-      "tap_action": {
-        "action": "none"
-      }
-    },
     "card_vacuum": {
       "type": "custom:mushroom-addition-card-vacuum",
       "entity": "vacuum.robob"
@@ -30,20 +21,6 @@
       "entity": "light.joris_iris_1",
       "ulm_card_vertical_button_state": "on",
       "ulm_card_vertical_button_color": "blue"
-    },
-    "card_weather": {
-      "type": "custom:mushroom-addition-card-weather",
-      "entity": "weather.hcn_ha",
-      "variant": "detailed",
-      "show_forecast": true,
-      "ulm_card_weather_primary_info": "extrema",
-      "ulm_card_weather_secondary_info": "precipitation"
-    },
-    "card_weather_ulm": {
-      "type": "custom:mushroom-addition-card-weather-ulm",
-      "entity": "weather.hcn_ha",
-      "variant": "native",
-      "show_forecast": false
     },
     "card_welcome_scenes": {
       "type": "custom:mushroom-addition-card-welcome-scenes",
@@ -64,20 +41,42 @@
     }
   },
   "visibleInteractions": {
-    "card_title": [
-      {
-        "control": "card surface",
-        "result": {
-          "action": "none"
-        }
-      }
-    ],
     "card_vacuum": [
-      ["vacuum", "start", { "entity_id": "vacuum.robob" }],
-      ["vacuum", "stop", { "entity_id": "vacuum.robob" }],
-      ["vacuum", "return_to_base", { "entity_id": "vacuum.robob" }],
-      ["vacuum", "locate", { "entity_id": "vacuum.robob" }],
-      ["script", "turn_on", { "entity_id": "script.clean_living_room" }]
+      [
+        "vacuum",
+        "start",
+        {
+          "entity_id": "vacuum.robob"
+        }
+      ],
+      [
+        "vacuum",
+        "stop",
+        {
+          "entity_id": "vacuum.robob"
+        }
+      ],
+      [
+        "vacuum",
+        "return_to_base",
+        {
+          "entity_id": "vacuum.robob"
+        }
+      ],
+      [
+        "vacuum",
+        "locate",
+        {
+          "entity_id": "vacuum.robob"
+        }
+      ],
+      [
+        "script",
+        "turn_on",
+        {
+          "entity_id": "script.clean_living_room"
+        }
+      ]
     ],
     "card_vertical_button": {
       "domains": [
@@ -95,20 +94,14 @@
       ],
       "payloads": "Asserted exactly in tests/default-batch-two-certification.test.ts"
     },
-    "card_weather": [
-      {
-        "action": "more-info",
-        "entity": "weather.hcn_ha"
-      }
-    ],
-    "card_weather_ulm": [
-      {
-        "action": "more-info",
-        "entity": "weather.hcn_ha"
-      }
-    ],
     "card_welcome_scenes": {
-      "collapse": ["input_boolean", "toggle", { "entity_id": "input_boolean.dropdown_welcome" }],
+      "collapse": [
+        "input_boolean",
+        "toggle",
+        {
+          "entity_id": "input_boolean.dropdown_welcome"
+        }
+      ],
       "settings": {
         "action": "navigate",
         "navigation_path": "/config/dashboard"
@@ -127,8 +120,6 @@
     "docs/assets/visual-audit/card_title-comparison.png",
     "docs/assets/visual-audit/card_vacuum-comparison.png",
     "docs/assets/visual-audit/card_vertical_button-comparison.png",
-    "docs/assets/visual-audit/card_weather-comparison.png",
-    "docs/assets/visual-audit/card_weather_ulm-comparison.png",
     "docs/assets/visual-audit/card_welcome_scenes-comparison.png"
   ],
   "liveAccepted": false

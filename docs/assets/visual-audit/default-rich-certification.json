@@ -3,42 +3,22 @@
   "fixture": "demo/default-rich-comparison.html",
   "matchedImplementationWidth": 320,
   "sources": {
-    "card_generic": {
-      "artifact": "docs/assets/visual-audit/card_generic-comparison.png",
-      "artifactSha256": "26197275edc143fd7cc365316a1734eb2418880556c4f03282b29bd5cf79b75d",
-      "artifactSize": [704, 167],
-      "referenceCrop": [55, 55, 1000, 270],
-      "interactions": ["card surface: more-info for entity"],
-      "liveConfig": {
-        "type": "custom:mushroom-addition-card-generic",
-        "entity": "sensor.bedroom_temperature_2",
-        "variant": "default"
-      },
-      "requiredEntities": {
-        "sensor.bedroom_temperature_2": "Prepared live bedroom temperature sensor."
-      }
-    },
-    "card_generic_swap": {
-      "artifact": "docs/assets/visual-audit/card_generic_swap-comparison.png",
-      "artifactSha256": "fb96253451d9cd1b544c077be266cc77d96874548ffef0df61be1303f77dd5c9",
-      "artifactSize": [704, 167],
-      "referenceCrop": [55, 55, 1000, 270],
-      "interactions": ["card surface: more-info for entity"],
-      "liveConfig": {
-        "type": "custom:mushroom-addition-card-generic",
-        "entity": "sensor.cv_plug_power",
-        "variant": "swapped"
-      },
-      "requiredEntities": {
-        "sensor.cv_plug_power": "Prepared live CV plug power sensor."
-      }
-    },
     "card_graph": {
       "artifact": "docs/assets/visual-audit/card_graph-comparison.png",
       "artifactSha256": "d7470a7f4a213e7204e8133cc3cb50fe9f52c35e57ae4f89c46183c43250ac2b",
-      "artifactSize": [704, 236],
-      "referenceCrop": [590, 55, 1000, 485],
-      "interactions": ["card surface: more-info for primary entity"],
+      "artifactSize": [
+        704,
+        236
+      ],
+      "referenceCrop": [
+        590,
+        55,
+        1000,
+        485
+      ],
+      "interactions": [
+        "card surface: more-info for primary entity"
+      ],
       "liveConfig": {
         "type": "custom:mushroom-addition-card-graph",
         "entity": "sensor.cv_plug_power",
@@ -52,8 +32,16 @@
     "card_light": {
       "artifact": "docs/assets/visual-audit/card_light-comparison.png",
       "artifactSha256": "d77f0f0ed84f02d116c94898de7fefc3775bf039418d0de2e968fda0d5ba745b",
-      "artifactSize": [704, 218],
-      "referenceCrop": [10, 82, 286, 122],
+      "artifactSize": [
+        704,
+        218
+      ],
+      "referenceCrop": [
+        10,
+        82,
+        286,
+        122
+      ],
       "interactions": [
         "card surface: configured tap action",
         "brightness slider: light.turn_on brightness_pct",
@@ -64,7 +52,9 @@
       "liveConfig": {
         "type": "custom:mushroom-addition-card-light",
         "entity": "light.joris_iris_1",
-        "tap_action": { "action": "toggle" },
+        "tap_action": {
+          "action": "toggle"
+        },
         "ulm_card_light_enable_slider": true,
         "ulm_card_light_enable_buttons": true,
         "ulm_card_light_enable_color": true
@@ -76,8 +66,16 @@
     "card_media_player": {
       "artifact": "docs/assets/visual-audit/card_media_player-comparison.png",
       "artifactSha256": "3a1c80f1b5e87a1afb63c971958928e97450ded7fa379fff0c978afe3d831b87",
-      "artifactSize": [704, 253],
-      "referenceCrop": [8, 8, 242, 130],
+      "artifactSize": [
+        704,
+        253
+      ],
+      "referenceCrop": [
+        8,
+        8,
+        242,
+        130
+      ],
       "interactions": [
         "card surface: configured tap action",
         "power: homeassistant.toggle",
@@ -104,20 +102,6 @@
       "requiredEntities": {
         "media_player.office_joris_tv_2": "Prepared office TV media player; live certification must remain render/more-info only."
       }
-    },
-    "card_navigate": {
-      "artifact": "docs/assets/visual-audit/card_navigate-comparison.png",
-      "artifactSha256": "a9c55e469de91dc5a23a1b5b482e18112140ff17ca38f8d75a54a6cb8cce44f8",
-      "artifactSize": [704, 167],
-      "referenceCrop": [55, 55, 1000, 270],
-      "interactions": ["card surface: navigate to configured dashboard path"],
-      "liveConfig": {
-        "type": "custom:mushroom-addition-card-navigate",
-        "name": "Media",
-        "icon": "mdi:account",
-        "navigation_path": "/config/updates"
-      },
-      "requiredEntities": {}
     }
   }
 }

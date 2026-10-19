@@ -7,6 +7,8 @@ import { editorHelper, localize } from "./localize";
 import { editorSchemaFor, upstreamEditorSchemaFor } from "./editor-schema";
 import { populatedDefaultsFor } from "./defaults";
 import { wasteStreamsForConfig } from "./waste-streams";
+import { PERSON_INFO_RELATED_FIELDS, personInfoDefaultsFor } from "./person-info-defaults";
+import { sceneItemDefaultsFor } from "./scene-item-defaults";
 
 @customElement("mushroom-addition-editor")
 export class MushroomAdditionEditor extends LitElement {
@@ -21,6 +23,7 @@ export class MushroomAdditionEditor extends LitElement {
     .item-row h4 { grid-column: 1 / -1; margin: 0; font-size: 13px; }
     .field { display: grid; gap: 5px; }
     .field > span { color: var(--secondary-text-color); font-size: 11px; }
+    .field > small { color: var(--secondary-text-color); font-size: 11px; line-height: 1.35; }
     .item-actions { display: flex; justify-content: flex-end; gap: 8px; }
     button { border: 0; border-radius: 10px; padding: 8px 12px; background: var(--secondary-background-color); color: var(--primary-text-color); cursor: pointer; }
     button.add { background: var(--primary-color); color: var(--text-primary-color, #fff); }
@@ -43,9 +46,16 @@ export class MushroomAdditionEditor extends LitElement {
     if (!item) return nothing;
     const schema = editorSchemaFor(item, this.config);
     const upstreamSchema = upstreamEditorSchemaFor(item, this.config).filter((field) =>
-      item.upstreamId !== "custom_card_afvalophaling" ||
+      item.upstreamId !== "custom_card_trash" ||
       (!field.name.startsWith("ulm_card_datum_") && !field.name.includes("ophaling")));
-    const formData = { ...populatedDefaultsFor(item, this.hass, this.config.entity), ...this.config };
+    const contextualDefaults = item.upstreamId === "custom_card_person_info"
+      ? personInfoDefaultsFor(this.hass, this.config.entity)
+      : {};
+    const formData = {
+      ...populatedDefaultsFor(item, this.hass, this.config.entity),
+      ...contextualDefaults,
+      ...this.config,
+    };
     return html`
       <ha-form
         .hass=${this.hass}
@@ -55,10 +65,14 @@ export class MushroomAdditionEditor extends LitElement {
         .computeHelper=${this.computeHelper}
         @value-changed=${this.valueChanged}
       ></ha-form>
-      ${item.upstreamId === "custom_card_afvalophaling"
+      ${item.upstreamId === "custom_card_trash"
         ? this.renderWasteStreamEditor()
         : item.family === "scene"
-        ? this.renderItemEditor("scene_items", "Scene buttons", ["scene"])
+        ? this.renderItemEditor(
+          "scene_items",
+          "Scene buttons",
+          item.upstreamId === "card_welcome_scenes" ? undefined : ["scene"],
+        )
         : item.upstreamId === "card_room"
           ? this.renderItemEditor("room_sensors", "Room sensor buttons")
           : nothing}
@@ -79,8 +93,8 @@ export class MushroomAdditionEditor extends LitElement {
   }
 
   private readonly computeLabel = (schema: { name: string }): string =>
-    this.config?.type.includes("custom-card-afvalophaling") && schema.name === "entity"
-      ? "Optional card action entity"
+    this.config?.type.includes("custom-card-trash") && schema.name === "entity"
+      ? "Optional card entity"
       : localize(this.hass, schema.name);
 
   private readonly computeHelper = (schema: { name: string }): string | undefined =>
@@ -90,6 +104,25 @@ export class MushroomAdditionEditor extends LitElement {
     if (!this.config || !event.detail.value) return;
     const value = event.detail.value as Record<string, unknown>;
     const next = { ...this.config, ...value } as AdditionConfig;
+    const item = getCatalogItem(this.config.type.replace(/^custom:/, ""));
+    if (
+      item?.upstreamId === "custom_card_person_info" &&
+      typeof value.entity === "string" &&
+      value.entity !== this.config.entity
+    ) {
+      const defaults = personInfoDefaultsFor(this.hass, value.entity);
+      for (const field of PERSON_INFO_RELATED_FIELDS) {
+        if (defaults[field] !== undefined) Object.assign(next, { [field]: defaults[field] });
+        else delete next[field];
+      }
+      if (this.config.icon_type === undefined) next.icon_type = defaults.icon_type;
+    }
+    if (
+      Object.prototype.hasOwnProperty.call(value, "name") &&
+      JSON.stringify(value.name) !== JSON.stringify(this.config.name)
+    ) {
+      delete next.name_mode;
+    }
     this.config = next;
     fireEvent(this, "config-changed", { config: next });
   };
@@ -101,50 +134,95 @@ export class MushroomAdditionEditor extends LitElement {
   ) {
     if (!this.config) return nothing;
     const configuredItems = this.config[key] ?? [];
-    const items: AdditionItemConfig[] = configuredItems.length
+    const items: AdditionItemConfig[] = (configuredItems.length
       ? configuredItems
-      : (this.config.entities ?? []).map((entity) => ({ entity }));
+      : (this.config.entities ?? []).map((entity) => ({ entity })))
+      .map((item) => key === "scene_items"
+        ? { ...sceneItemDefaultsFor(this.hass, item.entity), ...item }
+        : item);
     return html`
       <section class="item-editor">
         <h3>${title}</h3>
-        <p>Configure each button with a clear entity, label, icon, color, active state and action.</p>
+        <p>Each button starts with sensible values from its entity. You can override every value, including its name.</p>
         ${items.map((item, index) => html`
           <div class="item-row">
-            <ha-selector
-              class="wide"
-              .hass=${this.hass}
-              .selector=${{ entity: domains?.length ? { domain: domains } : {} }}
-              .value=${item.entity}
-              @value-changed=${(event: CustomEvent) => this.updateItem(key, index, "entity", event.detail.value)}
-            ></ha-selector>
-            <ha-textfield
-              label="Label"
-              .value=${item.name ?? item.label ?? ""}
-              @input=${(event: Event) => this.updateItem(key, index, "name", (event.target as HTMLInputElement).value)}
-            ></ha-textfield>
-            <ha-selector
-              .hass=${this.hass}
-              .selector=${{ icon: {} }}
-              .value=${item.icon}
-              @value-changed=${(event: CustomEvent) => this.updateItem(key, index, "icon", event.detail.value)}
-            ></ha-selector>
-            <ha-selector
-              .hass=${this.hass}
-              .selector=${{ ui_color: {} }}
-              .value=${item.color}
-              @value-changed=${(event: CustomEvent) => this.updateItem(key, index, "color", event.detail.value)}
-            ></ha-selector>
-            <ha-textfield
-              label="Active when state is"
-              .value=${item.active_state ?? ""}
-              @input=${(event: Event) => this.updateItem(key, index, "active_state", (event.target as HTMLInputElement).value)}
-            ></ha-textfield>
-            <ha-selector
-              .hass=${this.hass}
-              .selector=${{ ui_action: {} }}
-              .value=${item.tap_action}
-              @value-changed=${(event: CustomEvent) => this.updateItem(key, index, "tap_action", event.detail.value)}
-            ></ha-selector>
+            <label class="field wide">
+              <span>Button entity</span>
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ entity: domains?.length ? { domain: domains } : {} }}
+                .value=${item.entity}
+                @value-changed=${(event: CustomEvent) => this.updateItem(key, index, "entity", event.detail.value)}
+              ></ha-selector>
+              <small>Select the entity this button controls. Welcome Scenes supports every Home Assistant domain.</small>
+            </label>
+            <label class="field">
+              <span>Custom name</span>
+              <ha-textfield
+                .value=${item.name ?? item.label ?? ""}
+                placeholder="Use entity name"
+                @input=${(event: Event) => this.updateItem(key, index, "name", (event.target as HTMLInputElement).value)}
+              ></ha-textfield>
+              <small>Text shown below the button. Change it independently for every button.</small>
+            </label>
+            <label class="field">
+              <span>Icon</span>
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ icon: {} }}
+                .value=${item.icon}
+                @value-changed=${(event: CustomEvent) => this.updateItem(key, index, "icon", event.detail.value)}
+              ></ha-selector>
+              <small>Defaults to the entity icon or a suitable icon for its domain.</small>
+            </label>
+            ${key === "room_sensors" || key === "scene_items" ? html`
+              <label class="field item-icon-type">
+                <span>Icon type</span>
+                <ha-selector
+                  .hass=${this.hass}
+                  .selector=${{ select: {
+                    mode: "dropdown",
+                    options: [
+                      { value: "icon", label: "Icon" },
+                      { value: "entity-picture", label: "Entity picture" },
+                    ],
+                  } }}
+                  .value=${item.icon_type ?? "icon"}
+                  @value-changed=${(event: CustomEvent) =>
+                    this.updateItem(key, index, "icon_type", event.detail.value)}
+                ></ha-selector>
+                <small>Show the selected icon or the entity picture when one is available.</small>
+              </label>
+            ` : nothing}
+            <label class="field">
+              <span>Color</span>
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ ui_color: { default_color: key === "room_sensors" ? "blue" : "purple" } }}
+                .value=${item.color}
+                @value-changed=${(event: CustomEvent) => this.updateItem(key, index, "color", event.detail.value)}
+              ></ha-selector>
+              <small>Accent color used by the button and its active state.</small>
+            </label>
+            <label class="field">
+              <span>Active when state is</span>
+              <ha-textfield
+                .value=${item.active_state ?? ""}
+                placeholder="For example: on"
+                @input=${(event: Event) => this.updateItem(key, index, "active_state", (event.target as HTMLInputElement).value)}
+              ></ha-textfield>
+              <small>Optional entity state that highlights this button as active.</small>
+            </label>
+            <label class="field">
+              <span>Tap action</span>
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ ui_action: {} }}
+                .value=${item.tap_action}
+                @value-changed=${(event: CustomEvent) => this.updateItem(key, index, "tap_action", event.detail.value)}
+              ></ha-selector>
+              <small>Defaults to activating scenes and toggling other supported entities.</small>
+            </label>
             <div class="item-actions wide">
               <button @click=${() => this.removeItem(key, index)}>Remove</button>
             </div>
@@ -201,7 +279,7 @@ export class MushroomAdditionEditor extends LitElement {
               <span>Color</span>
               <ha-selector
                 .hass=${this.hass}
-                .selector=${{ ui_color: {} }}
+                .selector=${{ ui_color: { default_color: "green" } }}
                 .value=${stream.color}
                 @value-changed=${(event: CustomEvent) => this.updateWasteStream(index, "color", event.detail.value)}
               ></ha-selector>
@@ -226,14 +304,35 @@ export class MushroomAdditionEditor extends LitElement {
   ): void {
     if (!this.config) return;
     const items: AdditionItemConfig[] = [...(this.config[key] ?? (this.config.entities ?? []).map((entity) => ({ entity })))];
-    items[index] = { ...items[index], [field]: value || undefined };
+    if (key === "scene_items" && field === "entity" && typeof value === "string") {
+      const current = items[index];
+      const oldDefaults = sceneItemDefaultsFor(this.hass, current.entity);
+      const newDefaults = sceneItemDefaultsFor(this.hass, value);
+      const next = { ...current, entity: value };
+      for (const defaultField of ["name", "icon", "icon_type", "color", "active_state", "tap_action"] as const) {
+        if (
+          current[defaultField] === undefined ||
+          JSON.stringify(current[defaultField]) === JSON.stringify(oldDefaults[defaultField])
+        ) {
+          Object.assign(next, { [defaultField]: newDefaults[defaultField] });
+        }
+      }
+      items[index] = next;
+    } else {
+      items[index] = { ...items[index], [field]: value || undefined };
+    }
     this.updateItems(key, items);
   }
 
   private addItem(key: "scene_items" | "room_sensors"): void {
     if (!this.config) return;
     const items: AdditionItemConfig[] = [...(this.config[key] ?? (this.config.entities ?? []).map((entity) => ({ entity })))];
-    items.push({ entity: "" });
+    const defaultEntity = key === "scene_items"
+      ? Object.keys(this.hass?.states ?? {}).find((entityId) => entityId.startsWith("scene.")) ?? ""
+      : "";
+    items.push(key === "scene_items"
+      ? sceneItemDefaultsFor(this.hass, defaultEntity)
+      : { entity: "" });
     this.updateItems(key, items);
   }
 
