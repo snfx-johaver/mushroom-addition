@@ -107,9 +107,7 @@ export const createStubConfig = (
                 findEntityByDeviceClass(["battery"], [], ["state", "charging"])
               : descriptor.upstreamId === "card_cover"
                   ? findEntity(["cover"], ["sunscreen"])
-                  : descriptor.upstreamId === "custom_card_wifi_signal"
-                        ? findEntity(["sensor"], ["signal", "strength"])
-                      : descriptor.upstreamId === "custom_card_pollen_forecast"
+                  : descriptor.upstreamId === "custom_card_pollen_forecast"
                         ? findEntity(["sensor"], ["pollen", "grass", "level"]) ??
                           findEntity(["sensor"], ["pollen", "grass"]) ??
                           findEntity(["sensor"], ["pollen"])

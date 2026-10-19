@@ -3,6 +3,8 @@ import { CATALOG } from "../src/catalog";
 import { editorSchemaFor } from "../src/editor-schema";
 import { editorHelper, localize } from "../src/localize";
 import { upstreamEditorSchemaFor } from "../src/editor-schema";
+import { additionalEditorSchemaFor } from "../src/editor-schema";
+import { populatedDefaultsFor } from "../src/defaults";
 import type { EditorField } from "../src/editor-schema";
 
 const flattenSchema = (schema: EditorField[]): EditorField[] =>
@@ -192,6 +194,7 @@ describe("family editor schemas", () => {
         selector: { entity_name: {} },
         context: { entity: "entity" },
       });
+
       const icon = flattened.find((field) => field.name === "icon");
       if (hasConfigurableIcon) expect(icon?.context).toEqual({ icon_entity: "entity" });
       else expect(flattened.map((field) => field.name)).not.toContain("icon_type");
@@ -215,6 +218,25 @@ describe("family editor schemas", () => {
           : [{ name: "primary_info" }, { name: "secondary_info" }],
       });
     }
+  });
+
+  it("uses Mushroom-compatible presentation defaults for newly created cards", () => {
+    for (const item of CATALOG.filter((entry) => entry.kind === "card")) {
+      expect(populatedDefaultsFor(item)).toMatchObject({
+        layout: "default",
+        primary_info: "name",
+        secondary_info: "state",
+      });
+    }
+  });
+
+  it("does not repeat main editor fields in additional appearance and controls", () => {
+    for (const item of CATALOG.filter((entry) => entry.kind === "card")) {
+      const configured = new Set(flattenSchema(editorSchemaFor(item)).map((field) => field.name));
+      expect(additionalEditorSchemaFor(item).filter((field) => configured.has(field.name))).toEqual([]);
+    }
+    const speedtest = CATALOG.find((item) => item.upstreamId === "custom_card_speedtest_gauges")!;
+    expect(additionalEditorSchemaFor(speedtest)).toEqual([]);
   });
 
   it("shows only controls relevant to the selected unified variant", () => {

@@ -2695,27 +2695,6 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "900ec6ff5ac98c1bc5e1ec6d5c751649c9b44681dd363daa67bd7a6450cf72e1"
   },
   {
-    "upstreamId": "custom_card_wifi_signal",
-    "sourcePath": "custom_cards/custom_card_wifi_signal",
-    "publicId": "custom_card_wifi_signal",
-    "rendererId": "custom_card_wifi_signal",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [],
-    "variables": [],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "f8c52bb16f5c28d2205d395a9a234d7c6a2c9328dcc863fe5a04f7229d40f1a8"
-  },
-  {
     "upstreamId": "custom_card_nas_metrics",
     "sourcePath": "custom_cards/custom_card_nas_metrics",
     "publicId": "custom_card_nas_metrics",

@@ -4,7 +4,7 @@ import type { AdditionConfig, AdditionItemConfig, HomeAssistant, WasteStreamConf
 import { CATALOG, getCatalogItem, LEGACY_ALIASES } from "./catalog";
 import { fireEvent } from "./helpers";
 import { editorHelper, localize } from "./localize";
-import { editorSchemaFor, upstreamEditorSchemaFor } from "./editor-schema";
+import { additionalEditorSchemaFor, editorSchemaFor } from "./editor-schema";
 import { populatedDefaultsFor } from "./defaults";
 import { wasteStreamsForConfig } from "./waste-streams";
 import { PERSON_INFO_RELATED_FIELDS, personInfoDefaultsFor } from "./person-info-defaults";
@@ -45,7 +45,7 @@ export class MushroomAdditionEditor extends LitElement {
     const item = getCatalogItem(this.config.type.replace(/^custom:/, ""));
     if (!item) return nothing;
     const schema = editorSchemaFor(item, this.config);
-    const upstreamSchema = upstreamEditorSchemaFor(item, this.config).filter((field) =>
+    const upstreamSchema = additionalEditorSchemaFor(item, this.config).filter((field) =>
       item.upstreamId !== "custom_card_trash" ||
       (!field.name.startsWith("ulm_card_datum_") && !field.name.includes("ophaling")));
     const contextualDefaults = item.upstreamId === "custom_card_person_info"

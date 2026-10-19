@@ -490,11 +490,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         entity(["sensor"], "cyan_entity"),
         ...presentation(),
       ]
-    : item.upstreamId === "custom_card_wifi_signal"
-      ? [
-        entity(["sensor"]),
-        ...presentation(),
-      ]
     : item.upstreamId === "custom_card_pollen_forecast"
       ? [
         entity(["sensor"]),
@@ -859,4 +854,14 @@ export const upstreamEditorSchemaFor = (item: CatalogItem, config?: AdditionConf
       default: return text(variable.name);
     }
   });
+};
+
+const schemaFieldNames = (fields: EditorField[]): Set<string> =>
+  new Set(fields.flatMap((field) =>
+    field.schema ? [...schemaFieldNames(field.schema)] : field.name ? [field.name] : []));
+
+export const additionalEditorSchemaFor = (item: CatalogItem, config?: AdditionConfig): EditorField[] => {
+  const configuredFields = schemaFieldNames(editorSchemaFor(item, config));
+  return upstreamEditorSchemaFor(item, config)
+    .filter((field) => !configuredFields.has(field.name));
 };
