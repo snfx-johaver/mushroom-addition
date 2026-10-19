@@ -62,6 +62,21 @@ describe("Home Assistant registration", () => {
       if (itemKey === "scene_items") {
         expect(editor.shadowRoot?.textContent).toContain("Custom name");
         expect(editor.shadowRoot?.textContent).toContain("Defaults to activating scenes");
+        const textSelectors = editor.shadowRoot?.querySelectorAll<HTMLElement & {
+          value?: string;
+          selector?: Record<string, unknown>;
+        }>(".item-row .field ha-selector") ?? [];
+        const customName = [...textSelectors].find((selector) => selector.value === "Example");
+        const activeState = [...textSelectors].find((selector) => selector.value === "");
+        expect(customName?.selector).toEqual({ text: {} });
+        expect(activeState?.selector).toEqual({ text: {} });
+        const changed = vi.fn();
+        editor.addEventListener("config-changed", changed);
+        customName?.dispatchEvent(new CustomEvent("value-changed", {
+          detail: { value: "Custom scene" },
+        }));
+        const updated = (changed.mock.calls[0][0] as CustomEvent<{ config: AdditionConfig }>).detail.config;
+        expect(updated[itemKey]?.[0].name).toBe("Custom scene");
       }
       const iconType = editor.shadowRoot?.querySelector<HTMLElement & {
         value?: string;
