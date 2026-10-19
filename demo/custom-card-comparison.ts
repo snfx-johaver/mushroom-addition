@@ -235,10 +235,8 @@ const fixtures: Fixture[] = [
     },
   },
   { id: "alarm-time", entity: "input_boolean.alarm", config: { datetime_entity: "input_datetime.alarm", ulm_card_alarm_time_step: 15 } },
-  { id: "apexcharts", entity: "sensor.download", reference: "custom_card_apexcharts_line.png", width: 640, config: { entities: ["sensor.ping", "sensor.upload"] } },
   { id: "camera", entity: "camera.driveway", reference: "screenshot_custom_camera1.png", width: 250, config: { name: "Driveway", show_name: true, show_state: true, aspect_ratio: "16:9", fit_mode: "cover" } },
   { id: "chromecast", entity: "media_player.chromecast", reference: "chromecast.png", width: 608 },
-  { id: "power-details", entity: "sensor.power", reference: "custom_power_details.png", width: 385, config: { icon: "mdi:flash", ulm_card_power_details_hours: 2, ulm_card_power_details_height: 180 } },
   { id: "device-tracker", entity: "device_tracker.phone", reference: "custom_card_device_tracker.png", width: 320, theme: "dark", config: { ulm_custom_card_device_tracker_tracker_1_entity: "device_tracker.phone", ulm_custom_card_device_tracker_tracker_1_type: "wifi", ulm_custom_card_device_tracker_tracker_2_entity: "device_tracker.phone_ble", ulm_custom_card_device_tracker_tracker_2_type: "bluetooth" } },
   { id: "roomview", entity: "", reference: "custom_card_roomview_1.png", width: 320, config: {
     icon: "mdi:home-variant-outline",
@@ -302,7 +300,6 @@ const fixtures: Fixture[] = [
   } },
   { id: "homeassistant-updates", entity: "update.core", reference: "ulm_cards/card_homeassistant_updates.png", width: 650, config: { ulm_card_homeassistant_core: "update.core", ulm_card_homeassistant_supervisor: "update.supervisor", ulm_card_homeassistant_os: "update.operating_system" } },
   { id: "sun", entity: "sun.sun", reference: "sun-card.png", width: 500, config: { timeFormat: "24h" } },
-  { id: "media-library", entity: "media_player.plex", reference: "custom_card_media_library/medias_library_plex.png", width: 488, config: { variant: "library", ulm_custom_card_media_library_platform: "plex" } },
   { id: "person-location", entity: "person.joris", reference: "custom_card_person_location.gif", width: 320, config: { use_entity_picture: false, gps_tracker_entity: "device_tracker.gps", wifi_tracker_entity: "device_tracker.wifi" } },
   { id: "input-datetime", entity: "input_datetime.alarm", reference: "card_input_datetime.png", width: 320 },
   { id: "input-number", entity: "input_number.missing", reference: "card_input_number.png", width: 320 },

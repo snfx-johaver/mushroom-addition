@@ -643,15 +643,12 @@ describe("family renderers", () => {
   it.each([
     ["trash", "sensor.power", "custom-waste-card", "waste-grid"],
     ["alarm-time", "input_boolean.alarm", "custom-alarm-time", "alarm-time-controls"],
-    ["apexcharts", "sensor.power", "custom-apexcharts", "apex-chart"],
     ["chromecast", "media_player.tv", "custom-chromecast", "chromecast-controls"],
-    ["power-details", "sensor.power", "custom-power-details", "power-details-chart"],
     ["device-tracker", "device_tracker.phone", "custom-device-tracker", "device-tracker-icon"],
     ["roomview", "sensor.temperature", "custom-room-view", "room-view-actions"],
     ["welcome", "person.joris", "custom-welcome", "welcome-items"],
     ["washer", "switch.washer", "custom-washer", "washer-stages"],
     ["sun", "sun.sun", "custom-sun-card", "sun-arc"],
-    ["media-library", "media_player.tv", "custom-media-library", "media-platform"],
     ["person-location", "person.joris", "custom-person-location", "person-location-marker"],
     ["input-datetime", "input_datetime.alarm", "custom-input-datetime", "input-datetime-controls"],
   ])("uses a source-specific %s composition", async (slug, entity, marker, region) => {

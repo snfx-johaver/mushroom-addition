@@ -7,11 +7,10 @@ const baseCards = [
 ] as const;
 
 const customCards = [
-  "trash", "alarm_time", "apexcharts", "bar_card", "camera", "chromecast",
-  "power_details", "device_tracker", "roomview",
+  "trash", "alarm_time", "bar_card", "camera", "chromecast",
+  "device_tracker", "roomview",
   "room_overview", "welcome",
-  "washer", "sun",
-  "media_library", "person_location",
+  "washer", "sun", "person_location",
   "input_datetime", "entity_overview", "internet_speed",
   "weather_metrics", "media_player_sonos", "more_power_outlet",
   "gauge", "printer",
@@ -67,7 +66,6 @@ const variants: Record<string, string[]> = {
   card_room: ["default", "with-sensors"],
   card_scenes: ["list", "welcome"],
   card_cover: ["default"],
-  custom_card_media_library: ["library", "upcoming"],
   custom_card_welcome_dashboard: ["message", "weather", "news"],
   custom_card_better_thermostat: ["normal", "compact"],
 };
