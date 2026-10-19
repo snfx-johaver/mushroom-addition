@@ -4,15 +4,6 @@
   "fixture": "demo/custom-card-comparison.html",
   "sourceCommit": "885bb9c",
   "geometry": {
-    "custom_card_device_tracker": {
-      "width": 320,
-      "height": 64,
-      "scrollWidth": 320,
-      "regions": {
-        ".tracker-badge": 2,
-        ".device-tracker-icon": 1
-      }
-    },
     "custom_card_roomview": {
       "width": 320,
       "height": 166,
@@ -42,19 +33,6 @@
     }
   },
   "browserInteractions": {
-    "custom_card_device_tracker": {
-      "controlsClicked": 1,
-      "serviceCalls": [],
-      "cardActions": [
-        {
-          "action": "tap",
-          "entity": "device_tracker.phone",
-          "tap_action": {
-            "action": "more-info"
-          }
-        }
-      ]
-    },
     "custom_card_roomview": {
       "controlsClicked": 4,
       "serviceCalls": [],
@@ -180,13 +158,6 @@
     }
   },
   "semanticLiveConfigs": {
-    "custom_card_device_tracker": {
-      "type": "custom:mushroom-addition-custom-card-device-tracker",
-      "entity": "device_tracker.joris_mobile",
-      "ulm_custom_card_device_tracker_icon": "mdi:cellphone",
-      "ulm_custom_card_device_tracker_tracker_1_entity": "device_tracker.joris_mobile",
-      "ulm_custom_card_device_tracker_tracker_1_type": "gps"
-    },
     "custom_card_roomview": {
       "type": "custom:mushroom-addition-custom-card-roomview",
       "name": "Living room",

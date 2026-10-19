@@ -4,8 +4,8 @@ This manifest maps the documented card catalog to Mushroom Cards Addition
 registrations. It is generated from `src/catalog.ts`; CI rejects duplicate
 IDs, missing source paths, invalid namespaces, or broken popup mappings.
 
-**Coverage:** 42 documented upstream card sources map to
-40 public card components.
+**Coverage:** 39 documented upstream card sources map to
+37 public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
 of duplicate picker entries. 2 popup templates and
 1 implementation helpers are inventoried but are not
@@ -17,7 +17,6 @@ public registrations.
 | `card_cover` | default-card | `custom:mushroom-addition-card-cover` | cover | default | `card_cover` |
 | `card_graph` | default-card | `custom:mushroom-addition-card-graph` | energy | default | `card_graph` |
 | `card_media_player` | default-card | `custom:mushroom-addition-card-media-player` | media | default, controls, artwork | `card_media_player` |
-| `card_person` | default-card | `custom:mushroom-addition-card-person` | presence | default, small | `card_person` |
 | `card_room` | default-card | `custom:mushroom-addition-card-room` | presence | default, with-sensors | `card_room` |
 | `card_scenes` | default-card | `custom:mushroom-addition-card-scenes` | scene | welcome-pills, scene-grid | `card_scenes`<br>`custom_card_scenes` |
 | `card_welcome_scenes` | default-card | `custom:mushroom-addition-card-welcome-scenes` | scene | default | `card_welcome_scenes` |
@@ -26,13 +25,11 @@ public registrations.
 | `custom_card_bar_card` | custom-card | `custom:mushroom-addition-custom-card-bar-card` | bar | default | `custom_card_bar_card` |
 | `custom_card_camera` | custom-card | `custom:mushroom-addition-custom-card-camera` | camera | default | `custom_card_camera` |
 | `custom_card_chromecast` | custom-card | `custom:mushroom-addition-custom-card-chromecast` | media | default | `custom_card_chromecast` |
-| `custom_card_device_tracker` | custom-card | `custom:mushroom-addition-custom-card-device-tracker` | presence | default | `custom_card_device_tracker` |
 | `custom_card_roomview` | custom-card | `custom:mushroom-addition-custom-card-roomview` | presence | default | `custom_card_roomview` |
 | `custom_card_room_overview` | custom-card | `custom:mushroom-addition-custom-card-room-overview` | presence | default | `custom_card_room_overview` |
 | `custom_card_welcome` | custom-card | `custom:mushroom-addition-custom-card-welcome` | presence | default | `custom_card_welcome` |
 | `custom_card_washer` | custom-card | `custom:mushroom-addition-custom-card-washer` | control | default | `custom_card_washer` |
 | `custom_card_sun` | custom-card | `custom:mushroom-addition-custom-card-sun` | weather | default | `custom_card_sun` |
-| `custom_card_person_location` | custom-card | `custom:mushroom-addition-custom-card-person-location` | presence | default | `custom_card_person_location` |
 | `custom_card_input_datetime` | custom-card | `custom:mushroom-addition-custom-card-input-datetime` | sensor | default | `custom_card_input_datetime` |
 | `custom_card_entity_overview` | custom-card | `custom:mushroom-addition-custom-card-entity-overview` | sensor | default | `custom_card_entity_overview` |
 | `custom_card_internet_speed` | custom-card | `custom:mushroom-addition-custom-card-internet-speed` | sensor | default | `custom_card_internet_speed` |

@@ -104,11 +104,6 @@ const personInfoEntities = new Set([
   "ulm_card_person_commute_entity",
 ]);
 const certifiedCoreVariables = new Set([
-  "ulm_card_person_location_entity",
-  "ulm_card_person_location_wifi_tracker",
-  "ulm_card_person_location_gps_tracker",
-  "ulm_card_person_location_findmy_script",
-  "ulm_card_person_location_use_entity_picture",
   "ulm_card_input_datetime_name",
   "ulm_card_input_number_entity",
   "ulm_card_input_number_name",
@@ -193,7 +188,6 @@ const fixedIconSources = new Set([
   "card_scenes",
   "card_welcome_scenes",
   "custom_card_bar_card",
-  "custom_card_device_tracker",
   "custom_card_roomview",
   "custom_card_welcome",
   "custom_card_sun",
@@ -314,15 +308,7 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
 
 export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): EditorField[] => {
   const fields: EditorField[] = [
-    ...(item.upstreamId === "card_person"
-    ? [
-      entity(["person"]),
-      entity(["sensor"], "battery_entity"),
-      entity(["sensor"], "eta_entity"),
-      entity(["sensor"], "address_entity"),
-      ...presentation(),
-    ]
-    : item.upstreamId === "card_room"
+    ...(item.upstreamId === "card_room"
       ? [
         entity(),
         toggle("label_use_temperature"),
@@ -474,24 +460,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
           { value: "de", label: "German" },
           { value: "es", label: "Spanish" },
           { value: "pl", label: "Polish" },
-        ]),
-        ...presentation(),
-      ]
-    : item.upstreamId === "custom_card_device_tracker"
-      ? [
-        entity(["device_tracker", "person"]),
-        { name: "ulm_custom_card_device_tracker_icon", selector: { icon: {} } },
-        entity(["device_tracker"], "ulm_custom_card_device_tracker_tracker_1_entity"),
-        select("ulm_custom_card_device_tracker_tracker_1_type", [
-          { value: "default", label: "Home" },
-          { value: "lan", label: "LAN" },
-          { value: "bluetooth", label: "Bluetooth" },
-        ]),
-        entity(["device_tracker"], "ulm_custom_card_device_tracker_tracker_2_entity"),
-        select("ulm_custom_card_device_tracker_tracker_2_type", [
-          { value: "default", label: "Home" },
-          { value: "lan", label: "LAN" },
-          { value: "bluetooth", label: "Bluetooth" },
         ]),
         ...presentation(),
       ]
@@ -652,15 +620,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
       number("cpu_max", 1, 100000),
       ...presentation(),
     ]
-    : item.upstreamId === "custom_card_person_location"
-      ? [
-        entity(["person"]),
-        entity(["device_tracker"], "wifi_tracker_entity"),
-        entity(["device_tracker"], "gps_tracker_entity"),
-        entity(["script"], "findmy_script_entity"),
-        entity(["sensor"], "battery_entity"),
-        ...presentation(),
-      ]
     : item.upstreamId === "custom_card_input_datetime"
       ? [
         entity(["input_datetime"]),

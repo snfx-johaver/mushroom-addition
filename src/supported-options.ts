@@ -39,7 +39,6 @@ export const canonicalNameOptions = new Set([
 ]);
 
 const canonicalIconTypeOptions = new Set([
-  "ulm_card_person_location_use_entity_picture",
   "ulm_card_person_use_entity_picture",
   "ulm_custom_card_person_tracker_use_entity_picture",
 ]);

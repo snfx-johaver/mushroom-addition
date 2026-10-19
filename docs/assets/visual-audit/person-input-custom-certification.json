@@ -4,11 +4,6 @@
   "width": 320,
   "live": false,
   "geometry": {
-    "custom_card_person_location": {
-      "referenceWidth": 320,
-      "implementationWidth": 320,
-      "implementationHeight": 66
-    },
     "custom_card_input_datetime": {
       "referenceWidth": 320,
       "implementationWidth": 320,
@@ -31,10 +26,6 @@
     }
   },
   "configs": {
-    "custom_card_person_location": {
-      "entity": "person.joris",
-      "battery_entity": "sensor.joris_mobile_battery_level"
-    },
     "custom_card_input_datetime": {
       "entity": "input_datetime.quiet_time_start"
     },
@@ -57,18 +48,6 @@
     }
   },
   "visibleInteractions": {
-    "custom_card_person_location": [
-      {
-        "surface": "card",
-        "event": "hass-action",
-        "payload": {
-          "action": "tap",
-          "tap_action": {
-            "action": "more-info"
-          }
-        }
-      }
-    ],
     "custom_card_input_datetime": [
       [
         "input_datetime",
@@ -159,7 +138,6 @@
   },
   "liveBehavior": {},
   "deviations": {
-    "custom_card_person_location": "The source Browser Mod popup, history graph, map, tracker glances, and find-my-phone control are dependency-backed popup content and are not reproduced inside the card surface.",
     "custom_card_input_datetime": "The renderer computes the documented -15/+1/-1/+15 minute behavior directly from the entity state instead of reproducing the source's timezone-offset timestamp arithmetic.",
     "custom_card_entity_overview": "Missing fourth live metric renders as configured-unavailable rather than inventing an entity.",
     "custom_card_internet_speed": "The source Polish fallback labels are retained from pinned defaults when the user does not override them.",

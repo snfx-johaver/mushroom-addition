@@ -209,14 +209,6 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
     entity: wasteMigrated.entity ?? legacy,
     primary_entity: undefined,
   };
-  if (String(config.type).includes("card-person")) {
-    migrated.battery_entity ??= entityId(config.ulm_card_person_battery);
-    migrated.eta_entity ??= entityId(config.ulm_card_person_eta);
-    migrated.address_entity ??= entityId(config.ulm_address);
-    migrated.use_entity_picture ??= typeof config.ulm_card_person_use_entity_picture === "boolean"
-      ? config.ulm_card_person_use_entity_picture
-      : undefined;
-  }
   if (String(config.type).includes("card-power-outlet")) {
     migrated.consumption_entity ??= entityId(config.ulm_card_power_outlet_consumption_sensor);
   }

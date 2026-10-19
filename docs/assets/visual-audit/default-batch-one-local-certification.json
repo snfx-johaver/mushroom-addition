@@ -5,23 +5,6 @@
   "fixture": "demo/default-batch-one-comparison.html",
   "test": "tests/default-batch-one-certification.test.ts",
   "sources": {
-    "card_person": {
-      "liveConfig": {
-        "entity": "person.joris",
-        "battery_entity": "sensor.joris_mobile_battery_level"
-      },
-      "visibleInteractions": [
-        {
-          "surface": "card",
-          "gesture": "tap",
-          "payload": {
-            "action": "more-info",
-            "entity": "person.joris"
-          }
-        }
-      ],
-      "artifact": "docs/assets/visual-audit/card_person-comparison.png"
-    },
     "card_room": {
       "liveConfig": {
         "entity": "light.joris_iris_1",

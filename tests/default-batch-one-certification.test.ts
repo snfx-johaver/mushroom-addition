@@ -150,19 +150,13 @@ describe("queued default batch one certification", () => {
     };
     expect(evidence.liveAccepted).toBe(false);
     expect(Object.keys(evidence.sources)).toEqual([
-      "card_person",
       "card_room",
       "card_scenes",
     ]);
-    expect(evidence.sources.card_person.liveConfig).toEqual({
-      entity: "person.joris",
-      battery_entity: "sensor.joris_mobile_battery_level",
-    });
   });
 
   it("creates source-specific picker defaults from the exact live entities", () => {
     const expected = {
-      card_person: ["person.joris", { battery_entity: "sensor.joris_mobile_battery_level" }],
       card_room: ["light.joris_iris_1", { room_sensors: expect.arrayContaining([
         expect.objectContaining({ entity: "sensor.office_joris_motion_illuminance" }),
         expect.objectContaining({ entity: "sensor.bedroom_temperature_2" }),
@@ -189,7 +183,6 @@ describe("queued default batch one certification", () => {
   });
 
   it.each([
-    ["card_person", ["entity", "battery_entity", "eta_entity", "address_entity"]],
     ["card_room", ["entity", "label_use_temperature", "label_use_brightness", "input_select_entity", "input_select_option"]],
     ["card_scenes", ["variant", "name"]],
   ])("exposes a dedicated %s graphical editor", (sourceId, fields) => {
@@ -200,20 +193,6 @@ describe("queued default batch one certification", () => {
   });
 
   it("migrates documented upstream variables into semantic defaults", () => {
-    expect(normalizeConfig({
-      type: "custom:mushroom-addition-card-person",
-      ulm_card_person_entity: "person.joris",
-      ulm_card_person_battery: "sensor.joris_mobile_battery_level",
-      ulm_card_person_eta: "sensor.joris_eta",
-      ulm_address: "sensor.joris_address",
-      ulm_card_person_use_entity_picture: true,
-    })).toMatchObject({
-      entity: "person.joris",
-      battery_entity: "sensor.joris_mobile_battery_level",
-      eta_entity: "sensor.joris_eta",
-      address_entity: "sensor.joris_address",
-      use_entity_picture: true,
-    });
     expect(normalizeConfig({
       type: "custom:mushroom-addition-card-room",
       entity: "light.joris_iris_1",
@@ -231,23 +210,7 @@ describe("queued default batch one certification", () => {
     });
   });
 
-  it("covers person, room, and scene state styling", async () => {
-    const person = await renderCard("card_person", {
-      entity: "person.joris",
-      battery_entity: "sensor.joris_mobile_battery_level",
-      address_entity: "sensor.joris_address",
-    });
-    expect(person.shadowRoot.querySelector(".person-location-badge.home")).not.toBeNull();
-    expect(person.shadowRoot.textContent).toContain("72");
-    person.remove();
-
-    const awayPerson = await renderCard("card_person", { entity: "person.joris" }, {
-      ...states,
-      "person.joris": { ...states["person.joris"], state: "not_home" },
-    });
-    expect(awayPerson.shadowRoot.querySelector(".person-location-badge.away")).not.toBeNull();
-    awayPerson.remove();
-
+  it("covers room and scene state styling", async () => {
     const room = await renderCard("card_room", { entity: "light.joris_iris_1" });
     expect(room.shadowRoot.textContent).toContain("21°C");
     room.remove();
@@ -266,22 +229,7 @@ describe("queued default batch one certification", () => {
 
   });
 
-  it("dispatches exact source surface and room widget Home Assistant actions", async () => {
-    const person = await renderCard("card_person", { entity: "person.joris" });
-    const personAction = vi.fn();
-    person.addEventListener("hass-action", personAction);
-    (person.shadowRoot.querySelector(".action-surface") as HTMLElement).click();
-    expect(personAction).toHaveBeenCalledWith(expect.objectContaining({
-      detail: {
-        action: "tap",
-        config: expect.objectContaining({
-          entity: "person.joris",
-          tap_action: { action: "more-info" },
-        }),
-      },
-    }));
-    person.remove();
-
+  it("dispatches exact room widget Home Assistant actions", async () => {
     const room = await renderCard("card_room", {
       entity: "light.joris_iris_1",
       room_sensors: [{ entity: "sensor.office_joris_motion_illuminance" }],

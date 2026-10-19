@@ -338,25 +338,6 @@ describe("Home Assistant registration", () => {
     }
   });
 
-  it("uses healthy device trackers for both picker example badges", () => {
-    const entries = [
-      ["device_tracker.phone_wifi", "unavailable"],
-      ["device_tracker.phone_ble", "unavailable"],
-      ["device_tracker.joris_mobile", "home"],
-      ["device_tracker.yvette_mobile", "not_home"],
-    ] as const;
-    const states: HomeAssistant["states"] = Object.fromEntries(entries.map(([entity_id, state]) => [
-      entity_id,
-      { entity_id, state, attributes: { friendly_name: entity_id } },
-    ]));
-    const hass: HomeAssistant = { states, callService: async () => undefined };
-    const descriptor = CATALOG.find((item) => item.upstreamId === "custom_card_device_tracker")!;
-    const config = createStubConfig(descriptor, hass, Object.keys(states), []);
-
-    expect(config.ulm_custom_card_device_tracker_tracker_1_entity).toBe("device_tracker.joris_mobile");
-    expect(config.ulm_custom_card_device_tracker_tracker_2_entity).toBe("device_tracker.yvette_mobile");
-  });
-
   it("selects Person Info defaults linked to the chosen person's tracker", () => {
     const entries: Array<[string, string, Record<string, unknown>]> = [
       ["person.joris", "home", {

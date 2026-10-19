@@ -14,18 +14,6 @@
     "backupSuffix": "20260923-224750"
   },
   "sources": {
-    "custom_card_device_tracker": {
-      "entity": "device_tracker.joris_mobile",
-      "tracker1Type": "gps",
-      "text": "Joris Mobile Present",
-      "geometry": [
-        330,
-        64.578125
-      ],
-      "overflow": false,
-      "moreInfoEntity": "device_tracker.joris_mobile",
-      "screenshot": "live-second-device-tracker.png"
-    },
     "custom_card_roomview": {
       "name": "Living room",
       "temperatureEntity": "sensor.living_room_temperature_3",

@@ -100,7 +100,6 @@ const entityFor: Record<string, string | undefined> = {
   card_generic_swap: "sensor.temperature",
   card_graph: "sensor.temperature",
   card_media_player: "media_player.tv",
-  card_person: "person.joris",
   card_room: "light.kitchen",
   card_scenes: "scene.relax",
   card_welcome_scenes: "scene.relax",
@@ -116,7 +115,6 @@ const referenceFor: Record<string, string> = {
   card_graph: "card_graph.png",
   card_media_player: "card_media_player_art_controls.png",
   card_navigate: "card_navigate.png",
-  card_person: "card_person.png",
   card_room: "room-card.png",
   card_scenes: "card_scenes.png",
   card_title: "card_title.png",
@@ -205,7 +203,6 @@ const variantsFor = (sourceId: string, base: AdditionConfig): AdditionConfig[] =
         { entity: "scene.relax", icon: "mdi:lightbulb", color: "#ff9800", name: "Scene" },
       ],
     }];
-    case "card_person": return [{ ...base, entity: "person.joris" }, { ...base, entity: "person.joris_away" }];
     case "card_title": return [{ ...base, name: "Living Room", secondary: "Light" }];
     case "card_navigate": return [{ ...base, name: "Navigate Card", secondary: "Navigate" }];
     default: return [base];

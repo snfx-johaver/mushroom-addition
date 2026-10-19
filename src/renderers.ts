@@ -352,10 +352,13 @@ const renderBarCard = (ctx: RenderContext): TemplateResult => {
         <span class="bar-card-copy">${heading(ctx, displayName(ctx.config, ctx.entity, ctx.hass), valueText)}</span>
       </div>
     ` : nothing}
-    <div class="bar-card-track" style=${`--bar-fill:${barColor}`}>
+    <div class="bar-card-track" style=${`--bar-fill:${barColor};--bar-percentage:${percentage}%`}>
       <span class="bar-card-fill" style=${`width:${percentage}%`}></span>
       ${showIndicator ? html`<span class="bar-card-indicator" style=${`left:${percentage}%`}></span>` : nothing}
-      ${showValue ? html`<b class="bar-card-inside-value">${valueText}</b>` : nothing}
+      ${showValue ? html`
+        <b class="bar-card-inside-value">${valueText}</b>
+        <b class="bar-card-inside-value bar-card-inside-value-filled" aria-hidden="true">${valueText}</b>
+      ` : nothing}
     </div>
   `);
 };
@@ -1043,24 +1046,6 @@ const renderChromecast = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const trackerIcon = (type: string | undefined, home: boolean): string =>
-  type === "bluetooth" ? (home ? "mdi:bluetooth" : "mdi:bluetooth-off") :
-    type === "lan" || type === "wifi" ? (home ? "mdi:lan-connect" : "mdi:lan-disconnect") :
-      home ? "mdi:home-variant" : "mdi:home-minus";
-
-const renderDeviceTrackerCard = (ctx: RenderContext): TemplateResult => {
-  const tracker1 = entityFromConfig(ctx, "ulm_custom_card_device_tracker_tracker_1_entity") ?? ctx.entity;
-  const tracker2 = entityFromConfig(ctx, "ulm_custom_card_device_tracker_tracker_2_entity");
-  return ctx.actionSurface("custom-device-tracker", html`
-    <span class="device-tracker-icon">
-      <ha-icon .icon=${configured<string>(ctx, "ulm_custom_card_device_tracker_icon") || "mdi:cellphone"}></ha-icon>
-      ${tracker1 ? html`<i class="tracker-badge tracker-one ${tracker1.state === "home" ? "is-home" : "is-away"}" title=${stateLabel(tracker1)}><ha-icon .icon=${trackerIcon(configured(ctx, "ulm_custom_card_device_tracker_tracker_1_type"), tracker1.state === "home")}></ha-icon></i>` : nothing}
-      ${tracker2 ? html`<i class="tracker-badge tracker-two ${tracker2.state === "home" ? "is-home" : "is-away"}" title=${stateLabel(tracker2)}><ha-icon .icon=${trackerIcon(configured(ctx, "ulm_custom_card_device_tracker_tracker_2_type"), tracker2.state === "home")}></ha-icon></i>` : nothing}
-    </span>
-    ${heading(ctx, ctx.entity?.state === "home" ? "Present" : ctx.entity?.state === "not_home" ? "Away" : stateLabel(ctx.entity))}
-  `);
-};
-
 const groupMembers = (ctx: RenderContext, entity: HassEntity | undefined): HassEntity[] => {
   const ids = attr(entity, "entity_id");
   return Array.isArray(ids)
@@ -1350,38 +1335,6 @@ const renderSunCard = (ctx: RenderContext): TemplateResult => {
         ${configured<boolean>(ctx, "showElevation") ? html`<span>Elevation <b>${elevation ?? "—"}°</b></span>` : nothing}
       </div>
     ` : nothing}
-  `);
-};
-
-const renderPersonLocation = (ctx: RenderContext): TemplateResult => {
-  const state = ctx.entity?.state ?? "unavailable";
-  const unavailable = state === "unavailable" || state === "unknown";
-  const zone = Object.values(ctx.hass.states).find((entity) =>
-    entity.entity_id.startsWith("zone.") && entity.attributes.friendly_name === state);
-  const locationIcon = unavailable
-    ? "mdi:alert"
-    : state === "home"
-      ? "mdi:home-variant"
-      : state === "not_home"
-        ? "mdi:home-minus"
-        : zone?.attributes.icon || "mdi:help-circle";
-  const label = unavailable
-    ? "Unavailable"
-    : state === "home"
-      ? configured<string>(ctx, "ulm_custom_card_person_location_home") || "Home"
-      : state === "not_home"
-        ? configured<string>(ctx, "ulm_custom_card_person_location_not_home") || "Away"
-        : state;
-  const usePicture = ctx.config.icon_type === "entity-picture";
-  return ctx.actionSurface("custom-person-location", html`
-    <div class="person-location-main">${usePicture && attr(ctx.entity, "entity_picture")
-      ? html`<span class="person-picture" style=${`background-image:url("${String(attr(ctx.entity, "entity_picture"))}")`}></span>`
-      : iconBubble(ctx, "mdi:face-man", unavailable ? "grey" : "blue")}
-      ${heading(ctx, label)}
-      <span class="person-location-marker ${unavailable ? "is-unavailable" : state === "home" ? "is-home" : "is-away"}">
-        <ha-icon .icon=${locationIcon}></ha-icon>
-      </span>
-    </div>
   `);
 };
 
@@ -2279,13 +2232,11 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "custom_card_trash": return renderTrash(ctx);
     case "custom_card_alarm_time": return renderAlarmTimeCard(ctx);
     case "custom_card_chromecast": return renderChromecast(ctx);
-    case "custom_card_device_tracker": return renderDeviceTrackerCard(ctx);
     case "custom_card_roomview": return renderRoomView(ctx);
     case "custom_card_room_overview": return renderRoomOverview(ctx);
     case "custom_card_welcome": return renderWelcome(ctx);
     case "custom_card_washer": return renderWasher(ctx);
     case "custom_card_sun": return renderSunCard(ctx);
-    case "custom_card_person_location": return renderPersonLocation(ctx);
     case "custom_card_input_datetime": return renderInputDateTime(ctx);
     case "custom_card_entity_overview": return renderEntityOverview(ctx);
     case "custom_card_internet_speed": return renderInternetSpeed(ctx);

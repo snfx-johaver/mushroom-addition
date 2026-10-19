@@ -235,13 +235,12 @@ describe("family editor schemas", () => {
     }
   });
 
-  it("uses Mushroom-compatible presentation defaults for newly created cards", () => {
+  it("leaves optional Mushroom presentation fields empty for newly created cards", () => {
     for (const item of CATALOG.filter((entry) => entry.kind === "card")) {
-      expect(populatedDefaultsFor(item)).toMatchObject({
-        layout: "default",
-        primary_info: "name",
-        secondary_info: "state",
-      });
+      const defaults = populatedDefaultsFor(item);
+      expect(defaults.layout).toBe("default");
+      expect(defaults.primary_info).toBeUndefined();
+      expect(defaults.secondary_info).toBeUndefined();
     }
   });
 

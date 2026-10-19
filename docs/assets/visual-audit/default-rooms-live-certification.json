@@ -10,18 +10,6 @@
     "backupSuffix": "20260923-223905"
   },
   "sources": {
-    "card_person": {
-      "entity": "person.joris",
-      "batteryEntity": "sensor.joris_mobile_battery_level",
-      "text": "Joris home 7 %",
-      "geometry": [
-        330,
-        96
-      ],
-      "overflow": false,
-      "moreInfoEntity": "person.joris",
-      "screenshot": "live-rooms-person.png"
-    },
     "card_room": {
       "entity": "light.joris_iris_1",
       "sensorEntities": [
@@ -58,14 +46,12 @@
   },
   "picker": {
     "registrations": [
-      "mushroom-addition-card-person",
       "mushroom-addition-card-room",
       "mushroom-addition-card-scenes"
     ],
     "allPreviewable": true
   },
   "editor": {
-    "personSemanticEntities": true,
     "powerConsumptionEntity": true,
     "roomGraphicalItemEditor": true,
     "sceneGraphicalItemEditor": true,

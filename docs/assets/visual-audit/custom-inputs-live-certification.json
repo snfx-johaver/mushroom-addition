@@ -14,18 +14,6 @@
     "backupSuffix": "20260923-224324"
   },
   "sources": {
-    "custom_card_person_location": {
-      "entity": "person.joris",
-      "batteryEntity": "sensor.joris_mobile_battery_level",
-      "text": "Joris Home",
-      "geometry": [
-        330,
-        68.578125
-      ],
-      "overflow": false,
-      "moreInfoEntity": "person.joris",
-      "screenshot": "live-inputs-person-location.png"
-    },
     "custom_card_input_datetime": {
       "entity": "input_datetime.quiet_time_start",
       "text": "Quiet time start 21:30:00 21:30",

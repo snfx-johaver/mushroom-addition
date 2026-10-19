@@ -2,15 +2,15 @@ import type { CatalogItem } from "./types";
 
 const baseCards = [
   "battery", "cover", "graph", "media_player",
-  "person", "room", "scenes",
+  "room", "scenes",
   "welcome_scenes",
 ] as const;
 
 const customCards = [
   "trash", "alarm_time", "bar_card", "camera", "chromecast",
-  "device_tracker", "roomview",
+  "roomview",
   "room_overview", "welcome",
-  "washer", "sun", "person_location",
+  "washer", "sun",
   "input_datetime", "entity_overview", "internet_speed",
   "weather_metrics", "media_player_sonos", "more_power_outlet",
   "gauge", "printer",
@@ -62,7 +62,6 @@ export const UPSTREAM_VARIANTS = [
 
 const variants: Record<string, string[]> = {
   card_media_player: ["default", "controls", "artwork"],
-  card_person: ["default", "small"],
   card_room: ["default", "with-sensors"],
   card_scenes: ["list", "welcome"],
   card_cover: ["default"],

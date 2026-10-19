@@ -90,15 +90,6 @@ describe("shared card behavior", () => {
       icon_type: "icon",
     }).icon_type).toBe("icon");
     expect(normalizeConfig({
-      type: "custom:mushroom-addition-card-person",
-      ulm_card_person_use_entity_picture: true,
-    }).icon_type).toBe("entity-picture");
-    expect(normalizeConfig({
-      type: "custom:mushroom-addition-card-person",
-      ulm_card_person_use_entity_picture: true,
-      icon_type: "none",
-    }).icon_type).toBe("none");
-    expect(normalizeConfig({
       type: "custom:mushroom-addition-custom-card-person-tracker",
       ulm_custom_card_person_tracker_use_entity_picture: true,
       icon_type: "icon",
