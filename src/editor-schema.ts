@@ -192,13 +192,11 @@ const fixedIconSources = new Set([
   "card_room",
   "card_scenes",
   "card_welcome_scenes",
-  "custom_card_apexcharts",
   "custom_card_bar_card",
   "custom_card_device_tracker",
   "custom_card_roomview",
   "custom_card_welcome",
   "custom_card_sun",
-  "custom_card_media_library",
   "custom_card_entity_overview",
   "custom_card_internet_speed",
   "custom_card_weather_metrics",
@@ -415,13 +413,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         number("thermostat_temp_step", 0.1, 5),
         percentage("low_battery_threshold"),
       ]
-    : item.upstreamId === "custom_card_apexcharts"
-      ? [
-        entity(["sensor"]),
-        entity(["sensor"], "series_2_entity"),
-        entity(["sensor"], "series_3_entity"),
-        ...presentation(),
-      ]
     : item.upstreamId === "custom_card_camera"
       ? [
         entity(["camera"]),
@@ -441,16 +432,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
     : item.upstreamId === "custom_card_chromecast"
       ? [
         entity(["media_player"]),
-        ...presentation(),
-      ]
-    : item.upstreamId === "custom_card_power_details"
-      ? [
-        entity(["sensor"]),
-        entity(["sensor"], "ulm_card_power_details_entity"),
-
-        number("ulm_card_power_details_hours", 1, 168),
-        number("ulm_card_power_details_height", 80, 600),
-        toggle("ulm_card_power_details_24hour"),
         ...presentation(),
       ]
     : item.upstreamId === "custom_card_media_player_sonos"
@@ -616,22 +597,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         toggle("darkMode"),
         toggle("showAzimuth"),
         toggle("showElevation"),
-        ...presentation(),
-      ]
-    : item.upstreamId === "custom_card_media_library"
-      ? [
-        entity(["sensor", "media_player"]),
-        entity(["sensor", "media_player"], "secondary_entity"),
-        select("variant", [
-          { value: "library", label: "Recently added library" },
-          { value: "upcoming", label: "Upcoming media" },
-        ]),
-        number("ulm_custom_card_media_library_index", 0, 100),
-        select("ulm_custom_card_media_library_platform", [
-          { value: "plex", label: "Plex" },
-          { value: "radarr", label: "Radarr" },
-          { value: "sonarr", label: "Sonarr" },
-        ]),
         ...presentation(),
       ]
     : item.upstreamId === "custom_card_pollen"

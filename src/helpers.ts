@@ -306,12 +306,6 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
     migrated.entity ??= entityId(config.entity);
     migrated.variant ??= "buttons";
   }
-  if (String(config.type).includes("custom-card-media-library")) {
-    const platform = typeof config.ulm_custom_card_media_library_platform === "string"
-      ? config.ulm_custom_card_media_library_platform
-      : undefined;
-    migrated.variant ??= !platform || platform === "plex" ? "library" : "upcoming";
-  }
   if (String(config.type).includes("media-player-sonos")) {
     migrated.entity ??= entityId(config.ulm_card_media_player_with_controls_entity);
   }

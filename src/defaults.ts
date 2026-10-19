@@ -32,7 +32,6 @@ const defaultIcons: Array<[RegExp, string]> = [
 
 export const defaultIconFor = (item: CatalogItem, entity?: HassEntity): string => {
   if (entity?.attributes.icon) return entity.attributes.icon;
-  if (item.upstreamId === "custom_card_power_details") return "mdi:flash";
   if (item.upstreamId === "custom_card_trash") return "mdi:trash-can-outline";
   if (item.upstreamId === "custom_card_room_overview") return "mdi:sofa";
   if (item.upstreamId === "custom_card_roomview") return "mdi:home-variant-outline";

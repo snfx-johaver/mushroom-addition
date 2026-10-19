@@ -94,34 +94,6 @@
         ]
       ]
     },
-    "custom_card_apexcharts": {
-      "visibleControls": 0,
-      "cardActions": [
-        {
-          "config": {
-            "type": "custom:mushroom-addition-custom-card-apexcharts",
-            "entity": "sensor.download",
-            "show_icon": true,
-            "show_state": true,
-            "show_controls": true,
-            "primary_info": "name",
-            "secondary_info": "default",
-            "entities": [
-              "sensor.ping",
-              "sensor.upload"
-            ],
-            "layout": "default",
-            "name_mode": "entity",
-            "icon_type": "icon",
-            "fill_container": false,
-            "tap_action": {
-              "action": "more-info"
-            }
-          },
-          "action": "tap"
-        }
-      ]
-    },
     "custom_card_camera": {
       "visibleControls": 0,
       "cardActions": [
@@ -176,33 +148,6 @@
           }
         ]
       ]
-    },
-    "custom_card_power_details": {
-      "visibleControls": 0,
-      "cardActions": [
-        {
-          "config": {
-            "type": "custom:mushroom-addition-custom-card-power-details",
-            "entity": "sensor.power",
-            "show_icon": true,
-            "show_state": true,
-            "show_controls": true,
-            "primary_info": "name",
-            "secondary_info": "default",
-            "icon": "mdi:flash",
-            "ulm_card_power_details_hours": 2,
-            "ulm_card_power_details_height": 180,
-            "layout": "default",
-            "name_mode": "entity",
-            "icon_type": "icon",
-            "fill_container": false,
-            "tap_action": {
-              "action": "more-info"
-            }
-          },
-          "action": "tap"
-        }
-      ]
     }
   },
   "geometry": {
@@ -223,15 +168,6 @@
         ".alarm-time-controls button": 2
       }
     },
-    "custom_card_apexcharts": {
-      "width": 640,
-      "height": 300,
-      "regions": {
-        ".apex-series": 3,
-        ".apex-chart": 1,
-        ".apex-line": 3
-      }
-    },
     "custom_card_camera": {
       "width": 250,
       "height": 258,
@@ -246,15 +182,6 @@
       "regions": {
         ".custom-card-heading": 1,
         ".chromecast-controls button": 3
-      }
-    },
-    "custom_card_power_details": {
-      "width": 385,
-      "height": 270,
-      "regions": {
-        ".power-details-heading": 1,
-        ".power-details-value": 1,
-        ".power-details-chart": 1
       }
     }
   }

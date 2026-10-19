@@ -3,8 +3,7 @@
   "sources": [
     "custom_card_bar_card",
     "custom_card_washer",
-    "custom_card_sun",
-    "custom_card_media_library"
+    "custom_card_sun"
   ],
   "configs": {
     "custom_card_bar_card": {
@@ -18,10 +17,6 @@
     },
     "custom_card_sun": {
       "entity": "sun.sun"
-    },
-    "custom_card_media_library": {
-      "entity": "media_player.office_joris_sonos",
-      "secondary_entity": "media_player.office_joris_tv_2"
     }
   },
   "interactions": {
@@ -61,12 +56,6 @@
                 "height": 231,
                 "visibleButtons": 0,
                 "actionExercised": "none"
-              },
-              "custom_card_media_library": {
-                "width": 488,
-                "height": 195,
-                "mdiPaths": 1,
-                "actionExercised": "more-info"
               }
             }
           }
@@ -171,21 +160,6 @@
             "entity": "sun.sun",
             "tap_action": {
               "action": "none"
-            }
-          }
-        }
-      }
-    ],
-    "custom_card_media_library": [
-      {
-        "surface": "card",
-        "event": "hass-action",
-        "payload": {
-          "action": "tap",
-          "config": {
-            "entity": "media_player.office_joris_sonos",
-            "tap_action": {
-              "action": "more-info"
             }
           }
         }

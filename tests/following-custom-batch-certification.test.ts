@@ -157,7 +157,6 @@ describe("following custom batch certification", () => {
       "custom_card_bar_card",
       "custom_card_washer",
       "custom_card_sun",
-      "custom_card_media_library",
     ]);
     expect(evidence.configs.custom_card_washer).toMatchObject({
       entity: "sensor.wasmachine_operation_state",
@@ -177,11 +176,6 @@ describe("following custom batch certification", () => {
         finished_entity: "sensor.wasmachine_program_finished",
       },
       custom_card_sun: { entity: "sun.sun", timeFormat: "24h" },
-      custom_card_media_library: {
-        entity: "media_player.office_joris_sonos",
-        secondary_entity: "media_player.office_joris_tv_2",
-        variant: "library",
-      },
     } satisfies Record<string, Partial<AdditionConfig>>;
 
     for (const [sourceId, expectedConfig] of Object.entries(expected)) {
@@ -208,10 +202,6 @@ describe("following custom batch certification", () => {
         "ulm_custom_card_washer_start_action", "ulm_custom_card_washer_stop_action",
       ],
       custom_card_sun: ["entity", "title", "language", "timeFormat", "showAzimuth", "showElevation"],
-      custom_card_media_library: [
-        "entity", "secondary_entity", "variant",
-        "ulm_custom_card_media_library_index", "ulm_custom_card_media_library_platform",
-      ],
     };
     for (const [sourceId, fields] of Object.entries(expectedFields)) {
       const descriptor = item(sourceId);
@@ -234,11 +224,6 @@ describe("following custom batch certification", () => {
       entity: "sensor.wasmachine_operation_state",
       power_entity: "sensor.wasmachine_plug_power",
     });
-    expect(normalizeConfig({
-      type: "custom:mushroom-addition-custom-card-media-library",
-      entity: "media_player.office_joris_sonos",
-      ulm_custom_card_media_library_platform: "plex",
-    })).toMatchObject({ variant: "library" });
   });
 
   it("round-trips all six source configs through the graphical editor", async () => {
@@ -257,11 +242,6 @@ describe("following custom batch certification", () => {
         type: "custom:mushroom-addition-custom-card-sun",
         entity: "sun.sun",
         timeFormat: "24h",
-      },
-      custom_card_media_library: {
-        type: "custom:mushroom-addition-custom-card-media-library",
-        entity: "media_player.office_joris_sonos",
-        variant: "library",
       },
     } satisfies Record<string, AdditionConfig>)) {
       const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {
@@ -375,31 +355,6 @@ describe("following custom batch certification", () => {
 
   });
 
-  it("renders source-specific Media variants", async () => {
-    const library = await renderCard("mushroom-addition-custom-card-media-library", {
-      type: "custom:mushroom-addition-custom-card-media-library",
-      entity: "media_player.office_joris_sonos",
-      secondary_entity: "media_player.office_joris_tv_2",
-      variant: "library",
-      ulm_custom_card_media_library_index: 1,
-      ulm_custom_card_media_library_platform: "plex",
-    });
-    expect(library.shadowRoot.querySelector(".is-library")).not.toBeNull();
-    expect(library.shadowRoot.textContent).toContain("Recently added");
-    expect(library.shadowRoot.textContent).toContain("Ted Lasso S03E02");
-    library.remove();
-
-    const upcoming = await renderCard("mushroom-addition-custom-card-media-library", {
-      type: "custom:mushroom-addition-custom-card-media-library",
-      entity: "media_player.office_joris_sonos",
-      variant: "upcoming",
-      ulm_custom_card_media_library_index: 1,
-      ulm_custom_card_media_library_platform: "sonarr",
-    });
-    expect(upcoming.shadowRoot.querySelector(".is-upcoming")).not.toBeNull();
-    expect(upcoming.shadowRoot.textContent).toContain("Ted Lasso - S03E02");
-  });
-
   it("enumerates every visible control with exact Home Assistant payloads", async () => {
     const washerServices = vi.fn(async () => undefined);
     const washer = await renderCard("mushroom-addition-custom-card-washer", {
@@ -501,11 +456,6 @@ describe("following custom batch certification", () => {
         "mushroom-addition-custom-card-sun",
         { type: "custom:mushroom-addition-custom-card-sun", entity: "sun.sun" },
         { action: "none" },
-      ],
-      [
-        "mushroom-addition-custom-card-media-library",
-        { type: "custom:mushroom-addition-custom-card-media-library", entity: "media_player.office_joris_sonos" },
-        { action: "more-info" },
       ],
     ] as const) {
       const card = await renderCard(tag, config);

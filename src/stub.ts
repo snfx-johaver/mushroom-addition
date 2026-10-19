@@ -121,10 +121,7 @@ export const createStubConfig = (
                                   findEntity(["sensor"], ["washer", "state"])
                                 : descriptor.upstreamId === "custom_card_sun"
                                   ? findEntity(["sun"], [])
-                                  : descriptor.upstreamId === "custom_card_media_library"
-                                        ? findEntity(["media_player", "sensor"], ["sonos"]) ??
-                                          findEntity(["media_player", "sensor"], ["media"])
-                                      : descriptor.upstreamId === "custom_card_media_player_sonos"
+                                  : descriptor.upstreamId === "custom_card_media_player_sonos"
                                         ? findEntity(["media_player"], ["sonos"])
                                       : descriptor.upstreamId === "custom_card_more_power_outlet"
                                         ? findEntity(["switch", "light"], ["outlet"]) ??
@@ -266,16 +263,6 @@ export const createStubConfig = (
         showElevation: false,
         timeFormat: "24h",
         tap_action: { action: "none" },
-      }
-      : {}),
-    ...(descriptor.upstreamId === "custom_card_media_library"
-      ? {
-        secondary_entity: findEntity(["media_player", "sensor"], ["tv"]),
-        variant: entity?.includes("radarr") || entity?.includes("sonarr") ? "upcoming" : "library",
-        ulm_custom_card_media_library_index: 1,
-        ulm_custom_card_media_library_platform: entity?.includes("sonarr")
-          ? "sonarr"
-          : entity?.includes("radarr") ? "radarr" : "plex",
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_pollen_forecast"

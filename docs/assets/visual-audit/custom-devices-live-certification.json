@@ -49,19 +49,6 @@
       ],
       "overflow": false,
       "screenshot": "live-devices-sun.png"
-    },
-    "custom_card_media_library": {
-      "entity": "media_player.office_joris_sonos",
-      "secondaryEntity": "media_player.office_joris_tv_2",
-      "text": "Recently added TV Audio",
-      "geometry": [
-        330,
-        132
-      ],
-      "overflow": false,
-      "moreInfoEntity": "media_player.office_joris_sonos",
-      "mediaActionsOperated": false,
-      "screenshot": "live-devices-media-library.png"
     }
   },
   "picker": {

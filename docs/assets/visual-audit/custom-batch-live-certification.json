@@ -44,21 +44,6 @@
       ],
       "stateChangingControlsNotOperatedLive": true
     },
-    "custom_card_apexcharts": {
-      "live": true,
-      "geometry": {
-        "width": 330,
-        "height": 300,
-        "clientWidth": 330,
-        "scrollWidth": 330
-      },
-      "series": [
-        "sensor.cv_plug_power",
-        "sensor.wasmachine_plug_power",
-        "sensor.dryer_plug_power"
-      ],
-      "moreInfoEntity": "sensor.cv_plug_power"
-    },
     "custom_card_camera": {
       "live": true,
       "geometry": {
@@ -94,23 +79,11 @@
         }
       ],
       "physicalMediaControlsNotOperatedLive": true
-    },
-    "custom_card_power_details": {
-      "live": true,
-      "geometry": {
-        "width": 330,
-        "height": 270,
-        "clientWidth": 330,
-        "scrollWidth": 330
-      },
-      "historyEntity": "sensor.cv_plug_power",
-      "hours": 24,
-      "moreInfoEntity": "sensor.cv_plug_power"
     }
   },
   "editorAndPicker": {
-    "registrationsFound": 6,
-    "graphicalSchemasLoaded": 6,
-    "semanticConfigRoundTripsPassed": 6
+    "registrationsFound": 4,
+    "graphicalSchemasLoaded": 4,
+    "semanticConfigRoundTripsPassed": 4
   }
 }

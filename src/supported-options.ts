@@ -29,7 +29,6 @@ export const canonicalNameOptions = new Set([
   "ulm_card_input_datetime_name",
   "ulm_card_input_number_name",
   "ulm_card_media_player_with_controls_name",
-  "ulm_card_power_details_name",
   "ulm_card_printer_name",
   "ulm_card_vehicle_status_name",
   "ulm_custom_card_bar_card_name",
@@ -144,10 +143,6 @@ const supportedByItem: Record<string, readonly string[]> = {
     "showElevation",
     "timeFormat",
     "title",
-  ],
-  custom_card_media_library: [
-    "ulm_custom_card_media_library_index",
-    "ulm_custom_card_media_library_platform",
   ],
   custom_card_speedtest_gauges: [
     "ulm_custom_card_speedtest_download_speed_color",

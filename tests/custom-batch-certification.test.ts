@@ -68,23 +68,16 @@ describe("first pending custom batch certification", () => {
         ["media_player", "toggle", { entity_id: "media_player.chromecast" }],
       ],
     });
-    expect(evidence.geometry.custom_card_apexcharts).toMatchObject({
-      width: 640,
-      regions: { ".apex-series": 3, ".apex-chart": 1, ".apex-line": 3 },
-    });
     expect(evidence.geometry.custom_card_camera.width).toBe(250);
     expect(evidence.geometry.custom_card_chromecast.width).toBe(608);
-    expect(evidence.geometry.custom_card_power_details.width).toBe(385);
   });
 
   it("provides source-specific picker defaults and graphical editor fields", () => {
     for (const id of [
       "custom_card_trash",
       "custom_card_alarm_time",
-      "custom_card_apexcharts",
       "custom_card_camera",
       "custom_card_chromecast",
-      "custom_card_power_details",
     ]) {
       const descriptor = item(id);
       const constructor = customElements.get(descriptor.tag) as typeof HTMLElement & {
@@ -98,14 +91,10 @@ describe("first pending custom batch certification", () => {
 
     expect(editorSchemaFor(item("custom_card_alarm_time")).map(({ name }) => name))
       .toEqual(expect.arrayContaining(["datetime_entity", "ulm_card_alarm_time_step", "ulm_card_alarm_time_collapse"]));
-    expect(editorSchemaFor(item("custom_card_apexcharts")).map(({ name }) => name))
-      .toEqual(expect.arrayContaining(["series_2_entity", "series_3_entity"]));
     expect(editorSchemaFor(item("custom_card_camera")).map(({ name }) => name))
       .toEqual(expect.arrayContaining(["name", "icon", "camera_view", "fit_mode", "aspect_ratio", "image_height"]));
     expect(editorSchemaFor(item("custom_card_camera")).map(({ name }) => name))
       .not.toEqual(expect.arrayContaining(["show_name", "show_state"]));
-    expect(editorSchemaFor(item("custom_card_power_details")).map(({ name }) => name))
-      .toEqual(expect.arrayContaining(["ulm_card_power_details_entity", "ulm_card_power_details_hours"]));
   });
 
   it("renders full and partial waste streams without sentinel summary text", async () => {
@@ -161,17 +150,7 @@ describe("first pending custom batch certification", () => {
       .every((control) => control.disabled)).toBe(true);
   });
 
-  it("renders three Apex series and source-specific Camera title modes", async () => {
-    const apex = await renderCard("mushroom-addition-custom-card-apexcharts", {
-      type: "custom:mushroom-addition-custom-card-apexcharts",
-      entity: "sensor.download",
-      series_2_entity: "sensor.ping",
-      series_3_entity: "sensor.upload",
-    });
-    expect(apex.shadowRoot.querySelectorAll(".apex-series")).toHaveLength(3);
-    expect(apex.shadowRoot.querySelector(".apex-chart .sparkline")).not.toBeNull();
-    apex.remove();
-
+  it("renders source-specific Camera title modes", async () => {
     const titled = await renderCard("mushroom-addition-custom-card-camera", {
       type: "custom:mushroom-addition-custom-card-camera",
       entity: "camera.driveway",
@@ -229,19 +208,4 @@ describe("first pending custom batch certification", () => {
       .every((control) => control.disabled)).toBe(true);
   });
 
-  it("uses the configured Power Details history entity and dispatches outer actions", async () => {
-    const power = await renderCard("mushroom-addition-custom-card-power-details", {
-      type: "custom:mushroom-addition-custom-card-power-details",
-      entity: "sensor.download",
-      ulm_card_power_details_entity: "sensor.power",
-      ulm_card_power_details_hours: 1,
-    });
-    expect(power.shadowRoot.textContent).toContain("In the last hour");
-    expect(power.shadowRoot.textContent).toContain("2577.8 W");
-
-    const action = vi.fn();
-    power.addEventListener("hass-action", action);
-    (power.shadowRoot.querySelector(".action-surface") as HTMLElement).click();
-    expect(action).toHaveBeenCalledTimes(1);
-  });
 });

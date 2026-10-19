@@ -1027,24 +1027,6 @@ const renderAlarmTimeCard = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const renderApexCharts = (ctx: RenderContext): TemplateResult => {
-  const series = [ctx.entity, ...configuredEntities(ctx)].filter((entity): entity is HassEntity => Boolean(entity)).slice(0, 3);
-  const colors = ["green", "red", "orange"];
-  return ctx.actionSurface("custom-apexcharts", html`
-    <div class="apex-legend">${series.map((entity, index) => html`
-      <span class="apex-series tone-${colors[index]}">
-        <i><ha-icon .icon=${entity.attributes.icon || ["mdi:download", "mdi:lan-pending", "mdi:upload"][index]}></ha-icon></i>
-        <b>${displayName({ type: "", entity: entity.entity_id }, entity, ctx.hass)}</b>
-        <small>${stateLabel(entity)}</small>
-      </span>
-    `)}</div>
-    <div class="apex-chart">${series.map((entity, index) =>
-      html`<span class="apex-line tone-${colors[index]}">${sparkline(ctx, false, entity)}</span>`)}
-      <span class="apex-grid-line line-1"></span><span class="apex-grid-line line-2"></span><span class="apex-grid-line line-3"></span>
-    </div>
-  `);
-};
-
 const renderChromecast = (ctx: RenderContext): TemplateResult => {
   const unavailable = !ctx.entity || ctx.entity.state === "unavailable";
   const playing = ctx.entity?.state === "playing";
@@ -1057,22 +1039,6 @@ const renderChromecast = (ctx: RenderContext): TemplateResult => {
       ${button("Toggle power", "mdi:power", (event) => { event.stopPropagation(); ctx.service("media_player", "toggle", { entity_id: ctx.config.entity }); }, unavailable)}
       ${button("Play or pause", playing ? "mdi:pause" : "mdi:play", (event) => { event.stopPropagation(); ctx.service("media_player", "media_play_pause", { entity_id: ctx.config.entity }); }, unavailable)}
       ${button("Toggle input", "mdi:video-input-hdmi", (event) => { event.stopPropagation(); ctx.service("media_player", "toggle", { entity_id: ctx.config.entity }); }, unavailable)}
-    </div>
-  `);
-};
-
-const renderPowerDetails = (ctx: RenderContext): TemplateResult => {
-  const hours = numeric(configured(ctx, "ulm_card_power_details_hours")) ?? ctx.config.graph_hours ?? 2;
-  const chartHeight = numeric(configured(ctx, "ulm_card_power_details_height")) ?? 180;
-  const graphEntity = entityFromConfig(ctx, "ulm_card_power_details_entity") ?? ctx.entity;
-  return ctx.actionSurface("custom-power-details", html`
-    <div class="power-details-content" style=${`min-height:${chartHeight + 66}px`}>
-      <div class="power-details-heading">
-        ${iconBubble(ctx, "mdi:flash", "grey")}
-        ${heading(ctx, `${hours === 1 ? "In the last hour" : `In the last ${hours} hours`}`)}
-      </div>
-      <b class="power-details-value">${stateLabel(graphEntity)}</b>
-      <div class="power-details-chart" style=${`height:${chartHeight}px`}>${sparkline(ctx, true, graphEntity)}</div>
     </div>
   `);
 };
@@ -1384,44 +1350,6 @@ const renderSunCard = (ctx: RenderContext): TemplateResult => {
         ${configured<boolean>(ctx, "showElevation") ? html`<span>Elevation <b>${elevation ?? "—"}°</b></span>` : nothing}
       </div>
     ` : nothing}
-  `);
-};
-
-const renderMediaLibrary = (ctx: RenderContext): TemplateResult => {
-  const data = Array.isArray(attr(ctx.entity, "data")) ? attr(ctx.entity, "data") as Array<Record<string, unknown>> : [];
-  const index = Math.max(1, numeric(configured(ctx, "ulm_custom_card_media_library_index")) ?? 1);
-  const media = data[index] ?? data.find((item) => item.title) ?? {};
-  const secondary = entityFromConfig(ctx, "secondary_entity");
-  const platform = configured<string>(ctx, "ulm_custom_card_media_library_platform") || "plex";
-  const library = ctx.config.variant === "library" || platform === "plex";
-  const picture = (library ? media.fanart : media.poster) || media.fanart || media.poster ||
-    attr(ctx.entity, "entity_picture") || attr(secondary, "entity_picture");
-  const unavailable = !ctx.entity || ["unavailable", "unknown"].includes(ctx.entity.state);
-  const title = unavailable
-    ? "Unavailable"
-    : String(media.title ?? attr(ctx.entity, "media_title") ?? displayName(ctx.config, ctx.entity, ctx.hass));
-  const libraryNumber = media.number ?? (
-    typeof media.aired === "string" ? `(${media.aired.split("-")[0]})` : ""
-  );
-  const upcomingNumber = platform === "sonarr" && media.number ? ` - ${String(media.number)}` : "";
-  const releaseDate = media.airdate ? new Date(String(media.airdate)) : undefined;
-  const release = releaseDate && !Number.isNaN(releaseDate.getTime())
-    ? new Intl.DateTimeFormat(ctx.hass.language || "en", {
-      weekday: "long",
-      month: "short",
-      day: "numeric",
-    }).format(releaseDate)
-    : String(media.release ?? stateLabel(ctx.entity));
-  return ctx.actionSurface(`custom-media-library ${library ? "is-library" : "is-upcoming"}`, html`
-    ${picture ? html`<span class="media-library-art" style=${`background-image:url("${String(picture)}")`}></span>` : html`<span class="media-library-art"><ha-icon icon="mdi:movie-open"></ha-icon></span>`}
-    <span class="media-library-overlay">
-      ${library ? html`<span class="media-platform"><ha-icon icon="mdi:plex"></ha-icon></span>` : nothing}
-      ${heading(
-        ctx,
-        library ? `${title}${libraryNumber ? ` ${String(libraryNumber)}` : ""}` : release,
-        library ? "Recently added" : `${title}${upcomingNumber}`,
-      )}
-    </span>
   `);
 };
 
@@ -2350,16 +2278,13 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "card_media_player": return renderMedia(ctx);
     case "custom_card_trash": return renderTrash(ctx);
     case "custom_card_alarm_time": return renderAlarmTimeCard(ctx);
-    case "custom_card_apexcharts": return renderApexCharts(ctx);
     case "custom_card_chromecast": return renderChromecast(ctx);
-    case "custom_card_power_details": return renderPowerDetails(ctx);
     case "custom_card_device_tracker": return renderDeviceTrackerCard(ctx);
     case "custom_card_roomview": return renderRoomView(ctx);
     case "custom_card_room_overview": return renderRoomOverview(ctx);
     case "custom_card_welcome": return renderWelcome(ctx);
     case "custom_card_washer": return renderWasher(ctx);
     case "custom_card_sun": return renderSunCard(ctx);
-    case "custom_card_media_library": return renderMediaLibrary(ctx);
     case "custom_card_person_location": return renderPersonLocation(ctx);
     case "custom_card_input_datetime": return renderInputDateTime(ctx);
     case "custom_card_entity_overview": return renderEntityOverview(ctx);
@@ -2388,7 +2313,7 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
   if (/trash/.test(ctx.descriptor.upstreamId)) return renderScheduleCard(ctx);
   if (/printer/.test(ctx.descriptor.upstreamId)) return renderDeviceStatus(ctx);
   if (/gauge/.test(ctx.descriptor.upstreamId)) return renderGauge(ctx);
-  if (/vehicle_status|plant|entity_overview|power_details/.test(ctx.descriptor.upstreamId)) {
+  if (/vehicle_status|plant|entity_overview/.test(ctx.descriptor.upstreamId)) {
     return renderDetailCard(ctx, /vehicle_status/.test(ctx.descriptor.upstreamId) ? "mdi:car" : /plant/.test(ctx.descriptor.upstreamId) ? "mdi:flower" : "mdi:view-grid", "purple");
   }
   switch (ctx.descriptor.family) {
