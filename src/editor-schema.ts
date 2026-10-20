@@ -301,6 +301,110 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
 };
 
 export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): EditorField[] => {
+  if (item.upstreamId === "mini_graph_card") {
+    return [
+      entity(["sensor", "binary_sensor", "input_number"]),
+      ...presentation(),
+      select("variant", [
+        { value: "line", label: "Line graph" },
+        { value: "bar", label: "Bar graph" },
+      ]),
+      select("aggregate_func", [
+        { value: "avg", label: "Average" },
+        { value: "median", label: "Median" },
+        { value: "min", label: "Minimum" },
+        { value: "max", label: "Maximum" },
+        { value: "first", label: "First value" },
+        { value: "last", label: "Last value" },
+        { value: "sum", label: "Sum" },
+        { value: "delta", label: "Range (maximum minus minimum)" },
+        { value: "diff", label: "Difference (last minus first)" },
+      ]),
+      select("group_by", [
+        { value: "interval", label: "Dynamic interval" },
+        { value: "hour", label: "Hour" },
+        { value: "date", label: "Date" },
+      ]),
+      number("hours_to_show", 1, 8760),
+      number("points_per_hour", 0.01, 60),
+      number("update_interval", 1, 86400),
+      toggle("cache"),
+      number("height", 0, 1000),
+      number("line_width", 1, 20),
+      number("bar_spacing", 0, 50),
+      toggle("smoothing"),
+      toggle("animate"),
+      toggle("logarithmic"),
+      number("value_factor", -12, 12),
+      number("decimals", 0, 12),
+      toggle("hour24"),
+      number("font_size", 25, 300),
+      number("font_size_header", 8, 48),
+      select("align_header", [
+        { value: "default", label: "Automatic" },
+        { value: "left", label: "Left" },
+        { value: "center", label: "Center" },
+        { value: "right", label: "Right" },
+      ]),
+      select("align_icon", [
+        { value: "left", label: "Left" },
+        { value: "right", label: "Right" },
+        { value: "state", label: "Beside state" },
+      ]),
+      select("align_state", [
+        { value: "left", label: "Left" },
+        { value: "center", label: "Center" },
+        { value: "right", label: "Right" },
+      ]),
+      text("unit"),
+      text("icon_image"),
+      text("lower_bound"),
+      text("upper_bound"),
+      number("min_bound_range", 0, 1000000),
+      text("lower_bound_secondary"),
+      text("upper_bound_secondary"),
+      number("min_bound_range_secondary", 0, 1000000),
+      select("color_thresholds_transition", [
+        { value: "smooth", label: "Smooth gradient" },
+        { value: "hard", label: "Hard color steps" },
+      ]),
+      toggle("group"),
+      select("mini_graph_show_state", [
+        { value: "current", label: "Current state" },
+        { value: "last", label: "Last graph value" },
+        { value: "hidden", label: "Hidden" },
+      ]),
+      select("mini_graph_show_fill", [
+        { value: "solid", label: "Solid fill" },
+        { value: "fade", label: "Faded fill" },
+        { value: "hidden", label: "No fill" },
+      ]),
+      select("mini_graph_show_points", [
+        { value: "always", label: "Always" },
+        { value: "hover", label: "On hover" },
+        { value: "hidden", label: "Hidden" },
+      ]),
+      select("mini_graph_show_labels", [
+        { value: "always", label: "Always" },
+        { value: "hover", label: "On hover" },
+        { value: "hidden", label: "Hidden" },
+      ]),
+      select("mini_graph_show_labels_secondary", [
+        { value: "always", label: "Always" },
+        { value: "hover", label: "On hover" },
+        { value: "hidden", label: "Hidden" },
+      ]),
+      toggle("mini_graph_show_legend"),
+      toggle("mini_graph_show_average"),
+      toggle("mini_graph_show_extrema"),
+      toggle("mini_graph_name_adaptive_color"),
+      toggle("mini_graph_icon_adaptive_color"),
+      toggle("mini_graph_loading_indicator"),
+      action("tap_action"),
+      action("hold_action"),
+      action("double_tap_action"),
+    ];
+  }
   const fields: EditorField[] = [
     ...(item.upstreamId === "card_room"
       ? [

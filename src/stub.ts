@@ -96,7 +96,11 @@ export const createStubConfig = (
     .filter((entityId) => entityId.startsWith("media_player.") && entityText(entityId).includes("sonos"))
     .sort((left, right) => sonosControlCount(hass, right) - sonosControlCount(hass, left))[0];
   const semanticPrimary =
-    descriptor.upstreamId === "card_graph"
+    descriptor.upstreamId === "mini_graph_card"
+      ? findEntityByDeviceClass(["temperature"]) ??
+        findEntityByDeviceClass(["power", "energy"]) ??
+        findEntity(["sensor"], [])
+      : descriptor.upstreamId === "card_graph"
         ? findEntity(["sensor"], ["cv", "plug", "power"]) ??
           findEntityByDeviceClass(["power", "energy"])
         : descriptor.upstreamId === "card_media_player"
@@ -264,7 +268,9 @@ export const createStubConfig = (
     show_forecast: descriptor.family === "weather",
     show_graph: ["battery", "energy", "sensor"].includes(descriptor.family),
     ulm_custom_card_bar_card_value: descriptor.family === "bar" ? true : undefined,
-    entities: descriptor.variants?.includes("with-sensors")
+    entities: descriptor.upstreamId === "mini_graph_card" && entity
+      ? [entity]
+      : descriptor.variants?.includes("with-sensors")
       ? entitiesFallback.slice(0, 2)
       : undefined,
     ...(descriptor.upstreamId === "custom_card_washer"
