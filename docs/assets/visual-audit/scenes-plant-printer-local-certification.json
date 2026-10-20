@@ -3,8 +3,8 @@
   "inspectedAt": "2026-09-23",
   "liveAccepted": false,
   "physicalActionsProhibited": true,
-  "fixture": "demo/fan-car-printer-comparison.html",
-  "test": "tests/fan-car-printer-certification.test.ts",
+  "fixture": "demo/scenes-plant-printer-comparison.html",
+  "test": "manual visual certification",
   "geometry": {
     "custom_card_scenes": {
       "width": 486,
@@ -12,15 +12,6 @@
       "regions": {
         "grid": 1,
         "buttons": 5
-      }
-    },
-    "custom_card_vehicle_status": {
-      "width": 313,
-      "height": 142,
-      "regions": {
-        "hero": 1,
-        "badges": 2,
-        "metrics": 2
       }
     },
     "custom_card_plant": {
@@ -74,32 +65,6 @@
       ],
       "artifact": "docs/assets/visual-audit/custom-card-scenes-comparison.png",
       "liveSafety": "No live scene, script, automation, or device action was performed."
-    },
-    "custom_card_vehicle_status": {
-      "liveConfig": {
-        "entity": "sensor.hn_etronq6_model",
-        "ulm_card_vehicle_status_tracker": "sensor.hn_etronq6_model",
-        "ulm_card_vehicle_status_lock": "binary_sensor.hn_etronq6_doors",
-        "ulm_card_vehicle_status_energy_level": "sensor.hn_etronq6_primary_engine_percent",
-        "ulm_card_vehicle_status_range": "sensor.hn_etronq6_range",
-        "ulm_card_vehicle_status_name": "HN e-tron Q6"
-      },
-      "visibleInteractions": [
-        {
-          "surface": "car summary",
-          "gesture": "tap",
-          "payload": {
-            "action": "more-info",
-            "entity": "sensor.hn_etronq6_model"
-          }
-        }
-      ],
-      "artifact": "docs/assets/visual-audit/custom-card-vehicle-status-comparison.png",
-      "deviations": [
-        "The prepared instance has model, range, energy, doors, and windows entities but no vehicle device_tracker or lock entity; model and doors are used in the corresponding read-only source slots.",
-        "The removed browser_mod map popup is represented by standard more-info on the configured tracker slot.",
-        "binary_sensor.hn_etronq6_windows has no source field and is intentionally not configured."
-      ]
     },
     "custom_card_plant": {
       "liveConfig": {

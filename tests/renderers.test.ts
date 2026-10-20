@@ -804,7 +804,6 @@ describe("family renderers", () => {
     ["pollen-forecast", "sensor.power", "custom-pollen-forecast", "pollen-icon"],
     ["game-console", "binary_sensor.snfx4594", "custom-console-card", "console-content"],
     ["scenes", "scene.relax", "ulm-scenes", "scene-grid"],
-    ["vehicle-status", "sensor.power", "custom-vehicle-status", "car-metrics"],
     ["plant", "sensor.power", "custom-plant", "flower-bars"],
     ["speedtest-gauges", "sensor.power", "custom-speedtest-gauges", "speedtest-three"],
     ["pollen", "sensor.power", "custom-pollen", "--pollen:"],

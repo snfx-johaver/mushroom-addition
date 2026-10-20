@@ -4,8 +4,8 @@ This manifest maps the documented card catalog to Mushroom Cards Addition
 registrations. It is generated from `src/catalog.ts`; CI rejects duplicate
 IDs, missing source paths, invalid namespaces, or broken popup mappings.
 
-**Coverage:** 33 documented upstream card sources map to
-33 public card components.
+**Coverage:** 31 documented upstream card sources map to
+31 public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
 of duplicate picker entries. 1 popup templates and
 1 implementation helpers are inventoried but are not
@@ -39,10 +39,8 @@ public registrations.
 | `custom_card_tablet` | custom-card | `custom:mushroom-addition-custom-card-tablet` | sensor | default | `custom_card_tablet` |
 | `custom_card_pollen_forecast` | custom-card | `custom:mushroom-addition-custom-card-pollen-forecast` | weather | default | `custom_card_pollen_forecast` |
 | `custom_card_playstation` | custom-card | `custom:mushroom-addition-custom-card-game-console` | media | default | `custom_card_playstation` |
-| `custom_card_vehicle_status` | custom-card | `custom:mushroom-addition-custom-card-vehicle-status` | sensor | default | `custom_card_vehicle_status` |
 | `custom_card_plant` | custom-card | `custom:mushroom-addition-custom-card-plant` | sensor | default | `custom_card_plant` |
 | `custom_card_speedtest_gauges` | custom-card | `custom:mushroom-addition-custom-card-speedtest-gauges` | energy | default | `custom_card_speedtest_gauges` |
-| `custom_card_better_thermostat` | custom-card | `custom:mushroom-addition-custom-card-better-thermostat` | climate | normal, compact | `custom_card_better_thermostat` |
 | `custom_card_pollen` | custom-card | `custom:mushroom-addition-custom-card-pollen` | weather | default | `custom_card_pollen` |
 | `mini_graph_card` | custom-card | `custom:mushroom-addition-mini-graph-card` | energy | line, bar | `mini_graph_card` |
 | `custom_card_entity_carousel` | custom-card | `custom:mushroom-addition-custom-card-entity-carousel` | sensor | default | `custom_card_entity_carousel` |

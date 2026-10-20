@@ -79,26 +79,6 @@ hold_action:
   action: more-info
 ```
 
-The **Better Thermostat Card** provides normal and compact layouts for any Home
-Assistant `climate` entity. It includes touch-friendly target temperature
-controls, HVAC modes, presets, humidity, heating/cooling state, and optional
-window and battery sensor warnings.
-
-```yaml
-type: custom:mushroom-addition-custom-card-better-thermostat
-entity: climate.living_room
-variant: normal
-window_sensor: binary_sensor.living_room_window
-humidity_entity: sensor.living_room_humidity
-battery_entity: sensor.living_room_thermostat_battery
-```
-
-The card uses Home Assistant's public `climate.set_temperature`,
-`climate.set_hvac_mode`, and `climate.set_preset_mode` services. It is an
-original implementation informed by the documented behavior of
-[Better Thermostat UI Card](https://github.com/KartoffelToby/better-thermostat-ui-card);
-no code, styles, translations, or assets from that AGPL project are bundled.
-
 The **Mini Graph Card** is a fully graphical, recorder-backed implementation of
 the complete public `kalkih/mini-graph-card` configuration surface. It supports
 line and bar graphs, multiple series, per-entity overrides, aggregation,
