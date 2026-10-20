@@ -1140,6 +1140,38 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
+const astronomyMetricEntity = (
+  ctx: RenderContext,
+  configKey: string,
+  metric: string,
+): HassEntity | undefined => configuredEntity(ctx, configKey) ??
+  Object.values(ctx.hass.states).find((entity) =>
+    String(attr(entity, "metric") ?? "").toLowerCase() === metric &&
+    ["moon", "sky"].includes(String(attr(entity, "body") ?? "").toLowerCase()));
+
+const orbitPositionStyle = (
+  azimuth: number | undefined,
+  altitude: number | undefined,
+  prefix: "sun" | "moon",
+): string => {
+  const normalizedAzimuth = azimuth === undefined ? 180 : ((azimuth % 360) + 360) % 360;
+  const normalizedAltitude = Math.max(-90, Math.min(90, altitude ?? 0));
+  const x = normalizedAzimuth / 360 * 100;
+  const y = 50 - normalizedAltitude / 180 * 100;
+  return `--${prefix}-x:${x.toFixed(2)}%;--${prefix}-y:${y.toFixed(2)}%`;
+};
+
+const moonPhaseIcon = (phase: string): string => ({
+  new_moon: "mdi:moon-new",
+  waxing_crescent: "mdi:moon-waxing-crescent",
+  first_quarter: "mdi:moon-first-quarter",
+  waxing_gibbous: "mdi:moon-waxing-gibbous",
+  full_moon: "mdi:moon-full",
+  waning_gibbous: "mdi:moon-waning-gibbous",
+  last_quarter: "mdi:moon-last-quarter",
+  waning_crescent: "mdi:moon-waning-crescent",
+})[phase] ?? "mdi:moon-waning-crescent";
+
 const renderSunCard = (ctx: RenderContext): TemplateResult => {
   const rising = attr(ctx.entity, "next_rising");
   const setting = attr(ctx.entity, "next_setting");
@@ -1156,16 +1188,67 @@ const renderSunCard = (ctx: RenderContext): TemplateResult => {
       hour12,
     }).format(date);
   };
-  const above = ctx.entity?.state === "above_horizon";
   const elevation = numeric(attr(ctx.entity, "elevation"));
   const azimuth = numeric(attr(ctx.entity, "azimuth"));
   const title = configured<string>(ctx, "title");
+  const moonPhase = configuredEntity(ctx, "moon_entity") ??
+    ctx.hass.states["sensor.moon"] ??
+    Object.values(ctx.hass.states).find((entity) =>
+      String(attr(entity, "device_class") ?? "") === "enum" &&
+      `${entity.entity_id} ${String(attr(entity, "friendly_name") ?? "")}`.toLowerCase().includes("moon"));
+  const moonAltitude = astronomyMetricEntity(ctx, "moon_altitude_entity", "altitude");
+  const moonAzimuth = astronomyMetricEntity(ctx, "moon_azimuth_entity", "azimuth");
+  const moonRightAscension = astronomyMetricEntity(ctx, "moon_right_ascension_entity", "right_ascension");
+  const moonDeclination = astronomyMetricEntity(ctx, "moon_declination_entity", "declination");
+  const moonDistance = astronomyMetricEntity(ctx, "moon_distance_entity", "distance_km");
+  const moonAngularDiameter = astronomyMetricEntity(ctx, "moon_angular_diameter_entity", "angular_diameter_arcmin");
+  const moonPhaseAngle = astronomyMetricEntity(ctx, "moon_phase_angle_entity", "phase_angle");
+  const moonIllumination = astronomyMetricEntity(ctx, "moon_illumination_entity", "illumination_pct");
+  const moonNextFull = astronomyMetricEntity(ctx, "moon_next_full_moon_entity", "next_full_moon");
+  const moonNextNew = astronomyMetricEntity(ctx, "moon_next_new_moon_entity", "next_new_moon");
+  const moonHorizon = astronomyMetricEntity(ctx, "moon_above_horizon_entity", "is_moon_above_horizon");
+  const moonEntities = [
+    moonPhase, moonAltitude, moonAzimuth, moonRightAscension, moonDeclination, moonDistance,
+    moonAngularDiameter, moonPhaseAngle, moonIllumination, moonNextFull, moonNextNew, moonHorizon,
+  ];
+  const showMoon = configured<boolean>(ctx, "showMoon") !== false && moonEntities.some(Boolean);
+  const moonNumber = (entity: HassEntity | undefined, maximumFractionDigits = 2): string => {
+    if (!entity || ["unknown", "unavailable"].includes(entity.state)) return "—";
+    const value = numeric(entity.state);
+    if (value === undefined) return stateLabel(entity);
+    const unit = String(attr(entity, "unit_of_measurement") ?? "");
+    return `${new Intl.NumberFormat(locale, { maximumFractionDigits }).format(value)}${unit ? ` ${unit}` : ""}`;
+  };
+  const moonDate = (entity: HassEntity | undefined): string => {
+    if (!entity || ["unknown", "unavailable"].includes(entity.state)) return "—";
+    const value = new Date(entity.state);
+    return Number.isNaN(value.getTime())
+      ? stateLabel(entity)
+      : new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).format(value);
+  };
+  const moonPhaseState = moonPhase?.state ?? "unknown";
+  const moonAltitudeValue = numeric(moonAltitude?.state);
+  const moonAzimuthValue = numeric(moonAzimuth?.state);
+  const moonAbove = moonHorizon
+    ? ["on", "true", "above_horizon"].includes(moonHorizon.state.toLowerCase())
+    : (moonAltitudeValue ?? -1) >= 0;
+  const moonMetric = (
+    label: string,
+    entity: HassEntity | undefined,
+    iconName: string,
+    value = moonNumber(entity),
+  ) => entity ? html`
+    <span class="moon-metric">
+      <ha-icon .icon=${iconName}></ha-icon>
+      <span><small>${label}</small><b>${value}</b></span>
+    </span>
+  ` : nothing;
   return ctx.actionSurface(`custom-sun-card ${configured<boolean>(ctx, "darkMode") ? "is-dark" : ""}`, html`
     ${title ? html`<b class="sun-title">${title}</b>` : nothing}
     <div class="sun-times"><span><small>Sunrise</small><b>${format(rising)}</b></span><span><small>Sunset</small><b>${format(setting)}</b></span></div>
     <div class="sun-arc">
       <svg viewBox="0 0 300 90" preserveAspectRatio="none"><path class="sun-night" d="M0,62 Q60,115 105,62"></path><path class="sun-day" d="M0,62 Q150,-45 300,62"></path><line x1="0" y1="62" x2="300" y2="62"></line></svg>
-      <span class="sun-marker" style=${above ? "--sun-x:56.67%;--sun-y:20%" : "--sun-x:9.33%;--sun-y:77.78%"}></span>
+      <span class="sun-marker" style=${orbitPositionStyle(azimuth, elevation, "sun")}></span>
     </div>
     <div class="sun-footer"><span><small>Dawn</small><b>${format(dawn)}</b></span><span><small>Solar noon</small><b>${format(noon)}</b></span><span><small>Dusk</small><b>${format(dusk)}</b></span></div>
     ${(configured<boolean>(ctx, "showAzimuth") || configured<boolean>(ctx, "showElevation")) ? html`
@@ -1173,6 +1256,44 @@ const renderSunCard = (ctx: RenderContext): TemplateResult => {
         ${configured<boolean>(ctx, "showAzimuth") ? html`<span>Azimuth <b>${azimuth ?? "—"}°</b></span>` : nothing}
         ${configured<boolean>(ctx, "showElevation") ? html`<span>Elevation <b>${elevation ?? "—"}°</b></span>` : nothing}
       </div>
+    ` : nothing}
+    ${showMoon ? html`
+      <section class="moon-section">
+        <div class="moon-heading">
+          <span class="moon-symbol"><ha-icon .icon=${moonPhaseIcon(moonPhaseState)}></ha-icon></span>
+          <span class="moon-copy">
+            <b>Moon</b>
+            <small>${stateLabel(moonPhase)} · ${moonAbove ? "Above horizon" : "Below horizon"}</small>
+          </span>
+          ${moonIllumination ? html`<b class="moon-illumination">${moonNumber(moonIllumination, 1)}</b>` : nothing}
+        </div>
+        ${(moonAltitude || moonAzimuth) ? html`
+          <div class="moon-arc">
+            <svg viewBox="0 0 300 82" preserveAspectRatio="none">
+              <path class="moon-sky" d="M0,41 Q150,-35 300,41 L300,82 L0,82 Z"></path>
+              <line x1="0" y1="41" x2="300" y2="41"></line>
+            </svg>
+            <span class=${`moon-marker ${moonAbove ? "is-above" : "is-below"}`}
+              style=${orbitPositionStyle(moonAzimuthValue, moonAltitudeValue, "moon")}>
+              <ha-icon .icon=${moonPhaseIcon(moonPhaseState)}></ha-icon>
+            </span>
+          </div>
+          <div class="moon-position">
+            <span>Azimuth <b>${moonNumber(moonAzimuth)}</b></span>
+            <span>Altitude <b>${moonNumber(moonAltitude)}</b></span>
+          </div>
+        ` : nothing}
+        <div class="moon-metrics">
+          ${moonMetric("Illumination", moonIllumination, "mdi:brightness-percent", moonNumber(moonIllumination, 1))}
+          ${moonMetric("Phase angle", moonPhaseAngle, "mdi:angle-acute")}
+          ${moonMetric("Right ascension", moonRightAscension, "mdi:axis-x-arrow")}
+          ${moonMetric("Declination", moonDeclination, "mdi:axis-y-arrow")}
+          ${moonMetric("Distance", moonDistance, "mdi:map-marker-distance", moonNumber(moonDistance, 0))}
+          ${moonMetric("Angular diameter", moonAngularDiameter, "mdi:circle-outline")}
+          ${moonMetric("Next full Moon", moonNextFull, "mdi:moon-full", moonDate(moonNextFull))}
+          ${moonMetric("Next new Moon", moonNextNew, "mdi:moon-new", moonDate(moonNextNew))}
+        </div>
+      </section>
     ` : nothing}
   `);
 };
@@ -1731,7 +1852,7 @@ const renderEntityCarousel = (ctx: RenderContext): TemplateResult => {
       ${showPresentation ? html`
         <div class="metric-heading entity-carousel-presentation">
           ${sourceIconBubble(ctx, icon(ctx, "mdi:view-carousel"), "var(--primary-color)", true)}
-          ${renderAutomaticPresentation(ctx)}
+          ${heading(ctx, stateLabel(ctx.entity), ctx.descriptor.name)}
         </div>
       ` : nothing}
       <mushroom-addition-entity-carousel

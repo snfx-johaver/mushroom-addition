@@ -127,6 +127,7 @@ const makeItem = (
     custom_card_tablet: "Tablet",
     custom_card_plant: "Flower",
     custom_card_pollen: "Pollen",
+    custom_card_sun: "Astronomy",
     custom_card_better_thermostat: "Better Thermostat",
     custom_card_entity_carousel: "Entity Carousel",
   };
@@ -140,6 +141,7 @@ const makeItem = (
     custom_card_tablet: "Mushroom-style tablet status and maintenance card.",
     custom_card_plant: "Mushroom-style plant health card.",
     custom_card_pollen: "Mushroom-style pollen level card.",
+    custom_card_sun: "Mushroom-style Sun and Moon position, phase, timing, and ephemeris card.",
     custom_card_better_thermostat: "Touch-friendly climate card with Better Thermostat status and controls.",
     custom_card_entity_carousel: "Dependency-free swipeable entity and action carousel with cover-flow navigation.",
   };
