@@ -394,6 +394,8 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
         .map((entity) => ({ entity }))
   ).filter((item) => item.entity);
   const welcome = ctx.descriptor.upstreamId === "card_welcome_scenes";
+  const buttonsOnly = ctx.config.scene_buttons_only === true;
+  if (buttonsOnly) ctx.presentation.rendered = true;
   const sourceGrid = ctx.descriptor.upstreamId === "card_scenes" && ctx.config.variant === "scene-grid";
   const compactLimit = welcome ? 7 : sourceGrid ? 5 : 6;
   const hasOverflow = welcome && sceneItems.length > compactLimit;
@@ -401,7 +403,7 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
     ? sceneItems
     : sceneItems.slice(0, compactLimit);
   const collapseEntity = ctx.config.collapse_entity ? ctx.hass.states[ctx.config.collapse_entity] : undefined;
-  const collapsed = ctx.config.collapsed === true || collapseEntity?.state === "on";
+  const collapsed = !buttonsOnly && (ctx.config.collapsed === true || collapseEntity?.state === "on");
   const weatherEntity = linkedState(ctx, "weather_entity");
   const weatherCondition = weatherEntity?.state || "partlycloudy";
   const weatherIcon = weatherIcons[weatherCondition]?.[0] ?? "mdi:weather-partly-cloudy";
@@ -417,8 +419,8 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
   const greetingSet = greetings[language] ?? greetings.en;
   const greeting = hour >= 18 ? greetingSet[3] : hour >= 12 ? greetingSet[2] : hour >= 5 ? greetingSet[1] : greetingSet[0];
   const welcomeSecondary = `${greeting}, ${ctx.hass.user?.name || "Home"}!`;
-  return ctx.actionSurface(`ulm-scenes ${welcome ? "welcome-scenes" : sourceGrid ? "source-scene-grid" : "scene-pills"} ${ctx.descriptor.upstreamId === "card_scenes" ? "ulm-source-scenes" : ""}`, html`
-    ${welcome ? html`
+  return ctx.actionSurface(`ulm-scenes ${welcome ? "welcome-scenes" : sourceGrid ? "source-scene-grid" : "scene-pills"} ${ctx.descriptor.upstreamId === "card_scenes" ? "ulm-source-scenes" : ""} ${buttonsOnly ? "scene-buttons-only" : ""}`, html`
+    ${welcome && !buttonsOnly ? html`
       <div class="welcome-toolbar">
         <button class="welcome-toolbar-button" aria-label="Toggle scenes" @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
           event.stopPropagation();

@@ -417,10 +417,12 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
       ]
     : item.upstreamId === "card_scenes"
       ? [
+        entity(),
         ...(item.variants?.length ? [select("variant", item.variants.map((variant) => ({
           value: variant,
           label: item.variantLabels?.[variant] ?? variant,
         })))] : []),
+        toggle("scene_buttons_only"),
         ...presentation(),
       ]
   : item.upstreamId === "custom_card_trash"

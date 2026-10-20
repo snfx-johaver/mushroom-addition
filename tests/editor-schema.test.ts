@@ -16,7 +16,6 @@ describe("family editor schemas", () => {
       const schema = editorSchemaFor(item);
       expect(schema.filter((field) => field.name === "entity")).toHaveLength(
         item.family === "navigation" ||
-          item.upstreamId === "card_scenes" ||
           item.family === "text"
           ? 0
           : 1,
