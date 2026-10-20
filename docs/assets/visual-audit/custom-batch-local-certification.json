@@ -93,35 +93,6 @@
           }
         ]
       ]
-    },
-    "custom_card_camera": {
-      "visibleControls": 0,
-      "cardActions": [
-        {
-          "config": {
-            "type": "custom:mushroom-addition-custom-card-camera",
-            "entity": "camera.driveway",
-            "show_icon": true,
-            "show_state": true,
-            "show_controls": true,
-            "primary_info": "name",
-            "secondary_info": "default",
-            "ulm_custom_card_camera_title": true,
-            "ulm_custom_card_camera_name": "Driveway",
-            "ulm_custom_card_camera_label": "Live camera",
-            "ulm_custom_card_camera_aspect_ratio": "16 / 9",
-            "name": "Driveway",
-            "layout": "default",
-            "name_mode": "entity",
-            "icon_type": "icon",
-            "fill_container": false,
-            "tap_action": {
-              "action": "more-info"
-            }
-          },
-          "action": "tap"
-        }
-      ]
     }
   },
   "geometry": {
@@ -140,14 +111,6 @@
         ".custom-card-heading": 1,
         ".alarm-time-controls": 1,
         ".alarm-time-controls button": 2
-      }
-    },
-    "custom_card_camera": {
-      "width": 250,
-      "height": 258,
-      "regions": {
-        ".camera-title": 1,
-        "img": 1
       }
     }
   }

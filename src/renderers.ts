@@ -720,47 +720,6 @@ const renderRoom = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const normalizedAspectRatio = (value: unknown): string => {
-  const ratio = String(value ?? "").trim();
-  const pair = ratio.match(/^(\d+(?:\.\d+)?)\s*(?::|\/|x)\s*(\d+(?:\.\d+)?)$/i);
-  if (pair) return `${pair[1]} / ${pair[2]}`;
-  return /^\d+(?:\.\d+)?$/.test(ratio) ? ratio : "16 / 9";
-};
-
-const renderCamera = (ctx: RenderContext): TemplateResult => {
-  const picture = attr(ctx.entity, "entity_picture") ||
-    (ctx.entity?.entity_id.startsWith("camera.") ? `/api/camera_proxy/${ctx.entity.entity_id}` : undefined);
-  const legacyName = configured<string>(ctx, "ulm_custom_card_camera_name");
-  const legacyLabel = configured<string>(ctx, "ulm_custom_card_camera_label");
-  const information = presentationValues(ctx, legacyLabel || stateLabel(ctx.entity));
-  const cameraName = information.primary || (
-    ctx.config.primary_info === undefined ? legacyName || displayName(ctx.config, ctx.entity, ctx.hass) : undefined
-  );
-  const cameraLabel = information.secondary;
-  const aspectRatio = normalizedAspectRatio(
-    ctx.config.aspect_ratio ?? configured<string>(ctx, "ulm_custom_card_camera_aspect_ratio"),
-  );
-  const imageHeight = numeric(ctx.config.image_height);
-  const fitMode = ctx.config.fit_mode ?? "cover";
-  const live = ctx.config.camera_view === "live" && ctx.entity?.entity_id.startsWith("camera.");
-  const mediaStyle = imageHeight
-    ? `height:${Math.max(80, imageHeight)}px`
-    : `aspect-ratio:${aspectRatio}`;
-  return ctx.actionSurface("ulm-camera", html`
-    <div class="camera-media" style=${mediaStyle}>
-      ${live ? html`<ha-camera-stream .hass=${ctx.hass} .stateObj=${ctx.entity}></ha-camera-stream>` :
-        picture ? html`<img src=${String(picture)} alt=${cameraName} width="1600" height="900"
-          loading="lazy" style=${`object-fit:${fitMode}`}>` : html`
-      <div class="camera-placeholder">${iconBubble(ctx, "mdi:camera", "blue")}</div>
-      `}
-      ${cameraName || cameraLabel ? html`<div class="camera-overlay shared-presentation">
-        ${cameraName ? html`<b class="ulm-name">${cameraName}</b>` : nothing}
-        ${cameraLabel ? html`<span class="ulm-label">${cameraLabel}</span>` : nothing}
-      </div>` : nothing}
-    </div>
-  `);
-};
-
 const configuredEntities = (ctx: RenderContext): HassEntity[] => {
   const ids = Object.entries(ctx.config)
     .filter(([key, value]) =>
@@ -2209,7 +2168,6 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "navigation": return renderNavigation(ctx);
     case "control": return renderControl(ctx);
     case "alarm-time": return renderAlarmTime(ctx);
-    case "camera": return renderCamera(ctx);
     default: return renderGeneric(ctx);
   }
 };

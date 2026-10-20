@@ -156,12 +156,8 @@ describe("family editor schemas", () => {
     }
   });
 
-  it("uses clear labels for camera controls", () => {
+  it("uses clear labels without legacy contributor terminology", () => {
     expect(localize(undefined, "show_name")).toBe("Show name");
-    expect(localize(undefined, "camera_view")).toBe("Camera view");
-    expect(localize(undefined, "fit_mode")).toBe("Image fit");
-    expect(localize(undefined, "aspect_ratio")).toBe("Aspect ratio");
-    expect(localize(undefined, "image_height")).toBe("Custom image height");
     expect(localize(undefined, "ulm_language")).not.toMatch(/\bUlm\b/i);
   });
 
