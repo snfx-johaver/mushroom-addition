@@ -125,6 +125,7 @@ interface Bounds {
 
 interface CachedHistory {
   fetchedAt: number;
+  stateSignature: string;
   points: GraphPoint[];
 }
 
@@ -429,6 +430,8 @@ export class MushroomMiniGraphCard extends LitElement {
   @state() private loading = false;
   @state() private error?: string;
   private requestKey?: string;
+  private lastEntityStateSignature?: string;
+  private historyGeneration = 0;
   private interval?: number;
   private holdTimer?: number;
   private tapTimer?: number;
@@ -462,6 +465,7 @@ export class MushroomMiniGraphCard extends LitElement {
     this.config = normalizeMiniGraphConfig(config);
     this.restartInterval();
     this.requestKey = undefined;
+    this.lastEntityStateSignature = this.entityStateSignature();
     void this.loadHistory();
   }
 
@@ -470,7 +474,15 @@ export class MushroomMiniGraphCard extends LitElement {
   }
 
   protected updated(changed: Map<PropertyKey, unknown>): void {
-    if (changed.has("hass") || changed.has("config")) void this.loadHistory();
+    if (!changed.has("hass") && !changed.has("config")) return;
+    const signature = this.entityStateSignature();
+    const relevantStateChanged =
+      changed.has("hass") &&
+      this.lastEntityStateSignature !== undefined &&
+      signature !== this.lastEntityStateSignature;
+    this.lastEntityStateSignature = signature;
+    if (relevantStateChanged && this.config?.update_interval) return;
+    void this.loadHistory(relevantStateChanged);
   }
 
   public connectedCallback(): void {
@@ -819,12 +831,34 @@ export class MushroomMiniGraphCard extends LitElement {
     this.interval = undefined;
     if (!this.isConnected || !this.config?.update_interval) return;
     this.interval = window.setInterval(() => {
-      this.requestKey = undefined;
-      void this.loadHistory();
+      void this.loadHistory(true);
     }, this.config.update_interval * 1000);
   }
 
-  private async loadHistory(): Promise<void> {
+  private entityStateSignature(): string | undefined {
+    if (!this.hass || !this.config) return undefined;
+    return JSON.stringify(normalizeEntities(this.config).map((entityConfig) => {
+      const entity = this.hass?.states[entityConfig.entity];
+      return {
+        entity: entityConfig.entity,
+        attribute: entityConfig.attribute,
+        value: nestedAttribute(entity, entityConfig.attribute),
+        lastChanged: entity?.last_changed,
+        lastUpdated: entity?.last_updated,
+      };
+    }));
+  }
+
+  private singleEntityStateSignature(entityConfig: MiniGraphEntityConfig): string {
+    const entity = this.hass?.states[entityConfig.entity];
+    return JSON.stringify({
+      value: nestedAttribute(entity, entityConfig.attribute),
+      lastChanged: entity?.last_changed,
+      lastUpdated: entity?.last_updated,
+    });
+  }
+
+  private async loadHistory(forceRefresh = false): Promise<void> {
     if (!this.hass || !this.config) return;
     const entities = normalizeEntities(this.config);
     const currentKey = JSON.stringify({
@@ -834,25 +868,29 @@ export class MushroomMiniGraphCard extends LitElement {
       grouping: this.config.group_by,
       factor: this.config.value_factor,
       map: this.config.state_map,
+      state: this.entityStateSignature(),
     });
-    if (currentKey === this.requestKey) return;
+    if (!forceRefresh && currentKey === this.requestKey) return;
     this.requestKey = currentKey;
+    const generation = ++this.historyGeneration;
     this.loading = true;
     this.error = undefined;
     try {
       const end = Date.now();
       const start = end - Number(this.config.hours_to_show ?? 24) * 3_600_000;
-      const rawHistory = await this.fetchHistory(entities, start, end);
+      const rawHistory = await this.fetchHistory(entities, start, end, forceRefresh, generation);
+      if (generation !== this.historyGeneration) return;
       this.series = entities.map((entityConfig, index) =>
         this.buildSeries(entityConfig, index, rawHistory[entityConfig.entity] ?? [], start, end));
       this.error = this.series.some((entry) => entry.points.length)
         ? undefined
         : "No recorder history is available for the selected entities.";
     } catch (error) {
+      if (generation !== this.historyGeneration) return;
       this.error = error instanceof Error ? error.message : "Unable to load recorder history.";
       console.warn("Mushroom Cards Addition: unable to load Mini Graph history", error);
     } finally {
-      this.loading = false;
+      if (generation === this.historyGeneration) this.loading = false;
     }
   }
 
@@ -860,12 +898,14 @@ export class MushroomMiniGraphCard extends LitElement {
     entities: MiniGraphEntityConfig[],
     start: number,
     end: number,
+    bypassCache: boolean,
+    generation: number,
   ): Promise<Record<string, GraphPoint[]>> {
     const result: Record<string, GraphPoint[]> = {};
     const needsFetch: MiniGraphEntityConfig[] = [];
     for (const entity of entities) {
       if (entity.fixed_value) continue;
-      const cached = this.readCache(entity, start);
+      const cached = bypassCache ? undefined : this.readCache(entity, start);
       if (cached) result[entity.entity] = cached;
       else needsFetch.push(entity);
     }
@@ -886,6 +926,7 @@ export class MushroomMiniGraphCard extends LitElement {
     const history = response && typeof response === "object"
       ? response as Record<string, unknown>
       : {};
+    if (generation !== this.historyGeneration) return result;
     for (const entity of needsFetch) {
       const rows = Array.isArray(history[entity.entity]) ? history[entity.entity] as unknown[] : [];
       const points = rows.flatMap((row) => {
@@ -947,9 +988,16 @@ export class MushroomMiniGraphCard extends LitElement {
     const entity = this.hass?.states[entityConfig.entity];
     const current = mappedValue(nestedAttribute(entity, entityConfig.attribute), this.config?.state_map ?? []);
     const factor = 10 ** Number(this.config?.value_factor ?? 0);
+    const currentTime = Date.parse(entity?.last_updated ?? entity?.last_changed ?? "") || end;
+    const historyWithCurrent = current.value === undefined
+      ? history
+      : [
+        ...history.filter((point) => point.time !== currentTime),
+        { time: currentTime, value: current.value, label: current.label },
+      ];
     const source = entityConfig.fixed_value && current.value !== undefined
       ? [{ time: start, value: current.value }, { time: end, value: current.value }]
-      : history;
+      : historyWithCurrent;
     const scaled = source.map((point) => ({ ...point, value: point.value * factor }));
     const points = aggregateHistory(
       scaled,
@@ -979,7 +1027,11 @@ export class MushroomMiniGraphCard extends LitElement {
     try {
       const cached = JSON.parse(localStorage.getItem(this.cacheKey(entity)) ?? "null") as CachedHistory | null;
       const maxAge = Math.max(60, Number(this.config.update_interval ?? 300)) * 1000;
-      if (!cached || Date.now() - cached.fetchedAt > maxAge) return undefined;
+      if (
+        !cached ||
+        cached.stateSignature !== this.singleEntityStateSignature(entity) ||
+        Date.now() - cached.fetchedAt > maxAge
+      ) return undefined;
       return cached.points.filter((point) => point.time >= start);
     } catch {
       return undefined;
@@ -989,7 +1041,11 @@ export class MushroomMiniGraphCard extends LitElement {
   private writeCache(entity: MiniGraphEntityConfig, points: GraphPoint[]): void {
     if (!this.config?.cache || typeof localStorage === "undefined") return;
     try {
-      localStorage.setItem(this.cacheKey(entity), JSON.stringify({ fetchedAt: Date.now(), points } satisfies CachedHistory));
+      localStorage.setItem(this.cacheKey(entity), JSON.stringify({
+        fetchedAt: Date.now(),
+        stateSignature: this.singleEntityStateSignature(entity),
+        points,
+      } satisfies CachedHistory));
     } catch (error) {
       console.warn("Mushroom Cards Addition: unable to cache Mini Graph history", error);
     }

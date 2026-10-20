@@ -288,6 +288,100 @@ describe("Mini Graph configuration and history processing", () => {
     expect(send).toHaveBeenCalledTimes(1);
   });
 
+  it("refreshes recorder history on relevant state changes and bypasses a valid cache", async () => {
+    const updatedHistory = {
+      ...history,
+      "sensor.temperature": [
+        ...history["sensor.temperature"],
+        {
+          state: "23",
+          last_updated: "2026-10-20T00:01:00.000Z",
+          attributes: { friendly_name: "Temperature", unit_of_measurement: "°C" },
+        },
+      ],
+    };
+    const send = vi.fn()
+      .mockResolvedValueOnce(history)
+      .mockResolvedValueOnce(updatedHistory);
+    const card = await renderCard({
+      type: "custom:mushroom-addition-mini-graph-card",
+      entities: ["sensor.temperature"],
+      cache: true,
+    }, makeHass(send));
+    expect(send).toHaveBeenCalledTimes(1);
+
+    const changedHass = makeHass(send);
+    changedHass.states["sensor.temperature"] = {
+      ...changedHass.states["sensor.temperature"],
+      state: "23",
+      last_updated: "2026-10-20T00:01:00.000Z",
+    };
+    card.hass = changedHass;
+    await card.updateComplete;
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await card.updateComplete;
+
+    expect(send).toHaveBeenCalledTimes(2);
+    expect(card.shadowRoot?.textContent).toContain("23");
+  });
+
+  it("does not refetch when an unrelated Home Assistant entity changes", async () => {
+    const send = vi.fn(async () => history);
+    const card = await renderCard({
+      type: "custom:mushroom-addition-mini-graph-card",
+      entities: ["sensor.temperature"],
+      cache: false,
+    }, makeHass(send));
+    const changedHass = makeHass(send);
+    changedHass.states["light.unrelated"] = {
+      entity_id: "light.unrelated",
+      state: "on",
+      attributes: { friendly_name: "Unrelated light" },
+      last_updated: "2026-10-20T00:01:00.000Z",
+    };
+    card.hass = changedHass;
+    await card.updateComplete;
+    await Promise.resolve();
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps explicit update intervals authoritative while polling fresh history", async () => {
+    vi.useFakeTimers();
+    const send = vi.fn(async () => history);
+    const card = document.createElement("mushroom-addition-mini-graph-card") as HTMLElement & {
+      hass: HomeAssistant;
+      setConfig(value: MiniGraphCardConfig): void;
+      updateComplete: Promise<boolean>;
+    };
+    card.hass = makeHass(send);
+    card.setConfig({
+      type: "custom:mushroom-addition-mini-graph-card",
+      entities: ["sensor.temperature"],
+      update_interval: 60,
+      cache: true,
+    });
+    document.body.append(card);
+    await card.updateComplete;
+    await Promise.resolve();
+    await card.updateComplete;
+    expect(send).toHaveBeenCalledTimes(1);
+
+    const changedHass = makeHass(send);
+    changedHass.states["sensor.temperature"] = {
+      ...changedHass.states["sensor.temperature"],
+      state: "24",
+      last_updated: "2026-10-20T00:02:00.000Z",
+    };
+    card.hass = changedHass;
+    await card.updateComplete;
+    await Promise.resolve();
+    expect(send).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(60_000);
+    await card.updateComplete;
+    expect(send).toHaveBeenCalledTimes(2);
+  });
+
   it("dispatches Home Assistant actions from the full card surface", async () => {
     const card = await renderCard({
       type: "custom:mushroom-addition-mini-graph-card",
