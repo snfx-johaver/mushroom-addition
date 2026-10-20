@@ -23,6 +23,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     .carousel.grab-cursor { cursor: grab; }
     .carousel.grab-cursor:active { cursor: grabbing; }
     .carousel.grab-cursor button { cursor: inherit; }
+    .carousel.dragging button { transition: none; }
     .stage {
       position: relative;
       width: 100%;
@@ -46,7 +47,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
         linear-gradient(145deg, color-mix(in srgb, var(--card-background-color) 92%, white 8%),
         color-mix(in srgb, var(--card-background-color) 86%, black 14%));
       box-shadow: 0 5px 16px rgb(0 0 0 / 28%);
-      transition: transform 220ms cubic-bezier(.2,.8,.2,1), opacity 180ms ease, filter 180ms ease;
+      transition: transform 130ms cubic-bezier(.2,.8,.2,1), opacity 110ms ease, filter 110ms ease;
       cursor: pointer;
       transform-style: preserve-3d;
       will-change: transform;
@@ -108,8 +109,15 @@ export class MushroomAdditionEntityCarousel extends LitElement {
   @property({ attribute: false }) public config?: AdditionConfig;
   @state() private selectedIndex = 0;
   @state() private carouselWidth = 0;
+  @state() private dragOffset = 0;
+  @state() private dragging = false;
 
   private dragStartX?: number;
+  private dragStartY?: number;
+  private lastPointerX?: number;
+  private lastPointerTime?: number;
+  private horizontalVelocity = 0;
+  private pointerAxis: "pending" | "horizontal" | "vertical" = "pending";
   private holdTimer?: number;
   private holdFired = false;
   private pointerItemIndex?: number;
@@ -133,7 +141,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     const activeItem = items[this.selectedIndex];
     const activeEntity = this.entityFor(activeItem);
     return html`
-      <div class=${`carousel ${this.grabCursor ? "grab-cursor" : ""}`}
+      <div class=${`carousel ${this.grabCursor ? "grab-cursor" : ""} ${this.dragging ? "dragging" : ""}`}
         style=${`perspective:${Math.max(520, this.coverflowDepth * 2)}px`}
         role="listbox"
         aria-label="Entity carousel"
@@ -169,13 +177,15 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     const modifier = this.coverflowModifier;
     const stretch = this.effect === "coverflow" ? this.coverflowStretch * modifier : 0;
     const slideStep = Math.max(18, 58 + stretch);
+    const visualOffset = offset + this.dragOffset / slideStep;
+    const visualDistance = Math.abs(visualOffset);
     const alignmentOffset = this.centeredSlides ? 0 : -((visible - 1) * slideStep) / 2;
-    const translate = alignmentOffset + offset * slideStep;
-    const depth = this.effect === "coverflow" ? -distance * this.coverflowDepth * modifier : 0;
-    const rotate = this.effect === "coverflow" ? offset * -this.coverflowRotate * modifier : 0;
-    const opacity = Math.max(0.18, 1 - distance * (this.effect === "coverflow" ? 0.16 : 0.08));
+    const translate = alignmentOffset + offset * slideStep + this.dragOffset;
+    const depth = this.effect === "coverflow" ? -visualDistance * this.coverflowDepth * modifier : 0;
+    const rotate = this.effect === "coverflow" ? visualOffset * -this.coverflowRotate * modifier : 0;
+    const opacity = Math.max(0.18, 1 - visualDistance * (this.effect === "coverflow" ? 0.16 : 0.08));
     const shadowOpacity = this.coverflowSlideShadows
-      ? Math.min(0.48, distance * 0.16 * Math.max(0.25, modifier))
+      ? Math.min(0.48, visualDistance * 0.16 * Math.max(0.25, modifier))
       : 0;
     const style = [
       `transform:translateX(${translate}px) translateZ(${depth}px) rotateY(${rotate}deg)`,
@@ -184,7 +194,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       `filter:saturate(${Math.max(0.45, 1 - distance * 0.14)})`,
       `--carousel-color:var(--${color}-color, ${color})`,
       `--carousel-shadow-opacity:${shadowOpacity}`,
-      `--carousel-shadow-angle:${offset < 0 ? 270 : 90}deg`,
+      `--carousel-shadow-angle:${visualOffset < 0 ? 270 : 90}deg`,
     ].join(";");
     const picture = item.icon_type === "entity-picture"
       ? entity?.attributes.entity_picture
@@ -340,15 +350,22 @@ export class MushroomAdditionEntityCarousel extends LitElement {
   }
 
   private readonly onPointerDown = (event: PointerEvent): void => {
+    if (event.pointerType && event.isPrimary === false) return;
     event.stopPropagation();
     this.dragStartX = event.clientX;
+    this.dragStartY = event.clientY;
+    this.lastPointerX = event.clientX;
+    this.lastPointerTime = event.timeStamp;
+    this.horizontalVelocity = 0;
+    this.pointerAxis = "pending";
+    this.dragOffset = 0;
+    this.dragging = false;
     this.holdFired = false;
     const button = event.composedPath().find((node) =>
       node instanceof HTMLElement && node.matches("button[data-carousel-index]")) as HTMLElement | undefined;
     const parsedIndex = Number(button?.dataset.carouselIndex);
     this.pointerStartedOnItem = Boolean(button) && Number.isInteger(parsedIndex);
     this.pointerItemIndex = this.pointerStartedOnItem ? parsedIndex : this.selectedIndex;
-    (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
     if (this.pointerStartedOnItem && this.pointerItemIndex === this.selectedIndex) {
       this.holdTimer = window.setTimeout(() => {
         this.holdFired = true;
@@ -358,28 +375,56 @@ export class MushroomAdditionEntityCarousel extends LitElement {
   };
 
   private readonly onPointerMove = (event: PointerEvent): void => {
-    if (this.dragStartX === undefined) return;
-    if (Math.abs(event.clientX - this.dragStartX) > 8) this.clearHold();
+    if (this.dragStartX === undefined || this.dragStartY === undefined) return;
+    const deltaX = event.clientX - this.dragStartX;
+    const deltaY = event.clientY - this.dragStartY;
+    if (this.pointerAxis === "pending") {
+      if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < 4) return;
+      if (Math.abs(deltaY) > Math.abs(deltaX) * 1.15) {
+        this.pointerAxis = "vertical";
+        this.clearHold();
+        return;
+      }
+      this.pointerAxis = "horizontal";
+      this.dragging = true;
+      this.clearHold();
+      (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
+    }
+    if (this.pointerAxis !== "horizontal") return;
+    event.preventDefault();
+    event.stopPropagation();
+    const elapsed = Math.max(1, event.timeStamp - (this.lastPointerTime ?? event.timeStamp));
+    this.horizontalVelocity = (event.clientX - (this.lastPointerX ?? event.clientX)) / elapsed;
+    this.lastPointerX = event.clientX;
+    this.lastPointerTime = event.timeStamp;
+    this.dragOffset = this.constrainDrag(deltaX);
   };
 
   private readonly onPointerUp = (event: PointerEvent): void => {
     event.stopPropagation();
     if (this.dragStartX === undefined) return;
     const delta = event.clientX - this.dragStartX;
+    const deltaY = event.clientY - (this.dragStartY ?? event.clientY);
     const itemIndex = this.pointerItemIndex ?? this.selectedIndex;
     const startedOnItem = this.pointerStartedOnItem;
+    const wasHorizontal = this.pointerAxis === "horizontal";
+    const wasVertical = this.pointerAxis === "vertical" || Math.abs(deltaY) > Math.abs(delta) * 1.15;
+    const elapsed = Math.max(1, event.timeStamp - (this.lastPointerTime ?? event.timeStamp));
+    const releaseVelocity = Math.abs(event.clientX - (this.lastPointerX ?? event.clientX)) > 0
+      ? (event.clientX - (this.lastPointerX ?? event.clientX)) / elapsed
+      : this.horizontalVelocity;
     this.clearHold();
-    this.dragStartX = undefined;
-    this.pointerItemIndex = undefined;
-    this.pointerStartedOnItem = false;
-    if (Math.abs(delta) >= 16) {
-      this.select(delta > 0 ? -1 : 1);
+    this.resetPointer();
+    if (wasHorizontal && (Math.abs(delta) >= 10 || Math.abs(releaseVelocity) >= 0.16)) {
+      this.select(delta > 0 || releaseVelocity > 0 ? -1 : 1);
       return;
     }
     if (this.holdFired) {
       this.holdFired = false;
       return;
     }
+    if (wasHorizontal) return;
+    if (wasVertical || Math.max(Math.abs(delta), Math.abs(deltaY)) >= 6) return;
     if (!startedOnItem) return;
     if (itemIndex !== this.selectedIndex) {
       this.selectIndex(itemIndex);
@@ -390,11 +435,29 @@ export class MushroomAdditionEntityCarousel extends LitElement {
 
   private readonly cancelPointer = (): void => {
     this.clearHold();
-    this.dragStartX = undefined;
     this.holdFired = false;
+    this.resetPointer();
+  };
+
+  private constrainDrag(delta: number): number {
+    if (this.config?.carousel_loop !== false) return delta;
+    const pullingPastStart = this.selectedIndex === 0 && delta > 0;
+    const pullingPastEnd = this.selectedIndex === this.items.length - 1 && delta < 0;
+    return pullingPastStart || pullingPastEnd ? delta * 0.28 : delta;
+  }
+
+  private resetPointer(): void {
+    this.dragStartX = undefined;
+    this.dragStartY = undefined;
+    this.lastPointerX = undefined;
+    this.lastPointerTime = undefined;
+    this.horizontalVelocity = 0;
+    this.pointerAxis = "pending";
     this.pointerItemIndex = undefined;
     this.pointerStartedOnItem = false;
-  };
+    this.dragOffset = 0;
+    this.dragging = false;
+  }
 
   private clearHold(): void {
     if (this.holdTimer !== undefined) window.clearTimeout(this.holdTimer);
