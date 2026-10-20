@@ -122,7 +122,7 @@ const translations: Record<string, Record<string, string>> = {
     ulm_card_battery_battery_level_danger: "Low battery threshold",
     ulm_card_battery_battery_level_warning: "Battery warning threshold",
     ulm_card_battery_attribute: "Battery level attribute",
-    ulm_card_battery_battery_state_entity_id: "Charging state entity",
+    ulm_card_battery_battery_state_entity_id: "Battery/Charging state entity",
     ulm_card_battery_charger_type_entity_id: "Charger type entity",
     ulm_card_battery_charging_animation: "Animate while charging",
     ulm_card_battery_color_battery_level_danger: "Low battery color",
