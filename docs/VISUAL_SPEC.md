@@ -36,6 +36,19 @@ fallback.
 
 ## Editor contract
 
+**Native Area exception:** `area_card_advanced` uses the installed Area card and
+native Area editor rather than this collection's generic presentation contract.
+Its compact chips-style advanced control rows open a dedicated detail editor;
+labels appear under icons and bottom-align in an opt-in 64px row. The default
+unnamed native control height remains 42px. Entity/action/conditional/template
+buttons support native action selectors; conditions are native-delegated and
+templates are HA-server-rendered. Live checks on HA 2026.10.2 cover native
+display-mode sizing, editor round trips, aligned labels at 320px and 440px widths,
+conditional visibility, templates and isolated keyboard/click action events.
+Recheck native Area custom-feature APIs and extended row sizing after frontend
+updates. This addition is not included in the generated upstream-source visual
+acceptance count.
+
 Each family has a separate schema. The primary entity is always `entity`, shown
 at most once and filtered to suitable Home Assistant domains. Secondary inputs
 are explicit (`temperature_entity`, `humidity_entity`, `battery_entity`,

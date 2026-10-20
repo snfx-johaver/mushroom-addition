@@ -22,6 +22,7 @@ export type RoomSecondaryPart =
 
 export interface HomeAssistant {
   states: Record<string, HassEntity>;
+  areas?: Record<string, { area_id: string; name: string; [key: string]: unknown }>;
   config?: { unit_system?: { temperature?: string } };
   entities?: Record<string, {
     device_id?: string | null;

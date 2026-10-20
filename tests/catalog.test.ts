@@ -40,7 +40,7 @@ describe("catalog coverage", () => {
       UPSTREAM_CATALOG.filter((item) => item.category === category).length;
     expect(sourceCount("default-card")).toBe(5);
     expect(sourceCount("custom-card")).toBe(19);
-    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(22);
+    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(23);
   });
 
   it("keeps removed contributor names out of renamed public card metadata", () => {

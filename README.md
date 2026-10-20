@@ -3,7 +3,7 @@
 [![CI](https://github.com/snfx-johaver/mushroom-cards-addition/actions/workflows/ci.yml/badge.svg)](https://github.com/snfx-johaver/mushroom-cards-addition/actions/workflows/ci.yml)
 
 **Build a more useful Home Assistant dashboard without writing YAML.**
-Mushroom Cards Addition is a HACS-installable collection of **29 Mushroom-style
+Mushroom Cards Addition is a HACS-installable collection of **28
 dashboard components**, with graphical configuration, theme-aware styling and
 Home Assistant actions. It is a frontend custom-card collection, not a backend
 integration, and works alongside Mushroom without depending on its internals.
@@ -15,7 +15,7 @@ NAS metrics, speed tests and more. Configure entities, presentation and supporte
 controls directly in the dashboard editor; YAML remains available when preferred.
 
 The catalog maps **24 documented sources**—5 default-card sources and 19 custom-card
-sources—to **27 public components**. Related layouts are grouped into graphical
+sources—to **28 public components**, including five original additions. Related layouts are grouped into graphical
 variants instead of duplicating picker entries. See the
 [complete, source-linked catalog](docs/CATALOG.md), the generated
 [item-by-item parity matrix](docs/PARITY_MATRIX.md), and the
@@ -34,6 +34,96 @@ The plugin uses Home Assistant's public custom-card surface and native
 `ha-form`, icon, entity, color, and action selectors. Compatibility guards
 provide preview rendering before `hass` is available and explicit unavailable
 states for missing entities.
+
+### Area card advanced
+
+**Mushroom Addition - Area card advanced** (`custom:mushroom-addition-area-card-advanced`)
+hosts the **installed native Home Assistant Area card and its native editor**.
+It does not copy or reimplement Area: camera/picture/icon/compact modes, alerts,
+sensors, exclusions, layout, actions, standard controls and future native options
+are forwarded. This card specifically requires a frontend supporting native Area
+custom features (the target instance is Home Assistant 2026.10.2); the general
+2024.4 minimum above is not a compatibility promise for this card. Missing native
+helpers/components produce visible errors with retry, not a simulated fallback.
+
+In **Advanced area controls**, compact chips-style rows have drag handles,
+edit/remove buttons and keyboard/up/down reordering. **Add button** offers
+Entity (any domain), Action, Conditional and Template. Edit a row to configure
+name, inferred/custom icon, icon color, entity picture, content (name, state,
+relative last-changed/last-updated, attribute or custom text), and native
+tap/hold/double-tap action selectors. Names/content sit **below the icon,
+bottom-aligned**, using a shared 64px row; unnamed controls retain the native
+42px baseline. Named rows reserve one extra grid row. Conditional buttons use
+the installed native conditional card and conditions editor, including nested
+conditions/buttons. Template content/name/icon/color use HA `render_template`
+websocket subscriptions, surface backend errors and unsubscribe on removal.
+Conditional controls disable native preview mode and remain mounted while
+native-hidden, with no reserved horizontal slot, so native condition listeners
+can restore visibility. On frontends that evaluate conditions on the server,
+changing a cloned frontend `hass.states` object is not a valid visibility test:
+the real server verdict remains authoritative.
+Templates can reference `config`, `entity` and `user`, plus normal HA template
+globals. These are button counterparts to the four chip types, not a dependency
+on Mushroom chips or a claim to support every specialized chip type.
+
+Standard domain groups remain native (including group membership, exclusions,
+state and toggle semantics). For item-specific icons/actions, add an entity
+button instead of overriding an aggregate domain group. Domain color overrides
+are supported graphically; YAML domain icon/action overrides display an explicit warning.
+Omitting `controls` retains automatic HA controls **once**; `controls: []` renders
+none. Adding buttons to an automatic feature explicitly switches it to a manual
+list; use a separate controls feature if automatic groups must remain alongside.
+Action/template/conditional buttons are edited only in the advanced list and are
+omitted from the native editor's controls projection. Saved features retain
+`type: area-controls`; the custom feature type is runtime-only.
+
+```yaml
+type: custom:mushroom-addition-area-card-advanced
+area: office_joris
+display_type: icon
+features_position: bottom
+features:
+  - type: area-controls
+    controls:
+      - light
+      - type: entity
+        entity_id: sensor.office_temperature
+        name: Temperature
+        content_info: name
+        icon: mdi:thermometer
+        icon_color: orange
+        tap_action:
+          action: more-info
+      - type: action
+        name: Work
+        icon: mdi:desk
+        tap_action:
+          action: perform-action
+          perform_action: scene.turn_on
+          target:
+            entity_id: scene.office_work
+      - type: conditional
+        conditions:
+          - condition: state
+            entity: light.office
+            state: "on"
+        control:
+          type: template
+          entity_id: light.office
+          content: "{{ state_attr(entity, 'friendly_name') }}"
+          icon: mdi:lightbulb
+          tap_action:
+            action: toggle
+```
+
+Automated tests prove delegation and extension contracts with fake native
+elements; they do **not** establish complete live Area visual/behavior parity.
+Live checks on HA 2026.10.2 cover native display-mode sizing, editor round trips,
+bottom-aligned labels at 320px and 440px widths, conditional visibility and
+server-rendered templates. Recheck native frontend internals and named-row
+geometry when Home Assistant changes. Structurally identical native controls/features
+round-tripped without object identities use occurrence matching; use the advanced
+list to reorder duplicate buttons with distinct overrides unambiguously.
 
 ### Sonos media controls
 

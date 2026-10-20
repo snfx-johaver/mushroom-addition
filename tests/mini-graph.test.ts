@@ -82,6 +82,7 @@ describe("Mini Graph configuration and history processing", () => {
     document.body.replaceChildren();
     localStorage.clear();
     vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
   it("normalizes the documented defaults and direct entity shorthand", () => {
@@ -280,6 +281,7 @@ describe("Mini Graph configuration and history processing", () => {
   });
 
   it("parses Home Assistant's array-of-entity-arrays history response", async () => {
+    vi.spyOn(Date, "now").mockReturnValue(now);
     const send = vi.fn(async () => [
       history["sensor.temperature"],
       history["sensor.humidity"],
@@ -326,6 +328,7 @@ describe("Mini Graph configuration and history processing", () => {
   });
 
   it("renders array-response state-map and attribute history series", async () => {
+    vi.spyOn(Date, "now").mockReturnValue(now);
     const response = [
       [
         {

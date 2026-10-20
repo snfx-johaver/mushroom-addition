@@ -1,6 +1,20 @@
 # Upstream parity matrix
 
-Every public catalog entry has an explicit renderer ID, source digest, layout profile, editor-variable inventory, action inventory, and dependency deviation record.
+Every documented upstream catalog source has an explicit renderer ID, source digest, layout profile, editor-variable inventory, action inventory, and dependency deviation record.
+
+## Native addition: Area card advanced
+
+`area_card_advanced` is an original native-host addition, not one of the 24
+inventoried upstream YAML sources. `src/area-advanced.ts` delegates the installed
+`hui-area-card` and its static `getConfigElement()` editor, without copying native
+source. Only enhanced `area-controls` features change to a private custom feature
+type at runtime. Plain controls/default groups and every other native option are
+passed through. Extended entity/action/conditional/template buttons are original
+Lit controls; conditions delegate native conditional cards, and Jinja templates
+subscribe to HA's template websocket. Aggregate domain icon/action customization
+is intentionally not simulated. Mock-native tests in `tests/area-advanced.test.ts`
+cover forwarding, lifecycle/races, editor round trips and extensions; full live
+native parity and named-row geometry are not certified by those tests.
 
 ## Property mapping
 

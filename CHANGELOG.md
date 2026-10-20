@@ -4,6 +4,15 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Updates to 0.0.1 (no version bump)
 
+- Added **Mushroom Addition - Area card advanced** using the installed native HA
+  Area card/editor, with runtime-only enhanced controls and no copied upstream
+  code. Added any-domain entity buttons, chips-style compact list/detail editing,
+  names/bottom-aligned content, entity pictures, icon/color overrides and
+  tap/hold/double actions; action, native-conditional and server-template buttons
+  are opt-in. Native domain/default controls and all other Area features remain
+  delegated. Native custom-feature support is required. Checked on HA 2026.10.2:
+  native display-mode sizing, editor round trips, bottom-aligned named controls,
+  narrow layouts, conditional visibility and server-rendered templates.
 - Kept Room's square geometry and icon sizes while placing status indicators
   below secondary text. Fixed temperature/brightness labels with explicit
   entity selectors, valid-value checks and combined output; added Room-only

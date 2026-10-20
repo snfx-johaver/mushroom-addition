@@ -199,6 +199,17 @@ export const UPSTREAM_CATALOG: readonly CatalogItem[] = [
 ] as const;
 
 export const NATIVE_CATALOG: readonly CatalogItem[] = [
+  {
+    upstreamId: "area_card_advanced",
+    sourcePath: "src/area-advanced.ts",
+    kind: "card",
+    category: "custom-card",
+    family: "presence",
+    tag: "mushroom-addition-area-card-advanced",
+    name: "Area card advanced",
+    description: "Installed native Home Assistant Area card and editor, with any-entity controls, per-entity icons, colors and tap behaviors.",
+    preferredDomains: [],
+  },
   makeItem("custom_card_entity_carousel", "src/entity-carousel.ts"),
   {
     upstreamId: "advanced_home_energy_management",

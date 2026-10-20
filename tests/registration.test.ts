@@ -29,7 +29,8 @@ describe("Home Assistant registration", () => {
         getConfigElement(): Promise<HTMLElement>;
       };
       await expect(constructor.getConfigElement()).resolves.toMatchObject({
-        tagName: "MUSHROOM-ADDITION-EDITOR",
+        tagName: item.upstreamId === "area_card_advanced"
+          ? "MUSHROOM-ADDITION-AREA-CARD-ADVANCED-EDITOR" : "MUSHROOM-ADDITION-EDITOR",
       });
     }
   });
