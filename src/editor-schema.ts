@@ -40,8 +40,6 @@ const colorDefaults: Record<string, string> = {
   battery_critical_color: "red",
   ulm_card_media_player_color: "blue",
   ulm_card_alarm_time_color: "blue",
-  ulm_custom_card_bar_card_color: "blue",
-  ulm_custom_card_bar_card_icon_color: "grey",
   disk_color: "red",
   temperature_color: "orange",
   memory_color: "blue",
@@ -88,9 +86,6 @@ const percentageOptions = new Set([
   "ulm_card_battery_battery_level_warning",
 ]);
 const booleanOptions = new Set([
-  "ulm_custom_card_bar_card_indicator",
-  "ulm_custom_card_bar_card_show_icon",
-  "ulm_custom_card_bar_card_value",
   "ulm_card_media_player_collapsible",
   "ulm_card_media_player_idle_off",
   "ulm_card_media_player_more_info",
@@ -98,8 +93,6 @@ const booleanOptions = new Set([
   "ulm_card_media_player_force_background_color",
 ]);
 const numericBoxOptions = new Set([
-  "ulm_custom_card_bar_card_min",
-  "ulm_custom_card_bar_card_max",
   "ulm_card_media_player_enable_volume_adjust",
 ]);
 const certifiedCoreVariables = new Set([
@@ -179,7 +172,6 @@ const presentation = (): EditorField[] => [
 const fixedIconSources = new Set([
   "card_room",
   "card_welcome_scenes",
-  "custom_card_bar_card",
   "custom_card_welcome",
   "custom_card_tablet",
 ]);
@@ -261,7 +253,6 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
     color("battery_low_color"),
     color("battery_critical_color"),
   ],
-  bar: (item) => [...common(item)],
   energy: (item) => [...common(item), entity(["sensor"], "min_entity"), entity(["sensor"], "max_entity"), toggle("show_graph")],
   sensor: (item) => [...common(item), toggle("show_graph")],
   media: (item) => [...common(item), toggle("show_controls")],

@@ -7,7 +7,7 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 - Added Mushroom-compatible Sonos media information, volume display, selectable
   volume/playback controls, and collapse-when-off behavior with feature-aware
   service calls, entity-driven icons, and isolated nested control actions.
-- Removed Internet Speed, Graph, Entity Overview, More Power Outlet and Gauge cards.
+- Removed Internet Speed, Graph, Entity Overview, More Power Outlet, Gauge, and Bar Card.
   Mini Graph and Speedtest Gauges remain available.
 - Added theme-controlled Mushroom-style borders to standalone cards.
 - Added a carousel-only mode via the graphical **Show card header** switch.

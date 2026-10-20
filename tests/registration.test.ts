@@ -517,6 +517,7 @@ describe("Home Assistant registration", () => {
       "mushroom-addition-custom-card-entity-overview",
       "mushroom-addition-custom-card-more-power-outlet",
       "mushroom-addition-custom-card-gauge",
+      "mushroom-addition-custom-card-bar-card",
     ]) {
       expect(customElements.get(tag)).toBeUndefined();
       expect(window.customCards?.some((card) => card.type === tag)).toBe(false);

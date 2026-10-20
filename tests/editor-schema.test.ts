@@ -284,23 +284,6 @@ describe("family editor schemas", () => {
     expect(additionalEditorSchemaFor(speedtest)).toEqual([]);
   });
 
-  it("gives Bar Card only its source-specific controls", () => {
-    const bar = CATALOG.find((item) => item.upstreamId === "custom_card_bar_card")!;
-    expect(bar.family).toBe("bar");
-    const core = editorSchemaFor(bar).map((field) => field.name);
-    expect(core).not.toEqual(expect.arrayContaining(["show_graph", "min_entity", "max_entity"]));
-    expect(upstreamEditorSchemaFor(bar).map((field) => field.name)).toEqual(expect.arrayContaining([
-      "ulm_custom_card_bar_card_color",
-      "ulm_custom_card_bar_card_icon",
-      "ulm_custom_card_bar_card_icon_color",
-      "ulm_custom_card_bar_card_indicator",
-      "ulm_custom_card_bar_card_min",
-      "ulm_custom_card_bar_card_max",
-      "ulm_custom_card_bar_card_show_icon",
-      "ulm_custom_card_bar_card_value",
-    ]));
-  });
-
   it("gives Waste Collection semantic stream controls without graph settings", () => {
     const waste = CATALOG.find((item) => item.upstreamId === "custom_card_trash")!;
     const core = editorSchemaFor(waste);

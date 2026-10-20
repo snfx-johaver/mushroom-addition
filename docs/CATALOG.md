@@ -4,8 +4,8 @@ This manifest maps the documented card catalog to Mushroom Cards Addition
 registrations. It is generated from `src/catalog.ts`; CI rejects duplicate
 IDs, missing source paths, invalid namespaces, or broken popup mappings.
 
-**Coverage:** 25 documented upstream card sources map to
-28 public card components.
+**Coverage:** 24 documented upstream card sources map to
+27 public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
 of duplicate picker entries. 1 popup templates and
 1 implementation helpers are inventoried but are not
@@ -20,7 +20,6 @@ public registrations.
 | `card_welcome_scenes` | default-card | `custom:mushroom-addition-card-welcome-scenes` | scene | default | `card_welcome_scenes` |
 | `custom_card_trash` | custom-card | `custom:mushroom-addition-custom-card-trash` | sensor | default | `custom_card_trash` |
 | `custom_card_alarm_time` | custom-card | `custom:mushroom-addition-custom-card-alarm-time` | alarm-time | default | `custom_card_alarm_time` |
-| `custom_card_bar_card` | custom-card | `custom:mushroom-addition-custom-card-bar-card` | bar | default | `custom_card_bar_card` |
 | `custom_card_roomview` | custom-card | `custom:mushroom-addition-custom-card-roomview` | presence | default | `custom_card_roomview` |
 | `custom_card_room_overview` | custom-card | `custom:mushroom-addition-custom-card-room-overview` | presence | default | `custom_card_room_overview` |
 | `custom_card_welcome` | custom-card | `custom:mushroom-addition-custom-card-welcome` | presence | default | `custom_card_welcome` |

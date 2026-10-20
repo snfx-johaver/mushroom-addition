@@ -13,7 +13,7 @@ tokens but not a generic layout.
 | Weather | Condition and date header, outside temperature, and four configurable weather metrics | `custom_cards/custom_card_weather_metrics` |
 | Scene | Compact heading plus a grid of scene activation pills | `card_templates/cards/card_scenes_welcome.yaml`, `docs/usage/cards/card_scenes.md` |
 | Battery | Threshold-colored battery icon, large percentage and level bar | `card_templates/cards/card_battery.yaml`, `docs/usage/cards/card_battery.md` |
-| Energy/power | Current value emphasis, source-specific graph, gauge, or bar composition | `custom_cards/custom_card_more_power_outlet/`, `custom_cards/custom_card_bar_card/` |
+| Energy/power | Current value emphasis, source-specific graph, or gauge composition | `custom_cards/custom_card_more_power_outlet/` |
 | Sensor/graph | Current sensor reading plus deterministic compact history/sparkline treatment | `card_templates/2-line_cards/card_graph.yaml`, `docs/usage/cards/card_graph.md` |
 | Media | Artwork or app/device icon, title/state, optional transport controls | `card_templates/cards/card_media_player.yaml`, `docs/usage/cards/card_media_player.md` |
 | Navigation | Direction icon, destination copy and trailing chevron | `card_templates/cards/card_navigate.yaml` |
@@ -55,9 +55,6 @@ Assistant entity, action, icon, boolean, number, or text selectors.
 `demo/` provides deterministic representative states for the complete checked
 card catalog, exactly once per registration. The current browser-rendered
 fixture is committed at [`docs/assets/catalog-fixture.png`](assets/catalog-fixture.png).
-Bar Card is the first source-specific visual acceptance gate; its inspected
-comparison is committed at
-[`docs/assets/visual-audit/custom-card-bar-card-comparison.png`](assets/visual-audit/custom-card-bar-card-comparison.png).
 The generated [`VISUAL_AUDIT.md`](VISUAL_AUDIT.md) ledger records exact
 accepted/total progress, source references, deterministic fixtures, comparison
 artifacts, structural contracts, and individually reviewed deviations. The

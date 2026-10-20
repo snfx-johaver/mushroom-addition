@@ -273,7 +273,6 @@ export const createStubConfig = (
       : undefined,
     show_forecast: descriptor.family === "weather",
     show_graph: ["battery", "energy", "sensor"].includes(descriptor.family),
-    ulm_custom_card_bar_card_value: descriptor.family === "bar" ? true : undefined,
     entities: descriptor.upstreamId === "mini_graph_card" && entity
       ? [entity]
       : descriptor.variants?.includes("with-sensors")

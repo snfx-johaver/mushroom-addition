@@ -308,46 +308,6 @@ const renderDefaultBattery = (ctx: RenderContext): TemplateResult => {
 
 const configuredColor = resolveColor;
 
-const renderBarCard = (ctx: RenderContext): TemplateResult => {
-  const value = numeric(ctx.entity?.state) ?? 0;
-  const min = numeric(configured(ctx, "ulm_custom_card_bar_card_min")) ?? 0;
-  const max = numeric(configured(ctx, "ulm_custom_card_bar_card_max")) ?? 100;
-  const range = max - min;
-  const percentage = range > 0 ? Math.max(0, Math.min(100, ((value - min) / range) * 100)) : 0;
-  const showHeader = configured<boolean>(ctx, "ulm_custom_card_bar_card_show_icon") !== false;
-  const showValue = configured<boolean>(ctx, "ulm_custom_card_bar_card_value") === true;
-  const showIndicator = configured<boolean>(ctx, "ulm_custom_card_bar_card_indicator") === true;
-  const barColor = configuredColor(
-    configured<string>(ctx, "ulm_custom_card_bar_card_color"),
-    "var(--google-blue, #4285f4)",
-  );
-  const iconColor = configuredColor(
-    configured<string>(ctx, "ulm_custom_card_bar_card_icon_color"),
-    "var(--secondary-text-color)",
-  );
-  const barIcon = configured<string>(ctx, "ulm_custom_card_bar_card_icon") ||
-    ctx.config.icon || ctx.entity?.attributes.icon || "mdi:chart-bar";
-  const valueText = stateLabel(ctx.entity);
-  return ctx.actionSurface(`bar-card ${showHeader ? "has-header" : "bar-only"}`, html`
-    ${showHeader ? html`
-      <div class="bar-card-header">
-        <span class="bar-card-icon" style=${`--bar-icon-color:${iconColor}`}>
-          <ha-icon .icon=${barIcon}></ha-icon>
-        </span>
-        <span class="bar-card-copy">${heading(ctx, displayName(ctx.config, ctx.entity, ctx.hass), valueText)}</span>
-      </div>
-    ` : nothing}
-    <div class="bar-card-track" style=${`--bar-fill:${barColor};--bar-percentage:${percentage}%`}>
-      <span class="bar-card-fill" style=${`width:${percentage}%`}></span>
-      ${showIndicator ? html`<span class="bar-card-indicator" style=${`left:${percentage}%`}></span>` : nothing}
-      ${showValue ? html`
-        <b class="bar-card-inside-value">${valueText}</b>
-        <b class="bar-card-inside-value bar-card-inside-value-filled" aria-hidden="true">${valueText}</b>
-      ` : nothing}
-    </div>
-  `);
-};
-
 const sparkline = (
   ctx: RenderContext,
   filled = false,
@@ -2514,7 +2474,6 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
   switch (ctx.descriptor.family) {
     case "scene": return renderScene(ctx);
     case "battery": return renderBattery(ctx);
-    case "bar": return renderBarCard(ctx);
     case "energy":
     case "sensor": return renderMetric(ctx);
     case "media": return renderMedia(ctx);

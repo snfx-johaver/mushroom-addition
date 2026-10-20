@@ -7,7 +7,7 @@ const baseCards = [
 ] as const;
 
 const customCards = [
-  "trash", "alarm_time", "bar_card",
+  "trash", "alarm_time",
   "roomview",
   "room_overview", "welcome",
   "washer", "sun",
@@ -31,13 +31,12 @@ const humanize = (id: string): string =>
     .join(" ");
 
 const familyFor = (id: string): string => {
-  if (id === "custom_card_bar_card") return "bar";
   if (id === "custom_card_alarm_time") return "alarm-time";
   if (/alarm|alert|lock/.test(id)) return "security";
   if (/navigate|back/.test(id)) return "navigation";
   if (/battery/.test(id)) return "battery";
   if (/power_outlet|more_power_outlet/.test(id)) return "control";
-  if (/energy|power|gauge|speedtest|graph|apex|bar_card|myenedis/.test(id)) return "energy";
+  if (/energy|power|gauge|speedtest|graph|apex|myenedis/.test(id)) return "energy";
   if (/weather|sun|pollen|moon/.test(id)) return "weather";
   if (/scene/.test(id)) return "scene";
   if (/person|tracker|tracer|presence|room|welcome/.test(id)) return "presence";

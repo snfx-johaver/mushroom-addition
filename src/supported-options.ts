@@ -34,7 +34,6 @@ export const canonicalNameOptions = new Set([
   "ulm_card_input_number_name",
   "ulm_card_media_player_with_controls_name",
   "ulm_card_printer_name",
-  "ulm_custom_card_bar_card_name",
   "ulm_custom_card_metrics_entitites_name",
 ]);
 
@@ -73,17 +72,6 @@ const supportedByFamily: Record<string, readonly string[]> = {
 };
 
 const supportedByItem: Record<string, readonly string[]> = {
-  custom_card_bar_card: [
-    "ulm_custom_card_bar_card_color",
-    "ulm_custom_card_bar_card_icon",
-    "ulm_custom_card_bar_card_icon_color",
-    "ulm_custom_card_bar_card_indicator",
-    "ulm_custom_card_bar_card_max",
-    "ulm_custom_card_bar_card_min",
-    "ulm_custom_card_bar_card_name",
-    "ulm_custom_card_bar_card_show_icon",
-    "ulm_custom_card_bar_card_value",
-  ],
   custom_card_washer: [
     "ulm_custom_card_washer_power",
     "ulm_custom_card_washer_remote_control",

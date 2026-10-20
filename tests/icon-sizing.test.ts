@@ -25,7 +25,6 @@ describe("default Mushroom icon sizing", () => {
   });
 
   it.each([
-    ".bar-card-icon",
     ".scene-button i",
     ".room-view-icon",
     ".welcome-items i",

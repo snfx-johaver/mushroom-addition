@@ -503,31 +503,6 @@ describe("family renderers", () => {
 
   });
 
-  it("renders Bar Card as a compact header and 35px progress bar without graph regions", async () => {
-    const markup = await render("mushroom-addition-custom-card-bar-card", {
-      type: "custom:mushroom-addition-custom-card-bar-card",
-      entity: "sensor.memory",
-      ulm_custom_card_bar_card_name: "Memory Usage",
-      ulm_custom_card_bar_card_min: 0,
-      ulm_custom_card_bar_card_max: 100,
-      ulm_custom_card_bar_card_value: true,
-      ulm_custom_card_bar_card_color: "#81c995",
-      ulm_custom_card_bar_card_icon: "mdi:memory",
-    });
-    expect(markup).toContain("bar-card");
-    expect(markup).toContain("bar-card-header");
-    expect(markup).toContain("bar-card-icon");
-    expect(markup).toContain("ulm-name");
-    expect(markup).toContain("ulm-label");
-    expect(markup).toContain("bar-card-track");
-    expect(markup).toContain("bar-card-fill");
-    expect(markup).toContain("bar-card-inside-value");
-    expect(markup).toContain("width:17.7%");
-    expect(markup).not.toContain("sparkline");
-    expect(markup).not.toContain("metric-extremes");
-    expect(markup).not.toContain("ulm-metric");
-  });
-
   it.each([
     ["card_battery", "mushroom-addition-card-battery", "sensor.battery", "ulm-default-battery", "battery-track"],
     ["card_media_player", "mushroom-addition-card-media-player", "media_player.tv", "ulm-media", "sparkline"],

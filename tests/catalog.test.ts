@@ -29,6 +29,7 @@ describe("catalog coverage", () => {
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_better_thermostat")).toBe(false);
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_vehicle_status")).toBe(false);
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_gauge")).toBe(false);
+    expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_bar_card")).toBe(false);
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_pollen_forecast")).toBe(false);
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "advanced_energy_buy_sell")).toBe(true);
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "advanced_energy_panel_health")).toBe(true);
@@ -38,8 +39,8 @@ describe("catalog coverage", () => {
     const sourceCount = (category: string) =>
       UPSTREAM_CATALOG.filter((item) => item.category === category).length;
     expect(sourceCount("default-card")).toBe(5);
-    expect(sourceCount("custom-card")).toBe(20);
-    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(23);
+    expect(sourceCount("custom-card")).toBe(19);
+    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(22);
   });
 
   it("keeps removed contributor names out of renamed public card metadata", () => {

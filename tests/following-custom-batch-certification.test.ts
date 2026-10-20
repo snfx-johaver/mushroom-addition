@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { CATALOG } from "../src/catalog";
-import { additionalEditorSchemaFor, editorSchemaFor, upstreamEditorSchemaFor } from "../src/editor-schema";
+import { additionalEditorSchemaFor, editorSchemaFor } from "../src/editor-schema";
 import { normalizeConfig } from "../src/helpers";
 import type { AdditionConfig, HomeAssistant } from "../src/types";
 import "../src/index";
@@ -229,7 +229,6 @@ describe("following custom batch certification", () => {
       configs: Record<string, AdditionConfig>;
     };
     expect(evidence.sources).toEqual([
-      "custom_card_bar_card",
       "custom_card_washer",
       "custom_card_sun",
     ]);
@@ -243,7 +242,6 @@ describe("following custom batch certification", () => {
 
   it("creates source-specific picker defaults from the provided live entity mappings", () => {
     const expected = {
-      custom_card_bar_card: { entity: "sensor.cv_plug_power" },
       custom_card_washer: {
         entity: "sensor.wasmachine_operation_state",
         program_stage_entity: "sensor.wasmachine_program_state",
@@ -281,7 +279,6 @@ describe("following custom batch certification", () => {
 
   it("provides dedicated graphical editor fields without unrelated family controls", () => {
     const expectedFields: Record<string, string[]> = {
-      custom_card_bar_card: ["entity", "ulm_custom_card_bar_card_min", "ulm_custom_card_bar_card_value"],
       custom_card_washer: [
         "entity", "program_stage_entity", "washer_power_entity", "door_entity", "finished_entity",
         "ulm_custom_card_washer_start_action", "ulm_custom_card_washer_stop_action",
@@ -295,14 +292,9 @@ describe("following custom batch certification", () => {
     };
     for (const [sourceId, fields] of Object.entries(expectedFields)) {
       const descriptor = item(sourceId);
-      const names = [
-        ...editorSchemaFor(descriptor),
-        ...(sourceId === "custom_card_bar_card" ? upstreamEditorSchemaFor(descriptor) : []),
-      ].map(({ name }) => name);
+      const names = editorSchemaFor(descriptor).map(({ name }) => name);
       expect(names).toEqual(expect.arrayContaining(fields));
     }
-    expect(editorSchemaFor(item("custom_card_bar_card")).map(({ name }) => name))
-      .not.toEqual(expect.arrayContaining(["show_graph", "min_entity", "max_entity"]));
     const washerFields = editorSchemaFor(item("custom_card_washer")).flatMap((field) =>
       field.schema ?? [field]);
     const washerFieldNames = washerFields.map(({ name }) => name);
@@ -335,13 +327,8 @@ describe("following custom batch certification", () => {
     });
   });
 
-  it("round-trips all six source configs through the graphical editor", async () => {
+  it("round-trips the remaining washer and Sun source configs through the graphical editor", async () => {
     for (const [sourceId, config] of Object.entries({
-      custom_card_bar_card: {
-        type: "custom:mushroom-addition-custom-card-bar-card",
-        entity: "sensor.cv_plug_power",
-        ulm_custom_card_bar_card_value: true,
-      },
       custom_card_washer: {
         type: "custom:mushroom-addition-custom-card-washer",
         entity: "sensor.wasmachine_operation_state",
@@ -391,26 +378,6 @@ describe("following custom batch certification", () => {
       }));
       editor.remove();
     }
-  });
-
-  it("preserves Bar Card's accepted 35px composition and state behavior", async () => {
-    const styles = readFileSync(join(process.cwd(), "src", "styles.ts"), "utf8");
-    expect(styles).toContain("grid-template-rows: minmax(60px, 1fr) 35px");
-    expect(styles).toContain("height: 35px");
-    expect(styles).toContain("var(--card-background-color, var(--ha-card-background, #fff))");
-    expect(styles).toContain("clip-path: inset(0 calc(100% - var(--bar-percentage)) 0 0)");
-    const card = await renderCard("mushroom-addition-custom-card-bar-card", {
-      type: "custom:mushroom-addition-custom-card-bar-card",
-      entity: "sensor.cv_plug_power",
-      ulm_custom_card_bar_card_min: 0,
-      ulm_custom_card_bar_card_max: 100,
-      ulm_custom_card_bar_card_value: true,
-      ulm_custom_card_bar_card_indicator: true,
-    });
-    expect((card.shadowRoot.querySelector(".bar-card-fill") as HTMLElement).style.width).toBe("17.7%");
-    expect(card.shadowRoot.querySelector(".bar-card-indicator")).not.toBeNull();
-    expect(card.shadowRoot.querySelectorAll(".bar-card-inside-value")).toHaveLength(2);
-    expect(card.shadowRoot.querySelector(".bar-card-inside-value")?.textContent).toContain("17.7 W");
   });
 
   it("renders Washer stopped, running, progress, stage, delay, and auxiliary states", async () => {
@@ -582,11 +549,6 @@ describe("following custom batch certification", () => {
     runningWasher.remove();
 
     for (const [tag, config, expectedAction] of [
-      [
-        "mushroom-addition-custom-card-bar-card",
-        { type: "custom:mushroom-addition-custom-card-bar-card", entity: "sensor.cv_plug_power" },
-        { action: "more-info" },
-      ],
       [
         "mushroom-addition-custom-card-sun",
         { type: "custom:mushroom-addition-custom-card-sun", entity: "sun.sun" },
