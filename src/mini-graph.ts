@@ -311,7 +311,17 @@ export const calculateBounds = (
   const upperBound = parseBound(upper);
   if (lowerBound.value !== undefined) min = lowerBound.soft ? Math.min(min, lowerBound.value) : lowerBound.value;
   if (upperBound.value !== undefined) max = upperBound.soft ? Math.max(max, upperBound.value) : upperBound.value;
-  if (max <= min) max = min + 1;
+  if (max <= min) {
+    const padding = Math.max(1, Math.abs(min) * 0.05);
+    const hardLowerOnly = lowerBound.value !== undefined && !lowerBound.soft && upperBound.value === undefined;
+    const hardUpperOnly = upperBound.value !== undefined && !upperBound.soft && lowerBound.value === undefined;
+    if (hardLowerOnly) max = min + padding * 2;
+    else if (hardUpperOnly) min = max - padding * 2;
+    else {
+      min -= padding;
+      max += padding;
+    }
+  }
   if (max - min < minimumRange) {
     const midpoint = (min + max) / 2;
     min = midpoint - minimumRange / 2;
@@ -356,6 +366,39 @@ const pathForPoints = (
     path += ` C ${midpoint} ${previous.y}, ${midpoint} ${current.y}, ${current.x} ${current.y}`;
   }
   return path;
+};
+
+const timestampFromHistory = (value: unknown, fallback: number): number => {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value < 10_000_000_000 ? value * 1000 : value;
+  }
+  const parsed = Date.parse(String(value ?? ""));
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
+const historyRowsByEntity = (
+  response: unknown,
+  requestedEntities: MiniGraphEntityConfig[],
+): Map<string, unknown[]> => {
+  const result = new Map<string, unknown[]>();
+  if (Array.isArray(response)) {
+    response.forEach((group, index) => {
+      if (!Array.isArray(group)) return;
+      const first = group.find((row) => row && typeof row === "object") as Record<string, unknown> | undefined;
+      const entityId = typeof first?.entity_id === "string"
+        ? first.entity_id
+        : typeof first?.e === "string"
+          ? first.e
+          : requestedEntities[index]?.entity;
+      if (entityId) result.set(entityId, group);
+    });
+    return result;
+  }
+  if (!response || typeof response !== "object") return result;
+  for (const [entityId, rows] of Object.entries(response as Record<string, unknown>)) {
+    if (Array.isArray(rows)) result.set(entityId, rows);
+  }
+  return result;
 };
 
 export class MushroomMiniGraphCard extends LitElement {
@@ -651,14 +694,18 @@ export class MushroomMiniGraphCard extends LitElement {
     const visible = this.series.filter((entry) => entry.config.show_graph !== false && entry.points.length);
     const primary = visible.filter((entry) => entry.config.y_axis !== "secondary");
     const secondary = visible.filter((entry) => entry.config.y_axis === "secondary");
+    const primaryValues = primary.flatMap((entry) => entry.points.map((point) => point.value));
+    const secondaryValues = secondary.flatMap((entry) => entry.points.map((point) => point.value));
+    if (show.graph === "bar" && this.config?.lower_bound === undefined) primaryValues.push(0);
+    if (show.graph === "bar" && this.config?.lower_bound_secondary === undefined) secondaryValues.push(0);
     const primaryBounds = calculateBounds(
-      primary.flatMap((entry) => entry.points.map((point) => point.value)),
+      primaryValues,
       this.config?.lower_bound,
       this.config?.upper_bound,
       Number(this.config?.min_bound_range ?? 0),
     );
     const secondaryBounds = calculateBounds(
-      secondary.flatMap((entry) => entry.points.map((point) => point.value)),
+      secondaryValues,
       this.config?.lower_bound_secondary,
       this.config?.upper_bound_secondary,
       Number(this.config?.min_bound_range_secondary ?? 0),
@@ -732,8 +779,9 @@ export class MushroomMiniGraphCard extends LitElement {
       const transformedMax = this.config?.logarithmic ? Math.log10(Math.max(bounds.max, Number.EPSILON)) : bounds.max;
       return height - ((transformed - transformedMin) / Math.max(Number.EPSILON, transformedMax - transformedMin)) * height;
     };
+    const singleTimestamp = minTime === maxTime;
     const plotted = series.points.map((point) => ({
-      x: ((point.time - minTime) / Math.max(1, maxTime - minTime)) * 500,
+      x: singleTimestamp ? 250 : ((point.time - minTime) / Math.max(1, maxTime - minTime)) * 500,
       y: scaleValue(point.value),
       value: point.value,
       time: point.time,
@@ -743,20 +791,25 @@ export class MushroomMiniGraphCard extends LitElement {
       const slot = 500 / Math.max(1, Math.min(96, plotted.length));
       const spacing = Number(this.config?.bar_spacing ?? 4);
       const width = Math.max(1, (slot - spacing) / seriesCount);
+      const baseline = Math.max(0, Math.min(height, scaleValue(0)));
       return svg`
         <g class="series">
           ${plotted.slice(-96).map((point, pointIndex) => {
             const x = pointIndex * slot + index * width + spacing / 2;
-            return svg`<rect x=${x} y=${point.y} width=${width} height=${Math.max(0, height - point.y)} rx="1" fill=${color}>
+            const y = Math.min(point.y, baseline);
+            return svg`<rect x=${x} y=${y} width=${width} height=${Math.abs(baseline - point.y)} rx="1" fill=${color}>
               <title>${this.tooltip(series, point.value, point.time)}</title>
             </rect>`;
           })}
         </g>
       `;
     }
-    const path = pathForPoints(plotted, series.config.smoothing ?? this.config?.smoothing ?? true);
+    const linePoints = plotted.length === 1
+      ? [{ ...plotted[0], x: 0 }, { ...plotted[0], x: 500 }]
+      : plotted;
+    const path = pathForPoints(linePoints, series.config.smoothing ?? this.config?.smoothing ?? true);
     const fillPath = plotted.length
-      ? `${path} L ${plotted.at(-1)!.x} ${height} L ${plotted[0].x} ${height} Z`
+      ? `${path} L ${linePoints.at(-1)!.x} ${height} L ${linePoints[0].x} ${height} Z`
       : "";
     return svg`
       <g class="series">
@@ -923,12 +976,10 @@ export class MushroomMiniGraphCard extends LitElement {
       minimal_response: false,
       significant_changes_only: false,
     });
-    const history = response && typeof response === "object"
-      ? response as Record<string, unknown>
-      : {};
+    const history = historyRowsByEntity(response, needsFetch);
     if (generation !== this.historyGeneration) return result;
     for (const entity of needsFetch) {
-      const rows = Array.isArray(history[entity.entity]) ? history[entity.entity] as unknown[] : [];
+      const rows = history.get(entity.entity) ?? [];
       const points = rows.flatMap((row) => {
         if (!row || typeof row !== "object") return [];
         const record = row as Record<string, unknown>;
@@ -939,9 +990,10 @@ export class MushroomMiniGraphCard extends LitElement {
             value && typeof value === "object" ? (value as Record<string, unknown>)[key] : undefined, attributes)
           : state;
         const mapped = mappedValue(raw, this.config?.state_map ?? []);
-        const timestamp = Date.parse(String(
-          record.last_updated ?? record.last_changed ?? record.lu ?? record.lc ?? new Date(end).toISOString(),
-        ));
+        const timestamp = timestampFromHistory(
+          record.last_updated ?? record.last_changed ?? record.lu ?? record.lc,
+          end,
+        );
         return mapped.value === undefined || !Number.isFinite(timestamp)
           ? []
           : [{ time: timestamp, value: mapped.value, label: mapped.label }];
