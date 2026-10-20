@@ -96,7 +96,11 @@ export const createStubConfig = (
     .filter((entityId) => entityId.startsWith("media_player.") && entityText(entityId).includes("sonos"))
     .sort((left, right) => sonosControlCount(hass, right) - sonosControlCount(hass, left))[0];
   const semanticPrimary =
-    descriptor.upstreamId === "mini_graph_card"
+    descriptor.upstreamId === "advanced_home_energy_management"
+      ? findEntity(["sensor"], ["hems", "house", "consumption"]) ??
+        findEntity(["sensor"], ["house", "consumption"]) ??
+        findEntityByDeviceClass(["power"])
+      : descriptor.upstreamId === "mini_graph_card"
       ? findEntityByDeviceClass(["temperature"]) ??
         findEntityByDeviceClass(["power", "energy"]) ??
         findEntity(["sensor"], [])
@@ -252,12 +256,16 @@ export const createStubConfig = (
       }
       : descriptor.upstreamId === "custom_card_playstation"
         ? { action: entity ? "more-info" : "none", entity }
+        : descriptor.upstreamId === "advanced_home_energy_management"
+          ? { action: "navigate", navigation_path: "/hems-tower/savings-overview" }
         : descriptor.upstreamId === "custom_card_plant"
           ? { action: "more-info" }
           : tapAction;
   return {
     ...populatedDefaultsFor(descriptor, hass, entity),
-    name: entity ? hass?.states[entity]?.attributes.friendly_name : sampleName(descriptor),
+    name: descriptor.upstreamId === "advanced_home_energy_management"
+      ? undefined
+      : entity ? hass?.states[entity]?.attributes.friendly_name : sampleName(descriptor),
     secondary: entity ? undefined : isText ? "Example" : "Preview",
     variant: defaultVariant,
     tap_action: stubTapAction,
@@ -273,6 +281,30 @@ export const createStubConfig = (
       : descriptor.variants?.includes("with-sensors")
       ? entitiesFallback.slice(0, 2)
       : undefined,
+    ...(descriptor.upstreamId === "advanced_home_energy_management"
+      ? {
+        grid_power_entity: findEntity(["sensor"], ["p1", "meter", "power"]),
+        grid_phase_1_entity: findEntity(["sensor"], ["p1", "meter", "power", "phase", "1"]),
+        grid_phase_2_entity: findEntity(["sensor"], ["p1", "meter", "power", "phase", "2"]),
+        grid_phase_3_entity: findEntity(["sensor"], ["p1", "meter", "power", "phase", "3"]),
+        solar_power_entity: findEntity(["sensor"], ["hems", "pv", "power"]),
+        solar_forecast_entity: findEntity(["sensor"], ["energy", "production", "today"]),
+        battery_level_entity: findEntity(["sensor"], ["zendure", "total", "state", "charge"]),
+        battery_power_entity: findEntity(["sensor"], ["zendure", "power"]),
+        battery_1_level_entity: findEntity(["sensor"], ["zendure", "1", "state", "charge"]),
+        battery_1_power_entity: findEntity(["sensor"], ["zendure", "1", "power"]),
+        battery_2_level_entity: findEntity(["sensor"], ["zendure", "2", "state", "charge"]),
+        battery_2_power_entity: findEntity(["sensor"], ["zendure", "2", "power"]),
+        battery_3_level_entity: findEntity(["sensor"], ["zendure", "3", "state", "charge"]),
+        battery_3_power_entity: findEntity(["sensor"], ["zendure", "3", "power"]),
+        ev_charger_power_entity: findEntity(["sensor"], ["alfen", "active", "power", "socket", "1"]),
+        energy_mode_entity: findEntity(["input_select", "select"], ["zendure", "operation", "mode"]),
+        energy_auto_control_entity: findEntity(["input_boolean", "binary_sensor", "switch"], ["hems", "auto", "control"]),
+        electricity_price_entity: findEntity(["sensor"], ["nordpool", "kwh", "nl", "eur"]),
+        tariff_markup_entity: findEntity(["sensor", "input_number"], ["hems", "rate", "markup"]),
+        tariff_vat_entity: findEntity(["sensor", "input_number"], ["hems", "vat", "percentage"]),
+      }
+      : {}),
     ...(descriptor.upstreamId === "custom_card_washer"
       ? {
         program_stage_entity: findEntity(["sensor", "select"], ["wasmachine", "program"]) ??

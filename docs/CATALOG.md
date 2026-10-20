@@ -5,7 +5,7 @@ registrations. It is generated from `src/catalog.ts`; CI rejects duplicate
 IDs, missing source paths, invalid namespaces, or broken popup mappings.
 
 **Coverage:** 31 documented upstream card sources map to
-31 public card components.
+32 public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
 of duplicate picker entries. 1 popup templates and
 1 implementation helpers are inventoried but are not
@@ -44,6 +44,7 @@ public registrations.
 | `custom_card_pollen` | custom-card | `custom:mushroom-addition-custom-card-pollen` | weather | default | `custom_card_pollen` |
 | `mini_graph_card` | custom-card | `custom:mushroom-addition-mini-graph-card` | energy | line, bar | `mini_graph_card` |
 | `custom_card_entity_carousel` | custom-card | `custom:mushroom-addition-custom-card-entity-carousel` | sensor | default | `custom_card_entity_carousel` |
+| `advanced_home_energy_management` | custom-card | `custom:mushroom-addition-advanced-home-energy-management` | energy | default | `advanced_home_energy_management` |
 
 ## Unified component mapping
 
