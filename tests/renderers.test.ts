@@ -1007,12 +1007,61 @@ describe("family renderers", () => {
     expect(buttons[1].style.transform).toContain("rotateY(0deg)");
     expect(buttons[1].dataset.shadow).toBe("true");
     const swipeSurface = carousel.shadowRoot?.querySelector(".carousel") as HTMLElement;
-    swipeSurface.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: 160, pointerId: 10 }));
-    swipeSurface.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, clientX: 120, pointerId: 10 }));
+    swipeSurface.dispatchEvent(new PointerEvent("pointerdown", {
+      bubbles: true, clientX: 160, clientY: 50, pointerId: 10,
+    }));
+    swipeSurface.dispatchEvent(new PointerEvent("pointermove", {
+      bubbles: true, cancelable: true, clientX: 153, clientY: 50, pointerId: 10,
+    }));
+    await carousel.updateComplete;
+    expect(swipeSurface.classList.contains("dragging")).toBe(true);
+    expect(buttons[0].style.transform).toContain("translateX(-7px)");
+    swipeSurface.dispatchEvent(new PointerEvent("pointerup", {
+      bubbles: true, clientX: 150, clientY: 50, pointerId: 10,
+    }));
     await carousel.updateComplete;
     expect(buttons[1].getAttribute("aria-selected")).toBe("true");
-    swipeSurface.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: 120, pointerId: 11 }));
-    swipeSurface.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, clientX: 160, pointerId: 11 }));
+    expect(swipeSurface.classList.contains("dragging")).toBe(false);
+    const slowDrag = (type: string, clientX: number, timeStamp: number) => {
+      const event = new PointerEvent(type, {
+        bubbles: true,
+        cancelable: true,
+        clientX,
+        clientY: 50,
+        pointerId: 13,
+      });
+      Object.defineProperty(event, "timeStamp", { value: timeStamp });
+      return event;
+    };
+    swipeSurface.dispatchEvent(slowDrag("pointerdown", 120, 100));
+    swipeSurface.dispatchEvent(slowDrag("pointermove", 115, 250));
+    swipeSurface.dispatchEvent(slowDrag("pointerup", 115, 300));
+    await carousel.updateComplete;
+    expect(buttons[1].getAttribute("aria-selected")).toBe("true");
+    expect(action).not.toHaveBeenCalled();
+    swipeSurface.dispatchEvent(new PointerEvent("pointerdown", {
+      bubbles: true, clientX: 120, clientY: 50, pointerId: 11,
+    }));
+    swipeSurface.dispatchEvent(new PointerEvent("pointermove", {
+      bubbles: true, clientX: 124, clientY: 80, pointerId: 11,
+    }));
+    swipeSurface.dispatchEvent(new PointerEvent("pointerup", {
+      bubbles: true, clientX: 124, clientY: 90, pointerId: 11,
+    }));
+    await carousel.updateComplete;
+    expect(buttons[1].getAttribute("aria-selected")).toBe("true");
+    swipeSurface.dispatchEvent(new PointerEvent("pointerdown", {
+      bubbles: true, clientX: 120, clientY: 50, pointerId: 12,
+    }));
+    swipeSurface.dispatchEvent(new PointerEvent("pointermove", {
+      bubbles: true, cancelable: true, clientX: 114, clientY: 50, pointerId: 12,
+    }));
+    swipeSurface.dispatchEvent(new PointerEvent("pointerup", {
+      bubbles: true, clientX: 114, clientY: 50, pointerId: 12,
+    }));
+    await carousel.updateComplete;
+    expect(buttons[2].getAttribute("aria-selected")).toBe("true");
+    swipeSurface.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "Home" }));
     await carousel.updateComplete;
     expect(buttons[0].getAttribute("aria-selected")).toBe("true");
     buttons[1].dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: 100, pointerId: 1 }));
