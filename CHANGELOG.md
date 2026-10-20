@@ -4,6 +4,7 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Updates to 0.0.1 (no version bump)
 
+- Fixed Astronomy's default header icon to use a sun instead of an information icon.
 - Added Mushroom-compatible Sonos media information, volume display, selectable
   volume/playback controls, and collapse-when-off behavior with feature-aware
   service calls, entity-driven icons, and isolated nested control actions.

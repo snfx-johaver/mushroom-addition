@@ -38,6 +38,7 @@ export const defaultIconFor = (item: CatalogItem, entity?: HassEntity): string =
   if (item.upstreamId === "custom_card_room_overview") return "mdi:sofa";
   if (item.upstreamId === "custom_card_roomview") return "mdi:home-variant-outline";
   if (item.upstreamId === "custom_card_entity_carousel") return "mdi:view-carousel";
+  if (item.upstreamId === "custom_card_sun") return "mdi:weather-sunny";
   if (item.upstreamId === "custom_card_speedtest_gauges") return "mdi:speedometer";
   if (item.upstreamId === "advanced_home_energy_management") return "mdi:home-lightning-bolt-outline";
   if (item.upstreamId === "advanced_energy_buy_sell") return "mdi:chart-timeline-variant";

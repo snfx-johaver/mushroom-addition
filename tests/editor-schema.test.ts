@@ -4,13 +4,24 @@ import { editorSchemaFor } from "../src/editor-schema";
 import { editorHelper, localize } from "../src/localize";
 import { upstreamEditorSchemaFor } from "../src/editor-schema";
 import { additionalEditorSchemaFor } from "../src/editor-schema";
-import { populatedDefaultsFor } from "../src/defaults";
+import { defaultIconFor, populatedDefaultsFor } from "../src/defaults";
 import type { EditorField } from "../src/editor-schema";
 
 const flattenSchema = (schema: EditorField[]): EditorField[] =>
   schema.flatMap((field) => field.schema ? flattenSchema(field.schema) : field);
 
 describe("family editor schemas", () => {
+  it("defaults Astronomy to a sun icon while respecting entity icons", () => {
+    const astronomy = CATALOG.find((item) => item.upstreamId === "custom_card_sun")!;
+    expect(defaultIconFor(astronomy)).toBe("mdi:weather-sunny");
+    expect(populatedDefaultsFor(astronomy).icon).toBe("mdi:weather-sunny");
+    expect(defaultIconFor(astronomy, {
+      entity_id: "sun.sun",
+      state: "below_horizon",
+      attributes: { icon: "mdi:weather-night" },
+    })).toBe("mdi:weather-night");
+  });
+
   it("uses one canonical primary entity selector in every card editor", () => {
     for (const item of CATALOG) {
       const schema = editorSchemaFor(item);
