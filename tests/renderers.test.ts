@@ -206,12 +206,14 @@ describe("family renderers", () => {
       type: "custom:mushroom-addition-card-graph",
       entity: "sensor.power",
       layout: "vertical",
+      multiline_secondary: true,
       fill_container: true,
       icon_type: "none",
       primary_info: "state",
       secondary_info: "none",
     });
     expect(markup).toContain("layout-vertical");
+    expect(markup).toContain("multiline-secondary");
     expect(markup).toContain("fill-container");
     expect(markup).not.toContain("ulm-icon");
     expect(markup).toContain("on");

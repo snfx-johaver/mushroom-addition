@@ -131,10 +131,11 @@ export class MushroomAdditionCard extends LitElement {
     }
     const parityClass = parity ? ` parity-${parity.rendererId.replaceAll("_", "-")}` : "";
     const layoutClass = this.config?.layout && this.config.layout !== "default" ? ` layout-${this.config.layout}` : "";
+    const multilineClass = this.config?.multiline_secondary ? " multiline-secondary" : "";
     const fillClass = this.config?.fill_container ? " fill-container" : "";
     const variantClass = this.config?.variant ? ` variant-${this.config.variant}` : "";
     const surface = html`
-      <div class="${classes}${parityClass}${layoutClass}${fillClass}${variantClass} action-surface" style=${style} role="button" tabindex="0"
+      <div class="${classes}${parityClass}${layoutClass}${multilineClass}${fillClass}${variantClass} action-surface" style=${style} role="button" tabindex="0"
         @click=${this.tap} @dblclick=${this.doubleTap}
         @pointerdown=${this.pointerDown} @pointerup=${this.pointerUp}
         @pointercancel=${this.pointerUp} @keydown=${this.keydown}>

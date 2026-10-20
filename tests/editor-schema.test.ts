@@ -177,7 +177,7 @@ describe("family editor schemas", () => {
 
   it("provides Mushroom-style presentation controls on every card editor", () => {
     const expected = [
-      "name", "layout",
+      "name", "layout", "multiline_secondary",
       "fill_container", "primary_info", "secondary_info",
     ];
     for (const item of CATALOG.filter((entry) => entry.kind === "card")) {
@@ -192,6 +192,8 @@ describe("family editor schemas", () => {
       ]) {
         expect(flattened.find((field) => field.name === name)?.selector).toHaveProperty("select");
       }
+      expect(flattened.find((field) => field.name === "multiline_secondary")?.selector)
+        .toHaveProperty("boolean");
       const name = flattened.find((field) => field.name === "name");
       expect(name).toMatchObject({
         selector: { entity_name: {} },
@@ -206,15 +208,36 @@ describe("family editor schemas", () => {
       expect(presentationStart).toBe(entityIndex >= 0 ? entityIndex + 1 : 0);
       expect(schema.slice(
         presentationStart,
-        presentationStart + (hasConfigurableIcon ? 4 : 3),
+        presentationStart + (hasConfigurableIcon ? 6 : 5),
       ).map((field) => field.name))
-        .toEqual(hasConfigurableIcon ? ["name", "icon", "", ""] : ["name", "", ""]);
-      const layoutGridIndex = presentationStart + (hasConfigurableIcon ? 2 : 1);
-      expect(schema[layoutGridIndex]).toMatchObject({
-        type: "grid",
-        schema: [{ name: "layout" }, { name: "fill_container" }],
+        .toEqual(hasConfigurableIcon
+          ? ["name", "icon", "layout", "multiline_secondary", "fill_container", ""]
+          : ["name", "layout", "multiline_secondary", "fill_container", ""]);
+      const layoutField = flattened.find((field) => field.name === "layout");
+      expect(layoutField).toMatchObject({
+        selector: {
+          select: {
+            mode: "box",
+            options: [
+              {
+                value: "horizontal",
+                image: {
+                  src: "/static/images/form/tile_content_layout_horizontal.svg",
+                  src_dark: "/static/images/form/tile_content_layout_horizontal_dark.svg",
+                },
+              },
+              {
+                value: "vertical",
+                image: {
+                  src: "/static/images/form/tile_content_layout_vertical.svg",
+                  src_dark: "/static/images/form/tile_content_layout_vertical_dark.svg",
+                },
+              },
+            ],
+          },
+        },
       });
-      expect(schema[layoutGridIndex + 1]).toMatchObject({
+      expect(schema[presentationStart + (hasConfigurableIcon ? 5 : 4)]).toMatchObject({
         type: "grid",
         schema: hasConfigurableIcon
           ? [{ name: "primary_info" }, { name: "secondary_info" }, { name: "icon_type" }]

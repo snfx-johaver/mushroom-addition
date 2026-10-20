@@ -3,8 +3,9 @@ import type { HomeAssistant } from "./types";
 const translations: Record<string, Record<string, string>> = {
   en: {
     entity: "Entity", name: "Name", name_mode: "Name", secondary: "Custom secondary information", icon: "Icon",
-    icon_color: "Icon color", variant: "Card style", layout: "Layout",
+    icon_color: "Icon color", variant: "Card style", layout: "Content layout",
     icon_type: "Icon type", fill_container: "Fill container",
+    multiline_secondary: "Allow multiline secondary information",
     primary_info: "Primary information", secondary_info: "Secondary information",
     show_icon: "Show icon", show_name: "Show name", show_state: "Show state", tap_action: "Tap action",
     hold_action: "Hold action", double_tap_action: "Double-tap action",
@@ -302,7 +303,8 @@ const helpers: Record<string, string> = {
   icon: "Optional icon override. Leave empty to use the card's recommended icon.",
   variant: "Choose the upstream layout or behavior represented by this unified component.",
   icon_type: "Choose an icon, the entity picture when available, or no icon.",
-  layout: "Automatic uses the layout designed for this card. Horizontal and Vertical override it.",
+  layout: "Choose whether the card content is arranged horizontally or vertically.",
+  multiline_secondary: "The card may be taller to fit the text and will not always align with the grid system.",
   fill_container: "Makes the card stretch to fill the available dashboard grid cell.",
   primary_info: "Choose the main text displayed by the card.",
   secondary_info: "Choose the supporting text displayed below the primary information.",

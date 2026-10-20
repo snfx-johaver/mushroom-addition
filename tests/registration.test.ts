@@ -59,6 +59,41 @@ describe("Home Assistant registration", () => {
     }
   });
 
+  it("uses the modern Mushroom layout picker on every card", async () => {
+    for (const item of CATALOG) {
+      const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {
+        hass: HomeAssistant;
+        setConfig(config: AdditionConfig): void;
+        updateComplete: Promise<boolean>;
+      };
+      editor.hass = { states: {}, callService: async () => undefined };
+      editor.setConfig({ type: `custom:${item.tag}`, entity: "sensor.example", layout: "default" });
+      document.body.append(editor);
+      await editor.updateComplete;
+      const forms = [
+        ...editor.shadowRoot?.querySelectorAll<HTMLElement & {
+          data?: AdditionConfig;
+          schema?: Array<{ name: string; selector?: Record<string, unknown> }>;
+        }>("ha-form") ?? [],
+      ];
+      const layoutForm = forms.find((form) => form.schema?.some((field) => field.name === "layout"));
+      const layoutField = layoutForm?.schema?.find((field) => field.name === "layout");
+      expect(layoutForm?.data?.layout).toBe("horizontal");
+      expect(layoutField?.selector).toMatchObject({
+        select: {
+          mode: "box",
+          options: [
+            { value: "horizontal", image: { src: "/static/images/form/tile_content_layout_horizontal.svg" } },
+            { value: "vertical", image: { src: "/static/images/form/tile_content_layout_vertical.svg" } },
+          ],
+        },
+      });
+      expect(forms.some((form) =>
+        form.schema?.some((field) => field.name === "multiline_secondary"))).toBe(true);
+      editor.remove();
+    }
+  });
+
   it("keeps related multi-entity controls together in Features", async () => {
     for (const [type, expectedFields, customEditorText] of [
       [
