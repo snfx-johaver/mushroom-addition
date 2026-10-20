@@ -97,6 +97,18 @@ export interface PrinterCartridgeConfig {
   color?: string | string[];
 }
 
+export interface SonosShortcutConfig {
+  icon?: string;
+  name?: string;
+  type?: string;
+  id?: string;
+}
+
+export interface SonosShortcutsConfig {
+  columns?: number;
+  buttons?: SonosShortcutConfig[];
+}
+
 export interface AdditionConfig {
   type: string;
   entity?: string;
@@ -106,6 +118,7 @@ export interface AdditionConfig {
   room_sensors?: AdditionItemConfig[];
   cartridges?: PrinterCartridgeConfig[];
   waste_streams?: WasteStreamConfig[];
+  shortcuts?: SonosShortcutsConfig;
   today_entity?: string;
   tomorrow_entity?: string;
   show_today?: boolean;
