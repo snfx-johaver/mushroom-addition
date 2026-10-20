@@ -1350,6 +1350,9 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
     const entity = entityId ? ctx.hass.states[entityId] : undefined;
     return entity ? [{ control, entity }] : [];
   });
+  const shortcuts = (ctx.config.shortcuts?.buttons ?? []).filter((shortcut) =>
+    typeof shortcut.id === "string" && shortcut.id.trim().length > 0);
+  const shortcutColumns = Math.min(8, Math.max(1, Math.round(ctx.config.shortcuts?.columns ?? 4)));
   const detailsAlwaysVisible = configured<boolean>(ctx, "sonos_details_always_visible") === true;
   const detailsContent = html`
     ${switches.length ? html`<div class="sonos-switches">
@@ -1417,6 +1420,28 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
             </summary>
             ${detailsContent}
           </details>`}
+    ` : nothing}
+    ${shortcuts.length ? html`
+      <div class="sonos-shortcuts" style=${`--sonos-shortcut-columns:${shortcutColumns}`}
+        @pointerdown=${(event: Event) => event.stopPropagation()}>
+        ${shortcuts.map((shortcut, index) => html`
+          <button
+            aria-label=${shortcut.name || `Play shortcut ${index + 1}`}
+            title=${shortcut.name || shortcut.id || ""}
+            ?disabled=${unavailable}
+            @click=${(event: Event) => {
+              event.stopPropagation();
+              ctx.service("media_player", "play_media", {
+                entity_id: ctx.config.entity,
+                media_content_type: shortcut.type || "playlist",
+                media_content_id: shortcut.id,
+              });
+            }}>
+            <ha-icon .icon=${shortcut.icon || "mdi:playlist-music"}></ha-icon>
+            ${shortcut.name ? html`<span>${shortcut.name}</span>` : nothing}
+          </button>
+        `)}
+      </div>
     ` : nothing}
   `);
 };

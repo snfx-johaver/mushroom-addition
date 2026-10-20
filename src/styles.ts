@@ -592,7 +592,7 @@ export const sharedStyles = css`
   .custom-sonos.has-art .sonos-sliders output { color: #fff; }
   .custom-sonos.has-art .ulm-label { color: rgba(255,255,255,.78); }
   .custom-sonos.has-art .ulm-icon, .custom-sonos.has-art .sonos-controls button,
-  .custom-sonos.has-art .sonos-switches button {
+  .custom-sonos.has-art .sonos-switches button, .custom-sonos.has-art .sonos-shortcuts button {
     border-color: rgba(255,255,255,.22); background: rgba(0,0,0,.32); color: #fff;
   }
   .sonos-controls {
@@ -629,6 +629,21 @@ export const sharedStyles = css`
   .sonos-sliders label > ha-icon { --mdc-icon-size: 18px; color: rgb(var(--rgb-blue, 3, 169, 244)); }
   .sonos-sliders input { width: 100%; accent-color: rgb(var(--rgb-blue, 3, 169, 244)); }
   .sonos-sliders output { color: var(--primary-text-color); text-align: right; font-variant-numeric: tabular-nums; }
+  .sonos-shortcuts {
+    display: grid; grid-template-columns: repeat(var(--sonos-shortcut-columns, 4), minmax(0, 1fr)); gap: 8px;
+  }
+  .sonos-shortcuts button {
+    display: grid; min-width: 0; min-height: 56px; place-items: center; gap: 4px; padding: 8px 4px;
+    border: 1px solid var(--divider-color); border-radius: 14px;
+    background: var(--card-background-color, var(--ha-card-background, #fff));
+    color: var(--primary-text-color); cursor: pointer;
+  }
+  .sonos-shortcuts button:disabled { cursor: not-allowed; opacity: .45; }
+  .sonos-shortcuts ha-icon { --mdc-icon-size: 22px; color: rgb(var(--rgb-blue, 3, 169, 244)); }
+  .sonos-shortcuts span {
+    min-width: 0; max-width: 100%; overflow: hidden; font-size: 11px; font-weight: 700;
+    text-overflow: ellipsis; white-space: nowrap;
+  }
   .speedtest-action:disabled, .metrics-four button:disabled { cursor: not-allowed; opacity: .45; }
   .speedtest-router, .nas-metrics-header {
     display: flex; min-width: 0; align-items: center; gap: 10px;

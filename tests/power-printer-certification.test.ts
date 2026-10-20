@@ -358,6 +358,57 @@ describe("power and printer custom batch certification", () => {
     }));
   });
 
+  it("configures Sonos playlist shortcuts through the graphical editor", async () => {
+    const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {
+      hass: HomeAssistant;
+      setConfig(config: AdditionConfig): void;
+      updateComplete: Promise<boolean>;
+      shadowRoot: ShadowRoot;
+    };
+    editor.hass = { states, entities: sonosRegistry, callService: vi.fn(async () => undefined) };
+    editor.setConfig({
+      type: "custom:mushroom-addition-custom-card-media-player-sonos",
+      entity: "media_player.office_sonos",
+      shortcuts: {
+        columns: 4,
+        buttons: [
+          { icon: "mdi:party-popper", name: "Party", type: "playlist", id: "spotify:playlist:party" },
+        ],
+      },
+    });
+    document.body.append(editor);
+    await editor.updateComplete;
+    const shortcutEditor = editor.shadowRoot.querySelector(".sonos-shortcut-editor")!;
+    const row = shortcutEditor.querySelector(".sonos-shortcut-row")!;
+    const selectors = [...row.querySelectorAll<HTMLElement & { value: unknown }>("ha-selector")];
+    expect(selectors.map((selector) => selector.value)).toEqual([
+      "Party",
+      "mdi:party-popper",
+      "playlist",
+      "spotify:playlist:party",
+    ]);
+    const changed = vi.fn();
+    editor.addEventListener("config-changed", changed);
+    selectors[3].dispatchEvent(new CustomEvent("value-changed", {
+      bubbles: true,
+      composed: true,
+      detail: { value: "spotify:playlist:updated" },
+    }));
+    expect(changed).toHaveBeenCalledWith(expect.objectContaining({
+      detail: {
+        config: expect.objectContaining({
+          shortcuts: {
+            columns: 4,
+            buttons: [
+              expect.objectContaining({ id: "spotify:playlist:updated" }),
+            ],
+          },
+        }),
+      },
+    }));
+    editor.remove();
+  });
+
   it("migrates every pinned legacy variable to its canonical field", () => {
     expect(normalizeConfig({
       type: "custom:mushroom-addition-custom-card-media-player-sonos",
@@ -454,6 +505,35 @@ describe("power and printer custom batch certification", () => {
     expect(detailsAlwaysVisible.shadowRoot.querySelectorAll(".sonos-switches button")).toHaveLength(7);
     expect(detailsAlwaysVisible.shadowRoot.querySelectorAll(".sonos-sliders input")).toHaveLength(7);
     detailsAlwaysVisible.remove();
+
+    const shortcuts = await renderCard("mushroom-addition-custom-card-media-player-sonos", {
+      type: "custom:mushroom-addition-custom-card-media-player-sonos",
+      entity: "media_player.office_sonos",
+      shortcuts: {
+        columns: 4,
+        buttons: [
+          { icon: "mdi:party-popper", name: "Party", type: "playlist", id: "spotify:playlist:party" },
+          { icon: "mdi:coffee", type: "playlist", id: "spotify:playlist:coffee" },
+        ],
+      },
+    }, states, callService, sonosRegistry);
+    expect(shortcuts.shadowRoot.querySelector(".sonos-shortcuts")?.getAttribute("style"))
+      .toContain("--sonos-shortcut-columns:4");
+    const shortcutButtons = [
+      ...shortcuts.shadowRoot.querySelectorAll<HTMLButtonElement>(".sonos-shortcuts button"),
+    ];
+    expect(shortcutButtons).toHaveLength(2);
+    expect(shortcutButtons[0].textContent).toContain("Party");
+    expect((shortcutButtons[0].querySelector("ha-icon") as HTMLElement & { icon: string }).icon)
+      .toBe("mdi:party-popper");
+    callService.mockClear();
+    shortcutButtons[0].click();
+    expect(callService).toHaveBeenCalledWith("media_player", "play_media", {
+      entity_id: "media_player.office_sonos",
+      media_content_type: "playlist",
+      media_content_id: "spotify:playlist:party",
+    });
+    shortcuts.remove();
 
     const paused = await renderCard("mushroom-addition-custom-card-media-player-sonos", {
       type: "custom:mushroom-addition-custom-card-media-player-sonos",

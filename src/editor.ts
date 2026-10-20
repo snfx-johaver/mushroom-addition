@@ -1,6 +1,12 @@
 import { LitElement, css, html, nothing, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import type { AdditionConfig, AdditionItemConfig, HomeAssistant, WasteStreamConfig } from "./types";
+import type {
+  AdditionConfig,
+  AdditionItemConfig,
+  HomeAssistant,
+  SonosShortcutConfig,
+  WasteStreamConfig,
+} from "./types";
 import { CATALOG, getCatalogItem, LEGACY_ALIASES } from "./catalog";
 import { fireEvent } from "./helpers";
 import { SONOS_CONTROLS } from "./sonos-controls";
@@ -117,6 +123,8 @@ export class MushroomAdditionEditor extends LitElement {
     };
     const customFeatures = item.upstreamId === "custom_card_trash"
       ? this.renderWasteStreamEditor()
+      : item.upstreamId === "custom_card_media_player_sonos"
+        ? this.renderSonosShortcutEditor()
       : item.family === "scene"
         ? this.renderItemEditor(
           "scene_items",
@@ -127,6 +135,7 @@ export class MushroomAdditionEditor extends LitElement {
           ? this.renderItemEditor("room_sensors", "Room sensor buttons")
           : nothing;
     const hasCustomFeatures = item.upstreamId === "custom_card_trash" ||
+      item.upstreamId === "custom_card_media_player_sonos" ||
       item.family === "scene" ||
       item.upstreamId === "card_room";
     return html`
@@ -386,6 +395,85 @@ export class MushroomAdditionEditor extends LitElement {
     `;
   }
 
+  private renderSonosShortcutEditor() {
+    if (!this.config) return nothing;
+    const shortcuts = this.config.shortcuts?.buttons ?? [];
+    const columns = Math.min(8, Math.max(1, Math.round(this.config.shortcuts?.columns ?? 4)));
+    return html`
+      <section class="item-editor sonos-shortcut-editor">
+        <h3>Playlist shortcuts</h3>
+        <p>Add Sonos playlists or other media IDs. Each shortcut starts playback on the card's primary Sonos entity.</p>
+        <div class="item-row">
+          <label class="field">
+            <span>Columns</span>
+            <ha-selector
+              .hass=${this.hass}
+              .selector=${{ number: { min: 1, max: 8, step: 1, mode: "box" } }}
+              .value=${columns}
+              @value-changed=${(event: CustomEvent) => this.updateSonosColumns(event.detail.value)}
+            ></ha-selector>
+            <small>Number of shortcut buttons shown on each row.</small>
+          </label>
+        </div>
+        ${shortcuts.map((shortcut, index) => html`
+          <div class="item-row sonos-shortcut-row" data-shortcut-index=${index}>
+            <h4>${shortcut.name || `Shortcut ${index + 1}`}</h4>
+            <label class="field">
+              <span>Label</span>
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ text: {} }}
+                .value=${shortcut.name ?? ""}
+                @value-changed=${(event: CustomEvent) =>
+                  this.updateSonosShortcut(index, "name", event.detail.value)}
+              ></ha-selector>
+              <small>Optional text shown below the icon.</small>
+            </label>
+            <label class="field">
+              <span>Icon</span>
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ icon: {} }}
+                .value=${shortcut.icon ?? "mdi:playlist-music"}
+                @value-changed=${(event: CustomEvent) =>
+                  this.updateSonosShortcut(index, "icon", event.detail.value)}
+              ></ha-selector>
+            </label>
+            <label class="field">
+              <span>Media type</span>
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ text: {} }}
+                .value=${shortcut.type ?? "playlist"}
+                @value-changed=${(event: CustomEvent) =>
+                  this.updateSonosShortcut(index, "type", event.detail.value)}
+              ></ha-selector>
+              <small>Use playlist for Spotify playlist IDs, or another media type supported by your player.</small>
+            </label>
+            <label class="field wide">
+              <span>Playlist or media ID</span>
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ text: {} }}
+                .value=${shortcut.id ?? ""}
+                @value-changed=${(event: CustomEvent) =>
+                  this.updateSonosShortcut(index, "id", event.detail.value)}
+              ></ha-selector>
+              <small>For example: spotify:playlist:4Peff17x9lxkDupqOF0ive</small>
+            </label>
+            <div class="item-actions wide">
+              <button ?disabled=${index === 0} @click=${() => this.moveSonosShortcut(index, -1)}>Move up</button>
+              <button ?disabled=${index === shortcuts.length - 1}
+                @click=${() => this.moveSonosShortcut(index, 1)}>Move down</button>
+              <button @click=${() => this.removeSonosShortcut(index)}>Remove</button>
+            </div>
+          </div>
+        `)}
+        <button class="add" @click=${this.addSonosShortcut}>Add playlist shortcut</button>
+      </section>
+    `;
+  }
+
   private updateItem(
     key: "scene_items" | "room_sensors",
     index: number,
@@ -475,6 +563,57 @@ export class MushroomAdditionEditor extends LitElement {
   private updateWasteStreams(streams: WasteStreamConfig[]): void {
     if (!this.config) return;
     const next = { ...this.config, waste_streams: streams };
+    this.config = next;
+    fireEvent(this, "config-changed", { config: next });
+  }
+
+  private updateSonosColumns(value: unknown): void {
+    if (!this.config) return;
+    const columns = Math.min(8, Math.max(1, Math.round(Number(value) || 4)));
+    this.updateSonosShortcuts(this.config.shortcuts?.buttons ?? [], columns);
+  }
+
+  private updateSonosShortcut(
+    index: number,
+    field: keyof SonosShortcutConfig,
+    value: unknown,
+  ): void {
+    if (!this.config) return;
+    const shortcuts = [...(this.config.shortcuts?.buttons ?? [])];
+    shortcuts[index] = { ...shortcuts[index], [field]: value || undefined };
+    this.updateSonosShortcuts(shortcuts);
+  }
+
+  private readonly addSonosShortcut = (): void => {
+    if (!this.config) return;
+    this.updateSonosShortcuts([
+      ...(this.config.shortcuts?.buttons ?? []),
+      { icon: "mdi:playlist-music", type: "playlist", id: "" },
+    ]);
+  };
+
+  private removeSonosShortcut(index: number): void {
+    if (!this.config) return;
+    this.updateSonosShortcuts(
+      (this.config.shortcuts?.buttons ?? []).filter((_, shortcutIndex) => shortcutIndex !== index),
+    );
+  }
+
+  private moveSonosShortcut(index: number, direction: -1 | 1): void {
+    if (!this.config) return;
+    const shortcuts = [...(this.config.shortcuts?.buttons ?? [])];
+    const target = index + direction;
+    if (target < 0 || target >= shortcuts.length) return;
+    [shortcuts[index], shortcuts[target]] = [shortcuts[target], shortcuts[index]];
+    this.updateSonosShortcuts(shortcuts);
+  }
+
+  private updateSonosShortcuts(
+    buttons: SonosShortcutConfig[],
+    columns = this.config?.shortcuts?.columns ?? 4,
+  ): void {
+    if (!this.config) return;
+    const next = { ...this.config, shortcuts: { columns, buttons } };
     this.config = next;
     fireEvent(this, "config-changed", { config: next });
   }
