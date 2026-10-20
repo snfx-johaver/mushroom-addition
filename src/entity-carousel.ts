@@ -388,7 +388,11 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       this.pointerAxis = "horizontal";
       this.dragging = true;
       this.clearHold();
-      (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
+      try {
+        (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
+      } catch (error) {
+        if (!(error instanceof DOMException)) throw error;
+      }
     }
     if (this.pointerAxis !== "horizontal") return;
     event.preventDefault();
