@@ -77,6 +77,13 @@ describe("Home Assistant registration", () => {
         }>("ha-form") ?? [],
       ];
       const layoutForm = forms.find((form) => form.schema?.some((field) => field.name === "layout"));
+      if (item.upstreamId === "mini_graph_card") {
+        expect(layoutForm).toBeUndefined();
+        expect(forms.some((form) =>
+          form.schema?.some((field) => field.name === "multiline_secondary"))).toBe(false);
+        editor.remove();
+        continue;
+      }
       const layoutField = layoutForm?.schema?.find((field) => field.name === "layout");
       expect(layoutForm?.data?.layout).toBe("horizontal");
       expect(layoutField?.selector).toMatchObject({

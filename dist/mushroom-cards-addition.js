@@ -4697,7 +4697,7 @@ const ba = new Set(ya.map((e) => e.canonical)), ot = [
   if (e.upstreamId === "mini_graph_card")
     return [
       m(["sensor", "binary_sensor", "input_number"]),
-      ...F(),
+      ...F().filter((r) => r.name !== "layout" && r.name !== "multiline_secondary"),
       G("variant", [
         { value: "line", label: "Line graph" },
         { value: "bar", label: "Bar graph" }
