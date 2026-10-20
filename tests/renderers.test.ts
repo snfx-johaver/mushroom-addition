@@ -1104,12 +1104,39 @@ describe("family renderers", () => {
     editor.hass = hass;
     editor.setConfig({
       type: "custom:mushroom-addition-custom-card-entity-carousel",
+      parameters: {
+        effect: "coverflow",
+        grabCursor: true,
+        centeredSlides: true,
+        slidesPerView: "auto",
+        coverflowEffect: {
+          rotate: 12,
+          stretch: 8,
+          depth: 320,
+          modifier: 1.5,
+          slideShadows: true,
+        },
+      },
       carousel_items: [{ entity: "light.kitchen", name: "Lights" }],
     });
     document.body.append(editor);
     await editor.updateComplete;
     expect(editor.shadowRoot?.querySelectorAll(".carousel-item-row")).toHaveLength(1);
     expect(editor.shadowRoot?.textContent).toContain("Add carousel item");
+    const form = editor.shadowRoot?.querySelector("ha-form") as HTMLElement & {
+      data?: AdditionConfig;
+    };
+    expect(form.data).toEqual(expect.objectContaining({
+      carousel_effect: "coverflow",
+      carousel_grab_cursor: true,
+      carousel_centered_slides: true,
+      carousel_slides_per_view: "auto",
+      carousel_coverflow_rotate: 12,
+      carousel_coverflow_stretch: 8,
+      carousel_coverflow_depth: 320,
+      carousel_coverflow_modifier: 1.5,
+      carousel_coverflow_slide_shadows: true,
+    }));
     editor.remove();
   });
 });
