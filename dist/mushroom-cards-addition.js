@@ -7312,7 +7312,12 @@ let ne = class extends ce {
           this.pointerAxis = "vertical", this.clearHold();
           return;
         }
-        this.pointerAxis = "horizontal", this.dragging = !0, this.clearHold(), e.currentTarget.setPointerCapture?.(e.pointerId);
+        this.pointerAxis = "horizontal", this.dragging = !0, this.clearHold();
+        try {
+          e.currentTarget.setPointerCapture?.(e.pointerId);
+        } catch (r) {
+          if (!(r instanceof DOMException)) throw r;
+        }
       }
       if (this.pointerAxis !== "horizontal") return;
       e.preventDefault(), e.stopPropagation();
