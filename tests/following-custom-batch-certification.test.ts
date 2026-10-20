@@ -87,6 +87,16 @@ const states: HomeAssistant["states"] = {
     state: "49.3779",
     attributes: { body: "moon", metric: "azimuth", unit_of_measurement: "°" },
   },
+  "sensor.astronomy_moon_rising": {
+    entity_id: "sensor.astronomy_moon_rising",
+    state: "2026-09-24T17:40:00Z",
+    attributes: { body: "moon", metric: "next_rising" },
+  },
+  "sensor.astronomy_moon_setting": {
+    entity_id: "sensor.astronomy_moon_setting",
+    state: "2026-09-24T05:12:00Z",
+    attributes: { body: "moon", metric: "next_setting" },
+  },
   "sensor.astronomy_moon_right_ascension": {
     entity_id: "sensor.astronomy_moon_right_ascension",
     state: "319.6431",
@@ -248,6 +258,8 @@ describe("following custom batch certification", () => {
         moon_entity: "sensor.moon",
         moon_altitude_entity: "sensor.astronomy_moon_altitude",
         moon_azimuth_entity: "sensor.astronomy_moon_azimuth",
+        moon_rising_entity: "sensor.astronomy_moon_rising",
+        moon_setting_entity: "sensor.astronomy_moon_setting",
       },
     } satisfies Record<string, Partial<AdditionConfig>>;
 
@@ -275,10 +287,9 @@ describe("following custom batch certification", () => {
         "ulm_custom_card_washer_start_action", "ulm_custom_card_washer_stop_action",
       ],
       custom_card_sun: [
-        "entity", "title", "language", "timeFormat", "showAzimuth", "showElevation", "showMoon",
-        "moon_entity", "moon_altitude_entity", "moon_azimuth_entity", "moon_right_ascension_entity",
-        "moon_declination_entity", "moon_distance_entity", "moon_angular_diameter_entity",
-        "moon_phase_angle_entity", "moon_illumination_entity", "moon_next_full_moon_entity",
+        "entity", "title", "language", "timeFormat", "showMoon",
+        "moon_entity", "moon_altitude_entity", "moon_azimuth_entity",
+        "moon_rising_entity", "moon_setting_entity", "moon_next_full_moon_entity",
         "moon_next_new_moon_entity", "moon_above_horizon_entity",
       ],
     };
@@ -446,8 +457,6 @@ describe("following custom batch certification", () => {
       language: "en-GB",
       timeFormat: "24h",
       darkMode: true,
-      showAzimuth: true,
-      showElevation: true,
     });
     expect(sun.shadowRoot.querySelector(".custom-sun-card.is-dark")).not.toBeNull();
     expect(sun.shadowRoot.textContent).toContain("Today");
@@ -455,10 +464,21 @@ describe("following custom batch certification", () => {
     expect(sun.shadowRoot.textContent).toContain("242.5°");
     expect(sun.shadowRoot.textContent).toContain("Elevation");
     expect(sun.shadowRoot.querySelector(".moon-section")).not.toBeNull();
+    expect(sun.shadowRoot.querySelector(".moon-arc")).toBeNull();
+    expect(sun.shadowRoot.querySelector(".sun-arc .sun-marker")).not.toBeNull();
+    expect(sun.shadowRoot.querySelector(".sun-arc .moon-marker")).not.toBeNull();
     expect(sun.shadowRoot.textContent).toContain("waxing gibbous");
     expect(sun.shadowRoot.textContent).toContain("Below horizon");
-    expect(sun.shadowRoot.textContent).toContain("68.5 %");
-    expect(sun.shadowRoot.textContent).toContain("397,790 km");
+    expect(sun.shadowRoot.textContent).toContain("Moonrise");
+    expect(sun.shadowRoot.textContent).toContain("Moonset");
+    expect(sun.shadowRoot.textContent).toContain("Sun:");
+    expect(sun.shadowRoot.textContent).toContain("Moon:");
+    expect(sun.shadowRoot.textContent).not.toContain("Illumination");
+    expect(sun.shadowRoot.textContent).not.toContain("Phase angle");
+    expect(sun.shadowRoot.textContent).not.toContain("Right ascension");
+    expect(sun.shadowRoot.textContent).not.toContain("Declination");
+    expect(sun.shadowRoot.textContent).not.toContain("Distance");
+    expect(sun.shadowRoot.textContent).not.toContain("Angular diameter");
     expect(sun.shadowRoot.textContent).toContain("Next full Moon");
     expect(sun.shadowRoot.textContent).toContain("26 Oct 2026");
     expect(sun.shadowRoot.querySelector(".moon-marker")?.getAttribute("style"))

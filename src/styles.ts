@@ -445,11 +445,13 @@ export const sharedStyles = css`
   .washer-controls .ulm-control { width: 100%; height: 42px; border-radius: 16px; }
   .washer-remote { color: var(--secondary-text-color); font-size: 11px; text-align: center; }
   .custom-sun-card { display: grid; min-height: 210px; gap: 8px; padding: 18px; }
-  .sun-times, .sun-footer { display: flex; justify-content: space-between; }
-  .sun-times span, .sun-footer span { display: flex; flex-direction: column; gap: 3px; }
-  .sun-times span:last-child, .sun-footer span:last-child { align-items: flex-end; }
-  .sun-times small, .sun-footer small { color: var(--secondary-text-color); }
-  .sun-times b { font-size: 21px; font-weight: 500; }
+  .astronomy-times { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .astronomy-times span, .sun-footer span { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
+  .astronomy-times span:nth-child(2), .astronomy-times span:nth-child(3) { align-items: center; }
+  .astronomy-times span:last-child, .sun-footer span:last-child { align-items: flex-end; }
+  .astronomy-times small, .sun-footer small { color: var(--secondary-text-color); }
+  .astronomy-times b { font-size: 16px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .sun-footer { display: flex; justify-content: space-between; }
   .sun-footer b { font-size: 13px; }
   .sun-arc { position: relative; height: 90px; }
   .sun-arc svg { display: block; width: 100%; height: 90px; overflow: visible; }
@@ -466,8 +468,14 @@ export const sharedStyles = css`
     background: #ffd45c;
     transform: translate(-50%, -50%);
   }
-  .sun-position, .moon-position { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; }
-  .sun-position b, .moon-position b { font-variant-numeric: tabular-nums; }
+  .astronomy-position-rows { display: grid; gap: 4px; font-size: 12px; }
+  .astronomy-position-rows > div {
+    display: grid;
+    grid-template-columns: 44px minmax(0, auto) minmax(0, auto);
+    justify-content: start;
+    gap: 14px;
+  }
+  .astronomy-position-rows strong { font-variant-numeric: tabular-nums; }
   .moon-section {
     display: grid;
     gap: 10px;
@@ -478,7 +486,7 @@ export const sharedStyles = css`
   .moon-heading {
     display: grid;
     min-width: 0;
-    grid-template-columns: 40px minmax(0, 1fr) auto;
+    grid-template-columns: 40px minmax(0, 1fr);
     align-items: center;
     gap: 12px;
   }
@@ -496,11 +504,6 @@ export const sharedStyles = css`
   .moon-copy b, .moon-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .moon-copy b { font-size: 14px; }
   .moon-copy small { color: var(--secondary-text-color); font-size: 12px; text-transform: capitalize; }
-  .moon-illumination { font-size: 16px; font-variant-numeric: tabular-nums; }
-  .moon-arc { position: relative; height: 82px; overflow: hidden; border-radius: 14px; background: #101426; }
-  .moon-arc svg { display: block; width: 100%; height: 82px; }
-  .moon-arc line { stroke: rgba(255, 255, 255, .22); }
-  .moon-sky { fill: #20294f; }
   .moon-marker {
     position: absolute;
     left: var(--moon-x);
@@ -517,6 +520,7 @@ export const sharedStyles = css`
     transform: translate(-50%, -50%);
   }
   .moon-marker.is-below { opacity: .62; }
+  .astronomy-moon-marker { z-index: 2; }
   .moon-marker ha-icon { --mdc-icon-size: 20px; }
   .moon-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
   .moon-metric {
