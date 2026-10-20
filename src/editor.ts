@@ -10,6 +10,7 @@ import type {
 import { CATALOG, getCatalogItem, LEGACY_ALIASES } from "./catalog";
 import { fireEvent } from "./helpers";
 import { SONOS_CONTROLS } from "./sonos-controls";
+import { CONSOLE_ENTITIES } from "./console";
 import { editorHelper, localize } from "./localize";
 import { additionalEditorSchemaFor, editorSchemaFor, type EditorField } from "./editor-schema";
 import { populatedDefaultsFor } from "./defaults";
@@ -33,6 +34,7 @@ const contentFields = new Set([
 const layoutFields = new Set([
   "layout", "fill_container", "variant", "aspect_ratio", "image_height", "fit_mode",
   "camera_view", "features_position", "multiline_secondary",
+  "carousel_visible_items", "carousel_initial_index",
 ]);
 const interactionFields = new Set([
   "tap_action", "hold_action", "double_tap_action", "navigation_path", "settings_path",
@@ -129,6 +131,8 @@ export class MushroomAdditionEditor extends LitElement {
       ? this.renderWasteStreamEditor()
       : item.upstreamId === "custom_card_media_player_sonos"
         ? this.renderSonosShortcutEditor()
+      : item.upstreamId === "custom_card_entity_carousel"
+        ? this.renderCarouselItemEditor()
       : item.family === "scene"
         ? this.renderItemEditor(
           "scene_items",
@@ -140,6 +144,7 @@ export class MushroomAdditionEditor extends LitElement {
           : nothing;
     const hasCustomFeatures = item.upstreamId === "custom_card_trash" ||
       item.upstreamId === "custom_card_media_player_sonos" ||
+      item.upstreamId === "custom_card_entity_carousel" ||
       item.family === "scene" ||
       item.upstreamId === "card_room";
     return html`
@@ -210,6 +215,15 @@ export class MushroomAdditionEditor extends LitElement {
       value.entity !== this.config.entity
     ) {
       for (const { configKey } of SONOS_CONTROLS) {
+        if (this.config[configKey] === undefined) delete next[configKey];
+      }
+    }
+    if (
+      this.config.type.includes("custom-card-playstation") &&
+      typeof value.entity === "string" &&
+      value.entity !== this.config.entity
+    ) {
+      for (const { configKey } of CONSOLE_ENTITIES) {
         if (this.config[configKey] === undefined) delete next[configKey];
       }
     }
@@ -478,6 +492,102 @@ export class MushroomAdditionEditor extends LitElement {
     `;
   }
 
+  private renderCarouselItemEditor() {
+    if (!this.config) return nothing;
+    const items = this.config.carousel_items ?? [];
+    return html`
+      <section class="item-editor carousel-item-editor">
+        <h3>Carousel items</h3>
+        <p>Add entity-aware icon buttons. Swipe or scroll to move through them; tap the centered item to run its action.</p>
+        ${items.map((item, index) => html`
+          <div class="item-row carousel-item-row" data-carousel-index=${index}>
+            <h4>${item.name || item.entity || `Item ${index + 1}`}</h4>
+            <label class="field wide">
+              <span>Entity</span>
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ entity: {} }}
+                .value=${item.entity ?? ""}
+                @value-changed=${(event: CustomEvent) =>
+                  this.updateCarouselItem(index, "entity", event.detail.value)}
+              ></ha-selector>
+            </label>
+            <label class="field">
+              <span>Label</span>
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ text: {} }}
+                .value=${item.name ?? ""}
+                @value-changed=${(event: CustomEvent) =>
+                  this.updateCarouselItem(index, "name", event.detail.value)}
+              ></ha-selector>
+            </label>
+            <label class="field">
+              <span>Icon</span>
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ icon: {} }}
+                .value=${item.icon ?? ""}
+                @value-changed=${(event: CustomEvent) =>
+                  this.updateCarouselItem(index, "icon", event.detail.value)}
+              ></ha-selector>
+            </label>
+            <label class="field">
+              <span>Color</span>
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ ui_color: {} }}
+                .value=${item.color ?? "primary"}
+                @value-changed=${(event: CustomEvent) =>
+                  this.updateCarouselItem(index, "color", event.detail.value)}
+              ></ha-selector>
+            </label>
+            <label class="field">
+              <span>Visual</span>
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ select: { mode: "dropdown", options: [
+                  { value: "icon", label: "Icon" },
+                  { value: "entity-picture", label: "Entity picture" },
+                ] } }}
+                .value=${item.icon_type ?? "icon"}
+                @value-changed=${(event: CustomEvent) =>
+                  this.updateCarouselItem(index, "icon_type", event.detail.value)}
+              ></ha-selector>
+            </label>
+            <label class="field wide">
+              <span>Tap action</span>
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ ui_action: {} }}
+                .value=${item.tap_action ?? { action: "more-info" }}
+                @value-changed=${(event: CustomEvent) =>
+                  this.updateCarouselItem(index, "tap_action", event.detail.value)}
+              ></ha-selector>
+            </label>
+            <label class="field wide">
+              <span>Hold action</span>
+              <ha-selector
+                .hass=${this.hass}
+                .selector=${{ ui_action: {} }}
+                .value=${item.hold_action ?? { action: "none" }}
+                @value-changed=${(event: CustomEvent) =>
+                  this.updateCarouselItem(index, "hold_action", event.detail.value)}
+              ></ha-selector>
+            </label>
+            <div class="item-actions wide">
+              <button ?disabled=${index === 0} @click=${() => this.moveCarouselItem(index, -1)}>Move up</button>
+              <button ?disabled=${index === items.length - 1}
+                @click=${() => this.moveCarouselItem(index, 1)}>Move down</button>
+              <button @click=${() => this.removeCarouselItem(index)}>Remove</button>
+            </div>
+          </div>
+        `)}
+        <button class="add" @click=${this.addCarouselItem}>Add carousel item</button>
+      </section>
+    `;
+  }
+
   private updateItem(
     key: "scene_items" | "room_sensors",
     index: number,
@@ -575,6 +685,54 @@ export class MushroomAdditionEditor extends LitElement {
     if (!this.config) return;
     const columns = Math.min(8, Math.max(1, Math.round(Number(value) || 4)));
     this.updateSonosShortcuts(this.config.shortcuts?.buttons ?? [], columns);
+  }
+
+  private updateCarouselItem(
+    index: number,
+    field: keyof AdditionItemConfig,
+    value: unknown,
+  ): void {
+    if (!this.config) return;
+    const items = [...(this.config.carousel_items ?? [])];
+    items[index] = { ...items[index], [field]: value || undefined };
+    this.updateCarouselItems(items);
+  }
+
+  private readonly addCarouselItem = (): void => {
+    if (!this.config) return;
+    this.updateCarouselItems([
+      ...(this.config.carousel_items ?? []),
+      {
+        entity: "",
+        icon: "mdi:circle",
+        color: "primary",
+        tap_action: { action: "more-info" },
+        hold_action: { action: "none" },
+      },
+    ]);
+  };
+
+  private removeCarouselItem(index: number): void {
+    if (!this.config) return;
+    this.updateCarouselItems(
+      (this.config.carousel_items ?? []).filter((_, itemIndex) => itemIndex !== index),
+    );
+  }
+
+  private moveCarouselItem(index: number, direction: -1 | 1): void {
+    if (!this.config) return;
+    const items = [...(this.config.carousel_items ?? [])];
+    const target = index + direction;
+    if (target < 0 || target >= items.length) return;
+    [items[index], items[target]] = [items[target], items[index]];
+    this.updateCarouselItems(items);
+  }
+
+  private updateCarouselItems(items: AdditionItemConfig[]): void {
+    if (!this.config) return;
+    const next = { ...this.config, carousel_items: items };
+    this.config = next;
+    fireEvent(this, "config-changed", { config: next });
   }
 
   private updateSonosShortcut(

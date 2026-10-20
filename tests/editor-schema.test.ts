@@ -255,6 +255,37 @@ describe("family editor schemas", () => {
     }
   });
 
+  it("provides a multi-select and one linked entity per selected Flower bar", () => {
+    const flower = CATALOG.find((item) => item.upstreamId === "custom_card_plant")!;
+    const schema = flattenSchema(editorSchemaFor(flower, {
+      type: `custom:${flower.tag}`,
+      entity: "sensor.soil_moisture",
+      ulm_card_flower_show_bars: ["temperature", "moisture"],
+    }));
+    expect(schema.find((field) => field.name === "ulm_card_flower_show_bars")?.selector)
+      .toMatchObject({
+        select: {
+          multiple: true,
+          options: expect.arrayContaining([
+            { value: "temperature", label: "Temperature" },
+            { value: "moisture", label: "Moisture" },
+            { value: "conductivity", label: "Conductivity" },
+          ]),
+        },
+      });
+    expect(schema.map((field) => field.name)).toEqual(expect.arrayContaining([
+      "temperature_entity",
+      "moisture_entity",
+    ]));
+    expect(schema.map((field) => field.name)).not.toEqual(expect.arrayContaining([
+      "humidity_entity",
+      "conductivity_entity",
+      "illuminance_entity",
+      "dli_entity",
+      "ulm_card_flower_entity",
+    ]));
+  });
+
   it("does not repeat main editor fields in additional appearance and controls", () => {
     for (const item of CATALOG.filter((entry) => entry.kind === "card")) {
       const configured = new Set(flattenSchema(editorSchemaFor(item)).map((field) => field.name));

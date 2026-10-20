@@ -3,6 +3,7 @@ import type { AdditionConfig, CatalogItem, HassEntity, HomeAssistant } from "./t
 import { supportedUpstreamOption } from "./supported-options";
 import { defaultWasteStreams } from "./waste-streams";
 import { resolveSonosControlEntities } from "./sonos-controls";
+import { resolveConsoleEntities } from "./console";
 
 const defaultIcons: Array<[RegExp, string]> = [
   [/input_boolean/, "mdi:toggle-switch"],
@@ -15,7 +16,7 @@ const defaultIcons: Array<[RegExp, string]> = [
   [/battery/, "mdi:battery"],
   [/person|presence|tracker|tracer/, "mdi:account"],
   [/media/, "mdi:play-circle"],
-  [/playstation/, "mdi:sony-playstation"],
+  [/playstation/, "mdi:controller-classic"],
   [/scene/, "mdi:palette"],
   [/alarm|lock/, "mdi:shield-lock"],
   [/camera/, "mdi:camera"],
@@ -36,6 +37,7 @@ export const defaultIconFor = (item: CatalogItem, entity?: HassEntity): string =
   if (item.upstreamId === "custom_card_trash") return "mdi:trash-can-outline";
   if (item.upstreamId === "custom_card_room_overview") return "mdi:sofa";
   if (item.upstreamId === "custom_card_roomview") return "mdi:home-variant-outline";
+  if (item.upstreamId === "custom_card_entity_carousel") return "mdi:view-carousel";
   return defaultIcons.find(([pattern]) => pattern.test(item.upstreamId))?.[1] ??
     "mdi:information-outline";
 };
@@ -140,10 +142,20 @@ export const populatedDefaultsFor = (
                     ulm_custom_card_plant_correct: "Correto",
                     ulm_custom_card_plant_problem: "Problema",
                   }
+            : item.upstreamId === "custom_card_entity_carousel"
+                  ? {
+                    carousel_loop: true,
+                    carousel_show_labels: true,
+                    carousel_visible_items: 7,
+                    carousel_initial_index: 0,
+                  }
             : item.upstreamId === "custom_card_playstation"
                   ? {
-                    icon: "mdi:sony-playstation",
-                    show_controls: false,
+                    icon: "mdi:controller-classic",
+                    console_platform: "auto",
+                    console_show_artwork: true,
+                    console_show_controls: true,
+                    ...resolveConsoleEntities(hass, entityId),
                   }
                   : item.upstreamId === "custom_card_pollen"
                         ? {

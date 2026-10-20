@@ -2,6 +2,7 @@ import type { AdditionConfig, CatalogItem, HomeAssistant } from "./types";
 import { populatedDefaultsFor } from "./defaults";
 import { sceneItemDefaultsFor } from "./scene-item-defaults";
 import { sonosControlCount } from "./sonos-controls";
+import { inferConsolePlatform, resolveConsoleEntities } from "./console";
 
 const firstMatchingEntity = (
   descriptor: CatalogItem,
@@ -141,13 +142,40 @@ export const createStubConfig = (
                                     : descriptor.upstreamId === "custom_card_plant"
                                       ? findEntity(["plant"], []) ?? findEntity(["sensor"], ["soil", "humidity"])
                                       : descriptor.upstreamId === "custom_card_playstation"
-                                      ? findEntity(["media_player"], ["tv"]) ?? findEntity(["media_player"], [])
+                                      ? findEntity(["binary_sensor", "media_player", "remote", "sensor", "switch"], ["xbox"]) ??
+                                        findEntity(["binary_sensor", "media_player", "remote", "sensor", "switch"], ["playstation"]) ??
+                                        findEntity(["binary_sensor", "media_player", "remote", "sensor", "switch"], ["nintendo"]) ??
+                                        findEntity(["media_player", "remote"], [])
                                     : descriptor.upstreamId === "custom_card_better_thermostat"
                                       ? findEntity(["climate"], ["living", "room"]) ?? findEntity(["climate"], [])
                                     : undefined;
   const entity = descriptor.upstreamId === "card_scenes"
       ? undefined
       : semanticPrimary ?? firstMatchingEntity(descriptor, hass, entities, entitiesFallback);
+  const flowerEntities = descriptor.upstreamId === "custom_card_plant"
+    ? {
+      moisture_entity:
+        (entity && hass?.states[entity]?.attributes.device_class === "moisture" ? entity : undefined) ??
+        findHealthyEntityByDeviceClass(["moisture"], ["soil"]) ??
+        findHealthyEntityByDeviceClass(["moisture"]),
+      temperature_entity:
+        findHealthyEntityByDeviceClass(["temperature"], ["soil"]) ??
+        findHealthyEntityByDeviceClass(["temperature"], ["plant"]),
+      humidity_entity:
+        findHealthyEntityByDeviceClass(["humidity"], ["plant"]) ??
+        findHealthyEntityByDeviceClass(["humidity"], ["soil"]),
+      conductivity_entity:
+        findHealthyEntityByDeviceClass(["conductivity"], ["plant"]) ??
+        findHealthyEntity(["sensor"], ["conductivity"]),
+      illuminance_entity:
+        findHealthyEntityByDeviceClass(["illuminance"], ["plant"]) ??
+        findHealthyEntity(["sensor"], ["plant", "illuminance"]),
+      dli_entity: findHealthyEntity(["sensor"], ["dli"]),
+    }
+    : {};
+  const flowerBars = Object.entries(flowerEntities)
+    .filter(([, linkedEntity]) => linkedEntity)
+    .map(([key]) => key.replace(/_entity$/, ""));
   const isText = ["text", "navigation"].includes(descriptor.family);
   const defaultVariant = descriptor.variants?.[0];
   const entityDomain = entity?.split(".", 1)[0];
@@ -189,6 +217,7 @@ export const createStubConfig = (
     [findHealthyEntityByDeviceClass(["illuminance"]), "Light level"],
     [findHealthyEntity(["sensor"], ["dew", "point"]), "Dew point"],
   ];
+  const inferredConsolePlatform = inferConsolePlatform(hass, entity);
   const weatherMetrics = weatherMetricCandidates.filter(
     ([entityId], index, candidates) =>
       Boolean(entityId) && candidates.findIndex(([candidate]) => candidate === entityId) === index,
@@ -200,12 +229,34 @@ export const createStubConfig = (
     findEntityByDeviceClass(["battery"]),
     ...available.filter((entityId) => entityId.startsWith("sensor.")),
   ], 4);
+  const stubTapAction = descriptor.upstreamId === "custom_card_sun" ||
+    descriptor.upstreamId === "custom_card_pollen" ||
+    descriptor.upstreamId === "card_welcome_scenes"
+    ? { action: "none" }
+    : descriptor.upstreamId === "custom_card_speedtest_gauges"
+      ? {
+        action: "perform-action",
+        perform_action: "homeassistant.update_entity",
+        target: {
+          entity_id: [
+            findEntity(["sensor"], ["speedtest", "download"]) ?? findEntity(["sensor"], ["download"]) ?? entity,
+            findEntity(["sensor"], ["speedtest", "upload"]) ?? findEntity(["sensor"], ["upload"]),
+            findEntity(["sensor"], ["speedtest", "ping"]) ?? findEntity(["sensor"], ["ping"]),
+          ].filter((value): value is string => Boolean(value)),
+        },
+      }
+      : descriptor.upstreamId === "custom_card_playstation"
+        ? { action: entity ? "more-info" : "none", entity }
+        : descriptor.upstreamId === "custom_card_vehicle_status" ||
+            descriptor.upstreamId === "custom_card_plant"
+          ? { action: "more-info" }
+          : tapAction;
   return {
     ...populatedDefaultsFor(descriptor, hass, entity),
     name: entity ? hass?.states[entity]?.attributes.friendly_name : sampleName(descriptor),
     secondary: entity ? undefined : isText ? "Example" : "Preview",
     variant: defaultVariant,
-    tap_action: tapAction,
+    tap_action: stubTapAction,
     show_controls: ["climate", "vacuum", "control"].includes(descriptor.family) ||
       (descriptor.family === "media" && descriptor.upstreamId !== "card_media_player")
       ? true
@@ -246,7 +297,6 @@ export const createStubConfig = (
         showAzimuth: false,
         showElevation: false,
         timeFormat: "24h",
-        tap_action: { action: "none" },
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_pollen_forecast"
@@ -301,17 +351,6 @@ export const createStubConfig = (
           findEntity(["sensor"], ["upload"]),
         ping_entity: findEntity(["sensor"], ["speedtest", "ping"]) ??
           findEntity(["sensor"], ["ping"]),
-        tap_action: {
-          action: "perform-action",
-          perform_action: "homeassistant.update_entity",
-          target: {
-            entity_id: [
-              findEntity(["sensor"], ["speedtest", "download"]) ?? findEntity(["sensor"], ["download"]) ?? entity,
-              findEntity(["sensor"], ["speedtest", "upload"]) ?? findEntity(["sensor"], ["upload"]),
-              findEntity(["sensor"], ["speedtest", "ping"]) ?? findEntity(["sensor"], ["ping"]),
-            ].filter((value): value is string => Boolean(value)),
-          },
-        },
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_roomview"
@@ -350,7 +389,6 @@ export const createStubConfig = (
           findEntity(["sensor"], ["grass", "pollen"]) ?? entity,
         weeds_entity: findEntity(["sensor"], ["pollen", "weeds"]) ??
           findEntity(["sensor"], ["weed", "pollen"]),
-        tap_action: { action: "none" },
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_vehicle_status"
@@ -363,7 +401,6 @@ export const createStubConfig = (
           findEntity(["sensor"], ["primary", "engine", "percent"]) ?? findEntity(["sensor"], ["battery"]),
         ulm_card_vehicle_status_range: findEntity(["sensor"], ["range"]),
         ulm_card_vehicle_status_name: entity ? hass?.states[entity]?.attributes.friendly_name : undefined,
-        tap_action: { action: "more-info" },
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_plant"
@@ -371,8 +408,8 @@ export const createStubConfig = (
         entity,
         ulm_card_flower_entity: entity,
         ulm_card_flower_name: entity ? hass?.states[entity]?.attributes.friendly_name : "No name set",
-        ulm_card_flower_show_bars: ["temperature", "humidity", "moisture"],
-        tap_action: { action: "more-info" },
+        ulm_card_flower_show_bars: flowerBars.length ? flowerBars : ["moisture"],
+        ...flowerEntities,
       }
       : {}),
     ...(descriptor.upstreamId === "card_room"
@@ -404,7 +441,6 @@ export const createStubConfig = (
           .filter((entityId) => entityId.startsWith("scene."))
           .slice(0, 5)
           .map((entityId) => sceneItemDefaultsFor(hass, entityId)),
-        tap_action: { action: "none" },
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_internet_speed"
@@ -466,8 +502,28 @@ export const createStubConfig = (
       : {}),
     ...(descriptor.upstreamId === "custom_card_playstation"
       ? {
-        show_controls: false,
-        tap_action: { action: entity ? "more-info" : "none", entity },
+        console_platform: inferredConsolePlatform === "generic"
+          ? "auto"
+          : inferredConsolePlatform,
+        console_show_artwork: true,
+        console_show_controls: true,
+        ...resolveConsoleEntities(hass, entity),
+      }
+      : {}),
+    ...(descriptor.upstreamId === "custom_card_entity_carousel"
+      ? {
+        carousel_loop: true,
+        carousel_show_labels: true,
+        carousel_visible_items: 7,
+        carousel_initial_index: 0,
+        carousel_items: uniqueEntities(entitiesFallback, 7).map((carouselEntity) => ({
+          entity: carouselEntity,
+          name: hass?.states[carouselEntity]?.attributes.friendly_name,
+          icon: hass?.states[carouselEntity]?.attributes.icon,
+          color: "primary",
+          tap_action: { action: "more-info" },
+          hold_action: { action: "none" },
+        })),
       }
       : {}),
   };

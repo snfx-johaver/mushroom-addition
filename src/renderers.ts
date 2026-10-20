@@ -9,6 +9,13 @@ import {
   SONOS_NUMBER_CONTROLS,
   SONOS_SWITCH_CONTROLS,
 } from "./sonos-controls";
+import { FLOWER_BARS, flowerBarsForConfig, flowerEntityConfigKey, type FlowerBarKey } from "./flower";
+import {
+  consolePlatformPresentation,
+  inferConsolePlatform,
+  resolveConsoleEntities,
+} from "./console";
+import "./entity-carousel";
 
 export interface RenderContext {
   config: AdditionConfig;
@@ -1656,21 +1663,122 @@ const renderPollenForecast = (ctx: RenderContext): TemplateResult => {
 
 const renderConsoleCard = (ctx: RenderContext): TemplateResult => {
   const state = ctx.entity?.state ?? "unknown";
-  const artwork = attr(ctx.entity, "entity_picture");
-  const activeArtwork = state !== "unknown" && state !== "standby" && artwork;
-  return ctx.actionSurface(`custom-console-card platform-playstation state-${state} ${activeArtwork ? "has-artwork" : ""}`, html`
+  const resolved = resolveConsoleEntities(ctx.hass, ctx.config.entity, ctx.config);
+  const linked = (key: string): HassEntity | undefined => {
+    const entityId = resolved[key];
+    return entityId ? ctx.hass.states[entityId] : undefined;
+  };
+
+  const platform = inferConsolePlatform(ctx.hass, ctx.config.entity, ctx.config);
+  const presentation = consolePlatformPresentation(platform);
+  const followers = linked("followers_entity");
+  const following = linked("following_entity");
+  const friends = linked("friends_entity");
+  const primaryStat = linked("primary_stat_entity");
+  const secondaryStat = linked("secondary_stat_entity");
+  const nowPlaying = linked("now_playing_entity");
+  const gamerpic = linked("gamerpic_entity");
+  const artworkEntity = linked("artwork_entity");
+  const power = linked("console_power_entity");
+  const picture = attr(gamerpic, "entity_picture") ?? attr(ctx.entity, "entity_picture");
+  const artwork = configured<boolean>(ctx, "console_show_artwork") === false
+    ? undefined
+    : attr(artworkEntity, "entity_picture") ??
+      attr(ctx.entity, "media_image_url") ??
+      attr(ctx.entity, "entity_picture");
+  const activeArtwork = Boolean(artwork);
+  const playing = nowPlaying && !["unknown", "unavailable", "none", ""].includes(nowPlaying.state.toLowerCase())
+    ? stateLabel(nowPlaying)
+    : String(attr(ctx.entity, "media_title") ?? "");
+  const consoleName = displayName(ctx.config, ctx.entity, ctx.hass);
+  const social = [
+    { entity: followers, icon: "mdi:account-arrow-left", label: "Followers" },
+    { entity: following, icon: "mdi:account-arrow-right", label: "Following" },
+    { entity: friends, icon: "mdi:account-multiple", label: "Friends" },
+  ].filter(({ entity }) => entity);
+  const stats = [
+    {
+      entity: primaryStat,
+      icon: configured<string>(ctx, "primary_stat_icon") || (platform === "xbox" ? "mdi:microsoft-xbox" : "mdi:trophy"),
+    },
+    {
+      entity: secondaryStat,
+      icon: configured<string>(ctx, "secondary_stat_icon") || "mdi:podium",
+    },
+  ].filter(({ entity }) => entity);
+  const powerDomain = power?.entity_id.split(".", 1)[0];
+  const powerOn = power && !["off", "standby", "unavailable", "unknown"].includes(power.state);
+  const togglePower = (event: Event): void => {
+    event.stopPropagation();
+    if (!power || !powerDomain) return;
+    if (powerDomain === "switch") {
+      ctx.service("homeassistant", "toggle", { entity_id: power.entity_id });
+      return;
+    }
+    ctx.service(powerDomain, powerOn ? "turn_off" : "turn_on", { entity_id: power.entity_id });
+  };
+  return ctx.actionSurface(`custom-console-card platform-${platform} state-${state} ${activeArtwork ? "has-artwork" : ""}`, html`
     ${activeArtwork ? html`<div class="console-backdrop" style=${`background-image:url("${String(artwork)}")`}></div>` : nothing}
     <div class="console-content">
-      <span class="console-logo"><ha-icon .icon=${ctx.config.icon || "mdi:sony-playstation"}></ha-icon></span>
-      ${heading(
-        ctx,
-        activeArtwork ? String(attr(ctx.entity, "friendly_name") || stateLabel(ctx.entity)) : stateLabel(ctx.entity),
-        activeArtwork
-          ? String(attr(ctx.entity, "media_title") || displayName(ctx.config, ctx.entity, ctx.hass))
-          : displayName(ctx.config, ctx.entity, ctx.hass),
-      )}
+      <div class="console-header">
+        <span class="console-logo ${picture ? "has-picture" : ""}"
+          style=${picture ? `background-image:url("${String(picture)}")` : ""}>
+          ${picture ? nothing : html`<ha-icon .icon=${ctx.config.icon || presentation.icon}></ha-icon>`}
+        </span>
+        <span class="console-title">
+          <b>${consoleName}</b>
+          <small>${playing || stateLabel(ctx.entity)}</small>
+        </span>
+        ${stats.length ? html`<span class="console-top-stats">
+          ${stats.map(({ entity, icon }) => html`
+            <span title=${String(attr(entity, "friendly_name") ?? "")}>
+              <ha-icon .icon=${icon}></ha-icon>
+              <b>${stateLabel(entity)}</b>
+            </span>
+          `)}
+        </span>` : nothing}
+      </div>
+      ${social.length ? html`<div class="console-social">
+        ${social.map(({ entity, icon, label }) => html`
+          <span class="console-social-item" title=${label}><ha-icon .icon=${icon}></ha-icon><b>${entity?.state}</b></span>
+        `)}
+      </div>` : nothing}
+      ${configured<boolean>(ctx, "console_show_controls") !== false && power ? html`
+        <div class="console-controls">
+          <button aria-label=${powerOn ? "Turn console off" : "Turn console on"}
+            @pointerdown=${(event: Event) => event.stopPropagation()}
+            @click=${togglePower}>
+            <ha-icon .icon=${powerOn ? "mdi:power" : "mdi:power-standby"}></ha-icon>
+            <span>${powerOn ? "Power off" : "Power on"}</span>
+          </button>
+        </div>
+      ` : nothing}
     </div>
   `);
+};
+
+const renderEntityCarousel = (ctx: RenderContext): TemplateResult => {
+  const showPresentation = [
+    ctx.config.name,
+    ctx.config.primary_info,
+    ctx.config.secondary_info,
+    ctx.config.icon,
+    ctx.config.show_name === true ? true : undefined,
+  ].some((value) => value !== undefined);
+  return html`
+    <ha-card class="mushroom-addition-card entity-carousel-card">
+      ${showPresentation ? html`
+        <div class="metric-heading entity-carousel-presentation">
+          ${sourceIconBubble(ctx, icon(ctx, "mdi:view-carousel"), "var(--primary-color)", true)}
+          ${renderAutomaticPresentation(ctx)}
+        </div>
+      ` : nothing}
+      <mushroom-addition-entity-carousel
+        .hass=${ctx.hass}
+        .config=${ctx.config}>
+      </mushroom-addition-entity-carousel>
+    </ha-card>
+  `;
 };
 
 const renderCar = (ctx: RenderContext): TemplateResult => {
@@ -1712,21 +1820,34 @@ const renderCar = (ctx: RenderContext): TemplateResult => {
 const renderFlower = (ctx: RenderContext): TemplateResult => {
   const plant = entityFromConfig(ctx, "ulm_card_flower_entity") ?? ctx.entity;
   const problem = plant?.state === "problem";
-  const requested = configured<unknown>(ctx, "ulm_card_flower_show_bars");
-  const allowed = ["temperature", "humidity", "moisture", "conductivity", "illuminance", "dli"];
-  const bars = (Array.isArray(requested) ? requested.filter((value): value is string => typeof value === "string") : allowed)
-    .filter((key) => allowed.includes(key))
-    .filter((key) => attr(plant, key) !== undefined || (key === "moisture" && plant?.entity_id.startsWith("sensor.")));
-  const icons: Record<string, string> = {
-    temperature: "mdi:thermometer",
-    humidity: "mdi:water-percent",
-    moisture: "mdi:water",
-    conductivity: "mdi:flash",
-    illuminance: "mdi:white-balance-sunny",
-    dli: "mdi:leaf",
-  };
-  const valueFor = (key: string): number | undefined =>
-    numeric(attr(plant, key)) ?? (key === "moisture" ? numeric(plant?.state) : undefined);
+  const definitionFor = (key: FlowerBarKey) => FLOWER_BARS.find((definition) => definition.key === key)!;
+  const metrics = flowerBarsForConfig(ctx.config).flatMap((key) => {
+    const definition = definitionFor(key);
+    const raw = attr(plant, key);
+    const info = typeof raw === "object" && raw !== null
+      ? raw as Record<string, unknown>
+      : undefined;
+    const explicitEntity = entityFromConfig(ctx, flowerEntityConfigKey(key));
+    const linkedEntityId = typeof info?.sensor === "string"
+      ? info.sensor
+      : typeof raw === "string" && ctx.hass.states[raw]
+        ? raw
+        : undefined;
+    const linkedEntity = explicitEntity ?? (linkedEntityId ? ctx.hass.states[linkedEntityId] : undefined);
+    const plantDeviceClass = String(attr(plant, "device_class") ?? "");
+    const primaryMatches = plant?.entity_id.startsWith("sensor.") && (
+      plantDeviceClass === key ||
+      (key === "moisture" && (!plantDeviceClass || plantDeviceClass === "humidity"))
+    );
+    const sourceEntity = linkedEntity ?? (primaryMatches ? plant : undefined);
+    const value = numeric(sourceEntity?.state) ?? numeric(info?.current) ?? numeric(raw);
+    if (value === undefined) return [];
+    const minimum = numeric(info?.min) ?? numeric(attr(sourceEntity, "min")) ?? definition.min;
+    const maximum = numeric(info?.max) ?? numeric(attr(sourceEntity, "max")) ?? definition.max;
+    const percent = Math.max(0, Math.min(100, ((value - minimum) / Math.max(1, maximum - minimum)) * 100));
+    const display = sourceEntity ? stateLabel(sourceEntity) : String(value);
+    return [{ key, definition, sourceEntity, value, percent, display }];
+  });
   return ctx.actionSurface("custom-plant", html`
     <button class="flower-heading" aria-label="Open plant details"
       @pointerdown=${(event: Event) => event.stopPropagation()}
@@ -1736,11 +1857,12 @@ const renderFlower = (ctx: RenderContext): TemplateResult => {
         ? configured<string>(ctx, "ulm_custom_card_plant_problem") || "Problema"
         : configured<string>(ctx, "ulm_custom_card_plant_correct") || "Correto")}
     </button>
-    ${bars.length ? html`<div class="flower-bars">${bars.map((key) => {
-      const value = valueFor(key);
-      return html`<span>
-        <ha-icon .icon=${icons[key]}></ha-icon>
-        <i><em style=${`width:${Math.max(0, Math.min(100, value ?? 0))}%`}></em></i>
+    ${metrics.length ? html`<div class="flower-bars">${metrics.map(({ key, definition, sourceEntity, percent, display }) => {
+      const label = `${definition.label}: ${display}`;
+      return html`<span data-flower-bar=${key} title=${label} aria-label=${label}>
+        <ha-icon .icon=${definition.icon}></ha-icon>
+        <i><em style=${`width:${percent}%`}></em></i>
+        ${sourceEntity ? html`<output>${display}</output>` : nothing}
       </span>`;
     })}</div>` : nothing}
   `);
@@ -2059,6 +2181,7 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "custom_card_tablet": return renderTablet(ctx);
     case "custom_card_pollen_forecast": return renderPollenForecast(ctx);
     case "custom_card_playstation": return renderConsoleCard(ctx);
+    case "custom_card_entity_carousel": return renderEntityCarousel(ctx);
     case "custom_card_vehicle_status": return renderCar(ctx);
     case "custom_card_plant": return renderFlower(ctx);
     case "custom_card_speedtest_gauges": return renderSpeedtestGauges(ctx);
