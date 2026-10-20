@@ -6672,12 +6672,15 @@ const ln = Le`
   .sun-arc line { stroke: rgba(var(--ulm-grey), .18); }
   .sun-arc .sun-day { fill: rgba(var(--ulm-blue), .48); stroke: none; }
   .sun-arc .sun-night { fill: #343579; stroke: none; }
+  .sun-marker, .moon-marker {
+    box-sizing: border-box;
+    width: 20px;
+    height: 20px;
+  }
   .sun-marker {
     position: absolute;
     left: var(--sun-x);
     top: var(--sun-y);
-    width: 20px;
-    height: 20px;
     border-radius: 50%;
     background: #ffd45c;
     transform: translate(-50%, -50%);
@@ -6723,10 +6726,8 @@ const ln = Le`
     left: var(--moon-x);
     top: var(--moon-y);
     display: grid;
-    width: 28px;
-    height: 28px;
     place-items: center;
-    border: 2px solid rgba(255, 255, 255, .35);
+    border: 0;
     border-radius: 50%;
     background: #e7e7e7;
     color: #25293a;

@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Updates to 0.0.1 (no version bump)
 
+- Matched Astronomy's Sun and Moon orbit markers at 20px, retaining the Moon
+  glyph size while fitting its white circle to the same diameter.
 - Simplified Area advanced button content with contextual attribute dropdowns
   and text helpers; replaced arrow reorder buttons with drag grips and removed
   the duplicate controls-feature add button. Fixed native group color overrides.
