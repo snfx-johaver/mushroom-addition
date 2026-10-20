@@ -8,6 +8,7 @@ import {
   resolveSonosControlEntities,
   SONOS_NUMBER_CONTROLS,
   SONOS_SWITCH_CONTROLS,
+  SONOS_MEDIA_FEATURES,
 } from "./sonos-controls";
 import { FLOWER_BARS, flowerBarsForConfig, flowerEntityConfigKey, type FlowerBarKey } from "./flower";
 import {
@@ -1358,15 +1359,62 @@ const renderWeatherMetrics = (ctx: RenderContext): TemplateResult => {
 };
 
 const renderSonos = (ctx: RenderContext): TemplateResult => {
-  const unavailable = !ctx.entity || ctx.entity.state === "unavailable";
+  const state = ctx.entity?.state;
+  const unavailable = !ctx.entity || state === "unavailable" || state === "unknown";
+  const collapsed = ctx.config.collapsible_controls === true &&
+    (unavailable || state === "off");
+  const stopEvent = (event: Event) => event.stopPropagation();
+  const features = attr(ctx.entity, "supported_features");
+  // Older integrations may omit the bitmask; an explicit zero must still hide controls.
+  const supports = (feature: number): boolean =>
+    features === undefined || (Number(features) & feature) !== 0;
+  const volumeControls = ctx.config.volume_controls ?? ["volume_buttons"];
+  const mediaControls = ctx.config.media_controls ?? ["play_pause_stop"];
+  const mediaService = (service: string, data: Record<string, unknown> = {}) => {
+    if (!unavailable) ctx.service("media_player", service, { entity_id: ctx.config.entity, ...data });
+  };
+  const mediaButton = (label: string, iconName: string, service: string, data?: Record<string, unknown>) =>
+    button(label, iconName, (event) => { stopEvent(event); mediaService(service, data); }, unavailable);
+  const powerOn = state === "off" || unavailable;
+  const powerControl = mediaControls.includes("on_off") &&
+    supports(powerOn ? SONOS_MEDIA_FEATURES.turnOn : SONOS_MEDIA_FEATURES.turnOff)
+    ? mediaButton(powerOn ? "Turn on" : "Turn off", "mdi:power", powerOn ? "turn_on" : "turn_off")
+    : nothing;
+  const playing = state === "playing";
+  const playbackService = features === undefined
+    ? "media_play_pause"
+    : playing && supports(SONOS_MEDIA_FEATURES.pause)
+      ? "media_pause"
+      : !playing && supports(SONOS_MEDIA_FEATURES.play)
+        ? "media_play"
+        : supports(SONOS_MEDIA_FEATURES.stop) ? "media_stop" : undefined;
+  const playbackControl = mediaControls.includes("play_pause_stop") && playbackService
+    ? mediaButton(
+      playbackService === "media_stop" ? "Stop" : features === undefined ? "Play or pause" : playing ? "Pause" : "Play",
+      playbackService === "media_stop" ? "mdi:stop" : playing ? "mdi:pause" : "mdi:play",
+      playbackService,
+    ) : nothing;
+  const volumeButtons = volumeControls.includes("volume_buttons") &&
+    supports(SONOS_MEDIA_FEATURES.volumeStep | SONOS_MEDIA_FEATURES.volumeSet);
+  const repeat = String(attr(ctx.entity, "repeat") ?? "off");
+  const repeatNext = repeat === "off" ? "all" : repeat === "all" ? "one" : "off";
+  const muted = attr(ctx.entity, "is_volume_muted") === true;
   const picture = configured<boolean>(ctx, "ulm_card_media_player_enable_art") === false
     ? undefined
     : attr(ctx.entity, "entity_picture");
-  const volume = Math.round((numeric(attr(ctx.entity, "volume_level")) ?? 0) * 100);
+  const volume = Math.round(Math.max(0, Math.min(1, numeric(attr(ctx.entity, "volume_level")) ?? 0)) * 100);
   const source = attr(ctx.entity, "source");
-  const label = ["idle", "paused", "unavailable"].includes(ctx.entity?.state ?? "")
+  const legacyLabel = ["idle", "paused", "unavailable", "unknown"].includes(state ?? "")
     ? stateLabel(ctx.entity)
     : `${source ? String(source) : stateLabel(ctx.entity)} • ${volume}%`;
+  const title = ctx.config.use_media_info ? attr(ctx.entity, "media_title") : undefined;
+  const artist = ctx.config.use_media_info ? attr(ctx.entity, "media_artist") : undefined;
+  const label = ctx.config.show_volume_level === undefined && !ctx.config.use_media_info
+    ? legacyLabel
+    : [
+      artist ? String(artist) : title ? undefined : source ? String(source) : stateLabel(ctx.entity),
+      ctx.config.show_volume_level !== false ? `${volume}%` : undefined,
+    ].filter(Boolean).join(" • ");
   const controls = resolveSonosControlEntities(ctx.hass, ctx.config.entity, ctx.config);
   const switches = SONOS_SWITCH_CONTROLS.flatMap((control) => {
     const entityId = controls[control.configKey];
@@ -1386,10 +1434,12 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
     ${switches.length ? html`<div class="sonos-switches">
       ${switches.map(({ control, entity }) => html`
         <button class=${entity.state === "on" ? "is-active" : ""} aria-pressed=${entity.state === "on"}
-          ?disabled=${entity.state === "unavailable"}
+          ?disabled=${unavailable || ["unavailable", "unknown"].includes(entity.state)}
           @click=${(event: Event) => {
             event.stopPropagation();
-            ctx.service("homeassistant", "toggle", { entity_id: entity.entity_id });
+            if (!unavailable && !["unavailable", "unknown"].includes(entity.state)) {
+              ctx.service("homeassistant", "toggle", { entity_id: entity.entity_id });
+            }
           }}>
           <ha-icon .icon=${control.icon}></ha-icon>
           <span>${control.label}</span>
@@ -1407,10 +1457,11 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
             <ha-icon .icon=${control.icon}></ha-icon>
             <span>${control.label}</span>
             <input type="range" min=${min} max=${max} step=${step} .value=${String(value)}
-              ?disabled=${entity.state === "unavailable"}
+              ?disabled=${unavailable || ["unavailable", "unknown"].includes(entity.state)}
               aria-label=${control.label}
               @change=${(event: Event) => {
                 event.stopPropagation();
+                if (unavailable || ["unavailable", "unknown"].includes(entity.state)) return;
                 ctx.service("number", "set_value", {
                   entity_id: entity.entity_id,
                   value: Number((event.currentTarget as HTMLInputElement).value),
@@ -1426,22 +1477,58 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
     ${picture ? html`<span class="media-art" style=${`background-image:url("${String(picture)}")`}></span>` : nothing}
     <div class="custom-card-heading">
       ${iconBubble(ctx, "mdi:speaker", ctx.entity?.state === "playing" ? "green" : "grey")}
-      ${heading(ctx, label)}
+      ${heading(ctx, label, title && !ctx.config.name ? String(title) : undefined)}
     </div>
-    <div class="sonos-controls">
-      ${button("Volume down", "mdi:volume-minus", (event) => { event.stopPropagation(); ctx.service("media_player", "volume_down", { entity_id: ctx.config.entity }); }, unavailable)}
-      ${button("Play or pause", ["paused", "off"].includes(ctx.entity?.state ?? "") ? "mdi:play" : "mdi:pause", (event) => { event.stopPropagation(); ctx.service("media_player", "media_play_pause", { entity_id: ctx.config.entity }); }, unavailable)}
-      ${button("Volume up", "mdi:volume-plus", (event) => { event.stopPropagation(); ctx.service("media_player", "volume_up", { entity_id: ctx.config.entity }); }, unavailable)}
+    <div class="sonos-controls"
+      @pointerdown=${stopEvent} @pointerup=${stopEvent} @pointercancel=${stopEvent}
+      @click=${stopEvent} @dblclick=${stopEvent} @keydown=${stopEvent} @keyup=${stopEvent}>
+      ${powerControl}
+      ${!collapsed ? html`
+        ${volumeControls.includes("volume_mute") && supports(SONOS_MEDIA_FEATURES.volumeMute)
+          ? html`<button class="ulm-control" aria-label=${muted ? "Unmute" : "Mute"} aria-pressed=${muted}
+              ?disabled=${unavailable} @click=${() => mediaService("volume_mute", { is_volume_muted: !muted })}>
+              <ha-icon .icon=${muted ? "mdi:volume-off" : "mdi:volume-high"}></ha-icon>
+            </button>` : nothing}
+        ${volumeButtons ? mediaButton("Volume down", "mdi:volume-minus", "volume_down") : nothing}
+        ${mediaControls.includes("shuffle") && supports(SONOS_MEDIA_FEATURES.shuffle)
+          ? html`<button class="ulm-control" aria-label="Shuffle" aria-pressed=${attr(ctx.entity, "shuffle") === true}
+              ?disabled=${unavailable} @click=${() => mediaService("shuffle_set", { shuffle: attr(ctx.entity, "shuffle") !== true })}>
+              <ha-icon icon="mdi:shuffle"></ha-icon>
+            </button>` : nothing}
+        ${mediaControls.includes("previous") && supports(SONOS_MEDIA_FEATURES.previous)
+          ? mediaButton("Previous track", "mdi:skip-previous", "media_previous_track") : nothing}
+        ${playbackControl}
+        ${mediaControls.includes("next") && supports(SONOS_MEDIA_FEATURES.next)
+          ? mediaButton("Next track", "mdi:skip-next", "media_next_track") : nothing}
+        ${mediaControls.includes("repeat") && supports(SONOS_MEDIA_FEATURES.repeat)
+          ? mediaButton(`Repeat: ${repeat}`, repeat === "one" ? "mdi:repeat-once" : repeat === "off" ? "mdi:repeat-off" : "mdi:repeat",
+            "repeat_set", { repeat: repeatNext }) : nothing}
+        ${volumeButtons ? mediaButton("Volume up", "mdi:volume-plus", "volume_up") : nothing}
+        ${volumeControls.includes("volume_set") && supports(SONOS_MEDIA_FEATURES.volumeSet)
+          ? html`<label class="sonos-volume">
+              <input type="range" min="0" max="100" step="1" .value=${String(volume)}
+                aria-label="Volume level" ?disabled=${unavailable}
+                @change=${(event: Event) => {
+                  stopEvent(event);
+                  mediaService("volume_set", {
+                    volume_level: Math.max(0, Math.min(100, Number((event.currentTarget as HTMLInputElement).value))) / 100,
+                  });
+                }}>
+              <output>${volume}%</output>
+            </label>` : nothing}
+      ` : nothing}
     </div>
-    ${switches.length || numbers.length ? html`
+    ${!collapsed && (switches.length || numbers.length) ? html`
       ${detailsAlwaysVisible
         ? html`<div class="sonos-details sonos-details-always-visible"
             @pointerdown=${(event: Event) => event.stopPropagation()}
-            @click=${(event: Event) => event.stopPropagation()}>
+            @click=${stopEvent} @dblclick=${stopEvent} @keydown=${stopEvent} @keyup=${stopEvent}
+            @pointerup=${stopEvent} @pointercancel=${stopEvent}>
             ${detailsContent}
           </div>`
         : html`<details class="sonos-details" @pointerdown=${(event: Event) => event.stopPropagation()}
-            @click=${(event: Event) => event.stopPropagation()}>
+            @click=${stopEvent} @dblclick=${stopEvent} @keydown=${stopEvent} @keyup=${stopEvent}
+            @pointerup=${stopEvent} @pointercancel=${stopEvent}>
             <summary>
               <span>More details</span>
               <ha-icon icon="mdi:chevron-down"></ha-icon>
@@ -1449,9 +1536,10 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
             ${detailsContent}
           </details>`}
     ` : nothing}
-    ${shortcuts.length ? html`
+    ${!collapsed && shortcuts.length ? html`
       <div class="sonos-shortcuts" style=${`--sonos-shortcut-columns:${shortcutColumns}`}
-        @pointerdown=${(event: Event) => event.stopPropagation()}>
+        @pointerdown=${stopEvent} @pointerup=${stopEvent} @pointercancel=${stopEvent}
+        @click=${stopEvent} @dblclick=${stopEvent} @keydown=${stopEvent} @keyup=${stopEvent}>
         ${shortcuts.map((shortcut, index) => html`
           <button
             aria-label=${shortcut.name || `Play shortcut ${index + 1}`}
@@ -1459,6 +1547,7 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
             ?disabled=${unavailable}
             @click=${(event: Event) => {
               event.stopPropagation();
+              if (unavailable) return;
               ctx.service("media_player", "play_media", {
                 entity_id: ctx.config.entity,
                 media_content_type: shortcut.type || "playlist",

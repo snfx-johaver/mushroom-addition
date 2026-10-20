@@ -1,5 +1,20 @@
 import type { AdditionConfig, HomeAssistant } from "./types";
 
+export const SONOS_MEDIA_FEATURES = {
+  pause: 1,
+  volumeSet: 4,
+  volumeMute: 8,
+  previous: 16,
+  next: 32,
+  turnOn: 128,
+  turnOff: 256,
+  volumeStep: 1024,
+  stop: 4096,
+  play: 16384,
+  shuffle: 32768,
+  repeat: 262144,
+} as const;
+
 export interface SonosControlDefinition {
   configKey: string;
   domain: "switch" | "number";

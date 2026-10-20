@@ -260,6 +260,7 @@ export const createStubConfig = (
       "advanced_home_energy_management",
       "advanced_energy_buy_sell",
       "advanced_energy_panel_health",
+      "custom_card_media_player_sonos",
     ].includes(descriptor.upstreamId)
       ? undefined
       : entity ? hass?.states[entity]?.attributes.friendly_name : sampleName(descriptor),
@@ -483,9 +484,11 @@ export const createStubConfig = (
       : {}),
     ...(descriptor.upstreamId === "custom_card_media_player_sonos"
       ? {
-        ulm_card_media_player_with_controls_name: entity
-          ? hass?.states[entity]?.attributes.friendly_name
-          : "No name set",
+        use_media_info: true,
+        show_volume_level: true,
+        volume_controls: ["volume_mute", "volume_set", "volume_buttons"],
+        media_controls: ["on_off", "shuffle", "previous", "play_pause_stop", "next", "repeat"],
+        collapsible_controls: true,
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_printer"

@@ -229,6 +229,11 @@ export const populatedDefaultsFor = (
           : item.upstreamId === "custom_card_media_player_sonos"
         ? {
           ulm_card_media_player_enable_art: false,
+          use_media_info: false,
+          show_volume_level: true,
+          volume_controls: ["volume_buttons"],
+          media_controls: ["play_pause_stop"],
+          collapsible_controls: false,
           sonos_details_always_visible: false,
           ...resolveSonosControlEntities(hass, entityId),
         }
@@ -299,6 +304,7 @@ export const populatedDefaultsFor = (
     "card_battery",
     "custom_card_pollen",
     "advanced_home_energy_management",
+    "custom_card_media_player_sonos",
   ]).has(item.upstreamId);
   return {
     type: `custom:${item.tag}`,

@@ -556,8 +556,14 @@ export const sharedStyles = css`
     border-color: rgba(255,255,255,.22); background: rgba(0,0,0,.32); color: #fff;
   }
   .sonos-controls {
-    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; gap: 7px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(42px, 1fr)); align-items: center; gap: 7px;
   }
+  .sonos-controls:empty { display: none; }
+  .sonos-volume { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .sonos-volume input { flex: 1; min-width: 0; accent-color: rgb(var(--rgb-blue, 3, 169, 244)); }
+  .sonos-volume output { font-variant-numeric: tabular-nums; }
+  .sonos-controls button[aria-pressed="true"] { color: rgb(var(--rgb-blue, 3, 169, 244)); }
+  .sonos-controls button:disabled, .sonos-volume input:disabled { cursor: not-allowed; opacity: .45; }
   .sonos-controls button {
     min-height: 42px; border: 0; border-radius: 13px; background: rgba(var(--ulm-grey), .08); color: var(--primary-text-color);
   }

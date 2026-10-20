@@ -258,6 +258,11 @@ export interface AdditionConfig {
   cartridges?: PrinterCartridgeConfig[];
   waste_streams?: WasteStreamConfig[];
   shortcuts?: SonosShortcutsConfig;
+  use_media_info?: boolean;
+  show_volume_level?: boolean;
+  volume_controls?: ("volume_mute" | "volume_set" | "volume_buttons")[];
+  media_controls?: ("on_off" | "shuffle" | "previous" | "play_pause_stop" | "next" | "repeat")[];
+  collapsible_controls?: boolean;
   today_entity?: string;
   tomorrow_entity?: string;
   show_today?: boolean;
