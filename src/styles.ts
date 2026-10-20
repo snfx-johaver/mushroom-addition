@@ -584,6 +584,17 @@ export const sharedStyles = css`
   .custom-sonos, .custom-printer,
   .custom-entity-overview, .custom-weather-metrics, .custom-internet-speed,
   .custom-nas-metrics, .custom-tablet { display: grid; gap: 10px; padding: 12px; }
+  .custom-sonos { position: relative; overflow: hidden; }
+  .custom-sonos > :not(.media-art) { position: relative; z-index: 1; }
+  .custom-sonos.has-art { color: #fff; }
+  .custom-sonos.has-art .ulm-name, .custom-sonos.has-art .ulm-label,
+  .custom-sonos.has-art .sonos-details summary, .custom-sonos.has-art .sonos-sliders label,
+  .custom-sonos.has-art .sonos-sliders output { color: #fff; }
+  .custom-sonos.has-art .ulm-label { color: rgba(255,255,255,.78); }
+  .custom-sonos.has-art .ulm-icon, .custom-sonos.has-art .sonos-controls button,
+  .custom-sonos.has-art .sonos-switches button {
+    border-color: rgba(255,255,255,.22); background: rgba(0,0,0,.32); color: #fff;
+  }
   .sonos-controls {
     display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; gap: 7px;
   }

@@ -1331,6 +1331,9 @@ const renderWeatherMetrics = (ctx: RenderContext): TemplateResult => {
 
 const renderSonos = (ctx: RenderContext): TemplateResult => {
   const unavailable = !ctx.entity || ctx.entity.state === "unavailable";
+  const picture = configured<boolean>(ctx, "ulm_card_media_player_enable_art") === false
+    ? undefined
+    : attr(ctx.entity, "entity_picture");
   const volume = Math.round((numeric(attr(ctx.entity, "volume_level")) ?? 0) * 100);
   const source = attr(ctx.entity, "source");
   const label = ["idle", "paused", "unavailable"].includes(ctx.entity?.state ?? "")
@@ -1347,7 +1350,8 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
     const entity = entityId ? ctx.hass.states[entityId] : undefined;
     return entity ? [{ control, entity }] : [];
   });
-  return ctx.actionSurface("custom-sonos", html`
+  return ctx.actionSurface(`custom-sonos ${picture ? "has-art" : ""}`, html`
+    ${picture ? html`<span class="media-art" style=${`background-image:url("${String(picture)}")`}></span>` : nothing}
     <div class="custom-card-heading">
       ${iconBubble(ctx, "mdi:speaker", ctx.entity?.state === "playing" ? "green" : "grey")}
       ${heading(ctx, label)}

@@ -16,7 +16,12 @@ const states: HomeAssistant["states"] = {
   "media_player.office_sonos": {
     entity_id: "media_player.office_sonos",
     state: "playing",
-    attributes: { friendly_name: "Office Sonos", source: "Spotify", volume_level: 0.42 },
+    attributes: {
+      friendly_name: "Office Sonos",
+      source: "Spotify",
+      volume_level: 0.42,
+      entity_picture: "/api/media_player_proxy/media_player.office_sonos",
+    },
   },
   "media_player.office_sonos_2": {
     entity_id: "media_player.office_sonos_2",
@@ -273,7 +278,7 @@ describe("power and printer custom batch certification", () => {
       "entity", "crossfade_entity", "night_sound_entity", "speech_enhancement_entity",
       "subwoofer_entity", "surrounds_entity", "loudness_entity", "surround_full_entity",
       "audio_delay_entity", "balance_entity", "bass_entity", "treble_entity", "sub_gain_entity",
-      "surround_level_entity", "music_surround_level_entity",
+      "surround_level_entity", "music_surround_level_entity", "ulm_card_media_player_enable_art",
     ]],
     ["custom_card_more_power_outlet", ["entity", "power_entity", "energy_entity", "time_entity"]],
     ["custom_card_gauge", ["entity", "minimum", "maximum"]],
@@ -418,6 +423,24 @@ describe("power and printer custom batch certification", () => {
       ["number", "set_value", { entity_id: "number.office_sonos_bass", value: 6 }],
     ]);
     card.remove();
+
+    const artwork = await renderCard("mushroom-addition-custom-card-media-player-sonos", {
+      type: "custom:mushroom-addition-custom-card-media-player-sonos",
+      entity: "media_player.office_sonos",
+      ulm_card_media_player_enable_art: true,
+    }, states, undefined, sonosRegistry);
+    expect(artwork.shadowRoot.querySelector(".custom-sonos.has-art")).not.toBeNull();
+    expect(artwork.shadowRoot.querySelector(".media-art")?.getAttribute("style"))
+      .toContain("/api/media_player_proxy/media_player.office_sonos");
+    artwork.remove();
+
+    const artworkHidden = await renderCard("mushroom-addition-custom-card-media-player-sonos", {
+      type: "custom:mushroom-addition-custom-card-media-player-sonos",
+      entity: "media_player.office_sonos",
+      ulm_card_media_player_enable_art: false,
+    }, states, undefined, sonosRegistry);
+    expect(artworkHidden.shadowRoot.querySelector(".media-art")).toBeNull();
+    artworkHidden.remove();
 
     const paused = await renderCard("mushroom-addition-custom-card-media-player-sonos", {
       type: "custom:mushroom-addition-custom-card-media-player-sonos",
