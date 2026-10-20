@@ -247,7 +247,7 @@ let je = class extends HTMLElement {
   }
 };
 je.elementStyles = [], je.shadowRootOptions = { mode: "open" }, je[et("elementProperties")] = /* @__PURE__ */ new Map(), je[et("finalized")] = /* @__PURE__ */ new Map(), Ka?.({ ReactiveElement: je }), (xt.reactiveElementVersions ??= []).push("2.1.2");
-const Wt = globalThis, bo = (e) => e, vt = Wt.trustedTypes, fo = vt ? vt.createPolicy("lit-html", { createHTML: (e) => e }) : void 0, Ko = "$lit$", ke = `lit$${Math.random().toFixed(9).slice(2)}$`, Yo = "?" + ke, Ya = `<${Yo}>`, Ne = document, nt = () => Ne.createComment(""), it = (e) => e === null || typeof e != "object" && typeof e != "function", Gt = Array.isArray, Xa = (e) => Gt(e) || typeof e?.[Symbol.iterator] == "function", Et = `[ 	
+const Wt = globalThis, bo = (e) => e, vt = Wt.trustedTypes, fo = vt ? vt.createPolicy("lit-html", { createHTML: (e) => e }) : void 0, Ko = "$lit$", Me = `lit$${Math.random().toFixed(9).slice(2)}$`, Yo = "?" + Me, Ya = `<${Yo}>`, Ne = document, nt = () => Ne.createComment(""), it = (e) => e === null || typeof e != "object" && typeof e != "function", Gt = Array.isArray, Xa = (e) => Gt(e) || typeof e?.[Symbol.iterator] == "function", Et = `[ 	
 \f\r]`, Ye = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, vo = /-->/g, wo = />/g, Ee = RegExp(`>|${Et}(?:([^\\s"'>=/]+)(${Et}*=${Et}*(?:[^ 	
 \f\r"'\`<>=]|("|')|))|$)`, "g"), $o = /'/g, xo = /"/g, Xo = /^(?:script|style|textarea|title)$/i, Jo = (e) => (t, ...o) => ({ _$litType$: e, strings: t, values: o }), c = Jo(1), q = Jo(2), We = /* @__PURE__ */ Symbol.for("lit-noChange"), m = /* @__PURE__ */ Symbol.for("lit-nothing"), So = /* @__PURE__ */ new WeakMap(), De = Ne.createTreeWalker(Ne, 129);
 function Zo(e, t) {
@@ -262,7 +262,7 @@ const Ja = (e, t) => {
     let d, u, _ = -1, h = 0;
     for (; h < s.length && (i.lastIndex = h, u = i.exec(s), u !== null); ) h = i.lastIndex, i === Ye ? u[1] === "!--" ? i = vo : u[1] !== void 0 ? i = wo : u[2] !== void 0 ? (Xo.test(u[2]) && (r = RegExp("</" + u[2], "g")), i = Ee) : u[3] !== void 0 && (i = Ee) : i === Ee ? u[0] === ">" ? (i = r ?? Ye, _ = -1) : u[1] === void 0 ? _ = -2 : (_ = i.lastIndex - u[2].length, d = u[1], i = u[3] === void 0 ? Ee : u[3] === '"' ? xo : $o) : i === xo || i === $o ? i = Ee : i === vo || i === wo ? i = Ye : (i = Ee, r = void 0);
     const p = i === Ee && e[l + 1].startsWith("/>") ? " " : "";
-    n += i === Ye ? s + Ya : _ >= 0 ? (a.push(d), s.slice(0, _) + Ko + s.slice(_) + ke + p) : s + ke + (_ === -2 ? l : p);
+    n += i === Ye ? s + Ya : _ >= 0 ? (a.push(d), s.slice(0, _) + Ko + s.slice(_) + Me + p) : s + Me + (_ === -2 ? l : p);
   }
   return [Zo(e, n + (e[o] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), a];
 };
@@ -279,11 +279,11 @@ class st {
     for (; (r = De.nextNode()) !== null && s.length < l; ) {
       if (r.nodeType === 1) {
         if (r.hasAttributes()) for (const _ of r.getAttributeNames()) if (_.endsWith(Ko)) {
-          const h = u[i++], p = r.getAttribute(_).split(ke), y = /([.?@])?(.*)/.exec(h);
+          const h = u[i++], p = r.getAttribute(_).split(Me), y = /([.?@])?(.*)/.exec(h);
           s.push({ type: 1, index: n, name: y[2], strings: p, ctor: y[1] === "." ? Qa : y[1] === "?" ? er : y[1] === "@" ? tr : St }), r.removeAttribute(_);
-        } else _.startsWith(ke) && (s.push({ type: 6, index: n }), r.removeAttribute(_));
+        } else _.startsWith(Me) && (s.push({ type: 6, index: n }), r.removeAttribute(_));
         if (Xo.test(r.tagName)) {
-          const _ = r.textContent.split(ke), h = _.length - 1;
+          const _ = r.textContent.split(Me), h = _.length - 1;
           if (h > 0) {
             r.textContent = vt ? vt.emptyScript : "";
             for (let p = 0; p < h; p++) r.append(_[p], nt()), De.nextNode(), s.push({ type: 2, index: ++n });
@@ -293,7 +293,7 @@ class st {
       } else if (r.nodeType === 8) if (r.data === Yo) s.push({ type: 2, index: n });
       else {
         let _ = -1;
-        for (; (_ = r.data.indexOf(ke, _ + 1)) !== -1; ) s.push({ type: 7, index: n }), _ += ke.length - 1;
+        for (; (_ = r.data.indexOf(Me, _ + 1)) !== -1; ) s.push({ type: 7, index: n }), _ += Me.length - 1;
       }
       n++;
     }
@@ -5142,7 +5142,7 @@ const oa = new Set(ta.map((e) => e.canonical)), kt = [
   const t = Number(e);
   return Number.isFinite(t) ? t : void 0;
 }, To = (e, t) => {
-  if (Me(t)) return;
+  if (Ae(t)) return;
   const o = t.attributes, a = [
     o.current_temperature,
     o.temperature,
@@ -5151,7 +5151,7 @@ const oa = new Set(ta.map((e) => e.canonical)), kt = [
   ].map(fa).find((n) => n !== void 0), r = o.unit_of_measurement ?? (t.entity_id.startsWith("climate.") || o.device_class === "temperature" || o.current_temperature !== void 0 || o.device_temperature !== void 0 || o.temperature !== void 0 ? e.config?.unit_system?.temperature : void 0);
   return a !== void 0 && typeof r == "string" && ["°C", "°F", "K"].includes(r.trim()) ? `${a} ${r.trim()}` : void 0;
 }, Oo = (e) => {
-  if (Me(e) || !e.entity_id.startsWith("light.")) return;
+  if (Ae(e) || !e.entity_id.startsWith("light.")) return;
   const t = fa(e.attributes.brightness);
   return t !== void 0 && t >= 0 && t <= 255 ? `${Math.round(t / 255 * 100)}%` : void 0;
 }, Yr = (e, t) => {
@@ -5166,13 +5166,13 @@ const oa = new Set(ta.map((e) => e.canonical)), kt = [
         case "name":
           return o?.attributes.friendly_name || o?.entity_id;
         case "state":
-          return Me(o) ? void 0 : A(o);
+          return Ae(o) ? void 0 : A(o);
         case "brightness":
           return Oo(o);
         case "temperature":
           return To(t, o);
         case "attribute": {
-          if (Me(o) || !l.attribute) return;
+          if (Ae(o) || !l.attribute) return;
           const s = o.attributes[l.attribute];
           return typeof s == "string" && s.trim() && !["unknown", "unavailable"].includes(s) || typeof s == "number" && Number.isFinite(s) || typeof s == "boolean" ? String(s) : void 0;
         }
@@ -5189,7 +5189,7 @@ const oa = new Set(ta.map((e) => e.canonical)), kt = [
 }, Ze = 4, va = ["window", "door", "motion", "water", "smoke"], ot = (e) => {
   const t = e?.attributes.device_class;
   return t === "window" ? "window" : t === "door" || t === "garage_door" || t === "opening" ? "door" : t === "moisture" ? "water" : t === "smoke" || t === "fire" ? "smoke" : "motion";
-}, Me = (e) => !e || ["unknown", "unavailable"].includes(e.state), eo = (e, t) => Me(e) ? !1 : {
+}, Ae = (e) => !e || ["unknown", "unavailable"].includes(e.state), eo = (e, t) => Ae(e) ? !1 : {
   window: ["on", "open", "opening"],
   door: ["on", "open", "opening"],
   motion: ["on", "motion", "detected", "occupied", "home", "active"],
@@ -7413,7 +7413,7 @@ const Te = sn(_n), pn = {
   if (o === void 0) return;
   const a = gn(e, t).toLowerCase();
   return a === "mw" ? o * 1e6 : a === "kw" ? o * 1e3 : o;
-}, Se = (e) => {
+}, ke = (e) => {
   const t = Math.abs(e ?? 0);
   return t >= 1e3 ? `${(t / 1e3).toFixed(2).replace(".", ",")} kW` : `${Math.round(t).toLocaleString()} W`;
 }, Vt = (e, t, o, a = 380, r = 300) => {
@@ -7532,7 +7532,7 @@ var In = Object.defineProperty, En = Object.getOwnPropertyDescriptor, Re = (e, t
   return a && r && In(t, o, r), r;
 };
 const Pn = /* @__PURE__ */ new Set(["off", "unknown", "unavailable", "none", "idle"]);
-let $e = class extends be {
+let xe = class extends be {
   constructor() {
     super(...arguments), this.selectedIndex = 0, this.carouselWidth = 0, this.dragOffset = 0, this.dragging = !1, this.horizontalVelocity = 0, this.pointerAxis = "pending", this.holdFired = !1, this.pointerStartedOnItem = !1, this.onPointerDown = (e) => {
       if (e.pointerType && e.isPrimary === !1) return;
@@ -7762,7 +7762,7 @@ let $e = class extends be {
     });
   }
 };
-$e.styles = Le`
+xe.styles = Le`
     :host { display: block; min-width: 0; }
     .carousel {
       position: relative;
@@ -7861,25 +7861,25 @@ $e.styles = Le`
   `;
 Re([
   ue({ attribute: !1 })
-], $e.prototype, "hass", 2);
+], xe.prototype, "hass", 2);
 Re([
   ue({ attribute: !1 })
-], $e.prototype, "config", 2);
+], xe.prototype, "config", 2);
 Re([
   oe()
-], $e.prototype, "selectedIndex", 2);
+], xe.prototype, "selectedIndex", 2);
 Re([
   oe()
-], $e.prototype, "carouselWidth", 2);
+], xe.prototype, "carouselWidth", 2);
 Re([
   oe()
-], $e.prototype, "dragOffset", 2);
+], xe.prototype, "dragOffset", 2);
 Re([
   oe()
-], $e.prototype, "dragging", 2);
-$e = Re([
+], xe.prototype, "dragging", 2);
+xe = Re([
   Qo("mushroom-addition-entity-carousel")
-], $e);
+], xe);
 const E = (e, t) => e?.attributes[t], N = (e) => {
   const t = Number(e);
   return Number.isFinite(t) ? t : void 0;
@@ -8217,7 +8217,7 @@ const E = (e, t) => e?.attributes[t], N = (e) => {
       <div class="room-copy">${X(a, o)}
       ${i.length ? c`<div class="room-status" role="group" aria-label=${G(e.hass, "room_status")}>
         ${i.map((l) => {
-    const s = e.hass.states[l.entity], d = l.kind && va.includes(l.kind) ? l.kind : ot(s), u = Me(s), _ = eo(s, d), h = `${le({ entity: l.entity }, s, e.hass)} · ${G(e.hass, `room_status_${d}`)}: ${G(e.hass, u ? "room_status_unavailable" : _ ? "room_status_active" : "room_status_inactive")} (${A(s)})`;
+    const s = e.hass.states[l.entity], d = l.kind && va.includes(l.kind) ? l.kind : ot(s), u = Ae(s), _ = eo(s, d), h = `${le({ entity: l.entity }, s, e.hass)} · ${G(e.hass, `room_status_${d}`)}: ${G(e.hass, u ? "room_status_unavailable" : _ ? "room_status_active" : "room_status_inactive")} (${A(s)})`;
     return c`<button class="room-status-indicator kind-${d} ${u ? "is-unavailable" : _ ? "is-active" : "is-inactive"}"
             type="button" aria-label=${h} title=${h} ?disabled=${u}
             ${Te({ type: e.config.type, entity: l.entity, tap_action: { action: "more-info" } })}>
@@ -8230,11 +8230,11 @@ const E = (e, t) => e?.attributes[t], N = (e) => {
       ${e.entity?.state === "unavailable" ? c`<span class="room-unavailable"><ha-icon icon="mdi:exclamation"></ha-icon></span>` : m}
     </div>
     ${t.length ? c`<div class="room-entities">${t.map((l) => {
-    const s = e.hass.states[l.entity], d = at(e.hass, l.entity), u = !Me(s) && s?.state === (l.active_state || d.active_state), _ = ce(l.color, "rgb(var(--ulm-blue))"), h = l.icon_type === "entity-picture" ? E(s, "entity_picture") : void 0;
+    const s = e.hass.states[l.entity], d = at(e.hass, l.entity), u = !Ae(s) && s?.state === (l.active_state || d.active_state), _ = ce(l.color, "rgb(var(--ulm-blue))"), h = l.icon_type === "entity-picture" ? E(s, "entity_picture") : void 0;
     return c`<button
         class="metric-pill room-sensor ${u ? "is-active" : ""}"
         type="button"
-        ?disabled=${Me(s)}
+        ?disabled=${Ae(s)}
         style=${`--item-color:${_}`}
         aria-label=${l.name || l.label || le({ entity: l.entity }, s, e.hass)}
         ${Te({
@@ -9089,7 +9089,7 @@ const E = (e, t) => e?.attributes[t], N = (e) => {
     "Smart Matching": t.mode_solar_first_label ?? "Solar first",
     "Dynamic Smart Matching": t.mode_smart_saving_label ?? "Smart saving",
     "Dynamic Trading + Smart Matching": t.mode_smart_trading_label ?? "Smart trading"
-  }, y = t.energy_auto_control_entity ? e.hass.states[t.energy_auto_control_entity]?.state === "on" : !1, x = `${p[h] ?? h} · ${y ? t.energy_auto_label ?? "Auto" : t.energy_manual_label ?? "Manual"}`, b = s > 20 ? `${t.energy_charge_label ?? "Charging"} ${Se(s)}` : s < -20 ? `${t.energy_discharge_label ?? "Discharging"} ${Se(s)}` : t.energy_idle_label ?? "Idle", f = r > 20 ? t.energy_grid_import_label ?? "GRID · Import" : r < -20 ? t.energy_grid_export_label ?? "GRID · Export" : t.energy_grid_label ?? "GRID", k = t.import_color ?? "#ff9f43", w = t.export_color ?? "#4cd98b", T = t.battery_color ?? "#3b82f6", F = t.solar_color ?? "#f5c542", B = t.home_color ?? "#3b82f6", J = r > 20 ? k : w, Q = (/* @__PURE__ */ new Date()).toLocaleTimeString(e.hass.language ?? "nl-NL", {
+  }, y = t.energy_auto_control_entity ? e.hass.states[t.energy_auto_control_entity]?.state === "on" : !1, x = `${p[h] ?? h} · ${y ? t.energy_auto_label ?? "Auto" : t.energy_manual_label ?? "Manual"}`, b = s > 20 ? `${t.energy_charge_label ?? "Charging"} ${ke(s)}` : s < -20 ? `${t.energy_discharge_label ?? "Discharging"} ${ke(s)}` : t.energy_idle_label ?? "Idle", f = r > 20 ? t.energy_grid_import_label ?? "GRID · Import" : r < -20 ? t.energy_grid_export_label ?? "GRID · Export" : t.energy_grid_label ?? "GRID", k = t.import_color ?? "#ff9f43", w = t.export_color ?? "#4cd98b", T = t.battery_color ?? "#3b82f6", F = t.solar_color ?? "#f5c542", B = t.home_color ?? "#3b82f6", J = r > 20 ? k : w, Q = (/* @__PURE__ */ new Date()).toLocaleTimeString(e.hass.language ?? "nl-NL", {
     hour: "2-digit",
     minute: "2-digit"
   }), L = ($, H, C) => q`
@@ -9130,17 +9130,17 @@ const E = (e, t) => e?.attributes[t], N = (e) => {
   )}
       `) : m}
       <text x="180" y="185" class="hems-muted">${f}</text>
-      <text x="180" y="228" class="hems-main-value" fill=${J}>⚡ ${Se(r)}</text>
+      <text x="180" y="228" class="hems-main-value" fill=${J}>⚡ ${ke(r)}</text>
       ${t.show_grid_phases !== !1 ? n.map(($, H) => q`
         <text x="180" y=${258 + H * 22} class="hems-detail hems-muted">
-          L${H + 1} ${$ >= 0 ? "↓" : "↑"} ${Se($)}
+          L${H + 1} ${$ >= 0 ? "↓" : "↑"} ${ke($)}
         </text>
       `) : m}
 
       ${L(265, 188, 262)}
       ${O(265, 188, 262, i / (t.solar_scale_max ?? 6e3), F, !0)}
       <text x="180" y="395" class="hems-muted">${t.energy_solar_label ?? "Solar Panels"}</text>
-      <text x="180" y="437" class="hems-main-value">☀️ ${Se(i)}</text>
+      <text x="180" y="437" class="hems-main-value">☀️ ${ke(i)}</text>
       <text x="180" y="465" class="hems-detail hems-muted">
         ${t.energy_forecast_label ?? "Expected"} ${l.toLocaleString(void 0, {
     minimumFractionDigits: 1,
@@ -9163,16 +9163,16 @@ const E = (e, t) => e?.attributes[t], N = (e) => {
       ${t.show_battery_units !== !1 ? _.map(($, H) => q`
         <text x="585" y=${224 + H * 22} class="hems-detail hems-muted hems-end">
           ${H + 1} <tspan fill=${T} font-weight="600">${Math.round($.level)}%</tspan>
-          ${$.power > 20 ? "↑" : $.power < -20 ? "↓" : ""} ${Se($.power)}
+          ${$.power > 20 ? "↑" : $.power < -20 ? "↓" : ""} ${ke($.power)}
         </text>
       `) : m}
 
       ${L(265, 98, 172)}
       ${O(265, 98, 172, a / (t.home_scale_max ?? 4e3), B)}
       <text x="585" y="395" class="hems-muted hems-end">${t.energy_home_label ?? "HOME"}</text>
-      <text x="585" y="437" class="hems-main-value hems-end">${Se(a)} ⌂</text>
+      <text x="585" y="437" class="hems-main-value hems-end">${ke(a)} ⌂</text>
       <text x="585" y="465" class="hems-detail hems-muted hems-end">
-        🚗 ${t.energy_ev_label ?? "EV charger"} ${Se(u)}
+        🚗 ${t.energy_ev_label ?? "EV charger"} ${ke(u)}
       </text>
       <text x="380" y="522" class="hems-mode hems-muted hems-center">${x} ▾</text>
 
@@ -10518,7 +10518,7 @@ function Oe(e, t = !1) {
   };
 }
 const $t = (e) => typeof e == "string" || e.domain ? !1 : e.type === "conditional" ? !!(e.control && $t(e.control)) : e.type === "template" ? !!(e.content || e.name) : (e.content_info ?? (e.name ? "name" : e.content ? "custom" : "none")) !== "none", Dt = (e) => e?.features?.some((t) => t.type === "area-controls" && t.controls?.some($t)) ?? !1;
-function Ae(e, t) {
+function $e(e, t) {
   return new Promise((o, a) => {
     const r = window.setTimeout(() => a(new Error(t)), 8e3);
     e.then(
@@ -10534,10 +10534,14 @@ function Ae(e, t) {
 async function Da(e) {
   const t = window.loadCardHelpers;
   if (!t) throw new Error("Home Assistant card helpers are unavailable. Open this card in Home Assistant, then retry.");
-  const o = await Ae(t(), "Home Assistant card helpers timed out. Retry."), a = await Ae(Promise.resolve(o.createCardElement(e)), "Native Area card timed out. Retry.");
-  if (!customElements.get("hui-area-card") || a.localName !== "hui-area-card")
+  const o = await $e(t(), "Home Assistant card helpers timed out. Retry."), a = await $e(Promise.resolve(o.createCardElement(e)), "Native Area card timed out. Retry.");
+  if (a.localName !== "hui-area-card")
     throw new Error("The installed Home Assistant frontend does not provide the native Area card. Update Home Assistant, then retry.");
-  return a;
+  if (await $e(
+    customElements.whenDefined("hui-area-card"),
+    "The native Area card did not finish loading. Check Home Assistant frontend compatibility and retry."
+  ), customElements.upgrade(a), typeof a.setConfig != "function") throw new Error("The native Area card could not be initialized. Retry.");
+  return a.setConfig(e), a;
 }
 const lo = class lo extends be {
   constructor() {
@@ -10583,7 +10587,7 @@ const lo = class lo extends be {
         this.card = r;
       }
       if (this.loadingControls = !!a, this.sync(), a) {
-        if (await this.updateComplete, await Ae(customElements.whenDefined("hui-area-controls-card-feature"), "The installed frontend cannot load native Area controls. Update Home Assistant, then retry."), t !== this.revision) return;
+        if (await this.updateComplete, await $e(customElements.whenDefined("hui-area-controls-card-feature"), "The installed frontend cannot load native Area controls. Update Home Assistant, then retry."), t !== this.revision) return;
         this.card.setConfig(o), this.loadingControls = !1;
       }
     } catch (a) {
@@ -10693,7 +10697,7 @@ const co = class co extends be {
       const n = this.configRevision, i = window.loadCardHelpers;
       if (!i)
         return this.conditionalErrors.set(o, "Native conditional controls require Home Assistant card helpers."), this.requestUpdate(), m;
-      Ae(i().then((l) => l.createCardElement({
+      $e(i().then((l) => l.createCardElement({
         type: "conditional",
         conditions: t.conditions ?? [],
         card: {
@@ -10737,7 +10741,7 @@ const co = class co extends be {
   }
   async load() {
     try {
-      await Ae(
+      await $e(
         customElements.whenDefined("hui-area-controls-card-feature"),
         "Native Area controls are unavailable. This frontend is not supported; update Home Assistant and retry."
       ), this.ready = !0, this.error = void 0;
@@ -10859,7 +10863,7 @@ const uo = class uo extends be {
         await Da(Oe(this.config, !0));
         const t = customElements.get("hui-area-card");
         if (!t.getConfigElement) throw new Error("The installed native Area editor is unavailable.");
-        const o = await Ae(Promise.resolve(t.getConfigElement()), "Native Area editor timed out. Retry.");
+        const o = await $e(Promise.resolve(t.getConfigElement()), "Native Area editor timed out. Retry.");
         o.setConfig(Oe(this.config, !0)), o.hass = this.hass, o.addEventListener("config-changed", (a) => {
           a.stopPropagation();
           const r = a.detail.config;
@@ -10906,13 +10910,13 @@ const uo = class uo extends be {
       try {
         const t = window.loadCardHelpers;
         if (!t) throw new Error("Home Assistant card helpers are unavailable.");
-        const a = (await Ae(t().then((r) => r.createCardElement({
+        const a = (await $e(t().then((r) => r.createCardElement({
           type: "conditional",
           conditions: [],
           card: { type: "markdown", content: "" }
         })), "Native condition editor timed out.")).constructor;
         if (!a.getConfigElement) throw new Error("Native condition editor is unavailable.");
-        if (await Ae(Promise.resolve(a.getConfigElement()), "Native condition editor timed out."), !customElements.get("hui-conditions-editor")) throw new Error("This frontend does not provide the native conditions editor.");
+        if (await $e(Promise.resolve(a.getConfigElement()), "Native condition editor timed out."), !customElements.get("hui-conditions-editor")) throw new Error("This frontend does not provide the native conditions editor.");
         this.conditionsError = void 0;
       } catch (t) {
         this.conditionsError = String(t);
@@ -11076,27 +11080,27 @@ uo.styles = Le`fieldset { border: 1px solid var(--divider-color); margin: 16px 0
     button { cursor: pointer; } button:disabled { opacity: .4; }
     button:focus-visible, select:focus-visible, .drag:focus-visible { outline: 2px solid var(--primary-color); }
     @media (max-width: 420px) { .control { gap: 4px; } .control button { padding: 6px; } }`;
-let xe = uo;
+let Se = uo;
 re([
   ue({ attribute: !1 })
-], xe.prototype, "hass");
+], Se.prototype, "hass");
 re([
   oe()
-], xe.prototype, "config");
+], Se.prototype, "config");
 re([
   oe()
-], xe.prototype, "editor");
+], Se.prototype, "editor");
 re([
   oe()
-], xe.prototype, "error");
+], Se.prototype, "error");
 re([
   oe()
-], xe.prototype, "selected");
+], Se.prototype, "selected");
 re([
   oe()
-], xe.prototype, "conditionsError");
+], Se.prototype, "conditionsError");
 customElements.get(dt) || customElements.define(dt, ve);
-customElements.get(`${ct}-editor`) || customElements.define(`${ct}-editor`, xe);
+customElements.get(`${ct}-editor`) || customElements.define(`${ct}-editor`, Se);
 const Di = (e, t, o = [], a = []) => {
   const r = [...o, ...a, ...Object.keys(t?.states ?? {})], n = [...new Set(r)].filter((l) => t?.states?.[l] !== void 0), i = n.filter((l) => !["unavailable", "unknown"].includes(t?.states?.[l]?.state.toLowerCase() ?? ""));
   for (const l of e.preferredDomains ?? []) {

@@ -110,9 +110,15 @@ async function createNative(config: AreaAdvancedConfig): Promise<NativeElement> 
   if (!loader) throw new Error("Home Assistant card helpers are unavailable. Open this card in Home Assistant, then retry.");
   const helpers = await bounded(loader(), "Home Assistant card helpers timed out. Retry.");
   const card = await bounded(Promise.resolve(helpers.createCardElement(config)), "Native Area card timed out. Retry.");
-  if (!customElements.get("hui-area-card") || card.localName !== "hui-area-card") {
+  if (card.localName !== "hui-area-card") {
     throw new Error("The installed Home Assistant frontend does not provide the native Area card. Update Home Assistant, then retry.");
   }
+  // HA helpers intentionally return an unregistered element while importing lazy native cards.
+  await bounded(customElements.whenDefined("hui-area-card"),
+    "The native Area card did not finish loading. Check Home Assistant frontend compatibility and retry.");
+  customElements.upgrade(card);
+  if (typeof card.setConfig !== "function") throw new Error("The native Area card could not be initialized. Retry.");
+  card.setConfig(config);
   return card;
 }
 

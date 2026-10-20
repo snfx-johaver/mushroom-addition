@@ -4,6 +4,10 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Updates to 0.0.1 (no version bump)
 
+- Fixed cold-page Area card/editor initialization: wait for Home Assistant's lazy
+  native Area registration, explicitly upgrade/configure the helper-created
+  element, and retain bounded errors and safe retry instead of rejecting the
+  loading placeholder as unsupported.
 - Added **Mushroom Addition - Area card advanced** using the installed native HA
   Area card/editor, with runtime-only enhanced controls and no copied upstream
   code. Added any-domain entity buttons, chips-style compact list/detail editing,
