@@ -107,7 +107,10 @@ export const populatedDefaultsFor = (
           low_battery_threshold: 20,
         }
       : item.upstreamId === "custom_card_media_player_sonos"
-        ? resolveSonosControlEntities(hass, entityId)
+        ? {
+          ulm_card_media_player_enable_art: false,
+          ...resolveSonosControlEntities(hass, entityId),
+        }
       : item.upstreamId === "custom_card_room_overview"
           ? {
             ulm_card_room_overview_light_icon_on: "mdi:lightbulb",
