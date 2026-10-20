@@ -27,7 +27,10 @@ const history = {
   ],
 };
 
-const makeHass = (sendMessagePromise = vi.fn(async () => history)): HomeAssistant => ({
+const makeHass = (
+  sendMessagePromise: (message: Record<string, unknown>) => Promise<unknown> =
+    vi.fn(async () => history),
+): HomeAssistant => ({
   states: {
     "sensor.temperature": {
       entity_id: "sensor.temperature",
@@ -165,6 +168,7 @@ describe("Mini Graph configuration and history processing", () => {
     ]);
     expect(calculateBounds([20, 22], "~18", "~25", 10)).toEqual({ min: 16.5, max: 26.5 });
     expect(calculateBounds([20, 22], 0, 100)).toEqual({ min: 0, max: 100 });
+    expect(calculateBounds([21])).toEqual({ min: 19.95, max: 22.05 });
   });
 
   it("renders the upstream single-entity and alternative-style line examples", async () => {
@@ -273,6 +277,101 @@ describe("Mini Graph configuration and history processing", () => {
       minimal_response: false,
       significant_changes_only: false,
     }));
+  });
+
+  it("parses Home Assistant's array-of-entity-arrays history response", async () => {
+    const send = vi.fn(async () => [
+      history["sensor.temperature"],
+      history["sensor.humidity"],
+    ]);
+    const card = await renderCard({
+      type: "custom:mushroom-addition-mini-graph-card",
+      entities: ["sensor.temperature", "sensor.humidity"],
+      show: { points: true, legend: true },
+      cache: false,
+    }, makeHass(send));
+
+    const lines = [...card.shadowRoot?.querySelectorAll("path.line") ?? []];
+    expect(lines).toHaveLength(2);
+    expect(lines[0].getAttribute("d")).toMatch(/^M .+ [CL] /);
+    expect(card.shadowRoot?.querySelectorAll("circle.point").length).toBeGreaterThanOrEqual(6);
+  });
+
+  it("renders visible line and bar geometry for a single recorder sample", async () => {
+    const sparse = [[{
+      entity_id: "sensor.temperature",
+      state: "21",
+      last_updated: "2026-10-20T00:00:00.000Z",
+      attributes: { friendly_name: "Temperature", unit_of_measurement: "°C" },
+    }]];
+    const line = await renderCard({
+      type: "custom:mushroom-addition-mini-graph-card",
+      entities: ["sensor.temperature"],
+      show: { graph: "line", points: true },
+      cache: false,
+    }, makeHass(vi.fn(async () => sparse)));
+    const linePath = line.shadowRoot?.querySelector("path.line")?.getAttribute("d") ?? "";
+    expect(linePath).toContain("M 0");
+    expect(linePath).toContain("L 500");
+
+    const bar = await renderCard({
+      type: "custom:mushroom-addition-mini-graph-card",
+      entities: ["sensor.temperature"],
+      show: { graph: "bar" },
+      cache: false,
+    }, makeHass(vi.fn(async () => sparse)));
+    const barRects = [...bar.shadowRoot?.querySelectorAll("g.series rect") ?? []];
+    expect(barRects.some((rect) => Number(rect.getAttribute("height")) > 0)).toBe(true);
+    expect(barRects.every((rect) => Number(rect.getAttribute("width")) > 0)).toBe(true);
+  });
+
+  it("renders array-response state-map and attribute history series", async () => {
+    const response = [
+      [
+        {
+          entity_id: "binary_sensor.window",
+          state: "off",
+          last_updated: "2026-10-19T20:00:00.000Z",
+          attributes: { friendly_name: "Window" },
+        },
+        {
+          entity_id: "binary_sensor.window",
+          state: "on",
+          last_updated: "2026-10-19T22:00:00.000Z",
+          attributes: { friendly_name: "Window" },
+        },
+      ],
+      [
+        {
+          entity_id: "sensor.temperature",
+          state: "ignored",
+          last_updated: "2026-10-19T20:00:00.000Z",
+          attributes: { measurements: { calibrated: 19 } },
+        },
+        {
+          entity_id: "sensor.temperature",
+          state: "ignored",
+          last_updated: "2026-10-19T22:00:00.000Z",
+          attributes: { measurements: { calibrated: 21 } },
+        },
+      ],
+    ];
+    const card = await renderCard({
+      type: "custom:mushroom-addition-mini-graph-card",
+      entities: [
+        { entity: "binary_sensor.window", name: "Window" },
+        { entity: "sensor.temperature", attribute: "measurements.calibrated", name: "Calibrated" },
+      ],
+      state_map: [
+        { value: "off", label: "Night" },
+        { value: "on", label: "Day" },
+      ],
+      show: { graph: "line", points: true, legend: true },
+      cache: false,
+    }, makeHass(vi.fn(async () => response)));
+    expect(card.shadowRoot?.querySelectorAll("path.line")).toHaveLength(2);
+    expect(card.shadowRoot?.querySelectorAll("circle.point").length).toBeGreaterThanOrEqual(4);
+    expect(card.shadowRoot?.textContent).toContain("Day");
   });
 
   it("reuses cached history across card instances", async () => {
