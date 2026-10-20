@@ -742,7 +742,6 @@ describe("family renderers", () => {
     ["nas-metrics", "sensor.power", "custom-nas-metrics", "nas-metrics-metrics"],
     ["tablet", "sensor.battery", "custom-tablet", "tablet-header"],
     ["pollen-forecast", "sensor.power", "custom-pollen-forecast", "pollen-icon"],
-    ["welcome-dashboard", "person.joris", "custom-welcome-dashboard", "welcome-dashboard-message"],
     ["playstation", "media_player.tv", "custom-console-card", "console-content"],
     ["scenes", "scene.relax", "ulm-scenes", "scene-grid"],
     ["vehicle-status", "sensor.power", "custom-vehicle-status", "car-metrics"],

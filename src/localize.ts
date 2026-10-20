@@ -440,7 +440,6 @@ const helpers: Record<string, string> = {
   tomorrow_entity: "Sensor containing the waste type collected tomorrow. Empty and no-collection values are hidden.",
   datetime_entity: "Date and time helper controlled by this card.",
   time_entity: "Time or runtime sensor used by the source-specific presentation.",
-  news_entities: "Up to three entities shown in the compact source-compatible news feed.",
   qubino_more_info_entity: "Entity opened by the Qubino card surface, matching the source pilot-wire input select.",
   series_2_entity: "Optional second sensor displayed in the chart legend.",
   series_3_entity: "Optional third sensor displayed in the chart legend.",

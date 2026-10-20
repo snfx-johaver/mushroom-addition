@@ -140,9 +140,7 @@ export const createStubConfig = (
                                     ? findEntity(["sensor"], ["model"]) ?? findEntity(["device_tracker"], [])
                                     : descriptor.upstreamId === "custom_card_plant"
                                       ? findEntity(["plant"], []) ?? findEntity(["sensor"], ["soil", "humidity"])
-                                      : descriptor.upstreamId === "custom_card_welcome_dashboard"
-                                    ? findEntity(["person"], [])
-                                    : descriptor.upstreamId === "custom_card_playstation"
+                                      : descriptor.upstreamId === "custom_card_playstation"
                                       ? findEntity(["media_player"], ["tv"]) ?? findEntity(["media_player"], [])
                                     : descriptor.upstreamId === "custom_card_better_thermostat"
                                       ? findEntity(["climate"], ["living", "room"]) ?? findEntity(["climate"], [])
@@ -464,13 +462,6 @@ export const createStubConfig = (
         yellow_entity: findEntity(["sensor"], ["yellow"]),
         magenta_entity: findEntity(["sensor"], ["magenta"]),
         cyan_entity: findEntity(["sensor"], ["cyan"]),
-      }
-      : {}),
-    ...(descriptor.upstreamId === "custom_card_welcome_dashboard"
-      ? {
-        variant: findEntity(["weather"], []) ? "weather" : "message",
-        time_entity: findEntity(["sensor"], ["time"]),
-        weather_entity: findEntity(["weather"], []),
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_playstation"

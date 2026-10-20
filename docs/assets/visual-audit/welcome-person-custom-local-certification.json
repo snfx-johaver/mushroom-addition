@@ -22,45 +22,6 @@
         }
       ]
     },
-    "custom_card_welcome_dashboard": {
-      "config": {
-        "entity": "person.joris",
-        "variant": "weather",
-        "time_entity": "sensor.time",
-        "weather_entity": "weather.hcn_ha"
-      },
-      "interactions": [
-        {
-          "surface": "card surface",
-          "payload": {
-            "event": "hass-action",
-            "action": "tap",
-            "config": {
-              "entity": "person.joris",
-              "tap_action": {
-                "action": "more-info"
-              }
-            }
-          }
-        },
-        {
-          "surface": "weather row",
-          "payload": {
-            "event": "hass-action",
-            "action": "tap",
-            "config": {
-              "entity": "weather.hcn_ha",
-              "tap_action": {
-                "action": "more-info"
-              }
-            }
-          }
-        }
-      ],
-      "unavailableIntegrations": [
-        "home-feed-card templating is not embedded; configured entity IDs render as a compact local feed."
-      ]
-    },
     "custom_card_playstation": {
       "config": {
         "entity": "media_player.office_joris_tv_2"

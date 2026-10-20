@@ -2,7 +2,7 @@
 
 This is the source-by-source acceptance ledger for the card catalog.
 
-**Progress: 0/34 fully E2E accepted. Stage totals — picker 0, editor 0, visual 0, states 0, interactions 0, live 0.**
+**Progress: 0/33 fully E2E accepted. Stage totals — picker 0, editor 0, visual 0, states 0, interactions 0, live 0.**
 
 An entry is fully accepted only when all six independent stages pass: picker,
 graphical editor, visual parity, state behavior, interactions, and live Home
@@ -42,7 +42,6 @@ metadata, and structural tests do not constitute acceptance.
 | `custom_card_nas_metrics` | custom-card | `custom_card_nas_metrics` | — | `custom_card_nas_metrics` | Source: `custom_cards/custom_card_nas_metrics` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_tablet` | custom-card | `custom_card_tablet` | — | `custom_card_tablet` | Source: `custom_cards/custom_card_tablet` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_pollen_forecast` | custom-card | `custom_card_pollen_forecast` | — | `custom_card_pollen_forecast` | Source: `custom_cards/custom_card_pollen_forecast` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
-| `custom_card_welcome_dashboard` | custom-card | `custom_card_welcome_dashboard` | — | `custom_card_welcome_dashboard` | Source: `custom_cards/custom_card_welcome_dashboard` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_playstation` | custom-card | `custom_card_playstation` | — | `custom_card_playstation` | Source: `custom_cards/custom_card_playstation` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_scenes` | custom-card | `card_scenes` | scene-grid | `card_scenes:scene-grid` | Source: `custom_cards/custom_card_scenes` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_vehicle_status` | custom-card | `custom_card_vehicle_status` | — | `custom_card_vehicle_status` | Source: `custom_cards/custom_card_vehicle_status` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |

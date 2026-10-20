@@ -1615,53 +1615,6 @@ const renderPollenForecast = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const renderWelcomeDashboard = (ctx: RenderContext): TemplateResult => {
-  const time = linkedState(ctx, "time_entity") ??
-    entityFromConfig(ctx, "ulm_custom_card_welcome_dashboard_time");
-  const timeValue = time?.state && /^\d\d:\d\d/.test(time.state)
-    ? time.state
-    : new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
-  const greeting = timeValue > "18:00"
-    ? configured<string>(ctx, "ulm_evening") || "Good evening"
-    : timeValue > "12:00"
-      ? configured<string>(ctx, "ulm_afternoon") || "Good afternoon"
-      : timeValue > "05:00"
-        ? configured<string>(ctx, "ulm_morning") || "Good morning"
-        : configured<string>(ctx, "ulm_hello") || "Hello";
-  const weather = linkedState(ctx, "weather_entity") ??
-    entityFromConfig(ctx, "ulm_custom_card_welcome_dashboard_weather_provider") ??
-    entityFromConfig(ctx, "ulm_weather");
-  const variant = ctx.config.variant ?? (ctx.config.news_entities?.length ? "news" : weather ? "weather" : "message");
-  const news = (ctx.config.news_entities ?? []).map((id) => ctx.hass.states[id]).filter(Boolean).slice(0, 3);
-  return ctx.actionSurface("custom-welcome-dashboard", html`
-    <div class="welcome-dashboard-message">${heading(
-      ctx,
-      `${displayName(ctx.config, ctx.entity, ctx.hass)}!`,
-      `${greeting},`,
-    )}</div>
-    ${variant === "weather" && weather ? html`
-      <button class="welcome-dashboard-weather" aria-label="Open weather details"
-        @pointerdown=${(event: Event) => event.stopPropagation()}
-        @click=${(event: Event) => runControlAction(event, ctx, { action: "more-info" }, weather.entity_id)}>
-        <span><ha-icon .icon=${weatherIcons[weather.state]?.[0] || "mdi:weather-partly-cloudy"}></ha-icon>
-          <b>${weather.state.replaceAll("-", " ")}</b><small>${displayName({ type: "", entity: weather.entity_id }, weather, ctx.hass)}</small></span>
-        <strong>${attr(weather, "temperature") ?? "—"}°</strong>
-      </button>
-    ` : nothing}
-    ${variant === "news" ? html`
-      <div class="welcome-dashboard-news">
-        ${news.map((entity) => html`<button
-          @pointerdown=${(event: Event) => event.stopPropagation()}
-          @click=${(event: Event) => runControlAction(event, ctx, { action: "more-info" }, entity.entity_id)}>
-          <ha-icon .icon=${String(attr(entity, "icon") || "mdi:information-outline")}></ha-icon>
-          <span><b>${displayName({ type: "", entity: entity.entity_id }, entity, ctx.hass)}</b><small>${stateLabel(entity)}</small></span>
-        </button>`)}
-        ${news.length === 0 ? html`<span class="welcome-dashboard-empty">No configured news entities</span>` : nothing}
-      </div>
-    ` : nothing}
-  `);
-};
-
 const renderConsoleCard = (ctx: RenderContext): TemplateResult => {
   const state = ctx.entity?.state ?? "unknown";
   const artwork = attr(ctx.entity, "entity_picture");
@@ -2066,7 +2019,6 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "custom_card_nas_metrics": return renderNasMetrics(ctx);
     case "custom_card_tablet": return renderTablet(ctx);
     case "custom_card_pollen_forecast": return renderPollenForecast(ctx);
-    case "custom_card_welcome_dashboard": return renderWelcomeDashboard(ctx);
     case "custom_card_playstation": return renderConsoleCard(ctx);
     case "custom_card_vehicle_status": return renderCar(ctx);
     case "custom_card_plant": return renderFlower(ctx);

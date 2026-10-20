@@ -318,22 +318,6 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
     migrated.magenta_entity ??= entityId(config.ulm_card_printer_magenta_name);
     migrated.cyan_entity ??= entityId(config.ulm_card_printer_cyan_name);
   }
-  if (String(config.type).includes("welcome-dashboard")) {
-    migrated.time_entity ??= entityId(config.ulm_custom_card_welcome_dashboard_time);
-    migrated.weather_entity ??= entityId(config.ulm_custom_card_welcome_dashboard_weather_provider) ??
-      entityId(config.ulm_weather);
-    migrated.news_entities ??= Array.isArray(config.ulm_custom_card_welcome_dashboard_news_entities)
-      ? config.ulm_custom_card_welcome_dashboard_news_entities.flatMap((item) => {
-        const id = entityId(item);
-        return id ? [id] : [];
-      })
-      : undefined;
-    migrated.variant ??= migrated.news_entities?.length
-      ? "news"
-      : migrated.weather_entity
-        ? "weather"
-        : "message";
-  }
   if (String(config.type).endsWith("custom-card-pollen")) {
     migrated.trees_entity ??= entityId(config.custom_card_pollen_tree);
     migrated.grass_entity ??= entityId(config.custom_card_pollen_grass);

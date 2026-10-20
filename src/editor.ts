@@ -1,20 +1,82 @@
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, css, html, nothing, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import type { AdditionConfig, AdditionItemConfig, HomeAssistant, WasteStreamConfig } from "./types";
 import { CATALOG, getCatalogItem, LEGACY_ALIASES } from "./catalog";
 import { fireEvent } from "./helpers";
 import { SONOS_CONTROLS } from "./sonos-controls";
 import { editorHelper, localize } from "./localize";
-import { additionalEditorSchemaFor, editorSchemaFor } from "./editor-schema";
+import { additionalEditorSchemaFor, editorSchemaFor, type EditorField } from "./editor-schema";
 import { populatedDefaultsFor } from "./defaults";
 import { wasteStreamsForConfig } from "./waste-streams";
 import { sceneItemDefaultsFor } from "./scene-item-defaults";
+
+type EditorSectionId = "context" | "content" | "layout" | "interactions" | "features";
+
+const editorSections: Array<{ id: EditorSectionId; title: string; icon: string }> = [
+  { id: "context", title: "Context", icon: "mdi:shape-outline" },
+  { id: "content", title: "Content", icon: "mdi:format-align-left" },
+  { id: "layout", title: "Layout", icon: "mdi:view-dashboard-outline" },
+  { id: "interactions", title: "Interactions", icon: "mdi:gesture-tap" },
+  { id: "features", title: "Features", icon: "mdi:view-list" },
+];
+
+const contentFields = new Set([
+  "name", "secondary", "primary_info", "secondary_info", "icon", "icon_type", "icon_color",
+  "show_icon", "show_name", "show_state",
+]);
+const layoutFields = new Set([
+  "layout", "fill_container", "variant", "aspect_ratio", "image_height", "fit_mode",
+  "camera_view", "features_position",
+]);
+const interactionFields = new Set([
+  "tap_action", "hold_action", "double_tap_action", "navigation_path", "settings_path",
+]);
+
+const sectionForField = (field: EditorField): EditorSectionId => {
+  if (field.name === "entity") return "context";
+  if (interactionFields.has(field.name) || field.name.endsWith("_action")) return "interactions";
+  if (
+    layoutFields.has(field.name) ||
+    field.name.endsWith("_horizontal") ||
+    field.name.endsWith("_narrow_buttons")
+  ) return "layout";
+  if (contentFields.has(field.name)) return "content";
+  return "features";
+};
+
+const groupEditorFields = (fields: EditorField[]): Record<EditorSectionId, EditorField[]> => {
+  const grouped: Record<EditorSectionId, EditorField[]> = {
+    context: [],
+    content: [],
+    layout: [],
+    interactions: [],
+    features: [],
+  };
+  for (const field of fields) {
+    if (!field.schema?.length) {
+      grouped[sectionForField(field)].push(field);
+      continue;
+    }
+    const nestedGroups = new Map<EditorSectionId, EditorField[]>();
+    for (const nested of field.schema) {
+      const section = sectionForField(nested);
+      nestedGroups.set(section, [...(nestedGroups.get(section) ?? []), nested]);
+    }
+    for (const [section, schema] of nestedGroups) grouped[section].push({ ...field, schema });
+  }
+  return grouped;
+};
 
 @customElement("mushroom-addition-editor")
 export class MushroomAdditionEditor extends LitElement {
   public static styles = css`
     :host { display: block; }
-    .item-editor { margin-top: 16px; }
+    .editor-sections { display: grid; gap: 12px; }
+    .editor-section { border-radius: 12px; overflow: hidden; }
+    .section-header { display: inline-flex; align-items: center; gap: 10px; font-weight: 650; }
+    .section-header ha-icon { --mdc-icon-size: 20px; color: var(--secondary-text-color); }
+    .section-body { padding: 4px 16px 16px; }
+    .item-editor { margin-top: 8px; }
     .item-editor h3 { margin: 0 0 8px; font-size: 15px; }
     .item-editor p { margin: 0 0 12px; color: var(--secondary-text-color); font-size: 12px; }
     .item-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 10px; padding: 12px; border: 1px solid var(--divider-color); border-radius: 12px; }
@@ -48,22 +110,14 @@ export class MushroomAdditionEditor extends LitElement {
     const upstreamSchema = additionalEditorSchemaFor(item, this.config).filter((field) =>
       item.upstreamId !== "custom_card_trash" ||
       (!field.name.startsWith("ulm_card_datum_") && !field.name.includes("ophaling")));
+    const groupedSchema = groupEditorFields([...schema, ...upstreamSchema]);
     const formData = {
       ...populatedDefaultsFor(item, this.hass, this.config.entity),
       ...this.config,
     };
-    return html`
-      <ha-form
-        .hass=${this.hass}
-        .data=${formData}
-        .schema=${schema}
-        .computeLabel=${this.computeLabel}
-        .computeHelper=${this.computeHelper}
-        @value-changed=${this.valueChanged}
-      ></ha-form>
-      ${item.upstreamId === "custom_card_trash"
-        ? this.renderWasteStreamEditor()
-        : item.family === "scene"
+    const customFeatures = item.upstreamId === "custom_card_trash"
+      ? this.renderWasteStreamEditor()
+      : item.family === "scene"
         ? this.renderItemEditor(
           "scene_items",
           "Scene buttons",
@@ -71,20 +125,51 @@ export class MushroomAdditionEditor extends LitElement {
         )
         : item.upstreamId === "card_room"
           ? this.renderItemEditor("room_sensors", "Room sensor buttons")
-          : nothing}
-      ${upstreamSchema.length ? html`
-        <ha-expansion-panel outlined>
-          <span slot="header">Additional appearance and controls (${upstreamSchema.length})</span>
-          <ha-form
-            .hass=${this.hass}
-            .data=${formData}
-            .schema=${upstreamSchema}
-            .computeLabel=${this.computeLabel}
-            .computeHelper=${this.computeHelper}
-            @value-changed=${this.valueChanged}
-          ></ha-form>
-        </ha-expansion-panel>
-      ` : nothing}
+          : nothing;
+    const hasCustomFeatures = item.upstreamId === "custom_card_trash" ||
+      item.family === "scene" ||
+      item.upstreamId === "card_room";
+    return html`
+      <div class="editor-sections">
+        ${editorSections.map((section) => this.renderEditorSection(
+          section,
+          groupedSchema[section.id],
+          formData,
+          section.id === "features" && hasCustomFeatures ? customFeatures : nothing,
+          section.id === "features" && hasCustomFeatures,
+        ))}
+      </div>
+    `;
+  }
+
+  private renderEditorSection(
+    section: { id: EditorSectionId; title: string; icon: string },
+    schema: EditorField[],
+    formData: AdditionConfig,
+    customContent: TemplateResult | typeof nothing,
+    hasCustomContent: boolean,
+  ): TemplateResult | typeof nothing {
+    if (!schema.length && !hasCustomContent) return nothing;
+    return html`
+      <ha-expansion-panel class="editor-section" outlined>
+        <span slot="header" class="section-header">
+          <ha-icon .icon=${section.icon}></ha-icon>
+          <span>${section.title}</span>
+        </span>
+        <div class="section-body">
+          ${schema.length ? html`
+            <ha-form
+              .hass=${this.hass}
+              .data=${formData}
+              .schema=${schema}
+              .computeLabel=${this.computeLabel}
+              .computeHelper=${this.computeHelper}
+              @value-changed=${this.valueChanged}
+            ></ha-form>
+          ` : nothing}
+          ${customContent}
+        </div>
+      </ha-expansion-panel>
     `;
   }
 

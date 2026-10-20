@@ -19,48 +19,6 @@
     "appended": 0
   },
   "sources": {
-    "custom_card_welcome_dashboard": {
-      "config": {
-        "entity": "person.joris",
-        "variant": "weather",
-        "time_entity": "sensor.time",
-        "weather_entity": "weather.hcn_ha"
-      },
-      "renderedText": "Good evening, Joris! partlycloudy Forecast Home 16°",
-      "geometry": {
-        "width": 330,
-        "height": 159,
-        "clientWidth": 330,
-        "scrollWidth": 330
-      },
-      "pickerRegistered": true,
-      "editorFields": [
-        "variant",
-        "entity",
-        "time_entity",
-        "weather_entity",
-        "news_entities",
-        "name_mode",
-        "name",
-        "icon",
-        "icon_type",
-        "layout",
-        "fill_container",
-        "primary_info",
-        "secondary_info",
-        "tap_action",
-        "hold_action",
-        "double_tap_action"
-      ],
-      "safeInteraction": {
-        "surface": "weather row",
-        "action": "more-info",
-        "entity": "weather.hcn_ha",
-        "verifiedBy": "Home Assistant more-info URL"
-      },
-      "screenshot": "live-welcome-mushroom-addition-custom-card-welcome-dashboard.png",
-      "liveAccepted": true
-    },
     "custom_card_playstation": {
       "config": {
         "entity": "media_player.office_joris_tv_2"

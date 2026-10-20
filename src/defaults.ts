@@ -136,13 +136,7 @@ export const populatedDefaultsFor = (
                     ulm_custom_card_plant_correct: "Correto",
                     ulm_custom_card_plant_problem: "Problema",
                   }
-            : item.upstreamId === "custom_card_welcome_dashboard"
-              ? {
-                variant: Object.keys(hass?.states ?? {}).some((id) => id.startsWith("weather.")) ? "weather" : "message",
-                time_entity: Object.keys(hass?.states ?? {}).find((id) => id === "sensor.time"),
-                weather_entity: Object.keys(hass?.states ?? {}).find((id) => id.startsWith("weather.")),
-              }
-              : item.upstreamId === "custom_card_playstation"
+            : item.upstreamId === "custom_card_playstation"
                   ? {
                     icon: "mdi:sony-playstation",
                     show_controls: false,

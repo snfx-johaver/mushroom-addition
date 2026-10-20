@@ -180,7 +180,6 @@ const fixedIconSources = new Set([
   "custom_card_nas_metrics",
   "custom_card_tablet",
   "custom_card_pollen_forecast",
-  "custom_card_welcome_dashboard",
   "custom_card_playstation",
   "custom_card_speedtest_gauges",
   "custom_card_pollen",
@@ -317,18 +316,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
       entity(["sensor"], "tomorrow_entity"),
       ...presentation(),
     ]
-    : item.upstreamId === "custom_card_welcome_dashboard"
-      ? [
-        ...(item.variants?.length ? [select("variant", item.variants.map((variant) => ({
-          value: variant,
-          label: item.variantLabels?.[variant] ?? variant,
-        })))] : []),
-        entity(["person"]),
-        entity(["sensor"], "time_entity"),
-        entity(["weather"], "weather_entity"),
-        { name: "news_entities", selector: { entity: { multiple: true } } },
-        ...presentation(),
-      ]
     : item.upstreamId === "custom_card_playstation"
       ? [
         entity(["media_player", "sensor"]),

@@ -58,13 +58,6 @@ const fixtures: Array<{
     reference: `<div class="source-card"><div class="source-row"><span class="bubble alert" style="color:#f44336;background:rgb(244 67 54 / 50%)"><ha-icon icon="mdi:trash-can"></ha-icon></span><span class="copy"><b>TODAY</b><small>Paper</small></span></div></div>`,
   },
   {
-    sourceId: "custom_card_welcome_dashboard",
-    slug: "welcome-dashboard",
-    width: 420,
-    config: { entity: "person.joris", variant: "weather", time_entity: "sensor.time", weather_entity: "weather.home" },
-    reference: `<div class="source-card welcome-source"><div class="greeting">Good evening,<br>Joris!</div><div class="weather-source"><span><ha-icon icon="mdi:weather-partly-cloudy"></ha-icon><span class="copy"><b>partly cloudy</b><small>Home weather</small></span></span><b>18°</b></div></div>`,
-  },
-  {
     sourceId: "custom_card_playstation",
     slug: "playstation",
     width: 320,
