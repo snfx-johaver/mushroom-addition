@@ -3,6 +3,40 @@ import type { ParityEntry } from "./types";
 
 export const PARITY_ENTRIES: readonly ParityEntry[] = [
   {
+    "upstreamId": "mini_graph_card",
+    "sourcePath": "https://github.com/kalkih/mini-graph-card",
+    "publicId": "mini_graph_card",
+    "rendererId": "mini_graph_card",
+    "layoutProfile": "card:recorder-history+svg-chart",
+    "primitives": [
+      "ha-card",
+      "ha-icon",
+      "recorder-history",
+      "svg"
+    ],
+    "customFields": [
+      "graph",
+      "legend",
+      "statistics"
+    ],
+    "stateDriven": true,
+    "animated": true,
+    "actions": [
+      "tap",
+      "hold",
+      "double_tap"
+    ],
+    "variables": [],
+    "dependencies": [],
+    "backendRequirements": [
+      "history/history_during_period"
+    ],
+    "deviations": [
+      "The renderer is an integrated TypeScript implementation and does not require the standalone mini-graph-card frontend resource."
+    ],
+    "sourceDigest": "9d672bd3d743aa0901ba68d2940a4cb9f86da17df7c54fd93406833bde181b47"
+  },
+  {
     "upstreamId": "card_battery",
     "sourcePath": "reference_catalog/cards/card_battery.yaml",
     "publicId": "card_battery",

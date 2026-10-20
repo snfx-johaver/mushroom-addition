@@ -30,9 +30,9 @@ const removedSources = new Set([
 
 describe("visual audit manifest", () => {
   it("contains one audit record for every retained source", () => {
-    expect(VISUAL_AUDIT).toHaveLength(33);
-    expect(new Set(VISUAL_AUDIT.map((entry) => entry.sourceId)).size).toBe(33);
-    expect(visualAuditProgress()).toMatchObject({ total: 33 });
+    expect(VISUAL_AUDIT).toHaveLength(34);
+    expect(new Set(VISUAL_AUDIT.map((entry) => entry.sourceId)).size).toBe(34);
+    expect(visualAuditProgress()).toMatchObject({ total: 34 });
   });
 
   it("does not expose audit records for deleted sources", () => {

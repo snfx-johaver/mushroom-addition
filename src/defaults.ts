@@ -75,7 +75,39 @@ export const populatedDefaultsFor = (
 ): AdditionConfig => {
   const entity = entityId ? hass?.states[entityId] : undefined;
   const sourceDefaults: Partial<AdditionConfig> =
-    item.upstreamId === "card_battery"
+    item.upstreamId === "mini_graph_card"
+      ? {
+        variant: "line",
+        hours_to_show: 24,
+        points_per_hour: 0.5,
+        aggregate_func: "avg",
+        group_by: "interval",
+        cache: true,
+        smoothing: true,
+        animate: false,
+        height: 150,
+        line_width: 5,
+        bar_spacing: 4,
+        color_thresholds_transition: "smooth",
+        align_header: "default",
+        align_icon: "right",
+        align_state: "left",
+        show: {
+          name: true,
+          icon: true,
+          state: true,
+          graph: "line",
+          fill: true,
+          points: "hover",
+          legend: true,
+          average: false,
+          extrema: false,
+          labels: "hover",
+          labels_secondary: "hover",
+          loading_indicator: true,
+        },
+      }
+      : item.upstreamId === "card_battery"
       ? {
         battery_warning_threshold: 50,
         battery_low_threshold: 20,
@@ -182,6 +214,7 @@ export const populatedDefaultsFor = (
     ...upstreamDefaultsFor(item),
     ...sourceDefaults,
     entity: entityId,
+    entities: item.upstreamId === "mini_graph_card" && entityId ? [entityId] : undefined,
     waste_streams: item.upstreamId === "custom_card_trash" ? defaultWasteStreams() : undefined,
     show_today: item.upstreamId === "custom_card_trash" ? false : undefined,
     show_tomorrow: item.upstreamId === "custom_card_trash" ? false : undefined,
