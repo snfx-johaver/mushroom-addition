@@ -1,6 +1,7 @@
 import "./editor";
 import { CATALOG, LEGACY_ALIASES, PUBLIC_CATALOG } from "./catalog";
 import { MushroomAdditionCard } from "./card";
+import { MushroomMiniGraphCard } from "./mini-graph";
 import type { AdditionConfig, CatalogItem, HomeAssistant } from "./types";
 import { createStubConfig } from "./stub";
 
@@ -8,6 +9,10 @@ const VERSION = "1.4.0";
 
 for (const item of CATALOG) {
   if (!customElements.get(item.tag)) {
+    if (item.upstreamId === "mini_graph_card") {
+      customElements.define(item.tag, MushroomMiniGraphCard);
+      continue;
+    }
     const descriptor = item;
     class RegisteredAdditionCard extends MushroomAdditionCard {
       protected descriptor: CatalogItem = descriptor;

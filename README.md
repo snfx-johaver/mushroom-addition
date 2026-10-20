@@ -7,8 +7,8 @@ providing UI-configurable additional Mushroom style cards. The layouts, state st
 controls, variables, and defaults are audited item-by-item while retaining a
 cohesive installation alongside Mushroom.
 
-The release traces **33 documented card sources**—6 default cards and
-27 custom cards—to **32 public card components**. Same-goal aliases and compact or
+The release traces **34 documented card sources**—6 default cards and
+28 custom cards—to **34 public card components**. Same-goal aliases and compact or
 layout alternatives are combined into clear graphical variants instead of
 duplicating picker entries. Every public component has a visual editor and
 remains YAML-configurable. See the
@@ -99,6 +99,14 @@ original implementation informed by the documented behavior of
 [Better Thermostat UI Card](https://github.com/KartoffelToby/better-thermostat-ui-card);
 no code, styles, translations, or assets from that AGPL project are bundled.
 
+The **Mini Graph Card** is a fully graphical, recorder-backed implementation of
+the complete public `kalkih/mini-graph-card` configuration surface. It supports
+line and bar graphs, multiple series, per-entity overrides, aggregation,
+primary/secondary axes, thresholds, state maps, attributes, fixed values,
+statistics, caching, logarithmic scales, smoothing, animation, and Home
+Assistant actions without requiring another frontend resource. See the
+[configuration and example guide](docs/MINI_GRAPH_CARD.md).
+
 ## Design and behavior
 
 Registrations share typed configuration, entity/state formatting, action
@@ -154,3 +162,5 @@ a pull request.
 
 Mushroom Cards Addition is MIT licensed. Mushroom and Home Assistant
 are independent projects and trademarks of their respective owners.
+Required third-party copyright and license notices are retained in
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
