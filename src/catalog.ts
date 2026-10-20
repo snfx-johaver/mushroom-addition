@@ -15,7 +15,7 @@ const customCards = [
   "weather_metrics", "media_player_sonos", "more_power_outlet",
   "gauge", "printer",
   "nas_metrics", "tablet",
-  "pollen_forecast", "welcome_dashboard",
+  "pollen_forecast",
   "playstation",
   "scenes", "vehicle_status", "plant",
   "speedtest_gauges", "better_thermostat",
@@ -63,7 +63,6 @@ const variants: Record<string, string[]> = {
   card_media_player: ["default", "controls", "artwork"],
   card_room: ["default", "with-sensors"],
   card_scenes: ["list", "welcome"],
-  custom_card_welcome_dashboard: ["message", "weather", "news"],
   custom_card_better_thermostat: ["normal", "compact"],
 };
 
@@ -160,9 +159,7 @@ const makeItem = (
         ? "Mushroom-style NAS status and utilization card."
       : displayDescriptions[upstreamId] ?? `Mushroom-style ${humanize(componentId).toLowerCase()} card.`,
     variants: variants[upstreamId],
-    variantLabels: upstreamId === "custom_card_welcome_dashboard"
-      ? { message: "Welcome message", weather: "Welcome with weather", news: "Welcome with news" }
-      : undefined,
+    variantLabels: undefined,
     preferredDomains: preferredDomainsFor(upstreamId, family),
   };
 };

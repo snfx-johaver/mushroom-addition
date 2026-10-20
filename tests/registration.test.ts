@@ -34,6 +34,69 @@ describe("Home Assistant registration", () => {
     }
   });
 
+  it("organizes every graphical editor into modern semantic sections", async () => {
+    const order = ["Context", "Content", "Layout", "Interactions", "Features"];
+    for (const item of CATALOG) {
+      const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {
+        hass: HomeAssistant;
+        setConfig(config: AdditionConfig): void;
+        updateComplete: Promise<boolean>;
+      };
+      editor.hass = { states: {}, callService: async () => undefined };
+      editor.setConfig({ type: `custom:${item.tag}`, entity: `${item.preferredDomains?.[0] ?? "sensor"}.example` });
+      document.body.append(editor);
+      await editor.updateComplete;
+      const panels = [...editor.shadowRoot?.querySelectorAll("ha-expansion-panel") ?? []];
+      const headers = panels.map((panel) => panel.querySelector("[slot=header]")?.textContent?.trim());
+      expect(headers).toEqual([...headers].sort((left, right) =>
+        order.indexOf(left ?? "") - order.indexOf(right ?? "")));
+      expect(new Set(headers).size).toBe(headers.length);
+      expect(editor.shadowRoot?.textContent).not.toContain("Additional appearance and controls");
+      for (const form of editor.shadowRoot?.querySelectorAll("ha-form") ?? []) {
+        expect(form.closest("ha-expansion-panel")).not.toBeNull();
+      }
+      editor.remove();
+    }
+  });
+
+  it("keeps related multi-entity controls together in Features", async () => {
+    for (const [type, expectedFields, customEditorText] of [
+      [
+        "custom:mushroom-addition-custom-card-media-player-sonos",
+        ["crossfade_entity", "bass_entity", "music_surround_level_entity"],
+        undefined,
+      ],
+      [
+        "custom:mushroom-addition-custom-card-printer",
+        ["black_entity", "yellow_entity", "magenta_entity", "cyan_entity"],
+        undefined,
+      ],
+      [
+        "custom:mushroom-addition-card-welcome-scenes",
+        [],
+        "Scene buttons",
+      ],
+    ] as const) {
+      const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {
+        hass: HomeAssistant;
+        setConfig(config: AdditionConfig): void;
+        updateComplete: Promise<boolean>;
+      };
+      editor.hass = { states: {}, callService: async () => undefined };
+      editor.setConfig({ type, entity: "media_player.example" });
+      document.body.append(editor);
+      await editor.updateComplete;
+      const features = [...editor.shadowRoot?.querySelectorAll("ha-expansion-panel") ?? []]
+        .find((panel) => panel.querySelector("[slot=header]")?.textContent?.includes("Features"));
+      const names = [...features?.querySelectorAll<HTMLElement & { schema?: Array<{ name: string; schema?: Array<{ name: string }> }> }>("ha-form") ?? []]
+        .flatMap((form) => form.schema ?? [])
+        .flatMap((field) => field.schema?.map((nested) => nested.name) ?? [field.name]);
+      expect(names).toEqual(expect.arrayContaining([...expectedFields]));
+      if (customEditorText) expect(features?.textContent).toContain(customEditorText);
+      editor.remove();
+    }
+  });
+
   it("renders user-friendly repeatable item controls for scenes and rooms", async () => {
     for (const [type, entity, itemKey] of [
       ["custom:mushroom-addition-card-scenes", "scene.relax", "scene_items"],

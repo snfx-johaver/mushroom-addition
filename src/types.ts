@@ -174,7 +174,6 @@ export interface AdditionConfig {
   gps_tracker_entity?: string;
   findmy_script_entity?: string;
   weather_entity?: string;
-  news_entities?: string[];
   qubino_more_info_entity?: string;
   lock_entity?: string;
   clock_switch_entity?: string;

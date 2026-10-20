@@ -379,7 +379,6 @@ const fixtures: Fixture[] = [
   } },
   { id: "pollen-forecast", entity: "sensor.pollen" },
   { id: "waste-collection", entity: "sensor.waste" },
-  { id: "welcome-dashboard", entity: "person.joris", config: { name: "Joris", ulm_weather: "weather.home" } },
   { id: "playstation", entity: "media_player.console", config: { console_platform: "xbox" } },
   { id: "qubino", entity: "switch.heater", config: { entities: ["sensor.power"] } },
   { id: "scenes", entity: "scene.relax", reference: "card_scenes.png", config: { entities: ["scene.relax", "light.lamp", "switch.outlet", "fan.bedroom"] } },
