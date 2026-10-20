@@ -193,6 +193,19 @@ export const UPSTREAM_CATALOG: readonly CatalogItem[] = [
       ? "https://github.com/KartoffelToby/better-thermostat-ui-card"
       : `custom_cards/custom_card_${id}`,
   )),
+  {
+    upstreamId: "mini_graph_card",
+    sourcePath: "https://github.com/kalkih/mini-graph-card",
+    kind: "card",
+    category: "custom-card",
+    family: "energy",
+    tag: "mushroom-addition-mini-graph-card",
+    name: "Mini Graph Card",
+    description: "Mushroom-style recorder history card with line and bar charts, aggregation, thresholds, and dual axes.",
+    variants: ["line", "bar"],
+    variantLabels: { line: "Line graph", bar: "Bar graph" },
+    preferredDomains: ["sensor", "binary_sensor", "input_number"],
+  },
 ] as const;
 
 export const NATIVE_CATALOG: readonly CatalogItem[] = [
