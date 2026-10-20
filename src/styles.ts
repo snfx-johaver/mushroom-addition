@@ -609,6 +609,7 @@ export const sharedStyles = css`
   .sonos-details summary::-webkit-details-marker { display: none; }
   .sonos-details summary ha-icon { --mdc-icon-size: 20px; transition: transform .2s ease; }
   .sonos-details[open] summary ha-icon { transform: rotate(180deg); }
+  .sonos-details-always-visible { padding-top: 4px; }
   .sonos-switches { display: flex; flex-wrap: wrap; gap: 8px; padding: 4px 0 10px; }
   .sonos-switches button {
     display: inline-flex; min-height: 40px; align-items: center; gap: 6px; padding: 0 12px;

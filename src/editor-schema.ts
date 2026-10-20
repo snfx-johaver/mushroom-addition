@@ -374,6 +374,7 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         entity(["media_player"]),
         ...presentation(),
         toggle("ulm_card_media_player_enable_art"),
+        toggle("sonos_details_always_visible"),
         entity(["switch"], "crossfade_entity"),
         entity(["switch"], "night_sound_entity"),
         entity(["switch"], "speech_enhancement_entity"),

@@ -109,6 +109,7 @@ export const populatedDefaultsFor = (
       : item.upstreamId === "custom_card_media_player_sonos"
         ? {
           ulm_card_media_player_enable_art: false,
+          sonos_details_always_visible: false,
           ...resolveSonosControlEntities(hass, entityId),
         }
       : item.upstreamId === "custom_card_room_overview"
