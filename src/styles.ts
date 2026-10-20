@@ -79,12 +79,15 @@ export const sharedStyles = css`
   .multiline-secondary .ulm-label {
     overflow: visible; text-overflow: clip; white-space: normal;
   }
-  .automatic-presentation {
+  .card-heading {
     display: flex;
     min-width: 0;
+    min-height: var(--mush-icon-size, 40px);
     align-items: center;
-    padding: 0 2px 10px;
+    gap: 12px;
   }
+  .card-heading > .ulm-copy { flex: 1; }
+  .automatic-presentation { min-width: 0; }
   .ulm-name { font-size: 14px; font-weight: 600; }
   .ulm-label { color: var(--secondary-text-color); font-size: 12px; text-transform: capitalize; }
   .ulm-controls { display: flex; align-items: center; gap: 7px; }
@@ -607,7 +610,7 @@ export const sharedStyles = css`
     text-overflow: ellipsis; white-space: nowrap;
   }
   .speedtest-action:disabled, .metrics-four button:disabled { cursor: not-allowed; opacity: .45; }
-  .speedtest-router, .nas-metrics-header {
+  .nas-metrics-header {
     display: flex; min-width: 0; align-items: center; gap: 10px;
   }
   .custom-entity-overview, .custom-weather-metrics { min-height: 160px; border-radius: 30px; }
@@ -623,10 +626,6 @@ export const sharedStyles = css`
   .metrics-four > button { display: grid; min-width: 0; min-height: 54px; place-items: center; padding: 6px 3px; border: 0; background: transparent; color: var(--primary-text-color); text-align: center; }
   .metrics-four b, .metrics-four small { overflow: hidden; max-width: 100%; text-overflow: ellipsis; white-space: nowrap; }
   .metrics-four b { font-size: 14px; } .metrics-four small { color: var(--secondary-text-color); font-size: 12px; font-weight: 700; }
-  .speedtest-router { flex-direction: column; text-align: center; }
-  .speedtest-router .ulm-icon { width: 62px; height: 62px; }
-  .speedtest-router .ulm-icon ha-icon { --mdc-icon-size: 32px; }
-  .speedtest-router .ulm-copy { align-items: center; }
   .speedtest-action { display: grid; min-height: 40px; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; padding: 0 12px; border: 2px solid rgba(var(--ulm-grey), .65); border-radius: 10px; background: transparent; color: var(--primary-text-color); font-size: 16px; font-weight: 700; text-align: left; }
   .speedtest-action ha-icon { --mdc-icon-size: 20px; }
   .speedtest-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
@@ -636,9 +635,6 @@ export const sharedStyles = css`
   .speedtest-metrics b em { color: var(--secondary-text-color); font-size: 10px; font-style: normal; font-weight: 700; }
   .custom-more-power-outlet {
     display: grid; min-height: 62px; grid-template-columns: 46px minmax(0, 1fr); align-items: center; gap: 10px; padding: 10px 14px;
-  }
-  .custom-pollen-forecast {
-    display: grid; min-height: 62px; grid-template-columns: minmax(0, 1fr) 46px; align-items: center; gap: 10px; padding: 10px 14px;
   }
   .custom-dual-gauge { display: grid; min-height: 210px; gap: 10px; padding: 12px; }
   .dual-gauge { position: relative; align-self: end; justify-self: center; width: min(86%, 240px); height: 108px; overflow: hidden; }
@@ -651,9 +647,7 @@ export const sharedStyles = css`
   .toner-bars i { position: relative; display: grid; box-sizing: border-box; height: 30px; overflow: hidden; place-items: center; border: 1px solid rgba(var(--ulm-grey), .3); border-radius: 10px; background: rgba(var(--ulm-grey), .08); font-style: normal; }
   .toner-bars em { position: absolute; inset: 0 auto 0 0; width: var(--level); background: var(--toner); }
   .toner-bars b { position: relative; z-index: 1; padding: 2px 7px; border-radius: 999px; background: color-mix(in srgb, var(--card-background-color, #fff) 88%, transparent); color: var(--primary-text-color); font-size: 12px; font-variant-numeric: tabular-nums; font-weight: 600; }
-  .pollen-icon { display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: var(--pollen); }
-  .pollen-icon > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
-  .custom-nas-metrics { gap: 12px; padding: 18px; }
+  .custom-nas-metrics { gap: 12px; padding: 12px; }
   .nas-metrics-top { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .nas-metrics-tile { box-sizing: border-box; display: grid; min-height: 102px; grid-template-columns: 64px minmax(0, 1fr); align-items: center; gap: 16px; padding: 12px 18px; border: 0; border-radius: 30px; background: transparent; color: var(--primary-text-color); text-align: left; }
   button.nas-metrics-tile { cursor: pointer; }
@@ -722,7 +716,6 @@ export const sharedStyles = css`
   .tablet-battery-bar { position: relative; height: 35px; overflow: hidden; border-radius: 18px; background: rgba(var(--ulm-grey), .16); }
   .tablet-battery-bar i { position: absolute; inset: 0 auto 0 0; border-radius: inherit 0 0 inherit; background: #00c853; }
   .tablet-battery-bar b { position: relative; z-index: 1; display: flex; height: 100%; align-items: center; justify-content: flex-end; padding-right: 14px; font-size: 16px; }
-  .pollen-icon { display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--pollen) 20%, transparent); color: var(--pollen); }
   .waste-collection-icon { position: relative; } .waste-collection-icon > i { position: absolute; top: -3px; right: -3px; display: grid; width: 20px; height: 20px; place-items: center; border-radius: 50%; background: rgb(var(--ulm-red)); color: #fff; }
   .waste-collection-icon > i ha-icon { --mdc-icon-size: 13px; }
   .custom-plant { display: grid; gap: 10px; padding: 12px; }
@@ -801,7 +794,7 @@ export const sharedStyles = css`
   .speedtest-three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
   .speedtest-three ha-icon { color: rgb(var(--ulm-blue)); } .speedtest-three b { font-size: 12px; } .speedtest-three small { overflow: hidden; max-width: 100%; color: var(--secondary-text-color); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
   .speedtest-chart { height: 58px; overflow: hidden; } .speedtest-chart .sparkline { height: 60px; }
-  .custom-speedtest-gauges { padding: 8px; }
+  .custom-speedtest-gauges { display: grid; gap: 12px; padding: 12px; }
   .speedtest-three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; }
   .speedtest-metric { position: relative; display: grid; min-width: 0; min-height: 112px; place-items: center; color: var(--speedtest-color); }
   .speedtest-ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
@@ -809,10 +802,11 @@ export const sharedStyles = css`
   .speedtest-track { stroke: rgba(var(--ulm-grey), .12); }
   .speedtest-value { stroke: var(--speedtest-color); stroke-dasharray: var(--speedtest-value) 100; }
   .speedtest-value-copy { position: relative; display: grid; place-items: center; text-align: center; }
+  .speedtest-value-copy ha-icon, .speedtest-value-copy b { position: relative; top: 9px; }
   .speedtest-value-copy ha-icon { --mdc-icon-size: 20px; }
   .speedtest-value-copy b { margin-top: 2px; color: var(--primary-text-color); font-size: 13px; }
   .speedtest-value-copy small { margin-top: 4px; color: var(--secondary-text-color); font-size: 11px; font-weight: 700; }
-  .custom-pollen { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 8px; }
+  .custom-pollen { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 12px; }
   .pollen-heading { grid-column: 1 / -1; min-width: 0; }
   .pollen-item { display: grid; min-width: 0; min-height: 92px; place-items: center; gap: 3px; padding: 6px 3px; border: 0; border-radius: var(--border-radius, 12px); background: transparent; color: var(--primary-text-color); text-align: center; cursor: pointer; }
   .pollen-item:disabled { cursor: default; opacity: .55; }
@@ -824,7 +818,7 @@ export const sharedStyles = css`
   .custom-pollen small { color: var(--secondary-text-color); font-size: 10px; }
   .advanced-energy-management {
     box-sizing: border-box;
-    padding: 6px;
+    padding: 12px;
     border-radius: 20px;
     background: var(--ha-card-background, var(--card-background-color, #fff));
   }
@@ -854,8 +848,66 @@ export const sharedStyles = css`
   .hems-center { text-anchor: middle; }
   .hems-end { text-anchor: end; }
   .hems-now { fill: var(--primary-text-color); }
+  .energy-buy-sell-card,
+  .panel-health-card {
+    box-sizing: border-box;
+    min-width: 0;
+    padding: 12px;
+    border-radius: var(--ha-card-border-radius, 12px);
+    background: var(--ha-card-background, var(--card-background-color));
+    color: var(--primary-text-color);
+  }
+  .hems-presentation, .advanced-energy-management > .automatic-presentation { margin-bottom: 12px; }
+  .energy-buy-sell-chart { width: 100%; min-width: 0; margin-top: 8px; }
+  .energy-buy-sell-chart svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  .energy-chart-grid { stroke: var(--divider-color); stroke-width: 1; stroke-dasharray: 3 4; }
+  .energy-chart-axis { stroke: var(--divider-color); stroke-width: 1; }
+  .energy-chart-tick { fill: var(--secondary-text-color); font-size: 11px; }
+  .energy-chart-axis-title { fill: var(--secondary-text-color); font-size: 11px; }
+  .energy-chart-empty { fill: var(--secondary-text-color); font-size: 14px; }
+  .energy-chart-now { stroke: var(--primary-text-color); stroke-width: 1.5; stroke-dasharray: 3 3; }
+  .energy-chart-now-label { font-size: 11px; font-weight: 600; }
+  .energy-chart-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 16px; padding: 8px 0 2px; }
+  .energy-chart-legend-item { display: inline-flex; align-items: center; gap: 6px; color: var(--secondary-text-color); font-size: 12px; }
+  .energy-chart-legend-swatch { width: 10px; height: 10px; border-radius: 3px; background: var(--energy-series-color); }
+  .panel-health-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px 16px; margin-top: 14px; }
+  .panel-health-summary-row { display: flex; justify-content: space-between; gap: 8px; padding: 7px 2px; border-bottom: 1px solid var(--divider-color); font-size: 13px; }
+  .panel-health-summary-row span { color: var(--secondary-text-color); }
+  .panel-health-summary-row strong { color: var(--primary-text-color); text-align: right; }
+  .panel-health-status { display: flex; align-items: flex-start; gap: 8px; margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: var(--secondary-background-color, rgba(127,127,127,.1)); font-size: 13px; line-height: 1.45; }
+  .panel-health-status ha-icon { flex: 0 0 auto; --mdc-icon-size: 18px; }
+  .panel-health-status-warning { color: var(--error-color); }
+  .panel-health-status-success { color: var(--success-color, var(--primary-color)); }
+  .panel-health-status-muted { color: var(--secondary-text-color); }
+  .panel-health-gauges { display: grid; grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); gap: 4px; margin-top: 12px; }
+  .panel-health-gauge { display: grid; min-width: 0; justify-items: center; gap: 2px; padding: 4px; border: 0; border-radius: 10px; background: transparent; color: var(--primary-text-color); cursor: pointer; }
+  .panel-health-gauge:hover { background: var(--secondary-background-color, rgba(127,127,127,.08)); }
+  .panel-health-gauge svg { width: min(100%, 84px); overflow: visible; }
+  .panel-health-gauge-track,
+  .panel-health-gauge-value { fill: none; stroke-width: 7; }
+  .panel-health-gauge-track { stroke: var(--divider-color); opacity: .55; }
+  .panel-health-gauge-value { stroke: var(--panel-gauge-color); stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50px 46px; }
+  .panel-health-gauge-value-label { fill: var(--primary-text-color); font-size: 19px; font-weight: 600; }
+  .panel-health-gauge-name { overflow: hidden; max-width: 100%; color: var(--secondary-text-color); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+  .energy-card-empty { margin-top: 12px; padding: 12px; border-radius: 10px; background: var(--secondary-background-color, rgba(127,127,127,.1)); color: var(--secondary-text-color); font-size: 13px; line-height: 1.45; }
+  .energy-buy-sell-result { margin-top: 12px; border-top: 1px solid var(--divider-color); }
+  .energy-buy-sell-result summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 0; list-style: none; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .energy-buy-sell-result summary::-webkit-details-marker { display: none; }
+  .energy-buy-sell-result summary ha-icon { --mdc-icon-size: 20px; color: var(--secondary-text-color); }
+  .energy-buy-sell-result[open] summary ha-icon { transform: rotate(180deg); }
+  .energy-buy-sell-result summary:focus-visible, .energy-result-table-scroll:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+  .energy-result-table-scroll { max-width: 100%; overflow-x: auto; }
+  .energy-result-table { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+  .energy-result-table th, .energy-result-table td { padding: 8px 6px; border-bottom: 1px solid var(--divider-color); text-align: right; }
+  .energy-result-table th:first-child, .energy-result-table td:nth-child(2), .energy-result-table th:nth-child(2) { text-align: left; }
+  .energy-result-table thead { color: var(--secondary-text-color); }
+  .energy-result-kind { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .energy-result-kind i { width: 10px; height: 10px; border-radius: 50%; background: var(--energy-result-color); }
+  .energy-result-net { margin: 14px 0; font-size: 15px; font-weight: 600; }
+  .energy-result-note { margin: 0; color: var(--secondary-text-color); font-size: 12px; line-height: 1.6; cursor: text; }
   @container (max-width: 420px) {
-    .advanced-energy-management { padding: 2px; }
+    .panel-health-summary { grid-template-columns: 1fr; }
+    .energy-chart-legend { justify-content: flex-start; gap: 6px 12px; }
   }
   .preview { padding: 16px; color: var(--secondary-text-color); text-align: center; }
 `;

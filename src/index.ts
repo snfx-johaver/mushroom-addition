@@ -4,8 +4,7 @@ import { MushroomAdditionCard } from "./card";
 import { MushroomMiniGraphCard } from "./mini-graph";
 import type { AdditionConfig, CatalogItem, HomeAssistant } from "./types";
 import { createStubConfig } from "./stub";
-
-const VERSION = "1.4.0";
+import { version as VERSION } from "../package.json";
 
 for (const item of CATALOG) {
   if (!customElements.get(item.tag)) {

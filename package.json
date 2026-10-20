@@ -1,7 +1,7 @@
 {
   "name": "mushroom-cards-addition",
-  "version": "1.4.0",
-  "description": "UI-configurable additional Mushroom-style Lovelace cards",
+  "version": "0.0.1",
+  "description": "Mushroom-style Home Assistant dashboard cards with visual editors, advanced energy management, live charts, and device controls.",
   "type": "module",
   "main": "dist/mushroom-cards-addition.js",
   "files": [
@@ -9,6 +9,9 @@
   ],
   "scripts": {
     "build": "vite build",
+    "check:version": "tsx scripts/check-version.ts",
+    "preversion": "npm run validate",
+    "version": "npm run build",
     "check:catalog": "tsx scripts/catalog-doc.ts --check && tsx scripts/check-catalog.ts",
     "check:parity": "tsx scripts/check-parity.ts",
     "docs:catalog": "tsx scripts/catalog-doc.ts",
@@ -17,7 +20,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "validate": "npm run lint && npm run typecheck && npm run check:catalog && npm run check:parity && npm run docs:visual-audit -- --check && npm test && npm run build"
+    "validate": "npm run check:version && npm run lint && npm run typecheck && npm run check:catalog && npm run check:parity && npm run docs:visual-audit -- --check && npm test && npm run build"
   },
   "keywords": [
     "home-assistant",

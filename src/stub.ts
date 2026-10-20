@@ -78,6 +78,9 @@ export const createStubConfig = (
         terms.every((term) => text.includes(term)) &&
         excludedTerms.every((term) => !text.includes(term));
     }))[0];
+  const discoveredPanelEntities = available
+    .filter((entityId) => /^sensor\.inverter_4/i.test(entityId))
+    .sort((left, right) => left.localeCompare(right, undefined, { numeric: true }));
   const findHealthyEntityByDeviceClass = (
     deviceClasses: string[],
     terms: string[] = [],
@@ -100,6 +103,12 @@ export const createStubConfig = (
       ? findEntity(["sensor"], ["hems", "house", "consumption"]) ??
         findEntity(["sensor"], ["house", "consumption"]) ??
         findEntityByDeviceClass(["power"])
+      : descriptor.upstreamId === "advanced_energy_buy_sell"
+        ? findEntity(["sensor"], ["hems", "price", "overview"]) ??
+          findEntity(["sensor"], ["price", "overview"]) ??
+          findEntity(["sensor"], ["hems", "price"])
+        : descriptor.upstreamId === "advanced_energy_panel_health"
+          ? discoveredPanelEntities[0]
       : descriptor.upstreamId === "mini_graph_card"
       ? findEntityByDeviceClass(["temperature"]) ??
         findEntityByDeviceClass(["power", "energy"]) ??
@@ -112,11 +121,7 @@ export const createStubConfig = (
             : descriptor.upstreamId === "card_battery"
               ? findEntityExcluding(["sensor"], ["battery", "level"], ["state", "charging"]) ??
                 findEntityByDeviceClass(["battery"], [], ["state", "charging"])
-              : descriptor.upstreamId === "custom_card_pollen_forecast"
-                        ? findEntity(["sensor"], ["pollen", "grass", "level"]) ??
-                          findEntity(["sensor"], ["pollen", "grass"]) ??
-                          findEntity(["sensor"], ["pollen"])
-                        : descriptor.upstreamId === "custom_card_pollen"
+              : descriptor.upstreamId === "custom_card_pollen"
                           ? findEntity(["sensor"], ["pollen", "grass"])
                         : descriptor.upstreamId === "custom_card_speedtest_gauges"
                           ? findEntity(["sensor"], ["speedtest", "download"]) ??
@@ -161,6 +166,9 @@ export const createStubConfig = (
     : undefined;
   const entity = scenePrimary ?? semanticPrimary ??
     firstMatchingEntity(descriptor, hass, entities, entitiesFallback);
+  const panelEntities = descriptor.upstreamId === "advanced_energy_panel_health"
+    ? discoveredPanelEntities
+    : undefined;
   const flowerEntities = descriptor.upstreamId === "custom_card_plant"
     ? {
       moisture_entity:
@@ -263,7 +271,11 @@ export const createStubConfig = (
           : tapAction;
   return {
     ...populatedDefaultsFor(descriptor, hass, entity),
-    name: descriptor.upstreamId === "advanced_home_energy_management"
+    name: [
+      "advanced_home_energy_management",
+      "advanced_energy_buy_sell",
+      "advanced_energy_panel_health",
+    ].includes(descriptor.upstreamId)
       ? undefined
       : entity ? hass?.states[entity]?.attributes.friendly_name : sampleName(descriptor),
     secondary: entity ? undefined : isText ? "Example" : "Preview",
@@ -281,6 +293,7 @@ export const createStubConfig = (
       : descriptor.variants?.includes("with-sensors")
       ? entitiesFallback.slice(0, 2)
       : undefined,
+    panel_entities: panelEntities?.length ? panelEntities : undefined,
     ...(descriptor.upstreamId === "advanced_home_energy_management"
       ? {
         grid_power_entity: findEntity(["sensor"], ["p1", "meter", "power"]),
@@ -341,13 +354,6 @@ export const createStubConfig = (
         moon_next_new_moon_entity: findEntity(["sensor"], ["moon", "next", "new"]),
         moon_above_horizon_entity: findEntity(["sensor", "binary_sensor"], ["moon", "above", "horizon"]),
         timeFormat: "24h",
-      }
-      : {}),
-    ...(descriptor.upstreamId === "custom_card_pollen_forecast"
-      ? {
-        entity: findEntity(["sensor"], ["pollen", "grass", "level"]) ?? entity,
-        level_entity: findEntity(["sensor"], ["pollen", "grass", "level"]),
-        pollen_language: "en",
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_tablet"

@@ -22,7 +22,6 @@ describe("default Mushroom icon sizing", () => {
     ".scene-button i",
     ".room-view-icon",
     ".welcome-items i",
-    ".pollen-icon",
     ".tablet-icon",
     ".tablet-battery-icon",
     ".pollen-item-icon",

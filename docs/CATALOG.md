@@ -4,8 +4,8 @@ This manifest maps the documented card catalog to Mushroom Cards Addition
 registrations. It is generated from `src/catalog.ts`; CI rejects duplicate
 IDs, missing source paths, invalid namespaces, or broken popup mappings.
 
-**Coverage:** 31 documented upstream card sources map to
-32 public card components.
+**Coverage:** 30 documented upstream card sources map to
+33 public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
 of duplicate picker entries. 1 popup templates and
 1 implementation helpers are inventoried but are not
@@ -37,7 +37,6 @@ public registrations.
 | `custom_card_printer` | custom-card | `custom:mushroom-addition-custom-card-printer` | sensor | default | `custom_card_printer` |
 | `custom_card_nas_metrics` | custom-card | `custom:mushroom-addition-custom-card-nas-metrics` | sensor | default | `custom_card_nas_metrics` |
 | `custom_card_tablet` | custom-card | `custom:mushroom-addition-custom-card-tablet` | sensor | default | `custom_card_tablet` |
-| `custom_card_pollen_forecast` | custom-card | `custom:mushroom-addition-custom-card-pollen-forecast` | weather | default | `custom_card_pollen_forecast` |
 | `custom_card_playstation` | custom-card | `custom:mushroom-addition-custom-card-game-console` | media | default | `custom_card_playstation` |
 | `custom_card_plant` | custom-card | `custom:mushroom-addition-custom-card-plant` | sensor | default | `custom_card_plant` |
 | `custom_card_speedtest_gauges` | custom-card | `custom:mushroom-addition-custom-card-speedtest-gauges` | energy | default | `custom_card_speedtest_gauges` |
@@ -45,6 +44,8 @@ public registrations.
 | `mini_graph_card` | custom-card | `custom:mushroom-addition-mini-graph-card` | energy | line, bar | `mini_graph_card` |
 | `custom_card_entity_carousel` | custom-card | `custom:mushroom-addition-custom-card-entity-carousel` | sensor | default | `custom_card_entity_carousel` |
 | `advanced_home_energy_management` | custom-card | `custom:mushroom-addition-advanced-home-energy-management` | energy | default | `advanced_home_energy_management` |
+| `advanced_energy_buy_sell` | custom-card | `custom:mushroom-addition-advanced-energy-buy-and-sell` | energy | default | `advanced_energy_buy_sell` |
+| `advanced_energy_panel_health` | custom-card | `custom:mushroom-addition-advanced-energy-panel-health` | energy | default | `advanced_energy_panel_health` |
 
 ## Unified component mapping
 

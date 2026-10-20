@@ -20,9 +20,9 @@ const entity = (domains?: string[], name = "entity"): EditorField => ({
 const text = (name: string): EditorField => ({ name, selector: { text: {} } });
 const navigation = (name: string): EditorField => ({ name, selector: { navigation: {} } });
 const toggle = (name: string): EditorField => ({ name, selector: { boolean: {} } });
-const number = (name: string, min = 1, max = 168): EditorField => ({
+const number = (name: string, min = 1, max = 168, step?: number): EditorField => ({
   name,
-  selector: { number: { min, max, mode: "box" } },
+  selector: { number: { min, max, mode: "box", ...(step === undefined ? {} : { step }) } },
 });
 const percentage = (name: string): EditorField => ({
   name,
@@ -62,6 +62,17 @@ const colorDefaults: Record<string, string> = {
   price_medium_color: "#9ccc65",
   price_high_color: "#fdd835",
   price_critical_color: "#e53935",
+  buy_sell_price_color: "#78909c",
+  buy_sell_charge_color: "#43a047",
+  buy_sell_planned_sell_color: "#fb8c00",
+  buy_sell_possible_sell_color: "#ffcc80",
+  buy_sell_now_color: "var(--primary-text-color)",
+  panel_color_0: "#b0bec5",
+  panel_color_1: "#ffa726",
+  panel_color_2: "#d4e157",
+  panel_color_3: "#66bb6a",
+  panel_color_4: "#2e7d32",
+  panel_color_5: "#2e7d32",
 };
 const color = (name: string): EditorField => ({
   name,
@@ -190,21 +201,11 @@ const presentation = (): EditorField[] => [
 
 const fixedIconSources = new Set([
   "card_room",
-  "card_scenes",
   "card_welcome_scenes",
   "custom_card_bar_card",
-  "custom_card_roomview",
   "custom_card_welcome",
-  "custom_card_sun",
   "custom_card_entity_overview",
-  "custom_card_internet_speed",
-  "custom_card_weather_metrics",
-  "custom_card_nas_metrics",
   "custom_card_tablet",
-  "custom_card_pollen_forecast",
-  "custom_card_playstation",
-  "custom_card_speedtest_gauges",
-  "custom_card_pollen",
 ]);
 
 const removeUnsupportedIconFields = (fields: EditorField[]): EditorField[] =>
@@ -613,18 +614,68 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         entity(["sensor"], "cyan_entity"),
         ...presentation(),
       ]
-    : item.upstreamId === "custom_card_pollen_forecast"
+    : item.upstreamId === "advanced_energy_buy_sell"
       ? [
         entity(["sensor"]),
-        entity(["sensor"], "level_entity"),
-
-        { name: "ulm_custom_card_pollen_forecast_icon", selector: { icon: {} } },
-        select("pollen_language", [
-          { value: "en", label: "English" },
-          { value: "de", label: "German" },
-          { value: "es", label: "Spanish" },
-          { value: "pl", label: "Polish" },
+        text("buy_sell_title"),
+        number("buy_sell_graph_span", 1, 168),
+        select("buy_sell_span_start", [
+          { value: "day", label: "Start at midnight" },
+          { value: "now", label: "Start now" },
         ]),
+        number("buy_sell_update_interval", 1, 120),
+        number("buy_sell_chart_height", 120, 700),
+        number("buy_sell_min_value", -10, 10),
+        number("buy_sell_max_value", -10, 10),
+        number("buy_sell_price_decimals", 0, 6),
+        number("buy_sell_axis_decimals", 0, 4),
+        number("buy_sell_bar_radius", 0, 16),
+        text("buy_sell_axis_label"),
+        text("buy_sell_price_label"),
+        color("buy_sell_price_color"),
+        text("buy_sell_charge_label"),
+        color("buy_sell_charge_color"),
+        text("buy_sell_planned_sell_label"),
+        color("buy_sell_planned_sell_color"),
+        text("buy_sell_possible_sell_label"),
+        color("buy_sell_possible_sell_color"),
+        toggle("buy_sell_show_now"),
+        text("buy_sell_now_label"),
+        color("buy_sell_now_color"),
+        toggle("buy_sell_show_legend"),
+        toggle("buy_sell_show_grid"),
+        toggle("buy_sell_show_result"),
+        number("buy_sell_trade_energy", 0.1, 1000, 0.01),
+        entity(["input_number", "number", "sensor"], "buy_sell_trade_energy_entity"),
+        number("buy_sell_trade_power", 0.1, 1000, 0.01),
+        number("buy_sell_trade_efficiency", 1, 100, 0.1),
+        number("buy_sell_feed_in_fee", 0, 10, 0.001),
+        number("buy_sell_slot_minutes", 1, 1440),
+        ...presentation(),
+      ]
+    : item.upstreamId === "advanced_energy_panel_health"
+      ? [
+        entity(["sensor"]),
+        {
+          name: "panel_entities",
+          selector: { entity: { domain: ["sensor"], multiple: true } },
+        },
+        text("panel_health_title"),
+        toggle("panel_show_summary"),
+        toggle("panel_show_gauges"),
+        number("panel_gauge_max", 1, 100000),
+        number("panel_warning_average_min", 0, 100000),
+        number("panel_low_output_percent", 1, 100),
+        number("panel_segment_1", 0, 100000),
+        number("panel_segment_2", 0, 100000),
+        number("panel_segment_3", 0, 100000),
+        number("panel_segment_4", 0, 100000),
+        color("panel_color_0"),
+        color("panel_color_1"),
+        color("panel_color_2"),
+        color("panel_color_3"),
+        color("panel_color_4"),
+        color("panel_color_5"),
         ...presentation(),
       ]
     : item.upstreamId === "custom_card_roomview"

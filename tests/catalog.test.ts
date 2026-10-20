@@ -25,14 +25,17 @@ describe("catalog coverage", () => {
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_camera")).toBe(false);
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_better_thermostat")).toBe(false);
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_vehicle_status")).toBe(false);
+    expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_pollen_forecast")).toBe(false);
+    expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "advanced_energy_buy_sell")).toBe(true);
+    expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "advanced_energy_panel_health")).toBe(true);
   });
 
   it("matches the documented source counts and keeps the custom card catalog public", () => {
     const sourceCount = (category: string) =>
       UPSTREAM_CATALOG.filter((item) => item.category === category).length;
     expect(sourceCount("default-card")).toBe(6);
-    expect(sourceCount("custom-card")).toBe(25);
-    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(26);
+    expect(sourceCount("custom-card")).toBe(24);
+    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(27);
   });
 
   it("keeps removed contributor names out of renamed public card metadata", () => {

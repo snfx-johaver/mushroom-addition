@@ -38,7 +38,10 @@ export const defaultIconFor = (item: CatalogItem, entity?: HassEntity): string =
   if (item.upstreamId === "custom_card_room_overview") return "mdi:sofa";
   if (item.upstreamId === "custom_card_roomview") return "mdi:home-variant-outline";
   if (item.upstreamId === "custom_card_entity_carousel") return "mdi:view-carousel";
+  if (["custom_card_speedtest_gauges", "custom_card_internet_speed"].includes(item.upstreamId)) return "mdi:speedometer";
   if (item.upstreamId === "advanced_home_energy_management") return "mdi:home-lightning-bolt-outline";
+  if (item.upstreamId === "advanced_energy_buy_sell") return "mdi:chart-timeline-variant";
+  if (item.upstreamId === "advanced_energy_panel_health") return "mdi:solar-power-variant";
   return defaultIcons.find(([pattern]) => pattern.test(item.upstreamId))?.[1] ??
     "mdi:information-outline";
 };
@@ -114,17 +117,17 @@ export const populatedDefaultsFor = (
       }
       : item.upstreamId === "advanced_home_energy_management"
       ? {
-        energy_grid_label: "NET",
-        energy_grid_import_label: "NET · afname",
-        energy_grid_export_label: "NET · teruglevering",
-        energy_solar_label: "ZON · Enphase",
-        energy_battery_label: "ZENDURE",
-        energy_home_label: "HUIS",
-        energy_forecast_label: "verwacht",
-        energy_ev_label: "laadpaal",
-        energy_charge_label: "laden",
-        energy_discharge_label: "ontladen",
-        energy_idle_label: "rust",
+        energy_grid_label: "GRID",
+        energy_grid_import_label: "GRID · Import",
+        energy_grid_export_label: "GRID · Export",
+        energy_solar_label: "Solar Panels",
+        energy_battery_label: "Battery",
+        energy_home_label: "HOME",
+        energy_forecast_label: "Expected",
+        energy_ev_label: "EV charger",
+        energy_charge_label: "Charging",
+        energy_discharge_label: "Discharging",
+        energy_idle_label: "Idle",
         energy_auto_label: "Auto",
         energy_manual_label: "Manual",
         mode_solar_first_label: "Solar first",
@@ -157,6 +160,56 @@ export const populatedDefaultsFor = (
           navigation_path: "/hems-tower/savings-overview",
         },
       }
+      : item.upstreamId === "advanced_energy_buy_sell"
+      ? {
+        buy_sell_title: "Buy and sell moments (all-in €/kWh)",
+        buy_sell_show_result: true,
+        buy_sell_trade_energy: 10,
+        buy_sell_trade_power: 7.2,
+        buy_sell_trade_efficiency: 86,
+        buy_sell_feed_in_fee: 0,
+        buy_sell_slot_minutes: 15,
+        buy_sell_graph_span: 36,
+        buy_sell_span_start: "day",
+        buy_sell_update_interval: 5,
+        buy_sell_chart_height: 300,
+        buy_sell_show_now: true,
+        buy_sell_now_label: "Now",
+        buy_sell_now_color: "var(--primary-text-color)",
+        buy_sell_show_legend: true,
+        buy_sell_show_grid: true,
+        buy_sell_axis_label: "€/kWh",
+        buy_sell_price_decimals: 3,
+        buy_sell_axis_decimals: 2,
+        buy_sell_bar_radius: 2,
+        buy_sell_price_label: "Price",
+        buy_sell_charge_label: "Planned grid charge",
+        buy_sell_planned_sell_label: "Planned sell",
+        buy_sell_possible_sell_label: "Possible sell",
+        buy_sell_price_color: "#78909c",
+        buy_sell_charge_color: "#43a047",
+        buy_sell_planned_sell_color: "#fb8c00",
+        buy_sell_possible_sell_color: "#ffcc80",
+      }
+      : item.upstreamId === "advanced_energy_panel_health"
+      ? {
+        panel_health_title: "Panel health",
+        panel_gauge_max: 350,
+        panel_warning_average_min: 30,
+        panel_low_output_percent: 60,
+        panel_segment_1: 80,
+        panel_segment_2: 150,
+        panel_segment_3: 230,
+        panel_segment_4: 300,
+        panel_color_0: "#b0bec5",
+        panel_color_1: "#ffa726",
+        panel_color_2: "#d4e157",
+        panel_color_3: "#66bb6a",
+        panel_color_4: "#2e7d32",
+        panel_color_5: "#2e7d32",
+        panel_show_summary: true,
+        panel_show_gauges: true,
+      }
       : item.upstreamId === "card_battery"
       ? {
         battery_warning_threshold: 50,
@@ -173,11 +226,7 @@ export const populatedDefaultsFor = (
             label_use_temperature: true,
             label_use_brightness: false,
           }
-          : item.upstreamId === "custom_card_pollen_forecast"
-              ? {
-                pollen_language: "en",
-              }
-              : item.upstreamId === "custom_card_media_player_sonos"
+          : item.upstreamId === "custom_card_media_player_sonos"
         ? {
           ulm_card_media_player_enable_art: false,
           sonos_details_always_visible: false,

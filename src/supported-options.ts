@@ -37,7 +37,6 @@ export const canonicalNameOptions = new Set([
   "ulm_custom_card_bar_card_name",
   "ulm_custom_card_entity_overview_name",
   "ulm_custom_card_metrics_entitites_name",
-  "ulm_custom_card_pollen_forecast_name",
 ]);
 
 export const isReplacedUpstreamOption = (item: CatalogItem, name: string): boolean =>
@@ -146,17 +145,6 @@ const supportedByItem: Record<string, readonly string[]> = {
     "ulm_custom_card_speedtest_ping_entity",
     "ulm_custom_card_speedtest_ping_max",
     "ulm_custom_card_speedtest_round",
-  ],
-  custom_card_pollen_forecast: [
-    "ulm_custom_card_pollen_forecast_icon",
-    "ulm_custom_card_pollen_forecast_name",
-    "ulm_custom_card_pollen_forecast_1",
-    "ulm_custom_card_pollen_forecast_2",
-    "ulm_custom_card_pollen_forecast_3",
-    "ulm_custom_card_pollen_forecast_4",
-    "ulm_custom_card_pollen_forecast_5",
-    "ulm_custom_card_pollen_forecast_6",
-    "ulm_custom_card_pollen_forecast_none",
   ],
 };
 

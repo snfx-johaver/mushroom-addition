@@ -317,15 +317,6 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
     migrated.ping_entity ??= entityId(config.ulm_custom_card_speedtest_ping_entity);
     migrated.entity = entityId(migrated.download_entity);
   }
-  if (String(config.type).includes("custom-card-pollen-forecast")) {
-    migrated.level_entity ??= entityId(config.level_entity);
-    migrated.name ??= typeof config.ulm_custom_card_pollen_forecast_name === "string"
-      ? config.ulm_custom_card_pollen_forecast_name
-      : undefined;
-    migrated.icon ??= typeof config.ulm_custom_card_pollen_forecast_icon === "string"
-      ? config.ulm_custom_card_pollen_forecast_icon
-      : undefined;
-  }
   if (String(config.type).includes("custom-card-scenes") || (
     String(config.type).includes("card-scenes") && config.variant === "scene-grid"
   )) {

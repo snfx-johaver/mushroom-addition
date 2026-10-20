@@ -18,6 +18,7 @@ export class MushroomAdditionCard extends LitElement {
   private forecastSubscriptionKey?: string;
   private unsubscribeForecast?: () => void;
   private forecastGeneration = 0;
+  private energyBuySellTimer?: number;
   private forecast: WeatherForecast[] = [];
   @state() private sceneOverflowExpanded = false;
 
@@ -28,6 +29,7 @@ export class MushroomAdditionCard extends LitElement {
     this.config = normalized;
     this.sceneOverflowExpanded = false;
     if (previousKey !== this.forecastKey(normalized)) this.stopForecastSubscription();
+    this.scheduleEnergyBuySellRefresh();
     this.requestUpdate();
     void this.subscribeForecast();
   }
@@ -79,7 +81,28 @@ export class MushroomAdditionCard extends LitElement {
 
   public disconnectedCallback(): void {
     this.stopForecastSubscription();
+    this.stopEnergyBuySellRefresh();
     super.disconnectedCallback();
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.scheduleEnergyBuySellRefresh();
+  }
+
+  private scheduleEnergyBuySellRefresh(): void {
+    this.stopEnergyBuySellRefresh();
+    if (this.descriptor?.upstreamId !== "advanced_energy_buy_sell" || !this.isConnected) return;
+    const configuredMinutes = Number(this.config?.buy_sell_update_interval);
+    const minutes = Number.isFinite(configuredMinutes) && configuredMinutes > 0
+      ? Math.max(1, Math.min(120, configuredMinutes))
+      : 5;
+    this.energyBuySellTimer = window.setInterval(() => this.requestUpdate(), minutes * 60_000);
+  }
+
+  private stopEnergyBuySellRefresh(): void {
+    if (this.energyBuySellTimer !== undefined) window.clearInterval(this.energyBuySellTimer);
+    this.energyBuySellTimer = undefined;
   }
 
   private forecastKey(config = this.config): string | undefined {

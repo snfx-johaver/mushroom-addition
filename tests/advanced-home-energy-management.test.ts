@@ -133,13 +133,13 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-describe("Advanced Home Energy Management", () => {
+describe("Advanced Energy - Home Energy Management", () => {
   it("registers as a native picker card with a complete graphical editor", () => {
     const item = CATALOG.find((candidate) =>
       candidate.upstreamId === "advanced_home_energy_management")!;
     expect(item).toMatchObject({
       tag: "mushroom-addition-advanced-home-energy-management",
-      name: "Advanced Home Energy Management",
+      name: "Advanced Energy - Home Energy Management",
       family: "energy",
     });
     const fields = editorSchemaFor(item).flatMap((field) => field.schema ?? [field]);
@@ -183,7 +183,7 @@ describe("Advanced Home Energy Management", () => {
       setConfig(value: AdditionConfig): void;
       updateComplete: Promise<boolean>;
     };
-    element.hass = { states, language: "nl-NL", callService: vi.fn(async () => undefined) };
+    element.hass = { states, language: "en-US", callService: vi.fn(async () => undefined) };
     element.setConfig(config);
     document.body.append(element);
     await element.updateComplete;
@@ -194,8 +194,15 @@ describe("Advanced Home Energy Management", () => {
     expect(svg.textContent).toContain("6,71 kW");
     expect(svg.textContent).toContain("13,92 kW");
     expect(svg.textContent).toContain("60%");
+    expect(svg.textContent).toContain("GRID · Import");
+    expect(svg.textContent).toContain("Battery");
+    expect(svg.textContent).toContain("Solar Panels");
+    expect(svg.textContent).toContain("HOME");
+    expect(svg.textContent).toContain("Expected");
     expect(svg.textContent).toContain("Smart saving · Auto");
-    expect(svg.textContent).toContain("laadpaal 11,15 kW");
+    expect(svg.textContent).toContain("EV charger 11,15 kW");
+    expect(svg.textContent).toContain("Idle");
+    expect(svg.textContent).not.toMatch(/afname|teruglevering|laden|ontladen|rust|laadpaal|verwacht|Accu|HUIS|ZENDURE|ZON/i);
     expect(svg.querySelectorAll(".hems-track").length).toBeGreaterThanOrEqual(8);
     expect(svg.querySelectorAll("rect").length).toBeGreaterThanOrEqual(2);
     expect(root.textContent).not.toContain("Panel health");

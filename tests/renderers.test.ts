@@ -326,6 +326,7 @@ describe("family renderers", () => {
         entities: item.family === "scene" ? ["scene.relax"] : undefined,
         name: { type: "text", text: "Custom card name" },
       });
+
       document.body.append(element);
       await element.updateComplete;
       expect(
@@ -334,6 +335,53 @@ describe("family renderers", () => {
       ).toBe("Custom card name");
       element.remove();
     }
+  });
+
+  it.each([
+    "custom_card_pollen",
+    "custom_card_roomview",
+    "custom_card_nas_metrics",
+    "custom_card_speedtest_gauges",
+    "custom_card_weather_metrics",
+    "custom_card_internet_speed",
+    "advanced_home_energy_management",
+    "advanced_energy_buy_sell",
+    "advanced_energy_panel_health",
+  ])("aligns the %s header icon with its shared information", async (id) => {
+    const item = CATALOG.find((candidate) => candidate.upstreamId === id)!;
+    const element = document.createElement(item.tag) as HTMLElement & {
+      hass: HomeAssistant;
+      setConfig(config: AdditionConfig): void;
+      updateComplete: Promise<boolean>;
+    };
+    const config: AdditionConfig = {
+      type: `custom:${item.tag}`,
+      entity: entityFor(item),
+      name: "Header name",
+      primary_info: "name",
+      secondary_info: "state",
+      icon: "mdi:test-tube",
+    };
+    element.hass = hass;
+    element.setConfig(config);
+    document.body.append(element);
+    await element.updateComplete;
+    const header = element.shadowRoot?.querySelector(".card-heading");
+    expect(header, id).not.toBeNull();
+    expect((header?.querySelector(".ulm-icon > ha-icon") as HTMLElement & { icon?: string })?.icon)
+      .toBe("mdi:test-tube");
+    expect(header?.querySelector(".shared-presentation .ulm-name")?.textContent?.trim()).toBe("Header name");
+    expect(header?.querySelector(".shared-presentation .ulm-label")?.textContent?.trim())
+      .toBe(stateLabel(hass.states[entityFor(item)]));
+    expect(element.shadowRoot?.querySelectorAll(".shared-presentation")).toHaveLength(1);
+    expect(element.shadowRoot?.querySelector("ha-card")).not.toBeNull();
+
+    element.setConfig({ ...config, icon_type: "none", secondary_info: "none" });
+    await element.updateComplete;
+    expect(element.shadowRoot?.querySelector(".card-heading .ulm-icon")).toBeNull();
+    expect(element.shadowRoot?.querySelector(".card-heading .ulm-label")).toBeNull();
+    expect(element.shadowRoot?.querySelector(".energy-card-subtitle")).toBeNull();
+    element.remove();
   });
 
   it("makes Icon type affect every card renderer", async () => {
@@ -801,7 +849,6 @@ describe("family renderers", () => {
     ["printer", "sensor.power", "custom-printer", "toner-bars"],
     ["nas-metrics", "sensor.power", "custom-nas-metrics", "nas-metrics-metrics"],
     ["tablet", "sensor.battery", "custom-tablet", "tablet-header"],
-    ["pollen-forecast", "sensor.power", "custom-pollen-forecast", "pollen-icon"],
     ["game-console", "binary_sensor.snfx4594", "custom-console-card", "console-content"],
     ["scenes", "scene.relax", "ulm-scenes", "scene-grid"],
     ["plant", "sensor.power", "custom-plant", "flower-bars"],
@@ -883,6 +930,7 @@ describe("family renderers", () => {
         "scene": [
           "ulm-scenes",
           "ulm-source-scenes",
+          "ulm-icon",
           "ulm-copy",
           "ulm-name",
           "ulm-label",

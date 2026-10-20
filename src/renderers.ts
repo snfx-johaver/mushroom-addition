@@ -23,6 +23,9 @@ import {
   powerEntityWatts,
   tariffIntervals,
 } from "./energy-management";
+import { energyPriceBounds, energyPriceSlots, energyTradeResult, formatEnergyPrice } from "./energy-buy-sell";
+import type { EnergyTradeSelection } from "./energy-buy-sell";
+import { inverterPanelEntities, panelGaugeColor, panelGaugePercent, summarizePanels } from "./panel-health";
 import "./entity-carousel";
 
 export interface RenderContext {
@@ -156,8 +159,19 @@ const valueThenName = (ctx: RenderContext, value = stateLabel(ctx.entity)) => ht
   <span class="value-first">${heading(ctx, displayName(ctx.config, ctx.entity, ctx.hass), value)}</span>
 `;
 
+const cardHeading = (
+  ctx: RenderContext,
+  secondary = stateLabel(ctx.entity),
+  primary = ctx.descriptor.name,
+): TemplateResult => html`
+  <div class="card-heading">
+    ${iconBubble(ctx, defaultIconFor(ctx.descriptor, ctx.entity))}
+    ${heading(ctx, secondary, primary)}
+  </div>
+`;
+
 export const renderAutomaticPresentation = (ctx: RenderContext): TemplateResult =>
-  html`<div class="automatic-presentation">${heading(ctx, stateLabel(ctx.entity), ctx.descriptor.name)}</div>`;
+  html`<div class="automatic-presentation">${cardHeading(ctx)}</div>`;
 const button = (label: string, iconName: string, handler: (event: Event) => void, disabled = false) => html`
   <button class="ulm-control" aria-label=${label} ?disabled=${disabled}
     @pointerdown=${(event: Event) => event.stopPropagation()} @click=${handler}>
@@ -1358,8 +1372,8 @@ const renderInternetSpeed = (ctx: RenderContext): TemplateResult => {
     "rgb(var(--rgb-blue, 33, 150, 243))",
   );
   return ctx.actionSurface("custom-internet-speed", html`
-    <div class="speedtest-router">
-      <span class="ulm-icon source-icon is-source-active" style=${`--source-color:${accent}`}><ha-icon icon="mdi:wifi"></ha-icon></span>
+    <div class="card-heading speedtest-router">
+      ${sourceIconBubble(ctx, "mdi:wifi", accent, true)}
       ${heading(ctx, configured<string>(ctx, "ulm_custom_card_internet_speed_router_model") || "router_model")}
     </div>
     <button class="speedtest-action" ?disabled=${targets.length !== 3}
@@ -1716,32 +1730,6 @@ const renderTablet = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const pollenLabels: Record<string, string[]> = {
-  en: ["none", "none to low", "low", "low to medium", "medium", "medium to high", "high"],
-  de: ["keine", "keine bis gering", "gering", "gering bis mittel", "mittel", "mittel bis hoch", "hoch"],
-  es: ["ninguno", "ninguno a bajo", "bajo", "bajo a medio", "medio", "medio a alto", "alto"],
-  pl: ["brak", "bardzo słabe", "słabe", "umiarkowane", "średnie", "wysokie", "bardzo wysokie"],
-};
-
-const pollenForecastSeverity = (ctx: RenderContext, value: number): [string, string] => {
-  const level = Math.max(0, Math.min(6, Math.round(value)));
-  const language = configured<string>(ctx, "pollen_language") || ctx.hass.language?.split("-")[0] || "en";
-  const configuredLabel = configured<string>(ctx, `ulm_custom_card_pollen_forecast_${level || "none"}`);
-  const label = configuredLabel || (pollenLabels[language] ?? pollenLabels.en)[level];
-  const colors = ["transparent", "rgb(219,250,200)", "rgb(254,228,156)", "rgb(254,197,77)", "rgb(254,154,36)", "rgb(240,56,26)", "rgb(190,0,33)"];
-  return [label, colors[level]];
-};
-
-const renderPollenForecast = (ctx: RenderContext): TemplateResult => {
-  const levelEntity = linkedState(ctx, "level_entity") ?? ctx.entity;
-  const value = numeric(levelEntity?.state) ?? 0;
-  const [label, color] = pollenForecastSeverity(ctx, value);
-  return ctx.actionSurface("custom-pollen-forecast", html`
-    ${heading(ctx, label)}
-    <span class="pollen-icon" style=${`--pollen:${color}`}><ha-icon .icon=${configured<string>(ctx, "ulm_custom_card_pollen_forecast_icon") || ctx.config.icon || ctx.entity?.attributes.icon || "mdi:flower-pollen"}></ha-icon></span>
-  `);
-};
-
 const renderConsoleCard = (ctx: RenderContext): TemplateResult => {
   const state = ctx.entity?.state ?? "unknown";
   const resolved = resolveConsoleEntities(ctx.hass, ctx.config.entity, ctx.config);
@@ -1904,15 +1892,15 @@ const renderAdvancedHomeEnergyManagement = (ctx: RenderContext): TemplateResult 
     automatic ? config.energy_auto_label ?? "Auto" : config.energy_manual_label ?? "Manual"
   }`;
   const batteryState = battery > 20
-    ? `${config.energy_charge_label ?? "laden"} ${formatPower(battery)}`
+    ? `${config.energy_charge_label ?? "Charging"} ${formatPower(battery)}`
     : battery < -20
-      ? `${config.energy_discharge_label ?? "ontladen"} ${formatPower(battery)}`
-      : config.energy_idle_label ?? "rust";
+      ? `${config.energy_discharge_label ?? "Discharging"} ${formatPower(battery)}`
+      : config.energy_idle_label ?? "Idle";
   const gridLabel = grid > 20
-    ? config.energy_grid_import_label ?? "NET · afname"
+    ? config.energy_grid_import_label ?? "GRID · Import"
     : grid < -20
-      ? config.energy_grid_export_label ?? "NET · teruglevering"
-      : config.energy_grid_label ?? "NET";
+      ? config.energy_grid_export_label ?? "GRID · Export"
+      : config.energy_grid_label ?? "GRID";
   const importColor = config.import_color ?? "#ff9f43";
   const exportColor = config.export_color ?? "#4cd98b";
   const batteryColor = config.battery_color ?? "#3b82f6";
@@ -1966,15 +1954,12 @@ const renderAdvancedHomeEnergyManagement = (ctx: RenderContext): TemplateResult 
     });
   return ctx.actionSurface("advanced-energy-management", html`
     ${showPresentation ? html`
-      <div class="metric-heading hems-presentation">
-        ${iconBubble(ctx, "mdi:home-lightning-bolt-outline", "blue")}
-        ${heading(ctx, stateLabel(ctx.entity), ctx.descriptor.name)}
-      </div>
+      <div class="hems-presentation">${cardHeading(ctx)}</div>
     ` : nothing}
     <svg class="hems-flow" viewBox="0 0 760 650" role="img" aria-label="Advanced home energy live flow">
       <circle cx="380" cy="300" r="80" class="hems-track hems-battery-track"></circle>
       ${bar(80, 0, Math.min(batteryLevel, 99.9) * 3.6, 1, batteryColor)}
-      <text x="380" y="270" class="hems-muted hems-center">▮ Accu</text>
+      <text x="380" y="270" class="hems-muted hems-center">▮ Battery</text>
       <text x="380" y="318" class="hems-battery-value hems-center">${Math.round(batteryLevel)}%</text>
       <text x="380" y="346" class="hems-muted hems-center">${batteryState}</text>
       <text x="380" y="125" class="hems-time hems-muted hems-center">${time}</text>
@@ -1994,10 +1979,10 @@ const renderAdvancedHomeEnergyManagement = (ctx: RenderContext): TemplateResult 
 
       ${track(265, 188, 262)}
       ${bar(265, 188, 262, solar / (config.solar_scale_max ?? 6000), solarColor, true)}
-      <text x="180" y="395" class="hems-muted">${config.energy_solar_label ?? "ZON · Enphase"}</text>
+      <text x="180" y="395" class="hems-muted">${config.energy_solar_label ?? "Solar Panels"}</text>
       <text x="180" y="437" class="hems-main-value">☀️ ${formatPower(solar)}</text>
       <text x="180" y="465" class="hems-detail hems-muted">
-        ${config.energy_forecast_label ?? "verwacht"} ${forecast.toLocaleString(undefined, {
+        ${config.energy_forecast_label ?? "Expected"} ${forecast.toLocaleString(undefined, {
           minimumFractionDigits: 1,
           maximumFractionDigits: 1,
         })} kWh
@@ -2009,7 +1994,7 @@ const renderAdvancedHomeEnergyManagement = (ctx: RenderContext): TemplateResult 
           Math.abs(batteries[index].power) / (config.battery_unit_scale_max ?? 2400),
           batteries[index].power > 0 ? batteryColor : importColor, true)}
       `) : nothing}
-      <text x="585" y="185" class="hems-muted hems-end">${config.energy_battery_label ?? "ZENDURE"}</text>
+      <text x="585" y="185" class="hems-muted hems-end">${config.energy_battery_label ?? "Battery"}</text>
       ${config.show_battery_units !== false ? batteries.map((unit, index) => svg`
         <text x="585" y=${224 + index * 22} class="hems-detail hems-muted hems-end">
           ${index + 1} <tspan fill=${batteryColor} font-weight="600">${Math.round(unit.level)}%</tspan>
@@ -2019,10 +2004,10 @@ const renderAdvancedHomeEnergyManagement = (ctx: RenderContext): TemplateResult 
 
       ${track(265, 98, 172)}
       ${bar(265, 98, 172, home / (config.home_scale_max ?? 4000), homeColor)}
-      <text x="585" y="395" class="hems-muted hems-end">${config.energy_home_label ?? "HUIS"}</text>
+      <text x="585" y="395" class="hems-muted hems-end">${config.energy_home_label ?? "HOME"}</text>
       <text x="585" y="437" class="hems-main-value hems-end">${formatPower(home)} ⌂</text>
       <text x="585" y="465" class="hems-detail hems-muted hems-end">
-        🚗 ${config.energy_ev_label ?? "laadpaal"} ${formatPower(ev)}
+        🚗 ${config.energy_ev_label ?? "EV charger"} ${formatPower(ev)}
       </text>
       <text x="380" y="522" class="hems-mode hems-muted hems-center">${modeLabel} ▾</text>
 
@@ -2039,7 +2024,7 @@ const renderAdvancedHomeEnergyManagement = (ctx: RenderContext): TemplateResult 
           </text>
           <text x="670" y="574" class="hems-price hems-end"
             fill=${priceColor(currentInterval.price)}>
-            ${Math.round(currentInterval.price * 100)} cent
+            ${Math.round(currentInterval.price * 100)} cents
           </text>
         ` : nothing}
         <rect x=${90 + 580 * (now - dayStart) / dayDuration - 1.5} y="584"
@@ -2051,6 +2036,302 @@ const renderAdvancedHomeEnergyManagement = (ctx: RenderContext): TemplateResult 
         `)}
       ` : nothing}
     </svg>
+  `);
+};
+
+const ENERGY_SERIES = [
+  { kind: 0, fallback: "Price" },
+  { kind: 1, fallback: "Planned grid charge" },
+  { kind: 2, fallback: "Planned sell" },
+  { kind: 3, fallback: "Possible sell" },
+] as const;
+
+const energyCardHeading = (ctx: RenderContext, title: string, secondary: string) => {
+  const hasPresentationOverride = [
+    ctx.config.name,
+    ctx.config.name_mode,
+    ctx.config.primary_info,
+    ctx.config.secondary_info,
+  ].some((value) => value !== undefined);
+  const headerContext = hasPresentationOverride
+    ? ctx
+    : { ...ctx, config: { ...ctx.config, entity: undefined }, entity: undefined };
+  return cardHeading(headerContext, secondary, title);
+};
+
+const renderEnergyBuySell = (ctx: RenderContext): TemplateResult => {
+  const entity = ctx.entity;
+  const slots = energyPriceSlots(entity);
+  const spanHours = Math.max(1, numeric(ctx.config.buy_sell_graph_span) ?? 36);
+  const now = Date.now();
+  const start = ctx.config.buy_sell_span_start !== "now"
+    ? new Date(new Date(now).setHours(0, 0, 0, 0)).getTime()
+    : now;
+  const end = start + spanHours * 60 * 60 * 1000;
+  const visibleSlots = slots.filter(({ timestamp }) => timestamp >= start && timestamp < end);
+  const minimum = numeric(ctx.config.buy_sell_min_value);
+  const maximum = numeric(ctx.config.buy_sell_max_value);
+  const bounds = energyPriceBounds(visibleSlots, minimum, maximum);
+  const plotLeft = 58;
+  const plotRight = 700;
+  const plotTop = 22;
+  const plotBottom = 254;
+  const plotWidth = plotRight - plotLeft;
+  const plotHeight = plotBottom - plotTop;
+  const x = (timestamp: number) => plotLeft + ((timestamp - start) / (end - start)) * plotWidth;
+  const y = (value: number) =>
+    plotBottom - ((value - bounds.minimum) / (bounds.maximum - bounds.minimum)) * plotHeight;
+  const priceDecimals = Math.max(0, Math.min(6, Math.floor(numeric(ctx.config.buy_sell_price_decimals) ?? 3)));
+  const pointDuration = (index: number) => {
+    const next = visibleSlots[index + 1]?.timestamp;
+    const duration = next ? next - visibleSlots[index].timestamp : 30 * 60 * 1000;
+    return Math.max(60 * 1000, Math.min(duration, 6 * 60 * 60 * 1000));
+  };
+  const axisDecimals = Math.max(0, Math.min(6, Math.floor(numeric(ctx.config.buy_sell_axis_decimals) ?? 2)));
+  const chartColors = ENERGY_SERIES.map((_, index) =>
+    configuredColor(configured<string>(ctx, [
+      "buy_sell_price_color",
+      "buy_sell_charge_color",
+      "buy_sell_planned_sell_color",
+      "buy_sell_possible_sell_color",
+    ][index]), ["#78909c", "#43a047", "#fb8c00", "#ffcc80"][index]));
+  const nowColor = configuredColor(
+    configured<string>(ctx, "buy_sell_now_color"),
+    "var(--primary-text-color)",
+  );
+  const interval = 4 * 60 * 60 * 1000;
+  const tickTimes: number[] = [];
+  for (let timestamp = start; timestamp <= end; timestamp += interval) tickTimes.push(timestamp);
+  if (tickTimes.at(-1) !== end) tickTimes.push(end);
+  const timeLabel = (timestamp: number) =>
+    new Date(timestamp).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+  const legendKeys = [
+    "buy_sell_price_label",
+    "buy_sell_charge_label",
+    "buy_sell_planned_sell_label",
+    "buy_sell_possible_sell_label",
+  ] as const;
+  const legendLabels = ENERGY_SERIES.map(({ fallback }, index) =>
+    String(ctx.config[legendKeys[index]] || fallback));
+  const tradeEnergyEntity = ctx.config.buy_sell_trade_energy_entity;
+  const tradeEnergy = tradeEnergyEntity
+    ? Number(ctx.hass.states[tradeEnergyEntity]?.state)
+    : Number(ctx.config.buy_sell_trade_energy ?? 10);
+  const tradePower = Number(ctx.config.buy_sell_trade_power ?? 7.2);
+  const tradeEfficiency = Number(ctx.config.buy_sell_trade_efficiency ?? 86);
+  const feedInFee = Number(ctx.config.buy_sell_feed_in_fee ?? 0);
+  const trade = tradeEnergyEntity && (!Number.isFinite(tradeEnergy) || tradeEnergy <= 0)
+    ? { error: `Minimum trade size entity ${tradeEnergyEntity} must provide a positive numeric kWh value.` }
+    : energyTradeResult(slots, {
+      energy: tradeEnergy,
+      power: tradePower,
+      efficiency: tradeEfficiency,
+      fee: feedInFee,
+      slotMinutes: Number(ctx.config.buy_sell_slot_minutes ?? 15),
+    });
+  const signedMoney = (value: number) => `${value >= 0 ? "+" : ""}${value.toFixed(2)}`;
+  const tradeTime = (timestamp: number) => new Date(timestamp).toLocaleString(
+    ctx.hass.language ?? "en-GB",
+    { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" },
+  );
+  const tradeRow = (label: string, selection: EnergyTradeSelection, color: string) => html`
+    <tr>
+      <th scope="row"><span class="energy-result-kind" style=${`--energy-result-color:${color}`}><i></i>${label}</span></th>
+      <td title=${selection.slots.map((slot) => `${tradeTime(slot.start)} – ${tradeTime(slot.end)}`).join("; ")}>
+        ${tradeTime(selection.slots[0].start)} – ${tradeTime(selection.slots.at(-1)!.end)}
+        (${selection.slots.length} slots)
+      </td>
+      <td>${selection.averagePrice.toFixed(3)}</td>
+      <td>${selection.energy.toFixed(1)}</td>
+      <td>${signedMoney(selection.amount)}</td>
+    </tr>
+  `;
+
+  return ctx.actionSurface("energy-buy-sell-card", html`
+      ${energyCardHeading(ctx, String(ctx.config.buy_sell_title || "Buy and sell moments (all-in €/kWh)"), "Price timeline")}
+      <div class="energy-buy-sell-chart" style=${`height:${Math.max(120, Math.min(700, numeric(ctx.config.buy_sell_chart_height) ?? 300))}px`} role="img"
+        aria-label=${`Energy prices and planned actions for the next ${spanHours} hours`}>
+        <svg viewBox="0 0 720 314" preserveAspectRatio="none" aria-hidden="true">
+          ${Array.from({ length: 5 }, (_, index) => {
+            const value = bounds.maximum - (bounds.maximum - bounds.minimum) * index / 4;
+            const yPos = plotTop + plotHeight * index / 4;
+            return svg`
+              ${ctx.config.buy_sell_show_grid !== false ? svg`
+                <line x1=${plotLeft} y1=${yPos} x2=${plotRight} y2=${yPos} class="energy-chart-grid"></line>
+              ` : nothing}
+              <text x=${plotLeft - 8} y=${yPos + 4} text-anchor="end" class="energy-chart-tick">
+                ${formatEnergyPrice(value, axisDecimals)}
+              </text>
+            `;
+          })}
+          <text x="14" y=${(plotTop + plotBottom) / 2} text-anchor="middle"
+            transform=${`rotate(-90 14 ${(plotTop + plotBottom) / 2})`} class="energy-chart-axis-title">${ctx.config.buy_sell_axis_label || "€/kWh"}</text>
+          ${tickTimes.map((timestamp) => {
+            const xPos = x(timestamp);
+            return svg`
+              <line x1=${xPos} y1=${plotBottom} x2=${xPos} y2=${plotBottom + 4} class="energy-chart-axis"></line>
+              <text x=${xPos} y=${plotBottom + 20} text-anchor="middle" class="energy-chart-tick">
+                ${timeLabel(timestamp)}
+              </text>
+            `;
+          })}
+          ${visibleSlots.map((slot, index) => {
+            const seriesIndex = slot.kind;
+            const color = chartColors[seriesIndex];
+            const valueY = y(slot.price);
+            const zeroY = y(Math.max(bounds.minimum, Math.min(0, bounds.maximum)));
+            const left = x(slot.timestamp);
+            const right = x(Math.min(end, slot.timestamp + pointDuration(index)));
+            const barWidth = Math.max(1, (right - left) * 0.88);
+            const top = Math.min(valueY, zeroY);
+            const height = Math.max(1, Math.abs(valueY - zeroY));
+            return svg`
+              <rect x=${left} y=${top} width=${barWidth} height=${height}
+                rx=${Math.max(0, Math.min(16, numeric(ctx.config.buy_sell_bar_radius) ?? 2))}
+                fill=${color} opacity="0.88">
+                <title>${`${legendLabels[seriesIndex]}: ${formatEnergyPrice(slot.price, priceDecimals)} ${ctx.config.buy_sell_axis_label || "€/kWh"}`}</title>
+              </rect>
+            `;
+          })}
+          ${visibleSlots.length === 0 ? svg`
+            <text x=${(plotLeft + plotRight) / 2} y=${(plotTop + plotBottom) / 2}
+              text-anchor="middle" class="energy-chart-empty">No price slots available</text>
+          ` : nothing}
+          ${ctx.config.buy_sell_show_now !== false && now >= start && now <= end ? svg`
+            <line x1=${x(now)} y1=${plotTop} x2=${x(now)} y2=${plotBottom + 4}
+              class="energy-chart-now" style=${`stroke:${nowColor}`}></line>
+            <text x=${x(now)} y=${plotTop - 7} text-anchor="middle" class="energy-chart-now-label"
+              style=${`fill:${nowColor}`}>
+              ${ctx.config.buy_sell_now_label || "Now"}
+            </text>
+          ` : nothing}
+        </svg>
+      </div>
+      ${ctx.config.buy_sell_show_legend !== false ? html`<div class="energy-chart-legend">
+        ${ENERGY_SERIES.map(({ kind }, index) => html`
+          <span class="energy-chart-legend-item">
+            <span class="energy-chart-legend-swatch" style=${`--energy-series-color:${chartColors[index]}`}></span>
+            ${legendLabels[kind]}
+          </span>
+        `)}
+      </div>` : nothing}
+      ${ctx.config.buy_sell_show_result !== false ? html`
+        <details class="energy-buy-sell-result"
+          @pointerdown=${(event: Event) => event.stopPropagation()}
+          @click=${(event: Event) => event.stopPropagation()}
+          @dblclick=${(event: Event) => event.stopPropagation()}
+          @keydown=${(event: Event) => event.stopPropagation()}>
+          <summary>Buy and sell result<ha-icon icon="mdi:chevron-down"></ha-icon></summary>
+          ${"error" in trade ? html`<p class="energy-card-empty" role="status">${trade.error}</p>` : html`
+            <div class="energy-result-table-scroll" tabindex="0" role="region" aria-label="Buy and sell estimate">
+              <table class="energy-result-table">
+                <thead><tr><th scope="col">Action</th><th scope="col">Slots</th><th scope="col">avg €/kWh</th><th scope="col">kWh</th><th scope="col">€</th></tr></thead>
+                <tbody>${tradeRow("Buy", trade.buy, chartColors[1])}${tradeRow("Sell", trade.sell, chartColors[2])}</tbody>
+              </table>
+            </div>
+            <p class="energy-result-net">Net result for ${Number(tradeEnergy.toFixed(2))} kWh: ${signedMoney(trade.net)} €</p>
+            <p class="energy-result-note">
+              Calculated for the minimum trade size (${Number(tradeEnergy.toFixed(2))} kWh):
+              the cheapest slots to buy and the most expensive remaining slots to sell,
+              at ${tradePower} kW, over all published prices.
+              Buy kWh = sold kWh ÷ round-trip efficiency (${tradeEfficiency}%).
+              Sell is revenue after the feed-in fee (${feedInFee} €/kWh).
+              Slots may be non-contiguous; the displayed times span the selected slots, not a continuous schedule.
+              The final slot may be partially used. This estimate does not enforce buy-before-sell order,
+              battery capacity or available charge; the real plan follows Smart saving / Smart trading.
+            </p>
+          `}
+        </details>
+      ` : nothing}
+  `);
+};
+
+const renderPanelHealth = (ctx: RenderContext): TemplateResult => {
+  const configuredEntities = Array.isArray(ctx.config.panel_entities) ? ctx.config.panel_entities : undefined;
+  const panels = inverterPanelEntities(
+    ctx.hass.states,
+    configuredEntities,
+    ctx.config.entity,
+  );
+  const summary = summarizePanels(panels);
+  const maxOutput = Math.max(1, numeric(ctx.config.panel_gauge_max) ?? 350);
+  const thresholds = [0, 1, 2, 3, 4, 5].map((index) =>
+    numeric(ctx.config[`panel_segment_${index}`]) ?? [0, 80, 150, 230, 300, maxOutput][index]);
+  const gaugeColors = thresholds.map((_, index) =>
+    configuredColor(configured<string>(ctx, `panel_color_${index}`), [
+      "#b0bec5", "#ffa726", "#d4e157", "#66bb6a", "#2e7d32", "#2e7d32",
+    ][index]));
+  const warningMinimum = numeric(ctx.config.panel_warning_average_min) ?? 30;
+  const lowOutputPercent = (numeric(ctx.config.panel_low_output_percent) ?? 60) / 100;
+  const warning = summary.averageOutput > warningMinimum && !!summary.weakest &&
+    summary.weakest.value < summary.averageOutput * lowOutputPercent;
+  const inactive = summary.activeCount < panels.length;
+  const status = panels.length === 0
+    ? "No panel sensors are selected."
+    : warning
+    ? `Panel ${summary.weakest!.id} is delivering less than ${Math.round(lowOutputPercent * 100)}% of the average. Check for shading or a fault.`
+    : inactive
+      ? `${panels.length - summary.activeCount} panel(s) at zero. This is normal at night; otherwise, check them.`
+      : "All panels are within the expected range of each other.";
+  const statusIcon = panels.length === 0
+    ? "mdi:information-outline"
+    : warning || inactive
+      ? "mdi:alert-circle-outline"
+      : "mdi:check-circle-outline";
+  const statusTone = warning ? "warning" : inactive || panels.length === 0 ? "muted" : "success";
+  const summaryRows: Array<[string, string]> = [
+    ["Panels reporting", `${summary.activeCount} / ${panels.length}`],
+    ["Combined output", `${Math.round(summary.totalOutput)} W`],
+    ["Average per panel", `${Math.round(summary.averageOutput)} W`],
+    ["Best panel", summary.best ? `${summary.best.id} · ${Math.round(summary.best.value)} W` : "—"],
+    ["Weakest panel", summary.weakest ? `${summary.weakest.id} · ${Math.round(summary.weakest.value)} W` : "—"],
+    ["Best-to-weakest spread", `${Math.round(summary.spread)} W`],
+  ];
+
+  return ctx.actionSurface("panel-health-card", html`
+      ${energyCardHeading(ctx, String(ctx.config.panel_health_title || "Panel health"), "Solar panel output")}
+      ${ctx.config.panel_show_summary !== false ? html`<div class="panel-health-summary">
+        ${summaryRows.map(([label, value]) => html`
+          <div class="panel-health-summary-row"><span>${label}</span><strong>${value}</strong></div>
+        `)}
+      </div>` : nothing}
+      <div class=${`panel-health-status panel-health-status-${statusTone}`} role="status">
+        <ha-icon icon=${statusIcon}></ha-icon><span>${status}</span>
+      </div>
+      ${panels.length && ctx.config.panel_show_gauges !== false ? html`
+        <div class="panel-health-gauges">
+          ${panels.map((panel) => {
+            const percent = panelGaugePercent(panel.value, maxOutput);
+            const color = panelGaugeColor(panel.value, thresholds, gaugeColors);
+            const circumference = 2 * Math.PI * 37;
+            const progress = circumference * percent / 100;
+            const panelName = displayName({
+              ...ctx.config,
+              entity: panel.entity.entity_id,
+            }, panel.entity, ctx.hass) || panel.id;
+            return html`
+              <button class="panel-health-gauge" type="button"
+                aria-label=${`${panelName}: ${Math.round(panel.value)} watts`}
+                @click=${(event: Event) => runControlAction(event, ctx, { action: "more-info" }, panel.entity.entity_id)}>
+                <svg viewBox="0 0 100 100" aria-hidden="true">
+                  <circle cx="50" cy="46" r="37" class="panel-health-gauge-track"></circle>
+                  <circle cx="50" cy="46" r="37" class="panel-health-gauge-value"
+                    style=${`--panel-gauge-color:${color};--panel-gauge-progress:${progress};--panel-gauge-circumference:${circumference}`}
+                    stroke-dasharray=${`${progress} ${circumference}`}></circle>
+                  <text x="50" y="51" text-anchor="middle" class="panel-health-gauge-value-label">
+                    ${Math.round(panel.value)}
+                  </text>
+                </svg>
+                <span class="panel-health-gauge-name">${panelName}</span>
+              </button>
+            `;
+          })}
+        </div>
+      ` : panels.length ? nothing : html`
+        <div class="energy-card-empty">
+          Select panel sensors in the card editor, or add sensors with entity IDs beginning with sensor.inverter_4.
+        </div>
+      `}
   `);
 };
 
@@ -2195,7 +2476,7 @@ const renderPollen = (ctx: RenderContext): TemplateResult => {
     };
   };
   return ctx.actionSurface("custom-pollen", html`
-    <div class="pollen-heading">${heading(ctx, stateLabel(ctx.entity), ctx.descriptor.name)}</div>
+    <div class="pollen-heading">${cardHeading(ctx)}</div>
     ${items.map((item) => {
       const state = severity(item.entity?.state);
       const name = item.name || item.entity?.attributes.friendly_name || language[item.kind];
@@ -2259,10 +2540,11 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "custom_card_printer": return renderPrinter(ctx);
     case "custom_card_nas_metrics": return renderNasMetrics(ctx);
     case "custom_card_tablet": return renderTablet(ctx);
-    case "custom_card_pollen_forecast": return renderPollenForecast(ctx);
     case "custom_card_playstation": return renderConsoleCard(ctx);
     case "custom_card_entity_carousel": return renderEntityCarousel(ctx);
     case "advanced_home_energy_management": return renderAdvancedHomeEnergyManagement(ctx);
+    case "advanced_energy_buy_sell": return renderEnergyBuySell(ctx);
+    case "advanced_energy_panel_health": return renderPanelHealth(ctx);
     case "custom_card_plant": return renderFlower(ctx);
     case "custom_card_speedtest_gauges": return renderSpeedtestGauges(ctx);
     case "custom_card_pollen": return renderPollen(ctx);

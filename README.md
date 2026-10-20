@@ -2,16 +2,21 @@
 
 [![CI](https://github.com/snfx-johaver/mushroom-cards-addition/actions/workflows/ci.yml/badge.svg)](https://github.com/snfx-johaver/mushroom-cards-addition/actions/workflows/ci.yml)
 
-Mushroom Cards Addition is a HACS-installable Home Assistant frontend plugin
-providing UI-configurable additional Mushroom style cards. The layouts, state styling,
-controls, variables, and defaults are audited item-by-item while retaining a
-cohesive installation alongside Mushroom.
+**Build a more useful Home Assistant dashboard without writing YAML.**
+Mushroom Cards Addition is a HACS-installable collection of **33 Mushroom-style
+dashboard components**, with graphical configuration, theme-aware styling and
+Home Assistant actions. It is a frontend custom-card collection, not a backend
+integration, and works alongside Mushroom without depending on its internals.
 
-The release traces **34 documented card sources**—6 default cards and
-28 custom cards—to **34 public card components**. Same-goal aliases and compact or
-layout alternatives are combined into clear graphical variants instead of
-duplicating picker entries. Every public component has a visual editor and
-remains YAML-configurable. See the
+Explore live energy flows, buy/sell price timelines and profit estimates, solar
+panel health, recorder-backed Mini Graph charts, combined Sun/Moon views, media
+controls, room overviews, battery intelligence, plant and pollen monitoring,
+NAS metrics, speed tests and more. Configure entities, presentation and supported
+controls directly in the dashboard editor; YAML remains available when preferred.
+
+The catalog maps **30 documented sources**—6 default-card sources and 24 custom-card
+sources—to **33 public components**. Related layouts are grouped into graphical
+variants instead of duplicating picker entries. See the
 [complete, source-linked catalog](docs/CATALOG.md), the generated
 [item-by-item parity matrix](docs/PARITY_MATRIX.md), and the
 [visual behavior specification](docs/VISUAL_SPEC.md).
@@ -46,9 +51,30 @@ For a manual installation, copy `dist/mushroom-cards-addition.js` into
 `config/www/community/mushroom-cards-addition/` and register
 `/local/community/mushroom-cards-addition/mushroom-cards-addition.js` as a
 module. After replacing a manually installed bundle, use
-`/local/community/mushroom-cards-addition/mushroom-cards-addition.js?v=1.4.0`
+`/local/community/mushroom-cards-addition/mushroom-cards-addition.js?v=0.0.1`
 (or increment the query token) and hard-refresh the Home Assistant frontend to
 invalidate the browser cache.
+
+## Versions and releases
+
+Published releases use Semantic Versioning tags (`vMAJOR.MINOR.PATCH`), starting
+with **v0.0.1**. While the project is below 1.0, minor releases may introduce
+breaking configuration changes; patch releases contain compatible fixes.
+See [release notes](https://github.com/snfx-johaver/mushroom-cards-addition/releases)
+and the [changelog](CHANGELOG.md) before upgrading.
+
+`package.json` is the source of truth for the version displayed by the frontend.
+The lockfile and release tag must match it; `npm run check:version` checks the
+manifests, and `npm run check:version -- v0.0.1` also checks a tag.
+
+To prepare a release from a clean checkout, update the changelog, then run
+`npm version <version> --no-git-tag-version` (for example,
+`npm version 0.0.2 --no-git-tag-version`). This validates the current version,
+updates both manifests and rebuilds the bundle without creating a commit or tag.
+Run `npm run validate`, commit the manifests, changelog and built `dist` files,
+then push the release commit and an annotated `v<version>` tag. The release
+workflow validates the tag and code before publishing the JavaScript bundle
+and source map as GitHub release assets for HACS and manual installation.
 
 ## UI usage
 
@@ -59,6 +85,29 @@ tap/hold/double-tap actions. Hidden compatibility aliases keep existing YAML wor
 dashboards use the unified component and a friendly style dropdown. Card-picker
 previews automatically select compatible entities from
 the current Home Assistant instance so examples show real names and states.
+
+NAS, Weather Metrics, Speedtest, Internet Speed, Pollen, Roomview, and the
+Advanced Energy cards use aligned Mushroom headers with a 40px icon beside
+the primary and secondary information. Their header icon and information
+selectors are editable independently of the metric, forecast, and status icons
+inside each card. Choose **Icon type: None** to hide only the header icon.
+
+**Advanced Energy - Energy Buy and Sell** includes a collapsed **Buy and sell
+result** dropdown beneath its timeline. Expand it to see the selected buy/sell
+slots, energy-weighted average prices, kWh, costs/revenue and net result. The
+graphical editor controls visibility, minimum trade size (or an optional kWh
+entity), charging/selling power, round-trip efficiency, feed-in fee and slot
+duration. Defaults are 10 kWh sold, 7.2 kW, 86%, no additional feed-in fee and
+15-minute slots. Prices must already be all-in euros per kWh; do not add a fee
+again if it is already included.
+
+The estimate uses all published price slots, independently of the chart's
+visible range and planned-action colors. It buys in the cheapest slots and sells
+in the most expensive remaining slots without reusing a slot. The final slot
+can be partially used. Slot times may be non-contiguous and sales may precede
+purchases: this is an estimate, not a battery-capacity-aware operating schedule.
+Missing prices, an unavailable trade-size entity or insufficient separate slots
+produce an explicit message rather than a fabricated profit.
 
 The **PS5 / Xbox Card** preserves the upstream PlayStation mapping while adding
 a graphical platform selector. Choose `ps5` or `xbox`; the icon and presentation
