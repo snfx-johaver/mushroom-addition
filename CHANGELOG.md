@@ -2,6 +2,16 @@
 
 Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
+## Updates to 0.0.1 (no version bump)
+
+- Removed Internet Speed, Graph, Entity Overview and More Power Outlet cards.
+  Mini Graph and Speedtest Gauges remain available.
+- Added theme-controlled Mushroom-style borders to standalone cards.
+- Added a carousel-only mode via the graphical **Show card header** switch.
+- Combined Game Console profile image, profile name and current game into one
+  shared header instead of showing a duplicate information row.
+- Prepared the Dashboard/plugin repository for HACS validation and catalog review.
+
 ## [0.0.1] - 2026-10-20
 
 First versioned public release of Mushroom Cards Addition. This establishes a

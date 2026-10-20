@@ -202,7 +202,6 @@ describe("power and printer custom batch certification", () => {
     expect(evidence.live).toBe(false);
     expect(Object.keys(evidence.exactLiveConfigs)).toEqual([
       "custom_card_media_player_sonos",
-      "custom_card_more_power_outlet",
       "custom_card_gauge",
       "custom_card_printer",
     ]);
@@ -224,13 +223,11 @@ describe("power and printer custom batch certification", () => {
     }>;
     expect(Object.keys(geometry)).toEqual([
       "media-player-sonos",
-      "more-power-outlet",
       "gauge",
       "printer",
     ]);
     expect(geometry["media-player-sonos"].implementation.width).toBe(507);
     expect(geometry["media-player-sonos"].regions[".sonos-controls button"]).toHaveLength(3);
-    expect(geometry["more-power-outlet"].implementation.width).toBe(248);
     expect(geometry["gauge"].implementation).toEqual({ width: 197, height: 145 });
     expect(geometry["printer"].regions[".toner-bars span"])
       .toEqual(Array.from({ length: 4 }, () => ({ width: 232, height: 20 })));
@@ -239,7 +236,6 @@ describe("power and printer custom batch certification", () => {
   it("provides source-specific populated picker defaults", () => {
     const cases = [
       ["custom_card_media_player_sonos", "media_player.office_sonos"],
-      ["custom_card_more_power_outlet", "switch.office_plug"],
       ["custom_card_gauge", "sensor.office_plug_power"],
       ["custom_card_printer", "binary_sensor.printer_online"],
     ] as const;
@@ -255,13 +251,6 @@ describe("power and printer custom batch certification", () => {
         registration.type === descriptor.tag && registration.preview)).toBe(true);
     }
 
-    const outlet = customElements.get(item("custom_card_more_power_outlet").tag) as typeof HTMLElement & {
-      getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
-    };
-    expect(outlet.getStubConfig(hass, Object.keys(states), [])).toMatchObject({
-      power_entity: "sensor.office_plug_power",
-      energy_entity: "sensor.office_plug_energy",
-    });
     const sonos = customElements.get(item("custom_card_media_player_sonos").tag) as typeof HTMLElement & {
       getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
     };
@@ -281,7 +270,6 @@ describe("power and printer custom batch certification", () => {
       "surround_level_entity", "music_surround_level_entity", "ulm_card_media_player_enable_art",
       "sonos_details_always_visible",
     ]],
-    ["custom_card_more_power_outlet", ["entity", "power_entity", "energy_entity", "time_entity"]],
     ["custom_card_gauge", ["entity", "minimum", "maximum"]],
     ["custom_card_printer", ["entity", "black_entity", "yellow_entity", "magenta_entity", "cyan_entity"]],
   ])("exposes a dedicated graphical editor for %s", (sourceId, expected) => {
@@ -300,7 +288,6 @@ describe("power and printer custom batch certification", () => {
   it("round-trips all six configurations through the graphical editor", async () => {
     for (const descriptor of [
       item("custom_card_media_player_sonos"),
-      item("custom_card_more_power_outlet"),
       item("custom_card_gauge"),
       item("custom_card_printer"),
     ]) {
@@ -414,17 +401,6 @@ describe("power and printer custom batch certification", () => {
       type: "custom:mushroom-addition-custom-card-media-player-sonos",
       ulm_card_media_player_with_controls_entity: "media_player.office_sonos",
     })).toMatchObject({ entity: "media_player.office_sonos" });
-    expect(normalizeConfig({
-      type: "custom:mushroom-addition-custom-card-more-power-outlet",
-      entity: "switch.office_plug",
-      custom_card_more_power_outlet_power_sensor: "sensor.office_plug_power",
-      custom_card_more_power_outlet_energy_sensor: "sensor.office_plug_energy",
-      custom_card_more_power_outlet_time_sensor: "sensor.office_plug_time",
-    })).toMatchObject({
-      power_entity: "sensor.office_plug_power",
-      energy_entity: "sensor.office_plug_energy",
-      time_entity: "sensor.office_plug_time",
-    });
     expect(normalizeConfig({
       type: "custom:mushroom-addition-custom-card-gauge",
       entity: "sensor.office_humidity",
@@ -547,25 +523,6 @@ describe("power and printer custom batch certification", () => {
     expect(paused.shadowRoot.textContent).toContain("paused");
   });
 
-  it("matches outlet on/off sensor combinations exactly", async () => {
-    const config: AdditionConfig = {
-      type: "custom:mushroom-addition-custom-card-more-power-outlet",
-      entity: "switch.office_plug",
-      power_entity: "sensor.office_plug_power",
-      energy_entity: "sensor.office_plug_energy",
-      time_entity: "sensor.office_plug_time",
-    };
-    const on = await renderCard("mushroom-addition-custom-card-more-power-outlet", config);
-    expect(on.shadowRoot.textContent).toContain("42.5W • 2.8kWh • 50Mins");
-    on.remove();
-    const off = await renderCard("mushroom-addition-custom-card-more-power-outlet", config, {
-      ...states,
-      "switch.office_plug": { ...states["switch.office_plug"], state: "off" },
-    });
-    expect(off.shadowRoot.textContent).toContain("off • 2.8kWh");
-    expect(off.shadowRoot.textContent).not.toContain("42.5W");
-  });
-
   it("matches gauge title suppression and custom range behavior", async () => {
     const standard = await renderCard("mushroom-addition-custom-card-gauge", {
       type: "custom:mushroom-addition-custom-card-gauge",
@@ -604,7 +561,6 @@ describe("power and printer custom batch certification", () => {
   it("dispatches the source card-surface more-info action for every renderer", async () => {
     for (const [tag, entity] of [
       ["mushroom-addition-custom-card-media-player-sonos", "media_player.office_sonos"],
-      ["mushroom-addition-custom-card-more-power-outlet", "switch.office_plug"],
       ["mushroom-addition-custom-card-gauge", "sensor.office_humidity"],
       ["mushroom-addition-custom-card-printer", "binary_sensor.printer_online"],
     ] as const) {

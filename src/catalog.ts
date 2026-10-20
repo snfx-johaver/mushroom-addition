@@ -1,7 +1,7 @@
 import type { CatalogItem } from "./types";
 
 const baseCards = [
-  "battery", "graph", "media_player",
+  "battery", "media_player",
   "room", "scenes",
   "welcome_scenes",
 ] as const;
@@ -11,8 +11,8 @@ const customCards = [
   "roomview",
   "room_overview", "welcome",
   "washer", "sun",
-  "input_datetime", "entity_overview", "internet_speed",
-  "weather_metrics", "media_player_sonos", "more_power_outlet",
+  "input_datetime",
+  "weather_metrics", "media_player_sonos",
   "gauge", "printer",
   "nas_metrics", "tablet",
   "playstation",
@@ -116,8 +116,6 @@ const makeItem = (
   const consoleCard = upstreamId === "custom_card_playstation";
   const displayNames: Partial<Record<string, string>> = {
     custom_card_trash: "Trash",
-    custom_card_entity_overview: "Entity Overview",
-    custom_card_internet_speed: "Internet Speed",
     custom_card_weather_metrics: "Weather Metrics",
     custom_card_gauge: "Gauge",
     custom_card_printer: "Printer",
@@ -131,8 +129,6 @@ const makeItem = (
   };
   const displayDescriptions: Partial<Record<string, string>> = {
     custom_card_trash: "Mushroom-style trash collection schedule card.",
-    custom_card_entity_overview: "Mushroom-style multi-entity status card.",
-    custom_card_internet_speed: "Mushroom-style internet speed and router status card.",
     custom_card_weather_metrics: "Mushroom-style weather metrics card.",
     custom_card_gauge: "Mushroom-style sensor gauge card.",
     custom_card_printer: "Mushroom-style printer status and toner level card.",
@@ -179,7 +175,6 @@ export const SOURCE_ONLY_HELPERS = [
 export const UPSTREAM_CATALOG: readonly CatalogItem[] = [
   ...baseCards.map((id) => {
     const sourcePaths: Partial<Record<typeof id, string>> = {
-      graph: "reference_catalog/cards/card_graph.yaml",
       scenes: "reference_catalog/cards/card_scenes_welcome.yaml",
     };
     return makeItem(

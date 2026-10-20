@@ -10,6 +10,13 @@ const ruleFor = (selector: string): string => {
 };
 
 describe("default Mushroom icon sizing", () => {
+  it("uses theme-controlled Mushroom-style borders for standalone cards", () => {
+    const border = "border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, #e0e0e0))";
+    expect(ruleFor(".mushroom-addition-card")).toContain(border);
+    const miniGraph = readFileSync(join(process.cwd(), "src", "mini-graph.ts"), "utf8");
+    expect(miniGraph).toContain(border);
+    expect(miniGraph).toContain("ha-card.group { border: 0;");
+  });
   it("uses the Mushroom defaults for shared icon shapes and symbols", () => {
     expect(ruleFor(".ulm-icon")).toContain("width: var(--mush-icon-size, 40px)");
     expect(ruleFor(".ulm-icon")).toContain("height: var(--mush-icon-size, 40px)");
@@ -25,6 +32,7 @@ describe("default Mushroom icon sizing", () => {
     ".tablet-icon",
     ".tablet-battery-icon",
     ".pollen-item-icon",
+    ".console-logo",
   ])("keeps %s aligned with the shared icon shape", (selector) => {
     expect(ruleFor(selector)).toContain("width: var(--mush-icon-size, 40px)");
     expect(ruleFor(selector)).toContain("height: var(--mush-icon-size, 40px)");

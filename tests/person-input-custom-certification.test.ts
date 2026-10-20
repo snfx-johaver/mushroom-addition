@@ -146,8 +146,6 @@ describe("person and input custom-card certification", () => {
   it("provides dedicated picker defaults and graphical editor fields for retained sources", () => {
     const expected = {
       custom_card_input_datetime: ["entity", "name"],
-      custom_card_entity_overview: ["entity", "ulm_custom_card_entity_overview_entity_1", "ulm_custom_card_entity_overview_name_4"],
-      custom_card_internet_speed: ["entity", "download_entity", "upload_entity", "ping_entity", "ulm_custom_card_internet_speed_router_name"],
       custom_card_weather_metrics: ["entity", "temperature_entity", "date_entity", "ulm_custom_card_weather_metrics_entity_4"],
     };
     for (const [id, fields] of Object.entries(expected)) {
@@ -159,46 +157,7 @@ describe("person and input custom-card certification", () => {
     }
   });
 
-  it("round-trips a dedicated graphical editor field", async () => {
-    const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {
-      hass: HomeAssistant;
-      setConfig(config: AdditionConfig): void;
-      updateComplete: Promise<boolean>;
-      shadowRoot: ShadowRoot;
-    };
-    editor.hass = { states, callService: vi.fn() };
-    editor.setConfig({
-      type: `custom:${descriptor("custom_card_internet_speed").tag}`,
-      download_entity: "sensor.download",
-    });
-    document.body.append(editor);
-    await editor.updateComplete;
-    const changed = vi.fn();
-    editor.addEventListener("config-changed", changed);
-    editor.shadowRoot.querySelector("ha-form")!.dispatchEvent(new CustomEvent("value-changed", {
-      bubbles: true,
-      composed: true,
-      detail: { value: { upload_entity: "sensor.upload", ping_entity: "sensor.ping" } },
-    }));
-    expect((changed.mock.calls[0][0] as CustomEvent).detail.config).toMatchObject({
-      download_entity: "sensor.download",
-      upload_entity: "sensor.upload",
-      ping_entity: "sensor.ping",
-    });
-  });
-
   it("migrates every documented legacy entity variable to semantic fields", () => {
-    expect(normalizeConfig({
-      type: "custom:mushroom-addition-custom-card-internet-speed",
-      ulm_custom_card_internet_speed_download_speed_entity: "sensor.download",
-      ulm_custom_card_internet_speed_upload_speed_entity: "sensor.upload",
-      ulm_custom_card_internet_speed_ping_entity: "sensor.ping",
-    })).toMatchObject({
-      entity: "sensor.download",
-      download_entity: "sensor.download",
-      upload_entity: "sensor.upload",
-      ping_entity: "sensor.ping",
-    });
     expect(normalizeConfig({
       type: "custom:mushroom-addition-custom-card-weather-metrics",
       ulm_custom_card_weather_metrics: "weather.home",
@@ -238,47 +197,6 @@ describe("person and input custom-card certification", () => {
     }, { ...states, "input_datetime.quiet": { ...states["input_datetime.quiet"], state: "unavailable" } });
     expect([...unavailable.shadowRoot.querySelectorAll<HTMLButtonElement>(".input-datetime-controls button")]
       .every((control) => control.disabled)).toBe(true);
-  });
-
-  it("renders and dispatches all four Entities detail interactions", async () => {
-    const card = await renderCard("custom_card_entity_overview", {
-      entity: "light.lamp",
-      entities: ["light.lamp", "sensor.temperature", "switch.plug", "sensor.battery"],
-      ulm_custom_card_entity_overview_name: "System Status",
-    });
-    expect(card.shadowRoot.querySelectorAll(".metrics-four button")).toHaveLength(4);
-    const actions = vi.fn();
-    card.addEventListener("hass-action", actions);
-    card.shadowRoot.querySelectorAll<HTMLButtonElement>(".metrics-four button")
-      .forEach((control) => control.click());
-    expect(actions.mock.calls.map(([event]) => (event as CustomEvent).detail.config.entity)).toEqual([
-      "light.lamp", "sensor.temperature", "switch.plug", "sensor.battery",
-    ]);
-    expect(actions.mock.calls.every(([event]) =>
-      (event as CustomEvent).detail.config.tap_action.action === "more-info")).toBe(true);
-  });
-
-  it("uses one exact speedtest update payload and two visible metric actions", async () => {
-    const callService = vi.fn(async () => undefined);
-    const card = await renderCard("custom_card_internet_speed", {
-      entity: "sensor.download",
-      download_entity: "sensor.download",
-      upload_entity: "sensor.upload",
-      ping_entity: "sensor.ping",
-      ulm_custom_card_internet_speed_router_name: "Linksys",
-      ulm_custom_card_internet_speed_router_model: "EA8549",
-    }, states, callService);
-    (card.shadowRoot.querySelector(".speedtest-action") as HTMLButtonElement).click();
-    expect(callService).toHaveBeenCalledWith("homeassistant", "update_entity", {
-      entity_id: ["sensor.download", "sensor.upload", "sensor.ping"],
-    });
-    expect(card.shadowRoot.querySelectorAll(".speedtest-metrics button")).toHaveLength(2);
-    const actions = vi.fn();
-    card.addEventListener("hass-action", actions);
-    card.shadowRoot.querySelectorAll<HTMLButtonElement>(".speedtest-metrics button")
-      .forEach((control) => control.click());
-    expect(actions.mock.calls.map(([event]) => (event as CustomEvent).detail.config.entity))
-      .toEqual(["sensor.download", "sensor.upload"]);
   });
 
   it("renders weather date/temperature and dispatches all four metric actions", async () => {

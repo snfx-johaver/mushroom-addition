@@ -35,7 +35,6 @@ export const canonicalNameOptions = new Set([
   "ulm_card_media_player_with_controls_name",
   "ulm_card_printer_name",
   "ulm_custom_card_bar_card_name",
-  "ulm_custom_card_entity_overview_name",
   "ulm_custom_card_metrics_entitites_name",
 ]);
 
@@ -74,17 +73,6 @@ const supportedByFamily: Record<string, readonly string[]> = {
 };
 
 const supportedByItem: Record<string, readonly string[]> = {
-  card_graph: [
-    "ulm_card_graph_color",
-    "ulm_card_graph_color2",
-    "ulm_card_graph_entity2",
-    "ulm_card_graph_group_by",
-    "ulm_card_graph_hours",
-    "ulm_card_graph_icon_color",
-    "ulm_card_graph_line_width",
-    "ulm_card_graph_points",
-    "ulm_card_graph_type",
-  ],
   custom_card_bar_card: [
     "ulm_custom_card_bar_card_color",
     "ulm_custom_card_bar_card_icon",

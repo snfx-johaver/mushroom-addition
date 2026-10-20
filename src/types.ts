@@ -135,6 +135,7 @@ export interface AdditionConfig {
   room_sensors?: AdditionItemConfig[];
   carousel_items?: AdditionItemConfig[];
   carousel_loop?: boolean;
+  carousel_show_header?: boolean;
   carousel_show_labels?: boolean;
   carousel_visible_items?: number;
   carousel_initial_index?: number;

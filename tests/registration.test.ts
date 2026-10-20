@@ -510,16 +510,28 @@ describe("Home Assistant registration", () => {
     }
   });
 
+  it("does not register deleted card types or expose them in the picker", () => {
+    for (const tag of [
+      "mushroom-addition-card-graph",
+      "mushroom-addition-custom-card-internet-speed",
+      "mushroom-addition-custom-card-entity-overview",
+      "mushroom-addition-custom-card-more-power-outlet",
+    ]) {
+      expect(customElements.get(tag)).toBeUndefined();
+      expect(window.customCards?.some((card) => card.type === tag)).toBe(false);
+    }
+  });
+
   it("dispatches only the double-tap action for a double click", async () => {
     vi.useFakeTimers();
-    const element = document.createElement("mushroom-addition-card-graph") as HTMLElement & {
+    const element = document.createElement("mushroom-addition-custom-card-gauge") as HTMLElement & {
       hass: HomeAssistant;
       setConfig(config: AdditionConfig): void;
       updateComplete: Promise<boolean>;
     };
     element.hass = { states: {}, callService: async () => undefined };
     element.setConfig({
-      type: "custom:mushroom-addition-card-graph",
+      type: "custom:mushroom-addition-custom-card-gauge",
       tap_action: { action: "toggle" },
       double_tap_action: { action: "more-info" },
     });
@@ -539,14 +551,14 @@ describe("Home Assistant registration", () => {
 
   it("supports hold actions on cards without also tapping", async () => {
     vi.useFakeTimers();
-    const element = document.createElement("mushroom-addition-card-graph") as HTMLElement & {
+    const element = document.createElement("mushroom-addition-custom-card-gauge") as HTMLElement & {
       hass: HomeAssistant;
       setConfig(config: AdditionConfig): void;
       updateComplete: Promise<boolean>;
     };
     element.hass = { states: {}, callService: async () => undefined };
     element.setConfig({
-      type: "custom:mushroom-addition-card-graph",
+      type: "custom:mushroom-addition-custom-card-gauge",
       tap_action: { action: "more-info" },
       hold_action: { action: "assist" },
     });

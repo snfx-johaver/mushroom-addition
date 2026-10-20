@@ -2,6 +2,10 @@ import { describe, expect, it } from "vitest";
 import { VISUAL_AUDIT, visualAuditProgress } from "../src/visual-audit";
 
 const removedSources = new Set([
+  "card_graph",
+  "custom_card_internet_speed",
+  "custom_card_entity_overview",
+  "custom_card_more_power_outlet",
   "card_binary_sensor",
   "card_binary_sensor_alert",
   "card_generic",
@@ -34,9 +38,9 @@ const removedSources = new Set([
 
 describe("visual audit manifest", () => {
   it("contains one audit record for every retained source", () => {
-    expect(VISUAL_AUDIT).toHaveLength(30);
-    expect(new Set(VISUAL_AUDIT.map((entry) => entry.sourceId)).size).toBe(30);
-    expect(visualAuditProgress()).toMatchObject({ total: 30 });
+    expect(VISUAL_AUDIT).toHaveLength(26);
+    expect(new Set(VISUAL_AUDIT.map((entry) => entry.sourceId)).size).toBe(26);
+    expect(visualAuditProgress()).toMatchObject({ total: 26 });
   });
 
   it("does not expose audit records for deleted sources", () => {

@@ -3,7 +3,7 @@
 [![CI](https://github.com/snfx-johaver/mushroom-cards-addition/actions/workflows/ci.yml/badge.svg)](https://github.com/snfx-johaver/mushroom-cards-addition/actions/workflows/ci.yml)
 
 **Build a more useful Home Assistant dashboard without writing YAML.**
-Mushroom Cards Addition is a HACS-installable collection of **33 Mushroom-style
+Mushroom Cards Addition is a HACS-installable collection of **29 Mushroom-style
 dashboard components**, with graphical configuration, theme-aware styling and
 Home Assistant actions. It is a frontend custom-card collection, not a backend
 integration, and works alongside Mushroom without depending on its internals.
@@ -14,12 +14,14 @@ controls, room overviews, battery intelligence, plant and pollen monitoring,
 NAS metrics, speed tests and more. Configure entities, presentation and supported
 controls directly in the dashboard editor; YAML remains available when preferred.
 
-The catalog maps **30 documented sources**—6 default-card sources and 24 custom-card
-sources—to **33 public components**. Related layouts are grouped into graphical
+The catalog maps **26 documented sources**—5 default-card sources and 21 custom-card
+sources—to **29 public components**. Related layouts are grouped into graphical
 variants instead of duplicating picker entries. See the
 [complete, source-linked catalog](docs/CATALOG.md), the generated
 [item-by-item parity matrix](docs/PARITY_MATRIX.md), and the
 [visual behavior specification](docs/VISUAL_SPEC.md).
+
+![Illustrated preview of Mushroom-style battery, energy, carousel and game cards](docs/assets/cards-preview.svg)
 
 ## Requirements and compatibility
 
@@ -37,7 +39,7 @@ states for missing entities.
 
 Until the repository is accepted into HACS:
 
-1. In HACS, open **Frontend**, choose **Custom repositories**, and add
+1. In HACS, open **Custom repositories**, and add
    `https://github.com/snfx-johaver/mushroom-cards-addition` as a Dashboard
    repository.
 2. Install **Mushroom Cards Addition** and restart Home Assistant if HACS asks.
@@ -46,6 +48,18 @@ Until the repository is accepted into HACS:
    JavaScript module under **Settings → Dashboards → Resources**.
 4. Add a card from the Lovelace card picker and search for
    **Mushroom Addition**.
+
+[Open this repository in HACS](https://my.home-assistant.io/redirect/hacs_repository/?owner=snfx-johaver&repository=mushroom-cards-addition&category=plugin)
+
+This is a HACS **Dashboard** repository (category `plugin`), not a backend
+integration. Default-store inclusion requires a reviewed submission to
+[`hacs/default`](https://github.com/hacs/default); until accepted, install using
+the custom-repository steps above. The HACS validation job runs without ignored
+checks on every push and pull request.
+
+When a build is refreshed without changing its version, existing HACS users
+must use **Redownload** for v0.0.1 and reload their browser; a same-version update
+does not trigger a new-version notification.
 
 For a manual installation, copy `dist/mushroom-cards-addition.js` into
 `config/www/community/mushroom-cards-addition/` and register
@@ -86,11 +100,13 @@ dashboards use the unified component and a friendly style dropdown. Card-picker
 previews automatically select compatible entities from
 the current Home Assistant instance so examples show real names and states.
 
-NAS, Weather Metrics, Speedtest, Internet Speed, Pollen, Roomview, and the
+NAS, Weather Metrics, Speedtest, Pollen, Roomview, and the
 Advanced Energy cards use aligned Mushroom headers with a 40px icon beside
 the primary and secondary information. Their header icon and information
 selectors are editable independently of the metric, forecast, and status icons
 inside each card. Choose **Icon type: None** to hide only the header icon.
+All standalone cards use Home Assistant's theme-controlled card border width
+and color, like official Mushroom cards.
 
 **Advanced Energy - Energy Buy and Sell** includes a collapsed **Buy and sell
 result** dropdown beneath its timeline. Expand it to see the selected buy/sell
@@ -109,9 +125,10 @@ purchases: this is an estimate, not a battery-capacity-aware operating schedule.
 Missing prices, an unavailable trade-size entity or insufficient separate slots
 produce an explicit message rather than a fabricated profit.
 
-The **PS5 / Xbox Card** preserves the upstream PlayStation mapping while adding
-a graphical platform selector. Choose `ps5` or `xbox`; the icon and presentation
-update without requiring YAML-only variables.
+The **Game Console Card** supports automatic, Xbox, PlayStation and Nintendo
+platform selection. Its single header uses the profile image, profile name and
+current game; the graphical information selectors can override the text.
+Social counts, statistics, artwork and power controls remain independently configurable.
 
 The **Waste Collection Card** has an ordered graphical list of waste streams.
 Each row can be enabled independently and has its own sensor/calendar entity,
@@ -139,6 +156,8 @@ Assistant actions without requiring another frontend resource. See the
 The **Entity Carousel Card** includes dependency-free slide and coverflow
 effects with graphical controls for cursor behavior, centering, automatic or
 fixed slides per view, rotation, spacing, depth, intensity, and slide shadows.
+Turn off **Show card header** in its graphical editor to hide the title, icon
+and primary/secondary information while keeping the carousel and its item labels.
 Existing Swipe Card-style YAML can also use the source-compatible `parameters`
 shape:
 

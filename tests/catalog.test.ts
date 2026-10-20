@@ -21,7 +21,10 @@ describe("catalog coverage", () => {
   });
 
   it("includes default and custom cards", () => {
-    expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "card_graph")).toBe(true);
+    expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "card_graph")).toBe(false);
+    expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_internet_speed")).toBe(false);
+    expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_entity_overview")).toBe(false);
+    expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_more_power_outlet")).toBe(false);
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_camera")).toBe(false);
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_better_thermostat")).toBe(false);
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_vehicle_status")).toBe(false);
@@ -33,16 +36,14 @@ describe("catalog coverage", () => {
   it("matches the documented source counts and keeps the custom card catalog public", () => {
     const sourceCount = (category: string) =>
       UPSTREAM_CATALOG.filter((item) => item.category === category).length;
-    expect(sourceCount("default-card")).toBe(6);
-    expect(sourceCount("custom-card")).toBe(24);
-    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(27);
+    expect(sourceCount("default-card")).toBe(5);
+    expect(sourceCount("custom-card")).toBe(21);
+    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(24);
   });
 
   it("keeps removed contributor names out of renamed public card metadata", () => {
     const renamedSources = [
       "custom_card_trash",
-      "custom_card_entity_overview",
-      "custom_card_internet_speed",
       "custom_card_weather_metrics",
       "custom_card_gauge",
       "custom_card_printer",
@@ -54,8 +55,6 @@ describe("catalog coverage", () => {
     const renamedItems = PUBLIC_CATALOG.filter((candidate) => renamedSources.includes(candidate.upstreamId));
     expect(renamedItems.map((item) => item.name)).toEqual([
       "Trash Card",
-      "Entity Overview Card",
-      "Internet Speed Card",
       "Weather Metrics Card",
       "Gauge Card",
       "Printer Card",

@@ -38,13 +38,10 @@ const colorDefaults: Record<string, string> = {
   battery_warning_color: "yellow",
   battery_low_color: "orange",
   battery_critical_color: "red",
-  ulm_card_graph_color: "red",
-  ulm_card_graph_icon_color: "red",
   ulm_card_media_player_color: "blue",
   ulm_card_alarm_time_color: "blue",
   ulm_custom_card_bar_card_color: "blue",
   ulm_custom_card_bar_card_icon_color: "grey",
-  ulm_custom_card_internet_speed_color: "blue",
   disk_color: "red",
   temperature_color: "orange",
   memory_color: "blue",
@@ -103,33 +100,13 @@ const booleanOptions = new Set([
 const numericBoxOptions = new Set([
   "ulm_custom_card_bar_card_min",
   "ulm_custom_card_bar_card_max",
-  "ulm_card_graph_hours",
-  "ulm_card_graph_line_width",
-  "ulm_card_graph_points",
   "ulm_card_media_player_enable_volume_adjust",
 ]);
 const certifiedCoreVariables = new Set([
   "ulm_card_input_datetime_name",
   "ulm_card_input_number_entity",
   "ulm_card_input_number_name",
-  "ulm_custom_card_entity_overview",
-  "ulm_custom_card_entity_overview_entity_1",
-  "ulm_custom_card_entity_overview_entity_2",
-  "ulm_custom_card_entity_overview_entity_3",
-  "ulm_custom_card_entity_overview_entity_4",
-  "ulm_custom_card_entity_overview_icon",
-  "ulm_custom_card_entity_overview_name",
-  "ulm_custom_card_entity_overview_name_1",
-  "ulm_custom_card_entity_overview_name_2",
-  "ulm_custom_card_entity_overview_name_3",
-  "ulm_custom_card_entity_overview_name_4",
   "ulm_custom_card_metrics_entitites_name",
-  "ulm_custom_card_internet_speed_color",
-  "ulm_custom_card_internet_speed_download_speed_entity",
-  "ulm_custom_card_internet_speed_ping_entity",
-  "ulm_custom_card_internet_speed_router_model",
-  "ulm_custom_card_internet_speed_router_name",
-  "ulm_custom_card_internet_speed_upload_speed_entity",
   "ulm_custom_card_weather_metrics",
   "ulm_custom_card_weather_metrics_date",
   "ulm_custom_card_weather_metrics_entity_1",
@@ -204,7 +181,6 @@ const fixedIconSources = new Set([
   "card_welcome_scenes",
   "custom_card_bar_card",
   "custom_card_welcome",
-  "custom_card_entity_overview",
   "custom_card_tablet",
 ]);
 
@@ -511,6 +487,7 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
     : item.upstreamId === "custom_card_entity_carousel"
       ? [
         entity(),
+        toggle("carousel_show_header"),
         ...presentation(),
         toggle("carousel_loop"),
         toggle("carousel_show_labels"),
@@ -589,14 +566,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         entity(["number"], "sub_gain_entity"),
         entity(["number"], "surround_level_entity"),
         entity(["number"], "music_surround_level_entity"),
-      ]
-    : item.upstreamId === "custom_card_more_power_outlet"
-      ? [
-        entity(["switch", "light"]),
-        entity(["sensor"], "power_entity"),
-        entity(["sensor"], "energy_entity"),
-        entity(["sensor"], "time_entity"),
-        ...presentation(),
       ]
     : item.upstreamId === "custom_card_gauge"
       ? [
@@ -845,28 +814,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
     : item.upstreamId === "custom_card_input_datetime"
       ? [
         entity(["input_datetime"]),
-        ...presentation(),
-      ]
-    : item.upstreamId === "custom_card_entity_overview"
-      ? [
-        entity(),
-        { name: "ulm_custom_card_entity_overview_icon", selector: { icon: {} } },
-
-        ...[1, 2, 3, 4].flatMap((index) => [
-          entity(undefined, `ulm_custom_card_entity_overview_entity_${index}`),
-          text(`ulm_custom_card_entity_overview_name_${index}`),
-        ]),
-        ...presentation(),
-      ]
-    : item.upstreamId === "custom_card_internet_speed"
-      ? [
-        entity(["sensor"]),
-        entity(["sensor"], "download_entity"),
-        entity(["sensor"], "upload_entity"),
-        entity(["sensor"], "ping_entity"),
-        text("ulm_custom_card_internet_speed_router_name"),
-        text("ulm_custom_card_internet_speed_router_model"),
-        color("ulm_custom_card_internet_speed_color"),
         ...presentation(),
       ]
     : item.upstreamId === "custom_card_weather_metrics"

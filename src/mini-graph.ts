@@ -408,14 +408,15 @@ export class MushroomMiniGraphCard extends LitElement {
       position: relative;
       display: block;
       overflow: hidden;
-      border: 0;
+      box-sizing: border-box;
+      border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, #e0e0e0));
       border-radius: var(--mush-card-primary-border-radius, 14px);
       background: var(--ha-card-background, var(--card-background-color, #fff));
       box-shadow: var(--ha-card-box-shadow, 0 2px 8px rgba(0,0,0,.08));
       color: var(--primary-text-color);
       cursor: pointer;
     }
-    ha-card.group { border-radius: 0; box-shadow: none; background: transparent; }
+    ha-card.group { border: 0; border-radius: 0; box-shadow: none; background: transparent; }
     .content { display: grid; gap: 10px; padding: 14px; }
     .header { display: flex; align-items: center; gap: 10px; min-width: 0; }
     .header[data-align="left"] { justify-content: flex-start; }

@@ -113,9 +113,6 @@ export const createStubConfig = (
       ? findEntityByDeviceClass(["temperature"]) ??
         findEntityByDeviceClass(["power", "energy"]) ??
         findEntity(["sensor"], [])
-      : descriptor.upstreamId === "card_graph"
-        ? findEntity(["sensor"], ["cv", "plug", "power"]) ??
-          findEntityByDeviceClass(["power", "energy"])
         : descriptor.upstreamId === "card_media_player"
             ? findEntity(["media_player"], ["office", "joris", "tv"])
             : descriptor.upstreamId === "card_battery"
@@ -138,14 +135,9 @@ export const createStubConfig = (
                                   ? findEntity(["sun"], [])
                                   : descriptor.upstreamId === "custom_card_media_player_sonos"
                                         ? sonosPlayer
-                                      : descriptor.upstreamId === "custom_card_more_power_outlet"
-                                        ? findEntity(["switch", "light"], ["outlet"]) ??
-                                          findEntity(["switch", "light"], ["plug"])
                                       : descriptor.upstreamId === "custom_card_printer"
                                         ? findEntity(["sensor", "binary_sensor"], ["printer"]) ??
                                           findEntity(["sensor", "binary_sensor"], ["online"])
-                                      : descriptor.upstreamId === "custom_card_internet_speed"
-                                ? findEntity(["sensor"], ["download"])
                               : descriptor.upstreamId === "custom_card_weather_metrics"
                                 ? findEntity(["weather"], [])
                               : descriptor.upstreamId === "card_room"
@@ -239,13 +231,6 @@ export const createStubConfig = (
     ([entityId], index, candidates) =>
       Boolean(entityId) && candidates.findIndex(([candidate]) => candidate === entityId) === index,
   ).slice(0, 4) as Array<[string, string]>;
-  const overviewEntities = uniqueEntities([
-    findEntityByDeviceClass(["temperature"]),
-    findEntityByDeviceClass(["humidity"]),
-    findEntityByDeviceClass(["power", "energy"]),
-    findEntityByDeviceClass(["battery"]),
-    ...available.filter((entityId) => entityId.startsWith("sensor.")),
-  ], 4);
   const stubTapAction = descriptor.upstreamId === "custom_card_sun" ||
     descriptor.upstreamId === "custom_card_pollen" ||
     descriptor.upstreamId === "card_welcome_scenes"
@@ -481,23 +466,6 @@ export const createStubConfig = (
           .map((entityId) => sceneItemDefaultsFor(hass, entityId)),
       }
       : {}),
-    ...(descriptor.upstreamId === "custom_card_internet_speed"
-      ? {
-        download_entity: findEntity(["sensor"], ["download"]) ?? entity,
-        upload_entity: findEntity(["sensor"], ["upload"]),
-        ping_entity: findEntity(["sensor"], ["ping"]),
-      }
-      : {}),
-    ...(descriptor.upstreamId === "custom_card_entity_overview"
-      ? {
-        entities: overviewEntities,
-        ...Object.fromEntries(overviewEntities.flatMap((entityId, index) => [
-          [`ulm_custom_card_entity_overview_entity_${index + 1}`, entityId],
-          [`ulm_custom_card_entity_overview_name_${index + 1}`,
-            hass?.states[entityId]?.attributes.friendly_name ?? `Entity ${index + 1}`],
-        ])),
-      }
-      : {}),
     ...(descriptor.upstreamId === "custom_card_weather_metrics"
       ? {
         entity: findEntity(["weather"], []) ?? entity,
@@ -518,13 +486,6 @@ export const createStubConfig = (
         ulm_card_media_player_with_controls_name: entity
           ? hass?.states[entity]?.attributes.friendly_name
           : "No name set",
-      }
-      : {}),
-    ...(descriptor.upstreamId === "custom_card_more_power_outlet"
-      ? {
-        power_entity: findEntity(["sensor"], ["power"]),
-        energy_entity: findEntity(["sensor"], ["energy"]),
-        time_entity: findEntity(["sensor"], ["time"]),
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_gauge"

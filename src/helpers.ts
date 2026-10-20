@@ -122,7 +122,8 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
       : upstream.name_mode,
     icon_type: upstream.icon_type ?? (
       migrated.use_entity_picture ? "entity-picture" :
-        migrated.show_icon === false ? "none" : "icon"
+        migrated.show_icon === false ? "none" :
+          /custom-card-(game-console|playstation)$/.test(type) ? "entity-picture" : "icon"
     ),
     layout: upstream.layout ?? "default",
     fill_container: upstream.fill_container ?? false,
@@ -166,9 +167,7 @@ const upstreamCompatibility = (config: AdditionConfig): AdditionConfig => {
 
 const legacyEntityKeys = [
   "ulm_card_media_player_entity",
-  "ulm_card_graph_entity",
   "ulm_card_input_number_entity",
-  "ulm_custom_card_entity_overview",
   "ulm_custom_card_weather_metrics",
 ] as const;
 
@@ -244,18 +243,6 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
       if (sceneItems.length) migrated.scene_items = sceneItems;
     }
   }
-  if (String(config.type).includes("entity-overview")) {
-    migrated.entity ??= entityId(config.ulm_custom_card_entity_overview);
-    migrated.entities ??= [1, 2, 3, 4]
-      .map((index) => entityId(config[`ulm_custom_card_entity_overview_entity_${index}`]))
-      .filter((value): value is string => value !== undefined);
-  }
-  if (String(config.type).includes("internet-speed")) {
-    migrated.download_entity ??= entityId(config.ulm_custom_card_internet_speed_download_speed_entity);
-    migrated.upload_entity ??= entityId(config.ulm_custom_card_internet_speed_upload_speed_entity);
-    migrated.ping_entity ??= entityId(config.ulm_custom_card_internet_speed_ping_entity);
-    migrated.entity ??= migrated.download_entity;
-  }
   if (String(config.type).includes("weather-metrics")) {
     migrated.entity ??= entityId(config.ulm_custom_card_weather_metrics);
     migrated.temperature_entity ??= entityId(config.ulm_custom_card_weather_metrics_temperature_outside);
@@ -279,21 +266,6 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
   }
   if (String(config.type).includes("media-player-sonos")) {
     migrated.entity ??= entityId(config.ulm_card_media_player_with_controls_entity);
-  }
-  if (String(config.type).includes("more-power-outlet")) {
-    migrated.power_entity ??= entityId(
-      config.custom_card_more_power_outlet_power_sensor ??
-      config.ulm_card_more_power_outlet_power_sensor ??
-      config.graph_entity,
-    );
-    migrated.energy_entity ??= entityId(
-      config.custom_card_more_power_outlet_energy_sensor ??
-      config.ulm_card_more_power_outlet_energy_sensor,
-    );
-    migrated.time_entity ??= entityId(
-      config.custom_card_more_power_outlet_time_sensor ??
-      config.ulm_card_more_power_outlet_time_sensor,
-    );
   }
   if (String(config.type).includes("gauge")) {
     migrated.minimum ??= Number(config.ulm_card_gauge_min ?? 0);

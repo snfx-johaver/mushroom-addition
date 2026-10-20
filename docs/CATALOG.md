@@ -4,8 +4,8 @@ This manifest maps the documented card catalog to Mushroom Cards Addition
 registrations. It is generated from `src/catalog.ts`; CI rejects duplicate
 IDs, missing source paths, invalid namespaces, or broken popup mappings.
 
-**Coverage:** 30 documented upstream card sources map to
-33 public card components.
+**Coverage:** 26 documented upstream card sources map to
+29 public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
 of duplicate picker entries. 1 popup templates and
 1 implementation helpers are inventoried but are not
@@ -14,7 +14,6 @@ public registrations.
 | Public ID | Category | Addition type | Family | UI variants | Covered source IDs |
 |---|---|---|---|---|---|
 | `card_battery` | default-card | `custom:mushroom-addition-card-battery` | battery | default | `card_battery` |
-| `card_graph` | default-card | `custom:mushroom-addition-card-graph` | energy | default | `card_graph` |
 | `card_media_player` | default-card | `custom:mushroom-addition-card-media-player` | media | default, controls, artwork | `card_media_player` |
 | `card_room` | default-card | `custom:mushroom-addition-card-room` | presence | default, with-sensors | `card_room` |
 | `card_scenes` | default-card | `custom:mushroom-addition-card-scenes` | scene | welcome-pills, scene-grid | `card_scenes`<br>`custom_card_scenes` |
@@ -28,11 +27,8 @@ public registrations.
 | `custom_card_washer` | custom-card | `custom:mushroom-addition-custom-card-washer` | control | default | `custom_card_washer` |
 | `custom_card_sun` | custom-card | `custom:mushroom-addition-custom-card-sun` | weather | default | `custom_card_sun` |
 | `custom_card_input_datetime` | custom-card | `custom:mushroom-addition-custom-card-input-datetime` | sensor | default | `custom_card_input_datetime` |
-| `custom_card_entity_overview` | custom-card | `custom:mushroom-addition-custom-card-entity-overview` | sensor | default | `custom_card_entity_overview` |
-| `custom_card_internet_speed` | custom-card | `custom:mushroom-addition-custom-card-internet-speed` | sensor | default | `custom_card_internet_speed` |
 | `custom_card_weather_metrics` | custom-card | `custom:mushroom-addition-custom-card-weather-metrics` | weather | default | `custom_card_weather_metrics` |
 | `custom_card_media_player_sonos` | custom-card | `custom:mushroom-addition-custom-card-media-player-sonos` | media | default | `custom_card_media_player_sonos` |
-| `custom_card_more_power_outlet` | custom-card | `custom:mushroom-addition-custom-card-more-power-outlet` | control | default | `custom_card_more_power_outlet` |
 | `custom_card_gauge` | custom-card | `custom:mushroom-addition-custom-card-gauge` | energy | default | `custom_card_gauge` |
 | `custom_card_printer` | custom-card | `custom:mushroom-addition-custom-card-printer` | sensor | default | `custom_card_printer` |
 | `custom_card_nas_metrics` | custom-card | `custom:mushroom-addition-custom-card-nas-metrics` | sensor | default | `custom_card_nas_metrics` |

@@ -1339,69 +1339,6 @@ const renderInputDateTime = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const renderEntityOverview = (ctx: RenderContext): TemplateResult => {
-  const details = [1, 2, 3, 4]
-    .map((index) => entityFromConfig(ctx, `ulm_custom_card_entity_overview_entity_${index}`) ??
-      (ctx.config.entities?.[index - 1] ? ctx.hass.states[ctx.config.entities[index - 1]] : undefined));
-  return ctx.actionSurface("custom-entity-overview", html`
-    <div class="metrics-panel">
-      <span class="metrics-main-name"><ha-icon .icon=${configured<string>(ctx, "ulm_custom_card_entity_overview_icon") || "mdi:alien"}></ha-icon>${heading(ctx, stateLabel(ctx.entity))}</span>
-      <b>${stateLabel(ctx.entity)}</b>
-    </div>
-    <div class="metrics-four">${details.map((entity, index) => html`
-      <button ?disabled=${!entity} @pointerdown=${(event: Event) => event.stopPropagation()}
-        @click=${(event: Event) => entity && runControlAction(event, ctx, { action: "more-info" }, entity.entity_id)}>
-        <b>${stateLabel(entity)}</b>
-        <small>${configured<string>(ctx, `ulm_custom_card_entity_overview_name_${index + 1}`) ||
-          (entity ? displayName({ type: "", entity: entity.entity_id }, entity, ctx.hass) : `Entity ${index + 1}`)}</small>
-      </button>
-    `)}</div>
-  `);
-};
-
-const renderInternetSpeed = (ctx: RenderContext): TemplateResult => {
-  const download = linkedState(ctx, "download_entity") ??
-    entityFromConfig(ctx, "ulm_custom_card_internet_speed_download_speed_entity") ?? ctx.entity;
-  const upload = linkedState(ctx, "upload_entity") ??
-    entityFromConfig(ctx, "ulm_custom_card_internet_speed_upload_speed_entity");
-  const ping = linkedState(ctx, "ping_entity") ??
-    entityFromConfig(ctx, "ulm_custom_card_internet_speed_ping_entity");
-  const targets = [download, upload, ping].filter((entity): entity is HassEntity => Boolean(entity));
-  const accent = configuredColor(
-    configured<string>(ctx, "ulm_custom_card_internet_speed_color"),
-    "rgb(var(--rgb-blue, 33, 150, 243))",
-  );
-  return ctx.actionSurface("custom-internet-speed", html`
-    <div class="card-heading speedtest-router">
-      ${sourceIconBubble(ctx, "mdi:wifi", accent, true)}
-      ${heading(ctx, configured<string>(ctx, "ulm_custom_card_internet_speed_router_model") || "router_model")}
-    </div>
-    <button class="speedtest-action" ?disabled=${targets.length !== 3}
-      @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
-      event.stopPropagation();
-      ctx.service("homeassistant", "update_entity", { entity_id: targets.map((entity) => entity.entity_id) });
-    }}>
-      <ha-icon icon="mdi:speedometer"></ha-icon>
-      <span>${configured<string>(ctx, "ulm_custom_card_internet_speed_speedtest") || "Internet speed test"}</span>
-      <ha-icon icon="mdi:chevron-right"></ha-icon>
-    </button>
-    <div class="speedtest-metrics">
-      ${[
-        [configured<string>(ctx, "ulm_custom_card_internet_speed_download") || "Download speed", download],
-        [configured<string>(ctx, "ulm_custom_card_internet_speed_upload") || "Upload speed", upload],
-      ].map(([label, entity]) => html`
-        <button ?disabled=${!entity} @pointerdown=${(event: Event) => event.stopPropagation()}
-          @click=${(event: Event) => entity && runControlAction(event, ctx, { action: "more-info" }, (entity as HassEntity).entity_id)}>
-          <b><span>${(entity as HassEntity | undefined)?.state ?? "—"}</span>${attr(entity as HassEntity | undefined, "unit_of_measurement")
-            ? html`<em>${String(attr(entity as HassEntity | undefined, "unit_of_measurement"))}</em>`
-            : nothing}</b>
-          <small>${String(label)}</small>
-        </button>
-      `)}
-    </div>
-  `);
-};
-
 const renderWeatherMetrics = (ctx: RenderContext): TemplateResult => {
   const details = [1, 2, 3, 4]
     .map((index) => entityFromConfig(ctx, `ulm_custom_card_weather_metrics_entity_${index}`) ??
@@ -1545,31 +1482,6 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
         `)}
       </div>
     ` : nothing}
-  `);
-};
-
-const renderMorePowerOutlet = (ctx: RenderContext): TemplateResult => {
-  const power = linkedState(ctx, "power_entity");
-  const energy = linkedState(ctx, "energy_entity");
-  const elapsed = linkedState(ctx, "time_entity");
-  const duration = elapsed
-    ? (numeric(elapsed.state) ?? 0) < 1
-      ? `${(numeric(elapsed.state) ?? 0) * 100}Mins`
-      : `${elapsed.state}Hrs`
-    : undefined;
-  const on = ctx.entity?.state === "on";
-  const details = on
-    ? [
-      power ? `${power.state}W` : undefined,
-      energy ? `${energy.state}kWh` : undefined,
-      duration,
-    ].filter(Boolean).join(" • ") || stateLabel(ctx.entity)
-    : energy && (numeric(energy.state) ?? 0) > 0
-      ? `${stateLabel(ctx.entity)} • ${energy.state}kWh`
-      : stateLabel(ctx.entity);
-  return ctx.actionSurface("custom-more-power-outlet", html`
-    ${iconBubble(ctx, "mdi:power-socket-eu", on ? "yellow" : "grey")}
-    ${heading(ctx, details || stateLabel(ctx.entity))}
   `);
 };
 
@@ -1789,15 +1701,14 @@ const renderConsoleCard = (ctx: RenderContext): TemplateResult => {
   return ctx.actionSurface(`custom-console-card platform-${platform} state-${state} ${activeArtwork ? "has-artwork" : ""}`, html`
     ${activeArtwork ? html`<div class="console-backdrop" style=${`background-image:url("${String(artwork)}")`}></div>` : nothing}
     <div class="console-content">
-      <div class="console-header">
-        <span class="console-logo ${picture ? "has-picture" : ""}"
-          style=${picture ? `background-image:url("${String(picture)}")` : ""}>
-          ${picture ? nothing : html`<ha-icon .icon=${ctx.config.icon || presentation.icon}></ha-icon>`}
-        </span>
-        <span class="console-title">
-          <b>${consoleName}</b>
-          <small>${playing || stateLabel(ctx.entity)}</small>
-        </span>
+      <div class="card-heading console-header">
+        ${ctx.config.icon_type !== "none" ? html`
+          <span class="console-logo ${picture && ctx.config.icon_type !== "icon" ? "has-picture" : ""}"
+            style=${picture && ctx.config.icon_type !== "icon" ? `background-image:url("${String(picture)}")` : ""}>
+            ${picture && ctx.config.icon_type !== "icon" ? nothing : html`<ha-icon .icon=${ctx.config.icon || presentation.icon}></ha-icon>`}
+          </span>
+        ` : nothing}
+        ${heading(ctx, playing || stateLabel(ctx.entity), consoleName)}
         ${stats.length ? html`<span class="console-top-stats">
           ${stats.map(({ entity, icon }) => html`
             <span title=${String(attr(entity, "friendly_name") ?? "")}>
@@ -1827,7 +1738,7 @@ const renderConsoleCard = (ctx: RenderContext): TemplateResult => {
 };
 
 const renderEntityCarousel = (ctx: RenderContext): TemplateResult => {
-  const showPresentation = [
+  const showPresentation = ctx.config.carousel_show_header ?? [
     ctx.config.name,
     ctx.config.primary_info,
     ctx.config.secondary_info,
@@ -2503,25 +2414,9 @@ const renderGeneric = (ctx: RenderContext): TemplateResult => {
   `, `--source-color:${color}`);
 };
 
-const renderDefaultGraph = (ctx: RenderContext): TemplateResult => {
-  const graphColor = configuredColor(
-    configured<string>(ctx, "ulm_card_graph_color"),
-    "rgb(var(--rgb-red, 244, 67, 54))",
-  );
-  const iconColor = configuredColor(
-    configured<string>(ctx, "ulm_card_graph_icon_color"),
-    graphColor,
-  );
-  return ctx.actionSurface("ulm-default-graph", html`
-    <div class="metric-heading">${sourceIconBubble(ctx, icon(ctx, "mdi:chart-line"), iconColor, true)}${valueThenName(ctx)}</div>
-    ${sparkline(ctx, true, ctx.entity, graphColor)}
-  `);
-};
-
 export const renderByFamily = (ctx: RenderContext): TemplateResult => {
   switch (ctx.descriptor.upstreamId) {
     case "card_battery": return renderDefaultBattery(ctx);
-    case "card_graph": return renderDefaultGraph(ctx);
     case "card_media_player": return renderMedia(ctx);
     case "custom_card_trash": return renderTrash(ctx);
     case "custom_card_alarm_time": return renderAlarmTimeCard(ctx);
@@ -2531,11 +2426,8 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "custom_card_washer": return renderWasher(ctx);
     case "custom_card_sun": return renderSunCard(ctx);
     case "custom_card_input_datetime": return renderInputDateTime(ctx);
-    case "custom_card_entity_overview": return renderEntityOverview(ctx);
-    case "custom_card_internet_speed": return renderInternetSpeed(ctx);
     case "custom_card_weather_metrics": return renderWeatherMetrics(ctx);
     case "custom_card_media_player_sonos": return renderSonos(ctx);
-    case "custom_card_more_power_outlet": return renderMorePowerOutlet(ctx);
     case "custom_card_gauge": return renderDualGauge(ctx);
     case "custom_card_printer": return renderPrinter(ctx);
     case "custom_card_nas_metrics": return renderNasMetrics(ctx);

@@ -84,18 +84,6 @@ interface Spec {
 
 const specs: Spec[] = [
   {
-    id: "card_graph",
-    tag: "mushroom-addition-card-graph",
-    reference: "card_graph.png",
-    crop: [590, 55, 1000, 485],
-    config: {
-      type: "custom:mushroom-addition-card-graph",
-      entity: "sensor.temperature",
-      ulm_card_graph_color: "red",
-      ulm_card_graph_type: "fill",
-    },
-  },
-  {
     id: "card_media_player",
     tag: "mushroom-addition-card-media-player",
     reference: "card_media_player_art_controls.png",

@@ -226,25 +226,25 @@ const entityFor = (item: (typeof CATALOG)[number]): string => {
 
 describe("family renderers", () => {
   it("rerenders when Home Assistant updates an existing card config", async () => {
-    const element = document.createElement("mushroom-addition-card-graph") as HTMLElement & {
+    const element = document.createElement("mushroom-addition-custom-card-gauge") as HTMLElement & {
       hass: HomeAssistant;
       setConfig(config: AdditionConfig): void;
       updateComplete: Promise<boolean>;
       shadowRoot: ShadowRoot;
     };
     element.hass = hass;
-    element.setConfig({ type: "custom:mushroom-addition-card-graph", entity: "sensor.power", name: "First" });
+    element.setConfig({ type: "custom:mushroom-addition-custom-card-gauge", entity: "sensor.power", name: "First" });
     document.body.append(element);
     await element.updateComplete;
-    element.setConfig({ type: "custom:mushroom-addition-card-graph", entity: "sensor.power", name: "Updated" });
+    element.setConfig({ type: "custom:mushroom-addition-custom-card-gauge", entity: "sensor.power", name: "Updated" });
     await element.updateComplete;
     expect(element.shadowRoot.textContent).toContain("Updated");
     element.remove();
   });
 
   it("applies Mushroom-style layout, fill, icon, and information choices", async () => {
-    const markup = await render("mushroom-addition-card-graph", {
-      type: "custom:mushroom-addition-card-graph",
+    const markup = await render("mushroom-addition-custom-card-gauge", {
+      type: "custom:mushroom-addition-custom-card-gauge",
       entity: "sensor.power",
       layout: "vertical",
       multiline_secondary: true,
@@ -343,7 +343,6 @@ describe("family renderers", () => {
     "custom_card_nas_metrics",
     "custom_card_speedtest_gauges",
     "custom_card_weather_metrics",
-    "custom_card_internet_speed",
     "advanced_home_energy_management",
     "advanced_energy_buy_sell",
     "advanced_energy_panel_health",
@@ -531,7 +530,6 @@ describe("family renderers", () => {
 
   it.each([
     ["card_battery", "mushroom-addition-card-battery", "sensor.battery", "ulm-default-battery", "battery-track"],
-    ["card_graph", "mushroom-addition-card-graph", "sensor.power", "ulm-default-graph", "ulm-light-slider"],
     ["card_media_player", "mushroom-addition-card-media-player", "media_player.tv", "ulm-media", "sparkline"],
     ["card_room", "mushroom-addition-card-room", "light.kitchen", "ulm-room", "sparkline"],
     ["card_scenes", "mushroom-addition-card-scenes", "scene.relax", "scene-pills", "sparkline"],
@@ -637,7 +635,6 @@ describe("family renderers", () => {
   it.each([
     ["scene", "mushroom-addition-card-scenes", "scene.relax", "scene-grid"],
     ["battery", "mushroom-addition-card-battery", "sensor.battery", "ulm-default-battery"],
-    ["energy", "mushroom-addition-card-graph", "sensor.power", "sparkline"],
     ["media", "mushroom-addition-card-media-player", "media_player.tv", "ulm-media"],
   ])("renders distinct %s markup", async (_family, tag, entity, marker) => {
     const item = CATALOG.find((entry) => entry.tag === tag)!;
@@ -840,11 +837,8 @@ describe("family renderers", () => {
   });
 
   it.each([
-    ["entity-overview", "sensor.power", "custom-entity-overview", "metrics-four"],
-    ["internet-speed", "sensor.power", "custom-internet-speed", "speedtest-metrics"],
     ["weather-metrics", "weather.home", "custom-weather-metrics", "weather-metrics-panel"],
     ["media-player-sonos", "media_player.tv", "custom-sonos", "sonos-controls"],
-    ["more-power-outlet", "sensor.power", "custom-more-power-outlet", "ulm-copy"],
     ["gauge", "sensor.power", "custom-dual-gauge", "dual-gauge"],
     ["printer", "sensor.power", "custom-printer", "toner-bars"],
     ["nas-metrics", "sensor.power", "custom-nas-metrics", "nas-metrics-metrics"],
@@ -900,7 +894,6 @@ describe("family renderers", () => {
     const signatures = {
       scene: familySignature(await render("mushroom-addition-card-scenes", { type: "custom:mushroom-addition-card-scenes", entity: "scene.relax", entities: ["scene.relax"] })),
       battery: familySignature(await render("mushroom-addition-card-battery", { type: "custom:mushroom-addition-card-battery", entity: "sensor.battery" })),
-      energy: familySignature(await render("mushroom-addition-card-graph", { type: "custom:mushroom-addition-card-graph", entity: "sensor.power" })),
       media: familySignature(await render("mushroom-addition-card-media-player", { type: "custom:mushroom-addition-card-media-player", entity: "media_player.tv" })),
     };
     expect(signatures).toMatchInlineSnapshot(`
@@ -908,13 +901,6 @@ describe("family renderers", () => {
         "battery": [
           "ulm-row",
           "ulm-default-battery",
-          "ulm-icon",
-          "ulm-copy",
-          "ulm-name",
-          "ulm-label",
-        ],
-        "energy": [
-          "ulm-default-graph",
           "ulm-icon",
           "ulm-copy",
           "ulm-name",
@@ -954,7 +940,37 @@ describe("family renderers", () => {
     expect(markup).toContain("11145");
     expect(markup).toContain("Silver");
     expect((markup.match(/class="console-social-item"/g) ?? [])).toHaveLength(3);
+    expect((markup.match(/shared-presentation/g) ?? [])).toHaveLength(1);
+    expect(markup).not.toContain("automatic-presentation");
     expect(sharedStyles.cssText).toMatch(/\.console-social ha-icon[\s\S]*?width:\s*40px;[\s\S]*?height:\s*40px;/);
+  });
+
+  it("hides the entire carousel header without removing its configured information or items", async () => {
+    const element = document.createElement("mushroom-addition-custom-card-entity-carousel") as HTMLElement & {
+      hass: HomeAssistant;
+      setConfig(config: AdditionConfig): void;
+      updateComplete: Promise<boolean>;
+    };
+    const config: AdditionConfig = {
+      type: "custom:mushroom-addition-custom-card-entity-carousel",
+      name: "Carousel title",
+      primary_info: "name",
+      secondary_info: "state",
+      icon: "mdi:view-carousel",
+      carousel_show_header: false,
+      carousel_items: [{ entity: "light.kitchen", name: "Lights" }],
+    };
+    element.hass = hass;
+    element.setConfig(config);
+    document.body.append(element);
+    await element.updateComplete;
+    expect(element.shadowRoot?.querySelector(".entity-carousel-presentation")).toBeNull();
+    expect(element.shadowRoot?.querySelector(".shared-presentation")).toBeNull();
+    expect(element.shadowRoot?.querySelector("mushroom-addition-entity-carousel")).not.toBeNull();
+    element.setConfig({ ...config, carousel_show_header: true });
+    await element.updateComplete;
+    expect(element.shadowRoot?.querySelector(".shared-presentation")?.textContent).toContain("Carousel title");
+    element.remove();
   });
 
   it("uses the selected console platform and toggles a discovered power entity", async () => {
@@ -1188,6 +1204,7 @@ describe("family renderers", () => {
       "entity",
       "layout",
       "carousel_loop",
+      "carousel_show_header",
       "carousel_show_labels",
       "carousel_initial_index",
       "carousel_effect",

@@ -16,7 +16,8 @@ export const sharedStyles = css`
   .mushroom-addition-card {
     display: block;
     overflow: hidden;
-    border: 0;
+    box-sizing: border-box;
+    border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, #e0e0e0));
     border-radius: var(--mush-card-primary-border-radius, 14px);
     background: var(--ha-card-background, var(--card-background-color, #fff));
     box-shadow: var(--ha-card-box-shadow, 0 2px 8px rgba(0,0,0,.08));
@@ -225,8 +226,6 @@ export const sharedStyles = css`
   .sparkline polyline { fill: none; stroke: var(--sparkline-color, rgb(var(--ulm-blue))); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
   .sparkline.is-filled polyline { stroke: var(--sparkline-color, rgb(var(--ulm-red))); }
   .sparkline.is-filled polygon { fill: color-mix(in srgb, var(--sparkline-fill-color, rgb(var(--ulm-red))) 18%, transparent); }
-  .ulm-default-graph { padding: 0 12px 8px; }
-  .ulm-default-graph .metric-heading { padding-right: 0; padding-left: 0; }
   .metric-extremes { display: flex; justify-content: space-between; color: var(--secondary-text-color); font-size: 11px; }
   .ulm-scenes { padding: 12px; }
   .scene-grid { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -547,7 +546,7 @@ export const sharedStyles = css`
   .input-datetime-controls .ulm-control { width: 100%; height: 42px; border-radius: 14px; }
   .input-datetime-controls .hold-control { font-size: 16px; font-weight: 700; }
   .custom-sonos, .custom-printer,
-  .custom-entity-overview, .custom-weather-metrics, .custom-internet-speed,
+  .custom-weather-metrics,
   .custom-nas-metrics, .custom-tablet { display: grid; gap: 10px; padding: 12px; }
   .custom-sonos { position: relative; overflow: hidden; }
   .custom-sonos > :not(.media-art) { position: relative; z-index: 1; }
@@ -609,16 +608,12 @@ export const sharedStyles = css`
     min-width: 0; max-width: 100%; overflow: hidden; font-size: 11px; font-weight: 700;
     text-overflow: ellipsis; white-space: nowrap;
   }
-  .speedtest-action:disabled, .metrics-four button:disabled { cursor: not-allowed; opacity: .45; }
+  .metrics-four button:disabled { cursor: not-allowed; opacity: .45; }
   .nas-metrics-header {
     display: flex; min-width: 0; align-items: center; gap: 10px;
   }
-  .custom-entity-overview, .custom-weather-metrics { min-height: 160px; border-radius: 30px; }
-  .metrics-panel, .weather-metrics-panel { display: grid; min-height: 66px; align-items: center; border: 2px solid rgba(var(--ulm-grey), .65); border-radius: 20px; }
-  .metrics-panel { grid-template-columns: 1fr; padding: 0 12px; }
-  .metrics-panel > b { margin-left: 23px; color: var(--secondary-text-color); font-size: 14px; }
-  .metrics-main-name { display: flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 700; }
-  .metrics-main-name ha-icon { --mdc-icon-size: 18px; }
+  .custom-weather-metrics { min-height: 160px; border-radius: 30px; }
+  .weather-metrics-panel { display: grid; min-height: 66px; align-items: center; border: 2px solid rgba(var(--ulm-grey), .65); border-radius: 20px; }
   .weather-metrics-panel { grid-template-columns: 1fr auto; padding-left: 12px; }
   .weather-metrics-panel .weather-date { font-size: 14px; }
   .weather-metrics-panel strong { margin-right: 12px; color: var(--primary-text-color); font-size: 20px; }
@@ -626,16 +621,6 @@ export const sharedStyles = css`
   .metrics-four > button { display: grid; min-width: 0; min-height: 54px; place-items: center; padding: 6px 3px; border: 0; background: transparent; color: var(--primary-text-color); text-align: center; }
   .metrics-four b, .metrics-four small { overflow: hidden; max-width: 100%; text-overflow: ellipsis; white-space: nowrap; }
   .metrics-four b { font-size: 14px; } .metrics-four small { color: var(--secondary-text-color); font-size: 12px; font-weight: 700; }
-  .speedtest-action { display: grid; min-height: 40px; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; padding: 0 12px; border: 2px solid rgba(var(--ulm-grey), .65); border-radius: 10px; background: transparent; color: var(--primary-text-color); font-size: 16px; font-weight: 700; text-align: left; }
-  .speedtest-action ha-icon { --mdc-icon-size: 20px; }
-  .speedtest-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-  .speedtest-metrics > button { display: grid; gap: 2px; min-height: 80px; place-items: center; padding: 8px; border: 0; border-radius: 14px; background: rgba(var(--ulm-grey), .07); color: var(--primary-text-color); }
-  .speedtest-metrics small { color: var(--secondary-text-color); font-size: 10px; }
-  .speedtest-metrics b { display: flex; max-width: 100%; align-items: baseline; justify-content: center; gap: 3px; overflow: hidden; font-size: 23px; text-overflow: ellipsis; white-space: nowrap; }
-  .speedtest-metrics b em { color: var(--secondary-text-color); font-size: 10px; font-style: normal; font-weight: 700; }
-  .custom-more-power-outlet {
-    display: grid; min-height: 62px; grid-template-columns: 46px minmax(0, 1fr); align-items: center; gap: 10px; padding: 10px 14px;
-  }
   .custom-dual-gauge { display: grid; min-height: 210px; gap: 10px; padding: 12px; }
   .dual-gauge { position: relative; align-self: end; justify-self: center; width: min(86%, 240px); height: 108px; overflow: hidden; }
   .dual-gauge > i { position: absolute; top: 0; left: 50%; width: 210px; height: 210px; transform: translateX(-50%); border-radius: 50%; background: conic-gradient(from 270deg, rgb(var(--ulm-blue)) var(--gauge), rgba(var(--ulm-grey), .1) 0 180deg, transparent 180deg); }
@@ -740,25 +725,20 @@ export const sharedStyles = css`
   }
   .has-artwork .console-content { background: linear-gradient(90deg, rgba(0,0,0,.84), rgba(0,0,0,.24)); }
   .console-header {
-    display: grid; min-width: 0; grid-template-columns: 52px minmax(0, 1fr) auto; align-items: center; gap: 10px;
+    min-width: 0;
   }
   .console-logo {
-    display: grid; width: 52px; height: 52px; place-items: center; border-radius: 50%;
+    display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%;
+    flex: 0 0 auto;
     background: rgba(var(--console-tone), .18); color: rgb(var(--console-tone));
   }
   .console-logo.has-picture { background-position: center; background-size: cover; }
-  .console-logo ha-icon { --mdc-icon-size: 32px; }
+  .console-logo ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
   .state-unavailable .console-logo, .state-unknown .console-logo {
     color: rgba(var(--ulm-grey), .5); background: rgba(var(--ulm-grey), .1);
   }
-  .console-title { display: grid; min-width: 0; gap: 3px; }
-  .console-title b, .console-title small {
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
-  .console-title b { font-size: 14px; }
-  .console-title small { color: var(--secondary-text-color); font-size: 12px; }
-  .has-artwork .console-title small { color: rgba(255,255,255,.75); }
-  .console-top-stats { display: grid; justify-items: end; gap: 4px; }
+  .has-artwork .console-header .ulm-label { color: rgba(255,255,255,.75); }
+  .console-top-stats { display: grid; justify-items: end; gap: 4px; margin-left: auto; }
   .console-top-stats > span {
     display: inline-flex; min-height: 24px; align-items: center; gap: 5px; padding: 0 8px;
     border-radius: 12px; background: rgba(var(--console-tone), .14); color: var(--primary-text-color);

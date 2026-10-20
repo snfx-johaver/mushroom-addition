@@ -38,7 +38,7 @@ export const defaultIconFor = (item: CatalogItem, entity?: HassEntity): string =
   if (item.upstreamId === "custom_card_room_overview") return "mdi:sofa";
   if (item.upstreamId === "custom_card_roomview") return "mdi:home-variant-outline";
   if (item.upstreamId === "custom_card_entity_carousel") return "mdi:view-carousel";
-  if (["custom_card_speedtest_gauges", "custom_card_internet_speed"].includes(item.upstreamId)) return "mdi:speedometer";
+  if (item.upstreamId === "custom_card_speedtest_gauges") return "mdi:speedometer";
   if (item.upstreamId === "advanced_home_energy_management") return "mdi:home-lightning-bolt-outline";
   if (item.upstreamId === "advanced_energy_buy_sell") return "mdi:chart-timeline-variant";
   if (item.upstreamId === "advanced_energy_panel_health") return "mdi:solar-power-variant";
@@ -257,6 +257,7 @@ export const populatedDefaultsFor = (
             : item.upstreamId === "custom_card_entity_carousel"
                   ? {
                     carousel_loop: true,
+                    carousel_show_header: true,
                     carousel_show_labels: true,
                     carousel_visible_items: 7,
                     carousel_initial_index: 0,

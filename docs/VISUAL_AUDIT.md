@@ -2,7 +2,7 @@
 
 This is the source-by-source acceptance ledger for the card catalog.
 
-**Progress: 0/30 fully E2E accepted. Stage totals — picker 0, editor 0, visual 0, states 0, interactions 0, live 0.**
+**Progress: 0/26 fully E2E accepted. Stage totals — picker 0, editor 0, visual 0, states 0, interactions 0, live 0.**
 
 An entry is fully accepted only when all six independent stages pass: picker,
 graphical editor, visual parity, state behavior, interactions, and live Home
@@ -17,7 +17,6 @@ metadata, and structural tests do not constitute acceptance.
 | Source | Category | Public card | Variant | Composition | Reference | Comparison | Picker | Editor | Visual | States | Interactions | Live | Reviewer notes | Exact deviations |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `card_battery` | default-card | `card_battery` | — | `card_battery` | Source: `reference_catalog/cards/card_battery.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
-| `card_graph` | default-card | `card_graph` | — | `card_graph` | Source: `reference_catalog/cards/card_graph.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `card_media_player` | default-card | `card_media_player` | — | `card_media_player` | Source: `reference_catalog/cards/card_media_player.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `card_room` | default-card | `card_room` | — | `card_room` | Source: `reference_catalog/cards/card_room.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `card_scenes` | default-card | `card_scenes` | welcome-pills | `card_scenes:welcome-pills` | Source: `reference_catalog/cards/card_scenes_welcome.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
@@ -31,11 +30,8 @@ metadata, and structural tests do not constitute acceptance.
 | `custom_card_washer` | custom-card | `custom_card_washer` | — | `custom_card_washer` | Source: `custom_cards/custom_card_washer` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_sun` | custom-card | `custom_card_sun` | — | `custom_card_sun` | Source: `custom_cards/custom_card_sun` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_input_datetime` | custom-card | `custom_card_input_datetime` | — | `custom_card_input_datetime` | Source: `custom_cards/custom_card_input_datetime` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
-| `custom_card_entity_overview` | custom-card | `custom_card_entity_overview` | — | `custom_card_entity_overview` | Source: `custom_cards/custom_card_entity_overview` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
-| `custom_card_internet_speed` | custom-card | `custom_card_internet_speed` | — | `custom_card_internet_speed` | Source: `custom_cards/custom_card_internet_speed` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_weather_metrics` | custom-card | `custom_card_weather_metrics` | — | `custom_card_weather_metrics` | Source: `custom_cards/custom_card_weather_metrics` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_media_player_sonos` | custom-card | `custom_card_media_player_sonos` | — | `custom_card_media_player_sonos` | Source: `custom_cards/custom_card_media_player_sonos` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
-| `custom_card_more_power_outlet` | custom-card | `custom_card_more_power_outlet` | — | `custom_card_more_power_outlet` | Source: `custom_cards/custom_card_more_power_outlet` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_gauge` | custom-card | `custom_card_gauge` | — | `custom_card_gauge` | Source: `custom_cards/custom_card_gauge` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_printer` | custom-card | `custom_card_printer` | — | `custom_card_printer` | Source: `custom_cards/custom_card_printer` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_nas_metrics` | custom-card | `custom_card_nas_metrics` | — | `custom_card_nas_metrics` | Source: `custom_cards/custom_card_nas_metrics` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
