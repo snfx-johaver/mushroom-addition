@@ -131,20 +131,7 @@ export const populatedDefaultsFor = (
               ? {
                 pollen_language: "en",
               }
-              : item.upstreamId === "custom_card_better_thermostat"
-        ? {
-          variant: "normal",
-          show_controls: true,
-          show_temperature_control: true,
-          show_humidity: true,
-          show_hvac_modes: true,
-          show_presets: true,
-          show_status: true,
-          collapsible_controls: false,
-          thermostat_temp_step: 0.5,
-          low_battery_threshold: 20,
-        }
-      : item.upstreamId === "custom_card_media_player_sonos"
+              : item.upstreamId === "custom_card_media_player_sonos"
         ? {
           ulm_card_media_player_enable_art: false,
           sonos_details_always_visible: false,
@@ -166,13 +153,7 @@ export const populatedDefaultsFor = (
               nav_4: "climate", icon_4: "mdi:radiator", name_4: "Climate", color_4: "purple",
               nav_5: "network", icon_5: "mdi:flask", name_5: "Lab", color_5: "red",
             }
-            : item.upstreamId === "custom_card_vehicle_status"
-                ? {
-                  ulm_custom_card_vehicle_status_default_name: "O meu carro",
-                  ulm_custom_card_vehicle_status_energy_level: "Nível de energia",
-                  ulm_custom_card_vehicle_status_range: "Alcance",
-                }
-                : item.upstreamId === "custom_card_plant"
+            : item.upstreamId === "custom_card_plant"
                   ? {
                     ulm_card_flower_name: "No name set",
                     ulm_custom_card_plant_correct: "Correto",

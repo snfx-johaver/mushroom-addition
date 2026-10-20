@@ -261,18 +261,6 @@ const fixtures: Fixture[] = [
     temperature: "sensor.room_temperature",
     humidity: "sensor.room_humidity",
   } },
-  { id: "better-thermostat", key: "better-thermostat-normal", title: "custom_card_better_thermostat — normal", entity: "climate.living", width: 390, config: {
-    variant: "normal",
-    humidity_entity: "sensor.humidity",
-    window_sensor: "binary_sensor.window",
-    battery_entity: "sensor.battery",
-  } },
-  { id: "better-thermostat", key: "better-thermostat-compact", title: "custom_card_better_thermostat — compact", entity: "climate.living", width: 320, config: {
-    variant: "compact",
-    humidity_entity: "sensor.humidity",
-    window_sensor: "binary_sensor.window",
-    battery_entity: "sensor.battery",
-  } },
   { id: "elapsed-time", entity: "input_datetime.cat_litter", reference: "custom_card_elapsed_time.png", width: 320, config: { icon: "mdi:toilet" } },
   { id: "room-overview", entity: "light.room", reference: "custom_card_room_overview_light.png", width: 320, config: {
     name: "Living room",
@@ -382,7 +370,6 @@ const fixtures: Fixture[] = [
   { id: "playstation", entity: "media_player.console", config: { console_platform: "xbox" } },
   { id: "qubino", entity: "switch.heater", config: { entities: ["sensor.power"] } },
   { id: "scenes", entity: "scene.relax", reference: "card_scenes.png", config: { entities: ["scene.relax", "light.lamp", "switch.outlet", "fan.bedroom"] } },
-  { id: "vehicle-status", entity: "sensor.range", reference: "car.png", config: { entities: ["sensor.fuel", "sensor.range", "lock.front_door"] } },
   { id: "plant", entity: "sensor.moisture", reference: "flower.png", config: { entities: ["sensor.moisture", "sensor.signal", "sensor.room_temperature", "sensor.power"] } },
   { id: "window", entity: "binary_sensor.window", reference: "window_card.png", config: { entities: ["sensor.battery"] } },
   { id: "speedtest-gauges", entity: "sensor.download", config: { entities: ["sensor.upload", "sensor.ping"] } },

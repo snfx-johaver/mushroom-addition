@@ -495,27 +495,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         color("ulm_card_alarm_time_color"),
         ...presentation(),
       ]
-    : item.upstreamId === "custom_card_better_thermostat"
-      ? [
-        entity(["climate"]),
-        select("variant", [
-          { value: "normal", label: "Normal" },
-          { value: "compact", label: "Compact" },
-        ]),
-        ...presentation(),
-        entity(["binary_sensor"], "window_sensor"),
-        entity(["sensor"], "humidity_entity"),
-        entity(["sensor"], "battery_entity"),
-        toggle("show_controls"),
-        toggle("show_temperature_control"),
-        toggle("show_humidity"),
-        toggle("show_hvac_modes"),
-        toggle("show_presets"),
-        toggle("show_status"),
-        toggle("collapsible_controls"),
-        number("thermostat_temp_step", 0.1, 5),
-        percentage("low_battery_threshold"),
-      ]
     : item.upstreamId === "custom_card_media_player_sonos"
       ? [
         entity(["media_player"]),
@@ -618,15 +597,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
             label: value[0].toUpperCase() + value.slice(1),
           }))),
         ]),
-        ...presentation(),
-      ]
-    : item.upstreamId === "custom_card_vehicle_status"
-      ? [
-        entity(["device_tracker", "sensor"]),
-        entity(["device_tracker", "sensor"], "ulm_card_vehicle_status_tracker"),
-        entity(["lock", "binary_sensor"], "ulm_card_vehicle_status_lock"),
-        entity(["sensor"], "ulm_card_vehicle_status_energy_level"),
-        entity(["sensor"], "ulm_card_vehicle_status_range"),
         ...presentation(),
       ]
     : item.upstreamId === "custom_card_plant"
