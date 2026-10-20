@@ -907,7 +907,7 @@ describe("family renderers", () => {
     expect(markup).toContain("11145");
     expect(markup).toContain("Silver");
     expect((markup.match(/class="console-social-item"/g) ?? [])).toHaveLength(3);
-    expect(sharedStyles.cssText).toMatch(/\.console-social ha-icon[\s\S]*?width:\s*10px;[\s\S]*?height:\s*10px;/);
+    expect(sharedStyles.cssText).toMatch(/\.console-social ha-icon[\s\S]*?width:\s*40px;[\s\S]*?height:\s*40px;/);
   });
 
   it("uses the selected console platform and toggles a discovered power entity", async () => {

@@ -7205,7 +7205,7 @@ const Zo = Xe`
   .console-top-stats b { font-size: 11px; font-variant-numeric: tabular-nums; }
   .console-social { display: flex; min-width: 0; align-items: center; gap: 14px; }
   .console-social > span { display: inline-flex; min-width: 0; align-items: center; gap: 4px; }
-  .console-social ha-icon { width: 10px; height: 10px; --mdc-icon-size: 10px; color: rgb(var(--console-tone)); }
+  .console-social ha-icon { width: 40px; height: 40px; --mdc-icon-size: 40px; color: rgb(var(--console-tone)); }
   .console-social b { font-size: 10px; font-variant-numeric: tabular-nums; }
   .console-controls { display: flex; justify-content: flex-end; }
   .console-controls button {
