@@ -32,7 +32,7 @@ describe("catalog coverage", () => {
       UPSTREAM_CATALOG.filter((item) => item.category === category).length;
     expect(sourceCount("default-card")).toBe(6);
     expect(sourceCount("custom-card")).toBe(27);
-    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(26);
+    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(27);
   });
 
   it("keeps removed contributor names out of renamed public card metadata", () => {
@@ -72,7 +72,7 @@ describe("catalog coverage", () => {
 
   it("groups only explicit same-goal sources and preserves hidden migration aliases", () => {
     expect(LEGACY_ALIASES).toHaveLength(
-      COMPONENT_GROUPS.reduce((total, group) => total + Object.keys(group.sources).length - 1, 0),
+      COMPONENT_GROUPS.reduce((total, group) => total + Object.keys(group.sources).length - 1, 0) + 1,
     );
     for (const alias of LEGACY_ALIASES) {
       expect(PUBLIC_CATALOG.some((item) => item.tag === alias.tag)).toBe(false);

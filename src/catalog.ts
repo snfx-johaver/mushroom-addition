@@ -109,7 +109,9 @@ const makeItem = (
     .replace(/^custom_(card|chip)_/, "")
     .replace(/^(card|chip)_/, "");
   const slug = upstreamId.replaceAll("_", "-").toLowerCase();
-  const tag = slug.startsWith("custom-card-")
+  const tag = upstreamId === "custom_card_playstation"
+    ? "mushroom-addition-custom-card-game-console"
+    : slug.startsWith("custom-card-")
     ? `mushroom-addition-${slug}`
     : `mushroom-addition-card-${slug.replace(/^card-/, "")}`;
   const family = familyFor(upstreamId);
@@ -126,6 +128,7 @@ const makeItem = (
     custom_card_plant: "Flower",
     custom_card_pollen: "Pollen",
     custom_card_better_thermostat: "Better Thermostat",
+    custom_card_entity_carousel: "Entity Carousel",
   };
   const displayDescriptions: Partial<Record<string, string>> = {
     custom_card_trash: "Mushroom-style trash collection schedule card.",
@@ -138,6 +141,7 @@ const makeItem = (
     custom_card_plant: "Mushroom-style plant health card.",
     custom_card_pollen: "Mushroom-style pollen level card.",
     custom_card_better_thermostat: "Touch-friendly climate card with Better Thermostat status and controls.",
+    custom_card_entity_carousel: "Dependency-free swipeable entity and action carousel with cover-flow navigation.",
   };
   return {
     upstreamId,
@@ -149,12 +153,12 @@ const makeItem = (
     family,
     tag,
     name: consoleCard
-      ? "PS4 Card"
+      ? "Game Console Card"
       : upstreamId === "custom_card_nas_metrics"
         ? "NAS Card"
       : `${displayNames[upstreamId] ?? humanize(componentId)} Card`,
     description: consoleCard
-      ? "Source-faithful media artwork card for a PlayStation entity."
+      ? "Mushroom-style Xbox, PlayStation, and Nintendo profile, activity, artwork, and control card."
       : upstreamId === "custom_card_nas_metrics"
         ? "Mushroom-style NAS status and utilization card."
       : displayDescriptions[upstreamId] ?? `Mushroom-style ${humanize(componentId).toLowerCase()} card.`,
@@ -191,6 +195,10 @@ export const UPSTREAM_CATALOG: readonly CatalogItem[] = [
   )),
 ] as const;
 
+export const NATIVE_CATALOG: readonly CatalogItem[] = [
+  makeItem("custom_card_entity_carousel", "src/entity-carousel.ts"),
+] as const;
+
 interface ComponentGroup {
   canonical: string;
   sources: Record<string, string>;
@@ -216,30 +224,33 @@ for (const group of COMPONENT_GROUPS) {
 }
 
 const canonicalIds = new Set(COMPONENT_GROUPS.map((group) => group.canonical));
-export const PUBLIC_CATALOG: readonly CatalogItem[] = UPSTREAM_CATALOG
-  .filter((item) => !sourceToGroup.has(item.upstreamId) || canonicalIds.has(item.upstreamId))
-  .map((item) => {
-    const group = sourceToGroup.get(item.upstreamId);
-    if (!group) return { ...item, sourceIds: [item.upstreamId] };
-    return {
-      ...item,
-      name: group.name ?? item.name,
-      description: group.description ?? item.description,
-      variants: group.variants,
-      variantLabels: group.variantLabels,
-      sourceIds: Object.keys(group.sources),
-    };
-  });
+export const PUBLIC_CATALOG: readonly CatalogItem[] = [
+  ...UPSTREAM_CATALOG
+    .filter((item) => !sourceToGroup.has(item.upstreamId) || canonicalIds.has(item.upstreamId))
+    .map((item) => {
+      const group = sourceToGroup.get(item.upstreamId);
+      if (!group) return { ...item, sourceIds: [item.upstreamId] };
+      return {
+        ...item,
+        name: group.name ?? item.name,
+        description: group.description ?? item.description,
+        variants: group.variants,
+        variantLabels: group.variantLabels,
+        sourceIds: Object.keys(group.sources),
+      };
+    }),
+  ...NATIVE_CATALOG.map((item) => ({ ...item, sourceIds: [item.upstreamId] })),
+];
 
 export interface CatalogAlias {
   upstreamId: string;
   tag: string;
   targetId: string;
   targetTag: string;
-  variant: string;
+  variant?: string;
 }
 
-export const LEGACY_ALIASES: readonly CatalogAlias[] = UPSTREAM_CATALOG
+const generatedLegacyAliases: readonly CatalogAlias[] = UPSTREAM_CATALOG
   .filter((item) => sourceToGroup.has(item.upstreamId) && !canonicalIds.has(item.upstreamId))
   .map((item) => {
     const group = sourceToGroup.get(item.upstreamId)!;
@@ -252,6 +263,16 @@ export const LEGACY_ALIASES: readonly CatalogAlias[] = UPSTREAM_CATALOG
       variant: group.sources[item.upstreamId],
     };
   });
+
+export const LEGACY_ALIASES: readonly CatalogAlias[] = [
+  ...generatedLegacyAliases,
+  {
+    upstreamId: "custom_card_playstation",
+    tag: "mushroom-addition-custom-card-playstation",
+    targetId: "custom_card_playstation",
+    targetTag: "mushroom-addition-custom-card-game-console",
+  },
+];
 
 export const CATALOG: readonly CatalogItem[] = PUBLIC_CATALOG;
 

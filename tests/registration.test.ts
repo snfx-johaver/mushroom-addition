@@ -282,10 +282,20 @@ describe("Home Assistant registration", () => {
   it("populates picker examples with compatible Home Assistant entities", () => {
         const hass: HomeAssistant = {
           states: {
-            "media_player.xbox": {
-              entity_id: "media_player.xbox",
-              state: "playing",
-              attributes: { friendly_name: "Xbox" },
+            "binary_sensor.xbox_profile": {
+              entity_id: "binary_sensor.xbox_profile",
+              state: "on",
+              attributes: { friendly_name: "Xbox profile" },
+            },
+            "sensor.xbox_followers": {
+              entity_id: "sensor.xbox_followers",
+              state: "4",
+              attributes: { friendly_name: "Xbox Followers" },
+            },
+            "sensor.xbox_gamer_score": {
+              entity_id: "sensor.xbox_gamer_score",
+              state: "11145",
+              attributes: { friendly_name: "Xbox Gamerscore", unit_of_measurement: "points" },
             },
             "sensor.temperature": {
               entity_id: "sensor.temperature",
@@ -293,15 +303,24 @@ describe("Home Assistant registration", () => {
               attributes: { friendly_name: "Temperature", unit_of_measurement: "°C" },
             },
           },
+          entities: {
+            "binary_sensor.xbox_profile": { device_id: "xbox-profile", platform: "xbox" },
+            "sensor.xbox_followers": { device_id: "xbox-profile", platform: "xbox" },
+            "sensor.xbox_gamer_score": { device_id: "xbox-profile", platform: "xbox" },
+          },
           callService: async () => undefined,
         };
-        const consoleConstructor = customElements.get("mushroom-addition-custom-card-playstation") as typeof HTMLElement & {
+        const consoleConstructor = customElements.get("mushroom-addition-custom-card-game-console") as typeof HTMLElement & {
           getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
         };
         expect(consoleConstructor.getStubConfig(hass, Object.keys(hass.states), [])).toMatchObject({
-          entity: "media_player.xbox",
-          icon: "mdi:sony-playstation",
-          show_controls: false,
+          entity: "binary_sensor.xbox_profile",
+          icon: "mdi:controller-classic",
+          console_platform: "xbox",
+          console_show_artwork: true,
+          console_show_controls: true,
+          followers_entity: "sensor.xbox_followers",
+          primary_stat_entity: "sensor.xbox_gamer_score",
         });
   });
 
@@ -417,6 +436,42 @@ describe("Home Assistant registration", () => {
     });
   });
 
+  it("populates Flower bars with independently compatible sensor entities", () => {
+    const states: HomeAssistant["states"] = {
+      "sensor.garden_soil_moisture": {
+        entity_id: "sensor.garden_soil_moisture",
+        state: "48",
+        attributes: {
+          friendly_name: "Garden soil moisture",
+          device_class: "moisture",
+          unit_of_measurement: "%",
+        },
+      },
+      "sensor.garden_soil_temperature": {
+        entity_id: "sensor.garden_soil_temperature",
+        state: "18",
+        attributes: {
+          friendly_name: "Garden soil temperature",
+          device_class: "temperature",
+          unit_of_measurement: "°C",
+        },
+      },
+    };
+    const descriptor = CATALOG.find((item) => item.upstreamId === "custom_card_plant")!;
+    const config = createStubConfig(
+      descriptor,
+      { states, callService: async () => undefined },
+      Object.keys(states),
+      [],
+    );
+    expect(config).toMatchObject({
+      entity: "sensor.garden_soil_moisture",
+      ulm_card_flower_show_bars: ["moisture", "temperature"],
+      moisture_entity: "sensor.garden_soil_moisture",
+      temperature_entity: "sensor.garden_soil_temperature",
+    });
+  });
+
   it("never selects an unavailable entity when a healthy compatible picker example exists", () => {
     const domains = [...new Set(CATALOG.flatMap((item) => item.preferredDomains ?? []))];
     const states: HomeAssistant["states"] = {};
@@ -445,12 +500,17 @@ describe("Home Assistant registration", () => {
     }
   });
 
-  it("exposes the pinned PS4 source without invented console variants", () => {
+  it("exposes one platform-neutral Game Console card with the PlayStation tag as a legacy alias", () => {
         const consoleCard = CATALOG.find((item) => item.upstreamId === "custom_card_playstation");
         expect(consoleCard).toMatchObject({
-          name: "PS4 Card",
+          name: "Game Console Card",
+          tag: "mushroom-addition-custom-card-game-console",
           variants: undefined,
         });
+        expect(LEGACY_ALIASES).toContainEqual(expect.objectContaining({
+          tag: "mushroom-addition-custom-card-playstation",
+          targetTag: "mushroom-addition-custom-card-game-console",
+        }));
   });
 
   it("renders a representative from every component family", async () => {

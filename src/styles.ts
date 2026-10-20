@@ -781,12 +781,56 @@ export const sharedStyles = css`
   .car-metrics small { overflow: hidden; color: var(--secondary-text-color); font-size: 9px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
   .custom-console-card { position: relative; min-height: 72px; overflow: hidden; }
   .custom-console-card.has-artwork { background: #17191d; color: #fff; }
-  .console-backdrop { position: absolute; inset: 0; background-position: center; background-size: cover; opacity: .35; }
-  .console-content { position: relative; z-index: 1; display: grid; min-height: 48px; grid-template-columns: 52px minmax(0, 1fr); align-items: center; gap: 10px; padding: 12px; }
-  .has-artwork .console-content { background: linear-gradient(90deg, rgba(0,0,0,.8), rgba(0,0,0,.18)); }
-  .console-logo { display: grid; width: 52px; height: 52px; place-items: center; border-radius: 50%; background: rgba(255,255,255,.1); }
-  .console-logo ha-icon { --mdc-icon-size: 32px; } .state-idle .console-logo { color: rgb(var(--ulm-blue)); background: rgba(var(--ulm-blue), .2); } .state-standby .console-logo { color: rgba(var(--ulm-grey), .35); background: rgba(var(--ulm-grey), .05); }
-  .has-artwork .console-content .ulm-label { color: rgba(255,255,255,.75); }
+  .platform-xbox { --console-tone: 16, 124, 16; }
+  .platform-playstation { --console-tone: 0, 112, 209; }
+  .platform-nintendo { --console-tone: 230, 0, 18; }
+  .platform-generic { --console-tone: var(--ulm-purple); }
+  .console-backdrop {
+    position: absolute; inset: 0; background-position: center; background-size: cover; opacity: .42;
+  }
+  .console-content {
+    position: relative; z-index: 1; display: grid; min-height: 72px; gap: 10px; padding: 12px;
+  }
+  .has-artwork .console-content { background: linear-gradient(90deg, rgba(0,0,0,.84), rgba(0,0,0,.24)); }
+  .console-header {
+    display: grid; min-width: 0; grid-template-columns: 52px minmax(0, 1fr) auto; align-items: center; gap: 10px;
+  }
+  .console-logo {
+    display: grid; width: 52px; height: 52px; place-items: center; border-radius: 50%;
+    background: rgba(var(--console-tone), .18); color: rgb(var(--console-tone));
+  }
+  .console-logo.has-picture { background-position: center; background-size: cover; }
+  .console-logo ha-icon { --mdc-icon-size: 32px; }
+  .state-unavailable .console-logo, .state-unknown .console-logo {
+    color: rgba(var(--ulm-grey), .5); background: rgba(var(--ulm-grey), .1);
+  }
+  .console-title { display: grid; min-width: 0; gap: 3px; }
+  .console-title b, .console-title small {
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .console-title b { font-size: 14px; }
+  .console-title small { color: var(--secondary-text-color); font-size: 12px; }
+  .has-artwork .console-title small { color: rgba(255,255,255,.75); }
+  .console-top-stats { display: grid; justify-items: end; gap: 4px; }
+  .console-top-stats > span {
+    display: inline-flex; min-height: 24px; align-items: center; gap: 5px; padding: 0 8px;
+    border-radius: 12px; background: rgba(var(--console-tone), .14); color: var(--primary-text-color);
+  }
+  .has-artwork .console-top-stats > span { background: rgba(0,0,0,.38); color: #fff; }
+  .console-top-stats ha-icon { --mdc-icon-size: 13px; color: rgb(var(--console-tone)); }
+  .console-top-stats b { font-size: 11px; font-variant-numeric: tabular-nums; }
+  .console-social { display: flex; min-width: 0; align-items: center; gap: 14px; }
+  .console-social > span { display: inline-flex; min-width: 0; align-items: center; gap: 4px; }
+  .console-social ha-icon { width: 10px; height: 10px; --mdc-icon-size: 10px; color: rgb(var(--console-tone)); }
+  .console-social b { font-size: 10px; font-variant-numeric: tabular-nums; }
+  .console-controls { display: flex; justify-content: flex-end; }
+  .console-controls button {
+    display: inline-flex; min-height: 32px; align-items: center; gap: 6px; padding: 0 10px;
+    border: 0; border-radius: 12px; background: rgba(var(--console-tone), .16);
+    color: rgb(var(--console-tone)); font: inherit; font-size: 11px; font-weight: 700; cursor: pointer;
+  }
+  .has-artwork .console-controls button { background: rgba(0,0,0,.38); color: #fff; }
+  .console-controls ha-icon { --mdc-icon-size: 16px; }
   .source-scene-grid .scene-grid { display: grid; grid-template-columns: repeat(5, 64px); justify-content: space-between; gap: 12px; }
   .car-hero, .flower-heading { width: 100%; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; }
   .car-icon-wrap { position: relative; display: inline-grid; }
@@ -797,10 +841,16 @@ export const sharedStyles = css`
   .car-badge.lock { right: -5px; bottom: -5px; background: rgb(var(--ulm-blue)); }
   .car-badge.lock.is-unlocked { background: rgb(var(--ulm-red)); }
   .flower-bars { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 12px; }
-  .flower-bars > span { display: grid; grid-template-columns: 18px minmax(0, 1fr); align-items: center; gap: 5px; }
+  .flower-bars > span {
+    display: grid; min-width: 0; grid-template-columns: 18px minmax(0, 1fr) auto; align-items: center; gap: 5px;
+  }
   .flower-bars ha-icon { --mdc-icon-size: 15px; }
   .flower-bars i { display: block; height: 7px; overflow: hidden; border-radius: 2px; background: rgba(var(--ulm-grey), .1); }
   .flower-bars em { display: block; height: 100%; background: rgb(var(--ulm-green)); }
+  .flower-bars output {
+    overflow: hidden; max-width: 54px; color: var(--secondary-text-color); font-size: 10px;
+    font-variant-numeric: tabular-nums; text-overflow: ellipsis; white-space: nowrap;
+  }
   .speedtest-three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
   .speedtest-three ha-icon { color: rgb(var(--ulm-blue)); } .speedtest-three b { font-size: 12px; } .speedtest-three small { overflow: hidden; max-width: 100%; color: var(--secondary-text-color); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
   .speedtest-chart { height: 58px; overflow: hidden; } .speedtest-chart .sparkline { height: 60px; }

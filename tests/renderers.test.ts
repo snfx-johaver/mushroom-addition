@@ -4,6 +4,7 @@ import { editorSchemaFor } from "../src/editor-schema";
 import "../src/index";
 import { stateLabel } from "../src/helpers";
 import { PARITY_ENTRIES } from "../src/parity.generated";
+import { sharedStyles } from "../src/styles";
 import type { AdditionConfig, HomeAssistant } from "../src/types";
 
 const hass: HomeAssistant = {
@@ -57,6 +58,24 @@ const hass: HomeAssistant = {
       entity_id: "sensor.power",
       state: "843",
       attributes: { friendly_name: "Home power", unit_of_measurement: "W" },
+    },
+    "sensor.soil_moisture": {
+      entity_id: "sensor.soil_moisture",
+      state: "42",
+      attributes: {
+        friendly_name: "Bonsai moisture",
+        unit_of_measurement: "%",
+        device_class: "moisture",
+      },
+    },
+    "sensor.soil_temperature": {
+      entity_id: "sensor.soil_temperature",
+      state: "22",
+      attributes: {
+        friendly_name: "Bonsai temperature",
+        unit_of_measurement: "°C",
+        device_class: "temperature",
+      },
     },
     "sensor.memory": {
       entity_id: "sensor.memory",
@@ -130,7 +149,29 @@ const hass: HomeAssistant = {
     "sensor.tablet_disk": { entity_id: "sensor.tablet_disk", state: "17829.9", attributes: { friendly_name: "Disk", unit_of_measurement: "MB" } },
     "binary_sensor.tablet_power": { entity_id: "binary_sensor.tablet_power", state: "off", attributes: { friendly_name: "Power" } },
     "sensor.tablet_battery": { entity_id: "sensor.tablet_battery", state: "91", attributes: { friendly_name: "Battery", unit_of_measurement: "%" } },
+    "binary_sensor.snfx4594": { entity_id: "binary_sensor.snfx4594", state: "on", attributes: { friendly_name: "SNFX4594" } },
+    "sensor.snfx4594_follower": { entity_id: "sensor.snfx4594_follower", state: "31", attributes: { friendly_name: "Followers" } },
+    "sensor.snfx4594_following": { entity_id: "sensor.snfx4594_following", state: "18", attributes: { friendly_name: "Following" } },
+    "sensor.snfx4594_friends": { entity_id: "sensor.snfx4594_friends", state: "42", attributes: { friendly_name: "Friends" } },
+    "sensor.snfx4594_gamer_score": { entity_id: "sensor.snfx4594_gamer_score", state: "11145", attributes: { friendly_name: "Gamerscore" } },
+    "sensor.snfx4594_ranking": { entity_id: "sensor.snfx4594_ranking", state: "Silver", attributes: { friendly_name: "Ranking" } },
+    "sensor.snfx4594_now_playing": { entity_id: "sensor.snfx4594_now_playing", state: "Forza Horizon 5", attributes: { friendly_name: "Now Playing" } },
+    "image.snfx4594_gamerpic": { entity_id: "image.snfx4594_gamerpic", state: "2026-10-20T00:00:00+00:00", attributes: { friendly_name: "Gamerpic", entity_picture: "/api/image/xbox-gamerpic" } },
+    "image.snfx4594_now_playing": { entity_id: "image.snfx4594_now_playing", state: "2026-10-20T00:00:00+00:00", attributes: { friendly_name: "Now Playing artwork", entity_picture: "/api/image/xbox-artwork" } },
+    "remote.snfx4594_console": { entity_id: "remote.snfx4594_console", state: "off", attributes: { friendly_name: "Xbox console" } },
   },
+  entities: Object.fromEntries([
+    "binary_sensor.snfx4594",
+    "sensor.snfx4594_follower",
+    "sensor.snfx4594_following",
+    "sensor.snfx4594_friends",
+    "sensor.snfx4594_gamer_score",
+    "sensor.snfx4594_ranking",
+    "sensor.snfx4594_now_playing",
+    "image.snfx4594_gamerpic",
+    "image.snfx4594_now_playing",
+    "remote.snfx4594_console",
+  ].map((entityId) => [entityId, { device_id: "xbox-account", platform: "xbox" }])),
   callService: async () => undefined,
   connection: {
     sendMessagePromise: async <T>() => undefined as T,
@@ -212,12 +253,29 @@ describe("family renderers", () => {
       primary_info: "state",
       secondary_info: "none",
     });
+
     expect(markup).toContain("layout-vertical");
     expect(markup).toContain("multiline-secondary");
     expect(markup).toContain("fill-container");
     expect(markup).not.toContain("ulm-icon");
     expect(markup).toContain("on");
     expect(markup).not.toContain("Kitchen");
+  });
+
+  it("renders every selected Flower bar from its independently configured entity", async () => {
+    const markup = await render("mushroom-addition-custom-card-plant", {
+      type: "custom:mushroom-addition-custom-card-plant",
+      entity: "sensor.soil_moisture",
+      ulm_card_flower_show_bars: ["moisture", "temperature"],
+      moisture_entity: "sensor.soil_moisture",
+      temperature_entity: "sensor.soil_temperature",
+    });
+    expect(markup).toContain('data-flower-bar="moisture"');
+    expect(markup).toContain('data-flower-bar="temperature"');
+    expect(markup).toContain("Moisture: 42 %");
+    expect(markup).toContain("Temperature: 22 °C");
+    expect(markup).toContain("width:42%");
+    expect(markup).toContain("width:53.333333333333336%");
   });
 
   it("honors Mushroom name and information fields in every card renderer", async () => {
@@ -744,7 +802,7 @@ describe("family renderers", () => {
     ["nas-metrics", "sensor.power", "custom-nas-metrics", "nas-metrics-metrics"],
     ["tablet", "sensor.battery", "custom-tablet", "tablet-header"],
     ["pollen-forecast", "sensor.power", "custom-pollen-forecast", "pollen-icon"],
-    ["playstation", "media_player.tv", "custom-console-card", "console-content"],
+    ["game-console", "binary_sensor.snfx4594", "custom-console-card", "console-content"],
     ["scenes", "scene.relax", "ulm-scenes", "scene-grid"],
     ["vehicle-status", "sensor.power", "custom-vehicle-status", "car-metrics"],
     ["plant", "sensor.power", "custom-plant", "flower-bars"],
@@ -832,5 +890,144 @@ describe("family renderers", () => {
         ],
       }
     `);
+  });
+
+  it("renders an automatically discovered Xbox profile with compact social counts and replaceable stats", async () => {
+    const markup = await render("mushroom-addition-custom-card-game-console", {
+      type: "custom:mushroom-addition-custom-card-game-console",
+      entity: "binary_sensor.snfx4594",
+      primary_stat_entity: "sensor.snfx4594_gamer_score",
+      secondary_stat_entity: "sensor.snfx4594_ranking",
+    });
+
+    expect(markup).toContain("console-card platform-xbox");
+    expect(markup).toContain("/api/image/xbox-gamerpic");
+    expect(markup).toContain("/api/image/xbox-artwork");
+    expect(markup).toContain("Forza Horizon 5");
+    expect(markup).toContain("11145");
+    expect(markup).toContain("Silver");
+    expect((markup.match(/class="console-social-item"/g) ?? [])).toHaveLength(3);
+    expect(sharedStyles.cssText).toMatch(/\.console-social ha-icon[\s\S]*?width:\s*10px;[\s\S]*?height:\s*10px;/);
+  });
+
+  it("uses the selected console platform and toggles a discovered power entity", async () => {
+    const callService = vi.fn(async () => undefined);
+    const element = document.createElement("mushroom-addition-custom-card-game-console") as HTMLElement & {
+      hass: HomeAssistant;
+      setConfig(config: AdditionConfig): void;
+      updateComplete: Promise<boolean>;
+    };
+    element.hass = { ...hass, callService };
+    element.setConfig({
+      type: "custom:mushroom-addition-custom-card-game-console",
+      entity: "binary_sensor.snfx4594",
+      console_platform: "nintendo",
+      console_show_controls: true,
+      gamerpic_entity: "image.missing",
+    });
+    document.body.append(element);
+    await element.updateComplete;
+
+    expect(element.shadowRoot?.innerHTML).toContain("platform-nintendo");
+    expect((element.shadowRoot?.querySelector(".console-logo ha-icon") as HTMLElement & { icon: string }).icon).toBe("mdi:nintendo-switch");
+    (element.shadowRoot?.querySelector(".console-controls button") as HTMLElement).click();
+    expect(callService).toHaveBeenCalledWith("remote", "turn_on", { entity_id: "remote.snfx4594_console" });
+    element.remove();
+  });
+
+  it("exposes the full Game Console configuration in the graphical editor", () => {
+    const item = CATALOG.find((candidate) => candidate.upstreamId === "custom_card_playstation")!;
+    const schema = editorSchemaFor(item, {
+      type: `custom:${item.tag}`,
+      entity: "binary_sensor.snfx4594",
+    });
+    const serialized = JSON.stringify(schema);
+    for (const field of [
+      "console_platform",
+      "console_show_artwork",
+      "console_show_controls",
+      "followers_entity",
+      "following_entity",
+      "friends_entity",
+      "primary_stat_entity",
+      "secondary_stat_entity",
+      "now_playing_entity",
+      "gamerpic_entity",
+      "artwork_entity",
+      "console_power_entity",
+    ]) {
+      expect(serialized).toContain(`"${field}"`);
+    }
+  });
+
+  it("renders and navigates the dependency-free entity carousel", async () => {
+    const element = document.createElement("mushroom-addition-custom-card-entity-carousel") as HTMLElement & {
+      hass: HomeAssistant;
+      setConfig(config: AdditionConfig): void;
+      updateComplete: Promise<boolean>;
+    };
+    const action = vi.fn();
+    element.addEventListener("hass-action", action);
+    element.hass = hass;
+    element.setConfig({
+      type: "custom:mushroom-addition-custom-card-entity-carousel",
+      carousel_loop: true,
+      carousel_show_labels: true,
+      carousel_visible_items: 5,
+      carousel_items: [
+        { entity: "light.kitchen", name: "Lights", icon: "mdi:lightbulb", tap_action: { action: "toggle" } },
+        { entity: "scene.relax", name: "Relax", icon: "mdi:palette", tap_action: { action: "more-info" } },
+        { entity: "media_player.tv", name: "TV", icon: "mdi:television", tap_action: { action: "more-info" } },
+      ],
+    });
+    document.body.append(element);
+    await element.updateComplete;
+    const carousel = element.shadowRoot?.querySelector("mushroom-addition-entity-carousel") as HTMLElement & {
+      updateComplete: Promise<boolean>;
+    };
+    await carousel.updateComplete;
+    const buttons = [...(carousel.shadowRoot?.querySelectorAll("button") ?? [])] as HTMLButtonElement[];
+    expect(buttons).toHaveLength(3);
+    expect(buttons[0].getAttribute("aria-selected")).toBe("true");
+    buttons[1].dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: 100, pointerId: 1 }));
+    buttons[1].dispatchEvent(new PointerEvent("pointerup", { bubbles: true, clientX: 100, pointerId: 1 }));
+    await carousel.updateComplete;
+    expect(buttons[1].getAttribute("aria-selected")).toBe("true");
+    buttons[1].dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: 100, pointerId: 2 }));
+    buttons[1].dispatchEvent(new PointerEvent("pointerup", { bubbles: true, clientX: 100, pointerId: 2 }));
+    expect(action).toHaveBeenCalledWith(expect.objectContaining({
+      detail: expect.objectContaining({ action: "tap" }),
+    }));
+    element.remove();
+  });
+
+  it("exposes carousel behavior and item management through the graphical editor", async () => {
+    const item = CATALOG.find((candidate) => candidate.upstreamId === "custom_card_entity_carousel")!;
+    const schema = editorSchemaFor(item);
+    const names = schema.flatMap((field) => field.schema?.map((nested) => nested.name) ?? [field.name]);
+    expect(names).toEqual(expect.arrayContaining([
+      "entity",
+      "layout",
+      "carousel_loop",
+      "carousel_show_labels",
+      "carousel_visible_items",
+      "carousel_initial_index",
+    ]));
+
+    const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {
+      hass: HomeAssistant;
+      setConfig(config: AdditionConfig): void;
+      updateComplete: Promise<boolean>;
+    };
+    editor.hass = hass;
+    editor.setConfig({
+      type: "custom:mushroom-addition-custom-card-entity-carousel",
+      carousel_items: [{ entity: "light.kitchen", name: "Lights" }],
+    });
+    document.body.append(editor);
+    await editor.updateComplete;
+    expect(editor.shadowRoot?.querySelectorAll(".carousel-item-row")).toHaveLength(1);
+    expect(editor.shadowRoot?.textContent).toContain("Add carousel item");
+    editor.remove();
   });
 });

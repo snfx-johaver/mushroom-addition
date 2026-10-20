@@ -2,6 +2,7 @@ import type { AdditionConfig, CatalogItem } from "./types";
 import { PARITY_BY_ID } from "./parity.generated";
 import { canonicalNameOptions, isReplacedUpstreamOption, supportedUpstreamOption } from "./supported-options";
 import { variantForSource } from "./catalog";
+import { FLOWER_BARS, flowerBarsForConfig, flowerEntityConfigKey } from "./flower";
 
 export interface EditorField {
   name: string;
@@ -327,9 +328,37 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
       entity(["sensor"], "tomorrow_entity"),
       ...presentation(),
     ]
+    : item.upstreamId === "custom_card_entity_carousel"
+      ? [
+        entity(),
+        ...presentation(),
+        toggle("carousel_loop"),
+        toggle("carousel_show_labels"),
+        number("carousel_visible_items", 3, 11),
+        number("carousel_initial_index", 0, 50),
+      ]
     : item.upstreamId === "custom_card_playstation"
       ? [
-        entity(["media_player", "sensor"]),
+        entity(["binary_sensor", "media_player", "remote", "sensor", "switch"]),
+        select("console_platform", [
+          { value: "auto", label: "Automatic" },
+          { value: "xbox", label: "Xbox" },
+          { value: "playstation", label: "PlayStation" },
+          { value: "nintendo", label: "Nintendo" },
+        ]),
+        toggle("console_show_artwork"),
+        toggle("console_show_controls"),
+        entity(["sensor"], "followers_entity"),
+        entity(["sensor"], "following_entity"),
+        entity(["sensor"], "friends_entity"),
+        entity(["sensor", "number", "input_number"], "primary_stat_entity"),
+        { name: "primary_stat_icon", selector: { icon: {} } },
+        entity(["sensor", "number", "input_number"], "secondary_stat_entity"),
+        { name: "secondary_stat_icon", selector: { icon: {} } },
+        entity(["sensor"], "now_playing_entity"),
+        entity(["image", "camera"], "gamerpic_entity"),
+        entity(["image", "camera"], "artwork_entity"),
+        entity(["remote", "media_player", "switch"], "console_power_entity"),
         ...presentation(),
       ]
     : item.upstreamId === "custom_card_alarm_time"
@@ -496,10 +525,18 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
     : item.upstreamId === "custom_card_plant"
       ? [
         entity(["plant", "sensor"]),
-        entity(["plant", "sensor"], "ulm_card_flower_entity"),
-
         text("ulm_card_flower_species"),
-        { name: "ulm_card_flower_show_bars", selector: { object: {} } },
+        {
+          name: "ulm_card_flower_show_bars",
+          selector: {
+            select: {
+              multiple: true,
+              options: FLOWER_BARS.map(({ key, label }) => ({ value: key, label })),
+            },
+          },
+        },
+        ...flowerBarsForConfig(config).map((key) =>
+          entity(["sensor", "number", "input_number"], flowerEntityConfigKey(key))),
         ...presentation(),
       ]
     : item.upstreamId === "custom_card_washer"
