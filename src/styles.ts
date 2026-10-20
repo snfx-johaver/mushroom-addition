@@ -818,5 +818,40 @@ export const sharedStyles = css`
   .pollen-extreme ha-icon { --mdc-icon-size: 11px; }
   .custom-pollen b { overflow: hidden; max-width: 100%; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
   .custom-pollen small { color: var(--secondary-text-color); font-size: 10px; }
+  .advanced-energy-management {
+    box-sizing: border-box;
+    padding: 6px;
+    border-radius: 20px;
+    background: var(--ha-card-background, var(--card-background-color, #fff));
+  }
+  .hems-flow {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    color: var(--primary-text-color);
+    font-family: var(--paper-font-body1_-_font-family, Roboto, sans-serif);
+  }
+  .hems-track {
+    fill: none;
+    stroke: var(--divider-color);
+    stroke-width: 9;
+    stroke-linecap: round;
+  }
+  .hems-battery-track { stroke-width: 13; }
+  .hems-bar { fill: none; stroke-width: 9; stroke-linecap: round; }
+  .hems-battery-value { fill: var(--primary-text-color); font-size: 52px; font-weight: 500; }
+  .hems-muted { fill: var(--secondary-text-color); font-size: 15px; font-weight: 400; }
+  .hems-time { font-size: 22px; }
+  .hems-main-value { fill: var(--primary-text-color); font-size: 36px; font-weight: 500; }
+  .hems-detail { font-size: 16px; }
+  .hems-mode { font-size: 18px; }
+  .hems-price { font-size: 17px; font-weight: 600; }
+  .hems-hour { font-size: 13px; }
+  .hems-center { text-anchor: middle; }
+  .hems-end { text-anchor: end; }
+  .hems-now { fill: var(--primary-text-color); }
+  @container (max-width: 420px) {
+    .advanced-energy-management { padding: 2px; }
+  }
   .preview { padding: 16px; color: var(--secondary-text-color); text-align: center; }
 `;

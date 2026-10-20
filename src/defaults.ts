@@ -38,6 +38,7 @@ export const defaultIconFor = (item: CatalogItem, entity?: HassEntity): string =
   if (item.upstreamId === "custom_card_room_overview") return "mdi:sofa";
   if (item.upstreamId === "custom_card_roomview") return "mdi:home-variant-outline";
   if (item.upstreamId === "custom_card_entity_carousel") return "mdi:view-carousel";
+  if (item.upstreamId === "advanced_home_energy_management") return "mdi:home-lightning-bolt-outline";
   return defaultIcons.find(([pattern]) => pattern.test(item.upstreamId))?.[1] ??
     "mdi:information-outline";
 };
@@ -110,6 +111,51 @@ export const populatedDefaultsFor = (
       : item.upstreamId === "card_scenes"
       ? {
         scene_buttons_only: false,
+      }
+      : item.upstreamId === "advanced_home_energy_management"
+      ? {
+        energy_grid_label: "NET",
+        energy_grid_import_label: "NET · afname",
+        energy_grid_export_label: "NET · teruglevering",
+        energy_solar_label: "ZON · Enphase",
+        energy_battery_label: "ZENDURE",
+        energy_home_label: "HUIS",
+        energy_forecast_label: "verwacht",
+        energy_ev_label: "laadpaal",
+        energy_charge_label: "laden",
+        energy_discharge_label: "ontladen",
+        energy_idle_label: "rust",
+        energy_auto_label: "Auto",
+        energy_manual_label: "Manual",
+        mode_solar_first_label: "Solar first",
+        mode_smart_saving_label: "Smart saving",
+        mode_smart_trading_label: "Smart trading",
+        grid_phase_scale_max: 3000,
+        solar_scale_max: 6000,
+        battery_unit_scale_max: 2400,
+        home_scale_max: 4000,
+        price_low_threshold: 0.18,
+        price_medium_threshold: 0.26,
+        price_high_threshold: 0.34,
+        price_critical_threshold: 0.42,
+        show_grid_phases: true,
+        show_battery_units: true,
+        show_tariff_timeline: true,
+        import_color: "#ff9f43",
+        export_color: "#4cd98b",
+        solar_color: "#f6c744",
+        battery_color: "#3b82f6",
+        home_color: "#3478f6",
+        price_negative_color: "#0288d1",
+        price_low_color: "#2e7d32",
+        price_medium_color: "#9ccc65",
+        price_high_color: "#fdd835",
+        price_critical_color: "#e53935",
+        navigation_path: "/hems-tower/savings-overview",
+        tap_action: {
+          action: "navigate",
+          navigation_path: "/hems-tower/savings-overview",
+        },
       }
       : item.upstreamId === "card_battery"
       ? {
@@ -202,6 +248,7 @@ export const populatedDefaultsFor = (
   const sourceDrivenIcon = new Set([
     "card_battery",
     "custom_card_pollen",
+    "advanced_home_energy_management",
   ]).has(item.upstreamId);
   return {
     type: `custom:${item.tag}`,
