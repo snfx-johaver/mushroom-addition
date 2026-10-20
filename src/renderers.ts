@@ -1,5 +1,6 @@
 import { html, nothing, svg, type TemplateResult } from "lit";
-import type { ActionConfig, AdditionConfig, AdditionItemConfig, CatalogItem, HassEntity, HomeAssistant, WeatherForecast } from "./types";
+import type { ActionConfig, AdditionConfig, AdditionItemConfig, CatalogItem, HassEntity, HomeAssistant, RoomViewDevice, WeatherForecast } from "./types";
+import { controlActions } from "./control-actions";
 import { activeStates, displayName, fireEvent, stateLabel } from "./helpers";
 import { wasteStreamsForConfig } from "./waste-streams";
 import { defaultIconFor } from "./defaults";
@@ -875,45 +876,100 @@ const renderRoomView = (ctx: RenderContext): TemplateResult => {
   };
   const lowBatteries = Object.values(groups).flatMap((group) => groupMembers(ctx, group))
     .filter((entity) => (numeric(attr(entity, "battery")) ?? 101) <= 20);
-  const unavailable = Object.values(groups).flatMap((group) => groupMembers(ctx, group))
-    .filter((entity) => entity.state === "unavailable");
   const countOn = (entity: HassEntity | undefined): number =>
     groupMembers(ctx, entity).filter((member) => member.state === "on" || member.state === "open").length;
-  const moreInfo = (event: Event, entity?: HassEntity): void => {
-    if (entity) runControlAction(event, ctx, { action: "more-info" }, entity.entity_id);
+  const missing = (entity?: HassEntity): boolean =>
+    !entity || ["unavailable", "unknown"].includes(entity.state);
+  const unavailableCount = (entityId: string): number => {
+    const entity = ctx.hass.states[entityId];
+    const ids = attr(entity, "entity_id");
+    const members = Array.isArray(ids) ? ids.map(String) : [entityId];
+    const count = members.filter((id) => missing(ctx.hass.states[id])).length;
+    return Math.max(missing(entity) ? 1 : 0, count);
   };
-  const toggle = (event: Event, entity?: HassEntity): void => {
-    if (entity && entity.state !== "unavailable") runControlAction(event, ctx, { action: "toggle" }, entity.entity_id);
+  const infoActions = (entityId: string): AdditionConfig => ({
+    type: ctx.config.type, entity: entityId, tap_action: { action: "more-info" },
+  });
+  const deviceActions = (device: RoomViewDevice, entityId: string): AdditionConfig => ({
+    ...infoActions(entityId),
+    tap_action: ctx.config[`${device}_tap_action`] ?? { action: "more-info" },
+    hold_action: ctx.config[`${device}_hold_action`] ?? { action: "more-info" },
+    double_tap_action: ctx.config[`${device}_double_tap_action`] ?? { action: "toggle" },
+  });
+  const climateEntity = ctx.config.temperature ? temperature : humidity;
+  const climateContext: RenderContext = {
+    ...ctx,
+    entity: climateEntity,
+    config: {
+      type: ctx.config.type,
+      entity: ctx.config.temperature ?? ctx.config.humidity,
+      name: ctx.config.climate_name,
+      icon: ctx.config.climate_icon,
+      icon_type: ctx.config.climate_icon_type ?? "icon",
+      primary_info: ctx.config.climate_primary_info ?? (ctx.config.climate_name ? "name" : "state"),
+      secondary_info: ctx.config.climate_secondary_info,
+      secondary: ctx.config.climate_secondary,
+    },
   };
   const sensorSlots = [
-    [groups.doors, "mdi:door-open"], [groups.windows, "mdi:window-open-variant"],
-    [groups.motions, "mdi:motion-sensor"], [groups.water, "mdi:water"],
+    [ctx.config.group_doors, groups.doors, "Doors", "mdi:door-open"],
+    [ctx.config.group_windows, groups.windows, "Windows", "mdi:window-open-variant"],
+    [ctx.config.group_motions, groups.motions, "Motion", "mdi:motion-sensor"],
+    [ctx.config.group_water, groups.water, "Water", "mdi:water"],
   ] as const;
   const deviceSlots = [
-    [groups.lights, groups.lights?.state === "on" ? "mdi:lightbulb-group" : "mdi:lightbulb-group-off"],
-    [groups.shutters, groups.shutters?.state === "on" ? "mdi:window-shutter-open" : "mdi:window-shutter"],
-    [groups.outlets, groups.outlets?.state === "on" ? "mdi:power-plug" : "mdi:power-plug-off"],
-    [groups.tv, groups.tv?.state === "on" ? "mdi:television" : "mdi:television-off"],
+    ["lights", ctx.config.group_lights, groups.lights, "Lights", "mdi:lightbulb-group"],
+    ["shutters", ctx.config.group_windows_shutters, groups.shutters, "Shutters", "mdi:window-shutter"],
+    ["outlets", ctx.config.group_outlets, groups.outlets, "Outlets", "mdi:power-plug"],
+    ["tv", ctx.config.group_tv, groups.tv, "Television", "mdi:television"],
   ] as const;
+  const unavailable = [...sensorSlots.map(([id]) => id), ...deviceSlots.map(([, id]) => id)]
+    .reduce<number>((sum, id) => sum + (id ? unavailableCount(id) : 0), 0);
   return ctx.actionSurface("custom-room-view", html`
-    <div class="room-view-summary" @click=${(event: Event) => moreInfo(event, temperature ?? humidity)}>
-      <span class="room-view-icon"><ha-icon .icon=${ctx.config.icon || "mdi:home-variant-outline"}></ha-icon>${unavailable.length ? html`<i>${unavailable.length}</i>` : nothing}</span>
-      <span><b><ha-icon icon="mdi:thermometer"></ha-icon>${stateLabel(temperature)}</b><small><ha-icon icon="mdi:water-percent"></ha-icon>${stateLabel(humidity)}</small></span>
-    </div>
-    <div class="room-view-status">
-      ${sensorSlots.map(([entity, sensorIcon]) => entity && countOn(entity) ? html`<button aria-label=${displayName({ type: "", entity: entity.entity_id }, entity, ctx.hass)} @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => moreInfo(event, entity)}><ha-icon .icon=${sensorIcon}></ha-icon>${countOn(entity) > 1 ? html`<i>${countOn(entity)}</i>` : nothing}</button>` : nothing)}
-      ${lowBatteries.length ? html`<button aria-label="Low batteries" @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => moreInfo(event, lowBatteries[0])}><ha-icon icon="mdi:battery-20"></ha-icon><i>${lowBatteries.length}</i></button>` : nothing}
-      ${!sensorSlots.some(([entity]) => countOn(entity)) && !lowBatteries.length ? html`<span class="room-view-clear"><ha-icon icon="mdi:check"></ha-icon></span>` : nothing}
-    </div>
-    <div class="room-view-actions">
-      ${deviceSlots.map(([entity, deviceIcon]) => entity ? html`
-        <button class=${entity.state === "on" ? "is-active" : ""} aria-label=${displayName({ type: "", entity: entity.entity_id }, entity, ctx.hass)}
-          ?disabled=${entity.state === "unavailable"} @pointerdown=${(event: Event) => event.stopPropagation()}
-          @dblclick=${(event: Event) => toggle(event, entity)} @click=${(event: Event) => event.stopPropagation()}>
-          <ha-icon .icon=${entity.state === "unavailable" ? "mdi:exclamation-thick" : deviceIcon}></ha-icon>
-          ${countOn(entity) ? html`<i>${countOn(entity)}</i>` : nothing}
-        </button>` : nothing)}
-    </div>
+    ${cardHeading(ctx, stateLabel(ctx.entity), displayName(ctx.config, ctx.entity, ctx.hass))}
+    ${ctx.config.temperature || ctx.config.humidity ? html`
+      <section class="room-view-section" aria-label="Climate">
+        <h3>Climate</h3>
+        <button class="room-view-summary" aria-label="Climate · More information"
+          ${controlActions(infoActions(ctx.config.temperature ?? ctx.config.humidity!))}>
+          ${sourceIconBubble(climateContext, climateEntity?.attributes.icon || "mdi:thermometer", "var(--primary-color)", false, "room-view-icon")}
+          ${heading(climateContext,
+            ctx.config.climate_secondary ?? (ctx.config.humidity && ctx.config.temperature ? stateLabel(humidity) : undefined))}
+        </button>
+      </section>` : nothing}
+    <section class="room-view-section" aria-label="Sensor status">
+      <h3>Sensor status <small>Indicators · Tap for details</small></h3>
+      <div class="room-view-status">
+        ${sensorSlots.map(([entityId, entity, label, sensorIcon]) => entityId ? html`
+          <button class="room-view-indicator ${countOn(entity) ? "is-active" : ""} ${unavailableCount(entityId) ? "is-unavailable" : ""}"
+            aria-label=${`${label}: ${unavailableCount(entityId) ? "Unavailable" : stateLabel(entity)} · More information`}
+            ${controlActions(infoActions(entityId))}>
+            <ha-icon .icon=${sensorIcon}></ha-icon>
+            <span>${label}<small>${unavailableCount(entityId) ? `${unavailableCount(entityId)} unavailable` : countOn(entity) ? `${countOn(entity)} active` : stateLabel(entity)}</small></span>
+            ${countOn(entity) > 1 ? html`<i>${countOn(entity)}</i>` : nothing}
+          </button>` : nothing)}
+        ${!sensorSlots.some(([id]) => id) ? html`<span class="room-view-empty">No sensors configured</span>` : nothing}
+        ${lowBatteries.length ? html`
+          <button class="room-view-indicator is-unavailable" aria-label="Low batteries"
+            ${controlActions(infoActions(lowBatteries[0]!.entity_id))}>
+            <ha-icon icon="mdi:battery-20"></ha-icon><span>Low batteries<small>${lowBatteries.length}</small></span>
+          </button>` : nothing}
+        ${unavailable ? html`<span class="room-view-warning" role="status"><ha-icon icon="mdi:alert-circle-outline"></ha-icon>${unavailable} unavailable</span>` : nothing}
+      </div>
+    </section>
+    <section class="room-view-section" aria-label="Device controls">
+      <h3>Device controls <small>Buttons · Configurable actions</small></h3>
+      <div class="room-view-actions">
+        ${deviceSlots.map(([device, entityId, entity, label, deviceIcon]) => entityId ? html`
+          <button class=${activeStates.has(entity?.state ?? "") ? "is-active" : ""} aria-label=${label}
+            ?disabled=${missing(entity)} ${controlActions(deviceActions(device, entityId))}>
+            <ha-icon .icon=${missing(entity) ? "mdi:exclamation-thick" : deviceIcon}></ha-icon>
+            <span>${label}<small>${missing(entity) ? "Unavailable" : stateLabel(entity)}</small></span>
+            ${countOn(entity) ? html`<i>${countOn(entity)}</i>` : nothing}
+          </button>` : nothing)}
+        ${!deviceSlots.some(([, id]) => id) ? html`<span class="room-view-empty">No devices configured</span>` : nothing}
+      </div>
+    </section>
   `);
 };
 

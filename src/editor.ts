@@ -25,6 +25,29 @@ import type {
 
 type EditorSectionId = "context" | "content" | "layout" | "interactions" | "features";
 
+const roomViewSections = [
+  { id: "primary", title: "Primary entity presentation", icon: "mdi:account-circle-outline" },
+  { id: "climate", title: "Climate", icon: "mdi:thermometer" },
+  { id: "sensors", title: "Sensor status", icon: "mdi:shield-check-outline" },
+  { id: "devices", title: "Device controls", icon: "mdi:gesture-tap" },
+  { id: "actions", title: "Card interactions", icon: "mdi:gesture-tap-button" },
+] as const;
+type RoomViewSection = typeof roomViewSections[number]["id"];
+const roomViewSectionFor = (name: string): RoomViewSection => {
+  if (name === "temperature" || name === "humidity" || name.startsWith("climate_")) return "climate";
+  if (["group_motions", "group_doors", "group_windows", "group_water"].includes(name)) return "sensors";
+  if (["group_lights", "group_windows_shutters", "group_outlets", "group_tv"].includes(name) ||
+    /^(lights|shutters|outlets|tv)_/.test(name)) return "devices";
+  if (interactionFields.has(name)) return "actions";
+  return "primary";
+};
+const roomViewFields = (fields: EditorField[], section: RoomViewSection): EditorField[] =>
+  fields.flatMap((field) => {
+    if (!field.schema) return roomViewSectionFor(field.name) === section ? [field] : [];
+    const schema = roomViewFields(field.schema, section);
+    return schema.length ? [{ ...field, schema }] : [];
+  });
+
 const editorSections: Array<{ id: EditorSectionId; title: string; icon: string }> = [
   { id: "context", title: "Context", icon: "mdi:shape-outline" },
   { id: "content", title: "Content", icon: "mdi:format-align-left" },
@@ -50,6 +73,31 @@ const layoutFields = new Set([
 const interactionFields = new Set([
   "tap_action", "hold_action", "double_tap_action", "navigation_path", "settings_path",
 ]);
+
+const roomViewLabels: Record<string, string> = {
+  temperature: "Temperature entity",
+  humidity: "Humidity entity",
+  climate_name: "Climate name",
+  climate_icon: "Climate icon",
+  climate_icon_type: "Climate icon type",
+  climate_primary_info: "Climate primary information",
+  climate_secondary_info: "Climate secondary information (default: humidity)",
+  climate_secondary: "Custom climate secondary text",
+  group_doors: "Doors status entity",
+  group_windows: "Windows status entity",
+  group_motions: "Motion status entity",
+  group_water: "Water status entity",
+  group_lights: "Lights control entity",
+  group_windows_shutters: "Shutters control entity",
+  group_outlets: "Outlets control entity",
+  group_tv: "Television control entity",
+  ...Object.fromEntries(
+    [["lights", "Lights"], ["shutters", "Shutters"], ["outlets", "Outlets"], ["tv", "Television"]]
+      .flatMap(([key, label]) =>
+        [["tap", "tap"], ["hold", "hold"], ["double_tap", "double tap"]]
+          .map(([gesture, name]) => [`${key}_${gesture}_action`, `${label}: ${name} action`])),
+  ),
+};
 
 const sectionForField = (field: EditorField): EditorSectionId => {
   if (field.name === "entity") return "context";
@@ -135,6 +183,15 @@ export class MushroomAdditionEditor extends LitElement {
     const formData = {
       ...populatedDefaults,
       ...this.config,
+      ...(item.upstreamId === "custom_card_roomview" ? {
+        climate_icon_type: this.config.climate_icon_type ?? "icon",
+        climate_primary_info: this.config.climate_primary_info ?? (this.config.climate_name ? "name" : "state"),
+        ...Object.fromEntries(["lights", "shutters", "outlets", "tv"].flatMap((device) =>
+          ["tap", "hold", "double_tap"].map((gesture) => {
+            const key = `${device}_${gesture}_action`;
+            return [key, this.config![key] ?? { action: gesture === "double_tap" ? "toggle" : "more-info" }];
+          }))),
+      } : {}),
       ...(item.upstreamId === "mini_graph_card" ? {
         mini_graph_show_state: miniGraphShow?.state === "last"
           ? "last"
@@ -203,6 +260,13 @@ export class MushroomAdditionEditor extends LitElement {
         ? "horizontal"
         : this.config.layout ?? populatedDefaults.layout,
     };
+    if (item.upstreamId === "custom_card_roomview") {
+      return html`<div class="editor-sections room-view-editor">
+        ${roomViewSections.map((section) => this.renderEditorSection(
+          section, roomViewFields([...schema, ...upstreamSchema], section.id), formData, nothing, false,
+        ))}
+      </div>`;
+    }
     const customFeatures = item.upstreamId === "mini_graph_card"
       ? this.renderMiniGraphEditors()
       : item.upstreamId === "custom_card_trash"
@@ -240,7 +304,7 @@ export class MushroomAdditionEditor extends LitElement {
   }
 
   private renderEditorSection(
-    section: { id: EditorSectionId; title: string; icon: string },
+    section: { id: string; title: string; icon: string },
     schema: EditorField[],
     formData: AdditionConfig,
     customContent: TemplateResult | typeof nothing,
@@ -248,7 +312,7 @@ export class MushroomAdditionEditor extends LitElement {
   ): TemplateResult | typeof nothing {
     if (!schema.length && !hasCustomContent) return nothing;
     return html`
-      <ha-expansion-panel class="editor-section" outlined>
+      <ha-expansion-panel class="editor-section" outlined .expanded=${section.id === "primary"}>
         <span slot="header" class="section-header">
           <ha-icon .icon=${section.icon}></ha-icon>
           <span>${section.title}</span>
@@ -271,7 +335,9 @@ export class MushroomAdditionEditor extends LitElement {
   }
 
   private readonly computeLabel = (schema: { name: string }): string =>
-    this.config?.type.includes("custom-card-trash") && schema.name === "entity"
+    this.config?.type.includes("custom-card-roomview") && roomViewLabels[schema.name]
+      ? roomViewLabels[schema.name]!
+      : this.config?.type.includes("custom-card-trash") && schema.name === "entity"
       ? "Optional card entity"
       : this.config?.type.includes("custom-card-washer") && schema.name === "entity"
         ? localize(this.hass, "machine_state_entity")

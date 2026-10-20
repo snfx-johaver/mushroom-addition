@@ -54,6 +54,7 @@ export interface WeatherForecast {
 
 export interface ActionConfig {
   action: string;
+  entity?: string;
   navigation_path?: string;
   url_path?: string;
   service?: string;
@@ -125,8 +126,30 @@ export interface CarouselParametersConfig {
   coverflowEffect?: CarouselCoverflowEffectConfig;
 }
 
-export interface AdditionConfig {
+export type RoomViewDevice = "lights" | "shutters" | "outlets" | "tv";
+export type RoomViewDeviceActions = Partial<Record<
+  `${RoomViewDevice}_${"tap" | "hold" | "double_tap"}_action`,
+  ActionConfig
+>>;
+
+export interface AdditionConfig extends RoomViewDeviceActions {
   type: string;
+  temperature?: string;
+  humidity?: string;
+  climate_name?: string | EntityNameItem | EntityNameItem[];
+  climate_icon?: string;
+  climate_icon_type?: "icon" | "entity-picture" | "none";
+  climate_primary_info?: "name" | "state" | "none";
+  climate_secondary_info?: "name" | "state" | "none";
+  climate_secondary?: string;
+  group_lights?: string;
+  group_windows_shutters?: string;
+  group_outlets?: string;
+  group_tv?: string;
+  group_motions?: string;
+  group_doors?: string;
+  group_windows?: string;
+  group_water?: string;
   entity?: string;
   primary_entity?: string;
   entities?: string[];

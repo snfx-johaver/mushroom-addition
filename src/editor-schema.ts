@@ -650,16 +650,43 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
     : item.upstreamId === "custom_card_roomview"
       ? [
         entity(item.preferredDomains),
-        entity(["group", "light"], "group_lights"),
         entity(["group", "binary_sensor"], "group_motions"),
         entity(["group", "binary_sensor"], "group_doors"),
         entity(["group", "binary_sensor"], "group_windows"),
-        entity(["group", "switch"], "group_outlets"),
-        entity(["group", "media_player"], "group_tv"),
         entity(["group", "binary_sensor"], "group_water"),
-        entity(["group", "cover"], "group_windows_shutters"),
         entity(["sensor"], "temperature"),
         entity(["sensor"], "humidity"),
+        {
+          name: "climate_name",
+          selector: { entity_name: {} },
+          context: { entity: "temperature" },
+        },
+        {
+          name: "climate_icon",
+          selector: { icon: {} },
+          context: { icon_entity: "temperature" },
+        },
+        select("climate_icon_type", [
+          { value: "icon", label: "Icon" },
+          { value: "entity-picture", label: "Entity picture" },
+          { value: "none", label: "None" },
+        ]),
+        ...["climate_primary_info", "climate_secondary_info"].map((name) =>
+          select(name, [
+            { value: "name", label: "Name" },
+            { value: "state", label: "State" },
+            { value: "none", label: "None" },
+          ])),
+        text("climate_secondary"),
+        ...[
+          { device: "lights", key: "group_lights", domain: "light" },
+          { device: "shutters", key: "group_windows_shutters", domain: "cover" },
+          { device: "outlets", key: "group_outlets", domain: "switch" },
+          { device: "tv", key: "group_tv", domain: "media_player" },
+        ].flatMap(({ device, key, domain }) => [
+          entity(["group", domain], key),
+          ...["tap", "hold", "double_tap"].map((gesture) => action(`${device}_${gesture}_action`)),
+        ]),
         ...presentation(),
       ]
     : item.upstreamId === "custom_card_room_overview"

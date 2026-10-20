@@ -136,6 +136,39 @@ inside each card. Choose **Icon type: None** to hide only the header icon.
 All standalone cards use Home Assistant's theme-controlled card border width
 and color, like official Mushroom cards.
 
+### Roomview
+
+Roomview separates its primary entity header from **Climate**, **Sensor status**
+and **Device controls**. The graphical editor puts primary entity presentation
+first, then gives each section its own controls. Existing `temperature`, `humidity`
+and `group_*` entity bindings are unchanged.
+
+The climate header independently supports `climate_name` (including composed
+entity names), `climate_icon`, `climate_icon_type` (`icon`, `entity-picture`, `none`),
+`climate_primary_info` and `climate_secondary_info` (`name`, `state`, `none`),
+and `climate_secondary` custom text. By default it shows temperature and humidity.
+A configured climate name replaces the primary temperature text unless
+`climate_primary_info` selects otherwise. Leave `climate_secondary_info` unset
+for custom text or humidity; `state` selects the temperature entity's state.
+Climate icons use the override, temperature entity icon, then a thermometer,
+independently of the primary entity icon. Entity pictures come from temperature.
+
+Sensor indicators retain labels and inactive states; missing/unknown/unavailable
+entities and missing group members are reported rather than showing an all-clear.
+Group active counts, low battery counts, and unavailable counts remain visible.
+Indicators open entity information; they are visually distinct from device buttons.
+
+Each device has independent graphical Home Assistant actions:
+`lights_tap_action`, `lights_hold_action`, `lights_double_tap_action`, and the
+same three suffixes for `shutters`, `outlets`, and `tv`. They target the existing
+`group_lights`, `group_windows_shutters`, `group_outlets`, and `group_tv` entities,
+respectively. Tap defaults to safe **more-info**, hold (500 ms) defaults to
+**more-info**, and double tap retains the legacy **toggle**. Set any action to
+`{ action: none }` to disable it. Action-specific `entity` overrides are honored,
+along with normal Home Assistant action targets and payloads.
+Enter/Space runs the tap action. A pointer tap waits briefly for a possible double
+tap; double taps and holds never also trigger tap or whole-card actions.
+
 **Advanced Energy - Energy Buy and Sell** includes a collapsed **Buy and sell
 result** dropdown beneath its timeline. Expand it to see the selected buy/sell
 slots, energy-weighted average prices, kWh, costs/revenue and net result. The

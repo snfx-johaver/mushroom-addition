@@ -145,8 +145,9 @@ const configuredValue = (config: AdditionConfig, pattern: RegExp): unknown =>
   Object.entries(config).find(([key, value]) => pattern.test(key) && value !== undefined)?.[1];
 
 const upstreamCompatibility = (config: AdditionConfig): AdditionConfig => {
-  const name = configuredValue(config, /_name$/);
-  const icon = configuredValue(config, /_icon$/);
+  const independentClimate = String(config.type).includes("custom-card-roomview");
+  const name = configuredValue(config, independentClimate ? /^(?!climate_).*_name$/ : /_name$/);
+  const icon = configuredValue(config, independentClimate ? /^(?!climate_).*_icon$/ : /_icon$/);
   const color = configuredValue(config, /_color$/);
   const controls = configuredValue(config, /_enable_(controls|buttons)$/);
   const slider = configuredValue(config, /_enable_slider$/);
