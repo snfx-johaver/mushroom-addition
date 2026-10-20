@@ -44,6 +44,9 @@ const layoutFields = new Set([
   "bar_spacing", "font_size", "font_size_header", "align_header", "align_icon", "align_state",
   "group", "mini_graph_show_fill", "mini_graph_show_points", "mini_graph_show_labels",
   "mini_graph_show_labels_secondary", "carousel_visible_items", "carousel_initial_index",
+  "carousel_effect", "carousel_grab_cursor", "carousel_centered_slides",
+  "carousel_slides_per_view", "carousel_coverflow_rotate", "carousel_coverflow_stretch",
+  "carousel_coverflow_depth", "carousel_coverflow_modifier", "carousel_coverflow_slide_shadows",
 ]);
 const interactionFields = new Set([
   "tap_action", "hold_action", "double_tap_action", "navigation_path", "settings_path",

@@ -13,17 +13,20 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       position: relative;
       display: grid;
       place-items: center;
-      min-height: 104px;
+      min-height: 136px;
       overflow: hidden;
       perspective: 520px;
       touch-action: pan-y;
       user-select: none;
       outline: none;
     }
+    .carousel.grab-cursor { cursor: grab; }
+    .carousel.grab-cursor:active { cursor: grabbing; }
+    .carousel.grab-cursor button { cursor: inherit; }
     .stage {
       position: relative;
       width: 100%;
-      height: 74px;
+      height: 104px;
       transform-style: preserve-3d;
     }
     button {
@@ -48,6 +51,19 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       transform-style: preserve-3d;
       will-change: transform;
     }
+    button::after {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(
+        var(--carousel-shadow-angle, 90deg),
+        rgb(0 0 0 / var(--carousel-shadow-opacity, 0)),
+        transparent 72%
+      );
+      content: "";
+      pointer-events: none;
+    }
+    button[data-shadow="false"]::after { display: none; }
     button.active {
       color: var(--carousel-color, var(--primary-color));
       border-color: color-mix(in srgb, var(--carousel-color, var(--primary-color)) 55%, var(--divider-color));
@@ -91,10 +107,14 @@ export class MushroomAdditionEntityCarousel extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
   @property({ attribute: false }) public config?: AdditionConfig;
   @state() private selectedIndex = 0;
+  @state() private carouselWidth = 0;
 
   private dragStartX?: number;
   private holdTimer?: number;
   private holdFired = false;
+  private pointerItemIndex?: number;
+  private pointerStartedOnItem = false;
+  private resizeObserver?: ResizeObserver;
 
   protected willUpdate(changed: Map<PropertyKey, unknown>): void {
     if (changed.has("config")) {
@@ -113,12 +133,17 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     const activeItem = items[this.selectedIndex];
     const activeEntity = this.entityFor(activeItem);
     return html`
-      <div class="carousel"
+      <div class=${`carousel ${this.grabCursor ? "grab-cursor" : ""}`}
+        style=${`perspective:${Math.max(520, this.coverflowDepth * 2)}px`}
         role="listbox"
         aria-label="Entity carousel"
         tabindex="0"
         @keydown=${this.onKeydown}
-        @wheel=${this.onWheel}>
+        @wheel=${this.onWheel}
+        @pointerdown=${this.onPointerDown}
+        @pointermove=${this.onPointerMove}
+        @pointerup=${this.onPointerUp}
+        @pointercancel=${this.cancelPointer}>
         <div class="stage">
           ${items.map((item, index) => this.renderItem(item, index, visible))}
         </div>
@@ -137,20 +162,29 @@ export class MushroomAdditionEntityCarousel extends LitElement {
   private renderItem(item: AdditionItemConfig, index: number, visible: number): TemplateResult {
     const offset = this.itemOffset(index);
     const distance = Math.abs(offset);
-    const hidden = distance > Math.floor(visible / 2);
+    const hidden = this.itemIsHidden(offset, visible);
     const active = index === this.selectedIndex;
     const entity = this.entityFor(item);
     const color = item.color || (entity?.attributes.icon ? "primary" : "primary");
-    const translate = offset * 42;
-    const scale = Math.max(0.54, 1 - distance * 0.17);
-    const rotate = offset * -24;
-    const opacity = Math.max(0.18, 1 - distance * 0.2);
+    const modifier = this.coverflowModifier;
+    const stretch = this.effect === "coverflow" ? this.coverflowStretch * modifier : 0;
+    const slideStep = Math.max(18, 58 + stretch);
+    const alignmentOffset = this.centeredSlides ? 0 : -((visible - 1) * slideStep) / 2;
+    const translate = alignmentOffset + offset * slideStep;
+    const depth = this.effect === "coverflow" ? -distance * this.coverflowDepth * modifier : 0;
+    const rotate = this.effect === "coverflow" ? offset * -this.coverflowRotate * modifier : 0;
+    const opacity = Math.max(0.18, 1 - distance * (this.effect === "coverflow" ? 0.16 : 0.08));
+    const shadowOpacity = this.coverflowSlideShadows
+      ? Math.min(0.48, distance * 0.16 * Math.max(0.25, modifier))
+      : 0;
     const style = [
-      `transform:translateX(${translate}px) translateZ(${-distance * 34}px) rotateY(${rotate}deg) scale(${scale})`,
+      `transform:translateX(${translate}px) translateZ(${depth}px) rotateY(${rotate}deg)`,
       `z-index:${100 - distance}`,
       `opacity:${opacity}`,
       `filter:saturate(${Math.max(0.45, 1 - distance * 0.14)})`,
       `--carousel-color:var(--${color}-color, ${color})`,
+      `--carousel-shadow-opacity:${shadowOpacity}`,
+      `--carousel-shadow-angle:${offset < 0 ? 270 : 90}deg`,
     ].join(";");
     const picture = item.icon_type === "entity-picture"
       ? entity?.attributes.entity_picture
@@ -163,12 +197,11 @@ export class MushroomAdditionEntityCarousel extends LitElement {
         aria-selected=${active ? "true" : "false"}
         aria-label=${this.itemName(item, entity)}
         class=${`${active ? "active" : ""} ${isEntityActive ? "entity-active" : ""}`}
+        data-shadow=${this.effect === "coverflow" && this.coverflowSlideShadows ? "true" : "false"}
+        data-carousel-index=${index}
         style=${style}
         ?hidden=${hidden}
-        @pointerdown=${(event: PointerEvent) => this.onPointerDown(event, index)}
-        @pointermove=${this.onPointerMove}
-        @pointerup=${(event: PointerEvent) => this.onPointerUp(event, index)}
-        @pointercancel=${this.cancelPointer}>
+        >
         ${picture
           ? html`<span class="picture" style=${`background-image:url("${String(picture)}")`}></span>`
           : html`<ha-icon .icon=${icon}></ha-icon>`}
@@ -181,9 +214,68 @@ export class MushroomAdditionEntityCarousel extends LitElement {
   }
 
   private get visibleCount(): number {
+    const configured = this.config?.carousel_slides_per_view ??
+      this.config?.parameters?.slidesPerView;
+    if (configured === "auto") {
+      if (!this.carouselWidth) return this.legacyVisibleCount;
+      return Math.min(11, Math.max(1, Math.floor((this.carouselWidth - 16) / 58)));
+    }
+    const numeric = Number(configured);
+    if (Number.isFinite(numeric) && numeric > 0) {
+      return Math.min(11, Math.max(1, Math.round(numeric)));
+    }
+    return this.legacyVisibleCount;
+  }
+
+  private get legacyVisibleCount(): number {
     const requested = Math.round(this.config?.carousel_visible_items ?? 7);
-    const clamped = Math.min(11, Math.max(3, requested));
-    return clamped % 2 === 0 ? clamped + 1 : clamped;
+    return Math.min(11, Math.max(3, requested));
+  }
+
+  private get effect(): "slide" | "coverflow" {
+    return this.config?.carousel_effect ?? this.config?.parameters?.effect ?? "coverflow";
+  }
+
+  private get grabCursor(): boolean {
+    return this.config?.carousel_grab_cursor ??
+      this.config?.parameters?.grabCursor ??
+      true;
+  }
+
+  private get centeredSlides(): boolean {
+    return this.config?.carousel_centered_slides ??
+      this.config?.parameters?.centeredSlides ??
+      true;
+  }
+
+  private get coverflowRotate(): number {
+    return Number(this.config?.carousel_coverflow_rotate ??
+      this.config?.parameters?.coverflowEffect?.rotate ??
+      0);
+  }
+
+  private get coverflowStretch(): number {
+    return Number(this.config?.carousel_coverflow_stretch ??
+      this.config?.parameters?.coverflowEffect?.stretch ??
+      0);
+  }
+
+  private get coverflowDepth(): number {
+    return Math.max(0, Number(this.config?.carousel_coverflow_depth ??
+      this.config?.parameters?.coverflowEffect?.depth ??
+      400));
+  }
+
+  private get coverflowModifier(): number {
+    return Math.max(0, Number(this.config?.carousel_coverflow_modifier ??
+      this.config?.parameters?.coverflowEffect?.modifier ??
+      1));
+  }
+
+  private get coverflowSlideShadows(): boolean {
+    return this.config?.carousel_coverflow_slide_shadows ??
+      this.config?.parameters?.coverflowEffect?.slideShadows ??
+      true;
   }
 
   private entityFor(item: AdditionItemConfig): HassEntity | undefined {
@@ -210,6 +302,30 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     return offset;
   }
 
+  private itemIsHidden(offset: number, visible: number): boolean {
+    if (!this.centeredSlides) return offset < 0 || offset >= visible;
+    const before = Math.floor((visible - 1) / 2);
+    const after = Math.ceil((visible - 1) / 2);
+    return offset < -before || offset > after;
+  }
+
+  protected firstUpdated(): void {
+    const carousel = this.shadowRoot?.querySelector<HTMLElement>(".carousel");
+    if (!carousel) return;
+    this.carouselWidth = carousel.clientWidth;
+    if (typeof ResizeObserver === "undefined") return;
+    this.resizeObserver = new ResizeObserver(([entry]) => {
+      this.carouselWidth = entry.contentRect.width;
+    });
+    this.resizeObserver.observe(carousel);
+  }
+
+  public disconnectedCallback(): void {
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = undefined;
+    super.disconnectedCallback();
+  }
+
   private select(direction: -1 | 1): void {
     const count = this.items.length;
     if (!count) return;
@@ -223,15 +339,20 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     this.selectedIndex = Math.min(this.items.length - 1, Math.max(0, index));
   }
 
-  private readonly onPointerDown = (event: PointerEvent, index: number): void => {
+  private readonly onPointerDown = (event: PointerEvent): void => {
     event.stopPropagation();
     this.dragStartX = event.clientX;
     this.holdFired = false;
+    const button = event.composedPath().find((node) =>
+      node instanceof HTMLElement && node.matches("button[data-carousel-index]")) as HTMLElement | undefined;
+    const parsedIndex = Number(button?.dataset.carouselIndex);
+    this.pointerStartedOnItem = Boolean(button) && Number.isInteger(parsedIndex);
+    this.pointerItemIndex = this.pointerStartedOnItem ? parsedIndex : this.selectedIndex;
     (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
-    if (index === this.selectedIndex) {
+    if (this.pointerStartedOnItem && this.pointerItemIndex === this.selectedIndex) {
       this.holdTimer = window.setTimeout(() => {
         this.holdFired = true;
-        this.runItemAction(this.items[index], "hold");
+        this.runItemAction(this.items[this.pointerItemIndex ?? this.selectedIndex], "hold");
       }, 500);
     }
   };
@@ -241,13 +362,17 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     if (Math.abs(event.clientX - this.dragStartX) > 8) this.clearHold();
   };
 
-  private readonly onPointerUp = (event: PointerEvent, index: number): void => {
+  private readonly onPointerUp = (event: PointerEvent): void => {
     event.stopPropagation();
     if (this.dragStartX === undefined) return;
     const delta = event.clientX - this.dragStartX;
+    const itemIndex = this.pointerItemIndex ?? this.selectedIndex;
+    const startedOnItem = this.pointerStartedOnItem;
     this.clearHold();
     this.dragStartX = undefined;
-    if (Math.abs(delta) >= 24) {
+    this.pointerItemIndex = undefined;
+    this.pointerStartedOnItem = false;
+    if (Math.abs(delta) >= 16) {
       this.select(delta > 0 ? -1 : 1);
       return;
     }
@@ -255,17 +380,20 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       this.holdFired = false;
       return;
     }
-    if (index !== this.selectedIndex) {
-      this.selectIndex(index);
+    if (!startedOnItem) return;
+    if (itemIndex !== this.selectedIndex) {
+      this.selectIndex(itemIndex);
       return;
     }
-    this.runItemAction(this.items[index], "tap");
+    this.runItemAction(this.items[itemIndex], "tap");
   };
 
   private readonly cancelPointer = (): void => {
     this.clearHold();
     this.dragStartX = undefined;
     this.holdFired = false;
+    this.pointerItemIndex = undefined;
+    this.pointerStartedOnItem = false;
   };
 
   private clearHold(): void {
