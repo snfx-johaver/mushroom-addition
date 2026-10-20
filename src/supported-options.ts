@@ -29,7 +29,6 @@ export const canonicalNameOptions = new Set([
   "ulm_card_input_number_name",
   "ulm_card_media_player_with_controls_name",
   "ulm_card_printer_name",
-  "ulm_card_vehicle_status_name",
   "ulm_custom_card_bar_card_name",
   "ulm_custom_card_entity_overview_name",
   "ulm_custom_card_metrics_entitites_name",

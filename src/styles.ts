@@ -117,103 +117,6 @@ export const sharedStyles = css`
   .climate-top { padding-bottom: 8px; }
   .climate-target { color: rgb(var(--ulm-red)); font-size: 23px; font-weight: 600; }
   .climate-current { font-size: 18px; font-weight: 700; }
-  .better-thermostat { display: grid; gap: 12px; padding: 14px; }
-  .better-thermostat-header {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 12px;
-  }
-  .better-thermostat-temperature { display: grid; justify-items: end; gap: 2px; }
-  .better-thermostat-temperature b {
-    font-size: 24px;
-    font-variant-numeric: tabular-nums;
-    font-weight: 700;
-    line-height: 1;
-  }
-  .better-thermostat-temperature small {
-    display: inline-flex;
-    align-items: center;
-    color: var(--secondary-text-color);
-    font-size: 12px;
-  }
-  .better-thermostat-temperature small ha-icon { --mdc-icon-size: 14px; }
-  .better-thermostat-statuses { display: flex; flex-wrap: wrap; gap: 6px; }
-  .better-thermostat-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 5px 9px;
-    border-radius: 10px;
-    background: rgba(var(--tone, var(--ulm-grey)), .12);
-    color: rgb(var(--tone, var(--ulm-grey)));
-    font-size: 11px;
-    font-weight: 700;
-  }
-  .better-thermostat-status ha-icon { --mdc-icon-size: 15px; }
-  .better-thermostat-target {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 10px;
-  }
-  .better-thermostat-target label { display: grid; gap: 5px; }
-  .better-thermostat-target label span {
-    color: var(--secondary-text-color);
-    font-size: 11px;
-    text-align: center;
-  }
-  .better-thermostat-target input { width: 100%; accent-color: rgb(var(--tone, var(--ulm-orange))); }
-  .better-thermostat-target input:focus-visible,
-  .better-thermostat-options button:focus-visible {
-    outline: 2px solid rgb(var(--ulm-blue));
-    outline-offset: 2px;
-  }
-  .better-thermostat-target > span {
-    font-size: 18px;
-    font-variant-numeric: tabular-nums;
-    font-weight: 700;
-    text-align: center;
-  }
-  .better-thermostat-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(66px, 1fr));
-    gap: 7px;
-  }
-  .better-thermostat-options button {
-    display: grid;
-    min-height: 50px;
-    place-items: center;
-    gap: 3px;
-    padding: 7px;
-    border: 0;
-    border-radius: 13px;
-    background: rgba(var(--ulm-grey), .08);
-    color: var(--primary-text-color);
-    cursor: pointer;
-    touch-action: manipulation;
-  }
-  .better-thermostat-options button:hover { background: rgba(var(--ulm-grey), .14); }
-  .better-thermostat-options button:disabled { cursor: not-allowed; opacity: .55; }
-  .better-thermostat-options button.is-selected {
-    background: rgba(var(--tone, var(--ulm-orange)), .18);
-    color: rgb(var(--tone, var(--ulm-orange)));
-  }
-  .better-thermostat-options button ha-icon { --mdc-icon-size: 20px; }
-  .better-thermostat-options button span { font-size: 11px; font-weight: 700; }
-  .better-thermostat-options.presets button.is-selected {
-    background: rgba(var(--ulm-green), .16);
-    color: rgb(var(--ulm-green));
-  }
-  .better-thermostat.is-compact { gap: 9px; padding: 12px; }
-  .better-thermostat.is-compact .better-thermostat-header { min-height: 42px; }
-  .better-thermostat.is-compact .better-thermostat-options {
-    display: flex;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .better-thermostat.is-compact .better-thermostat-options::-webkit-scrollbar { display: none; }
-  .better-thermostat.is-compact .better-thermostat-options button { min-width: 68px; min-height: 44px; }
   .battery-ring, .battery-value { color: rgb(var(--ulm-green)); font-weight: 700; }
   .ulm-battery { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 12px; }
   .battery-value { font-size: 24px; }
@@ -818,19 +721,14 @@ export const sharedStyles = css`
   .pollen-icon { display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--pollen) 20%, transparent); color: var(--pollen); }
   .waste-collection-icon { position: relative; } .waste-collection-icon > i { position: absolute; top: -3px; right: -3px; display: grid; width: 20px; height: 20px; place-items: center; border-radius: 50%; background: rgb(var(--ulm-red)); color: #fff; }
   .waste-collection-icon > i ha-icon { --mdc-icon-size: 13px; }
-  .custom-vehicle-status, .custom-plant { display: grid; gap: 10px; padding: 12px; }
-  .car-hero, .flower-heading {
+  .custom-plant { display: grid; gap: 10px; padding: 12px; }
+  .flower-heading {
     display: flex; min-width: 0; align-items: center; gap: 10px;
   }
   .flower-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
   .flower-metrics > span { display: grid; min-width: 0; min-height: 52px; place-items: center; padding: 6px; border-radius: 12px; background: rgba(var(--ulm-grey), .07); text-align: center; }
   .flower-metrics ha-icon { --mdc-icon-size: 17px; color: rgb(var(--ulm-blue)); }
   .flower-metrics b { overflow: hidden; max-width: 100%; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-  .car-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
-  .car-metrics > span { display: grid; min-width: 0; min-height: 52px; grid-template-columns: 24px auto; grid-template-rows: auto auto; align-items: center; padding: 7px; border-radius: 14px; background: rgba(var(--ulm-grey), .07); }
-  .car-metrics ha-icon { --mdc-icon-size: 18px; grid-row: 1 / 3; color: rgb(var(--ulm-blue)); }
-  .car-metrics b { overflow: hidden; max-width: 100%; font-size: 18px; text-overflow: ellipsis; white-space: nowrap; }
-  .car-metrics small { overflow: hidden; color: var(--secondary-text-color); font-size: 9px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
   .custom-console-card { position: relative; min-height: 72px; overflow: hidden; }
   .custom-console-card.has-artwork { background: #17191d; color: #fff; }
   .platform-xbox { --console-tone: 16, 124, 16; }
@@ -884,14 +782,7 @@ export const sharedStyles = css`
   .has-artwork .console-controls button { background: rgba(0,0,0,.38); color: #fff; }
   .console-controls ha-icon { --mdc-icon-size: 16px; }
   .source-scene-grid .scene-grid { display: grid; grid-template-columns: repeat(5, 64px); justify-content: space-between; gap: 12px; }
-  .car-hero, .flower-heading { width: 100%; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; }
-  .car-icon-wrap { position: relative; display: inline-grid; }
-  .car-badge { position: absolute; display: grid; width: 18px; height: 18px; place-items: center; border: 2px solid var(--card-background-color); border-radius: 50%; color: var(--primary-background-color); }
-  .car-badge ha-icon { --mdc-icon-size: 11px; }
-  .car-badge.tracker { top: -5px; right: -5px; background: rgb(var(--ulm-blue)); }
-  .car-badge.tracker.is-away { background: rgb(var(--ulm-green)); }
-  .car-badge.lock { right: -5px; bottom: -5px; background: rgb(var(--ulm-blue)); }
-  .car-badge.lock.is-unlocked { background: rgb(var(--ulm-red)); }
+  .flower-heading { width: 100%; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; }
   .flower-bars { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 12px; }
   .flower-bars > span {
     display: grid; min-width: 0; grid-template-columns: 18px minmax(0, 1fr) auto; align-items: center; gap: 5px;

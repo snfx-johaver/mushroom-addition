@@ -342,13 +342,6 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
     }).filter((item): item is NonNullable<typeof item> => Boolean(item));
     if (!migrated.scene_items?.length && legacyItems.length) migrated.scene_items = legacyItems;
   }
-  if (String(config.type).includes("vehicle-status")) {
-    migrated.entity ??= entityId(config.ulm_card_vehicle_status_tracker);
-    migrated.ulm_card_vehicle_status_tracker ??= migrated.entity;
-    migrated.ulm_card_vehicle_status_energy_level ??= entityId(config.energy_entity) ?? entityId(config.battery_entity);
-    migrated.ulm_card_vehicle_status_range ??= entityId(config.range_entity);
-    migrated.ulm_card_vehicle_status_lock ??= entityId(config.lock_entity) ?? entityId(config.doors_entity);
-  }
   if (String(config.type).includes("plant")) {
     migrated.entity ??= entityId(config.ulm_card_flower_entity);
     migrated.ulm_card_flower_entity ??= migrated.entity;

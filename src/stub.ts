@@ -141,17 +141,13 @@ export const createStubConfig = (
                                 ? findEntity(["weather"], [])
                               : descriptor.upstreamId === "card_room"
                                 ? findEntity(["light"], [])
-                                : descriptor.upstreamId === "custom_card_vehicle_status"
-                                    ? findEntity(["sensor"], ["model"]) ?? findEntity(["device_tracker"], [])
-                                    : descriptor.upstreamId === "custom_card_plant"
+                                : descriptor.upstreamId === "custom_card_plant"
                                       ? findEntity(["plant"], []) ?? findEntity(["sensor"], ["soil", "humidity"])
                                       : descriptor.upstreamId === "custom_card_playstation"
                                       ? findEntity(["binary_sensor", "media_player", "remote", "sensor", "switch"], ["xbox"]) ??
                                         findEntity(["binary_sensor", "media_player", "remote", "sensor", "switch"], ["playstation"]) ??
                                         findEntity(["binary_sensor", "media_player", "remote", "sensor", "switch"], ["nintendo"]) ??
                                         findEntity(["media_player", "remote"], [])
-                                    : descriptor.upstreamId === "custom_card_better_thermostat"
-                                      ? findEntity(["climate"], ["living", "room"]) ?? findEntity(["climate"], [])
                                     : undefined;
   const scenePrimary = descriptor.upstreamId === "card_scenes"
     ? findHealthyEntity(["light"], ["office", "joris"]) ??
@@ -256,8 +252,7 @@ export const createStubConfig = (
       }
       : descriptor.upstreamId === "custom_card_playstation"
         ? { action: entity ? "more-info" : "none", entity }
-        : descriptor.upstreamId === "custom_card_vehicle_status" ||
-            descriptor.upstreamId === "custom_card_plant"
+        : descriptor.upstreamId === "custom_card_plant"
           ? { action: "more-info" }
           : tapAction;
   return {
@@ -292,13 +287,6 @@ export const createStubConfig = (
         ulm_custom_card_washer_label_idle: "idle",
         ulm_custom_card_washer_label_configuring: "configure",
         ulm_custom_card_washer_label_running: "run",
-      }
-      : {}),
-    ...(descriptor.upstreamId === "custom_card_better_thermostat"
-      ? {
-        window_sensor: findEntity(["binary_sensor"], ["window"]) ?? findEntity(["binary_sensor"], ["door"]),
-        humidity_entity: findEntityByDeviceClass(["humidity"]),
-        battery_entity: findEntityByDeviceClass(["battery"], [], ["phone", "tablet"]),
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_sun"
@@ -414,18 +402,6 @@ export const createStubConfig = (
           findEntity(["sensor"], ["grass", "pollen"]) ?? entity,
         weeds_entity: findEntity(["sensor"], ["pollen", "weeds"]) ??
           findEntity(["sensor"], ["weed", "pollen"]),
-      }
-      : {}),
-    ...(descriptor.upstreamId === "custom_card_vehicle_status"
-      ? {
-        entity,
-        ulm_card_vehicle_status_tracker: entity,
-        ulm_card_vehicle_status_lock:
-          findEntity(["lock"], ["car"]) ?? findEntity(["binary_sensor"], ["doors"]),
-        ulm_card_vehicle_status_energy_level:
-          findEntity(["sensor"], ["primary", "engine", "percent"]) ?? findEntity(["sensor"], ["battery"]),
-        ulm_card_vehicle_status_range: findEntity(["sensor"], ["range"]),
-        ulm_card_vehicle_status_name: entity ? hass?.states[entity]?.attributes.friendly_name : undefined,
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_plant"

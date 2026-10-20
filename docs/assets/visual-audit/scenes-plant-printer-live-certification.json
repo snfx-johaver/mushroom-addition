@@ -57,31 +57,6 @@
       "screenshot": "live-final-six-mushroom-addition-custom-card-scenes.png",
       "liveAccepted": true
     },
-    "custom_card_vehicle_status": {
-      "config": {
-        "entity": "sensor.hn_etronq6_model",
-        "ulm_card_vehicle_status_tracker": "sensor.hn_etronq6_model",
-        "ulm_card_vehicle_status_lock": "binary_sensor.hn_etronq6_doors",
-        "ulm_card_vehicle_status_energy_level": "sensor.hn_etronq6_primary_engine_percent",
-        "ulm_card_vehicle_status_range": "sensor.hn_etronq6_range",
-        "ulm_card_vehicle_status_name": "HN e-tron Q6"
-      },
-      "renderedText": "HN-ETRONQ6 Model 243 minutes ago 30% Nível de energia 109km Alcance",
-      "geometry": {
-        "width": 330,
-        "height": 142,
-        "scrollWidth": 330
-      },
-      "pickerRegistered": true,
-      "editorVerified": true,
-      "safeInteraction": {
-        "action": "more-info",
-        "entity": "sensor.hn_etronq6_model"
-      },
-      "physicalActionsOperated": false,
-      "screenshot": "live-final-six-mushroom-addition-custom-card-vehicle-status.png",
-      "liveAccepted": true
-    },
     "custom_card_plant": {
       "config": {
         "entity": "sensor.frontyard_plants_soil_soil_humidity",
@@ -108,7 +83,7 @@
     }
   },
   "result": {
-    "accepted": 3,
+    "accepted": 2,
     "overflowFailures": 0,
     "pickerFailures": 0,
     "editorFailures": 0,

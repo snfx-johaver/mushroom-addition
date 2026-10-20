@@ -2134,90 +2134,6 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "c2613ff61eb10100b101b380086774366b5ee38194a468becca5bcaf57d618e1"
   },
   {
-    "upstreamId": "custom_card_vehicle_status",
-    "sourcePath": "custom_cards/custom_card_vehicle_status",
-    "publicId": "custom_card_vehicle_status",
-    "rendererId": "custom_card_vehicle_status",
-    "layoutProfile": "card:button-card+popup",
-    "primitives": [
-      "button-card",
-      "popup"
-    ],
-    "customFields": [
-      "icon",
-      "item1",
-      "item2",
-      "state"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_card_vehicle_status_energy_level",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_card_vehicle_status_lock",
-        "defaultValue": "\"[[[ return variables.ulm_card_vehicle_status_lock ]]]\"",
-        "selector": "entity"
-      },
-      {
-        "name": "ulm_card_vehicle_status_name",
-        "defaultValue": "\"[[[ return variables.ulm_card_vehicle_status_name ]]]\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_card_vehicle_status_range",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_card_vehicle_status_tracker",
-        "defaultValue": "\"[[[ return variables.ulm_card_vehicle_status_tracker ]]]\"",
-        "selector": "entity"
-      },
-      {
-        "name": "ulm_custom_card_vehicle_status_popup",
-        "defaultValue": "<documented/inherited>",
-        "selector": "boolean"
-      },
-      {
-        "name": "ulm_custom_card_vehicle_status_default_name",
-        "defaultValue": "\"O meu carro\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_vehicle_status_energy_level",
-        "defaultValue": "\"Nível de energia\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_vehicle_status_language_variables",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_vehicle_status_range",
-        "defaultValue": "\"Alcance\"",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [
-      "history/statistics"
-    ],
-    "deviations": [
-      "Exact historical series requires Home Assistant recorder/statistics data; the fixture and preview use deterministic sample data when history is unavailable."
-    ],
-    "sourceDigest": "1932419ed4a9c15ed073b5bdb41ba76fe027ce25ad3b5dcfdc6b3717cb99e129"
-  },
-  {
     "upstreamId": "custom_card_plant",
     "sourcePath": "custom_cards/custom_card_plant",
     "publicId": "custom_card_plant",
@@ -2399,40 +2315,6 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "deviations": [],
     "sourceDigest": "e41b8c1f961cc37f153aa55b2401b0becc2ee49ac0b40ec19c36aaef09c8f98b"
   },
-  {
-    "upstreamId": "custom_card_better_thermostat",
-    "sourcePath": "https://github.com/KartoffelToby/better-thermostat-ui-card",
-    "publicId": "custom_card_better_thermostat",
-    "rendererId": "custom_card_better_thermostat",
-    "layoutProfile": "card:native-climate-controls",
-    "primitives": [
-      "native-climate-controls"
-    ],
-    "customFields": [
-      "header",
-      "temperature",
-      "status",
-      "hvac_modes",
-      "presets"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "tap_action",
-      "climate.set_temperature",
-      "climate.set_hvac_mode",
-      "climate.set_preset_mode"
-    ],
-    "variables": [],
-    "dependencies": [],
-    "backendRequirements": [
-      "climate entity/services"
-    ],
-    "deviations": [
-      "Original MIT-licensed implementation based only on documented public behavior and Home Assistant climate APIs; no AGPL source code, styles, translations, or assets are copied or bundled."
-    ],
-    "sourceDigest": "0ee9011b60ca98c0d0eb61c69e50b011d7399c08e357040a6445f5dd1e65308f"
-  }
 ];
 
 export const PARITY_BY_ID = new Map(PARITY_ENTRIES.map((entry) => [entry.upstreamId, entry]));
