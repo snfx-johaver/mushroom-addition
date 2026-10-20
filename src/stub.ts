@@ -275,14 +275,17 @@ export const createStubConfig = (
       : undefined,
     ...(descriptor.upstreamId === "custom_card_washer"
       ? {
-        power_entity: findEntity(["sensor", "switch"], ["wasmachine", "power"]) ??
+        program_stage_entity: findEntity(["sensor", "select"], ["wasmachine", "program"]) ??
+          findEntity(["sensor", "select"], ["washer", "program"]) ??
+          findEntity(["sensor", "select"], ["washer", "job"]) ??
+          entity,
+        washer_power_entity: findEntity(["sensor", "switch"], ["wasmachine", "power"]) ??
           findEntity(["sensor", "switch"], ["washer", "power"]) ??
           findEntity(["sensor", "switch"], ["power"]),
         door_entity: findEntity(["sensor", "binary_sensor"], ["washer", "door"]) ??
           findEntity(["sensor", "binary_sensor"], ["door"]),
         finished_entity: findEntity(["sensor", "binary_sensor"], ["washer", "finished"]) ??
           findEntity(["sensor", "binary_sensor"], ["finished"]),
-        ulm_custom_card_washer_machine_state: entity,
         ulm_custom_card_washer_machine_stop_state: "stop",
         ulm_custom_card_washer_label_idle: "idle",
         ulm_custom_card_washer_label_configuring: "configure",

@@ -267,8 +267,11 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
   if (String(config.type).includes("custom-card-washer")) {
     migrated.entity ??= entityId(config.ulm_custom_card_washer_machine_state) ??
       entityId(config.ulm_custom_card_washer_power);
-    migrated.power_entity ??= entityId(config.ulm_custom_card_washer_power);
-    migrated.ulm_custom_card_washer_machine_state ??= migrated.entity;
+    migrated.program_stage_entity ??= entityId(config.ulm_custom_card_washer_job_state) ??
+      migrated.entity;
+    migrated.washer_power_entity ??= migrated.power_entity ??
+      entityId(config.ulm_custom_card_washer_power);
+    migrated.power_entity ??= migrated.washer_power_entity;
   }
   if (String(config.type).includes("custom-card-thermostat-controls")) {
     migrated.entity ??= entityId(config.entity);
