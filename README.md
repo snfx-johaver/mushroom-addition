@@ -393,6 +393,12 @@ effects with graphical controls for cursor behavior, centering, automatic or
 fixed slides per view, rotation, spacing, depth, intensity, and slide shadows.
 Turn off **Show card header** in its graphical editor to hide the title, icon
 and primary/secondary information while keeping the carousel and its item labels.
+Turn off **Show selected item label** as well for a compact, icon-only strip.
+Use **Use entity icon** to clear a header or item override; Home Assistant then
+chooses the entity's icon, including device-class and state-specific icons.
+Each item's tap, hold and double-tap selectors support **Default** (tap opens
+more info; hold and double-tap do nothing). An explicit double-tap action
+waits briefly before firing a single tap so the two actions never run together.
 Existing Swipe Card-style YAML can also use the source-compatible `parameters`
 shape:
 

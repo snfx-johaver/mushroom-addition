@@ -64,7 +64,11 @@ const sourceIconBubble = (
     ? html`<span class="ulm-icon entity-picture ${extraClass}" style=${`background-image:url("${String(picture)}")`}></span>`
     : html`<span class="ulm-icon source-icon ${active ? "is-source-active" : ""} ${extraClass}"
         style=${`--source-color:${color}`}>
-        <ha-icon .icon=${ctx.config.icon || iconName}></ha-icon>
+        ${ctx.descriptor.upstreamId === "custom_card_entity_carousel" && !ctx.config.icon && ctx.entity
+          ? html`<ha-state-icon .hass=${ctx.hass} .stateObj=${ctx.entity}
+              ._config=${ctx.hass.config} ._connection=${ctx.hass.connection}
+              ._entities=${ctx.hass.entities}></ha-state-icon>`
+          : html`<ha-icon .icon=${ctx.config.icon || iconName}></ha-icon>`}
       </span>`;
 };
 

@@ -533,10 +533,7 @@ export const createStubConfig = (
         carousel_items: uniqueEntities(entitiesFallback, 7).map((carouselEntity) => ({
           entity: carouselEntity,
           name: hass?.states[carouselEntity]?.attributes.friendly_name,
-          icon: hass?.states[carouselEntity]?.attributes.icon,
           color: "primary",
-          tap_action: { action: "more-info" },
-          hold_action: { action: "none" },
         })),
       }
       : {}),

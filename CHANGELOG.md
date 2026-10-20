@@ -4,6 +4,10 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Updates to 0.0.1 (no version bump)
 
+- Tightened Entity Carousel vertical spacing, including header/label-free mode.
+  Cleared header/item icons now follow Home Assistant's entity/device-class/state
+  icons. Added per-item double-tap actions and native Default action selection
+  for tap, hold and double-tap, with isolated swipe/hold/double-tap handling.
 - Fixed cold-page Area card/editor initialization: wait for Home Assistant's lazy
   native Area registration, explicitly upgrade/configure the helper-created
   element, and retain bounded errors and safe retry instead of rejecting the

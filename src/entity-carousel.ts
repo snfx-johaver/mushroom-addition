@@ -13,7 +13,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       position: relative;
       display: grid;
       place-items: center;
-      min-height: 136px;
+      padding: 6px 0;
       overflow: hidden;
       perspective: 520px;
       touch-action: pan-y;
@@ -27,7 +27,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     .stage {
       position: relative;
       width: 100%;
-      height: 104px;
+      height: 70px;
       transform-style: preserve-3d;
     }
     button {
@@ -79,7 +79,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
           color-mix(in srgb, var(--carousel-color, var(--primary-color)) 12%, var(--card-background-color)));
     }
     button[hidden] { display: none; }
-    ha-icon { --mdc-icon-size: 28px; pointer-events: none; }
+    ha-icon, ha-state-icon { --mdc-icon-size: 28px; pointer-events: none; }
     .picture {
       width: 34px;
       height: 34px;
@@ -120,12 +120,16 @@ export class MushroomAdditionEntityCarousel extends LitElement {
   private pointerAxis: "pending" | "horizontal" | "vertical" = "pending";
   private holdTimer?: number;
   private holdFired = false;
+  private tapTimer?: number;
+  private tapItem?: AdditionItemConfig;
   private pointerItemIndex?: number;
   private pointerStartedOnItem = false;
   private resizeObserver?: ResizeObserver;
 
   protected willUpdate(changed: Map<PropertyKey, unknown>): void {
     if (changed.has("config")) {
+      this.clearTap();
+      this.cancelPointer();
       const count = this.items.length;
       const initial = Math.max(0, Math.round(this.config?.carousel_initial_index ?? 0));
       this.selectedIndex = count ? Math.min(initial, count - 1) : 0;
@@ -199,7 +203,6 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     const picture = item.icon_type === "entity-picture"
       ? entity?.attributes.entity_picture
       : undefined;
-    const icon = item.icon || entity?.attributes.icon || "mdi:circle";
     const isEntityActive = entity ? !inactiveStates.has(entity.state.toLowerCase()) : false;
     return html`
       <button
@@ -211,10 +214,22 @@ export class MushroomAdditionEntityCarousel extends LitElement {
         data-carousel-index=${index}
         style=${style}
         ?hidden=${hidden}
+        @click=${(event: MouseEvent) => {
+          event.stopPropagation();
+          if (event.detail !== 0) return;
+          if (active) this.runItemAction(item, "tap");
+          else this.selectIndex(index);
+        }}
         >
         ${picture
           ? html`<span class="picture" style=${`background-image:url("${String(picture)}")`}></span>`
-          : html`<ha-icon .icon=${icon}></ha-icon>`}
+          : item.icon
+            ? html`<ha-icon .icon=${item.icon}></ha-icon>`
+            : entity
+              ? html`<ha-state-icon .hass=${this.hass} .stateObj=${entity}
+                  ._config=${this.hass?.config} ._connection=${this.hass?.connection}
+                  ._entities=${this.hass?.entities}></ha-state-icon>`
+              : html`<ha-icon .icon=${"mdi:circle"}></ha-icon>`}
       </button>
     `;
   }
@@ -331,12 +346,15 @@ export class MushroomAdditionEntityCarousel extends LitElement {
   }
 
   public disconnectedCallback(): void {
+    this.cancelPointer();
+    this.clearTap();
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
     super.disconnectedCallback();
   }
 
   private select(direction: -1 | 1): void {
+    this.clearTap();
     const count = this.items.length;
     if (!count) return;
     const next = this.selectedIndex + direction;
@@ -346,12 +364,16 @@ export class MushroomAdditionEntityCarousel extends LitElement {
   }
 
   private selectIndex(index: number): void {
+    this.clearTap();
     this.selectedIndex = Math.min(this.items.length - 1, Math.max(0, index));
   }
 
   private readonly onPointerDown = (event: PointerEvent): void => {
+    if (event.button !== undefined && event.button !== 0) return;
     if (event.pointerType && event.isPrimary === false) return;
     event.stopPropagation();
+    this.clearHold();
+    window.clearTimeout(this.tapTimer);
     this.dragStartX = event.clientX;
     this.dragStartY = event.clientY;
     this.lastPointerX = event.clientX;
@@ -368,6 +390,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     this.pointerItemIndex = this.pointerStartedOnItem ? parsedIndex : this.selectedIndex;
     if (this.pointerStartedOnItem && this.pointerItemIndex === this.selectedIndex) {
       this.holdTimer = window.setTimeout(() => {
+        this.clearTap();
         this.holdFired = true;
         this.runItemAction(this.items[this.pointerItemIndex ?? this.selectedIndex], "hold");
       }, 500);
@@ -382,10 +405,12 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < 4) return;
       if (Math.abs(deltaY) > Math.abs(deltaX) * 1.15) {
         this.pointerAxis = "vertical";
+        this.clearTap();
         this.clearHold();
         return;
       }
       this.pointerAxis = "horizontal";
+      this.clearTap();
       this.dragging = true;
       this.clearHold();
       try {
@@ -427,18 +452,33 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       this.holdFired = false;
       return;
     }
-    if (wasHorizontal) return;
-    if (wasVertical || Math.max(Math.abs(delta), Math.abs(deltaY)) >= 6) return;
-    if (!startedOnItem) return;
+    if (wasHorizontal || wasVertical || Math.max(Math.abs(delta), Math.abs(deltaY)) >= 6 || !startedOnItem) {
+      this.clearTap();
+      return;
+    }
     if (itemIndex !== this.selectedIndex) {
       this.selectIndex(itemIndex);
       return;
     }
-    this.runItemAction(this.items[itemIndex], "tap");
+    const item = this.items[itemIndex];
+    if (this.tapTimer !== undefined && this.tapItem === item) {
+      this.clearTap();
+      this.runItemAction(item, "double_tap");
+    } else if (item.double_tap_action && !["none", "default"].includes(item.double_tap_action.action)) {
+      this.clearTap();
+      this.tapItem = item;
+      this.tapTimer = window.setTimeout(() => {
+        this.clearTap();
+        this.runItemAction(item, "tap");
+      }, 300);
+    } else {
+      this.runItemAction(item, "tap");
+    }
   };
 
   private readonly cancelPointer = (): void => {
     this.clearHold();
+    this.clearTap();
     this.holdFired = false;
     this.resetPointer();
   };
@@ -468,6 +508,12 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     this.holdTimer = undefined;
   }
 
+  private clearTap(): void {
+    window.clearTimeout(this.tapTimer);
+    this.tapTimer = undefined;
+    this.tapItem = undefined;
+  }
+
   private readonly onWheel = (event: WheelEvent): void => {
     const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
     if (Math.abs(delta) < 8) return;
@@ -481,23 +527,26 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     else if (event.key === "Home") this.selectIndex(0);
     else if (event.key === "End") this.selectIndex(this.items.length - 1);
     else if (event.key === "Enter" || event.key === " ") {
+      event.stopPropagation();
+      if (event.repeat) { event.preventDefault(); return; }
+      this.clearTap();
       this.runItemAction(this.items[this.selectedIndex], "tap");
     } else return;
     event.preventDefault();
+    event.stopPropagation();
   };
 
-  private runItemAction(item: AdditionItemConfig | undefined, gesture: "tap" | "hold"): void {
+  private runItemAction(item: AdditionItemConfig | undefined, gesture: "tap" | "hold" | "double_tap"): void {
     if (!item) return;
-    const configuredAction = gesture === "tap" ? item.tap_action : item.hold_action;
-    const action: ActionConfig = configuredAction ?? {
+    const configuredAction = item[`${gesture}_action`];
+    const action: ActionConfig = configuredAction && configuredAction.action !== "default" ? configuredAction : {
       action: gesture === "tap" && item.entity ? "more-info" : "none",
     };
     fireEvent(this, "hass-action", {
       config: {
         type: this.config?.type,
         entity: item.entity,
-        tap_action: gesture === "tap" ? action : undefined,
-        hold_action: gesture === "hold" ? action : undefined,
+        [`${gesture}_action`]: action,
       },
       action: gesture,
     });

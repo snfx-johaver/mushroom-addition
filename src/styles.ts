@@ -134,6 +134,7 @@ export const sharedStyles = css`
   .ulm-metric { padding: 0 12px 12px; }
   .metric-heading { padding-left: 0; padding-right: 0; }
   .entity-carousel-presentation { padding: 12px; }
+  .entity-carousel-presentation .ulm-icon > ha-state-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
   .entity-carousel-presentation .ulm-copy { justify-content: center; }
   .metric-value { color: rgb(var(--ulm-blue)); font-size: 20px; font-weight: 650; }
   .sparkline { width: 100%; height: 48px; overflow: visible; }

@@ -1,6 +1,7 @@
 import { LitElement, css, html, nothing, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import type {
+  ActionConfig,
   AdditionConfig,
   AdditionItemConfig,
   HomeAssistant,
@@ -300,6 +301,14 @@ export class MushroomAdditionEditor extends LitElement {
           groupedSchema[section.id],
           formData,
           section.id === "features" && hasCustomFeatures ? customFeatures
+            : section.id === "content" && item.upstreamId === "custom_card_entity_carousel" ? html`
+              <button @click=${() => {
+                const next = { ...this.config! };
+                delete next.icon;
+                this.config = next;
+                fireEvent(this, "config-changed", { config: next });
+              }}>Use entity icon</button>
+            `
             : section.id === "content" && item.upstreamId === "card_room" ? this.renderRoomSecondaryEditor() : nothing,
           section.id === "features" && hasCustomFeatures ||
             section.id === "content" && item.upstreamId === "card_room" && this.config?.secondary_info === "composed",
@@ -1252,6 +1261,7 @@ export class MushroomAdditionEditor extends LitElement {
                 @value-changed=${(event: CustomEvent) =>
                   this.updateCarouselItem(index, "icon", event.detail.value)}
               ></ha-selector>
+              <button @click=${() => this.updateCarouselItem(index, "icon", undefined)}>Use entity icon</button>
             </label>
             <label class="field">
               <span>Color</span>
@@ -1280,8 +1290,9 @@ export class MushroomAdditionEditor extends LitElement {
               <span>Tap action</span>
               <ha-selector
                 .hass=${this.hass}
-                .selector=${{ ui_action: {} }}
-                .value=${item.tap_action ?? { action: "more-info" }}
+                .required=${false}
+                .selector=${{ ui_action: { default_action: "more-info" } }}
+                .value=${item.tap_action}
                 @value-changed=${(event: CustomEvent) =>
                   this.updateCarouselItem(index, "tap_action", event.detail.value)}
               ></ha-selector>
@@ -1290,10 +1301,22 @@ export class MushroomAdditionEditor extends LitElement {
               <span>Hold action</span>
               <ha-selector
                 .hass=${this.hass}
-                .selector=${{ ui_action: {} }}
-                .value=${item.hold_action ?? { action: "none" }}
+                .required=${false}
+                .selector=${{ ui_action: { default_action: "none" } }}
+                .value=${item.hold_action}
                 @value-changed=${(event: CustomEvent) =>
                   this.updateCarouselItem(index, "hold_action", event.detail.value)}
+              ></ha-selector>
+            </label>
+            <label class="field wide">
+              <span>Double-tap action</span>
+              <ha-selector
+                .hass=${this.hass}
+                .required=${false}
+                .selector=${{ ui_action: { default_action: "none" } }}
+                .value=${item.double_tap_action}
+                @value-changed=${(event: CustomEvent) =>
+                  this.updateCarouselItem(index, "double_tap_action", event.detail.value)}
               ></ha-selector>
             </label>
             <div class="item-actions wide">
@@ -1419,7 +1442,13 @@ export class MushroomAdditionEditor extends LitElement {
   ): void {
     if (!this.config) return;
     const items = [...(this.config.carousel_items ?? [])];
-    items[index] = { ...items[index], [field]: value || undefined };
+    const item = { ...items[index] };
+    if (!value || (field.endsWith("_action") && (value as ActionConfig).action === "default")) {
+      delete item[field];
+    } else {
+      Object.assign(item, { [field]: value });
+    }
+    items[index] = item;
     this.updateCarouselItems(items);
   }
 
@@ -1429,10 +1458,7 @@ export class MushroomAdditionEditor extends LitElement {
       ...(this.config.carousel_items ?? []),
       {
         entity: "",
-        icon: "mdi:circle",
         color: "primary",
-        tap_action: { action: "more-info" },
-        hold_action: { action: "none" },
       },
     ]);
   };

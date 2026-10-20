@@ -308,6 +308,7 @@ export const populatedDefaultsFor = (
                             }
                             : {};
   const sourceDrivenIcon = new Set([
+    "custom_card_entity_carousel",
     "card_battery",
     "custom_card_pollen",
     "advanced_home_energy_management",
