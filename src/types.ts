@@ -289,15 +289,6 @@ export interface AdditionConfig {
   label_use_brightness?: boolean;
   input_select_entity?: string;
   input_select_option?: string;
-  thermostat_minimum_temp_spread?: number;
-  thermostat_temp_step?: number;
-  show_temperature_control?: boolean;
-  show_humidity?: boolean;
-  show_hvac_modes?: boolean;
-  show_presets?: boolean;
-  show_status?: boolean;
-  collapsible_controls?: boolean;
-  low_battery_threshold?: number;
   graph_hours?: number;
   [key: string]: unknown;
 }

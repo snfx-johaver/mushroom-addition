@@ -127,19 +127,6 @@ const comparisons: Record<string, Comparison> = {
       tap_action: { action: "none" },
     },
   },
-  custom_card_vehicle_status: {
-    width: 313, referenceHeight: 137, referenceWidth: 313, referenceX: 0, referenceY: 0,
-    reference: "car.png",
-    config: {
-      entity: "sensor.hn_etronq6_model",
-      ulm_card_vehicle_status_tracker: "sensor.hn_etronq6_model",
-      ulm_card_vehicle_status_lock: "binary_sensor.hn_etronq6_doors",
-      ulm_card_vehicle_status_energy_level: "sensor.hn_etronq6_primary_engine_percent",
-      ulm_card_vehicle_status_range: "sensor.hn_etronq6_range",
-      ulm_card_vehicle_status_name: "Audi Q3",
-      tap_action: { action: "none" },
-    },
-  },
   custom_card_plant: {
     width: 274, referenceHeight: 117, referenceWidth: 274, referenceX: 0, referenceY: 0,
     reference: "flower.png",

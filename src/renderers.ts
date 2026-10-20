@@ -1863,42 +1863,6 @@ const renderEntityCarousel = (ctx: RenderContext): TemplateResult => {
   `;
 };
 
-const renderCar = (ctx: RenderContext): TemplateResult => {
-  const tracker = entityFromConfig(ctx, "ulm_card_vehicle_status_tracker") ?? ctx.entity;
-  const energy = entityFromConfig(ctx, "ulm_card_vehicle_status_energy_level");
-  const range = entityFromConfig(ctx, "ulm_card_vehicle_status_range");
-  const lock = entityFromConfig(ctx, "ulm_card_vehicle_status_lock");
-  const home = tracker?.state === "home";
-  const locked = lock?.state === "locked" || lock?.state === "off";
-  const roundedState = (entity?: HassEntity): string => {
-    const value = numeric(entity?.state);
-    return value === undefined ? stateLabel(entity) : String(Math.round(value));
-  };
-  const metricLabel = (entity: HassEntity | undefined, fallback: string): string =>
-    [entity?.attributes.unit_of_measurement, fallback].filter(Boolean).join(" ");
-  const trackerLabel = tracker?.last_changed
-    ? (() => {
-      const minutes = Math.max(0, Math.round((Date.now() - new Date(tracker.last_changed).getTime()) / 60_000));
-      return minutes < 1 ? "just now" : `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
-    })()
-    : stateLabel(tracker);
-  return ctx.actionSurface("custom-vehicle-status", html`
-    <button class="car-hero" aria-label="Open car details"
-      @pointerdown=${(event: Event) => event.stopPropagation()}
-      @click=${(event: Event) => runControlAction(event, ctx, { action: "more-info" }, tracker?.entity_id)}>
-      <span class="car-icon-wrap">${iconBubble(ctx, "mdi:car", "blue")}
-        <i class="car-badge tracker ${home ? "is-home" : "is-away"}"><ha-icon .icon=${home ? "mdi:home-variant" : "mdi:road-variant"}></ha-icon></i>
-        <i class="car-badge lock ${locked ? "is-locked" : "is-unlocked"}"><ha-icon .icon=${locked ? "mdi:lock" : "mdi:lock-open"}></ha-icon></i>
-      </span>
-      ${heading(ctx, trackerLabel)}
-    </button>
-    <div class="car-metrics">
-      <span><ha-icon icon="mdi:gas-station"></ha-icon><b>${roundedState(energy)}</b><small>${metricLabel(energy, configured<string>(ctx, "ulm_custom_card_vehicle_status_energy_level") || "Nível de energia")}</small></span>
-      <span><ha-icon icon="mdi:map-marker-distance"></ha-icon><b>${roundedState(range)}</b><small>${metricLabel(range, configured<string>(ctx, "ulm_custom_card_vehicle_status_range") || "Alcance")}</small></span>
-    </div>
-  `);
-};
-
 const renderFlower = (ctx: RenderContext): TemplateResult => {
   const plant = entityFromConfig(ctx, "ulm_card_flower_entity") ?? ctx.entity;
   const problem = plant?.state === "problem";
@@ -2067,163 +2031,6 @@ const renderGeneric = (ctx: RenderContext): TemplateResult => {
   `, `--source-color:${color}`);
 };
 
-const renderBetterThermostat = (ctx: RenderContext): TemplateResult => {
-  const current = numeric(attr(ctx.entity, "current_temperature"));
-  const target = numeric(attr(ctx.entity, "temperature"));
-  const minimum = numeric(attr(ctx.entity, "min_temp")) ?? 5;
-  const maximum = numeric(attr(ctx.entity, "max_temp")) ?? 35;
-  const step = ctx.config.thermostat_temp_step ??
-    numeric(attr(ctx.entity, "target_temp_step")) ??
-    0.5;
-  const unit = String(
-    attr(ctx.entity, "temperature_unit") ??
-    attr(ctx.entity, "unit_of_measurement") ??
-    "°C",
-  );
-  const humidityEntity = linkedState(ctx, "humidity_entity");
-  const humidity = numeric(humidityEntity?.state) ??
-    numeric(attr(ctx.entity, "current_humidity")) ??
-    numeric(attr(ctx.entity, "humidity"));
-  const windowEntity = linkedState(ctx, "window_sensor");
-  const windowState = windowEntity?.state.toLowerCase();
-  const windowOpen = ["on", "open", "true"].includes(windowState ?? "") ||
-    attr(ctx.entity, "window_open") === true ||
-    ["on", "open", "true"].includes(String(attr(ctx.entity, "window_state") ?? "").toLowerCase());
-  const batteryEntity = linkedState(ctx, "battery_entity");
-  const battery = numeric(batteryEntity?.state) ??
-    numeric(attr(ctx.entity, "battery")) ??
-    numeric(attr(ctx.entity, "battery_level"));
-  const lowBattery = battery !== undefined && battery <= (ctx.config.low_battery_threshold ?? 20);
-  const linkedUnavailable = (entityId: string | undefined): boolean => Boolean(
-    entityId &&
-    (!ctx.hass?.states[entityId] ||
-      ["unavailable", "unknown"].includes(ctx.hass.states[entityId].state.toLowerCase())),
-  );
-  const unavailable = !ctx.entity ||
-    ["unavailable", "unknown"].includes(ctx.entity.state.toLowerCase()) ||
-    linkedUnavailable(ctx.config.window_sensor) ||
-    linkedUnavailable(ctx.config.humidity_entity) ||
-    linkedUnavailable(ctx.config.battery_entity);
-  const degraded = attr(ctx.entity, "degraded_mode") === true || attr(ctx.entity, "is_degraded") === true;
-  const hvacAction = String(attr(ctx.entity, "hvac_action") ?? "").toLowerCase();
-  const hvacModes = Array.isArray(attr(ctx.entity, "hvac_modes"))
-    ? (attr(ctx.entity, "hvac_modes") as unknown[]).map(String)
-    : [];
-  const presetMode = String(attr(ctx.entity, "preset_mode") ?? "");
-  const presetModes = Array.isArray(attr(ctx.entity, "preset_modes"))
-    ? (attr(ctx.entity, "preset_modes") as unknown[]).map(String)
-    : [];
-  const compact = ctx.config.variant === "compact";
-  const controls = ctx.config.show_controls !== false;
-  const collapsed = ctx.config.collapsible_controls === true && ctx.entity?.state === "off";
-  const modeIcons: Record<string, string> = {
-    off: "mdi:power",
-    auto: "mdi:autorenew",
-    heat: "mdi:fire",
-    cool: "mdi:snowflake",
-    heat_cool: "mdi:sun-snowflake-variant",
-    dry: "mdi:water-percent",
-    fan_only: "mdi:fan",
-  };
-  const modeTone = hvacAction === "heating" || ctx.entity?.state === "heat"
-    ? "orange"
-    : hvacAction === "cooling" || ctx.entity?.state === "cool"
-      ? "blue"
-      : ctx.entity?.state === "off" ? "grey" : "green";
-  const statuses = [
-    unavailable ? ["Connection lost", "mdi:lan-disconnect", "red"] : undefined,
-    degraded ? ["Degraded", "mdi:alert-circle-outline", "orange"] : undefined,
-    windowOpen ? ["Window open", "mdi:window-open-variant", "blue"] : undefined,
-    lowBattery ? [`Battery ${Math.round(battery!)}%`, "mdi:battery-alert-variant-outline", "red"] : undefined,
-    hvacAction === "heating" ? ["Heating", "mdi:radiator", "orange"] : undefined,
-    hvacAction === "cooling" ? ["Cooling", "mdi:snowflake", "blue"] : undefined,
-    presetMode === "eco" ? ["Eco", "mdi:leaf", "green"] : undefined,
-  ].filter((status): status is string[] => Boolean(status));
-  const setTarget = (event: Event, value: number): void => {
-    event.stopPropagation();
-    if (!ctx.config.entity || unavailable) return;
-    const clamped = Math.max(minimum, Math.min(maximum, value));
-    const precision = String(step).split(".")[1]?.length ?? 0;
-    const rounded = Number((Math.round(clamped / step) * step).toFixed(precision));
-    ctx.service("climate", "set_temperature", {
-      entity_id: ctx.config.entity,
-      temperature: rounded,
-    });
-  };
-  const modeLabel = (mode: string): string =>
-    mode === "fan_only"
-      ? "Fan"
-      : mode === "heat_cool"
-        ? "Heat/Cool"
-        : mode.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
-  return ctx.actionSurface(`better-thermostat ${compact ? "is-compact" : ""} tone-${modeTone}`, html`
-    <div class="better-thermostat-header">
-      ${iconBubble(ctx, hvacAction === "heating" ? "mdi:radiator" : "mdi:thermostat", modeTone)}
-      ${heading(ctx, current === undefined ? stateLabel(ctx.entity) : `${current}${unit} current`)}
-      <span class="better-thermostat-temperature">
-        <b>${target === undefined ? "—" : target}${target === undefined ? "" : unit}</b>
-        ${ctx.config.show_humidity !== false && humidity !== undefined
-          ? html`<small><ha-icon icon="mdi:water-percent" aria-hidden="true"></ha-icon>${Math.round(humidity)}%</small>`
-          : nothing}
-      </span>
-    </div>
-    ${ctx.config.show_status !== false && statuses.length
-      ? html`<div class="better-thermostat-statuses">
-        ${statuses.map(([label, statusIcon, tone]) => html`
-          <span class="better-thermostat-status tone-${tone}">
-            <ha-icon .icon=${statusIcon} aria-hidden="true"></ha-icon>${label}
-          </span>`)}
-      </div>`
-      : nothing}
-    ${controls && ctx.config.show_temperature_control !== false ? html`
-      <div class="better-thermostat-target">
-        ${button("Decrease target temperature", "mdi:minus", (event) => setTarget(event, (target ?? minimum) - step), unavailable)}
-        ${!compact ? html`
-          <label>
-            <span>Target temperature</span>
-            <input type="range" name="target_temperature" min=${String(minimum)} max=${String(maximum)} step=${String(step)}
-              .value=${String(target ?? minimum)}
-              ?disabled=${unavailable}
-              aria-label="Target temperature"
-              @pointerdown=${(event: Event) => event.stopPropagation()}
-              @click=${(event: Event) => event.stopPropagation()}
-              @change=${(event: Event) => setTarget(event, Number((event.target as HTMLInputElement).value))}>
-          </label>`
-          : html`<span>${target === undefined ? "—" : target}${target === undefined ? "" : unit}</span>`}
-        ${button("Increase target temperature", "mdi:plus", (event) => setTarget(event, (target ?? minimum) + step), unavailable)}
-      </div>`
-      : nothing}
-    ${controls && ctx.config.show_hvac_modes !== false && hvacModes.length ? html`
-      <div class="better-thermostat-options" aria-label="HVAC modes">
-        ${hvacModes.map((mode) => html`
-          <button type="button" class=${ctx.entity?.state === mode ? "is-selected" : ""} ?disabled=${unavailable}
-            @pointerdown=${(event: Event) => event.stopPropagation()}
-            @click=${(event: Event) => {
-              event.stopPropagation();
-              if (ctx.config.entity && !unavailable) ctx.service("climate", "set_hvac_mode", { entity_id: ctx.config.entity, hvac_mode: mode });
-            }}>
-            <ha-icon .icon=${modeIcons[mode] ?? "mdi:thermostat"} aria-hidden="true"></ha-icon>
-            <span>${modeLabel(mode)}</span>
-          </button>`)}
-      </div>`
-      : nothing}
-    ${controls && !collapsed && ctx.config.show_presets !== false && presetModes.length ? html`
-      <div class="better-thermostat-options presets" aria-label="Presets">
-        ${presetModes.map((preset) => html`
-          <button type="button" class=${presetMode === preset ? "is-selected" : ""} ?disabled=${unavailable}
-            @pointerdown=${(event: Event) => event.stopPropagation()}
-            @click=${(event: Event) => {
-              event.stopPropagation();
-              if (ctx.config.entity && !unavailable) ctx.service("climate", "set_preset_mode", { entity_id: ctx.config.entity, preset_mode: preset });
-            }}>
-            <ha-icon .icon=${preset === "eco" ? "mdi:leaf" : preset === "away" ? "mdi:home-export-outline" : preset === "boost" ? "mdi:rocket-launch" : "mdi:home-thermometer"} aria-hidden="true"></ha-icon>
-            <span>${preset === "none" ? "Normal" : modeLabel(preset)}</span>
-          </button>`)}
-      </div>`
-      : nothing}
-  `);
-};
-
 const renderDefaultGraph = (ctx: RenderContext): TemplateResult => {
   const graphColor = configuredColor(
     configured<string>(ctx, "ulm_card_graph_color"),
@@ -2264,19 +2071,17 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "custom_card_pollen_forecast": return renderPollenForecast(ctx);
     case "custom_card_playstation": return renderConsoleCard(ctx);
     case "custom_card_entity_carousel": return renderEntityCarousel(ctx);
-    case "custom_card_vehicle_status": return renderCar(ctx);
     case "custom_card_plant": return renderFlower(ctx);
     case "custom_card_speedtest_gauges": return renderSpeedtestGauges(ctx);
     case "custom_card_pollen": return renderPollen(ctx);
-    case "custom_card_better_thermostat": return renderBetterThermostat(ctx);
     case "card_room":
       return renderRoom(ctx);
   }
   if (/trash/.test(ctx.descriptor.upstreamId)) return renderScheduleCard(ctx);
   if (/printer/.test(ctx.descriptor.upstreamId)) return renderDeviceStatus(ctx);
   if (/gauge/.test(ctx.descriptor.upstreamId)) return renderGauge(ctx);
-  if (/vehicle_status|plant|entity_overview/.test(ctx.descriptor.upstreamId)) {
-    return renderDetailCard(ctx, /vehicle_status/.test(ctx.descriptor.upstreamId) ? "mdi:car" : /plant/.test(ctx.descriptor.upstreamId) ? "mdi:flower" : "mdi:view-grid", "purple");
+  if (/plant|entity_overview/.test(ctx.descriptor.upstreamId)) {
+    return renderDetailCard(ctx, /plant/.test(ctx.descriptor.upstreamId) ? "mdi:flower" : "mdi:view-grid", "purple");
   }
   switch (ctx.descriptor.family) {
     case "scene": return renderScene(ctx);
