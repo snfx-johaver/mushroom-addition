@@ -1021,11 +1021,15 @@ const renderRoomOverview = (ctx: RenderContext): TemplateResult => {
 };
 
 const renderWasher = (ctx: RenderContext): TemplateResult => {
-  const power = entityFromConfig(ctx, "power_entity") ??
+  const power = entityFromConfig(ctx, "washer_power_entity") ??
+    entityFromConfig(ctx, "power_entity") ??
     entityFromConfig(ctx, "ulm_custom_card_washer_power");
-  const machine = entityFromConfig(ctx, "ulm_custom_card_washer_machine_state") ?? ctx.entity;
+  const machine = entityFromConfig(ctx, "ulm_custom_card_washer_machine_state") ??
+    ctx.entity;
   const progress = entityFromConfig(ctx, "ulm_custom_card_washer_job_progress");
-  const job = entityFromConfig(ctx, "ulm_custom_card_washer_job_state") ?? ctx.entity;
+  const job = entityFromConfig(ctx, "program_stage_entity") ??
+    entityFromConfig(ctx, "ulm_custom_card_washer_job_state") ??
+    machine;
   const remote = entityFromConfig(ctx, "ulm_custom_card_washer_remote_control");
   const delayed = entityFromConfig(ctx, "ulm_custom_card_washer_delayed_start");
   const delayedTime = entityFromConfig(ctx, "ulm_custom_card_washer_delayed_starttime");

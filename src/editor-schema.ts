@@ -619,7 +619,8 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
     : item.upstreamId === "custom_card_washer"
       ? [
         entity(["sensor", "switch", "binary_sensor"]),
-        entity(["sensor", "switch", "binary_sensor"], "power_entity"),
+        entity(["sensor", "select"], "program_stage_entity"),
+        entity(["sensor", "switch"], "washer_power_entity"),
         entity(["sensor", "binary_sensor"], "door_entity"),
         entity(["sensor", "binary_sensor"], "finished_entity"),
         entity(["sensor", "binary_sensor"], "ulm_custom_card_washer_remote_control"),

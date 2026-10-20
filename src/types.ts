@@ -207,6 +207,8 @@ export interface AdditionConfig {
   battery_state_entity?: string;
   charger_type_entity?: string;
   power_entity?: string;
+  program_stage_entity?: string;
+  washer_power_entity?: string;
   door_entity?: string;
   finished_entity?: string;
   secondary_entity?: string;
