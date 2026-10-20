@@ -259,10 +259,6 @@ export interface AdditionConfig {
   show_state?: boolean;
   show_name?: boolean;
   show_icon?: boolean;
-  camera_view?: "auto" | "live";
-  fit_mode?: "cover" | "contain" | "fill";
-  aspect_ratio?: string;
-  image_height?: number;
   layout?: "default" | "horizontal" | "vertical";
   multiline_secondary?: boolean;
   fill_container?: boolean;
