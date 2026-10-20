@@ -209,6 +209,17 @@ export const UPSTREAM_CATALOG: readonly CatalogItem[] = [
 
 export const NATIVE_CATALOG: readonly CatalogItem[] = [
   makeItem("custom_card_entity_carousel", "src/entity-carousel.ts"),
+  {
+    upstreamId: "advanced_home_energy_management",
+    sourcePath: "src/energy-management.ts",
+    kind: "card",
+    category: "custom-card",
+    family: "energy",
+    tag: "mushroom-addition-advanced-home-energy-management",
+    name: "Advanced Home Energy Management",
+    description: "Circular whole-home energy dashboard with grid, solar, battery, consumption, tariff, and panel-health intelligence.",
+    preferredDomains: ["sensor"],
+  },
 ] as const;
 
 interface ComponentGroup {
