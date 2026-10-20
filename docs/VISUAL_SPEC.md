@@ -10,7 +10,6 @@ tokens but not a generic layout.
 
 | Family | Recognizable layout and behavior | Primary reference IDs |
 |---|---|---|
-| Weather | Condition and date header, outside temperature, and four configurable weather metrics | `custom_cards/custom_card_weather_metrics` |
 | Scene | Compact heading plus a grid of scene activation pills | `card_templates/cards/card_scenes_welcome.yaml`, `docs/usage/cards/card_scenes.md` |
 | Battery | Threshold-colored battery icon, large percentage and level bar | `card_templates/cards/card_battery.yaml`, `docs/usage/cards/card_battery.md` |
 | Energy/power | Current value emphasis, source-specific graph, or gauge composition | `custom_cards/custom_card_more_power_outlet/` |
@@ -48,6 +47,14 @@ conditional visibility, templates and isolated keyboard/click action events.
 Recheck native Area custom-feature APIs and extended row sizing after frontend
 updates. This addition is not included in the generated upstream-source visual
 acceptance count.
+
+Area advanced controls use drag-grip buttons, with Alt + Up/Down keyboard
+reordering, not separate arrow buttons. Attribute/custom-text fields appear only
+for their selected content mode; attributes are selectable from the entity.
+Native Content includes alert color, sensor wrapping and grey default-icon
+toggles. The sensor secondary slot preserves native class values and formatting;
+scoped styles change presentation only. Aggregate control colors override native
+button CSS without replacing native membership, state or click handling.
 
 Each family has a separate schema. The primary entity is always `entity`, shown
 at most once and filtered to suitable Home Assistant domains. Secondary inputs

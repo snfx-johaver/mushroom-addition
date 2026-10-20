@@ -9,7 +9,16 @@ import type { ActionConfig, HomeAssistant } from "../src/types";
 class NativeEditor extends HTMLElement {
   hass?: HomeAssistant;
   config?: AreaAdvancedConfig;
-  setConfig = vi.fn((config: AreaAdvancedConfig) => { this.config = config; });
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" }).innerHTML = "<ha-form></ha-form>";
+  }
+  setConfig = vi.fn((config: AreaAdvancedConfig) => {
+    this.config = config;
+    Object.assign(this.shadowRoot!.querySelector("ha-form")!, {
+      schema: [{ name: "content", schema: [{ name: "sensor_classes" }] }], data: config,
+    });
+  });
 }
 class NativeArea extends HTMLElement {
   hass?: HomeAssistant;
@@ -121,6 +130,30 @@ describe("native Area card delegation", () => {
       { ...config.features![3], type: `custom:${AREA_FEATURE_TAG}` },
     ]);
     expect(config.features![3].type).toBe("area-controls");
+  });
+  it("places alert and sensor options inside native Content, preserving native edits", async () => {
+    const editor = document.createElement(`${AREA_TAG}-editor`) as MushroomAreaAdvancedEditor;
+    const config = { ...base, alert_color: "red", sensor_wrap: true, sensor_icons: true };
+    editor.hass = hass; editor.setConfig(config);
+    document.body.append(editor); await settle(editor);
+    const native = editor.shadowRoot!.querySelector("test-area-editor") as NativeEditor;
+    const form = native.shadowRoot!.querySelector("ha-form") as HTMLElement & {
+      schema: { name: string; schema: { name: string }[] }[]; data: AreaAdvancedConfig;
+      computeLabel(field: { name: string }): string;
+    };
+    expect(form.schema[0].schema.map(field => field.name)).toEqual([
+      "sensor_classes", "alert_color", "sensor_wrap", "sensor_icons",
+    ]);
+    expect(form.data).toMatchObject({ alert_color: "red", sensor_wrap: true, sensor_icons: true });
+    expect(form.computeLabel({ name: "alert_color" })).toBe("Alert icon color");
+    expect(native.config).not.toHaveProperty("alert_color");
+    const events = vi.fn(); editor.addEventListener("config-changed", events);
+    native.dispatchEvent(new CustomEvent("config-changed", { detail: {
+      config: { ...native.config, alert_color: "blue", sensor_wrap: false, sensor_icons: true },
+    }, bubbles: true, composed: true }));
+    expect((events.mock.calls[0][0] as CustomEvent).detail.config).toMatchObject({
+      alert_color: "blue", sensor_wrap: false, sensor_icons: true,
+    });
   });
   it("shows an explicit missing-helper error and can retry", async () => {
     delete areaWindow.loadCardHelpers;
@@ -446,7 +479,9 @@ describe("native Area editor round trips", () => {
     editor.hass = hass; editor.setConfig({ ...base, features: [features[0]] });
     document.body.append(editor); await settle(editor);
     const events = vi.fn(); editor.addEventListener("config-changed", events);
-    (editor.shadowRoot!.querySelector('[aria-label="Move control down"]') as HTMLButtonElement).click();
+    (editor.shadowRoot!.querySelector(".drag") as HTMLButtonElement).dispatchEvent(new KeyboardEvent("keydown", {
+      key: "ArrowDown", altKey: true, bubbles: true,
+    }));
     await settle(editor);
     let saved = (events.mock.calls.at(-1)![0] as CustomEvent).detail.config as AreaAdvancedConfig;
     expect(saved.features![0].controls).toEqual([features[0].controls![1], features[0].controls![0], "light"]);
@@ -469,14 +504,49 @@ describe("native Area editor round trips", () => {
     expect(editor.shadowRoot!.querySelector('[aria-label="Edit action button"]')).toBeTruthy();
     const form = editor.shadowRoot!.querySelector("ha-form") as HTMLElement & { schema: { name: string }[] };
     expect(form.schema.map((field) => field.name)).toEqual(expect.arrayContaining([
-      "name", "content_info", "attribute", "content", "use_entity_picture", "tap_action", "hold_action", "double_tap_action",
+      "name", "content_info", "use_entity_picture", "tap_action", "hold_action", "double_tap_action",
     ]));
+    expect(form.schema.map(field => field.name)).not.toContain("attribute");
+    expect(form.schema.map(field => field.name)).not.toContain("content");
+    expect(editor.shadowRoot!.querySelector('[aria-label="Move control down"]')).toBeNull();
+    expect(editor.shadowRoot!.textContent).not.toContain("Add area controls feature");
     (editor.shadowRoot!.querySelector(".detail button") as HTMLButtonElement).click(); await settle(editor);
     (editor.shadowRoot!.querySelector(".drag") as HTMLElement).dispatchEvent(new KeyboardEvent("keydown", {
       key: "ArrowDown", altKey: true, bubbles: true,
     })); await settle(editor);
     const saved = (events.mock.calls.at(-1)![0] as CustomEvent).detail.config as AreaAdvancedConfig;
     expect(saved.features![0].controls![0]).toEqual(features[0].controls![1]);
+  });
+  it("reorders with the drag handle and only shows the selected content input", async () => {
+    const editor = document.createElement(`${AREA_TAG}-editor`) as MushroomAreaAdvancedEditor;
+    editor.hass = hass; editor.setConfig({ ...base, features: [features[0]] });
+    document.body.append(editor); await settle(editor);
+    const events = vi.fn(); editor.addEventListener("config-changed", events);
+    const rows = editor.shadowRoot!.querySelectorAll(".control");
+    rows[0].querySelector(".drag")!.dispatchEvent(new DragEvent("dragstart", { bubbles: true }));
+    rows[1].dispatchEvent(new DragEvent("drop", { bubbles: true, cancelable: true }));
+    await settle(editor);
+    const saved = (events.mock.calls.at(-1)![0] as CustomEvent).detail.config as AreaAdvancedConfig;
+    expect(saved.features![0].controls![0]).toEqual(features[0].controls![1]);
+    (editor.shadowRoot!.querySelector('[aria-label="Edit button"]') as HTMLButtonElement).click();
+    await settle(editor);
+    const readForm = () => editor.shadowRoot!.querySelector(".detail ha-form") as HTMLElement & {
+      data: Record<string, unknown>; schema: { name: string; selector: Record<string, unknown> }[];
+    };
+    let form = readForm();
+    expect(form.schema.map(s => s.name)).not.toContain("attribute");
+    expect(form.schema.map(s => s.name)).not.toContain("content");
+    form.dispatchEvent(new CustomEvent("value-changed", { detail: { value: { ...form.data, content_info: "attribute" } } }));
+    await settle(editor);
+    form = readForm();
+    expect(form.schema.find(s => s.name === "attribute")!.selector).toEqual({
+      select: { mode: "dropdown", custom_value: true, options: [{ value: "friendly_name", label: "friendly name" }] },
+    });
+    expect(form.schema.map(s => s.name)).not.toContain("content");
+    form.dispatchEvent(new CustomEvent("value-changed", { detail: { value: { ...form.data, content_info: "custom" } } }));
+    await settle(editor);
+    expect(readForm().schema.map(s => s.name)).toContain("content");
+    expect(readForm().schema.map(s => s.name)).not.toContain("attribute");
   });
   it("preserves advanced-only buttons through native edits and feature reordering without exposing invalid native fields", () => {
     const action = { type: "action" as const, name: "Work", icon: "mdi:desk" };

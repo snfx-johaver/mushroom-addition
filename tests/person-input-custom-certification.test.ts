@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CATALOG } from "../src/catalog";
 import { editorSchemaFor, upstreamEditorSchemaFor } from "../src/editor-schema";
-import { normalizeConfig } from "../src/helpers";
 import type { AdditionConfig, HomeAssistant } from "../src/types";
 import "../src/index";
 
@@ -146,7 +145,6 @@ describe("person and input custom-card certification", () => {
   it("provides dedicated picker defaults and graphical editor fields for retained sources", () => {
     const expected = {
       custom_card_input_datetime: ["entity", "name"],
-      custom_card_weather_metrics: ["entity", "temperature_entity", "date_entity", "ulm_custom_card_weather_metrics_entity_4"],
     };
     for (const [id, fields] of Object.entries(expected)) {
       const item = descriptor(id);
@@ -155,21 +153,6 @@ describe("person and input custom-card certification", () => {
       expect(upstreamEditorSchemaFor(item).map(({ name }) => name))
         .not.toEqual(expect.arrayContaining(fields));
     }
-  });
-
-  it("migrates every documented legacy entity variable to semantic fields", () => {
-    expect(normalizeConfig({
-      type: "custom:mushroom-addition-custom-card-weather-metrics",
-      ulm_custom_card_weather_metrics: "weather.home",
-      ulm_custom_card_weather_metrics_temperature_outside: "sensor.temperature",
-      ulm_custom_card_weather_metrics_date: "sensor.date_long",
-      ulm_custom_card_weather_metrics_entity_1: "sensor.wind",
-    })).toMatchObject({
-      entity: "weather.home",
-      temperature_entity: "sensor.temperature",
-      date_entity: "sensor.date_long",
-      entities: ["sensor.wind"],
-    });
   });
 
   it("executes all four datetime source interactions with exact payloads", async () => {
@@ -199,21 +182,4 @@ describe("person and input custom-card certification", () => {
       .every((control) => control.disabled)).toBe(true);
   });
 
-  it("renders weather date/temperature and dispatches all four metric actions", async () => {
-    const card = await renderCard("custom_card_weather_metrics", {
-      entity: "weather.home",
-      temperature_entity: "sensor.temperature",
-      date_entity: "sensor.date_long",
-      entities: ["sensor.wind", "sensor.precipitation", "sensor.uv", "sensor.humidity"],
-    });
-    expect(card.shadowRoot.textContent).toContain("⛅ Sep.23th. Wednesday");
-    expect(card.shadowRoot.textContent).toContain("22.4 °C");
-    const actions = vi.fn();
-    card.addEventListener("hass-action", actions);
-    card.shadowRoot.querySelectorAll<HTMLButtonElement>(".metrics-four button")
-      .forEach((control) => control.click());
-    expect(actions.mock.calls.map(([event]) => (event as CustomEvent).detail.config.entity)).toEqual([
-      "sensor.wind", "sensor.precipitation", "sensor.uv", "sensor.humidity",
-    ]);
-  });
 });

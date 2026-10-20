@@ -100,17 +100,6 @@ const certifiedCoreVariables = new Set([
   "ulm_card_input_number_entity",
   "ulm_card_input_number_name",
   "ulm_custom_card_metrics_entitites_name",
-  "ulm_custom_card_weather_metrics",
-  "ulm_custom_card_weather_metrics_date",
-  "ulm_custom_card_weather_metrics_entity_1",
-  "ulm_custom_card_weather_metrics_entity_2",
-  "ulm_custom_card_weather_metrics_entity_3",
-  "ulm_custom_card_weather_metrics_entity_4",
-  "ulm_custom_card_weather_metrics_name_1",
-  "ulm_custom_card_weather_metrics_name_2",
-  "ulm_custom_card_weather_metrics_name_3",
-  "ulm_custom_card_weather_metrics_name_4",
-  "ulm_custom_card_weather_metrics_temperature_outside",
 ]);
 
 const choiceOptions: Record<string, Array<{ value: string; label: string }>> = {
@@ -849,17 +838,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
     : item.upstreamId === "custom_card_input_datetime"
       ? [
         entity(["input_datetime"]),
-        ...presentation(),
-      ]
-    : item.upstreamId === "custom_card_weather_metrics"
-      ? [
-        entity(["weather"]),
-        entity(["sensor"], "temperature_entity"),
-        entity(["sensor"], "date_entity"),
-        ...[1, 2, 3, 4].flatMap((index) => [
-          entity(undefined, `ulm_custom_card_weather_metrics_entity_${index}`),
-          text(`ulm_custom_card_weather_metrics_name_${index}`),
-        ]),
         ...presentation(),
       ]
     : item.upstreamId === "custom_card_tablet"

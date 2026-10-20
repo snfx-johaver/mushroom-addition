@@ -3,6 +3,7 @@ import { property, state } from "lit/decorators.js";
 import { controlActions } from "./control-actions";
 import { fireEvent } from "./helpers";
 import type { ActionConfig, AdditionConfig, HomeAssistant } from "./types";
+import { applyAreaContent, applyNativeControlColor, areaCssColor, AREA_CONTENT_KEYS, type AreaContentOptions } from "./area-content";
 
 export const AREA_TAG = "mushroom-addition-area-card-advanced";
 export const AREA_FEATURE_TAG = "mushroom-addition-area-controls-advanced";
@@ -29,7 +30,7 @@ export interface AreaFeature {
   controls?: (string | AreaControl)[];
   [key: string]: unknown;
 }
-export interface AreaAdvancedConfig {
+export interface AreaAdvancedConfig extends AreaContentOptions {
   type: string;
   area?: string;
   features?: AreaFeature[];
@@ -42,6 +43,7 @@ interface NativeElement extends HTMLElement {
   position?: string;
   color?: string;
   preview?: boolean;
+  updateComplete?: Promise<boolean>;
   setConfig(config: AreaAdvancedConfig | AreaFeature): void;
   getCardSize?(): number | Promise<number>;
   getGridOptions?(): unknown;
@@ -68,8 +70,10 @@ const nativeControl = (control: string | AreaControl): string | AreaControl => {
 };
 
 export function nativeAreaConfig(config: AreaAdvancedConfig, editor = false): AreaAdvancedConfig {
+  const native = { ...config };
+  for (const key of AREA_CONTENT_KEYS) delete native[key];
   return {
-    ...config, type: "area",
+    ...native, type: "area",
     ...(config.features ? { features: config.features.map((feature) => {
       if (feature.type !== "area-controls") return feature;
       if (editor) {
@@ -189,6 +193,14 @@ export class MushroomAreaAdvancedCard extends LitElement {
       this.card.hass = this.hass; this.card.layout = this.layout;
       if (namedFeatures(this.config)) this.card.style.setProperty("--feature-height", "64px");
       else this.card.style.removeProperty("--feature-height");
+      const card = this.card;
+      const config = this.config;
+      void Promise.resolve(card.updateComplete).then(() => {
+        if (card !== this.card || config !== this.config || !this.isConnected) return;
+        applyAreaContent(card, config ?? {});
+      }).catch((error: unknown) => {
+        if (card === this.card && config === this.config) this.error = error instanceof Error ? error.message : String(error);
+      });
     }
   }
   protected updated() { this.sync(); }
@@ -362,6 +374,11 @@ export class MushroomAreaControlsAdvanced extends LitElement {
     group.context = this.context;
     group.position = this.position;
     group.color = domain?.icon_color ?? this.color;
+    const color = domain?.icon_color;
+    group.toggleAttribute("data-custom-color", Boolean(areaCssColor(color)));
+    applyNativeControlColor(group, color);
+    void Promise.resolve(group.updateComplete).then(() => applyNativeControlColor(group!, color))
+      .catch((error: unknown) => { this.error = error instanceof Error ? error.message : String(error); });
     return group;
   }
   protected render() {
@@ -401,7 +418,9 @@ export class MushroomAreaControlsAdvanced extends LitElement {
         ${controlActions(actionConfig)}>
         <span class="button-icon">${picture ? html`<img src=${picture} alt="">`
           : control.icon || !entity ? html`<ha-icon .icon=${control.icon || "mdi:gesture-tap-button"}></ha-icon>`
-          : html`<ha-state-icon .hass=${this.hass} .stateObj=${entityState}></ha-state-icon>`}</span>
+          : html`<ha-state-icon .hass=${this.hass} .stateObj=${entityState}
+              ._config=${this.hass!.config} ._connection=${this.hass!.connection}
+              ._entities=${this.hass!.entities}></ha-state-icon>`}</span>
         ${label ? html`<span class="button-label">${label}</span>` : nothing}
       </button>`;
     })}`;
@@ -438,7 +457,9 @@ const featureKey = (feature: AreaFeature) => JSON.stringify(Object.fromEntries(
 /** Native editors may replace objects; match occurrences, never resurrect removed controls/features. */
 export function mergeNativeAreaEdit(previous: AreaAdvancedConfig, next: AreaAdvancedConfig): AreaAdvancedConfig {
   const pool = [...previous.features ?? []];
-  return { ...next, type: previous.type, ...(next.features ? { features: next.features.map((feature) => {
+  return { ...next, ...Object.fromEntries(AREA_CONTENT_KEYS
+    .filter(key => key in next || previous[key] !== undefined).map(key => [key, key in next ? next[key] : previous[key]])),
+    type: previous.type, ...(next.features ? { features: next.features.map((feature) => {
     if (feature.type !== "area-controls") return feature;
     const referenced = projectedFeatures.get(feature) ?? (feature.controls && projectedControls.get(feature.controls));
     const candidates = pool.map((item, index) => ({ item, index }))
@@ -476,6 +497,7 @@ export class MushroomAreaAdvancedEditor extends LitElement {
   @state() private selected?: { feature: number; index: number; depth: number };
   @state() private conditionsError?: string;
   private conditionsLoading = false;
+  private dragging?: { feature: number; index: number };
   public setConfig(config: AreaAdvancedConfig) {
     this.config = config;
     if (this.editor) this.editor.setConfig(nativeAreaConfig(config, true));
@@ -578,16 +600,25 @@ export class MushroomAreaAdvancedEditor extends LitElement {
       { name: "icon", selector: type === "template" ? { text: {} } : { icon: {} } },
       { name: "icon_color", selector: type === "template" ? { text: {} } : { ui_color: {} } },
       { name: "content_info", selector: { select: { mode: "dropdown",
-        options: ["none", "name", "state", "last-changed", "last-updated", "attribute", "custom"].map((value) => ({ value, label: value.replaceAll("-", " ") })) } } },
-      { name: "attribute", selector: { text: {} } },
-      { name: "content", selector: { text: { multiline: type === "template" } } },
+        options: [
+          { value: "none", label: "Icon only (no text)" }, { value: "name", label: "Entity or custom name" },
+          { value: "state", label: "Current entity value" }, { value: "last-changed", label: "Time since state changed" },
+          { value: "last-updated", label: "Time since last update" },
+          { value: "attribute", label: "One of the entity's attributes" },
+          { value: "custom", label: "Your own text" },
+        ] } } },
+      ...(control.content_info === "attribute" ? [{ name: "attribute", selector: { select: { mode: "dropdown",
+        custom_value: true, options: Object.keys(this.hass?.states[control.entity_id ?? ""]?.attributes ?? {})
+          .map(value => ({ value, label: value.replaceAll("_", " ") })) } } }] : []),
+      ...(type === "template" || control.content_info === "custom"
+        ? [{ name: "content", selector: { text: { multiline: type === "template" } } }] : []),
       { name: "use_entity_picture", selector: { boolean: {} } },
       ...["tap_action", "hold_action", "double_tap_action"].map((name) => ({ name, selector: { ui_action: {} } })),
     ];
     const labels: Record<string, string> = {
       entity_id: "Entity (any domain)", name: "Name (below the icon)", icon: "Icon (empty = entity default)",
-      icon_color: "Icon color", content_info: "Button content", attribute: "State attribute",
-      content: type === "template" ? "Content template" : "Custom text", use_entity_picture: "Use entity picture",
+      icon_color: "Icon color", content_info: "Text below the icon", attribute: "Choose an entity attribute to display",
+      content: type === "template" ? "Content template" : "Text to display below the icon", use_entity_picture: "Use entity picture",
       tap_action: "Tap behavior", hold_action: "Hold behavior", double_tap_action: "Double-tap behavior",
     };
     return html`<section class="detail" aria-label=${`Edit ${type} button`}>
@@ -613,9 +644,13 @@ export class MushroomAreaAdvancedEditor extends LitElement {
         ${type === "template" ? html`<p>Content, name, icon and icon color accept Home Assistant Jinja templates.
           Templates run in Home Assistant, not in the browser. Errors are shown on the button preview.</p>` : nothing}
         <ha-form .hass=${this.hass} .data=${{
-          ...control, tap_action: control.tap_action ?? (control.entity_id ? defaultAreaAction(control.entity_id) : { action: "none" }),
+          ...control, content_info: control.content_info ?? (control.name ? "name" : control.content ? "custom" : "none"),
+          tap_action: control.tap_action ?? (control.entity_id ? defaultAreaAction(control.entity_id) : { action: "none" }),
           hold_action: control.hold_action ?? { action: "none" }, double_tap_action: control.double_tap_action ?? { action: "none" },
         }} .schema=${schema} .computeLabel=${(field: { name: string }) => labels[field.name] ?? field.name}
+          .computeHelper=${(field: { name: string }) => field.name === "attribute"
+            ? "Displays the selected entity property, for example brightness or battery_level. Only used when attribute content is selected."
+            : field.name === "content" && type !== "template" ? "Displays exactly what you type, for example Desk lights. Select Your own text above." : undefined}
           @value-changed=${(event: CustomEvent<{ value: AreaControl }>) => {
             event.stopPropagation();
             const updated = { ...control, ...event.detail.value };
@@ -624,7 +659,44 @@ export class MushroomAreaAdvancedEditor extends LitElement {
           }}></ha-form>`}
     </section>`;
   }
-  protected updated() { if (this.editor) this.editor.hass = this.hass; }
+  protected updated() {
+    if (this.editor) {
+      this.editor.hass = this.hass;
+      const editor = this.editor;
+      void Promise.resolve(editor.updateComplete).then(() => {
+        if (editor !== this.editor || !this.isConnected) return;
+        this.enhanceContentEditor();
+      }).catch((error: unknown) => { this.error = error instanceof Error ? error.message : String(error); });
+    }
+  }
+  private enhanceContentEditor() {
+    interface Field { name: string; schema?: Field[]; selector?: Record<string, unknown> }
+    const form = this.editor?.shadowRoot?.querySelector("ha-form") as (HTMLElement & {
+      schema: Field[]; data: Record<string, unknown>;
+      computeLabel?: (field: Field) => string;
+      computeHelper?: (field: Field) => string | undefined;
+    }) | null;
+    if (!form?.schema?.some(field => field.name === "content")) return;
+    const labels: Record<string, string> = { alert_color: "Alert icon color",
+      sensor_wrap: "Wrap sensor values onto additional lines", sensor_icons: "Show small grey entity icons beside sensor values" };
+    const helpers: Record<string, string> = {
+      alert_color: "Changes the colored alert circles, including the compact alert badge. Clear to use Home Assistant's default.",
+      sensor_wrap: "Keeps all selected sensor classes visible instead of truncating a long row.",
+      sensor_icons: "Uses each sensor entity's default icon. Values and aggregation remain controlled by Home Assistant.",
+    };
+    const content = form.schema.find(field => field.name === "content")!;
+    if (!content.schema?.some(field => field.name === "alert_color")) {
+      form.schema = form.schema.map(field => field !== content ? field : { ...field, schema: [...field.schema ?? [],
+        { name: "alert_color", selector: { ui_color: {} } },
+        { name: "sensor_wrap", selector: { boolean: {} } },
+        { name: "sensor_icons", selector: { boolean: {} } },
+      ] });
+      const label = form.computeLabel, helper = form.computeHelper;
+      form.computeLabel = field => labels[field.name] ?? label?.(field) ?? field.name;
+      form.computeHelper = field => helpers[field.name] ?? helper?.(field);
+    }
+    form.data = { ...form.data, ...Object.fromEntries(AREA_CONTENT_KEYS.map(key => [key, this.config?.[key]])) };
+  }
   protected render() {
     if (!this.config) return nothing;
     return html`${this.error ? html`<ha-alert alert-type="error">${this.error}<button @click=${() => void this.load()}>Retry</button></ha-alert>` : this.editor ?? html`Loading native Area editor…`}
@@ -643,31 +715,48 @@ export class MushroomAreaAdvancedEditor extends LitElement {
             const title = domain ? `Native ${domain} group` : (item.type ?? "entity").replace(/^./, (letter) => letter.toUpperCase());
             const subtitle = item.name ?? this.hass?.states[item.entity_id ?? ""]?.attributes.friendly_name
               ?? item.entity_id ?? (item.type === "conditional" ? `${item.control?.type ?? "entity"} button` : item.content ?? "");
-            return html`<div class="control" role="listitem"
-              @dragstart=${(event: DragEvent) => { event.dataTransfer?.setData("text/plain", `${featureIndex}:${index}`); }}
+            return html`<div class="control" role="listitem" data-feature=${featureIndex} data-index=${index}
+              @dragstart=${(event: DragEvent) => {
+                this.dragging = { feature: featureIndex, index };
+                event.dataTransfer?.setData("text/plain", `${featureIndex}:${index}`);
+              }}
+              @dragend=${() => { this.dragging = undefined; }}
               @dragover=${(event: DragEvent) => event.preventDefault()}
               @drop=${(event: DragEvent) => {
                 event.preventDefault(); event.stopPropagation();
-                const [fromFeature, from] = (event.dataTransfer?.getData("text/plain") ?? "").split(":").map(Number);
-                if (fromFeature === featureIndex && Number.isInteger(from)) this.move(featureIndex, from, index);
+                if (this.dragging?.feature === featureIndex) this.move(featureIndex, this.dragging.index, index);
+                this.dragging = undefined;
               }}>
-              <span class="drag" draggable="true" role="button" tabindex="0" aria-label="Drag to reorder; Alt plus arrow keys to move"
+              <button class="drag" draggable="true" aria-label="Drag to reorder; Alt plus arrow keys to move"
+                title="Drag up or down to reorder. Keyboard: Alt + Up or Down."
+                @pointerdown=${(event: PointerEvent) => {
+                  if (event.pointerType === "touch" || event.pointerType === "pen") {
+                    event.preventDefault();
+                    (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+                    this.dragging = { feature: featureIndex, index };
+                  }
+                }}
+                @pointerup=${(event: PointerEvent) => {
+                  if (!this.dragging || !["touch", "pen"].includes(event.pointerType)) return;
+                  const rows = [...this.shadowRoot!.querySelectorAll<HTMLElement>(`[data-feature="${featureIndex}"]`)];
+                  const row = rows.find(row => {
+                    const bounds = row.getBoundingClientRect();
+                    return event.clientY >= bounds.top && event.clientY <= bounds.bottom;
+                  });
+                  if (row) this.move(featureIndex, this.dragging.index, Number(row.dataset.index));
+                  this.dragging = undefined;
+                }}
+                @pointercancel=${() => { this.dragging = undefined; }}
                 @keydown=${(event: KeyboardEvent) => {
                   if (event.altKey && ["ArrowUp", "ArrowDown"].includes(event.key)) {
                     event.preventDefault(); this.move(featureIndex, index, index + (event.key === "ArrowUp" ? -1 : 1));
                   }
-                }}>⠿</span>
+                }}>⠿</button>
               <div class="row-label"><strong>${title}</strong><span>${subtitle}</span></div>
               <button aria-label="Edit button" @click=${() => {
                 this.selected = { feature: featureIndex, index, depth: 0 };
                 if (item.type === "conditional") void this.ensureConditions();
               }}>✎</button>
-              <button ?disabled=${index === 0} aria-label="Move control up" @click=${() => {
-                this.move(featureIndex, index, index - 1);
-              }}>↑</button>
-              <button ?disabled=${index === feature.controls!.length - 1} aria-label="Move control down" @click=${() => {
-                this.move(featureIndex, index, index + 1);
-              }}>↓</button>
               <button aria-label="Remove control" @click=${() => {
                 this.selected = undefined; this.controls(featureIndex, feature.controls!.filter((_, i) => i !== index));
               }}>×</button>
@@ -688,14 +777,13 @@ export class MushroomAreaAdvancedEditor extends LitElement {
           </label>
           <button @click=${() => { this.selected = undefined; this.controls(featureIndex, undefined); }}>Use automatic native controls</button>
           <button @click=${() => { this.selected = undefined; this.controls(featureIndex, []); }}>Clear controls</button>
-        </fieldset>`)}
-      <button @click=${() => this.commit({ ...this.config!, features: [...this.config!.features ?? [], { type: "area-controls", controls: [] }] })}>Add area controls feature</button>`;
+        </fieldset>`)}`;
   }
   static styles = css`fieldset { border: 1px solid var(--divider-color); margin: 16px 0; border-radius: 12px; }
     .control { display: flex; align-items: center; gap: 8px; min-height: 56px; border-bottom: 1px solid var(--divider-color); }
     .row-label { display: flex; flex-direction: column; flex: 1; min-width: 0; }
     .row-label span { color: var(--secondary-text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .drag { cursor: grab; font-size: 24px; padding: 8px; }
+    .drag { cursor: grab; font-size: 24px; padding: 8px; touch-action:none; }
     .detail { border: 1px solid var(--divider-color); border-radius: 12px; padding: 16px; }
     button, select { color: var(--primary-text-color); background: var(--secondary-background-color);
       border: 1px solid var(--divider-color); border-radius: 8px; padding: 8px; margin: 8px 0; }

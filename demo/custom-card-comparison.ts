@@ -302,7 +302,6 @@ const fixtures: Fixture[] = [
   { id: "sun", entity: "sun.sun", reference: "sun-card.png", width: 500, config: { timeFormat: "24h" } },
   { id: "input-datetime", entity: "input_datetime.alarm", reference: "card_input_datetime.png", width: 320 },
   { id: "input-number", entity: "input_number.missing", reference: "card_input_number.png", width: 320 },
-  { id: "weather-metrics", entity: "weather.home", reference: "screenshot_weather_metrics_card.jpg", width: 320, config: { temperature_entity: "sensor.room_temperature", date_entity: "sensor.date_long", entities: ["sensor.wind", "sensor.precipitation", "sensor.uv", "sensor.humidity"], ulm_custom_card_weather_metrics_name_1: "Wind", ulm_custom_card_weather_metrics_name_2: "Precipitation", ulm_custom_card_weather_metrics_name_3: "UV", ulm_custom_card_weather_metrics_name_4: "Humidity" } },
   {
     id: "media-player-sonos",
     entity: "media_player.sonos",

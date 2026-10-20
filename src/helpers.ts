@@ -168,7 +168,6 @@ const upstreamCompatibility = (config: AdditionConfig): AdditionConfig => {
 const legacyEntityKeys = [
   "ulm_card_media_player_entity",
   "ulm_card_input_number_entity",
-  "ulm_custom_card_weather_metrics",
 ] as const;
 
 export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
@@ -242,14 +241,6 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
       }).filter((item): item is NonNullable<typeof item> => item !== undefined);
       if (sceneItems.length) migrated.scene_items = sceneItems;
     }
-  }
-  if (String(config.type).includes("weather-metrics")) {
-    migrated.entity ??= entityId(config.ulm_custom_card_weather_metrics);
-    migrated.temperature_entity ??= entityId(config.ulm_custom_card_weather_metrics_temperature_outside);
-    migrated.date_entity ??= entityId(config.ulm_custom_card_weather_metrics_date);
-    migrated.entities ??= [1, 2, 3, 4]
-      .map((index) => entityId(config[`ulm_custom_card_weather_metrics_entity_${index}`]))
-      .filter((value): value is string => value !== undefined);
   }
   if (String(config.type).includes("custom-card-washer")) {
     migrated.entity ??= entityId(config.ulm_custom_card_washer_machine_state) ??

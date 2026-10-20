@@ -12,7 +12,7 @@ const customCards = [
   "room_overview", "welcome",
   "washer", "sun",
   "input_datetime",
-  "weather_metrics", "media_player_sonos",
+  "media_player_sonos",
   "printer",
   "nas_metrics", "tablet",
   "playstation",
@@ -115,7 +115,6 @@ const makeItem = (
   const consoleCard = upstreamId === "custom_card_playstation";
   const displayNames: Partial<Record<string, string>> = {
     custom_card_trash: "Trash",
-    custom_card_weather_metrics: "Weather Metrics",
     custom_card_printer: "Printer",
     custom_card_washer: "Washer-Dryer",
     custom_card_nas_metrics: "NAS",
@@ -127,7 +126,6 @@ const makeItem = (
   };
   const displayDescriptions: Partial<Record<string, string>> = {
     custom_card_trash: "Mushroom-style trash collection schedule card.",
-    custom_card_weather_metrics: "Mushroom-style weather metrics card.",
     custom_card_printer: "Mushroom-style printer status and toner level card.",
     custom_card_washer: "Mushroom-style washer and dryer program, progress, power, status, and remote control card.",
     custom_card_tablet: "Mushroom-style tablet status and maintenance card.",

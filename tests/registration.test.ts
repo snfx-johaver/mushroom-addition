@@ -11,6 +11,12 @@ describe("Home Assistant registration", () => {
     for (const alias of LEGACY_ALIASES) expect(customElements.get(alias.tag)).toBeDefined();
   });
 
+  it("does not register the removed Weather Metrics card or expose it in the picker", () => {
+    const tag = "mushroom-addition-custom-card-weather-metrics";
+    expect(customElements.get(tag)).toBeUndefined();
+    expect(window.customCards?.some((item) => item.type === tag)).toBe(false);
+  });
+
   it("publishes every component to the Lovelace picker", () => {
     const registered = new Set(window.customCards?.map((item) => item.type));
     for (const item of CATALOG) expect(registered.has(item.tag)).toBe(true);
@@ -343,66 +349,6 @@ describe("Home Assistant registration", () => {
       getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
     };
     expect(constructor.getStubConfig({ states: {}, callService: async () => undefined }, [], [])).toMatchObject({ icon });
-  });
-
-  it("populates the weather metrics picker example with healthy weather data", () => {
-    const entries: Array<[string, string, Record<string, unknown>]> = [
-      ["weather.home", "partlycloudy", { friendly_name: "Home forecast", temperature: 12.5 }],
-      ["sensor.outdoor_temperature_old", "unavailable", {
-        friendly_name: "Outdoor temperature old",
-        device_class: "temperature",
-        unit_of_measurement: "°C",
-      }],
-      ["sensor.outdoor_temperature", "12.5", {
-        friendly_name: "Outdoor temperature",
-        device_class: "temperature",
-        unit_of_measurement: "°C",
-      }],
-      ["sensor.date_time", "2026-10-19, 10:47", { friendly_name: "Date & Time" }],
-      ["sensor.outdoor_humidity", "81", {
-        friendly_name: "Outdoor humidity",
-        device_class: "humidity",
-        unit_of_measurement: "%",
-      }],
-      ["sensor.wind_speed", "14", {
-        friendly_name: "Wind speed",
-        device_class: "wind_speed",
-        unit_of_measurement: "km/h",
-      }],
-      ["sensor.weather_pressure", "1014", {
-        friendly_name: "Weather pressure",
-        device_class: "atmospheric_pressure",
-        unit_of_measurement: "hPa",
-      }],
-      ["sensor.rain_today", "2.4", {
-        friendly_name: "Rain today",
-        device_class: "precipitation",
-        unit_of_measurement: "mm",
-      }],
-    ];
-    const states: HomeAssistant["states"] = Object.fromEntries(entries.map(([entity_id, state, attributes]) => [
-      entity_id,
-      { entity_id, state, attributes },
-    ]));
-    const hass: HomeAssistant = { states, callService: async () => undefined };
-    const descriptor = CATALOG.find((item) => item.upstreamId === "custom_card_weather_metrics")!;
-    const config = createStubConfig(descriptor, hass, Object.keys(states), []);
-
-    expect(config).toMatchObject({
-      entity: "weather.home",
-      temperature_entity: "sensor.outdoor_temperature",
-      date_entity: "sensor.date_time",
-      entities: [
-        "sensor.outdoor_humidity",
-        "sensor.wind_speed",
-        "sensor.weather_pressure",
-        "sensor.rain_today",
-      ],
-      ulm_custom_card_weather_metrics_name_1: "Humidity",
-      ulm_custom_card_weather_metrics_name_2: "Wind",
-      ulm_custom_card_weather_metrics_name_3: "Pressure",
-      ulm_custom_card_weather_metrics_name_4: "Precipitation",
-    });
   });
 
   it("populates Flower bars with independently compatible sensor entities", () => {

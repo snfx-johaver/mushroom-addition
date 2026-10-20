@@ -4,6 +4,13 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Updates to 0.0.1 (no version bump)
 
+- Simplified Area advanced button content with contextual attribute dropdowns
+  and text helpers; replaced arrow reorder buttons with drag grips and removed
+  the duplicate controls-feature add button. Fixed native group color overrides.
+  Added native Content options for alert colors, wrapped sensor values and small
+  grey entity-default sensor icons while retaining native aggregation.
+- Removed Weather Metrics from the card picker, renderer, editor, demos and
+  source inventory. Astronomy and shared weather-entity support are unchanged.
 - Tightened Entity Carousel vertical spacing, including header/label-free mode.
   Cleared header/item icons now follow Home Assistant's entity/device-class/state
   icons. Added per-item double-tap actions and native Default action selection

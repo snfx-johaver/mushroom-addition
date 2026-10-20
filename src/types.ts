@@ -398,7 +398,6 @@ export interface AdditionConfig extends RoomViewDeviceActions {
   min_entity?: string;
   max_entity?: string;
   datetime_entity?: string;
-  date_entity?: string;
   level_entity?: string;
   download_entity?: string;
   upload_entity?: string;

@@ -3,7 +3,7 @@
 [![CI](https://github.com/snfx-johaver/mushroom-cards-addition/actions/workflows/ci.yml/badge.svg)](https://github.com/snfx-johaver/mushroom-cards-addition/actions/workflows/ci.yml)
 
 **Build a more useful Home Assistant dashboard without writing YAML.**
-Mushroom Cards Addition is a HACS-installable collection of **28
+Mushroom Cards Addition is a HACS-installable collection of **27
 dashboard components**, with graphical configuration, theme-aware styling and
 Home Assistant actions. It is a frontend custom-card collection, not a backend
 integration, and works alongside Mushroom without depending on its internals.
@@ -14,8 +14,8 @@ controls, room overviews, battery intelligence, plant and pollen monitoring,
 NAS metrics, speed tests and more. Configure entities, presentation and supported
 controls directly in the dashboard editor; YAML remains available when preferred.
 
-The catalog maps **24 documented sources**—5 default-card sources and 19 custom-card
-sources—to **28 public components**, including five original additions. Related layouts are grouped into graphical
+The catalog maps **23 documented sources**—5 default-card sources and 18 custom-card
+sources—to **27 public components**, including five original additions. Related layouts are grouped into graphical
 variants instead of duplicating picker entries. See the
 [complete, source-linked catalog](docs/CATALOG.md), the generated
 [item-by-item parity matrix](docs/PARITY_MATRIX.md), and the
@@ -47,7 +47,7 @@ custom features (the target instance is Home Assistant 2026.10.2); the general
 helpers/components produce visible errors with retry, not a simulated fallback.
 
 In **Advanced area controls**, compact chips-style rows have drag handles,
-edit/remove buttons and keyboard/up/down reordering. **Add button** offers
+edit/remove buttons and drag-to-reorder grips (keyboard: Alt + Up/Down). **Add button** offers
 Entity (any domain), Action, Conditional and Template. Edit a row to configure
 name, inferred/custom icon, icon color, entity picture, content (name, state,
 relative last-changed/last-updated, attribute or custom text), and native
@@ -66,6 +66,19 @@ Templates can reference `config`, `entity` and `user`, plus normal HA template
 globals. These are button counterparts to the four chip types, not a dependency
 on Mushroom chips or a claim to support every specialized chip type.
 
+**Text below the icon** explains each content choice. Selecting **One of the
+entity's attributes** reveals a dropdown of that entity's properties, such as
+brightness; selecting **Your own text** reveals the text box. Unused fields stay
+hidden. Add or remove controls features through the native **Features** section;
+there is no duplicate feature-add button in the advanced controls list.
+
+The native **Content** section also provides **Alert icon color** (clear it to
+restore HA's default alert circles/badge), **Wrap sensor values onto additional
+lines**, and **Show small grey entity icons beside sensor values**. Sensor values
+still come from native Area aggregation, ordering, exclusions and locale formatting.
+These opt-in enhancements use the native secondary slot and scoped styles. They
+depend on installed frontend internals; recheck them after Home Assistant updates.
+
 Standard domain groups remain native (including group membership, exclusions,
 state and toggle semantics). For item-specific icons/actions, add an entity
 button instead of overriding an aggregate domain group. Domain color overrides
@@ -81,6 +94,9 @@ omitted from the native editor's controls projection. Saved features retain
 type: custom:mushroom-addition-area-card-advanced
 area: office_joris
 display_type: icon
+alert_color: red
+sensor_wrap: true
+sensor_icons: true
 features_position: bottom
 features:
   - type: area-controls
@@ -218,7 +234,7 @@ dashboards use the unified component and a friendly style dropdown. Card-picker
 previews automatically select compatible entities from
 the current Home Assistant instance so examples show real names and states.
 
-NAS, Weather Metrics, Speedtest, Pollen, Roomview, and the
+NAS, Speedtest, Pollen, Roomview, and the
 Advanced Energy cards use aligned Mushroom headers with a 40px icon beside
 the primary and secondary information. Their header icon and information
 selectors are editable independently of the metric, forecast, and status icons

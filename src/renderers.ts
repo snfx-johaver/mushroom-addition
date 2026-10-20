@@ -1307,35 +1307,6 @@ const renderInputDateTime = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const renderWeatherMetrics = (ctx: RenderContext): TemplateResult => {
-  const details = [1, 2, 3, 4]
-    .map((index) => entityFromConfig(ctx, `ulm_custom_card_weather_metrics_entity_${index}`) ??
-      (ctx.config.entities?.[index - 1] ? ctx.hass.states[ctx.config.entities[index - 1]] : undefined));
-  const temperature = linkedState(ctx, "temperature_entity");
-  const date = linkedState(ctx, "date_entity") ??
-    entityFromConfig(ctx, "ulm_custom_card_weather_metrics_date");
-  const condition = ctx.entity?.state || "unknown";
-  const weatherEmoji: Record<string, string> = {
-    "clear-night": "🌙", cloudy: "☁️", exceptional: "🌞", fog: "🌫️", hail: "⛈️",
-    lightning: "⚡", "lightning-rainy": "⛈️", partlycloudy: "⛅", pouring: "🌧️",
-    rainy: "💧", snowy: "❄️", "snowy-rainy": "🌨️", sunny: "☀️", windy: "🌪️",
-  };
-  return ctx.actionSurface("custom-weather-metrics", html`
-    <div class="weather-metrics-panel">
-      <b class="weather-date">${weatherEmoji[condition] || "❔"} ${date ? stateLabel(date) : "Date unavailable"}</b>
-      <strong>${temperature ? stateLabel(temperature) : `${attr(ctx.entity, "temperature") ?? "—"}°`}</strong>
-    </div>
-    <div class="metrics-four">${details.map((entity, index) => html`
-      <button ?disabled=${!entity} @pointerdown=${(event: Event) => event.stopPropagation()}
-        @click=${(event: Event) => entity && runControlAction(event, ctx, { action: "more-info" }, entity.entity_id)}>
-        <b>${stateLabel(entity)}</b>
-        <small>${configured<string>(ctx, `ulm_custom_card_weather_metrics_name_${index + 1}`) ||
-          (entity ? displayName({ type: "", entity: entity.entity_id }, entity, ctx.hass) : `Weather ${index + 1}`)}</small>
-      </button>
-    `)}</div>
-  `);
-};
-
 const renderSonos = (ctx: RenderContext): TemplateResult => {
   const state = ctx.entity?.state;
   const unavailable = !ctx.entity || state === "unavailable" || state === "unknown";
@@ -2468,7 +2439,6 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "custom_card_washer": return renderWasher(ctx);
     case "custom_card_sun": return renderSunCard(ctx);
     case "custom_card_input_datetime": return renderInputDateTime(ctx);
-    case "custom_card_weather_metrics": return renderWeatherMetrics(ctx);
     case "custom_card_media_player_sonos": return renderSonos(ctx);
     case "custom_card_printer": return renderPrinter(ctx);
     case "custom_card_nas_metrics": return renderNasMetrics(ctx);

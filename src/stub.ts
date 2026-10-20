@@ -139,8 +139,6 @@ export const createStubConfig = (
                                       : descriptor.upstreamId === "custom_card_printer"
                                         ? findEntity(["sensor", "binary_sensor"], ["printer"]) ??
                                           findEntity(["sensor", "binary_sensor"], ["online"])
-                              : descriptor.upstreamId === "custom_card_weather_metrics"
-                                ? findEntity(["weather"], [])
                               : descriptor.upstreamId === "card_room"
                                 ? findEntity(["light"], [])
                                 : descriptor.upstreamId === "custom_card_plant"
@@ -194,44 +192,7 @@ export const createStubConfig = (
     : { action: entity ? "more-info" : "none" };
   const uniqueEntities = (candidates: Array<string | undefined>, limit: number): string[] =>
     [...new Set(candidates.filter((value): value is string => Boolean(value)))].slice(0, limit);
-  const weatherTemperature = findEntity(["sensor"], ["outdoor", "temperature"]) ??
-    findEntity(["sensor"], ["outside", "temperature"]) ??
-    findEntity(["sensor"], ["garden", "temperature"]) ??
-    findEntityByDeviceClass(["temperature"], [], ["battery", "cpu", "soil"]);
-  const weatherDate = findEntity(["sensor"], ["date", "time"]) ??
-    findEntity(["sensor"], ["time", "date"]) ??
-    findEntity(["sensor"], ["date"]);
-  const weatherMetricCandidates: Array<[string | undefined, string]> = [
-    [findHealthyEntityByDeviceClass(["humidity"]), "Humidity"],
-    [
-      findHealthyEntityByDeviceClass(["wind_speed"]) ??
-        findHealthyEntity(["sensor"], ["wind", "speed"]) ??
-        findHealthyEntity(["sensor"], ["wind"]),
-      "Wind",
-    ],
-    [
-      findHealthyEntityByDeviceClass(["atmospheric_pressure"]) ??
-        findHealthyEntity(["sensor"], ["barometric", "pressure"]) ??
-        findHealthyEntity(["sensor"], ["pressure"], ["blood"]),
-      "Pressure",
-    ],
-    [
-      findHealthyEntityByDeviceClass(["precipitation", "precipitation_intensity"]) ??
-        findHealthyEntity(["sensor"], ["precipitation"]) ??
-        findHealthyEntity(["sensor"], ["rain"]),
-      "Precipitation",
-    ],
-    [findHealthyEntity(["sensor"], ["visibility"]), "Visibility"],
-    [findHealthyEntity(["sensor"], ["cloud", "coverage"]), "Cloud cover"],
-    [findHealthyEntity(["sensor"], ["uv", "index"]), "UV index"],
-    [findHealthyEntityByDeviceClass(["illuminance"]), "Light level"],
-    [findHealthyEntity(["sensor"], ["dew", "point"]), "Dew point"],
-  ];
   const inferredConsolePlatform = inferConsolePlatform(hass, entity);
-  const weatherMetrics = weatherMetricCandidates.filter(
-    ([entityId], index, candidates) =>
-      Boolean(entityId) && candidates.findIndex(([candidate]) => candidate === entityId) === index,
-  ).slice(0, 4) as Array<[string, string]>;
   const stubTapAction = descriptor.upstreamId === "custom_card_sun" ||
     descriptor.upstreamId === "custom_card_pollen" ||
     descriptor.upstreamId === "card_welcome_scenes"
@@ -471,21 +432,6 @@ export const createStubConfig = (
           .filter((entityId) => entityId.startsWith("scene."))
           .slice(0, 5)
           .map((entityId) => sceneItemDefaultsFor(hass, entityId)),
-      }
-      : {}),
-    ...(descriptor.upstreamId === "custom_card_weather_metrics"
-      ? {
-        entity: findEntity(["weather"], []) ?? entity,
-        temperature_entity: weatherTemperature,
-        date_entity: weatherDate,
-        entities: weatherMetrics.map(([entityId]) => entityId),
-        ulm_custom_card_weather_metrics: findEntity(["weather"], []) ?? entity,
-        ulm_custom_card_weather_metrics_temperature_outside: weatherTemperature,
-        ulm_custom_card_weather_metrics_date: weatherDate,
-        ...Object.fromEntries(weatherMetrics.flatMap(([entityId, label], index) => [
-          [`ulm_custom_card_weather_metrics_entity_${index + 1}`, entityId],
-          [`ulm_custom_card_weather_metrics_name_${index + 1}`, label],
-        ])),
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_media_player_sonos"

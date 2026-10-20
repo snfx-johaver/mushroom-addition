@@ -342,7 +342,6 @@ describe("family renderers", () => {
     "custom_card_roomview",
     "custom_card_nas_metrics",
     "custom_card_speedtest_gauges",
-    "custom_card_weather_metrics",
     "advanced_home_energy_management",
     "advanced_energy_buy_sell",
     "advanced_energy_panel_health",
@@ -812,7 +811,6 @@ describe("family renderers", () => {
   });
 
   it.each([
-    ["weather-metrics", "weather.home", "custom-weather-metrics", "weather-metrics-panel"],
     ["media-player-sonos", "media_player.tv", "custom-sonos", "sonos-controls"],
     ["printer", "sensor.power", "custom-printer", "toner-bars"],
     ["nas-metrics", "sensor.power", "custom-nas-metrics", "nas-metrics-metrics"],

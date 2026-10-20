@@ -2,7 +2,7 @@
 
 This is the source-by-source acceptance ledger for the card catalog.
 
-**Progress: 0/24 fully E2E accepted. Stage totals — picker 0, editor 0, visual 0, states 0, interactions 0, live 0.**
+**Progress: 0/23 fully E2E accepted. Stage totals — picker 0, editor 0, visual 0, states 0, interactions 0, live 0.**
 
 An entry is fully accepted only when all six independent stages pass: picker,
 graphical editor, visual parity, state behavior, interactions, and live Home
@@ -29,7 +29,6 @@ metadata, and structural tests do not constitute acceptance.
 | `custom_card_washer` | custom-card | `custom_card_washer` | — | `custom_card_washer` | Source: `custom_cards/custom_card_washer` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_sun` | custom-card | `custom_card_sun` | — | `custom_card_sun` | Source: `custom_cards/custom_card_sun` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_input_datetime` | custom-card | `custom_card_input_datetime` | — | `custom_card_input_datetime` | Source: `custom_cards/custom_card_input_datetime` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
-| `custom_card_weather_metrics` | custom-card | `custom_card_weather_metrics` | — | `custom_card_weather_metrics` | Source: `custom_cards/custom_card_weather_metrics` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_media_player_sonos` | custom-card | `custom_card_media_player_sonos` | — | `custom_card_media_player_sonos` | Source: `custom_cards/custom_card_media_player_sonos` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_printer` | custom-card | `custom_card_printer` | — | `custom_card_printer` | Source: `custom_cards/custom_card_printer` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_nas_metrics` | custom-card | `custom_card_nas_metrics` | — | `custom_card_nas_metrics` | Source: `custom_cards/custom_card_nas_metrics` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |

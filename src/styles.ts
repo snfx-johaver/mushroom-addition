@@ -471,7 +471,6 @@ export const sharedStyles = css`
   .input-datetime-controls .ulm-control { width: 100%; height: 42px; border-radius: 14px; }
   .input-datetime-controls .hold-control { font-size: 16px; font-weight: 700; }
   .custom-sonos, .custom-printer,
-  .custom-weather-metrics,
   .custom-nas-metrics, .custom-tablet { display: grid; gap: 10px; padding: 12px; }
   .custom-sonos { position: relative; overflow: hidden; }
   .custom-sonos > :not(.media-art) { position: relative; z-index: 1; }
@@ -539,19 +538,9 @@ export const sharedStyles = css`
     min-width: 0; max-width: 100%; overflow: hidden; font-size: 11px; font-weight: 700;
     text-overflow: ellipsis; white-space: nowrap;
   }
-  .metrics-four button:disabled { cursor: not-allowed; opacity: .45; }
   .nas-metrics-header {
     display: flex; min-width: 0; align-items: center; gap: 10px;
   }
-  .custom-weather-metrics { min-height: 160px; border-radius: 30px; }
-  .weather-metrics-panel { display: grid; min-height: 66px; align-items: center; border: 2px solid rgba(var(--ulm-grey), .65); border-radius: 20px; }
-  .weather-metrics-panel { grid-template-columns: 1fr auto; padding-left: 12px; }
-  .weather-metrics-panel .weather-date { font-size: 14px; }
-  .weather-metrics-panel strong { margin-right: 12px; color: var(--primary-text-color); font-size: 20px; }
-  .metrics-four { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
-  .metrics-four > button { display: grid; min-width: 0; min-height: 54px; place-items: center; padding: 6px 3px; border: 0; background: transparent; color: var(--primary-text-color); text-align: center; }
-  .metrics-four b, .metrics-four small { overflow: hidden; max-width: 100%; text-overflow: ellipsis; white-space: nowrap; }
-  .metrics-four b { font-size: 14px; } .metrics-four small { color: var(--secondary-text-color); font-size: 12px; font-weight: 700; }
   .toner-bars { display: grid; gap: 5px; }
   .toner-bars span { display: block; min-height: 30px; }
   .toner-bars i { position: relative; display: grid; box-sizing: border-box; height: 30px; overflow: hidden; place-items: center; border: 1px solid rgba(var(--ulm-grey), .3); border-radius: 10px; background: rgba(var(--ulm-grey), .08); font-style: normal; }
