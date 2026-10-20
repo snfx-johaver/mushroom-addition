@@ -99,6 +99,47 @@ describe("first pending custom batch certification", () => {
     expect(card.shadowRoot.textContent).not.toContain("Today:");
   });
 
+  it.each(["unknown", "unavailable", "None", " geen ", "", "—", "-", "n/a"])(
+    "optionally hides unknown waste dates (%s), restoring rows when a date arrives", async (value) => {
+      const config: AdditionConfig = { type: "custom:mushroom-addition-custom-card-trash", entity: "sensor.rest",
+        hide_unknown_dates: true, waste_streams: [
+          { entity: "sensor.rest", label: "Scheduled" }, { entity: "sensor.empty", label: "Unscheduled" },
+          { entity: "sensor.missing", label: "Missing" }, { entity: "sensor.gft", enabled: false, label: "Disabled" },
+        ] };
+      const card = await renderCard(item("custom_card_trash").tag, config, {
+        ...states, "sensor.empty": { entity_id: "sensor.empty", state: value, attributes: {} },
+      });
+      expect(card.shadowRoot.querySelectorAll(".waste-row")).toHaveLength(1);
+      expect(card.shadowRoot.textContent).toContain("Scheduled");
+      expect(card.shadowRoot.textContent).not.toContain("Unscheduled");
+      card.hass = { ...card.hass, states: { ...card.hass.states,
+        "sensor.empty": { entity_id: "sensor.empty", state: "23-10-2026", attributes: {} } } };
+      await card.updateComplete;
+      expect(card.shadowRoot.querySelectorAll(".waste-row")).toHaveLength(2);
+      card.setConfig({ ...config, hide_unknown_dates: false });
+      await card.updateComplete;
+      expect(card.shadowRoot.querySelectorAll(".waste-row")).toHaveLength(3);
+      expect(card.shadowRoot.textContent).toContain("Missing");
+      expect(editorSchemaFor(item("custom_card_trash")).find(field => field.name === "hide_unknown_dates")?.selector)
+        .toEqual({ boolean: {} });
+    },
+  );
+
+  it("requires a valid calendar event date rather than treating on/off as a known date", async () => {
+    const card = await renderCard(item("custom_card_trash").tag, {
+      type: "custom:mushroom-addition-custom-card-trash", hide_unknown_dates: true,
+      waste_streams: [{ entity: "calendar.waste", label: "Calendar" }],
+    }, { "calendar.waste": { entity_id: "calendar.waste", state: "off", attributes: {} } });
+    expect(card.shadowRoot.querySelectorAll(".waste-row")).toHaveLength(0);
+    for (const start_time of ["invalid date", "2026-10-23 09:00:00"]) {
+      card.hass = { ...card.hass, states: { "calendar.waste": {
+        entity_id: "calendar.waste", state: "off", attributes: { start_time },
+      } } };
+      await card.updateComplete;
+      expect(card.shadowRoot.querySelectorAll(".waste-row")).toHaveLength(start_time === "invalid date" ? 0 : 1);
+    }
+  });
+
   it("covers Alarm Time active, collapsed, unavailable, and exact step actions", async () => {
     const callService = vi.fn(async () => undefined);
     const config: AdditionConfig = {

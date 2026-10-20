@@ -408,9 +408,8 @@ export const createStubConfig = (
         room_status: [],
         room_secondary_parts: [],
         room_temperature_entity: findEntity(["sensor"], ["temperature"]),
-        room_brightness_entity: entity?.startsWith("light.") ? entity : undefined,
         ulm_card_dynamic_color: false,
-        room_light_entity: findEntity(["light"], ["room"]) ?? findEntity(["light"], []),
+        room_light_entity: entity?.startsWith("light.") ? entity : findEntity(["light"], ["room"]) ?? findEntity(["light"], []),
       }
       : {}),
     ...(descriptor.upstreamId === "card_scenes"
@@ -437,9 +436,9 @@ export const createStubConfig = (
     ...(descriptor.upstreamId === "custom_card_media_player_sonos"
       ? {
         use_media_info: true,
-        show_volume_level: true,
         volume_controls: ["volume_mute", "volume_set", "volume_buttons"],
-        media_controls: ["on_off", "shuffle", "previous", "play_pause_stop", "next", "repeat"],
+        ulm_card_media_player_power_button: true,
+        media_controls: ["shuffle", "previous", "play_pause_stop", "next", "repeat"],
         collapsible_controls: true,
       }
       : {}),

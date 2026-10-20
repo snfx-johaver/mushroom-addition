@@ -331,7 +331,6 @@ describe("Home Assistant registration", () => {
         };
         expect(consoleConstructor.getStubConfig(hass, Object.keys(hass.states), [])).toMatchObject({
           entity: "binary_sensor.xbox_profile",
-          icon: "mdi:controller-classic",
           console_platform: "xbox",
           console_show_artwork: true,
           console_show_controls: true,
@@ -344,11 +343,11 @@ describe("Home Assistant registration", () => {
     ["mushroom-addition-custom-card-trash", "mdi:trash-can-outline"],
     ["mushroom-addition-custom-card-room-overview", "mdi:sofa"],
     ["mushroom-addition-custom-card-roomview", "mdi:home-variant-outline"],
-  ])("uses the intended default icon for %s", (tag, icon) => {
+  ])("leaves the default icon entity-driven for %s", (tag) => {
     const constructor = customElements.get(tag) as typeof HTMLElement & {
       getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
     };
-    expect(constructor.getStubConfig({ states: {}, callService: async () => undefined }, [], [])).toMatchObject({ icon });
+    expect(constructor.getStubConfig({ states: {}, callService: async () => undefined }, [], []).icon).toBeUndefined();
   });
 
   it("populates Flower bars with independently compatible sensor entities", () => {

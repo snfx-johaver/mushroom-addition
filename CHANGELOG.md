@@ -4,6 +4,33 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Updates to 0.0.1 (no version bump)
 
+- Brought working generic media-player options to Sonos: a separate,
+  capability-aware power switch, Sources/details, artist/album details,
+  an optional playback target, custom volume steps and idle/standby collapse.
+  Preserved legacy power selections without duplicating the editor control.
+- Fixed default header icons across entity-backed cards (including both media
+  players) to use HA's entity/device-class/state icon instead of a recommended
+  card icon. Picker/editor defaults no longer freeze header icons; linked metric
+  icons no longer accidentally become header overrides. Custom overrides remain.
+- Removed Sonos's redundant Show volume level switch: the selected volume
+  slider owns the percentage. Use media info now works with the editor's normal
+  Name/State modes, showing title/artist while respecting custom/hidden/time modes.
+- Aligned NAS status/metric typography with Mushroom's 14px primary/12px secondary
+  defaults and 40px icon containers/24px symbols, including narrow layouts and
+  theme-controlled sizing. Kept its header and rings.
+- Added Trash's opt-in **Hide items without a known date** graphical option;
+  missing/unknown dates disappear and automatically return when available.
+- Combined Room's brightness/accent light pickers into one shared light entity,
+  with migration of brightness-only configs. Status indicators now share the
+  square buttons' neutral background. Welcome navigation rows reserve bottom
+  shadow space and scroll on narrow widths instead of clipping their buttons.
+  Scenes and Welcome Scenes buttons now share Welcome's borderless/shadow
+  treatment without changing their shapes; the weather/date background is transparent.
+- Stabilized Area advanced Content selectors so the alert color picker stays open
+  across state updates. Advanced controls now use native HA sortable grips and
+  edit/delete icon buttons, matching Features. Off/disabled controls retain a
+  theme-aware neutral background. Added an opt-in configured-light RGB room accent
+  that clears when disabled or the light is off.
 - Matched Astronomy's Sun and Moon orbit markers at 20px, retaining the Moon
   glyph size while fitting its white circle to the same diameter.
 - Simplified Area advanced button content with contextual attribute dropdowns

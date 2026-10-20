@@ -1,5 +1,7 @@
 import { LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators.js";
+import { repeat } from "lit/directives/repeat.js";
+import { mdiDelete, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
 import { controlActions } from "./control-actions";
 import { fireEvent } from "./helpers";
 import type { ActionConfig, AdditionConfig, HomeAssistant } from "./types";
@@ -50,6 +52,13 @@ interface NativeElement extends HTMLElement {
 }
 interface NativeConstructor extends CustomElementConstructor {
   getConfigElement?(): HTMLElement | Promise<HTMLElement>;
+}
+interface AreaEditorField { name: string; schema?: AreaEditorField[]; selector?: Record<string, unknown> }
+interface NativeAreaEditor extends NativeElement {
+  _config?: AreaAdvancedConfig;
+  _schema?: (...args: unknown[]) => AreaEditorField[];
+  _computeLabelCallback?: (field: AreaEditorField) => string;
+  _computeHelperCallback?: (field: AreaEditorField) => string | undefined;
 }
 type Helpers = { createCardElement(config: AreaAdvancedConfig): NativeElement | Promise<NativeElement> };
 type AreaWindow = Window & { loadCardHelpers?: () => Promise<Helpers> };
@@ -433,10 +442,11 @@ export class MushroomAreaControlsAdvanced extends LitElement {
     hui-conditional-card[hidden] { display: none !important; }
     .entity { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; min-width: 42px;
       height: var(--feature-height, 42px); border: 0; border-radius: var(--ha-card-border-radius, 12px);
-      background: var(--ha-card-background, var(--card-background-color)); cursor: pointer;
+      background: color-mix(in srgb, var(--disabled-color, var(--secondary-text-color)) 14%,
+        var(--ha-card-background, var(--card-background-color))); cursor: pointer;
       color: var(--control-icon-color); --mdc-icon-size: 24px; }
     .entity[aria-pressed="true"] { background: color-mix(in srgb, var(--control-icon-color) 16%, transparent); }
-    .entity:disabled { opacity: .4; cursor: default; }
+    .entity:disabled { color: var(--disabled-text-color, var(--secondary-text-color)); cursor: default; }
     .entity:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
     :host([named]) { --feature-height: 64px; }
     :host([named]) .entity { height: 64px; padding: 6px 4px; }
@@ -497,10 +507,18 @@ export class MushroomAreaAdvancedEditor extends LitElement {
   @state() private selected?: { feature: number; index: number; depth: number };
   @state() private conditionsError?: string;
   private conditionsLoading = false;
-  private dragging?: { feature: number; index: number };
+  private controlKeys = new Map<string | AreaControl, string>();
+  private nextControlKey = 0;
+  private configureEditor() {
+    if (!this.editor || !this.config) return;
+    this.editor.setConfig(nativeAreaConfig(this.config, true));
+    const editor = this.editor as NativeAreaEditor;
+    if (editor._config) Object.assign(editor._config,
+      Object.fromEntries(AREA_CONTENT_KEYS.map(key => [key, this.config![key]])));
+  }
   public setConfig(config: AreaAdvancedConfig) {
     this.config = config;
-    if (this.editor) this.editor.setConfig(nativeAreaConfig(config, true));
+    if (this.editor) this.configureEditor();
     else void this.load();
   }
   private async load() {
@@ -511,7 +529,9 @@ export class MushroomAreaAdvancedEditor extends LitElement {
       const ctor = customElements.get("hui-area-card") as NativeConstructor;
       if (!ctor.getConfigElement) throw new Error("The installed native Area editor is unavailable.");
       const editor = await bounded(Promise.resolve(ctor.getConfigElement()), "Native Area editor timed out. Retry.") as NativeElement;
-      editor.setConfig(nativeAreaConfig(this.config, true));
+      this.installContentEditor(editor as NativeAreaEditor);
+      this.editor = editor;
+      this.configureEditor();
       editor.hass = this.hass;
       editor.addEventListener("config-changed", (event) => {
         event.stopPropagation();
@@ -526,7 +546,7 @@ export class MushroomAreaAdvancedEditor extends LitElement {
   }
   private commit(config: AreaAdvancedConfig, updateNative = true) {
     this.config = config;
-    if (updateNative) this.editor?.setConfig(nativeAreaConfig(config, true));
+    if (updateNative) this.configureEditor();
     fireEvent(this, "config-changed", { config });
   }
   private controls(featureIndex: number, controls: (string | AreaControl)[] | undefined) {
@@ -659,43 +679,39 @@ export class MushroomAreaAdvancedEditor extends LitElement {
           }}></ha-form>`}
     </section>`;
   }
-  protected updated() {
-    if (this.editor) {
-      this.editor.hass = this.hass;
-      const editor = this.editor;
-      void Promise.resolve(editor.updateComplete).then(() => {
-        if (editor !== this.editor || !this.isConnected) return;
-        this.enhanceContentEditor();
-      }).catch((error: unknown) => { this.error = error instanceof Error ? error.message : String(error); });
-    }
-  }
-  private enhanceContentEditor() {
-    interface Field { name: string; schema?: Field[]; selector?: Record<string, unknown> }
-    const form = this.editor?.shadowRoot?.querySelector("ha-form") as (HTMLElement & {
-      schema: Field[]; data: Record<string, unknown>;
-      computeLabel?: (field: Field) => string;
-      computeHelper?: (field: Field) => string | undefined;
-    }) | null;
-    if (!form?.schema?.some(field => field.name === "content")) return;
+  protected updated() { if (this.editor) this.editor.hass = this.hass; }
+  private installContentEditor(editor: NativeAreaEditor) {
+    if (!editor._schema) throw new Error("This Home Assistant frontend cannot extend the Area editor Content schema.");
     const labels: Record<string, string> = { alert_color: "Alert icon color",
-      sensor_wrap: "Wrap sensor values onto additional lines", sensor_icons: "Show small grey entity icons beside sensor values" };
+      sensor_wrap: "Wrap sensor values onto additional lines", sensor_icons: "Show small grey entity icons beside sensor values",
+      use_light_color: "Use the light color as the room accent", light_entity: "Room accent light" };
     const helpers: Record<string, string> = {
       alert_color: "Changes the colored alert circles, including the compact alert badge. Clear to use Home Assistant's default.",
       sensor_wrap: "Keeps all selected sensor classes visible instead of truncating a long row.",
       sensor_icons: "Uses each sensor entity's default icon. Values and aggregation remain controlled by Home Assistant.",
+      use_light_color: "Uses the configured light's RGB color for the active room card.",
+      light_entity: "Select a light or light group. Accent appears only while it is on with a valid RGB color.",
     };
-    const content = form.schema.find(field => field.name === "content")!;
-    if (!content.schema?.some(field => field.name === "alert_color")) {
-      form.schema = form.schema.map(field => field !== content ? field : { ...field, schema: [...field.schema ?? [],
+    const schema = editor._schema.bind(editor);
+    const cache = new WeakMap<AreaEditorField[], AreaEditorField[]>();
+    editor._schema = (...args: unknown[]) => {
+      const base = schema(...args);
+      let extended = cache.get(base);
+      if (!extended) {
+        extended = base.map(field => field.name !== "content" ? field : { ...field, schema: [...field.schema ?? [],
         { name: "alert_color", selector: { ui_color: {} } },
         { name: "sensor_wrap", selector: { boolean: {} } },
         { name: "sensor_icons", selector: { boolean: {} } },
+        { name: "use_light_color", selector: { boolean: {} } },
+        { name: "light_entity", selector: { entity: { domain: "light" } } },
       ] });
-      const label = form.computeLabel, helper = form.computeHelper;
-      form.computeLabel = field => labels[field.name] ?? label?.(field) ?? field.name;
-      form.computeHelper = field => helpers[field.name] ?? helper?.(field);
-    }
-    form.data = { ...form.data, ...Object.fromEntries(AREA_CONTENT_KEYS.map(key => [key, this.config?.[key]])) };
+        cache.set(base, extended);
+      }
+      return extended;
+    };
+    const label = editor._computeLabelCallback?.bind(editor), helper = editor._computeHelperCallback?.bind(editor);
+    editor._computeLabelCallback = field => labels[field.name] ?? label?.(field) ?? field.name;
+    editor._computeHelperCallback = field => helpers[field.name] ?? helper?.(field);
   }
   protected render() {
     if (!this.config) return nothing;
@@ -709,59 +725,38 @@ export class MushroomAreaAdvancedEditor extends LitElement {
       ${(this.config.features ?? []).map((feature, featureIndex) => feature.type !== "area-controls" ? nothing : html`
         <fieldset><legend>Area controls feature ${featureIndex + 1}</legend>
           ${feature.controls === undefined ? html`<p>Automatic native domain controls</p>` : nothing}
-          ${(feature.controls ?? []).map((control, index) => {
+          <ha-sortable handle-selector=".handle" @item-moved=${(event: CustomEvent<{ oldIndex: number; newIndex: number }>) => {
+            event.stopPropagation();
+            this.move(featureIndex, event.detail.oldIndex, event.detail.newIndex);
+          }}><div class="controls">
+          ${repeat(feature.controls ?? [], (control, index) => {
+            if (typeof control === "string") return `native:${control}:${index}`;
+            if (!this.controlKeys.has(control)) this.controlKeys.set(control, String(++this.nextControlKey));
+            return this.controlKeys.get(control)!;
+          }, (control, index) => {
             const domain = typeof control === "string" ? control : control.domain;
             const item = typeof control === "string" ? {} : control;
             const title = domain ? `Native ${domain} group` : (item.type ?? "entity").replace(/^./, (letter) => letter.toUpperCase());
             const subtitle = item.name ?? this.hass?.states[item.entity_id ?? ""]?.attributes.friendly_name
               ?? item.entity_id ?? (item.type === "conditional" ? `${item.control?.type ?? "entity"} button` : item.content ?? "");
-            return html`<div class="control" role="listitem" data-feature=${featureIndex} data-index=${index}
-              @dragstart=${(event: DragEvent) => {
-                this.dragging = { feature: featureIndex, index };
-                event.dataTransfer?.setData("text/plain", `${featureIndex}:${index}`);
-              }}
-              @dragend=${() => { this.dragging = undefined; }}
-              @dragover=${(event: DragEvent) => event.preventDefault()}
-              @drop=${(event: DragEvent) => {
-                event.preventDefault(); event.stopPropagation();
-                if (this.dragging?.feature === featureIndex) this.move(featureIndex, this.dragging.index, index);
-                this.dragging = undefined;
-              }}>
-              <button class="drag" draggable="true" aria-label="Drag to reorder; Alt plus arrow keys to move"
+            return html`<div class="control" role="listitem" data-feature=${featureIndex} data-index=${index}>
+              <div class="handle drag" role="button" tabindex="0" aria-label="Drag to reorder; Alt plus arrow keys to move"
                 title="Drag up or down to reorder. Keyboard: Alt + Up or Down."
-                @pointerdown=${(event: PointerEvent) => {
-                  if (event.pointerType === "touch" || event.pointerType === "pen") {
-                    event.preventDefault();
-                    (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
-                    this.dragging = { feature: featureIndex, index };
-                  }
-                }}
-                @pointerup=${(event: PointerEvent) => {
-                  if (!this.dragging || !["touch", "pen"].includes(event.pointerType)) return;
-                  const rows = [...this.shadowRoot!.querySelectorAll<HTMLElement>(`[data-feature="${featureIndex}"]`)];
-                  const row = rows.find(row => {
-                    const bounds = row.getBoundingClientRect();
-                    return event.clientY >= bounds.top && event.clientY <= bounds.bottom;
-                  });
-                  if (row) this.move(featureIndex, this.dragging.index, Number(row.dataset.index));
-                  this.dragging = undefined;
-                }}
-                @pointercancel=${() => { this.dragging = undefined; }}
                 @keydown=${(event: KeyboardEvent) => {
                   if (event.altKey && ["ArrowUp", "ArrowDown"].includes(event.key)) {
                     event.preventDefault(); this.move(featureIndex, index, index + (event.key === "ArrowUp" ? -1 : 1));
                   }
-                }}>⠿</button>
+                }}><ha-svg-icon .path=${mdiDragHorizontalVariant}></ha-svg-icon></div>
               <div class="row-label"><strong>${title}</strong><span>${subtitle}</span></div>
-              <button aria-label="Edit button" @click=${() => {
+              <ha-icon-button class="edit-icon" aria-label="Edit button" .label=${"Edit button"} .path=${mdiPencil} @click=${() => {
                 this.selected = { feature: featureIndex, index, depth: 0 };
                 if (item.type === "conditional") void this.ensureConditions();
-              }}>✎</button>
-              <button aria-label="Remove control" @click=${() => {
+              }}></ha-icon-button>
+              <ha-icon-button class="remove-icon" aria-label="Remove control" .label=${"Remove control"} .path=${mdiDelete} @click=${() => {
                 this.selected = undefined; this.controls(featureIndex, feature.controls!.filter((_, i) => i !== index));
-              }}>×</button>
+              }}></ha-icon-button>
             </div>`;
-          })}
+          })}</div></ha-sortable>
           <label>${feature.controls === undefined ? "Replace automatic controls" : "Add button"}
             <select aria-label="Add button type" .value=${""} @change=${(event: Event) => {
               const select = event.target as HTMLSelectElement;
@@ -780,10 +775,12 @@ export class MushroomAreaAdvancedEditor extends LitElement {
         </fieldset>`)}`;
   }
   static styles = css`fieldset { border: 1px solid var(--divider-color); margin: 16px 0; border-radius: 12px; }
-    .control { display: flex; align-items: center; gap: 8px; min-height: 56px; border-bottom: 1px solid var(--divider-color); }
+    .control { display: flex; align-items: center; min-height: 60px; }
     .row-label { display: flex; flex-direction: column; flex: 1; min-width: 0; }
     .row-label span { color: var(--secondary-text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .drag { cursor: grab; font-size: 24px; padding: 8px; touch-action:none; }
+    .handle { cursor: grab; padding-inline-end:8px; touch-action:none; }
+    .handle > * { pointer-events:none; }
+    .edit-icon, .remove-icon { --ha-icon-button-size:36px; color:var(--secondary-text-color); }
     .detail { border: 1px solid var(--divider-color); border-radius: 12px; padding: 16px; }
     button, select { color: var(--primary-text-color); background: var(--secondary-background-color);
       border: 1px solid var(--divider-color); border-radius: 8px; padding: 8px; margin: 8px 0; }

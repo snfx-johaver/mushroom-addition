@@ -2,10 +2,11 @@ import { html, nothing, svg, type TemplateResult } from "lit";
 import type { ActionConfig, AdditionConfig, AdditionItemConfig, CatalogItem, HassEntity, HomeAssistant, RoomViewDevice, WeatherForecast } from "./types";
 import { controlActions } from "./control-actions";
 import { localize } from "./localize";
-import { ROOM_STATUS_KINDS, ROOM_STATUS_LIMIT, roomEntityIcon, roomEntityUnavailable, roomItemDefaultsFor, roomLightRgb, roomSecondary, roomStatusActive, roomStatusIcon, roomStatusKind } from "./room";
+import { ROOM_STATUS_KINDS, ROOM_STATUS_LIMIT, roomEntityIcon, roomEntityUnavailable, roomItemDefaultsFor, roomLightEntity, roomLightRgb, roomSecondary, roomStatusActive, roomStatusIcon, roomStatusKind } from "./room";
 import { activeStates, displayName, fireEvent, stateLabel } from "./helpers";
 import { wasteStreamsForConfig } from "./waste-streams";
 import { defaultIconFor } from "./defaults";
+import { renderEntityIcon } from "./entity-icon";
 import { resolveColor } from "./colors";
 import {
   resolveSonosControlEntities,
@@ -64,11 +65,8 @@ const sourceIconBubble = (
     ? html`<span class="ulm-icon entity-picture ${extraClass}" style=${`background-image:url("${String(picture)}")`}></span>`
     : html`<span class="ulm-icon source-icon ${active ? "is-source-active" : ""} ${extraClass}"
         style=${`--source-color:${color}`}>
-        ${ctx.descriptor.upstreamId === "custom_card_entity_carousel" && !ctx.config.icon && ctx.entity
-          ? html`<ha-state-icon .hass=${ctx.hass} .stateObj=${ctx.entity}
-              ._config=${ctx.hass.config} ._connection=${ctx.hass.connection}
-              ._entities=${ctx.hass.entities}></ha-state-icon>`
-          : html`<ha-icon .icon=${ctx.config.icon || iconName}></ha-icon>`}
+        ${renderEntityIcon(ctx.hass, ctx.entity, ctx.config.icon ||
+          (ctx.descriptor.upstreamId === "card_battery" ? ctx.entity?.attributes.icon || iconName : undefined), iconName)}
       </span>`;
 };
 
@@ -102,7 +100,7 @@ const iconBubble = (ctx: RenderContext, fallback: string, tone = "blue", extraCl
   const picture = ctx.config.icon_type === "entity-picture" ? attr(ctx.entity, "entity_picture") : undefined;
   return picture
     ? html`<span class="ulm-icon entity-picture ${extraClass}" style=${`background-image:url("${String(picture)}")`}></span>`
-    : html`<span class="ulm-icon tone-${tone} ${extraClass}"><ha-icon .icon=${icon(ctx, fallback)}></ha-icon></span>`;
+    : html`<span class="ulm-icon tone-${tone} ${extraClass}">${renderEntityIcon(ctx.hass, ctx.entity, ctx.config.icon, fallback)}</span>`;
 };
 const selectedSecondary = (ctx: RenderContext, recommended?: string): string | undefined => {
   switch (ctx.config.secondary_info) {
@@ -620,9 +618,7 @@ const renderRoom = (ctx: RenderContext): TemplateResult => {
   ).filter((item) => item.entity).slice(0, 4);
   const roomLabel = roomSecondary(ctx.config, ctx.hass);
   const headingContext = { ...ctx, config: { ...ctx.config, secondary_info: undefined } };
-  const light = ctx.config.room_light_entity
-    ? ctx.hass.states[ctx.config.room_light_entity]
-    : ctx.config.entity?.startsWith("light.") ? ctx.entity : undefined;
+  const light = roomLightEntity(ctx.config, ctx.hass);
   const rgb = ctx.config.ulm_card_dynamic_color === true ? roomLightRgb(ctx.hass, light) : undefined;
   const statusItems = (ctx.config.room_status ?? []).slice(0, ROOM_STATUS_LIMIT).filter((item) => item.entity);
   return ctx.actionSurface(`ulm-room ulm-source-room ${rgb ? "dynamic-color" : ""} ${ctx.entity?.state === "unavailable" ? "is-unavailable" : ""}`, html`
@@ -643,7 +639,7 @@ const renderRoom = (ctx: RenderContext): TemplateResult => {
         })}
       </div>` : nothing}
       </div>
-      <span class="ulm-icon tone-blue"><ha-icon .icon=${ctx.config.icon || "mdi:sofa-single"}></ha-icon></span>
+      <span class="ulm-icon tone-blue">${renderEntityIcon(ctx.hass, ctx.entity, ctx.config.icon, "mdi:sofa-single")}</span>
       ${ctx.entity?.state === "unavailable"
         ? html`<span class="room-unavailable"><ha-icon icon="mdi:exclamation"></ha-icon></span>`
         : nothing}
@@ -766,8 +762,8 @@ const renderTrash = (ctx: RenderContext): TemplateResult => {
   };
   const today = summaryValue(ctx.config.today_entity, ctx.config.show_today);
   const tomorrow = summaryValue(ctx.config.tomorrow_entity, ctx.config.show_tomorrow);
-  const collectionDate = (entity?: HassEntity): string => {
-    if (!entity || ["unknown", "unavailable", "none", "geen"].includes(entity.state.toLowerCase())) return "—";
+  const collectionDate = (entity?: HassEntity): string | undefined => {
+    if (!entity || emptySummaryStates.has(entity.state.trim().toLowerCase()) || ["—", "–"].includes(entity.state.trim())) return undefined;
     if (entity.entity_id.startsWith("calendar.")) {
       const dateValue = attr(entity, "start_time") ?? attr(entity, "start") ?? attr(entity, "end_time");
       if (typeof dateValue === "string") {
@@ -776,6 +772,7 @@ const renderTrash = (ctx: RenderContext): TemplateResult => {
           return new Intl.DateTimeFormat(ctx.hass.language, { day: "2-digit", month: "2-digit", year: "numeric" }).format(date);
         }
       }
+      return undefined;
     }
     return entity.state;
   };
@@ -788,10 +785,12 @@ const renderTrash = (ctx: RenderContext): TemplateResult => {
     </div>
     <div class="waste-grid">${rows.map((stream) => {
       const entity = stream.entity ? ctx.hass.states[stream.entity] : undefined;
+      const date = collectionDate(entity);
+      if (ctx.config.hide_unknown_dates === true && date === undefined) return nothing;
       return html`<span class="waste-row" style=${`--waste-color:${configuredColor(stream.color, "rgb(var(--rgb-green, 76, 175, 80))")}`}>
         <ha-icon .icon=${stream.icon || "mdi:trash-can"}></ha-icon>
         <b>${stream.label || entity?.attributes.friendly_name || stream.entity}</b>
-        <small>${collectionDate(entity)}</small>
+        <small>${date ?? "—"}</small>
       </span>`;
     })}</div>
   `);
@@ -1310,26 +1309,33 @@ const renderInputDateTime = (ctx: RenderContext): TemplateResult => {
 const renderSonos = (ctx: RenderContext): TemplateResult => {
   const state = ctx.entity?.state;
   const unavailable = !ctx.entity || state === "unavailable" || state === "unknown";
+  const controlsEntityId = configured<string>(ctx, "ulm_card_media_player_player_controls_entity") || ctx.config.entity;
+  const controlsEntity = controlsEntityId ? ctx.hass.states[controlsEntityId] : undefined;
+  const controlsState = controlsEntity?.state;
+  const controlsUnavailable = !controlsEntityId?.startsWith("media_player.") || !controlsEntity ||
+    ["unavailable", "unknown"].includes(controlsState ?? "");
   const collapsed = ctx.config.collapsible_controls === true &&
-    (unavailable || state === "off");
+    (controlsUnavailable || ["off", "standby"].includes(controlsState ?? "") ||
+      (ctx.config.ulm_card_media_player_idle_off === true && controlsState === "idle"));
   const stopEvent = (event: Event) => event.stopPropagation();
-  const features = attr(ctx.entity, "supported_features");
+  const features = attr(controlsEntity, "supported_features");
   // Older integrations may omit the bitmask; an explicit zero must still hide controls.
   const supports = (feature: number): boolean =>
     features === undefined || (Number(features) & feature) !== 0;
   const volumeControls = ctx.config.volume_controls ?? ["volume_buttons"];
   const mediaControls = ctx.config.media_controls ?? ["play_pause_stop"];
   const mediaService = (service: string, data: Record<string, unknown> = {}) => {
-    if (!unavailable) ctx.service("media_player", service, { entity_id: ctx.config.entity, ...data });
+    if (!controlsUnavailable) ctx.service("media_player", service, { entity_id: controlsEntityId, ...data });
   };
   const mediaButton = (label: string, iconName: string, service: string, data?: Record<string, unknown>) =>
-    button(label, iconName, (event) => { stopEvent(event); mediaService(service, data); }, unavailable);
-  const powerOn = state === "off" || unavailable;
-  const powerControl = mediaControls.includes("on_off") &&
+    button(label, iconName, (event) => { stopEvent(event); mediaService(service, data); }, controlsUnavailable);
+  const powerOn = ["off", "standby"].includes(controlsState ?? "") || controlsUnavailable;
+  const showPower = ctx.config.ulm_card_media_player_power_button ?? mediaControls.includes("on_off");
+  const powerControl = showPower &&
     supports(powerOn ? SONOS_MEDIA_FEATURES.turnOn : SONOS_MEDIA_FEATURES.turnOff)
     ? mediaButton(powerOn ? "Turn on" : "Turn off", "mdi:power", powerOn ? "turn_on" : "turn_off")
     : nothing;
-  const playing = state === "playing";
+  const playing = controlsState === "playing";
   const playbackService = features === undefined
     ? "media_play_pause"
     : playing && supports(SONOS_MEDIA_FEATURES.pause)
@@ -1345,25 +1351,35 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
     ) : nothing;
   const volumeButtons = volumeControls.includes("volume_buttons") &&
     supports(SONOS_MEDIA_FEATURES.volumeStep | SONOS_MEDIA_FEATURES.volumeSet);
-  const repeat = String(attr(ctx.entity, "repeat") ?? "off");
+  const repeat = String(attr(controlsEntity, "repeat") ?? "off");
   const repeatNext = repeat === "off" ? "all" : repeat === "all" ? "one" : "off";
-  const muted = attr(ctx.entity, "is_volume_muted") === true;
+  const muted = attr(controlsEntity, "is_volume_muted") === true;
   const picture = configured<boolean>(ctx, "ulm_card_media_player_enable_art") === false
     ? undefined
     : attr(ctx.entity, "entity_picture");
-  const volume = Math.round(Math.max(0, Math.min(1, numeric(attr(ctx.entity, "volume_level")) ?? 0)) * 100);
+  const volumeLevel = Math.max(0, Math.min(1, numeric(attr(controlsEntity, "volume_level")) ?? 0));
+  const volume = Math.round(volumeLevel * 100);
+  const volumeStep = numeric(ctx.config.ulm_card_media_player_enable_volume_adjust);
+  const steppedVolume = volumeStep !== undefined && volumeStep > 0 && supports(SONOS_MEDIA_FEATURES.volumeSet);
+  const volumeButton = (up: boolean) => mediaButton(
+    up ? "Volume up" : "Volume down", up ? "mdi:volume-plus" : "mdi:volume-minus",
+    steppedVolume ? "volume_set" : up ? "volume_up" : "volume_down",
+    steppedVolume ? { volume_level: Math.max(0, Math.min(1, volumeLevel + (up ? 1 : -1) * volumeStep)) } : undefined,
+  );
   const source = attr(ctx.entity, "source");
-  const legacyLabel = ["idle", "paused", "unavailable", "unknown"].includes(state ?? "")
-    ? stateLabel(ctx.entity)
-    : `${source ? String(source) : stateLabel(ctx.entity)} • ${volume}%`;
   const title = ctx.config.use_media_info ? attr(ctx.entity, "media_title") : undefined;
-  const artist = ctx.config.use_media_info ? attr(ctx.entity, "media_artist") : undefined;
-  const label = ctx.config.show_volume_level === undefined && !ctx.config.use_media_info
-    ? legacyLabel
-    : [
-      artist ? String(artist) : title ? undefined : source ? String(source) : stateLabel(ctx.entity),
-      ctx.config.show_volume_level !== false ? `${volume}%` : undefined,
-    ].filter(Boolean).join(" • ");
+  const artist = ctx.config.use_media_info || ctx.config.ulm_card_media_player_more_info === true
+    ? attr(ctx.entity, "media_artist") : undefined;
+  const album = ctx.config.ulm_card_media_player_more_info === true ? attr(ctx.entity, "media_album_name") : undefined;
+  const mediaDetails = [artist, album].filter(Boolean).join(" · ");
+  const label = mediaDetails || (source && !["idle", "paused", "unavailable", "unknown"].includes(state ?? "")
+    ? String(source) : stateLabel(ctx.entity));
+  const mediaContext = { ...ctx, config: { ...ctx.config,
+    primary_info: title && !ctx.config.name && [undefined, "default", "name"].includes(ctx.config.primary_info)
+      ? undefined : ctx.config.primary_info,
+    secondary_info: (title || mediaDetails) && !ctx.config.secondary && [undefined, "default", "state"].includes(ctx.config.secondary_info)
+      ? undefined : ctx.config.secondary_info,
+  } };
   const controls = resolveSonosControlEntities(ctx.hass, ctx.config.entity, ctx.config);
   const switches = SONOS_SWITCH_CONTROLS.flatMap((control) => {
     const entityId = controls[control.configKey];
@@ -1426,7 +1442,7 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
     ${picture ? html`<span class="media-art" style=${`background-image:url("${String(picture)}")`}></span>` : nothing}
     <div class="custom-card-heading">
       ${iconBubble(ctx, "mdi:speaker", ctx.entity?.state === "playing" ? "green" : "grey")}
-      ${heading(ctx, label, title && !ctx.config.name ? String(title) : undefined)}
+      ${heading(mediaContext, label, title && !ctx.config.name ? String(title) : undefined)}
     </div>
     <div class="sonos-controls"
       @pointerdown=${stopEvent} @pointerup=${stopEvent} @pointercancel=${stopEvent}
@@ -1435,13 +1451,13 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
       ${!collapsed ? html`
         ${volumeControls.includes("volume_mute") && supports(SONOS_MEDIA_FEATURES.volumeMute)
           ? html`<button class="ulm-control" aria-label=${muted ? "Unmute" : "Mute"} aria-pressed=${muted}
-              ?disabled=${unavailable} @click=${() => mediaService("volume_mute", { is_volume_muted: !muted })}>
+              ?disabled=${controlsUnavailable} @click=${() => mediaService("volume_mute", { is_volume_muted: !muted })}>
               <ha-icon .icon=${muted ? "mdi:volume-off" : "mdi:volume-high"}></ha-icon>
             </button>` : nothing}
-        ${volumeButtons ? mediaButton("Volume down", "mdi:volume-minus", "volume_down") : nothing}
+        ${volumeButtons ? volumeButton(false) : nothing}
         ${mediaControls.includes("shuffle") && supports(SONOS_MEDIA_FEATURES.shuffle)
-          ? html`<button class="ulm-control" aria-label="Shuffle" aria-pressed=${attr(ctx.entity, "shuffle") === true}
-              ?disabled=${unavailable} @click=${() => mediaService("shuffle_set", { shuffle: attr(ctx.entity, "shuffle") !== true })}>
+          ? html`<button class="ulm-control" aria-label="Shuffle" aria-pressed=${attr(controlsEntity, "shuffle") === true}
+              ?disabled=${controlsUnavailable} @click=${() => mediaService("shuffle_set", { shuffle: attr(controlsEntity, "shuffle") !== true })}>
               <ha-icon icon="mdi:shuffle"></ha-icon>
             </button>` : nothing}
         ${mediaControls.includes("previous") && supports(SONOS_MEDIA_FEATURES.previous)
@@ -1452,11 +1468,13 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
         ${mediaControls.includes("repeat") && supports(SONOS_MEDIA_FEATURES.repeat)
           ? mediaButton(`Repeat: ${repeat}`, repeat === "one" ? "mdi:repeat-once" : repeat === "off" ? "mdi:repeat-off" : "mdi:repeat",
             "repeat_set", { repeat: repeatNext }) : nothing}
-        ${volumeButtons ? mediaButton("Volume up", "mdi:volume-plus", "volume_up") : nothing}
+        ${mediaControls.includes("sources") ? button("Sources and details", "mdi:playlist-music",
+          (event) => runControlAction(event, ctx, { action: "more-info" }, controlsEntityId), controlsUnavailable) : nothing}
+        ${volumeButtons ? volumeButton(true) : nothing}
         ${volumeControls.includes("volume_set") && supports(SONOS_MEDIA_FEATURES.volumeSet)
           ? html`<label class="sonos-volume">
               <input type="range" min="0" max="100" step="1" .value=${String(volume)}
-                aria-label="Volume level" ?disabled=${unavailable}
+                aria-label="Volume level" ?disabled=${controlsUnavailable}
                 @change=${(event: Event) => {
                   stopEvent(event);
                   mediaService("volume_set", {
@@ -1632,7 +1650,7 @@ const renderTablet = (ctx: RenderContext): TemplateResult => {
   };
   return ctx.actionSurface("custom-tablet", html`
     <div class="tablet-header">
-      <span class="tablet-icon"><ha-icon icon="mdi:tablet"></ha-icon></span>
+      ${iconBubble(ctx, "mdi:tablet", "blue", "tablet-icon")}
       ${heading(ctx, status)}
     </div>
     ${configuredControls.length ? html`<div class="tablet-controls">${configuredControls.map(([controlIcon, tone, label, entity]) => {
@@ -1718,7 +1736,7 @@ const renderConsoleCard = (ctx: RenderContext): TemplateResult => {
         ${ctx.config.icon_type !== "none" ? html`
           <span class="console-logo ${picture && ctx.config.icon_type !== "icon" ? "has-picture" : ""}"
             style=${picture && ctx.config.icon_type !== "icon" ? `background-image:url("${String(picture)}")` : ""}>
-            ${picture && ctx.config.icon_type !== "icon" ? nothing : html`<ha-icon .icon=${ctx.config.icon || presentation.icon}></ha-icon>`}
+            ${picture && ctx.config.icon_type !== "icon" ? nothing : renderEntityIcon(ctx.hass, ctx.entity, ctx.config.icon, presentation.icon)}
           </span>
         ` : nothing}
         ${heading(ctx, playing || stateLabel(ctx.entity), consoleName)}
@@ -1971,16 +1989,7 @@ const ENERGY_SERIES = [
 ] as const;
 
 const energyCardHeading = (ctx: RenderContext, title: string, secondary: string) => {
-  const hasPresentationOverride = [
-    ctx.config.name,
-    ctx.config.name_mode,
-    ctx.config.primary_info,
-    ctx.config.secondary_info,
-  ].some((value) => value !== undefined);
-  const headerContext = hasPresentationOverride
-    ? ctx
-    : { ...ctx, config: { ...ctx.config, entity: undefined }, entity: undefined };
-  return cardHeading(headerContext, secondary, title);
+  return cardHeading(ctx, secondary, title);
 };
 
 const renderEnergyBuySell = (ctx: RenderContext): TemplateResult => {

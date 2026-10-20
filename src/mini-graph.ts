@@ -1,6 +1,7 @@
 import { LitElement, css, html, nothing, svg, type TemplateResult } from "lit";
 import { property, state } from "lit/decorators.js";
 import { displayName, fireEvent, stateLabel } from "./helpers";
+import { renderEntityIcon } from "./entity-icon";
 import type { ActionConfig, AdditionConfig, HassEntity, HomeAssistant } from "./types";
 
 export type MiniGraphAggregate =
@@ -425,7 +426,7 @@ export class MushroomMiniGraphCard extends LitElement {
     .name { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: var(--mcg-title-font-weight, 500); letter-spacing: var(--mcg-title-letter-spacing); }
     .icon { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: color-mix(in srgb, currentColor 14%, transparent); }
     .icon img { width: 25px; height: 25px; object-fit: contain; border-radius: 50%; }
-    .icon ha-icon { --mdc-icon-size: 20px; }
+    .icon ha-icon, .icon ha-state-icon { --mdc-icon-size: 20px; }
     .states { display: flex; align-items: baseline; gap: 12px; min-width: 0; }
     .states[data-align="right"] { justify-content: flex-end; text-align: right; }
     .states[data-align="center"] { justify-content: center; text-align: center; }
@@ -615,7 +616,7 @@ export class MushroomMiniGraphCard extends LitElement {
           ? html`<img src=${this.config.icon_image} alt="">`
           : picture
             ? html`<img src=${String(picture)} alt="">`
-          : html`<ha-icon .icon=${this.config?.icon ?? this.hass?.states[primary?.config.entity ?? ""]?.attributes.icon ?? "mdi:chart-line"}></ha-icon>`}
+          : renderEntityIcon(this.hass, entity, typeof this.config?.icon === "string" ? this.config.icon : undefined, "mdi:chart-line")}
       </span>
     `;
   }

@@ -9,12 +9,23 @@ import type { ActionConfig, HomeAssistant } from "../src/types";
 class NativeEditor extends HTMLElement {
   hass?: HomeAssistant;
   config?: AreaAdvancedConfig;
+  _config?: AreaAdvancedConfig;
+  private baseSchema = [{ name: "content", schema: [{ name: "sensor_classes" }] }];
+  _schema = () => this.baseSchema;
+  _computeLabelCallback = (field: { name: string }) => field.name;
+  get updateComplete() {
+    Object.assign(this.shadowRoot!.querySelector("ha-form")!, {
+      schema: this._schema(), data: { ...this._config }, computeLabel: this._computeLabelCallback,
+    });
+    return Promise.resolve(true);
+  }
   constructor() {
     super();
     this.attachShadow({ mode: "open" }).innerHTML = "<ha-form></ha-form>";
   }
   setConfig = vi.fn((config: AreaAdvancedConfig) => {
     this.config = config;
+    this._config = { ...config };
     Object.assign(this.shadowRoot!.querySelector("ha-form")!, {
       schema: [{ name: "content", schema: [{ name: "sensor_classes" }] }], data: config,
     });
@@ -141,11 +152,20 @@ describe("native Area card delegation", () => {
       schema: { name: string; schema: { name: string }[] }[]; data: AreaAdvancedConfig;
       computeLabel(field: { name: string }): string;
     };
+    void native.updateComplete;
     expect(form.schema[0].schema.map(field => field.name)).toEqual([
-      "sensor_classes", "alert_color", "sensor_wrap", "sensor_icons",
+      "sensor_classes", "alert_color", "sensor_wrap", "sensor_icons", "use_light_color", "light_entity",
     ]);
     expect(form.data).toMatchObject({ alert_color: "red", sensor_wrap: true, sensor_icons: true });
     expect(form.computeLabel({ name: "alert_color" })).toBe("Alert icon color");
+    const schema = form.schema;
+    for (let index = 0; index < 5; index++) {
+      editor.hass = { ...hass, states: { ...hass.states } };
+      await settle(editor);
+      void native.updateComplete;
+      expect(form.schema).toBe(schema);
+      expect(form.data).toMatchObject({ alert_color: "red", sensor_wrap: true, sensor_icons: true });
+    }
     expect(native.config).not.toHaveProperty("alert_color");
     const events = vi.fn(); editor.addEventListener("config-changed", events);
     native.dispatchEvent(new CustomEvent("config-changed", { detail: {
@@ -496,7 +516,7 @@ describe("native Area editor round trips", () => {
     document.body.append(editor); await settle(editor);
     expect(editor.shadowRoot!.querySelectorAll(".control")).toHaveLength(3);
     expect(editor.shadowRoot!.querySelector("ha-form")).toBeNull();
-    expect(editor.shadowRoot!.querySelector('[draggable="true"]')).toBeTruthy();
+    expect(editor.shadowRoot!.querySelector('ha-sortable')?.getAttribute("handle-selector")).toBe(".handle");
     const events = vi.fn(); editor.addEventListener("config-changed", events);
     const select = editor.shadowRoot!.querySelector('[aria-label="Add button type"]') as HTMLSelectElement;
     expect([...select.options].map((option) => option.value)).toEqual(["", "entity", "action", "conditional", "template"]);
@@ -522,9 +542,9 @@ describe("native Area editor round trips", () => {
     editor.hass = hass; editor.setConfig({ ...base, features: [features[0]] });
     document.body.append(editor); await settle(editor);
     const events = vi.fn(); editor.addEventListener("config-changed", events);
-    const rows = editor.shadowRoot!.querySelectorAll(".control");
-    rows[0].querySelector(".drag")!.dispatchEvent(new DragEvent("dragstart", { bubbles: true }));
-    rows[1].dispatchEvent(new DragEvent("drop", { bubbles: true, cancelable: true }));
+    editor.shadowRoot!.querySelector("ha-sortable")!.dispatchEvent(new CustomEvent("item-moved", {
+      detail: { oldIndex: 0, newIndex: 1 }, bubbles: true,
+    }));
     await settle(editor);
     const saved = (events.mock.calls.at(-1)![0] as CustomEvent).detail.config as AreaAdvancedConfig;
     expect(saved.features![0].controls![0]).toEqual(features[0].controls![1]);

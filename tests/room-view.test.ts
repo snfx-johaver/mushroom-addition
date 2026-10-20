@@ -71,7 +71,7 @@ describe("Roomview independent headers and sections", () => {
     expect(root.querySelector(".room-view-summary .ulm-name")?.textContent).toBe("21 °C");
     expect(root.querySelector(".room-view-summary .ulm-label")?.textContent).toBe("55 %");
     expect(root.querySelector(".room-view-summary ha-icon")?.getAttribute("icon")).not.toBe("mdi:account");
-    expect((root.querySelector(".room-view-summary ha-icon") as HTMLElement & { icon: string }).icon).toBe("mdi:home-variant-outline");
+    expect((root.querySelector(".room-view-summary ha-state-icon") as HTMLElement & { stateObj: HassEntity }).stateObj.entity_id).toBe("sensor.temperature");
     expect(root.querySelectorAll("section, h3")).toHaveLength(0);
     expect(root.querySelectorAll(".room-view-status .room-view-indicator")).toHaveLength(2);
     expect(root.querySelector(".room-view-status")?.textContent?.replace(/\s/g, "")).toBe("21");
@@ -94,8 +94,8 @@ describe("Roomview independent headers and sections", () => {
     expect((root.querySelector(".room-view-summary ha-icon") as HTMLElement & { icon: string }).icon).toBe("mdi:thermostat");
     const independent = await render({ climate_name: "Climate only", climate_icon: "mdi:snowflake" });
     expect(independent.root.querySelector(".card-heading .ulm-name")?.textContent).toBe("Joris");
-    expect((independent.root.querySelector(".card-heading ha-icon") as HTMLElement & { icon: string }).icon)
-      .not.toBe("mdi:snowflake");
+    expect((independent.root.querySelector(".card-heading ha-state-icon") as HTMLElement & { stateObj: HassEntity }).stateObj.entity_id)
+      .toBe("person.joris");
   });
 
   it("handles composed climate names using HA's entity-name formatter", async () => {

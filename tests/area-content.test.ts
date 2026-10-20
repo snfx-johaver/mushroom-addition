@@ -27,6 +27,29 @@ customElements.define("test-area-content", ContentCard);
 afterEach(() => document.body.replaceChildren());
 
 describe("Area native content enhancements", () => {
+  it("applies the selected active light group RGB only when enabled and clears stale accents", () => {
+    const card = document.createElement("test-area-content") as ContentCard;
+    const light: HassEntity = { entity_id: "light.member", state: "on", attributes: { rgb_color: [24, 100, 200] } };
+    const group: HassEntity = { entity_id: "light.room", state: "on", attributes: { entity_id: [light.entity_id] } };
+    card.hass = { ...hass, states: { ...hass.states, [light.entity_id]: light, [group.entity_id]: group } };
+    const options = { use_light_color: true, light_entity: group.entity_id };
+    applyAreaContent(card, options);
+    expect(card.hasAttribute("data-light-accent")).toBe(true);
+    expect(card.style.getPropertyValue("--addition-room-rgb")).toBe("24,100,200");
+    applyAreaContent(card, { ...options, use_light_color: false });
+    expect(card.hasAttribute("data-light-accent")).toBe(false);
+    expect(card.style.getPropertyValue("--addition-room-rgb")).toBe("");
+    applyAreaContent(card, options);
+    card.hass = { ...card.hass, states: { ...card.hass.states, [group.entity_id]: { ...group, state: "off" } } };
+    applyAreaContent(card, options);
+    expect(card.hasAttribute("data-light-accent")).toBe(false);
+    applyAreaContent(card, { ...options, light_entity: "light.missing" });
+    expect(card.style.getPropertyValue("--addition-room-rgb")).toBe("");
+    const native = nativeAreaConfig({ type: "custom:area", ...options }, true);
+    expect(native).not.toHaveProperty("use_light_color");
+    expect(native).not.toHaveProperty("light_entity");
+    expect(mergeNativeAreaEdit({ type: "custom:area", ...options }, native)).toMatchObject(options);
+  });
   it("preserves native values, class order, entity icons and resets options without copying aggregation", () => {
     const card = document.createElement("test-area-content") as ContentCard;
     document.body.append(card);

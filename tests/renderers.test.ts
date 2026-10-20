@@ -964,7 +964,7 @@ describe("family renderers", () => {
     await element.updateComplete;
 
     expect(element.shadowRoot?.innerHTML).toContain("platform-nintendo");
-    expect((element.shadowRoot?.querySelector(".console-logo ha-icon") as HTMLElement & { icon: string }).icon).toBe("mdi:nintendo-switch");
+    expect((element.shadowRoot?.querySelector(".console-logo ha-state-icon") as HTMLElement & { stateObj: { entity_id: string } }).stateObj.entity_id).toBe("binary_sensor.snfx4594");
     (element.shadowRoot?.querySelector(".console-controls button") as HTMLElement).click();
     expect(callService).toHaveBeenCalledWith("remote", "turn_on", { entity_id: "remote.snfx4594_console" });
     element.remove();

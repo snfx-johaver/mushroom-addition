@@ -417,7 +417,7 @@ describe("power and printer custom batch certification", () => {
       entity: "media_player.office_sonos",
       ulm_card_media_player_with_controls_name: "Office",
     }, states, callService, sonosRegistry);
-    expect(card.shadowRoot.textContent).toContain("Spotify • 42%");
+    expect(card.shadowRoot.querySelector(".ulm-label")?.textContent).toBe("Spotify");
     const controls = [...card.shadowRoot.querySelectorAll<HTMLButtonElement>(".sonos-controls button")];
     controls.forEach((control) => control.click());
     expect(callService.mock.calls).toEqual([

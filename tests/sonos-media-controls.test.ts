@@ -12,9 +12,9 @@ const type = `custom:${descriptor.tag}`;
 const allFeatures = Object.values(F).reduce((mask, feature) => mask | feature, 0);
 const complete: Partial<AdditionConfig> = {
   use_media_info: true,
-  show_volume_level: true,
+  ulm_card_media_player_power_button: true,
   volume_controls: ["volume_mute", "volume_set", "volume_buttons"],
-  media_controls: ["on_off", "shuffle", "previous", "play_pause_stop", "next", "repeat"],
+  media_controls: ["shuffle", "previous", "play_pause_stop", "next", "repeat"],
 };
 type Card = HTMLElement & {
   hass: HomeAssistant;
@@ -36,7 +36,7 @@ const player = (state = "playing", attributes: HassEntity["attributes"] = {}): H
     ...attributes,
   },
 });
-const render = async (config: Partial<AdditionConfig> = {}, entity = player()) => {
+const render = async (config: Partial<AdditionConfig> = {}, entity = player(), extraStates: HomeAssistant["states"] = {}) => {
   const callService = vi.fn<HomeAssistant["callService"]>(async () => undefined);
   const card = document.createElement(descriptor.tag) as Card;
   card.hass = {
@@ -44,6 +44,7 @@ const render = async (config: Partial<AdditionConfig> = {}, entity = player()) =
       [entityId]: entity,
       "switch.office_crossfade": { entity_id: "switch.office_crossfade", state: "off", attributes: {} },
       "number.office_bass": { entity_id: "number.office_bass", state: "2", attributes: { min: -10, max: 10 } },
+      ...extraStates,
     },
     callService,
   };
@@ -59,7 +60,7 @@ afterEach(() => { document.body.replaceChildren(); vi.useRealTimers(); });
 describe("Sonos Mushroom-compatible media controls", () => {
   it("preserves legacy controls and label when arrays are omitted, but respects empty selections", async () => {
     const legacy = await render({}, player("playing", { supported_features: undefined }));
-    expect(legacy.root.querySelector(".ulm-label")?.textContent).toBe("Spotify • 42%");
+    expect(legacy.root.querySelector(".ulm-label")?.textContent).toBe("Spotify");
     expect([...legacy.root.querySelectorAll(".sonos-controls button")].map((node) => node.getAttribute("aria-label")))
       .toEqual(["Volume down", "Play or pause", "Volume up"]);
     legacy.button("Play or pause")!.click();
@@ -91,6 +92,105 @@ describe("Sonos Mushroom-compatible media controls", () => {
       ["media_player", "volume_up", { entity_id: entityId }],
       ["media_player", "volume_set", { entity_id: entityId, volume_level: 0.67 }],
     ]);
+  });
+
+  it("keeps the legacy on_off selection working, with the new explicit power toggle taking precedence", async () => {
+    const legacy = await render({ media_controls: ["on_off"] });
+    expect(legacy.button("Turn off")).not.toBeNull();
+    legacy.button("Turn off")!.click();
+    expect(legacy.callService).toHaveBeenCalledWith("media_player", "turn_off", { entity_id: entityId });
+    const hidden = await render({ media_controls: ["on_off"], ulm_card_media_player_power_button: false });
+    expect(hidden.button("Turn off")).toBeNull();
+    const explicit = await render({ media_controls: [], ulm_card_media_player_power_button: true });
+    expect(explicit.button("Turn off")).not.toBeNull();
+  });
+
+  it("adds optional album details and respects the media-info toggle", async () => {
+    const view = await render({
+      use_media_info: true, ulm_card_media_player_more_info: true, primary_info: "name", secondary_info: "state",
+    }, player("paused", { media_album_name: "The album" }));
+    expect(view.root.querySelector(".ulm-name")?.textContent).toBe("The song");
+    expect(view.root.querySelector(".ulm-label")?.textContent).toBe("The artist · The album");
+    view.card.setConfig({ type, entity: entityId, use_media_info: false, ulm_card_media_player_more_info: true });
+    await view.card.updateComplete;
+    expect(view.root.querySelector(".ulm-name")?.textContent).toBe("Office");
+    expect(view.root.querySelector(".ulm-label")?.textContent).toBe("The artist · The album");
+  });
+
+  it.each(["idle", "standby"])("can collapse %s controls while retaining supported power", async (state) => {
+    const view = await render({ ...complete, collapsible_controls: true, ulm_card_media_player_idle_off: true }, player(state));
+    expect(view.root.querySelectorAll(".sonos-controls button")).toHaveLength(1);
+    expect(view.root.querySelector(".sonos-volume")).toBeNull();
+    expect(view.root.querySelector(".sonos-details")).toBeNull();
+    expect(view.button(state === "standby" ? "Turn on" : "Turn off")).not.toBeNull();
+  });
+
+  it.each([[0.42, 0.37, 0.47], [0.02, 0, 0.07], [0.98, 0.93, 1]])(
+    "uses a configured volume step and clamps at the endpoints from %s", async (volume, down, up) => {
+      const view = await render({ ...complete, ulm_card_media_player_enable_volume_adjust: 0.05 },
+        player("playing", { volume_level: volume }));
+      view.button("Volume down")!.click();
+      view.button("Volume up")!.click();
+      expect(view.callService.mock.calls).toEqual([
+        ["media_player", "volume_set", { entity_id: entityId, volume_level: expect.closeTo(down, 10) }],
+        ["media_player", "volume_set", { entity_id: entityId, volume_level: expect.closeTo(up, 10) }],
+      ]);
+    },
+  );
+
+  it("retains the native volume step when volume-set is unsupported", async () => {
+    const view = await render({ ...complete, ulm_card_media_player_enable_volume_adjust: 0.05 },
+      player("playing", { supported_features: F.volumeStep }));
+    view.button("Volume up")!.click();
+    expect(view.callService).toHaveBeenCalledWith("media_player", "volume_up", { entity_id: entityId });
+    expect(view.root.querySelector(".sonos-volume")).toBeNull();
+  });
+
+  it("targets the selected playback player, using its features, state and volume but retaining the primary header", async () => {
+    const alternate = "media_player.other_room";
+    const view = await render({
+      ...complete, media_controls: ["play_pause_stop", "sources"],
+      ulm_card_media_player_player_controls_entity: alternate,
+    }, player(), { [alternate]: { ...player("paused", {
+      supported_features: F.play | F.volumeSet, volume_level: 0.17,
+    }), entity_id: alternate } });
+    expect(view.root.querySelector(".ulm-name")?.textContent).toBe("The song");
+    expect(view.button("Pause")).toBeNull();
+    expect(view.button("Turn off")).toBeNull();
+    expect(view.root.querySelector(".sonos-volume")?.textContent).toContain("17%");
+    view.button("Play")!.click();
+    view.button("Volume up")!.click();
+    const slider = view.root.querySelector<HTMLInputElement>(".sonos-volume input")!;
+    slider.value = "61";
+    slider.dispatchEvent(new Event("change", { bubbles: true }));
+    expect(view.callService.mock.calls).toEqual([
+      ["media_player", "media_play", { entity_id: alternate }],
+      ["media_player", "volume_up", { entity_id: alternate }],
+      ["media_player", "volume_set", { entity_id: alternate, volume_level: 0.61 }],
+    ]);
+    const action = vi.fn();
+    view.card.addEventListener("hass-action", action);
+    view.button("Sources and details")!.click();
+    expect(action).toHaveBeenCalledTimes(1);
+    expect(action.mock.calls[0][0].detail).toEqual({
+      config: { type, entity: alternate, tap_action: { action: "more-info" } }, action: "tap",
+    });
+    expect(view.callService).toHaveBeenCalledTimes(3);
+  });
+
+  it.each(["missing", "unknown", "unavailable"])("does not fall back to controlling the primary player when the selected playback player is %s", async (state) => {
+    const alternate = "media_player.other_room";
+    const view = await render({ ...complete, media_controls: ["play_pause_stop", "sources"],
+      ulm_card_media_player_player_controls_entity: alternate,
+    }, player(), state === "missing" ? {} : { [alternate]: { ...player(state), entity_id: alternate } });
+    const action = vi.fn();
+    view.card.addEventListener("hass-action", action);
+    view.root.querySelectorAll<HTMLButtonElement>(".sonos-controls button").forEach(button => {
+      expect(button.disabled).toBe(true);
+      button.click();
+    });
+    expect(action).not.toHaveBeenCalled();
+    expect(view.callService).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -228,10 +328,18 @@ describe("Sonos Mushroom-compatible media controls", () => {
     expect(callService.mock.calls.every(([domain]) => domain === "media_player" || domain === "homeassistant")).toBe(true);
   });
 
-  it("uses media title/artist and optional volume without overriding explicit shared presentation", async () => {
+  it("uses media title/artist with a single volume percentage beside the slider", async () => {
     const media = await render(complete);
     expect(media.root.querySelector(".ulm-name")?.textContent).toBe("The song");
-    expect(media.root.querySelector(".ulm-label")?.textContent).toBe("The artist • 42%");
+    expect(media.root.querySelector(".ulm-label")?.textContent).toBe("The artist");
+    expect(media.root.querySelector(".sonos-volume")?.textContent).toContain("42%");
+    const editorModes = await render({ ...complete, primary_info: "name", secondary_info: "state" });
+    expect(editorModes.root.querySelector(".ulm-name")?.textContent).toBe("The song");
+    expect(editorModes.root.querySelector(".ulm-label")?.textContent).toBe("The artist");
+    editorModes.card.setConfig({ type, entity: entityId, ...complete, use_media_info: false, primary_info: "name", secondary_info: "state" });
+    await editorModes.card.updateComplete;
+    expect(editorModes.root.querySelector(".ulm-name")?.textContent).toBe("Office");
+    expect(editorModes.root.querySelector(".ulm-label")?.textContent).toBe("playing");
     const noVolume = await render({ ...complete, show_volume_level: false });
     expect(noVolume.root.querySelector(".ulm-label")?.textContent).toBe("The artist");
     const noInfo = await render({ use_media_info: false, show_volume_level: false });
@@ -266,12 +374,14 @@ describe("Sonos Mushroom-compatible media controls", () => {
     const schema = flatten(editorSchemaFor(descriptor));
     for (const [key, values] of [
       ["volume_controls", complete.volume_controls],
-      ["media_controls", complete.media_controls],
+      ["media_controls", [...complete.media_controls!, "sources"]],
     ] as const) {
       const field = schema.find((field) => field.name === key)!;
       expect(field.selector).toMatchObject({ select: { multiple: true, mode: "list", options: values!.map((value) => ({ value })) } });
     }
-    for (const key of ["use_media_info", "show_volume_level", "collapsible_controls"]) {
+    expect(schema.find(field => field.name === "show_volume_level")).toBeUndefined();
+    for (const key of ["use_media_info", "collapsible_controls", "ulm_card_media_player_power_button",
+      "ulm_card_media_player_more_info", "ulm_card_media_player_idle_off"]) {
       expect(schema.find((field) => field.name === key)?.selector).toEqual({ boolean: {} });
     }
     const editor = document.createElement("mushroom-addition-editor") as Card;
@@ -287,7 +397,10 @@ describe("Sonos Mushroom-compatible media controls", () => {
     expect(data.icon).toBeUndefined();
     expect(data.volume_controls).toEqual(["volume_buttons"]);
     expect(data.media_controls).toEqual(["play_pause_stop"]);
-    for (const selected of [complete, { volume_controls: [], media_controls: [], use_media_info: false, show_volume_level: false, collapsible_controls: false }]) {
+    for (const selected of [{ ...complete, ulm_card_media_player_enable_volume_adjust: 0.05,
+      ulm_card_media_player_player_controls_entity: "media_player.other_room",
+      ulm_card_media_player_more_info: true, ulm_card_media_player_idle_off: true },
+    { volume_controls: [], media_controls: [], use_media_info: false, collapsible_controls: false }]) {
       form.dispatchEvent(new CustomEvent("value-changed", { detail: { value: { ...data, ...selected } }, bubbles: true }));
       expect(changed.mock.calls.at(-1)![0].detail.config).toMatchObject({
         ...selected, shortcuts: { buttons: [{ id: "playlist" }] },
@@ -298,5 +411,27 @@ describe("Sonos Mushroom-compatible media controls", () => {
     expect(stub).toMatchObject({ ...complete, collapsible_controls: true });
     const preview = await render(stub);
     expect(preview.root.querySelector(".ulm-name")?.textContent).toBe("The song");
+  });
+
+  it("maps legacy power selection into the single power toggle and saves a disabled toggle without restoring it", async () => {
+    const editor = document.createElement("mushroom-addition-editor") as Card;
+    editor.hass = { states: { [entityId]: player() }, callService: vi.fn() };
+    editor.setConfig({ type, entity: entityId, media_controls: ["on_off", "play_pause_stop"] });
+    document.body.append(editor);
+    await editor.updateComplete;
+    const form = [...editor.shadowRoot.querySelectorAll<HTMLElement & { data: AdditionConfig }>("ha-form")]
+      .find(form => form.data.ulm_card_media_player_power_button === true)!;
+    expect(form.data.media_controls).toEqual(["play_pause_stop"]);
+    const changed = vi.fn();
+    editor.addEventListener("config-changed", changed);
+    form.dispatchEvent(new CustomEvent("value-changed", { detail: { value: {
+      ...form.data, ulm_card_media_player_power_button: false,
+    } }, bubbles: true }));
+    const saved = changed.mock.calls[0][0].detail.config;
+    expect(saved.ulm_card_media_player_power_button).toBe(false);
+    expect(saved.media_controls).toEqual(["play_pause_stop"]);
+    const view = await render(saved);
+    expect(view.button("Turn off")).toBeNull();
+    expect(view.button("Pause")).not.toBeNull();
   });
 });

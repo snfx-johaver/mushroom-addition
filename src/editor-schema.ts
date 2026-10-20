@@ -167,7 +167,6 @@ const fixedIconSources = new Set([
   "card_room",
   "card_welcome_scenes",
   "custom_card_welcome",
-  "custom_card_tablet",
 ]);
 
 const removeUnsupportedIconFields = (fields: EditorField[]): EditorField[] =>
@@ -447,7 +446,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         toggle("label_use_temperature"),
         entity(["sensor", "climate"], "room_temperature_entity"),
         toggle("label_use_brightness"),
-        entity(["light"], "room_brightness_entity"),
         entity(["light"], "room_light_entity"),
         toggle("ulm_card_dynamic_color"),
         ...presentation(true),
@@ -466,6 +464,7 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
   : item.upstreamId === "custom_card_trash"
     ? [
       entity(["sensor", "calendar"]),
+      toggle("hide_unknown_dates"),
       toggle("show_today"),
       entity(["sensor"], "today_entity"),
       toggle("show_tomorrow"),
@@ -540,21 +539,25 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         ...presentation(),
         toggle("ulm_card_media_player_enable_art"),
         toggle("use_media_info"),
-        toggle("show_volume_level"),
+        toggle("ulm_card_media_player_more_info"),
+        toggle("ulm_card_media_player_power_button"),
+        entity(["media_player"], "ulm_card_media_player_player_controls_entity"),
+        { name: "ulm_card_media_player_enable_volume_adjust", selector: { number: { min: 0.01, max: 1, step: 0.01, mode: "box" } } },
         { name: "volume_controls", selector: { select: { multiple: true, mode: "list", options: [
           { value: "volume_mute", label: "Mute" },
-          { value: "volume_set", label: "Volume level" },
+          { value: "volume_set", label: "Volume slider and percentage" },
           { value: "volume_buttons", label: "Volume buttons" },
         ] } } },
         { name: "media_controls", selector: { select: { multiple: true, mode: "list", options: [
-          { value: "on_off", label: "Turn on/off" },
           { value: "shuffle", label: "Shuffle" },
           { value: "previous", label: "Previous track" },
           { value: "play_pause_stop", label: "Play/pause/stop" },
           { value: "next", label: "Next track" },
           { value: "repeat", label: "Repeat mode" },
+          { value: "sources", label: "Sources and details" },
         ] } } },
         toggle("collapsible_controls"),
+        toggle("ulm_card_media_player_idle_off"),
         toggle("sonos_details_always_visible"),
         entity(["switch"], "crossfade_entity"),
         entity(["switch"], "night_sound_entity"),

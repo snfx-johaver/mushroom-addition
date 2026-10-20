@@ -1,5 +1,7 @@
 import type { AdditionConfig, EntityNameItem, HassEntity, HomeAssistant } from "./types";
 import { migrateWasteStreamConfig } from "./waste-streams";
+import { getCatalogItem } from "./catalog";
+import { cardIconKeys } from "./entity-icon";
 
 export const activeStates = new Set([
   "on", "open", "opening", "playing", "home", "heat", "cool", "heating",
@@ -146,7 +148,9 @@ const configuredValue = (config: AdditionConfig, pattern: RegExp): unknown =>
 const upstreamCompatibility = (config: AdditionConfig): AdditionConfig => {
   const independentClimate = String(config.type).includes("custom-card-roomview");
   const name = configuredValue(config, independentClimate ? /^(?!climate_).*_name$/ : /_name$/);
-  const icon = configuredValue(config, independentClimate ? /^(?!climate_).*_icon$/ : /_icon$/);
+  const item = getCatalogItem(config.type.replace(/^custom:/, ""));
+  const icon = cardIconKeys(item)
+    .map(key => config[key]).find(value => typeof value === "string" && value);
   const color = configuredValue(config, /_color$/);
   const controls = configuredValue(config, /_enable_(controls|buttons)$/);
   const slider = configuredValue(config, /_enable_slider$/);
@@ -165,13 +169,29 @@ const upstreamCompatibility = (config: AdditionConfig): AdditionConfig => {
   };
 };
 
+export const clearCardIcon = (config: AdditionConfig): AdditionConfig => {
+  const next = { ...config };
+  for (const key of cardIconKeys(getCatalogItem(config.type.replace(/^custom:/, "")))) delete next[key];
+  return next;
+};
+
 const legacyEntityKeys = [
   "ulm_card_media_player_entity",
   "ulm_card_input_number_entity",
 ] as const;
 
+export const migrateRoomLightConfig = (config: AdditionConfig): AdditionConfig => {
+  if (!config.type.endsWith("mushroom-addition-card-room")) return config;
+  const migrated = { ...config };
+  if (migrated.room_light_entity === undefined && migrated.room_brightness_entity !== undefined) {
+    migrated.room_light_entity = migrated.room_brightness_entity;
+  }
+  delete migrated.room_brightness_entity;
+  return migrated;
+};
+
 export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
-  const wasteMigrated = migrateWasteStreamConfig(config);
+  const wasteMigrated = migrateWasteStreamConfig(migrateRoomLightConfig(config));
   const legacy = wasteMigrated.primary_entity ||
     legacyEntityKeys.map((key) => wasteMigrated[key]).find((value): value is string => typeof value === "string");
   const entityId = (value: unknown): string | undefined => {

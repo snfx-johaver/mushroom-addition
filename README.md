@@ -47,7 +47,8 @@ custom features (the target instance is Home Assistant 2026.10.2); the general
 helpers/components produce visible errors with retry, not a simulated fallback.
 
 In **Advanced area controls**, compact chips-style rows have drag handles,
-edit/remove buttons and drag-to-reorder grips (keyboard: Alt + Up/Down). **Add button** offers
+native Home Assistant sortable grips and edit/remove icon buttons, matching Features
+(keyboard: Alt + Up/Down). **Add button** offers
 Entity (any domain), Action, Conditional and Template. Edit a row to configure
 name, inferred/custom icon, icon color, entity picture, content (name, state,
 relative last-changed/last-updated, attribute or custom text), and native
@@ -78,6 +79,12 @@ lines**, and **Show small grey entity icons beside sensor values**. Sensor value
 still come from native Area aggregation, ordering, exclusions and locale formatting.
 These opt-in enhancements use the native secondary slot and scoped styles. They
 depend on installed frontend internals; recheck them after Home Assistant updates.
+Content also offers **Use the light color as the room accent** and a **Room accent
+light** selector (`use_light_color`, `light_entity`). The subtle card tint is opt-in
+and uses only the configured active light's valid RGB color, including light-group
+members. Turning it off or switching the light off clears the tint; explicit alert
+and control colors remain independent. Off/unavailable buttons retain a neutral
+theme-aware background in light and dark themes.
 
 Standard domain groups remain native (including group membership, exclusions,
 state and toggle semantics). For item-specific icons/actions, add an entity
@@ -143,20 +150,45 @@ list to reorder duplicate buttons with distinct overrides unambiguously.
 
 ### Sonos media controls
 
-The Sonos card supports Mushroom-compatible `use_media_info`,
-`show_volume_level`, `volume_controls`, `media_controls`, and
+The Sonos card supports `use_media_info`,
+`volume_controls`, `media_controls`, and
 `collapsible_controls` options in its visual editor. Volume and media controls
 use native multi-select checkbox lists. Only controls supported by the entity's
 `supported_features` are shown. Unknown/unavailable players cannot be controlled.
+**Use media info** replaces the normal name/state header with the media title and
+artist, including when the visual editor has populated Name/State information
+modes. Turning it off restores the entity name/state; custom names/text,
+hidden fields and explicit alternate state/name/time modes remain respected.
+The independent **Show artist and album details** switch can retain metadata
+below the entity name even with Use media info off.
+Missing metadata falls back to the entity/source rather than empty text.
+**Volume slider and percentage** under **Volume controls** is the single volume
+level option. The percentage sits beside the slider, not duplicated in the
+header. The redundant `show_volume_level` editor toggle was removed and that
+legacy setting no longer changes the header.
+
+The working generic media-player controls are also available on Sonos:
+**Show power button** is a separate switch, shown only for supported power
+actions (never duplicated in Media controls). Legacy `media_controls: [on_off]`
+still works unless the explicit power switch is off. **Sources and details**
+in Media controls opens HA's existing entity dialog, like the generic card.
+**Playback control entity** optionally targets another media player for power,
+playback, mute, shuffle, repeat and volume; its state/capabilities determine the
+controls while artwork/title and Sonos sound settings retain the main entity.
+A missing/unavailable target is disabled, never replaced by the main player.
+**Volume button step** accepts 0.01–1 (`0.05` = 5%) and clamps volume to 0–100%;
+leave it empty for native volume steps. A player without volume-set support
+retains its native steps. **Treat idle as inactive** adds idle to the collapsed
+states when **Collapse controls when off** is enabled; standby also collapses.
 The primary icon follows the entity's icon unless you explicitly override it.
 
 ```yaml
 type: custom:mushroom-addition-custom-card-media-player-sonos
 entity: media_player.living_room
 use_media_info: true
-show_volume_level: true
+ulm_card_media_player_power_button: true
 volume_controls: [volume_mute, volume_set, volume_buttons]
-media_controls: [on_off, shuffle, previous, play_pause_stop, next, repeat]
+media_controls: [shuffle, previous, play_pause_stop, next, repeat, sources]
 collapsible_controls: true
 ```
 
@@ -241,6 +273,17 @@ selectors are editable independently of the metric, forecast, and status icons
 inside each card. Choose **Icon type: None** to hide only the header icon.
 All standalone cards use Home Assistant's theme-controlled card border width
 and color, like official Mushroom cards.
+Header icons follow the selected entity by default, including Home Assistant's
+device-class/state icon when `attributes.icon` is absent. Picker/editor defaults
+no longer save a recommended card icon as an override. Clear a previously saved
+Icon override to follow the entity; explicit custom icons and entity pictures are
+preserved. A card-specific fallback is used only when no entity is available.
+Battery retains its computed level/charging glyph when the entity has no explicit
+icon, together with its threshold colors. Semantic chart/metric/action glyphs
+remain independent of the header icon.
+NAS status and metric content also uses Mushroom's 14px primary/12px secondary
+text defaults and 40px icon containers with 24px symbols at every width. Theme
+overrides for Mushroom font/icon sizes apply; the rings retain their chart sizing.
 
 ### Roomview
 
@@ -304,7 +347,7 @@ The small indicators flow directly below the secondary information and above
 the large room icon, within the left column. The square card and icon sizes are unchanged.
 
 Enable **Use the light color as the room accent** (`ulm_card_dynamic_color`)
-and choose **Room accent light** (`room_light_entity`), or use the main light
+and choose **Room light (brightness and accent)** (`room_light_entity`), or use the main light
 entity. The accent uses an on light's RGB, including an active RGB group member
 when the group has no RGB. Off, unavailable, missing or invalid RGB retains the
 normal theme. No light service calls are made by the accent.
@@ -313,12 +356,27 @@ even with the light on; individual light controls retain their on/off colors.
 
 Room's **Show temperature label** and **Show brightness label** switches can be
 used together. Optional `room_temperature_entity` (sensor/climate) defaults to the
-primary entity. Optional `room_brightness_entity` (light) defaults to the primary
-light, then `room_light_entity`. Numeric temperature states/attributes require a
+primary entity. The single `room_light_entity` selector supplies both brightness
+and the optional accent, defaulting to the primary light. Older brightness-only
+configs migrate `room_brightness_entity` into this field; when both were set,
+`room_light_entity` takes precedence. Numeric temperature states/attributes require a
 temperature unit (`°C`, `°F` or `K`); climate/temperature attributes and temperature
 class sensors may use Home Assistant's configured temperature unit. Brightness
 requires a valid 0–255 attribute and is displayed as a percentage. Missing,
 unknown, unavailable and nonnumeric values never produce fabricated labels.
+Status indicators share the square buttons' neutral background while retaining
+their compact circular geometry and alert colors.
+
+Welcome navigation buttons reserve space for their lower curves and shadows
+inside the row. Narrow rows scroll horizontally instead of cutting buttons off.
+Scenes and Welcome Scenes use the same borderless shadow treatment as Welcome,
+retaining each button's original shape. Welcome Scenes' weather/date display has
+no background.
+
+The Trash card's **Hide items without a known date** option
+(`hide_unknown_dates: true`) automatically hides missing/empty/unavailable
+collection dates and calendar rows without a valid event date. Rows reappear
+when a date arrives. It is off by default; unknown dates otherwise show a dash.
 
 Room-only secondary information precedence:
 

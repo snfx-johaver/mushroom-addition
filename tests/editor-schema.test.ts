@@ -14,7 +14,7 @@ describe("family editor schemas", () => {
   it("defaults Astronomy to a sun icon while respecting entity icons", () => {
     const astronomy = CATALOG.find((item) => item.upstreamId === "custom_card_sun")!;
     expect(defaultIconFor(astronomy)).toBe("mdi:weather-sunny");
-    expect(populatedDefaultsFor(astronomy).icon).toBe("mdi:weather-sunny");
+    expect(populatedDefaultsFor(astronomy).icon).toBeUndefined();
     expect(defaultIconFor(astronomy, {
       entity_id: "sun.sun",
       state: "below_horizon",

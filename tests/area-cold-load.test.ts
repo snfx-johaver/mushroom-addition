@@ -44,6 +44,7 @@ it("bootstraps a cold card and native editor from lazy unregistered helper eleme
   expect(placeholders).toHaveLength(3);
 
   class NativeEditor extends HTMLElement {
+    _schema = () => [];
     hass?: HomeAssistant;
     config?: AreaAdvancedConfig;
     setConfig(value: AreaAdvancedConfig) { this.config = value; }

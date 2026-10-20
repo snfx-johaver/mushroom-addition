@@ -28,6 +28,12 @@ export const roomBrightnessLabel = (entity?: HassEntity): string | undefined => 
     ? `${Math.round(brightness / 255 * 100)}%` : undefined;
 };
 
+export const roomLightEntity = (config: AdditionConfig, hass: HomeAssistant): HassEntity | undefined => {
+  const id = config.room_light_entity || config.room_brightness_entity ||
+    (config.entity?.startsWith("light.") ? config.entity : undefined);
+  return id ? hass.states[id] : undefined;
+};
+
 // Resolve Room's own secondary information before passing it to the shared heading.
 export const roomSecondary = (config: AdditionConfig, hass: HomeAssistant): string | undefined => {
   const primary = config.entity ? hass.states[config.entity] : undefined;
@@ -63,9 +69,7 @@ export const roomSecondary = (config: AdditionConfig, hass: HomeAssistant): stri
     ? roomTemperatureLabel(hass, config.room_temperature_entity ? hass.states[config.room_temperature_entity] : primary)
     : undefined;
   const brightness = config.label_use_brightness === true
-    ? roomBrightnessLabel(config.room_brightness_entity ? hass.states[config.room_brightness_entity]
-      : primary?.entity_id.startsWith("light.") ? primary
-        : config.room_light_entity ? hass.states[config.room_light_entity] : undefined)
+    ? roomBrightnessLabel(roomLightEntity(config, hass))
     : undefined;
   const labels = [...new Set([temperature, brightness].filter((value): value is string => Boolean(value)))];
   if (mode === "state") return [...new Set([stateLabel(primary), ...labels])].join(" · ");

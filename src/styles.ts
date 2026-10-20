@@ -49,7 +49,7 @@ export const sharedStyles = css`
     background: rgba(var(--tone, var(--ulm-blue)), .16);
     flex: 0 0 auto;
   }
-  .ulm-icon > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
+  .ulm-icon > ha-icon, .ulm-icon > ha-state-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
   .ulm-icon.entity-picture { background-position: center; background-size: cover; }
   .source-icon {
     color: color-mix(in srgb, var(--source-color) 20%, rgba(var(--ulm-grey), .35));
@@ -144,7 +144,7 @@ export const sharedStyles = css`
   .metric-extremes { display: flex; justify-content: space-between; color: var(--secondary-text-color); font-size: 11px; }
   .ulm-scenes { padding: 12px; }
   .scene-grid { display: flex; flex-wrap: wrap; gap: 10px; }
-  .scene-button { display: flex; width: 64px; min-width: 64px; min-height: 88px; flex-direction: column; align-items: center; justify-content: space-between; gap: 5px; padding: 7px 5px 10px; border: 1px solid var(--divider-color, rgba(var(--ulm-grey), .2)); border-radius: 32px; background: var(--card-background-color, var(--ha-card-background, var(--secondary-background-color))); color: var(--primary-text-color); box-shadow: 0 2px 6px rgba(0,0,0,.12); }
+  .scene-button { display: flex; width: 64px; min-width: 64px; min-height: 88px; flex-direction: column; align-items: center; justify-content: space-between; gap: 5px; padding: 7px 5px 10px; border: 0; border-radius: 32px; background: var(--card-background-color, var(--ha-card-background, var(--secondary-background-color))); color: var(--primary-text-color); box-shadow: 0 2px 7px rgba(0,0,0,.12); }
   .scene-button span { width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; }
   .scene-button i { display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: rgba(var(--ulm-purple), .14); font-style: normal; }
   .scene-button i > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
@@ -180,7 +180,7 @@ export const sharedStyles = css`
     outline: 2px solid var(--primary-color, rgb(var(--ulm-blue)));
     outline-offset: 2px;
   }
-  .welcome-date { justify-self: center; gap: 6px; padding: 0 14px; font-weight: 700; }
+  .welcome-date { justify-self: center; gap: 6px; padding: 0 14px; font-weight: 700; border: 0; background: transparent; }
   .welcome-date ha-icon, .welcome-toolbar-button ha-icon { color: var(--secondary-text-color); }
   .welcome-heading { margin: 0 16px 14px; }
   .welcome-heading b { max-width: 260px; font-size: 24px; line-height: 1.15; }
@@ -224,7 +224,7 @@ export const sharedStyles = css`
   .room-copy span { overflow: hidden; color: var(--secondary-text-color); font-size: 14px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
   .room-main .ulm-icon { width: 116px; height: 116px; margin: 0 0 -14px -14px; border-radius: 0 58px 0 14px; }
   .ulm-source-room .room-main .ulm-icon { position: absolute; bottom: 0; left: 0; width: 75%; height: 75%; margin: 0; border-radius: 50%; transform: translate(-25%, 25%); }
-  .room-main .ulm-icon ha-icon { --mdc-icon-size: 56px; }
+  .room-main .ulm-icon ha-icon, .room-main .ulm-icon ha-state-icon { --mdc-icon-size: 56px; }
   .room-entities { display: flex; flex-direction: column; justify-content: flex-end; gap: 7px; }
   .room-entities .metric-pill { width: 46px; min-height: 46px; justify-content: center; overflow: hidden; padding: 0; color: transparent; }
   .room-sensor { border: 0; cursor: pointer; }
@@ -236,7 +236,7 @@ export const sharedStyles = css`
   .ulm-source-room.dynamic-color { background: rgba(var(--room-rgb), .2); }
   .ulm-source-room.dynamic-color .room-main > .ulm-icon { color: rgb(var(--room-rgb)); background: rgba(var(--room-rgb), .3); }
   .room-status { display: flex; flex: 0 0 25px; max-width: 100%; overflow: hidden; gap: 5px; }
-  .room-status-indicator { display: grid; flex: 0 0 25px; place-items: center; width: 25px; height: 25px; padding: 0; border: 0; border-radius: 50%; color: var(--secondary-text-color); background: var(--card-background-color); cursor: pointer; }
+  .room-status-indicator { display: grid; flex: 0 0 25px; place-items: center; width: 25px; height: 25px; padding: 0; border: 0; border-radius: 50%; color: var(--secondary-text-color); background: rgba(var(--ulm-grey), .08); cursor: pointer; }
   .room-status-indicator > ha-icon { flex: 0 0 18px; width: 18px; height: 18px; --mdc-icon-size: 18px; }
   .room-status-indicator.is-active { color: rgb(var(--ulm-yellow)); }
   .room-status-indicator.is-unavailable { opacity: .45; cursor: default; }
@@ -347,7 +347,7 @@ export const sharedStyles = css`
   .welcome-toolbar button { display: grid; width: 38px; height: 38px; padding: 0; place-items: center; border: 0; border-radius: 50%; background: var(--card-background-color); color: inherit; box-shadow: 0 2px 7px rgba(0,0,0,.12); }
   .welcome-toolbar button:disabled { visibility: hidden; }
   .welcome-greeting { font-size: 23px; line-height: 1.08; }
-  .welcome-items { display: flex; gap: 8px; overflow: hidden; }
+  .welcome-items { display: flex; gap: 8px; overflow-x: auto; padding: 4px 4px 10px; margin: -4px -4px -10px; }
   .welcome-items > button { display: flex; min-width: 52px; flex: 1; flex-direction: column; align-items: center; gap: 6px; padding: 7px 4px 10px; border: 0; border-radius: 25px; background: var(--card-background-color); color: inherit; box-shadow: 0 2px 7px rgba(0,0,0,.12); }
   .welcome-items i { display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: rgba(var(--tone), .18); color: rgb(var(--tone)); font-style: normal; }
   .welcome-items i > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
@@ -549,18 +549,18 @@ export const sharedStyles = css`
   .toner-bars b { position: relative; z-index: 1; padding: 2px 7px; border-radius: 999px; background: color-mix(in srgb, var(--card-background-color, #fff) 88%, transparent); color: var(--primary-text-color); font-size: 12px; font-variant-numeric: tabular-nums; font-weight: 600; }
   .custom-nas-metrics { gap: 12px; padding: 12px; }
   .nas-metrics-top { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .nas-metrics-tile { box-sizing: border-box; display: grid; min-height: 102px; grid-template-columns: 64px minmax(0, 1fr); align-items: center; gap: 16px; padding: 12px 18px; border: 0; border-radius: 30px; background: transparent; color: var(--primary-text-color); text-align: left; }
+  .nas-metrics-tile { box-sizing: border-box; display: grid; min-height: 66px; grid-template-columns: var(--mush-icon-size, 40px) minmax(0, 1fr); align-items: center; gap: 12px; padding: 12px; border: 0; border-radius: 30px; background: transparent; color: var(--primary-text-color); text-align: left; }
   button.nas-metrics-tile { cursor: pointer; }
-  .nas-metrics-tile-icon { display: grid; width: 62px; height: 62px; place-items: center; border-radius: 50%; background: rgba(var(--tone), .2); color: rgb(var(--tone)); }
-  .nas-metrics-tile-icon ha-icon { --mdc-icon-size: 24px; }
+  .nas-metrics-tile-icon { display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: rgba(var(--tone), .2); color: rgb(var(--tone)); }
+  .nas-metrics-tile-icon ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
   .nas-metrics-tile > span:last-child, .nas-metrics-metrics > span > span { display: grid; }
-  .nas-metrics-tile b, .nas-metrics-metrics b { font-size: 21px; line-height: 1.1; }
-  .nas-metrics-tile small, .nas-metrics-metrics small { color: rgba(var(--ulm-grey), .65); font-size: 17px; font-weight: 600; }
+  .nas-metrics-tile b, .nas-metrics-metrics b { font-size: var(--mush-card-primary-font-size, 14px); line-height: 20px; font-weight: 600; }
+  .nas-metrics-tile small, .nas-metrics-metrics small { color: var(--secondary-text-color); font-size: var(--mush-card-secondary-font-size, 12px); line-height: 20px; font-weight: 400; }
   .nas-metrics-body { display: grid; grid-template-columns: minmax(150px, .9fr) minmax(180px, 1.2fr); align-items: center; gap: 18px; }
   .nas-metrics-metrics { display: grid; gap: 12px; }
-  .nas-metrics-metrics > span { display: grid; min-height: 62px; grid-template-columns: 56px minmax(0, 1fr); align-items: center; gap: 14px; }
-  .nas-metrics-metrics i { display: grid; width: 56px; height: 56px; place-items: center; border-radius: 50%; background: rgba(var(--tone), .2); color: rgb(var(--tone)); font-style: normal; }
-  .nas-metrics-metrics i ha-icon { --mdc-icon-size: 24px; }
+  .nas-metrics-metrics > span { display: grid; min-height: 48px; grid-template-columns: var(--mush-icon-size, 40px) minmax(0, 1fr); align-items: center; gap: 12px; }
+  .nas-metrics-metrics i { display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: rgba(var(--tone), .2); color: rgb(var(--tone)); font-style: normal; }
+  .nas-metrics-metrics i ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
   .nas-metrics-rings { width: 100%; max-width: 190px; justify-self: center; overflow: visible; transform: rotate(-90deg); }
   .nas-metrics-ring-track, .nas-metrics-ring-value { fill: none; stroke-width: 6; }
   .nas-metrics-ring-track { stroke: rgba(var(--ulm-grey), .16); }
@@ -570,26 +570,21 @@ export const sharedStyles = css`
     .nas-metrics-top { gap: 8px; }
     .nas-metrics-tile {
       min-width: 0;
-      min-height: 82px;
-      grid-template-columns: 44px minmax(0, 1fr);
+      min-height: 66px;
+      grid-template-columns: var(--mush-icon-size, 40px) minmax(0, 1fr);
       gap: 9px;
       padding: 9px 10px;
       border-radius: 24px;
     }
-    .nas-metrics-tile-icon { width: 44px; height: 44px; }
-    .nas-metrics-tile b, .nas-metrics-metrics b { font-size: 16px; }
-    .nas-metrics-tile small, .nas-metrics-metrics small { font-size: 13px; }
     .nas-metrics-tile > span:last-child { min-width: 0; overflow: hidden; }
     .nas-metrics-tile b, .nas-metrics-tile small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .nas-metrics-body { grid-template-columns: minmax(112px, 1fr) minmax(120px, 132px); gap: 8px; }
     .nas-metrics-metrics { gap: 6px; }
     .nas-metrics-metrics > span {
       min-height: 46px;
-      grid-template-columns: 38px minmax(0, 1fr);
+      grid-template-columns: var(--mush-icon-size, 40px) minmax(0, 1fr);
       gap: 8px;
     }
-    .nas-metrics-metrics i { width: 38px; height: 38px; }
-    .nas-metrics-metrics i ha-icon, .nas-metrics-tile-icon ha-icon { --mdc-icon-size: 20px; }
     .nas-metrics-rings { width: 132px; max-width: 100%; }
   }
   .custom-tablet { gap: 14px; padding: 18px; }

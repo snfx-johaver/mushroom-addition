@@ -1,11 +1,14 @@
 import { html, render } from "lit";
 import type { HassEntity, HomeAssistant } from "./types";
+import { roomLightRgb } from "./room";
 
-export const AREA_CONTENT_KEYS = ["alert_color", "sensor_wrap", "sensor_icons"] as const;
+export const AREA_CONTENT_KEYS = ["alert_color", "sensor_wrap", "sensor_icons", "use_light_color", "light_entity"] as const;
 export interface AreaContentOptions {
   alert_color?: string;
   sensor_wrap?: boolean;
   sensor_icons?: boolean;
+  use_light_color?: boolean;
+  light_entity?: string;
 }
 interface NativeContentCard extends HTMLElement {
   hass?: HomeAssistant;
@@ -23,6 +26,11 @@ export const areaCssColor = (color?: string): string | undefined =>
 export function applyAreaContent(card: NativeContentCard, options: AreaContentOptions): void {
   const root = card.shadowRoot;
   if (!root) return;
+  const light = options.light_entity ? card.hass?.states[options.light_entity] : undefined;
+  const rgb = options.use_light_color && card.hass ? roomLightRgb(card.hass, light) : undefined;
+  card.toggleAttribute("data-light-accent", Boolean(rgb));
+  if (rgb) card.style.setProperty("--addition-room-rgb", rgb.join(","));
+  else card.style.removeProperty("--addition-room-rgb");
   const color = areaCssColor(options.alert_color);
   if (color) card.style.setProperty("--addition-alert-color", color);
   else card.style.removeProperty("--addition-alert-color");
@@ -31,6 +39,11 @@ export function applyAreaContent(card: NativeContentCard, options: AreaContentOp
     style = document.createElement("style");
     style.dataset.areaContent = "";
     style.textContent = `
+      :host([data-light-accent]) ha-card {
+        background: linear-gradient(rgba(var(--addition-room-rgb), .12), rgba(var(--addition-room-rgb), .12)),
+          var(--ha-card-background, var(--card-background-color));
+        --tile-color: rgb(var(--addition-room-rgb)) !important;
+      }
       .header .alerts .alert { background-color: var(--addition-alert-color, var(--orange-color)); }
       ha-tile-icon .alert-badge { --tile-badge-background-color: var(--addition-alert-color, var(--orange-color)); }
       ha-tile-info:has(.addition-sensors) { min-width: 0; }
@@ -118,6 +131,10 @@ export function applyNativeControlColor(group: HTMLElement, color?: string): voi
   style.textContent = `:host([data-custom-color]) ha-control-button {
     --control-button-icon-color: var(--addition-control-color);
     --control-button-focus-color: var(--addition-control-color);
+  }
+  ha-control-button:not(.active) {
+    --control-button-background-color: var(--disabled-color, var(--secondary-text-color));
+    --control-button-background-opacity: .14;
   }
   :host([data-custom-color]) ha-control-button.active {
     --control-button-background-color: var(--addition-control-color);

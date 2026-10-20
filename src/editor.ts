@@ -11,7 +11,7 @@ import type {
   WasteStreamConfig,
 } from "./types";
 import { CATALOG, getCatalogItem, LEGACY_ALIASES } from "./catalog";
-import { fireEvent } from "./helpers";
+import { clearCardIcon, fireEvent, migrateRoomLightConfig } from "./helpers";
 import { SONOS_CONTROLS } from "./sonos-controls";
 import { CONSOLE_ENTITIES } from "./console";
 import { editorHelper, localize } from "./localize";
@@ -168,7 +168,7 @@ export class MushroomAdditionEditor extends LitElement {
     const tag = config.type.replace(/^custom:/, "");
     const alias = LEGACY_ALIASES.find((item) => item.tag === tag);
     this.config = {
-      ...config,
+      ...migrateRoomLightConfig(config),
       variant: config.variant ?? alias?.variant,
     };
   }
@@ -187,6 +187,11 @@ export class MushroomAdditionEditor extends LitElement {
     const formData = {
       ...populatedDefaults,
       ...this.config,
+      ...(item.upstreamId === "custom_card_media_player_sonos" ? {
+        ulm_card_media_player_power_button: this.config.ulm_card_media_player_power_button ??
+          this.config.media_controls?.includes("on_off") ?? false,
+        media_controls: (this.config.media_controls ?? populatedDefaults.media_controls)?.filter(control => control !== "on_off"),
+      } : {}),
       ...(item.upstreamId === "custom_card_roomview" ? {
         climate_icon_type: this.config.climate_icon_type ?? "icon",
         climate_primary_info: this.config.climate_primary_info ?? (this.config.climate_name ? "name" : "state"),
@@ -303,8 +308,7 @@ export class MushroomAdditionEditor extends LitElement {
           section.id === "features" && hasCustomFeatures ? customFeatures
             : section.id === "content" && item.upstreamId === "custom_card_entity_carousel" ? html`
               <button @click=${() => {
-                const next = { ...this.config! };
-                delete next.icon;
+                const next = clearCardIcon(this.config!);
                 this.config = next;
                 fireEvent(this, "config-changed", { config: next });
               }}>Use entity icon</button>
@@ -367,7 +371,9 @@ export class MushroomAdditionEditor extends LitElement {
   private readonly valueChanged = (event: CustomEvent): void => {
     if (!this.config || !event.detail.value) return;
     const value = event.detail.value as Record<string, unknown>;
-    const next = { ...this.config, ...value } as AdditionConfig;
+    const changed = { ...this.config, ...value } as AdditionConfig;
+    const next = Object.prototype.hasOwnProperty.call(value, "icon") && !value.icon
+      ? clearCardIcon(changed) : changed;
     if (this.config.type.includes("mini-graph-card")) {
       const show = { ...(this.config.show as MiniGraphShowConfig | undefined) };
       const showMappings: Record<string, keyof MiniGraphShowConfig> = {

@@ -65,7 +65,7 @@ describe("Room status indicators", () => {
     const css = sharedStyles.cssText;
     expect(css).toContain(".ulm-source-room { position: relative; aspect-ratio: 1; min-height: 0; padding: 5px;");
     expect(css).toContain("width: 75%; height: 75%; margin: 0; border-radius: 50%; transform: translate(-25%, 25%);");
-    expect(css).toContain(".room-main .ulm-icon ha-icon { --mdc-icon-size: 56px; }");
+    expect(css).toContain(".room-main .ulm-icon ha-icon, .room-main .ulm-icon ha-state-icon { --mdc-icon-size: 56px; }");
     expect(css).toContain(".room-status { display: flex; flex: 0 0 25px; max-width: 100%; overflow: hidden;");
     expect(css).toContain(".room-status-indicator { display: grid; flex: 0 0 25px;");
     expect(css).toContain("width: 18px; height: 18px; --mdc-icon-size: 18px;");
@@ -237,7 +237,8 @@ describe("Room status indicators", () => {
       const flattenFields = (fields: EditorField[]): EditorField[] => fields.flatMap((field) => field.schema ? flattenFields(field.schema) : [field]);
       const fields = flattenFields(schema);
       expect(fields.find((field) => field.name === "room_temperature_entity")?.selector).toEqual({ entity: { domain: ["sensor", "climate"] } });
-      expect(fields.find((field) => field.name === "room_brightness_entity")?.selector).toEqual({ entity: { domain: ["light"] } });
+      expect(fields.find((field) => field.name === "room_light_entity")?.selector).toEqual({ entity: { domain: ["light"] } });
+      expect(fields.find((field) => field.name === "room_brightness_entity")).toBeUndefined();
       expect(fields.find((field) => field.name === "secondary_info")?.selector).toMatchObject({ select: {
         options: expect.arrayContaining([{ value: "custom", label: expect.any(String) }, { value: "composed", label: expect.any(String) }]),
       } });
@@ -283,6 +284,34 @@ describe("Room status indicators", () => {
   });
 
   describe("Room and Room Overview accent opt-out", () => {
+    it("uses one selected light for brightness and accent and migrates brightness-only configs", async () => {
+      const home = hass();
+      home.states["light.room"] = state("light.room", "on", { brightness: 255, rgb_color: [12, 130, 240] });
+      home.states["light.other"] = state("light.other", "on", { brightness: 128, rgb_color: [200, 20, 30] });
+      const cfg = { entity: "light.room", room_light_entity: "light.other", room_brightness_entity: "light.room",
+        label_use_brightness: true, ulm_card_dynamic_color: true };
+      const card = await render(cfg, home);
+      expect(card.shadowRoot.querySelector(".room-copy")?.textContent).toContain("50%");
+      expect(card.shadowRoot.querySelector(".dynamic-color")?.getAttribute("style")).toContain("--room-rgb:200,20,30");
+      expect(normalizeConfig({ type, ...cfg }).room_brightness_entity).toBeUndefined();
+      const legacy = normalizeConfig({ type, entity: "sensor.temperature", room_brightness_entity: "light.other" });
+      expect(legacy.room_light_entity).toBe("light.other");
+      const element = await editor({ room_brightness_entity: "light.other" });
+      const forms = [...element.shadowRoot.querySelectorAll<HTMLElement & { data: AdditionConfig }>("ha-form")];
+      expect(forms.some(form => form.data.room_light_entity === "light.other")).toBe(true);
+      expect(forms.every(form => form.data.room_brightness_entity === undefined)).toBe(true);
+      let saved: AdditionConfig | undefined;
+      element.addEventListener("config-changed", event => { saved = (event as CustomEvent).detail.config; });
+      forms[0].dispatchEvent(new CustomEvent("value-changed", { detail: { value: { room_light_entity: undefined } } }));
+      await element.updateComplete;
+      expect(saved).toHaveProperty("room_light_entity", undefined);
+      expect(saved).not.toHaveProperty("room_brightness_entity");
+    });
+
+    it("gives small status indicators the same neutral surface as square sensor buttons", () => {
+      expect(sharedStyles.cssText).toContain("background: rgba(var(--ulm-grey), .08); cursor: pointer; }");
+      expect(sharedStyles.cssText).not.toContain("color: var(--secondary-text-color); background: var(--card-background-color); cursor: pointer;");
+    });
     it.each(["card_room", "custom_card_room_overview"])("keeps %s neutral when disabled and clears accents on config/entity changes", async (id) => {
       const item = CATALOG.find((entry) => entry.upstreamId === id)!;
       const config: AdditionConfig = {
