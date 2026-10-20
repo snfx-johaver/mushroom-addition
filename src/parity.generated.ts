@@ -833,57 +833,6 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "7156ed70b9bc402ae01e76cd3c9b6b65efad7d84667bf59bdaea74b49cff6cd3"
   },
   {
-    "upstreamId": "custom_card_camera",
-    "sourcePath": "custom_cards/custom_card_camera",
-    "publicId": "custom_card_camera",
-    "rendererId": "custom_card_camera",
-    "layoutProfile": "card:button-card+image",
-    "primitives": [
-      "button-card",
-      "image"
-    ],
-    "customFields": [
-      "item1",
-      "item2",
-      "label"
-    ],
-    "stateDriven": false,
-    "animated": false,
-    "actions": [
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_custom_card_camera_aspect_ratio",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_camera_label",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_camera_name",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_custom_card_camera_title",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [
-      "camera entity/stream API"
-    ],
-    "deviations": [],
-    "sourceDigest": "abf5b29b835da6e7501c6229a49c7dffa6a3e7e83a351398a04878d3b2b04334"
-  },
-  {
     "upstreamId": "custom_card_roomview",
     "sourcePath": "custom_cards/custom_card_roomview",
     "publicId": "custom_card_roomview",

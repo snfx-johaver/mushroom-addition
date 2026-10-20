@@ -516,22 +516,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         number("thermostat_temp_step", 0.1, 5),
         percentage("low_battery_threshold"),
       ]
-    : item.upstreamId === "custom_card_camera"
-      ? [
-        entity(["camera"]),
-        ...presentation(),
-        select("camera_view", [
-          { value: "auto", label: "Automatic" },
-          { value: "live", label: "Live stream" },
-        ]),
-        select("fit_mode", [
-          { value: "cover", label: "Crop to fill" },
-          { value: "contain", label: "Fit entire image" },
-          { value: "fill", label: "Stretch to fill" },
-        ]),
-        text("aspect_ratio"),
-        number("image_height", 80, 1200),
-      ]
     : item.upstreamId === "custom_card_media_player_sonos"
       ? [
         entity(["media_player"]),

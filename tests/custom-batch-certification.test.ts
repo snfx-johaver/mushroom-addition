@@ -14,7 +14,6 @@ const states: HomeAssistant["states"] = {
   "sensor.download": { entity_id: "sensor.download", state: "273.07", attributes: { friendly_name: "Download", unit_of_measurement: "Mbit/s", history: [190, 220, 280] } },
   "sensor.ping": { entity_id: "sensor.ping", state: "24", attributes: { friendly_name: "Ping", unit_of_measurement: "ms" } },
   "sensor.upload": { entity_id: "sensor.upload", state: "17.19", attributes: { friendly_name: "Upload", unit_of_measurement: "Mbit/s" } },
-  "camera.driveway": { entity_id: "camera.driveway", state: "streaming", attributes: { friendly_name: "Driveway", entity_picture: "/api/camera_proxy/camera.driveway" } },
   "sensor.power": { entity_id: "sensor.power", state: "2577.8", attributes: { friendly_name: "Power", unit_of_measurement: "W", history: [120, 100, 1900] } },
 };
 
@@ -59,14 +58,12 @@ describe("first pending custom batch certification", () => {
         ["input_datetime", "set_datetime", { entity_id: "input_datetime.alarm", time: "08:45:00" }],
       ],
     });
-    expect(evidence.geometry.custom_card_camera.width).toBe(250);
   });
 
   it("provides source-specific picker defaults and graphical editor fields", () => {
     for (const id of [
       "custom_card_trash",
       "custom_card_alarm_time",
-      "custom_card_camera",
     ]) {
       const descriptor = item(id);
       const constructor = customElements.get(descriptor.tag) as typeof HTMLElement & {
@@ -80,10 +77,6 @@ describe("first pending custom batch certification", () => {
 
     expect(editorSchemaFor(item("custom_card_alarm_time")).map(({ name }) => name))
       .toEqual(expect.arrayContaining(["datetime_entity", "ulm_card_alarm_time_step", "ulm_card_alarm_time_collapse"]));
-    expect(editorSchemaFor(item("custom_card_camera")).map(({ name }) => name))
-      .toEqual(expect.arrayContaining(["name", "icon", "camera_view", "fit_mode", "aspect_ratio", "image_height"]));
-    expect(editorSchemaFor(item("custom_card_camera")).map(({ name }) => name))
-      .not.toEqual(expect.arrayContaining(["show_name", "show_state"]));
   });
 
   it("renders full and partial waste streams without sentinel summary text", async () => {
@@ -137,39 +130,6 @@ describe("first pending custom batch certification", () => {
     });
     expect([...unavailable.shadowRoot.querySelectorAll<HTMLButtonElement>(".alarm-time-controls button")]
       .every((control) => control.disabled)).toBe(true);
-  });
-
-  it("renders source-specific Camera title modes", async () => {
-    const titled = await renderCard("mushroom-addition-custom-card-camera", {
-      type: "custom:mushroom-addition-custom-card-camera",
-      entity: "camera.driveway",
-      name: "Driveway camera",
-      show_name: true,
-      show_state: true,
-      aspect_ratio: "16 / 9",
-    });
-    expect(titled.shadowRoot.querySelector(".camera-overlay")?.textContent).toContain("Driveway camera");
-    expect(titled.shadowRoot.querySelector(".camera-media")?.getAttribute("style")).toContain("16 / 9");
-    titled.remove();
-
-    const colonRatio = await renderCard("mushroom-addition-custom-card-camera", {
-      type: "custom:mushroom-addition-custom-card-camera",
-      entity: "camera.driveway",
-      aspect_ratio: "21:9",
-    });
-    expect(colonRatio.shadowRoot.querySelector(".camera-media")?.getAttribute("style")).toContain("21 / 9");
-    colonRatio.remove();
-
-    const imageOnly = await renderCard("mushroom-addition-custom-card-camera", {
-      type: "custom:mushroom-addition-custom-card-camera",
-      entity: "camera.driveway",
-      show_name: false,
-      show_state: false,
-      image_height: 320,
-    });
-    expect(imageOnly.shadowRoot.querySelector(".camera-overlay")).toBeNull();
-    expect(imageOnly.shadowRoot.querySelector(".camera-media")?.getAttribute("style")).toContain("height:320px");
-    expect(imageOnly.shadowRoot.querySelector("img")).not.toBeNull();
   });
 
 });

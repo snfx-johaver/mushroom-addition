@@ -70,7 +70,6 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
   const title = type.includes("card-title");
   const welcomeScenes = type.includes("card-welcome-scenes");
   const weather = type.includes("card-weather");
-  const camera = type.includes("custom-card-camera");
   const nativeWeather = type.includes("card-weather-ulm") || migrated.variant === "native";
   const sourceDefaultAction =
     type.includes("custom-card-sun") || type.includes("custom-card-thermostat-controls")
@@ -116,19 +115,8 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
   return {
     ...upstream,
     show_icon: upstream.show_icon ?? true,
-    show_state: upstream.show_state ?? (
-      camera ? upstream.ulm_custom_card_camera_title !== false : true
-    ),
-    show_name: upstream.show_name ?? (
-      camera ? upstream.ulm_custom_card_camera_title !== false : undefined
-    ),
-    camera_view: upstream.camera_view ?? (camera ? "auto" : undefined),
-    fit_mode: upstream.fit_mode ?? (camera ? "cover" : undefined),
-    aspect_ratio: upstream.aspect_ratio ?? (
-      camera && typeof upstream.ulm_custom_card_camera_aspect_ratio === "string"
-        ? upstream.ulm_custom_card_camera_aspect_ratio
-        : undefined
-    ),
+    show_state: upstream.show_state ?? true,
+    show_name: upstream.show_name,
     name_mode: upstream.primary_info !== undefined || upstream.secondary_info !== undefined
       ? undefined
       : upstream.name_mode,
@@ -138,12 +126,8 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
     ),
     layout: upstream.layout ?? "default",
     fill_container: upstream.fill_container ?? false,
-    primary_info: upstream.primary_info ?? (
-      camera && upstream.show_name === false ? "none" : undefined
-    ),
-    secondary_info: upstream.secondary_info ?? (
-      camera && upstream.show_state === false ? "none" : undefined
-    ),
+    primary_info: upstream.primary_info,
+    secondary_info: upstream.secondary_info,
     tap_action: upstream.tap_action ?? defaultAction,
     show_controls: upstream.show_controls ?? (type.includes("card-vacuum") ? true : undefined),
     show_forecast: upstream.show_forecast ?? (weather ? !nativeWeather : undefined),

@@ -43,22 +43,11 @@
         }
       ],
       "stateChangingControlsNotOperatedLive": true
-    },
-    "custom_card_camera": {
-      "live": true,
-      "geometry": {
-        "width": 330,
-        "height": 260.578125,
-        "clientWidth": 330,
-        "scrollWidth": 330
-      },
-      "imageLoaded": true,
-      "moreInfoEntity": "camera.frontyard_high_resolution_channel"
     }
   },
   "editorAndPicker": {
-    "registrationsFound": 3,
-    "graphicalSchemasLoaded": 3,
-    "semanticConfigRoundTripsPassed": 3
+    "registrationsFound": 2,
+    "graphicalSchemasLoaded": 2,
+    "semanticConfigRoundTripsPassed": 2
   }
 }
