@@ -131,6 +131,7 @@ export interface AdditionConfig {
   primary_entity?: string;
   entities?: string[];
   scene_items?: AdditionItemConfig[];
+  scene_buttons_only?: boolean;
   room_sensors?: AdditionItemConfig[];
   carousel_items?: AdditionItemConfig[];
   carousel_loop?: boolean;

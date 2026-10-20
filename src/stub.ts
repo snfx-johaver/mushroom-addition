@@ -153,9 +153,14 @@ export const createStubConfig = (
                                     : descriptor.upstreamId === "custom_card_better_thermostat"
                                       ? findEntity(["climate"], ["living", "room"]) ?? findEntity(["climate"], [])
                                     : undefined;
-  const entity = descriptor.upstreamId === "card_scenes"
-      ? undefined
-      : semanticPrimary ?? firstMatchingEntity(descriptor, hass, entities, entitiesFallback);
+  const scenePrimary = descriptor.upstreamId === "card_scenes"
+    ? findHealthyEntity(["light"], ["office", "joris"]) ??
+      findHealthyEntity(["light"], []) ??
+      findHealthyEntity(["climate"], []) ??
+      findHealthyEntity(["sensor"], [])
+    : undefined;
+  const entity = scenePrimary ?? semanticPrimary ??
+    firstMatchingEntity(descriptor, hass, entities, entitiesFallback);
   const flowerEntities = descriptor.upstreamId === "custom_card_plant"
     ? {
       moisture_entity:

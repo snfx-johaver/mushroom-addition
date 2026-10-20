@@ -161,7 +161,7 @@ describe("queued default batch one certification", () => {
         expect.objectContaining({ entity: "sensor.office_joris_motion_illuminance" }),
         expect.objectContaining({ entity: "sensor.bedroom_temperature_2" }),
       ]) }],
-      card_scenes: [undefined, { scene_items: expect.arrayContaining([
+      card_scenes: ["light.joris_iris_1", { scene_items: expect.arrayContaining([
         expect.objectContaining({ entity: "scene.living_room_relax" }),
         expect.objectContaining({ entity: "scene.living_room_dimmed" }),
       ]) }],
@@ -184,7 +184,7 @@ describe("queued default batch one certification", () => {
 
   it.each([
     ["card_room", ["entity", "label_use_temperature", "label_use_brightness", "input_select_entity", "input_select_option"]],
-    ["card_scenes", ["variant", "name"]],
+    ["card_scenes", ["entity", "variant", "scene_buttons_only", "name"]],
   ])("exposes a dedicated %s graphical editor", (sourceId, fields) => {
     const item = CATALOG.find((entry) => entry.upstreamId === sourceId)!;
     const schema = editorSchemaFor(item, { type: `custom:${item.tag}`, variant: item.variants?.[0] });
@@ -222,10 +222,24 @@ describe("queued default batch one certification", () => {
     unavailableRoom.remove();
 
     const scenes = await renderCard("card_scenes", {
+      entity: "light.joris_iris_1",
       scene_items: [{ entity: "media_player.office", name: "Media", active_state: "playing" }],
     });
+    expect(scenes.shadowRoot.querySelector(".automatic-presentation")).not.toBeNull();
     expect(scenes.shadowRoot.querySelector(".scene-button.is-active")).not.toBeNull();
     scenes.remove();
+
+    const buttonsOnly = await renderCard("card_scenes", {
+      entity: "light.joris_iris_1",
+      name: "Office scenes",
+      secondary_info: "state",
+      scene_buttons_only: true,
+      scene_items: [{ entity: "media_player.office", name: "Media", active_state: "playing" }],
+    });
+    expect(buttonsOnly.shadowRoot.querySelector(".automatic-presentation")).toBeNull();
+    expect(buttonsOnly.shadowRoot.querySelector(".scene-buttons-only .scene-button")).not.toBeNull();
+    expect(buttonsOnly.shadowRoot.textContent).not.toContain("Office scenes");
+    buttonsOnly.remove();
 
   });
 

@@ -107,6 +107,10 @@ export const populatedDefaultsFor = (
           loading_indicator: true,
         },
       }
+      : item.upstreamId === "card_scenes"
+      ? {
+        scene_buttons_only: false,
+      }
       : item.upstreamId === "card_battery"
       ? {
         battery_warning_threshold: 50,
