@@ -169,6 +169,37 @@ export class MushroomAdditionEditor extends LitElement {
         mini_graph_icon_adaptive_color: miniGraphShow?.icon_adaptive_color ?? false,
         mini_graph_loading_indicator: miniGraphShow?.loading_indicator ?? true,
       } : {}),
+      ...(item.upstreamId === "custom_card_entity_carousel" ? {
+        carousel_effect: this.config.carousel_effect ??
+          this.config.parameters?.effect ??
+          "coverflow",
+        carousel_grab_cursor: this.config.carousel_grab_cursor ??
+          this.config.parameters?.grabCursor ??
+          true,
+        carousel_centered_slides: this.config.carousel_centered_slides ??
+          this.config.parameters?.centeredSlides ??
+          true,
+        carousel_slides_per_view: String(
+          this.config.carousel_slides_per_view ??
+          this.config.parameters?.slidesPerView ??
+          "auto",
+        ),
+        carousel_coverflow_rotate: this.config.carousel_coverflow_rotate ??
+          this.config.parameters?.coverflowEffect?.rotate ??
+          0,
+        carousel_coverflow_stretch: this.config.carousel_coverflow_stretch ??
+          this.config.parameters?.coverflowEffect?.stretch ??
+          0,
+        carousel_coverflow_depth: this.config.carousel_coverflow_depth ??
+          this.config.parameters?.coverflowEffect?.depth ??
+          400,
+        carousel_coverflow_modifier: this.config.carousel_coverflow_modifier ??
+          this.config.parameters?.coverflowEffect?.modifier ??
+          1,
+        carousel_coverflow_slide_shadows: this.config.carousel_coverflow_slide_shadows ??
+          this.config.parameters?.coverflowEffect?.slideShadows ??
+          true,
+      } : {}),
       layout: (this.config.layout ?? populatedDefaults.layout) === "default"
         ? "horizontal"
         : this.config.layout ?? populatedDefaults.layout,
