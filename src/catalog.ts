@@ -7,7 +7,7 @@ const baseCards = [
 ] as const;
 
 const customCards = [
-  "trash", "alarm_time", "bar_card", "camera",
+  "trash", "alarm_time", "bar_card",
   "roomview",
   "room_overview", "welcome",
   "washer", "sun",

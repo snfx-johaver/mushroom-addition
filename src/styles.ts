@@ -425,25 +425,6 @@ export const sharedStyles = css`
     color: var(--primary-background-color, #fff);
   }
   .room-unavailable ha-icon { --mdc-icon-size: 13px; }
-  .ulm-camera { display: block; overflow: hidden; background: rgba(var(--ulm-grey), .08); }
-  .camera-media { position: relative; width: 100%; min-height: 80px; overflow: hidden; background: rgba(var(--ulm-grey), .08); }
-  .camera-media img, .camera-media ha-camera-stream { display: block; width: 100%; height: 100%; }
-  .camera-overlay {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    display: grid;
-    gap: 2px;
-    padding: 28px 16px 12px;
-    background: linear-gradient(transparent, rgba(0, 0, 0, .72));
-    color: #fff;
-    pointer-events: none;
-  }
-  .camera-overlay b, .camera-overlay span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .camera-overlay b { font-size: 16px; }
-  .camera-overlay span { font-size: 12px; }
-  .camera-placeholder { display: grid; width: 100%; height: 100%; min-height: 80px; place-items: center; }
   .ulm-generic-swap { grid-template-columns: minmax(0, 1fr) auto; }
   .ulm-generic.force-background, .ulm-generic-swap.force-background {
     background: color-mix(in srgb, var(--source-color, rgb(var(--ulm-blue))) 16%, transparent);
