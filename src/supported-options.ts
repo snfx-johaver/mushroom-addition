@@ -55,6 +55,7 @@ const supportedByFamily: Record<string, readonly string[]> = {
   ],
   media: [
     "ulm_card_media_player_enable_art",
+    "sonos_details_always_visible",
     "ulm_card_media_player_enable_controls",
     "ulm_card_media_player_enable_volume_slider",
     "ulm_card_media_player_enable_volume_buttons",

@@ -1350,6 +1350,47 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
     const entity = entityId ? ctx.hass.states[entityId] : undefined;
     return entity ? [{ control, entity }] : [];
   });
+  const detailsAlwaysVisible = configured<boolean>(ctx, "sonos_details_always_visible") === true;
+  const detailsContent = html`
+    ${switches.length ? html`<div class="sonos-switches">
+      ${switches.map(({ control, entity }) => html`
+        <button class=${entity.state === "on" ? "is-active" : ""} aria-pressed=${entity.state === "on"}
+          ?disabled=${entity.state === "unavailable"}
+          @click=${(event: Event) => {
+            event.stopPropagation();
+            ctx.service("homeassistant", "toggle", { entity_id: entity.entity_id });
+          }}>
+          <ha-icon .icon=${control.icon}></ha-icon>
+          <span>${control.label}</span>
+        </button>
+      `)}
+    </div>` : nothing}
+    ${numbers.length ? html`<div class="sonos-sliders">
+      ${numbers.map(({ control, entity }) => {
+        const value = numeric(entity.state) ?? 0;
+        const min = numeric(attr(entity, "min")) ?? -100;
+        const max = numeric(attr(entity, "max")) ?? 100;
+        const step = numeric(attr(entity, "step")) ?? 1;
+        return html`
+          <label>
+            <ha-icon .icon=${control.icon}></ha-icon>
+            <span>${control.label}</span>
+            <input type="range" min=${min} max=${max} step=${step} .value=${String(value)}
+              ?disabled=${entity.state === "unavailable"}
+              aria-label=${control.label}
+              @change=${(event: Event) => {
+                event.stopPropagation();
+                ctx.service("number", "set_value", {
+                  entity_id: entity.entity_id,
+                  value: Number((event.currentTarget as HTMLInputElement).value),
+                });
+              }}>
+            <output>${value}</output>
+          </label>
+        `;
+      })}
+    </div>` : nothing}
+  `;
   return ctx.actionSurface(`custom-sonos ${picture ? "has-art" : ""}`, html`
     ${picture ? html`<span class="media-art" style=${`background-image:url("${String(picture)}")`}></span>` : nothing}
     <div class="custom-card-heading">
@@ -1362,51 +1403,20 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
       ${button("Volume up", "mdi:volume-plus", (event) => { event.stopPropagation(); ctx.service("media_player", "volume_up", { entity_id: ctx.config.entity }); }, unavailable)}
     </div>
     ${switches.length || numbers.length ? html`
-      <details class="sonos-details" @pointerdown=${(event: Event) => event.stopPropagation()}
-        @click=${(event: Event) => event.stopPropagation()}>
-        <summary>
-          <span>More details</span>
-          <ha-icon icon="mdi:chevron-down"></ha-icon>
-        </summary>
-        ${switches.length ? html`<div class="sonos-switches">
-          ${switches.map(({ control, entity }) => html`
-            <button class=${entity.state === "on" ? "is-active" : ""} aria-pressed=${entity.state === "on"}
-              ?disabled=${entity.state === "unavailable"}
-              @click=${(event: Event) => {
-                event.stopPropagation();
-                ctx.service("homeassistant", "toggle", { entity_id: entity.entity_id });
-              }}>
-              <ha-icon .icon=${control.icon}></ha-icon>
-              <span>${control.label}</span>
-            </button>
-          `)}
-        </div>` : nothing}
-        ${numbers.length ? html`<div class="sonos-sliders">
-          ${numbers.map(({ control, entity }) => {
-            const value = numeric(entity.state) ?? 0;
-            const min = numeric(attr(entity, "min")) ?? -100;
-            const max = numeric(attr(entity, "max")) ?? 100;
-            const step = numeric(attr(entity, "step")) ?? 1;
-            return html`
-              <label>
-                <ha-icon .icon=${control.icon}></ha-icon>
-                <span>${control.label}</span>
-                <input type="range" min=${min} max=${max} step=${step} .value=${String(value)}
-                  ?disabled=${entity.state === "unavailable"}
-                  aria-label=${control.label}
-                  @change=${(event: Event) => {
-                    event.stopPropagation();
-                    ctx.service("number", "set_value", {
-                      entity_id: entity.entity_id,
-                      value: Number((event.currentTarget as HTMLInputElement).value),
-                    });
-                  }}>
-                <output>${value}</output>
-              </label>
-            `;
-          })}
-        </div>` : nothing}
-      </details>
+      ${detailsAlwaysVisible
+        ? html`<div class="sonos-details sonos-details-always-visible"
+            @pointerdown=${(event: Event) => event.stopPropagation()}
+            @click=${(event: Event) => event.stopPropagation()}>
+            ${detailsContent}
+          </div>`
+        : html`<details class="sonos-details" @pointerdown=${(event: Event) => event.stopPropagation()}
+            @click=${(event: Event) => event.stopPropagation()}>
+            <summary>
+              <span>More details</span>
+              <ha-icon icon="mdi:chevron-down"></ha-icon>
+            </summary>
+            ${detailsContent}
+          </details>`}
     ` : nothing}
   `);
 };

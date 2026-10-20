@@ -279,6 +279,7 @@ describe("power and printer custom batch certification", () => {
       "subwoofer_entity", "surrounds_entity", "loudness_entity", "surround_full_entity",
       "audio_delay_entity", "balance_entity", "bass_entity", "treble_entity", "sub_gain_entity",
       "surround_level_entity", "music_surround_level_entity", "ulm_card_media_player_enable_art",
+      "sonos_details_always_visible",
     ]],
     ["custom_card_more_power_outlet", ["entity", "power_entity", "energy_entity", "time_entity"]],
     ["custom_card_gauge", ["entity", "minimum", "maximum"]],
@@ -441,6 +442,18 @@ describe("power and printer custom batch certification", () => {
     }, states, undefined, sonosRegistry);
     expect(artworkHidden.shadowRoot.querySelector(".media-art")).toBeNull();
     artworkHidden.remove();
+
+    const detailsAlwaysVisible = await renderCard("mushroom-addition-custom-card-media-player-sonos", {
+      type: "custom:mushroom-addition-custom-card-media-player-sonos",
+      entity: "media_player.office_sonos",
+      sonos_details_always_visible: true,
+    }, states, undefined, sonosRegistry);
+    expect(detailsAlwaysVisible.shadowRoot.querySelector("details.sonos-details")).toBeNull();
+    expect(detailsAlwaysVisible.shadowRoot.querySelector(".sonos-details-always-visible")).not.toBeNull();
+    expect(detailsAlwaysVisible.shadowRoot.textContent).not.toContain("More details");
+    expect(detailsAlwaysVisible.shadowRoot.querySelectorAll(".sonos-switches button")).toHaveLength(7);
+    expect(detailsAlwaysVisible.shadowRoot.querySelectorAll(".sonos-sliders input")).toHaveLength(7);
+    detailsAlwaysVisible.remove();
 
     const paused = await renderCard("mushroom-addition-custom-card-media-player-sonos", {
       type: "custom:mushroom-addition-custom-card-media-player-sonos",
