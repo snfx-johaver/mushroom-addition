@@ -203,7 +203,7 @@ describe("queued default batch one certification", () => {
 
   it("covers room and scene state styling", async () => {
     const room = await renderCard("card_room", { entity: "light.joris_iris_1" });
-    expect(room.shadowRoot.textContent).toContain("21°C");
+    expect(room.shadowRoot.textContent).toContain("21 °C");
     room.remove();
     const unavailableRoom = await renderCard("card_room", { entity: "light.joris_iris_1" }, {
       ...states,

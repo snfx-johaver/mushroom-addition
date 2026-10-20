@@ -116,7 +116,7 @@ const certifiedCoreVariables = new Set([
 const choiceOptions: Record<string, Array<{ value: string; label: string }>> = {
 };
 
-const presentation = (): EditorField[] => [
+const presentation = (room = false): EditorField[] => [
   presentationField({
     name: "name",
     selector: { entity_name: {} },
@@ -155,6 +155,11 @@ const presentation = (): EditorField[] => [
       { value: "none", label: "None" },
     ]),
     select("secondary_info", [
+      ...(room ? [
+        { value: "default", label: "Automatic (feature labels)" },
+        { value: "custom", label: "Custom text" },
+        { value: "composed", label: "Composed (primary entity values)" },
+      ] : []),
       { value: "name", label: "Name" },
       { value: "state", label: "State" },
       { value: "last-changed", label: "Last changed" },
@@ -451,10 +456,13 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
       ? [
         entity(),
         toggle("label_use_temperature"),
+        entity(["sensor", "climate"], "room_temperature_entity"),
         toggle("label_use_brightness"),
+        entity(["light"], "room_brightness_entity"),
         entity(["light"], "room_light_entity"),
         toggle("ulm_card_dynamic_color"),
-        ...presentation(),
+        ...presentation(true),
+        text("secondary"),
       ]
     : item.upstreamId === "card_scenes"
       ? [

@@ -15,8 +15,14 @@ export interface EntityNameItem {
   text?: string;
 }
 
+export type RoomSecondaryPart =
+  | { type: "text"; text?: string }
+  | { type: "state" | "brightness" | "temperature" | "name" }
+  | { type: "attribute"; attribute?: string };
+
 export interface HomeAssistant {
   states: Record<string, HassEntity>;
+  config?: { unit_system?: { temperature?: string } };
   entities?: Record<string, {
     device_id?: string | null;
     platform?: string;
@@ -165,6 +171,9 @@ export interface AdditionConfig extends RoomViewDeviceActions {
   room_sensors?: AdditionItemConfig[];
   room_status?: RoomStatusConfig[];
   room_light_entity?: string;
+  room_temperature_entity?: string;
+  room_brightness_entity?: string;
+  room_secondary_parts?: RoomSecondaryPart[];
   ulm_card_dynamic_color?: boolean;
   carousel_items?: AdditionItemConfig[];
   carousel_loop?: boolean;
@@ -423,7 +432,7 @@ export interface AdditionConfig extends RoomViewDeviceActions {
   multiline_secondary?: boolean;
   fill_container?: boolean;
   primary_info?: "name" | "state" | "last-changed" | "last-updated" | "none";
-  secondary_info?: "default" | "name" | "state" | "last-changed" | "last-updated" | "none";
+  secondary_info?: "default" | "name" | "state" | "last-changed" | "last-updated" | "none" | "custom" | "composed";
   navigation_path?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;

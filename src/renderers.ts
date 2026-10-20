@@ -2,7 +2,7 @@ import { html, nothing, svg, type TemplateResult } from "lit";
 import type { ActionConfig, AdditionConfig, AdditionItemConfig, CatalogItem, HassEntity, HomeAssistant, RoomViewDevice, WeatherForecast } from "./types";
 import { controlActions } from "./control-actions";
 import { localize } from "./localize";
-import { ROOM_STATUS_KINDS, ROOM_STATUS_LIMIT, roomEntityIcon, roomEntityUnavailable, roomItemDefaultsFor, roomLightRgb, roomStatusActive, roomStatusIcon, roomStatusKind } from "./room";
+import { ROOM_STATUS_KINDS, ROOM_STATUS_LIMIT, roomEntityIcon, roomEntityUnavailable, roomItemDefaultsFor, roomLightRgb, roomSecondary, roomStatusActive, roomStatusIcon, roomStatusKind } from "./room";
 import { activeStates, displayName, fireEvent, stateLabel } from "./helpers";
 import { wasteStreamsForConfig } from "./waste-streams";
 import { defaultIconFor } from "./defaults";
@@ -614,21 +614,8 @@ const renderRoom = (ctx: RenderContext): TemplateResult => {
       ? ctx.config.room_sensors
       : (ctx.config.entities ?? []).map((entity) => ({ entity }))
   ).filter((item) => item.entity).slice(0, 4);
-  const useTemperature = ctx.config.label_use_temperature ??
-    configured<boolean>(ctx, "label_use_temperature") ?? true;
-  const useBrightness = ctx.config.label_use_brightness ??
-    configured<boolean>(ctx, "label_use_brightness") ?? false;
-  const brightness = numeric(attr(ctx.entity, "brightness"));
-  const temperature = attr(ctx.entity, "current_temperature") ??
-    attr(ctx.entity, "temperature") ??
-    attr(ctx.entity, "device_temperature") ??
-    ctx.entity?.state ??
-    "—";
-  const roomLabel = useTemperature
-    ? `${String(temperature)}${String(attr(ctx.entity, "unit_of_measurement") ?? "°C")}`
-    : useBrightness && ctx.entity?.state === "on" && brightness !== undefined
-      ? `${Math.round(brightness / 2.55)}%`
-      : stateLabel(ctx.entity);
+  const roomLabel = roomSecondary(ctx.config, ctx.hass);
+  const headingContext = { ...ctx, config: { ...ctx.config, secondary_info: undefined } };
   const light = ctx.config.room_light_entity
     ? ctx.hass.states[ctx.config.room_light_entity]
     : ctx.config.entity?.startsWith("light.") ? ctx.entity : undefined;
@@ -636,8 +623,7 @@ const renderRoom = (ctx: RenderContext): TemplateResult => {
   const statusItems = (ctx.config.room_status ?? []).slice(0, ROOM_STATUS_LIMIT).filter((item) => item.entity);
   return ctx.actionSurface(`ulm-room ulm-source-room ${rgb ? "dynamic-color" : ""} ${ctx.entity?.state === "unavailable" ? "is-unavailable" : ""}`, html`
     <div class="room-main">
-      <span class="room-copy">${heading(ctx, roomLabel)}</span>
-      <span class="ulm-icon tone-blue"><ha-icon .icon=${ctx.config.icon || "mdi:sofa-single"}></ha-icon></span>
+      <div class="room-copy">${heading(headingContext, roomLabel)}
       ${statusItems.length ? html`<div class="room-status" role="group" aria-label=${localize(ctx.hass, "room_status")}>
         ${statusItems.map((item) => {
           const entity = ctx.hass.states[item.entity];
@@ -652,6 +638,8 @@ const renderRoom = (ctx: RenderContext): TemplateResult => {
           </button>`;
         })}
       </div>` : nothing}
+      </div>
+      <span class="ulm-icon tone-blue"><ha-icon .icon=${ctx.config.icon || "mdi:sofa-single"}></ha-icon></span>
       ${ctx.entity?.state === "unavailable"
         ? html`<span class="room-unavailable"><ha-icon icon="mdi:exclamation"></ha-icon></span>`
         : nothing}
@@ -1006,7 +994,7 @@ const renderRoomOverview = (ctx: RenderContext): TemplateResult => {
       <ha-icon .icon=${iconName}></ha-icon>
     </button>`;
   };
-  return ctx.actionSurface(`custom-room-overview ${lightOn ? "light-on" : ""} ${dynamic ? "dynamic-color" : ""}`, html`
+  return ctx.actionSurface(`custom-room-overview ${dynamic ? "dynamic-color" : ""}`, html`
     <div class="room-overview-main">
       ${iconBubble(ctx, "mdi:sofa", lightOn ? "yellow" : "grey")}
       ${heading(ctx, label)}

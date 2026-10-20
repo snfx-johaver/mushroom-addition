@@ -445,6 +445,9 @@ export const createStubConfig = (
           .filter((entityId): entityId is string => Boolean(entityId))
           .map((entityId) => roomItemDefaultsFor(hass, entityId)),
         room_status: [],
+        room_secondary_parts: [],
+        room_temperature_entity: findEntity(["sensor"], ["temperature"]),
+        room_brightness_entity: entity?.startsWith("light.") ? entity : undefined,
         ulm_card_dynamic_color: false,
         room_light_entity: findEntity(["light"], ["room"]) ?? findEntity(["light"], []),
       }

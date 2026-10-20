@@ -228,6 +228,9 @@ export const populatedDefaultsFor = (
             label_use_brightness: false,
             ulm_card_dynamic_color: false,
             room_status: [],
+            room_secondary_parts: [],
+            room_temperature_entity: entityId && /^(sensor|climate)\./.test(entityId) ? entityId : undefined,
+            room_brightness_entity: entityId?.startsWith("light.") ? entityId : undefined,
             room_light_entity: entityId?.startsWith("light.") ? entityId : undefined,
           }
           : item.upstreamId === "custom_card_media_player_sonos"

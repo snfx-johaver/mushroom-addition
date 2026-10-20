@@ -194,12 +194,54 @@ four small entity icons of kind `window`, `door`, `motion` (including occupancy)
 motion keeps a static alert color. Inactive icons stay neutral, unavailable or
 unknown entities are dimmed and disabled, and each indicator exposes its name
 and state accessibly. Available indicators open entity details when tapped.
+The small indicators flow directly below the secondary information and above
+the large room icon, within the left column. The square card and icon sizes are unchanged.
 
 Enable **Use the light color as the room accent** (`ulm_card_dynamic_color`)
 and choose **Room accent light** (`room_light_entity`), or use the main light
 entity. The accent uses an on light's RGB, including an active RGB group member
 when the group has no RGB. Off, unavailable, missing or invalid RGB retains the
 normal theme. No light service calls are made by the accent.
+Disabling the accent keeps both **Room** and **Room Overview** backgrounds neutral,
+even with the light on; individual light controls retain their on/off colors.
+
+Room's **Show temperature label** and **Show brightness label** switches can be
+used together. Optional `room_temperature_entity` (sensor/climate) defaults to the
+primary entity. Optional `room_brightness_entity` (light) defaults to the primary
+light, then `room_light_entity`. Numeric temperature states/attributes require a
+temperature unit (`°C`, `°F` or `K`); climate/temperature attributes and temperature
+class sensors may use Home Assistant's configured temperature unit. Brightness
+requires a valid 0–255 attribute and is displayed as a percentage. Missing,
+unknown, unavailable and nonnumeric values never produce fabricated labels.
+
+Room-only secondary information precedence:
+
+- `none` hides all secondary information.
+- `custom` displays only `secondary` text, even when empty.
+- `composed` displays only the ordered `room_secondary_parts` list, even when empty.
+- `name`, `last-changed` and `last-updated` retain their explicit meanings.
+- Unset/`default` uses nonempty legacy `secondary` text first, then enabled valid
+  feature labels joined by ` · `, falling back to the primary state.
+- `state` preserves the primary state and appends enabled valid feature labels
+  (including when old configurations explicitly set `secondary_info: state`).
+
+Choose **Composed (primary entity values)** under **Content** to add, remove or
+move information parts up/down. Each part reads the current primary entity:
+`text` (`text` value), `name` (entity friendly name), `state`, `brightness`,
+`temperature`, or `attribute` (`attribute` key selected from the primary entity).
+Parts are joined with ` · `; missing values are omitted. Composition does not
+use the feature-label entity selectors or switches.
+
+```yaml
+secondary_info: composed
+room_secondary_parts:
+  - type: text
+    text: Living room
+  - type: state
+  - type: brightness
+  - type: attribute
+    attribute: color_mode
+```
 
 Room selection helper options and their implicit double-tap action are removed
 for Room; old `input_select_entity`, `input_select_option`, `ulm_input_select`
@@ -209,6 +251,8 @@ active state, blue color and tap/hold/double-tap defaults on entity selection.
 Inferred values refresh on entity changes while explicit overrides are retained.
 Sensors open details by default; other entities toggle. Legacy button names are
 kept as accessible labels, not editable/visible names. Scene names are unchanged.
+Use **Move up**/**Move down** on Room sensor button rows to persist their order
+without changing their icons or actions. Boundary buttons are disabled.
 
 ```yaml
 type: custom:mushroom-addition-card-room

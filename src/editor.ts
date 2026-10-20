@@ -5,6 +5,7 @@ import type {
   AdditionItemConfig,
   HomeAssistant,
   RoomStatusConfig,
+  RoomSecondaryPart,
   SonosShortcutConfig,
   WasteStreamConfig,
 } from "./types";
@@ -298,8 +299,10 @@ export class MushroomAdditionEditor extends LitElement {
           section,
           groupedSchema[section.id],
           formData,
-          section.id === "features" && hasCustomFeatures ? customFeatures : nothing,
-          section.id === "features" && hasCustomFeatures,
+          section.id === "features" && hasCustomFeatures ? customFeatures
+            : section.id === "content" && item.upstreamId === "card_room" ? this.renderRoomSecondaryEditor() : nothing,
+          section.id === "features" && hasCustomFeatures ||
+            section.id === "content" && item.upstreamId === "card_room" && this.config?.secondary_info === "composed",
         ))}
       </div>
     `;
@@ -562,6 +565,12 @@ export class MushroomAdditionEditor extends LitElement {
               <small>${key === "scene_items" ? "Defaults to activating scenes and toggling other supported entities." : localize(this.hass, "room_button_action_help")}</small>
             </label>
             <div class="item-actions wide">
+              ${key === "room_sensors" ? html`
+                <button class="move-up" ?disabled=${index === 0}
+                  @click=${() => this.moveRoomSensor(index, -1)}>${localize(this.hass, "room_move_up")}</button>
+                <button class="move-down" ?disabled=${index === items.length - 1}
+                  @click=${() => this.moveRoomSensor(index, 1)}>${localize(this.hass, "room_move_down")}</button>
+              ` : nothing}
               <button @click=${() => this.removeItem(key, index)}>Remove</button>
             </div>
           </div>
@@ -569,6 +578,74 @@ export class MushroomAdditionEditor extends LitElement {
         <button class="add" @click=${() => this.addItem(key)}>Add button</button>
       </section>
     `;
+  }
+
+  private renderRoomSecondaryEditor() {
+    if (this.config?.secondary_info !== "composed") return nothing;
+    const parts = this.config.room_secondary_parts ?? [];
+    const types: RoomSecondaryPart["type"][] = ["text", "name", "state", "brightness", "temperature", "attribute"];
+    return html`<section class="item-editor room-secondary-editor">
+      <p>${localize(this.hass, "room_secondary_help")}</p>
+      ${parts.map((part, index) => html`<div class="item-row">
+        <label class="field">
+          <span>${localize(this.hass, "room_secondary_value")}</span>
+          <ha-selector .hass=${this.hass} .selector=${{ select: { mode: "dropdown", options: types.map((value) => ({
+            value, label: localize(this.hass, `room_part_${value}`),
+          })) } }} .value=${part.type}
+            @value-changed=${(event: CustomEvent) => {
+              if (!types.includes(event.detail.value)) return;
+              this.updateRoomSecondaryPart(index, { type: event.detail.value } as RoomSecondaryPart);
+            }}></ha-selector>
+        </label>
+        ${part.type === "text" || part.type === "attribute" ? html`<label class="field">
+          <span>${localize(this.hass, `room_part_${part.type}`)}</span>
+          <ha-selector .hass=${this.hass}
+            .selector=${part.type === "attribute" ? { attribute: { entity_id: this.config?.entity } } : { text: {} }}
+            .value=${part.type === "text" ? part.text ?? "" : part.attribute ?? ""}
+            @value-changed=${(event: CustomEvent) => {
+              this.updateRoomSecondaryPart(index, part.type === "text" ? { type: "text", text: event.detail.value }
+                : { type: "attribute", attribute: event.detail.value });
+            }}></ha-selector>
+        </label>` : nothing}
+        <div class="item-actions wide">
+          <button class="move-up" ?disabled=${index === 0}
+            @click=${() => this.moveRoomSecondary(index, -1)}>${localize(this.hass, "room_move_up")}</button>
+          <button class="move-down" ?disabled=${index === parts.length - 1}
+            @click=${() => this.moveRoomSecondary(index, 1)}>${localize(this.hass, "room_move_down")}</button>
+          <button class="remove" @click=${() => this.saveRoomSecondary((this.config?.room_secondary_parts ?? []).filter((_, row) => row !== index))}>${localize(this.hass, "room_part_remove")}</button>
+        </div>
+      </div>`)}
+      <button class="add" @click=${() => this.saveRoomSecondary([...(this.config?.room_secondary_parts ?? []), { type: "state" }])}>${localize(this.hass, "room_part_add")}</button>
+    </section>`;
+  }
+
+  private saveRoomSecondary(parts: RoomSecondaryPart[]): void {
+    if (!this.config) return;
+    this.config = { ...this.config, room_secondary_parts: parts };
+    fireEvent(this, "config-changed", { config: this.config });
+  }
+
+  private updateRoomSecondaryPart(index: number, part: RoomSecondaryPart): void {
+    const parts = [...(this.config?.room_secondary_parts ?? [])];
+    parts[index] = part;
+    this.saveRoomSecondary(parts);
+  }
+
+  private moveRoomSecondary(index: number, offset: number): void {
+    const parts = [...(this.config?.room_secondary_parts ?? [])];
+    const target = index + offset;
+    if (target < 0 || target >= parts.length) return;
+    [parts[index], parts[target]] = [parts[target], parts[index]];
+    this.saveRoomSecondary(parts);
+  }
+
+  private moveRoomSensor(index: number, offset: number): void {
+    if (!this.config) return;
+    const items = [...(this.config.room_sensors ?? (this.config.entities ?? []).map((entity) => ({ entity })))];
+    const target = index + offset;
+    if (target < 0 || target >= items.length) return;
+    [items[index], items[target]] = [items[target], items[index]];
+    this.updateItems("room_sensors", items);
   }
 
   private renderRoomStatusEditor() {

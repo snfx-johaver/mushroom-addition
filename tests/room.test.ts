@@ -4,7 +4,7 @@ import { CATALOG } from "../src/catalog";
 import { additionalEditorSchemaFor, editorSchemaFor, type EditorField } from "../src/editor-schema";
 import { normalizeConfig } from "../src/helpers";
 import { populatedDefaultsFor } from "../src/defaults";
-import { roomEntityIcon, roomItemDefaultsFor, roomLightRgb, roomStatusActive, roomStatusKind } from "../src/room";
+import { roomBrightnessLabel, roomEntityIcon, roomItemDefaultsFor, roomLightRgb, roomSecondary, roomStatusActive, roomStatusKind, roomTemperatureLabel } from "../src/room";
 import { sharedStyles } from "../src/styles";
 import type { AdditionConfig, AdditionItemConfig, HassEntity, HomeAssistant, RoomStatusKind } from "../src/types";
 
@@ -57,6 +57,21 @@ const actionsFor = (card: Element) => {
 afterEach(() => { document.body.replaceChildren(); vi.useRealTimers(); });
 
 describe("Room status indicators", () => {
+  it("places fixed-size indicators directly after secondary text, bounded in the left column without resizing the square or sofa", async () => {
+    const card = await render({ room_status: [{ entity: "binary_sensor.window" }], room_sensors: [{ entity: "light.room" }] });
+    const copy = card.shadowRoot.querySelector(".room-copy")!;
+    expect(copy.querySelector(".shared-presentation")?.nextElementSibling?.className).toBe("room-status");
+    expect(copy.nextElementSibling?.classList.contains("ulm-icon")).toBe(true);
+    const css = sharedStyles.cssText;
+    expect(css).toContain(".ulm-source-room { position: relative; aspect-ratio: 1; min-height: 0; padding: 5px;");
+    expect(css).toContain("width: 75%; height: 75%; margin: 0; border-radius: 50%; transform: translate(-25%, 25%);");
+    expect(css).toContain(".room-main .ulm-icon ha-icon { --mdc-icon-size: 56px; }");
+    expect(css).toContain(".room-status { display: flex; flex: 0 0 25px; max-width: 100%; overflow: hidden;");
+    expect(css).toContain(".room-status-indicator { display: grid; flex: 0 0 25px;");
+    expect(css).toContain("width: 18px; height: 18px; --mdc-icon-size: 18px;");
+    expect(css).not.toContain(".room-status { position: absolute;");
+  });
+
   it("renders at most four distinct small indicators without altering action buttons or adding visible labels", async () => {
     const card = await render({
       room_status: (["window", "door", "water", "smoke", "motion"] as RoomStatusKind[])
@@ -72,6 +87,237 @@ describe("Room status indicators", () => {
     card.shadowRoot.querySelector<HTMLButtonElement>(".room-status-indicator")!.click();
     expect(actions).toHaveLength(1);
     expect(actions[0]).toMatchObject({ action: "tap", config: { entity: "binary_sensor.window", tap_action: { action: "more-info" } } });
+  });
+
+  describe("Room secondary information", () => {
+    const config = (extra: Partial<AdditionConfig> = {}): AdditionConfig => ({ type, entity: "light.room", ...extra });
+    const home = () => {
+      const result = hass();
+      result.states["light.room"] = state("light.room", "on", {
+        ...states["light.room"].attributes, brightness: 128, color_mode: "rgb",
+      });
+      return result;
+    };
+
+    it("combines selected sensor temperature with primary light brightness and updates both live", async () => {
+      const card = await render(config({
+        room_temperature_entity: "sensor.temperature", label_use_temperature: true, label_use_brightness: true,
+      }), home());
+      const label = () => card.shadowRoot.querySelector(".ulm-label")?.textContent;
+      expect(label()).toBe("21 °C · 50%");
+      card.hass = { ...card.hass, states: {
+        ...card.hass.states,
+        "sensor.temperature": state("sensor.temperature", "22.5", { unit_of_measurement: "°C" }),
+        "light.room": state("light.room", "on", { brightness: 255 }),
+      } };
+      await card.updateComplete;
+      expect(label()).toBe("22.5 °C · 100%");
+      card.setConfig(config({ label_use_temperature: true }));
+      await card.updateComplete;
+      expect(label()).toBe("on");
+      expect(label()).not.toContain("°C");
+    });
+
+    it("uses explicit feature entities before primary light and accent-light fallbacks", () => {
+      const ha = home();
+      ha.states["light.other"] = state("light.other", "on", { brightness: 0 });
+      expect(roomSecondary(config({ label_use_brightness: true }), ha)).toBe("50%");
+      expect(roomSecondary(config({ label_use_brightness: true, room_brightness_entity: "light.other" }), ha)).toBe("0%");
+      expect(roomSecondary(config({ entity: "sensor.lux", label_use_brightness: true, room_light_entity: "light.room" }), ha)).toBe("50%");
+      expect(roomSecondary(config({ label_use_brightness: true, room_brightness_entity: "light.missing" }), ha)).toBe("on");
+    });
+
+    it.each([
+      ["unset", undefined, undefined, "21 °C · 50%"],
+      ["default", "default", undefined, "21 °C · 50%"],
+      ["legacy state", "state", undefined, "on · 21 °C · 50%"],
+      ["state with legacy text", "state", "Old text", "on · 21 °C · 50%"],
+      ["none", "none", "Hidden", undefined],
+      ["custom", "custom", "Custom", "Custom"],
+      ["empty custom", "custom", "", undefined],
+      ["legacy custom", undefined, "Legacy", "Legacy"],
+      ["name", "name", "Ignored", "Room light"],
+      ["empty composed", "composed", "Ignored", undefined],
+    ] as const)("respects %s precedence with both feature toggles", (_, mode, secondary, expected) => {
+      const value = config({ room_temperature_entity: "sensor.temperature", label_use_brightness: true,
+        label_use_temperature: true, secondary_info: mode, secondary });
+      expect(roomSecondary(normalizeConfig(value), home())).toBe(expected);
+    });
+
+    it("reflects toggling either feature even with explicit legacy state mode", async () => {
+      const card = await render(config({ secondary_info: "state", room_temperature_entity: "sensor.temperature",
+        label_use_temperature: false, label_use_brightness: false }), home());
+      const label = () => card.shadowRoot.querySelector(".ulm-label")?.textContent;
+      expect(label()).toBe("on");
+      for (const [temperature, brightness, expected] of [
+        [true, false, "on · 21 °C"], [false, true, "on · 50%"],
+        [true, true, "on · 21 °C · 50%"], [false, false, "on"],
+      ] as const) {
+        card.setConfig(config({ secondary_info: "state", room_temperature_entity: "sensor.temperature",
+          label_use_temperature: temperature, label_use_brightness: brightness }));
+        await card.updateComplete;
+        expect(label()).toBe(expected);
+      }
+      card.setConfig(config({ secondary_info: "none", label_use_temperature: true, label_use_brightness: true }));
+      await card.updateComplete;
+      expect(label()).toBeUndefined();
+    });
+
+    it("validates temperature state/attributes/units without inventing Celsius", () => {
+      const ha = home();
+      expect(roomTemperatureLabel(ha, states["sensor.temperature"])).toBe("21 °C");
+      expect(roomTemperatureLabel(ha, state("climate.room", "heat", { current_temperature: 20, unit_of_measurement: "°F" }))).toBe("20 °F");
+      expect(roomTemperatureLabel(ha, state("climate.room", "heat", { current_temperature: 20 }))).toBeUndefined();
+      ha.config = { unit_system: { temperature: "°C" } };
+      for (const attrs of [{ current_temperature: 0 }, { temperature: "19.5" }, { device_temperature: 23 }]) {
+        expect(roomTemperatureLabel(ha, state("climate.room", "heat", attrs))).toMatch(/°C$/);
+      }
+      expect(roomTemperatureLabel(ha, state("sensor.temp", "17", { device_class: "temperature" }))).toBe("17 °C");
+      for (const value of ["on", "unavailable", "unknown", "", " ", "NaN", "Infinity"]) {
+        expect(roomTemperatureLabel(ha, state("sensor.temp", value, { unit_of_measurement: "°C" }))).toBeUndefined();
+      }
+      for (const attrs of [{}, { unit_of_measurement: "%" }, { unit_of_measurement: "watts" }]) {
+        expect(roomTemperatureLabel(ha, state("sensor.other", "20", attrs))).toBeUndefined();
+      }
+      expect(roomTemperatureLabel(ha, state("climate.room", "unavailable", { current_temperature: 22 }))).toBeUndefined();
+      expect(roomTemperatureLabel(ha, undefined)).toBeUndefined();
+    });
+
+    it("rejects missing, invalid and unavailable brightness and never fabricates fallback labels", () => {
+      for (const value of [undefined, null, true, "", " ", "bad", NaN, Infinity, -1, 256]) {
+        expect(roomBrightnessLabel(state("light.room", "on", { brightness: value }))).toBeUndefined();
+      }
+      expect(roomBrightnessLabel(state("light.room", "unavailable", { brightness: 128 }))).toBeUndefined();
+      expect(roomBrightnessLabel(state("sensor.room", "on", { brightness: 128 }))).toBeUndefined();
+      expect(roomBrightnessLabel(undefined)).toBeUndefined();
+      const ha = home();
+      ha.states["sensor.temperature"] = state("sensor.temperature", "unavailable", { unit_of_measurement: "°C" });
+      ha.states["light.room"] = state("light.room", "unknown", { brightness: 128 });
+      expect(roomSecondary(config({ room_temperature_entity: "sensor.temperature", label_use_brightness: true }), ha)).toBe("unknown");
+    });
+
+    it("composes primary entity values only, omits invalid parts and refreshes when primary entity changes", async () => {
+      const card = await render(config({
+        name: "Not the entity name", secondary_info: "composed", secondary: "Ignored",
+        room_temperature_entity: "sensor.temperature", room_brightness_entity: "light.other",
+        label_use_temperature: false, label_use_brightness: false,
+        room_secondary_parts: [
+          { type: "text", text: "Room" }, { type: "name" }, { type: "state" }, { type: "brightness" },
+          { type: "temperature" }, { type: "attribute", attribute: "color_mode" },
+          { type: "attribute", attribute: "missing" }, { type: "text", text: "" },
+        ],
+      }), home());
+      expect(card.shadowRoot.querySelector(".ulm-label")?.textContent).toBe("Room · Room light · on · 50% · rgb");
+      card.hass = { ...card.hass, states: { ...card.hass.states,
+        "light.room": state("light.room", "off", { friendly_name: "Updated light", brightness: 0, color_mode: "unknown" }),
+      } };
+      await card.updateComplete;
+      expect(card.shadowRoot.querySelector(".ulm-label")?.textContent).toBe("Room · Updated light · off · 0%");
+      card.setConfig({ ...config({ entity: "sensor.temperature", secondary_info: "composed" }),
+        room_secondary_parts: [{ type: "temperature" }, { type: "brightness" }, { type: "attribute", attribute: "device_class" }] });
+      await card.updateComplete;
+      expect(card.shadowRoot.querySelector(".ulm-label")?.textContent).toBe("21 °C · temperature");
+    });
+
+    it("retains explicit timestamp modes and safe scalar attributes without falling back to feature labels", () => {
+      const ha = home();
+      ha.states["light.room"] = { ...ha.states["light.room"], last_changed: "2026-10-20T10:00:00Z",
+        attributes: { count: 0, enabled: false, invalid: Infinity, list: ["x"], object: {}, empty: " ", missing: null } };
+      expect(roomSecondary(config({ secondary_info: "last-changed", label_use_brightness: true }), ha))
+        .toBe(new Date("2026-10-20T10:00:00Z").toLocaleString());
+      expect(roomSecondary(config({ secondary_info: "last-updated" }), ha)).toBe("Last updated unavailable");
+      expect(roomSecondary(config({ secondary_info: "composed",
+        room_secondary_parts: ["count", "enabled", "invalid", "list", "object", "empty", "missing"]
+          .map((attribute) => ({ type: "attribute", attribute })),
+      }), ha)).toBe("0 · false");
+    });
+
+    it("exposes Room-only feature selectors and composed/custom modes without changing other schemas", () => {
+      const schema = editorSchemaFor(descriptor);
+      const flattenFields = (fields: EditorField[]): EditorField[] => fields.flatMap((field) => field.schema ? flattenFields(field.schema) : [field]);
+      const fields = flattenFields(schema);
+      expect(fields.find((field) => field.name === "room_temperature_entity")?.selector).toEqual({ entity: { domain: ["sensor", "climate"] } });
+      expect(fields.find((field) => field.name === "room_brightness_entity")?.selector).toEqual({ entity: { domain: ["light"] } });
+      expect(fields.find((field) => field.name === "secondary_info")?.selector).toMatchObject({ select: {
+        options: expect.arrayContaining([{ value: "custom", label: expect.any(String) }, { value: "composed", label: expect.any(String) }]),
+      } });
+      for (const item of CATALOG.filter((item) => item.upstreamId !== "card_room")) {
+        const others = flattenFields(editorSchemaFor(item));
+        expect(others.find((field) => field.name === "room_temperature_entity")).toBeUndefined();
+        const options = others.find((field) => field.name === "secondary_info")?.selector?.select as { options?: { value: string }[] } | undefined;
+        expect(options?.options?.some((option) => ["custom", "composed"].includes(option.value))).not.toBe(true);
+      }
+    });
+
+    it("adds, configures, reorders and removes composed parts in the graphical Content editor", async () => {
+      const element = await editor(config({ secondary_info: "composed" }));
+      const section = () => element.shadowRoot.querySelector<HTMLElement>(".room-secondary-editor")!;
+      expect(section().closest("ha-expansion-panel")?.textContent).toContain("Content");
+      let saved: AdditionConfig | undefined;
+      element.addEventListener("config-changed", (event) => { saved = (event as CustomEvent).detail.config; });
+      for (let index = 0; index < 2; index++) {
+        section().querySelector<HTMLButtonElement>(".add")!.click();
+        await element.updateComplete;
+      }
+      const rows = () => section().querySelectorAll<HTMLElement>(".item-row");
+      change(selector(rows()[0], "select"), "text");
+      await element.updateComplete;
+      change(selector(rows()[0], "text"), "Hello");
+      change(selector(rows()[1], "select"), "attribute");
+      await element.updateComplete;
+      expect(selector(rows()[1], "attribute").selector).toEqual({ attribute: { entity_id: "light.room" } });
+      change(selector(rows()[1], "attribute"), "brightness");
+      await element.updateComplete;
+      expect(rows()[0].querySelector<HTMLButtonElement>(".move-up")!.disabled).toBe(true);
+      expect(rows()[1].querySelector<HTMLButtonElement>(".move-down")!.disabled).toBe(true);
+      rows()[1].querySelector<HTMLButtonElement>(".move-up")!.click();
+      await element.updateComplete;
+      expect(saved?.room_secondary_parts).toEqual([{ type: "attribute", attribute: "brightness" }, { type: "text", text: "Hello" }]);
+      rows()[0].querySelector<HTMLButtonElement>(".move-down")!.click();
+      await element.updateComplete;
+      rows()[0].querySelector<HTMLButtonElement>(".remove")!.click();
+      await element.updateComplete;
+      expect(saved?.room_secondary_parts).toEqual([{ type: "attribute", attribute: "brightness" }]);
+      expect(normalizeConfig(saved!).room_secondary_parts).toEqual(saved?.room_secondary_parts);
+    });
+  });
+
+  describe("Room and Room Overview accent opt-out", () => {
+    it.each(["card_room", "custom_card_room_overview"])("keeps %s neutral when disabled and clears accents on config/entity changes", async (id) => {
+      const item = CATALOG.find((entry) => entry.upstreamId === id)!;
+      const config: AdditionConfig = {
+        type: `custom:${item.tag}`, entity: "light.room",
+        room_light_entity: "light.room", ulm_custom_card_room_overview_light_entity: "light.room",
+        ulm_card_dynamic_color: false,
+      };
+      const card = await mount(item.tag, config);
+      const surface = () => card.shadowRoot.querySelector(".action-surface")!;
+      const neutral = () => {
+        expect(surface().classList.contains("light-on")).toBe(false);
+        expect(surface().classList.contains("is-on")).toBe(false);
+        expect(surface().classList.contains("dynamic-color")).toBe(false);
+        expect(surface().getAttribute("style")).not.toContain("--room-rgb");
+      };
+      neutral();
+      if (id === "custom_card_room_overview") expect(card.shadowRoot.querySelector(".room-overview-control.light.state-on")).not.toBeNull();
+      card.setConfig({ ...config, ulm_card_dynamic_color: true });
+      await card.updateComplete;
+      expect(surface().classList.contains("dynamic-color")).toBe(true);
+      expect(surface().getAttribute("style")).toContain("--room-rgb:12,130,240");
+      card.setConfig(config);
+      await card.updateComplete;
+      neutral();
+      card.setConfig({ ...config, ulm_card_dynamic_color: true });
+      await card.updateComplete;
+      card.hass = { ...card.hass, states: { ...card.hass.states, "light.room": state("light.room", "off", { rgb_color: [12, 130, 240] }) } };
+      await card.updateComplete;
+      neutral();
+      card.hass = { ...card.hass, states: { ...card.hass.states, "light.room": state("light.room", "on") } };
+      await card.updateComplete;
+      neutral();
+      expect(sharedStyles.cssText).not.toContain(".custom-room-overview.light-on");
+      expect(sharedStyles.cssText).not.toContain(".custom-room-overview.is-on");
+    });
   });
 
   it("clears alert classes when inactive, unknown, missing or unavailable and exposes state", async () => {
@@ -187,6 +433,43 @@ describe("Room RGB accent", () => {
 });
 
 describe("Room-only helper removal and button controls", () => {
+  it("persists button order without materializing defaults or changing actions/icons, including legacy entity lists", async () => {
+    const items: AdditionItemConfig[] = [
+      { entity: "light.room", icon: "mdi:star", name: "Legacy", color: "red", tap_action: { action: "navigate", navigation_path: "/room" }, hold_action: { action: "none" } },
+      { entity: "sensor.temperature", icon_type: "entity-picture", double_tap_action: { action: "more-info" } },
+      { entity: "binary_sensor.window" },
+    ];
+    const element = await editor({ room_sensors: items });
+    let saved: AdditionConfig | undefined;
+    element.addEventListener("config-changed", (event) => { saved = (event as CustomEvent).detail.config; });
+    const rows = () => element.shadowRoot.querySelectorAll<HTMLElement>(".item-editor:not(.room-status-editor) .item-row");
+    expect(rows()[0].querySelector<HTMLButtonElement>(".move-up")!.disabled).toBe(true);
+    expect(rows()[2].querySelector<HTMLButtonElement>(".move-down")!.disabled).toBe(true);
+    rows()[0].querySelector<HTMLButtonElement>(".move-down")!.click();
+    await element.updateComplete;
+    expect(saved?.room_sensors).toEqual([items[1], items[0], items[2]]);
+    rows()[2].querySelector<HTMLButtonElement>(".move-up")!.click();
+    await element.updateComplete;
+    expect(normalizeConfig(saved!).room_sensors).toEqual([items[1], items[2], items[0]]);
+    element.setConfig(saved!);
+    await element.updateComplete;
+    expect(selector(rows()[2], "entity").value).toBe("light.room");
+    const card = await render(saved);
+    expect([...card.shadowRoot.querySelectorAll<HTMLButtonElement>(".room-sensor")].map((button) => button.getAttribute("aria-label")))
+      .toEqual(["sensor.temperature", "Window", "Legacy"]);
+    const actions = actionsFor(card);
+    card.shadowRoot.querySelectorAll<HTMLButtonElement>(".room-sensor")[2].click();
+    expect(actions[0].config.tap_action).toEqual(items[0].tap_action);
+    const legacy = await editor({ entities: ["light.room", "sensor.temperature"] });
+    legacy.addEventListener("config-changed", (event) => { saved = (event as CustomEvent).detail.config; });
+    legacy.shadowRoot.querySelector<HTMLButtonElement>(".item-actions .move-down")!.click();
+    await legacy.updateComplete;
+    expect(saved?.room_sensors).toEqual([{ entity: "sensor.temperature" }, { entity: "light.room" }]);
+    expect(saved?.entities).toBeUndefined();
+    const scenes = await editor({ type: "custom:mushroom-addition-card-scenes", scene_items: [{ entity: "scene.relax" }] });
+    expect(scenes.shadowRoot.querySelector(".move-up")).toBeNull();
+  });
+
   it("does not expose or act on helper config, but preserves explicit actions and other card helper behavior", () => {
     const names = flatten([...editorSchemaFor(descriptor), ...additionalEditorSchemaFor(descriptor)]);
     expect(names).toContain("room_light_entity");

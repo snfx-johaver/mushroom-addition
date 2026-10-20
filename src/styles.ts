@@ -234,8 +234,8 @@ export const sharedStyles = css`
   .room-sensor:disabled { cursor: default; opacity: .45; }
   .ulm-source-room.dynamic-color { background: rgba(var(--room-rgb), .2); }
   .ulm-source-room.dynamic-color .room-main > .ulm-icon { color: rgb(var(--room-rgb)); background: rgba(var(--room-rgb), .3); }
-  .room-status { position: absolute; left: 17px; bottom: 10px; z-index: 2; display: flex; gap: 5px; }
-  .room-status-indicator { display: grid; place-items: center; width: 25px; height: 25px; padding: 0; border: 0; border-radius: 50%; color: var(--secondary-text-color); background: var(--card-background-color); cursor: pointer; }
+  .room-status { display: flex; flex: 0 0 25px; max-width: 100%; overflow: hidden; gap: 5px; }
+  .room-status-indicator { display: grid; flex: 0 0 25px; place-items: center; width: 25px; height: 25px; padding: 0; border: 0; border-radius: 50%; color: var(--secondary-text-color); background: var(--card-background-color); cursor: pointer; }
   .room-status-indicator > ha-icon { flex: 0 0 18px; width: 18px; height: 18px; --mdc-icon-size: 18px; }
   .room-status-indicator.is-active { color: rgb(var(--ulm-yellow)); }
   .room-status-indicator.is-unavailable { opacity: .45; cursor: default; }
@@ -355,8 +355,7 @@ export const sharedStyles = css`
   .room-overview-main { display: grid; min-width: 0; grid-template-rows: auto auto; align-content: space-between; gap: 8px; }
   .room-overview-main .ulm-icon { justify-self: start; }
   .room-overview-main .ulm-copy { min-width: 0; }
-  .custom-room-overview.light-on { background: rgba(var(--ulm-yellow), .12); }
-  .custom-room-overview.dynamic-color { background: rgba(var(--room-rgb, 255,152,0), .2); }
+  .custom-room-overview.dynamic-color { background: rgba(var(--room-rgb), .2); }
   .custom-room-overview.dynamic-color .ulm-icon { background: rgba(var(--room-rgb), .3); color: rgb(var(--room-rgb)); }
   .room-overview-controls { display: flex; flex-direction: column; gap: 5px; }
   .room-overview-control { display: grid; width: 42px; height: 42px; padding: 0; place-items: center; border: 0; border-radius: 14px; background: rgba(var(--ulm-grey), .08); color: rgba(var(--ulm-grey), .75); }

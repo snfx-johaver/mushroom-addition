@@ -4,6 +4,12 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Updates to 0.0.1 (no version bump)
 
+- Kept Room's square geometry and icon sizes while placing status indicators
+  below secondary text. Fixed temperature/brightness labels with explicit
+  entity selectors, valid-value checks and combined output; added Room-only
+  composed secondary information and up/down sensor-button ordering.
+- Fixed Room Overview's whole-card yellow tint when the light-color accent is
+  disabled. Room and Room Overview now tint only for an enabled, valid RGB accent.
 - Added Room's Features status-indicator editor (up to four), water/smoke alert
   pulses with reduced-motion support, and configurable RGB light accents.
   Removed Room selection helpers and Room-only custom button-name editing;

@@ -1,4 +1,76 @@
-import type { AdditionItemConfig, HassEntity, HomeAssistant, RoomStatusKind } from "./types";
+import type { AdditionConfig, AdditionItemConfig, HassEntity, HomeAssistant, RoomStatusKind } from "./types";
+import { displayName, stateLabel } from "./helpers";
+
+const finiteNumber = (value: unknown): number | undefined => {
+  if (typeof value !== "number" && (typeof value !== "string" || !value.trim())) return undefined;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : undefined;
+};
+
+export const roomTemperatureLabel = (hass: HomeAssistant, entity?: HassEntity): string | undefined => {
+  if (roomEntityUnavailable(entity)) return undefined;
+  const attributes = entity!.attributes;
+  const temperature = [attributes.current_temperature, attributes.temperature, attributes.device_temperature,
+    entity!.entity_id.startsWith("sensor.") ? entity!.state : undefined]
+    .map(finiteNumber).find((value) => value !== undefined);
+  const unit = attributes.unit_of_measurement ??
+    (entity!.entity_id.startsWith("climate.") || attributes.device_class === "temperature" ||
+      attributes.current_temperature !== undefined || attributes.device_temperature !== undefined ||
+      attributes.temperature !== undefined ? hass.config?.unit_system?.temperature : undefined);
+  return temperature !== undefined && typeof unit === "string" && ["°C", "°F", "K"].includes(unit.trim())
+    ? `${temperature} ${unit.trim()}` : undefined;
+};
+
+export const roomBrightnessLabel = (entity?: HassEntity): string | undefined => {
+  if (roomEntityUnavailable(entity) || !entity!.entity_id.startsWith("light.")) return undefined;
+  const brightness = finiteNumber(entity!.attributes.brightness);
+  return brightness !== undefined && brightness >= 0 && brightness <= 255
+    ? `${Math.round(brightness / 255 * 100)}%` : undefined;
+};
+
+// Resolve Room's own secondary information before passing it to the shared heading.
+export const roomSecondary = (config: AdditionConfig, hass: HomeAssistant): string | undefined => {
+  const primary = config.entity ? hass.states[config.entity] : undefined;
+  const mode = config.secondary_info;
+  if (mode === "none") return undefined;
+  if (mode === "custom") return config.secondary || undefined;
+  if (mode === "composed") {
+    return (config.room_secondary_parts ?? []).map((part) => {
+      switch (part.type) {
+        case "text": return part.text?.trim();
+        case "name": return primary?.attributes.friendly_name || primary?.entity_id;
+        case "state": return roomEntityUnavailable(primary) ? undefined : stateLabel(primary);
+        case "brightness": return roomBrightnessLabel(primary);
+        case "temperature": return roomTemperatureLabel(hass, primary);
+        case "attribute": {
+          if (roomEntityUnavailable(primary) || !part.attribute) return undefined;
+          const value = primary!.attributes[part.attribute];
+          return (typeof value === "string" && value.trim() && !["unknown", "unavailable"].includes(value)) ||
+            (typeof value === "number" && Number.isFinite(value)) || typeof value === "boolean"
+            ? String(value) : undefined;
+        }
+      }
+    }).filter(Boolean).join(" · ") || undefined;
+  }
+  if (mode === "name") return displayName(config, primary, hass);
+  if (mode === "last-changed" || mode === "last-updated") {
+    const timestamp = mode === "last-changed" ? primary?.last_changed : primary?.last_updated;
+    return timestamp ? new Date(timestamp).toLocaleString()
+      : mode === "last-changed" ? "Last changed unavailable" : "Last updated unavailable";
+  }
+  if (mode !== "state" && config.secondary) return config.secondary;
+  const temperature = config.label_use_temperature !== false
+    ? roomTemperatureLabel(hass, config.room_temperature_entity ? hass.states[config.room_temperature_entity] : primary)
+    : undefined;
+  const brightness = config.label_use_brightness === true
+    ? roomBrightnessLabel(config.room_brightness_entity ? hass.states[config.room_brightness_entity]
+      : primary?.entity_id.startsWith("light.") ? primary
+        : config.room_light_entity ? hass.states[config.room_light_entity] : undefined)
+    : undefined;
+  const labels = [...new Set([temperature, brightness].filter((value): value is string => Boolean(value)))];
+  if (mode === "state") return [...new Set([stateLabel(primary), ...labels])].join(" · ");
+  return labels.join(" · ") || stateLabel(primary);
+};
 
 export const ROOM_STATUS_LIMIT = 4;
 export const ROOM_STATUS_KINDS: RoomStatusKind[] = ["window", "door", "motion", "water", "smoke"];
