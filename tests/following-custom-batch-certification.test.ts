@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { CATALOG } from "../src/catalog";
-import { editorSchemaFor, upstreamEditorSchemaFor } from "../src/editor-schema";
+import { additionalEditorSchemaFor, editorSchemaFor, upstreamEditorSchemaFor } from "../src/editor-schema";
 import { normalizeConfig } from "../src/helpers";
 import type { AdditionConfig, HomeAssistant } from "../src/types";
 import "../src/index";
@@ -17,6 +17,11 @@ const states: HomeAssistant["states"] = {
     entity_id: "sensor.wasmachine_operation_state",
     state: "stop",
     attributes: { friendly_name: "Washing machine" },
+  },
+  "sensor.wasmachine_program_state": {
+    entity_id: "sensor.wasmachine_program_state",
+    state: "wash",
+    attributes: { friendly_name: "Current program stage" },
   },
   "sensor.wasmachine_plug_power": {
     entity_id: "sensor.wasmachine_plug_power",
@@ -231,7 +236,8 @@ describe("following custom batch certification", () => {
       custom_card_bar_card: { entity: "sensor.cv_plug_power" },
       custom_card_washer: {
         entity: "sensor.wasmachine_operation_state",
-        power_entity: "sensor.wasmachine_plug_power",
+        program_stage_entity: "sensor.wasmachine_program_state",
+        washer_power_entity: "sensor.wasmachine_plug_power",
         door_entity: "sensor.wasmachine_door",
         finished_entity: "sensor.wasmachine_program_finished",
       },
@@ -265,7 +271,7 @@ describe("following custom batch certification", () => {
     const expectedFields: Record<string, string[]> = {
       custom_card_bar_card: ["entity", "ulm_custom_card_bar_card_min", "ulm_custom_card_bar_card_value"],
       custom_card_washer: [
-        "entity", "power_entity", "door_entity", "finished_entity",
+        "entity", "program_stage_entity", "washer_power_entity", "door_entity", "finished_entity",
         "ulm_custom_card_washer_start_action", "ulm_custom_card_washer_stop_action",
       ],
       custom_card_sun: [
@@ -286,6 +292,23 @@ describe("following custom batch certification", () => {
     }
     expect(editorSchemaFor(item("custom_card_bar_card")).map(({ name }) => name))
       .not.toEqual(expect.arrayContaining(["show_graph", "min_entity", "max_entity"]));
+    const washerFields = editorSchemaFor(item("custom_card_washer")).flatMap((field) =>
+      field.schema ?? [field]);
+    const washerFieldNames = washerFields.map(({ name }) => name);
+    const machineFieldIndex = washerFieldNames.indexOf("entity");
+    const programFieldIndex = washerFieldNames.indexOf("program_stage_entity");
+    const powerFieldIndex = washerFieldNames.indexOf("washer_power_entity");
+    const doorFieldIndex = washerFieldNames.indexOf("door_entity");
+    expect(machineFieldIndex).toBeLessThan(programFieldIndex);
+    expect(programFieldIndex).toBeLessThan(powerFieldIndex);
+    expect(powerFieldIndex).toBeLessThan(doorFieldIndex);
+    expect([machineFieldIndex, programFieldIndex, powerFieldIndex]
+      .every((index) => washerFields[index].selector && "entity" in washerFields[index].selector!)).toBe(true);
+    expect(additionalEditorSchemaFor(item("custom_card_washer")).map(({ name }) => name)).not.toEqual(expect.arrayContaining([
+      "ulm_custom_card_washer_job_state",
+      "ulm_custom_card_washer_machine_state",
+      "ulm_custom_card_washer_power",
+    ]));
   });
 
   it("migrates required upstream variables into semantic renderer config", () => {
@@ -295,7 +318,9 @@ describe("following custom batch certification", () => {
       ulm_custom_card_washer_power: "sensor.wasmachine_plug_power",
     })).toMatchObject({
       entity: "sensor.wasmachine_operation_state",
+      program_stage_entity: "sensor.wasmachine_operation_state",
       power_entity: "sensor.wasmachine_plug_power",
+      washer_power_entity: "sensor.wasmachine_plug_power",
     });
   });
 
@@ -309,7 +334,8 @@ describe("following custom batch certification", () => {
       custom_card_washer: {
         type: "custom:mushroom-addition-custom-card-washer",
         entity: "sensor.wasmachine_operation_state",
-        power_entity: "sensor.wasmachine_plug_power",
+        program_stage_entity: "sensor.wasmachine_program_state",
+        washer_power_entity: "sensor.wasmachine_plug_power",
       },
       custom_card_sun: {
         type: "custom:mushroom-addition-custom-card-sun",
@@ -330,9 +356,13 @@ describe("following custom batch certification", () => {
       const forms = [...editor.shadowRoot.querySelectorAll<HTMLElement & {
         schema: Array<{ name: string }>;
         data: AdditionConfig;
+        computeLabel: (schema: { name: string }) => string;
       }>("ha-form")];
       expect(forms.length, sourceId).toBeGreaterThan(0);
       expect(forms.flatMap((form) => form.schema.map((field) => field.name)), sourceId).toContain("entity");
+      if (sourceId === "custom_card_washer") {
+        expect(forms[0].computeLabel({ name: "entity" })).toBe("Machine state");
+      }
       const changed = vi.fn();
       editor.addEventListener("config-changed", changed);
       forms[0].dispatchEvent(new CustomEvent("value-changed", {

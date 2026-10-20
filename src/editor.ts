@@ -273,10 +273,16 @@ export class MushroomAdditionEditor extends LitElement {
   private readonly computeLabel = (schema: { name: string }): string =>
     this.config?.type.includes("custom-card-trash") && schema.name === "entity"
       ? "Optional card entity"
+      : this.config?.type.includes("custom-card-washer") && schema.name === "entity"
+        ? localize(this.hass, "machine_state_entity")
       : localize(this.hass, schema.name);
 
   private readonly computeHelper = (schema: { name: string }): string | undefined =>
-    editorHelper(schema.name);
+    editorHelper(
+      this.config?.type.includes("custom-card-washer") && schema.name === "entity"
+        ? "machine_state_entity"
+        : schema.name,
+    );
 
   private readonly valueChanged = (event: CustomEvent): void => {
     if (!this.config || !event.detail.value) return;

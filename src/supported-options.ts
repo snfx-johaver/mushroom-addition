@@ -19,6 +19,11 @@ const replacedOptions: Partial<Record<string, readonly string[]>> = {
     "ulm_custom_card_speedtest_ping_color",
     "ulm_custom_card_speedtest_ping_entity",
   ],
+  custom_card_washer: [
+    "ulm_custom_card_washer_job_state",
+    "ulm_custom_card_washer_machine_state",
+    "ulm_custom_card_washer_power",
+  ],
 };
 
 export const canonicalNameOptions = new Set([
