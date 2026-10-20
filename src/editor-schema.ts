@@ -314,7 +314,8 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
   if (item.upstreamId === "mini_graph_card") {
     return [
       entity(["sensor", "binary_sensor", "input_number"]),
-      ...presentation(),
+      ...presentation().filter((field) =>
+        field.name !== "layout" && field.name !== "multiline_secondary"),
       select("variant", [
         { value: "line", label: "Line graph" },
         { value: "bar", label: "Bar graph" },
