@@ -488,9 +488,6 @@ export const createStubConfig = (
           : "No name set",
       }
       : {}),
-    ...(descriptor.upstreamId === "custom_card_gauge"
-      ? { minimum: 0, maximum: 100 }
-      : {}),
     ...(descriptor.upstreamId === "custom_card_printer"
       ? {
         black_entity: findEntity(["sensor"], ["black"]),

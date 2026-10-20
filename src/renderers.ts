@@ -795,17 +795,6 @@ const renderDeviceStatus = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const renderGauge = (ctx: RenderContext): TemplateResult => {
-  const value = numeric(ctx.entity?.state) ?? 0;
-  const min = configured<number>(ctx, "ulm_card_gauge_min", "ulm_custom_card_gauge_min") ?? 0;
-  const max = configured<number>(ctx, "ulm_card_gauge_max", "ulm_custom_card_gauge_max") ?? 100;
-  const percentage = Math.max(0, Math.min(100, ((value - min) / Math.max(1, max - min)) * 100));
-  return ctx.actionSurface("ulm-gauge-card", html`
-    <span class="gauge-ring" style=${`--gauge:${percentage * 3.6}deg`}><b>${stateLabel(ctx.entity)}</b></span>
-    ${heading(ctx, `${min} – ${max}`)}
-  `);
-};
-
 const renderAlarmTime = (ctx: RenderContext): TemplateResult => {
   const time = linkedState(ctx, "datetime_entity");
   return ctx.actionSurface(`ulm-control-card ulm-row ${activeStates.has(ctx.entity?.state ?? "") ? "is-active" : ""}`, html`
@@ -1482,20 +1471,6 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
         `)}
       </div>
     ` : nothing}
-  `);
-};
-
-const renderDualGauge = (ctx: RenderContext): TemplateResult => {
-  const value = numeric(ctx.entity?.state) ?? 0;
-  const min = numeric(ctx.config.minimum) ?? 0;
-  const max = numeric(ctx.config.maximum) ?? 100;
-  const gauge = Math.max(0, Math.min(100, ((value - min) / Math.max(1, max - min)) * 100));
-  return ctx.actionSurface("custom-dual-gauge", html`
-    <div class="custom-card-heading">${iconBubble(ctx, "mdi:gauge", "blue")}${heading(ctx, stateLabel(ctx.entity))}</div>
-    <div class="dual-gauge" style=${`--gauge:${gauge * 1.8}deg`}>
-      <i></i>
-      ${min === 0 && max === 100 ? nothing : html`<span><small>${min} - ${max}</small></span>`}
-    </div>
   `);
 };
 
@@ -2428,7 +2403,6 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "custom_card_input_datetime": return renderInputDateTime(ctx);
     case "custom_card_weather_metrics": return renderWeatherMetrics(ctx);
     case "custom_card_media_player_sonos": return renderSonos(ctx);
-    case "custom_card_gauge": return renderDualGauge(ctx);
     case "custom_card_printer": return renderPrinter(ctx);
     case "custom_card_nas_metrics": return renderNasMetrics(ctx);
     case "custom_card_tablet": return renderTablet(ctx);
@@ -2445,7 +2419,6 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
   }
   if (/trash/.test(ctx.descriptor.upstreamId)) return renderScheduleCard(ctx);
   if (/printer/.test(ctx.descriptor.upstreamId)) return renderDeviceStatus(ctx);
-  if (/gauge/.test(ctx.descriptor.upstreamId)) return renderGauge(ctx);
   if (/plant|entity_overview/.test(ctx.descriptor.upstreamId)) {
     return renderDetailCard(ctx, /plant/.test(ctx.descriptor.upstreamId) ? "mdi:flower" : "mdi:view-grid", "purple");
   }

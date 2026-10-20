@@ -267,10 +267,6 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
   if (String(config.type).includes("media-player-sonos")) {
     migrated.entity ??= entityId(config.ulm_card_media_player_with_controls_entity);
   }
-  if (String(config.type).includes("gauge")) {
-    migrated.minimum ??= Number(config.ulm_card_gauge_min ?? 0);
-    migrated.maximum ??= Number(config.ulm_card_gauge_max ?? 100);
-  }
   if (String(config.type).includes("printer")) {
     migrated.black_entity ??= entityId(config.ulm_card_printer_black_name);
     migrated.yellow_entity ??= entityId(config.ulm_card_printer_yellow_name);

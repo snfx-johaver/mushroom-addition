@@ -516,6 +516,7 @@ describe("Home Assistant registration", () => {
       "mushroom-addition-custom-card-internet-speed",
       "mushroom-addition-custom-card-entity-overview",
       "mushroom-addition-custom-card-more-power-outlet",
+      "mushroom-addition-custom-card-gauge",
     ]) {
       expect(customElements.get(tag)).toBeUndefined();
       expect(window.customCards?.some((card) => card.type === tag)).toBe(false);
@@ -524,14 +525,14 @@ describe("Home Assistant registration", () => {
 
   it("dispatches only the double-tap action for a double click", async () => {
     vi.useFakeTimers();
-    const element = document.createElement("mushroom-addition-custom-card-gauge") as HTMLElement & {
+    const element = document.createElement("mushroom-addition-custom-card-printer") as HTMLElement & {
       hass: HomeAssistant;
       setConfig(config: AdditionConfig): void;
       updateComplete: Promise<boolean>;
     };
     element.hass = { states: {}, callService: async () => undefined };
     element.setConfig({
-      type: "custom:mushroom-addition-custom-card-gauge",
+      type: "custom:mushroom-addition-custom-card-printer",
       tap_action: { action: "toggle" },
       double_tap_action: { action: "more-info" },
     });
@@ -551,14 +552,14 @@ describe("Home Assistant registration", () => {
 
   it("supports hold actions on cards without also tapping", async () => {
     vi.useFakeTimers();
-    const element = document.createElement("mushroom-addition-custom-card-gauge") as HTMLElement & {
+    const element = document.createElement("mushroom-addition-custom-card-printer") as HTMLElement & {
       hass: HomeAssistant;
       setConfig(config: AdditionConfig): void;
       updateComplete: Promise<boolean>;
     };
     element.hass = { states: {}, callService: async () => undefined };
     element.setConfig({
-      type: "custom:mushroom-addition-custom-card-gauge",
+      type: "custom:mushroom-addition-custom-card-printer",
       tap_action: { action: "more-info" },
       hold_action: { action: "assist" },
     });

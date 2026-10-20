@@ -4,7 +4,7 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Updates to 0.0.1 (no version bump)
 
-- Removed Internet Speed, Graph, Entity Overview and More Power Outlet cards.
+- Removed Internet Speed, Graph, Entity Overview, More Power Outlet and Gauge cards.
   Mini Graph and Speedtest Gauges remain available.
 - Added theme-controlled Mushroom-style borders to standalone cards.
 - Added a carousel-only mode via the graphical **Show card header** switch.

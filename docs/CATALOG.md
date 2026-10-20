@@ -4,8 +4,8 @@ This manifest maps the documented card catalog to Mushroom Cards Addition
 registrations. It is generated from `src/catalog.ts`; CI rejects duplicate
 IDs, missing source paths, invalid namespaces, or broken popup mappings.
 
-**Coverage:** 26 documented upstream card sources map to
-29 public card components.
+**Coverage:** 25 documented upstream card sources map to
+28 public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
 of duplicate picker entries. 1 popup templates and
 1 implementation helpers are inventoried but are not
@@ -29,7 +29,6 @@ public registrations.
 | `custom_card_input_datetime` | custom-card | `custom:mushroom-addition-custom-card-input-datetime` | sensor | default | `custom_card_input_datetime` |
 | `custom_card_weather_metrics` | custom-card | `custom:mushroom-addition-custom-card-weather-metrics` | weather | default | `custom_card_weather_metrics` |
 | `custom_card_media_player_sonos` | custom-card | `custom:mushroom-addition-custom-card-media-player-sonos` | media | default | `custom_card_media_player_sonos` |
-| `custom_card_gauge` | custom-card | `custom:mushroom-addition-custom-card-gauge` | energy | default | `custom_card_gauge` |
 | `custom_card_printer` | custom-card | `custom:mushroom-addition-custom-card-printer` | sensor | default | `custom_card_printer` |
 | `custom_card_nas_metrics` | custom-card | `custom:mushroom-addition-custom-card-nas-metrics` | sensor | default | `custom_card_nas_metrics` |
 | `custom_card_tablet` | custom-card | `custom:mushroom-addition-custom-card-tablet` | sensor | default | `custom_card_tablet` |

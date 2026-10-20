@@ -567,13 +567,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         entity(["number"], "surround_level_entity"),
         entity(["number"], "music_surround_level_entity"),
       ]
-    : item.upstreamId === "custom_card_gauge"
-      ? [
-        entity(["sensor"]),
-        number("minimum", -100000, 100000),
-        number("maximum", -100000, 100000),
-        ...presentation(),
-      ]
     : item.upstreamId === "custom_card_printer"
       ? [
         entity(["sensor", "binary_sensor"]),

@@ -1331,45 +1331,6 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "sourceDigest": "43e2b1382095299759e872abb8a92f8ad9b56c60dfe018b83e2ad43b5adfcaef"
   },
   {
-    "upstreamId": "custom_card_gauge",
-    "sourcePath": "custom_cards/custom_card_gauge",
-    "publicId": "custom_card_gauge",
-    "rendererId": "custom_card_gauge",
-    "layoutProfile": "card:button-card+chart",
-    "primitives": [
-      "button-card",
-      "chart"
-    ],
-    "customFields": [
-      "item1",
-      "item2"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [],
-    "variables": [
-      {
-        "name": "ulm_card_gauge_max",
-        "defaultValue": "100",
-        "selector": "number"
-      },
-      {
-        "name": "ulm_card_gauge_min",
-        "defaultValue": "0",
-        "selector": "number"
-      }
-    ],
-    "dependencies": [
-      "button-card",
-      "dual-gauge-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [
-      "Upstream embeds custom:dual-gauge-card; this plugin provides an original Lit equivalent without requiring that frontend dependency."
-    ],
-    "sourceDigest": "25d0a61887381d4ec2ecce9487c4cca767146bb35a093de79d047295e8ee2275"
-  },
-  {
     "upstreamId": "custom_card_printer",
     "sourcePath": "custom_cards/custom_card_printer",
     "publicId": "custom_card_printer",

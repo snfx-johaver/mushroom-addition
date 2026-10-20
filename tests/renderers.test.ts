@@ -226,26 +226,26 @@ const entityFor = (item: (typeof CATALOG)[number]): string => {
 
 describe("family renderers", () => {
   it("rerenders when Home Assistant updates an existing card config", async () => {
-    const element = document.createElement("mushroom-addition-custom-card-gauge") as HTMLElement & {
+    const element = document.createElement("mushroom-addition-custom-card-printer") as HTMLElement & {
       hass: HomeAssistant;
       setConfig(config: AdditionConfig): void;
       updateComplete: Promise<boolean>;
       shadowRoot: ShadowRoot;
     };
     element.hass = hass;
-    element.setConfig({ type: "custom:mushroom-addition-custom-card-gauge", entity: "sensor.power", name: "First" });
+    element.setConfig({ type: "custom:mushroom-addition-custom-card-printer", entity: "sensor.power", name: "First" });
     document.body.append(element);
     await element.updateComplete;
-    element.setConfig({ type: "custom:mushroom-addition-custom-card-gauge", entity: "sensor.power", name: "Updated" });
+    element.setConfig({ type: "custom:mushroom-addition-custom-card-printer", entity: "sensor.power", name: "Updated" });
     await element.updateComplete;
     expect(element.shadowRoot.textContent).toContain("Updated");
     element.remove();
   });
 
   it("applies Mushroom-style layout, fill, icon, and information choices", async () => {
-    const markup = await render("mushroom-addition-custom-card-gauge", {
-      type: "custom:mushroom-addition-custom-card-gauge",
-      entity: "sensor.power",
+    const markup = await render("mushroom-addition-custom-card-printer", {
+      type: "custom:mushroom-addition-custom-card-printer",
+      entity: "light.kitchen",
       layout: "vertical",
       multiline_secondary: true,
       fill_container: true,
@@ -839,7 +839,6 @@ describe("family renderers", () => {
   it.each([
     ["weather-metrics", "weather.home", "custom-weather-metrics", "weather-metrics-panel"],
     ["media-player-sonos", "media_player.tv", "custom-sonos", "sonos-controls"],
-    ["gauge", "sensor.power", "custom-dual-gauge", "dual-gauge"],
     ["printer", "sensor.power", "custom-printer", "toner-bars"],
     ["nas-metrics", "sensor.power", "custom-nas-metrics", "nas-metrics-metrics"],
     ["tablet", "sensor.battery", "custom-tablet", "tablet-header"],

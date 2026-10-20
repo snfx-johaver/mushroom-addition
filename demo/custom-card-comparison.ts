@@ -312,14 +312,6 @@ const fixtures: Fixture[] = [
     config: { ulm_card_media_player_with_controls_name: "Sonos" },
   },
   {
-    id: "gauge",
-    entity: "sensor.humidity",
-    reference: "custom_gauge.png",
-    referenceCrop: { width: 197, height: 145, scale: 0.5 },
-    width: 197,
-    config: { minimum: 0, maximum: 100 },
-  },
-  {
     id: "printer",
     entity: "sensor.printer_status",
     reference: "custom_printer.png",

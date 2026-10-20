@@ -14,8 +14,8 @@ controls, room overviews, battery intelligence, plant and pollen monitoring,
 NAS metrics, speed tests and more. Configure entities, presentation and supported
 controls directly in the dashboard editor; YAML remains available when preferred.
 
-The catalog maps **26 documented sources**—5 default-card sources and 21 custom-card
-sources—to **29 public components**. Related layouts are grouped into graphical
+The catalog maps **25 documented sources**—5 default-card sources and 20 custom-card
+sources—to **28 public components**. Related layouts are grouped into graphical
 variants instead of duplicating picker entries. See the
 [complete, source-linked catalog](docs/CATALOG.md), the generated
 [item-by-item parity matrix](docs/PARITY_MATRIX.md), and the

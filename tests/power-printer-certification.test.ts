@@ -202,7 +202,6 @@ describe("power and printer custom batch certification", () => {
     expect(evidence.live).toBe(false);
     expect(Object.keys(evidence.exactLiveConfigs)).toEqual([
       "custom_card_media_player_sonos",
-      "custom_card_gauge",
       "custom_card_printer",
     ]);
     expect(evidence.interactions.custom_card_media_player_sonos.exactPayloads).toEqual([
@@ -223,12 +222,10 @@ describe("power and printer custom batch certification", () => {
     }>;
     expect(Object.keys(geometry)).toEqual([
       "media-player-sonos",
-      "gauge",
       "printer",
     ]);
     expect(geometry["media-player-sonos"].implementation.width).toBe(507);
     expect(geometry["media-player-sonos"].regions[".sonos-controls button"]).toHaveLength(3);
-    expect(geometry["gauge"].implementation).toEqual({ width: 197, height: 145 });
     expect(geometry["printer"].regions[".toner-bars span"])
       .toEqual(Array.from({ length: 4 }, () => ({ width: 232, height: 20 })));
   });
@@ -236,7 +233,6 @@ describe("power and printer custom batch certification", () => {
   it("provides source-specific populated picker defaults", () => {
     const cases = [
       ["custom_card_media_player_sonos", "media_player.office_sonos"],
-      ["custom_card_gauge", "sensor.office_plug_power"],
       ["custom_card_printer", "binary_sensor.printer_online"],
     ] as const;
     const hass: HomeAssistant = { states, entities: sonosRegistry, callService: vi.fn(async () => undefined) };
@@ -270,7 +266,6 @@ describe("power and printer custom batch certification", () => {
       "surround_level_entity", "music_surround_level_entity", "ulm_card_media_player_enable_art",
       "sonos_details_always_visible",
     ]],
-    ["custom_card_gauge", ["entity", "minimum", "maximum"]],
     ["custom_card_printer", ["entity", "black_entity", "yellow_entity", "magenta_entity", "cyan_entity"]],
   ])("exposes a dedicated graphical editor for %s", (sourceId, expected) => {
     const schema = editorSchemaFor(item(sourceId));
@@ -285,10 +280,9 @@ describe("power and printer custom batch certification", () => {
     expect(schema.filter(({ name }) => name === "entity")).toHaveLength(1);
   });
 
-  it("round-trips all six configurations through the graphical editor", async () => {
+  it("round-trips retained configurations through the graphical editor", async () => {
     for (const descriptor of [
       item("custom_card_media_player_sonos"),
-      item("custom_card_gauge"),
       item("custom_card_printer"),
     ]) {
       const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {
@@ -401,12 +395,6 @@ describe("power and printer custom batch certification", () => {
       type: "custom:mushroom-addition-custom-card-media-player-sonos",
       ulm_card_media_player_with_controls_entity: "media_player.office_sonos",
     })).toMatchObject({ entity: "media_player.office_sonos" });
-    expect(normalizeConfig({
-      type: "custom:mushroom-addition-custom-card-gauge",
-      entity: "sensor.office_humidity",
-      ulm_card_gauge_min: 10,
-      ulm_card_gauge_max: 90,
-    })).toMatchObject({ minimum: 10, maximum: 90 });
     expect(normalizeConfig({
       type: "custom:mushroom-addition-custom-card-printer",
       entity: "binary_sensor.printer_online",
@@ -523,24 +511,6 @@ describe("power and printer custom batch certification", () => {
     expect(paused.shadowRoot.textContent).toContain("paused");
   });
 
-  it("matches gauge title suppression and custom range behavior", async () => {
-    const standard = await renderCard("mushroom-addition-custom-card-gauge", {
-      type: "custom:mushroom-addition-custom-card-gauge",
-      entity: "sensor.office_humidity",
-      minimum: 0,
-      maximum: 100,
-    });
-    expect(standard.shadowRoot.querySelector(".dual-gauge span")).toBeNull();
-    standard.remove();
-    const ranged = await renderCard("mushroom-addition-custom-card-gauge", {
-      type: "custom:mushroom-addition-custom-card-gauge",
-      entity: "sensor.office_humidity",
-      minimum: 10,
-      maximum: 90,
-    });
-    expect(ranged.shadowRoot.textContent).toContain("10 - 90");
-  });
-
   it("matches printer header states and source toner order", async () => {
     const card = await renderCard("mushroom-addition-custom-card-printer", {
       type: "custom:mushroom-addition-custom-card-printer",
@@ -561,7 +531,6 @@ describe("power and printer custom batch certification", () => {
   it("dispatches the source card-surface more-info action for every renderer", async () => {
     for (const [tag, entity] of [
       ["mushroom-addition-custom-card-media-player-sonos", "media_player.office_sonos"],
-      ["mushroom-addition-custom-card-gauge", "sensor.office_humidity"],
       ["mushroom-addition-custom-card-printer", "binary_sensor.printer_online"],
     ] as const) {
       const action = vi.fn();
