@@ -125,7 +125,9 @@ export class MushroomAdditionEntityCarousel extends LitElement {
         ${this.config?.carousel_show_labels === false ? nothing : html`
           <div class="label">
             ${this.itemName(activeItem, activeEntity)}
-            ${activeEntity ? html`<span class="state">${activeEntity.state}</span>` : nothing}
+            ${this.showEntityState(activeEntity)
+              ? html`<span class="state">${activeEntity?.state}</span>`
+              : nothing}
           </div>
         `}
       </div>
@@ -190,6 +192,12 @@ export class MushroomAdditionEntityCarousel extends LitElement {
 
   private itemName(item: AdditionItemConfig, entity = this.entityFor(item)): string {
     return item.name || entity?.attributes.friendly_name || item.entity || "Carousel item";
+  }
+
+  private showEntityState(entity: HassEntity | undefined): boolean {
+    if (!entity) return false;
+    const domain = entity.entity_id.split(".", 1)[0];
+    return !["scene", "script", "button"].includes(domain);
   }
 
   private itemOffset(index: number): number {

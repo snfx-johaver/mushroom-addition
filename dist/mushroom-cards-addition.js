@@ -6699,7 +6699,7 @@ let fe = class extends de {
         ${this.config?.carousel_show_labels === !1 ? h : c`
           <div class="label">
             ${this.itemName(a, o)}
-            ${o ? c`<span class="state">${o.state}</span>` : h}
+            ${this.showEntityState(o) ? c`<span class="state">${o?.state}</span>` : h}
           </div>
         `}
       </div>
@@ -6741,6 +6741,11 @@ let fe = class extends de {
   }
   itemName(e, t = this.entityFor(e)) {
     return e.name || t?.attributes.friendly_name || e.entity || "Carousel item";
+  }
+  showEntityState(e) {
+    if (!e) return !1;
+    const t = e.entity_id.split(".", 1)[0];
+    return !["scene", "script", "button"].includes(t);
   }
   itemOffset(e) {
     let t = e - this.selectedIndex;
