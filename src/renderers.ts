@@ -15,6 +15,14 @@ import {
   inferConsolePlatform,
   resolveConsoleEntities,
 } from "./console";
+import {
+  energyArcPath,
+  energyBarPath,
+  formatPower,
+  numericEntityState,
+  powerEntityWatts,
+  tariffIntervals,
+} from "./energy-management";
 import "./entity-carousel";
 
 export interface RenderContext {
@@ -1867,6 +1875,198 @@ const renderEntityCarousel = (ctx: RenderContext): TemplateResult => {
   `;
 };
 
+const renderAdvancedHomeEnergyManagement = (ctx: RenderContext): TemplateResult => {
+  ctx.presentation.rendered = true;
+  const config = ctx.config;
+  const showPresentation = [
+    config.name,
+    config.primary_info,
+    config.secondary_info,
+    config.icon,
+    config.icon_type,
+  ].some((value) => value !== undefined);
+  const home = powerEntityWatts(ctx.hass, config.entity) ?? 0;
+  const grid = powerEntityWatts(ctx.hass, config.grid_power_entity) ?? 0;
+  const phases = [
+    config.grid_phase_1_entity,
+    config.grid_phase_2_entity,
+    config.grid_phase_3_entity,
+  ].map((entityId) => powerEntityWatts(ctx.hass, entityId) ?? 0);
+  const solar = powerEntityWatts(ctx.hass, config.solar_power_entity) ?? 0;
+  const forecast = numericEntityState(ctx.hass, config.solar_forecast_entity) ?? 0;
+  const battery = powerEntityWatts(ctx.hass, config.battery_power_entity) ?? 0;
+  const batteryLevel = Math.max(0, Math.min(100,
+    numericEntityState(ctx.hass, config.battery_level_entity) ?? 0));
+  const ev = powerEntityWatts(ctx.hass, config.ev_charger_power_entity) ?? 0;
+  const batteries = [1, 2, 3].map((index) => ({
+    level: numericEntityState(ctx.hass, configured<string>(ctx, `battery_${index}_level_entity`)) ?? 0,
+    power: powerEntityWatts(ctx.hass, configured<string>(ctx, `battery_${index}_power_entity`)) ?? 0,
+  }));
+  const modeRaw = config.energy_mode_entity
+    ? ctx.hass.states[config.energy_mode_entity]?.state ?? "-"
+    : "-";
+  const modeNames: Record<string, string> = {
+    "Smart Matching": config.mode_solar_first_label ?? "Solar first",
+    "Dynamic Smart Matching": config.mode_smart_saving_label ?? "Smart saving",
+    "Dynamic Trading + Smart Matching": config.mode_smart_trading_label ?? "Smart trading",
+  };
+  const automatic = config.energy_auto_control_entity
+    ? ctx.hass.states[config.energy_auto_control_entity]?.state === "on"
+    : false;
+  const modeLabel = `${modeNames[modeRaw] ?? modeRaw} · ${
+    automatic ? config.energy_auto_label ?? "Auto" : config.energy_manual_label ?? "Manual"
+  }`;
+  const batteryState = battery > 20
+    ? `${config.energy_charge_label ?? "laden"} ${formatPower(battery)}`
+    : battery < -20
+      ? `${config.energy_discharge_label ?? "ontladen"} ${formatPower(battery)}`
+      : config.energy_idle_label ?? "rust";
+  const gridLabel = grid > 20
+    ? config.energy_grid_import_label ?? "NET · afname"
+    : grid < -20
+      ? config.energy_grid_export_label ?? "NET · teruglevering"
+      : config.energy_grid_label ?? "NET";
+  const importColor = config.import_color ?? "#ff9f43";
+  const exportColor = config.export_color ?? "#4cd98b";
+  const batteryColor = config.battery_color ?? "#3b82f6";
+  const solarColor = config.solar_color ?? "#f5c542";
+  const homeColor = config.home_color ?? "#3b82f6";
+  const gridColor = grid > 20 ? importColor : exportColor;
+  const time = new Date().toLocaleTimeString(ctx.hass.language ?? "nl-NL", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const track = (radius: number, start: number, end: number) => svg`
+    <path d=${energyArcPath(radius, start, end)} class="hems-track"></path>
+  `;
+  const bar = (
+    radius: number,
+    start: number,
+    end: number,
+    fraction: number,
+    color: string,
+    fromEnd = false,
+  ) => {
+    const path = energyBarPath(radius, start, end, fraction, fromEnd);
+    return path ? svg`<path d=${path} stroke=${color} class="hems-bar"></path>` : nothing;
+  };
+  const tariffEntity = config.electricity_price_entity
+    ? ctx.hass.states[config.electricity_price_entity]
+    : undefined;
+  const intervals = tariffIntervals(
+    tariffEntity,
+    numericEntityState(ctx.hass, config.tariff_markup_entity) ?? 0,
+    numericEntityState(ctx.hass, config.tariff_vat_entity) ?? 0,
+  );
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+  const dayStart = startOfDay.getTime();
+  const dayDuration = 86_400_000;
+  const now = Date.now();
+  const currentInterval = intervals.find((interval) => now >= interval.start && now < interval.end);
+  const priceColor = (price: number): string => {
+    if (price < 0) return config.price_negative_color ?? "#0288d1";
+    if (price < (config.price_low_threshold ?? 0.18)) return config.price_low_color ?? "#2e7d32";
+    if (price < (config.price_medium_threshold ?? 0.26)) return config.price_medium_color ?? "#9ccc65";
+    if (price < (config.price_high_threshold ?? 0.34)) return config.price_high_color ?? "#fdd835";
+    if (price < (config.price_critical_threshold ?? 0.42)) return config.import_color ?? "#fb8c00";
+    return config.price_critical_color ?? "#e53935";
+  };
+  const formatTime = (value: number): string =>
+    new Date(value).toLocaleTimeString(ctx.hass.language ?? "nl-NL", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  return ctx.actionSurface("advanced-energy-management", html`
+    ${showPresentation ? html`
+      <div class="metric-heading hems-presentation">
+        ${iconBubble(ctx, "mdi:home-lightning-bolt-outline", "blue")}
+        ${heading(ctx, stateLabel(ctx.entity), ctx.descriptor.name)}
+      </div>
+    ` : nothing}
+    <svg class="hems-flow" viewBox="0 0 760 650" role="img" aria-label="Advanced home energy live flow">
+      <circle cx="380" cy="300" r="80" class="hems-track hems-battery-track"></circle>
+      ${bar(80, 0, Math.min(batteryLevel, 99.9) * 3.6, 1, batteryColor)}
+      <text x="380" y="270" class="hems-muted hems-center">▮ Accu</text>
+      <text x="380" y="318" class="hems-battery-value hems-center">${Math.round(batteryLevel)}%</text>
+      <text x="380" y="346" class="hems-muted hems-center">${batteryState}</text>
+      <text x="380" y="125" class="hems-time hems-muted hems-center">${time}</text>
+
+      ${config.show_grid_phases !== false ? [250, 270, 290].map((radius, index) => svg`
+        ${track(radius, 272, 352)}
+        ${bar(radius, 272, 352, Math.abs(phases[index]) / (config.grid_phase_scale_max ?? 3000),
+          phases[index] < 0 ? exportColor : importColor)}
+      `) : nothing}
+      <text x="180" y="185" class="hems-muted">${gridLabel}</text>
+      <text x="180" y="228" class="hems-main-value" fill=${gridColor}>⚡ ${formatPower(grid)}</text>
+      ${config.show_grid_phases !== false ? phases.map((phase, index) => svg`
+        <text x="180" y=${258 + index * 22} class="hems-detail hems-muted">
+          L${index + 1} ${phase >= 0 ? "↓" : "↑"} ${formatPower(phase)}
+        </text>
+      `) : nothing}
+
+      ${track(265, 188, 262)}
+      ${bar(265, 188, 262, solar / (config.solar_scale_max ?? 6000), solarColor, true)}
+      <text x="180" y="395" class="hems-muted">${config.energy_solar_label ?? "ZON · Enphase"}</text>
+      <text x="180" y="437" class="hems-main-value">☀️ ${formatPower(solar)}</text>
+      <text x="180" y="465" class="hems-detail hems-muted">
+        ${config.energy_forecast_label ?? "verwacht"} ${forecast.toLocaleString(undefined, {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        })} kWh
+      </text>
+
+      ${config.show_battery_units !== false ? [250, 270, 290].map((radius, index) => svg`
+        ${track(radius, 8, 88)}
+        ${bar(radius, 8, 88,
+          Math.abs(batteries[index].power) / (config.battery_unit_scale_max ?? 2400),
+          batteries[index].power > 0 ? batteryColor : importColor, true)}
+      `) : nothing}
+      <text x="585" y="185" class="hems-muted hems-end">${config.energy_battery_label ?? "ZENDURE"}</text>
+      ${config.show_battery_units !== false ? batteries.map((unit, index) => svg`
+        <text x="585" y=${224 + index * 22} class="hems-detail hems-muted hems-end">
+          ${index + 1} <tspan fill=${batteryColor} font-weight="600">${Math.round(unit.level)}%</tspan>
+          ${unit.power > 20 ? "↑" : unit.power < -20 ? "↓" : ""} ${formatPower(unit.power)}
+        </text>
+      `) : nothing}
+
+      ${track(265, 98, 172)}
+      ${bar(265, 98, 172, home / (config.home_scale_max ?? 4000), homeColor)}
+      <text x="585" y="395" class="hems-muted hems-end">${config.energy_home_label ?? "HUIS"}</text>
+      <text x="585" y="437" class="hems-main-value hems-end">${formatPower(home)} ⌂</text>
+      <text x="585" y="465" class="hems-detail hems-muted hems-end">
+        🚗 ${config.energy_ev_label ?? "laadpaal"} ${formatPower(ev)}
+      </text>
+      <text x="380" y="522" class="hems-mode hems-muted hems-center">${modeLabel} ▾</text>
+
+      ${config.show_tariff_timeline !== false && intervals.length ? svg`
+        ${intervals.map((interval) => {
+          const x = 90 + 580 * (interval.start - dayStart) / dayDuration;
+          const width = Math.max(580 * (interval.end - interval.start) / dayDuration, 1);
+          return svg`<rect x=${x} y="588" width=${width} height="14"
+            fill=${priceColor(interval.price)} opacity=".8"></rect>`;
+        })}
+        ${currentInterval ? svg`
+          <text x="90" y="574" class="hems-muted">
+            ${formatTime(currentInterval.start)} – ${formatTime(currentInterval.end)}
+          </text>
+          <text x="670" y="574" class="hems-price hems-end"
+            fill=${priceColor(currentInterval.price)}>
+            ${Math.round(currentInterval.price * 100)} cent
+          </text>
+        ` : nothing}
+        <rect x=${90 + 580 * (now - dayStart) / dayDuration - 1.5} y="584"
+          width="3" height="22" rx="1.5" class="hems-now"></rect>
+        ${[0, 6, 12, 18, 24].map((hour) => svg`
+          <text x=${90 + 580 * hour / 24} y="624" class="hems-hour hems-muted hems-center">
+            ${String(hour % 24).padStart(2, "0")}
+          </text>
+        `)}
+      ` : nothing}
+    </svg>
+  `);
+};
+
 const renderFlower = (ctx: RenderContext): TemplateResult => {
   const plant = entityFromConfig(ctx, "ulm_card_flower_entity") ?? ctx.entity;
   const problem = plant?.state === "problem";
@@ -2075,6 +2275,7 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "custom_card_pollen_forecast": return renderPollenForecast(ctx);
     case "custom_card_playstation": return renderConsoleCard(ctx);
     case "custom_card_entity_carousel": return renderEntityCarousel(ctx);
+    case "advanced_home_energy_management": return renderAdvancedHomeEnergyManagement(ctx);
     case "custom_card_plant": return renderFlower(ctx);
     case "custom_card_speedtest_gauges": return renderSpeedtestGauges(ctx);
     case "custom_card_pollen": return renderPollen(ctx);

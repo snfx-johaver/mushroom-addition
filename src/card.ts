@@ -126,7 +126,8 @@ export class MushroomAdditionCard extends LitElement {
 
   private readonly actionSurface = (classes: string, content: TemplateResult, style = ""): TemplateResult => {
     const parity = this.descriptor ? PARITY_BY_ID.get(this.descriptor.upstreamId) : undefined;
-    if (!parity) {
+    const native = this.descriptor?.sourcePath.startsWith("src/") ?? false;
+    if (!parity && !native) {
       throw new Error(`Missing explicit parity renderer mapping for ${this.descriptor?.upstreamId}`);
     }
     const parityClass = parity ? ` parity-${parity.rendererId.replaceAll("_", "-")}` : "";
