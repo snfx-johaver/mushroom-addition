@@ -135,14 +135,25 @@ const presentation = (): EditorField[] => [
     selector: { icon: {} },
     context: { icon_entity: "entity" },
   }),
-  presentationGrid([
-    select("layout", [
-      { value: "default", label: "Default" },
-      { value: "horizontal", label: "Horizontal" },
-      { value: "vertical", label: "Vertical" },
-    ]),
-    toggle("fill_container"),
-  ]),
+  presentationField({
+    name: "layout",
+    selector: {
+      select: {
+        mode: "box",
+        options: ["horizontal", "vertical"].map((value) => ({
+          value,
+          label: value === "horizontal" ? "Horizontal" : "Vertical",
+          image: {
+            src: `/static/images/form/tile_content_layout_${value}.svg`,
+            src_dark: `/static/images/form/tile_content_layout_${value}_dark.svg`,
+            flip_rtl: true,
+          },
+        })),
+      },
+    },
+  }),
+  presentationField(toggle("multiline_secondary")),
+  presentationField(toggle("fill_container")),
   presentationGrid([
     select("primary_info", [
       { value: "name", label: "Name" },

@@ -32,7 +32,7 @@ const contentFields = new Set([
 ]);
 const layoutFields = new Set([
   "layout", "fill_container", "variant", "aspect_ratio", "image_height", "fit_mode",
-  "camera_view", "features_position",
+  "camera_view", "features_position", "multiline_secondary",
 ]);
 const interactionFields = new Set([
   "tap_action", "hold_action", "double_tap_action", "navigation_path", "settings_path",
@@ -117,9 +117,13 @@ export class MushroomAdditionEditor extends LitElement {
       item.upstreamId !== "custom_card_trash" ||
       (!field.name.startsWith("ulm_card_datum_") && !field.name.includes("ophaling")));
     const groupedSchema = groupEditorFields([...schema, ...upstreamSchema]);
+    const populatedDefaults = populatedDefaultsFor(item, this.hass, this.config.entity);
     const formData = {
-      ...populatedDefaultsFor(item, this.hass, this.config.entity),
+      ...populatedDefaults,
       ...this.config,
+      layout: (this.config.layout ?? populatedDefaults.layout) === "default"
+        ? "horizontal"
+        : this.config.layout ?? populatedDefaults.layout,
     };
     const customFeatures = item.upstreamId === "custom_card_trash"
       ? this.renderWasteStreamEditor()

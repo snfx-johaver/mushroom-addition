@@ -214,6 +214,7 @@ export interface AdditionConfig {
   aspect_ratio?: string;
   image_height?: number;
   layout?: "default" | "horizontal" | "vertical";
+  multiline_secondary?: boolean;
   fill_container?: boolean;
   primary_info?: "name" | "state" | "last-changed" | "last-updated" | "none";
   secondary_info?: "default" | "name" | "state" | "last-changed" | "last-updated" | "none";

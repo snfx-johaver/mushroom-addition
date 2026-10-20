@@ -76,6 +76,9 @@ export const sharedStyles = css`
   .tone-grey { --tone: var(--ulm-grey); }
   .ulm-copy { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
   .ulm-name, .ulm-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .multiline-secondary .ulm-label {
+    overflow: visible; text-overflow: clip; white-space: normal;
+  }
   .automatic-presentation {
     display: flex;
     min-width: 0;
