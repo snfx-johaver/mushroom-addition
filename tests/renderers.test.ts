@@ -971,6 +971,10 @@ describe("family renderers", () => {
     element.hass = hass;
     element.setConfig({
       type: "custom:mushroom-addition-custom-card-entity-carousel",
+      entity: "light.kitchen",
+      name: "Entity Carousel",
+      primary_info: "name",
+      secondary_info: "state",
       carousel_loop: true,
       carousel_show_labels: true,
       carousel_visible_items: 5,
@@ -998,6 +1002,11 @@ describe("family renderers", () => {
     const carousel = element.shadowRoot?.querySelector("mushroom-addition-entity-carousel") as HTMLElement & {
       updateComplete: Promise<boolean>;
     };
+    const presentation = element.shadowRoot?.querySelector(".entity-carousel-presentation");
+    expect(presentation?.querySelector(".ulm-icon")).not.toBeNull();
+    expect(presentation?.querySelector(".ulm-copy")).not.toBeNull();
+    expect(presentation?.querySelector(".automatic-presentation")).toBeNull();
+    expect(sharedStyles.cssText).toMatch(/\.entity-carousel-presentation\s*\{\s*padding:\s*12px;/);
     await carousel.updateComplete;
     const buttons = [...(carousel.shadowRoot?.querySelectorAll("button") ?? [])] as HTMLButtonElement[];
     expect(buttons).toHaveLength(3);

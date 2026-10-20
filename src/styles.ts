@@ -312,6 +312,8 @@ export const sharedStyles = css`
   }
   .ulm-metric { padding: 0 12px 12px; }
   .metric-heading { padding-left: 0; padding-right: 0; }
+  .entity-carousel-presentation { padding: 12px; }
+  .entity-carousel-presentation .ulm-copy { justify-content: center; }
   .metric-value { color: rgb(var(--ulm-blue)); font-size: 20px; font-weight: 650; }
   .sparkline { width: 100%; height: 48px; overflow: visible; }
   .sparkline polyline { fill: none; stroke: var(--sparkline-color, rgb(var(--ulm-blue))); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
@@ -561,6 +563,75 @@ export const sharedStyles = css`
     background: #ffd45c;
     transform: translate(-50%, -50%);
   }
+  .sun-position, .moon-position { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; }
+  .sun-position b, .moon-position b { font-variant-numeric: tabular-nums; }
+  .moon-section {
+    display: grid;
+    gap: 10px;
+    margin-top: 6px;
+    padding-top: 14px;
+    border-top: 1px solid var(--divider-color, rgba(var(--ulm-grey), .18));
+  }
+  .moon-heading {
+    display: grid;
+    min-width: 0;
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+  }
+  .moon-symbol {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(var(--ulm-grey), .18);
+    color: var(--primary-text-color);
+  }
+  .moon-symbol ha-icon { --mdc-icon-size: 25px; }
+  .moon-copy { display: grid; min-width: 0; gap: 2px; }
+  .moon-copy b, .moon-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .moon-copy b { font-size: 14px; }
+  .moon-copy small { color: var(--secondary-text-color); font-size: 12px; text-transform: capitalize; }
+  .moon-illumination { font-size: 16px; font-variant-numeric: tabular-nums; }
+  .moon-arc { position: relative; height: 82px; overflow: hidden; border-radius: 14px; background: #101426; }
+  .moon-arc svg { display: block; width: 100%; height: 82px; }
+  .moon-arc line { stroke: rgba(255, 255, 255, .22); }
+  .moon-sky { fill: #20294f; }
+  .moon-marker {
+    position: absolute;
+    left: var(--moon-x);
+    top: var(--moon-y);
+    display: grid;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    border: 2px solid rgba(255, 255, 255, .35);
+    border-radius: 50%;
+    background: #e7e7e7;
+    color: #25293a;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .4);
+    transform: translate(-50%, -50%);
+  }
+  .moon-marker.is-below { opacity: .62; }
+  .moon-marker ha-icon { --mdc-icon-size: 20px; }
+  .moon-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+  .moon-metric {
+    display: grid;
+    min-width: 0;
+    min-height: 46px;
+    grid-template-columns: 26px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    padding: 7px 9px;
+    border-radius: 12px;
+    background: rgba(var(--ulm-grey), .08);
+  }
+  .moon-metric > ha-icon { --mdc-icon-size: 19px; color: rgba(var(--ulm-grey), .8); }
+  .moon-metric > span { display: grid; min-width: 0; gap: 1px; }
+  .moon-metric small, .moon-metric b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .moon-metric small { color: var(--secondary-text-color); font-size: 10px; }
+  .moon-metric b { font-size: 12px; font-variant-numeric: tabular-nums; }
   .media-platform { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-purple), .75); color: #fff; }
   .input-datetime-controls { display: grid; grid-template-columns: repeat(3, 1fr); align-items: center; gap: 7px; }
   .input-datetime-controls .ulm-control { width: 100%; height: 42px; border-radius: 14px; }
