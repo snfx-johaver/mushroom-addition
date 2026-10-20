@@ -164,14 +164,16 @@ describe("Home Assistant registration", () => {
       await editor.updateComplete;
       expect(editor.shadowRoot?.textContent).toContain("Add button");
       expect(editor.shadowRoot?.textContent).toContain(itemKey === "scene_items" ? "Scene buttons" : "Room sensor buttons");
-      expect(editor.shadowRoot?.textContent).toContain("Custom name");
+      if (itemKey === "scene_items") expect(editor.shadowRoot?.textContent).toContain("Custom name");
+      else expect(editor.shadowRoot?.textContent).not.toContain("Custom name");
       expect(editor.shadowRoot?.textContent).not.toContain("Active when state is");
       const textSelectors = editor.shadowRoot?.querySelectorAll<HTMLElement & {
         value?: string;
         selector?: Record<string, unknown>;
       }>(".item-row .field ha-selector") ?? [];
       const customName = [...textSelectors].find((selector) => selector.value === "Example");
-      expect(customName?.selector).toEqual({ text: {} });
+      if (itemKey === "scene_items") expect(customName?.selector).toEqual({ text: {} });
+      else expect(customName).toBeUndefined();
       if (itemKey === "scene_items") {
         expect(editor.shadowRoot?.textContent).toContain("Defaults to activating scenes");
         expect(editor.shadowRoot?.textContent).toContain("Navigation path");

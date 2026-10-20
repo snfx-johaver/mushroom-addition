@@ -4,6 +4,7 @@ import type {
   AdditionConfig,
   AdditionItemConfig,
   HomeAssistant,
+  RoomStatusConfig,
   SonosShortcutConfig,
   WasteStreamConfig,
 } from "./types";
@@ -16,6 +17,7 @@ import { additionalEditorSchemaFor, editorSchemaFor, type EditorField } from "./
 import { populatedDefaultsFor } from "./defaults";
 import { wasteStreamsForConfig } from "./waste-streams";
 import { sceneItemDefaultsFor } from "./scene-item-defaults";
+import { ROOM_STATUS_KINDS, ROOM_STATUS_LIMIT, roomItemDefaultsFor, roomStatusKind, roomStatusIcon, roomStatusActive } from "./room";
 import type {
   MiniGraphEntityConfig,
   MiniGraphShowConfig,
@@ -282,7 +284,7 @@ export class MushroomAdditionEditor extends LitElement {
           item.upstreamId === "card_welcome_scenes" ? undefined : ["scene"],
         )
         : item.upstreamId === "card_room"
-          ? this.renderItemEditor("room_sensors", "Room sensor buttons")
+          ? html`${this.renderItemEditor("room_sensors", localize(this.hass, "room_buttons"))}${this.renderRoomStatusEditor()}`
           : nothing;
     const hasCustomFeatures = item.upstreamId === "mini_graph_card" ||
       item.upstreamId === "custom_card_trash" ||
@@ -442,17 +444,21 @@ export class MushroomAdditionEditor extends LitElement {
     domains?: string[],
   ) {
     if (!this.config) return nothing;
-    const configuredItems = this.config[key] ?? [];
-    const items: AdditionItemConfig[] = (configuredItems.length
-      ? configuredItems
-      : (this.config.entities ?? []).map((entity) => ({ entity })))
+    const configuredItems = this.config[key];
+    const selectedItems = key === "scene_items"
+      ? configuredItems?.length ? configuredItems : undefined
+      : configuredItems;
+    const items: AdditionItemConfig[] = (selectedItems ??
+      (this.config.entities ?? []).map((entity) => ({ entity })))
       .map((item) => key === "scene_items"
         ? { ...sceneItemDefaultsFor(this.hass, item.entity), ...item }
-        : item);
+        : { ...roomItemDefaultsFor(this.hass, item.entity), ...item });
     return html`
       <section class="item-editor">
         <h3>${title}</h3>
-        <p>Each button starts with sensible values from its entity. You can override every value, including its name.</p>
+        <p>${key === "scene_items"
+          ? "Each button starts with sensible values from its entity. You can override every value, including its name."
+          : localize(this.hass, "room_buttons_help")}</p>
         ${items.map((item, index) => html`
           <div class="item-row">
             <label class="field wide">
@@ -467,7 +473,7 @@ export class MushroomAdditionEditor extends LitElement {
                 ? "Select the entity this button controls. Welcome Scenes supports every Home Assistant domain."
                 : "Select the entity represented by this room sensor button."}</small>
             </label>
-            <label class="field">
+            ${key === "scene_items" ? html`<label class="field">
               <span>Custom name</span>
               <ha-selector
                 .hass=${this.hass}
@@ -477,7 +483,7 @@ export class MushroomAdditionEditor extends LitElement {
                   this.updateItem(key, index, "name", event.detail.value)}
               ></ha-selector>
               <small>Text shown below the button. Change it independently for every button.</small>
-            </label>
+            </label>` : nothing}
             <label class="field">
               <span>Icon</span>
               <ha-selector
@@ -530,6 +536,21 @@ export class MushroomAdditionEditor extends LitElement {
                 <small>Optional destination selected from your Home Assistant dashboards. It overrides the tap action.</small>
               </label>
             ` : nothing}
+            ${key === "room_sensors" ? html`
+              <label class="field">
+                <span>${localize(this.hass, "active_state")}</span>
+                <ha-selector .hass=${this.hass} .selector=${{ text: {} }} .value=${item.active_state}
+                  @value-changed=${(event: CustomEvent) => this.updateItem(key, index, "active_state", event.detail.value)}></ha-selector>
+                <small>${localize(this.hass, "room_active_state_help")}</small>
+              </label>
+              ${(["hold_action", "double_tap_action"] as const).map((field) => html`
+                <label class="field">
+                  <span>${localize(this.hass, field)}</span>
+                  <ha-selector .hass=${this.hass} .selector=${{ ui_action: {} }} .value=${item[field]}
+                    @value-changed=${(event: CustomEvent) => this.updateItem(key, index, field, event.detail.value)}></ha-selector>
+                </label>
+              `)}
+            ` : nothing}
             <label class="field">
               <span>Tap action</span>
               <ha-selector
@@ -538,7 +559,7 @@ export class MushroomAdditionEditor extends LitElement {
                 .value=${item.tap_action}
                 @value-changed=${(event: CustomEvent) => this.updateItem(key, index, "tap_action", event.detail.value)}
               ></ha-selector>
-              <small>Defaults to activating scenes and toggling other supported entities.</small>
+              <small>${key === "scene_items" ? "Defaults to activating scenes and toggling other supported entities." : localize(this.hass, "room_button_action_help")}</small>
             </label>
             <div class="item-actions wide">
               <button @click=${() => this.removeItem(key, index)}>Remove</button>
@@ -548,6 +569,64 @@ export class MushroomAdditionEditor extends LitElement {
         <button class="add" @click=${() => this.addItem(key)}>Add button</button>
       </section>
     `;
+  }
+
+  private renderRoomStatusEditor() {
+    const items = (this.config?.room_status ?? []).slice(0, ROOM_STATUS_LIMIT);
+    return html`<section class="item-editor room-status-editor">
+      <h3>${localize(this.hass, "room_status")}</h3>
+      <p>${localize(this.hass, "room_status_help")}</p>
+      ${items.map((item, index) => {
+        const entity = this.hass?.states[item.entity];
+        const kind = item.kind ?? roomStatusKind(entity);
+        return html`<div class="item-row">
+          <label class="field">
+            <span>${localize(this.hass, "entity")}</span>
+            <ha-selector .hass=${this.hass} .selector=${{ entity: {} }} .value=${item.entity}
+              @value-changed=${(event: CustomEvent) => this.updateRoomStatus(index, "entity", event.detail.value)}></ha-selector>
+          </label>
+          <label class="field">
+            <span>${localize(this.hass, "room_status_kind")}</span>
+            <ha-selector .hass=${this.hass} .selector=${{ select: { mode: "dropdown", options: ROOM_STATUS_KINDS.map((value) => ({
+              value, label: localize(this.hass, `room_status_${value}`),
+            })) } }} .value=${kind}
+              @value-changed=${(event: CustomEvent) => this.updateRoomStatus(index, "kind", event.detail.value)}></ha-selector>
+          </label>
+          <span class="room-status-preview wide" aria-label=${localize(this.hass, "room_status_preview")}>
+            <ha-icon .icon=${entity?.attributes.icon || roomStatusIcon(kind, roomStatusActive(entity, kind))}></ha-icon>
+            ${entity?.attributes.friendly_name || item.entity || localize(this.hass, "room_status_choose_entity")}
+          </span>
+          <div class="item-actions wide"><button @click=${() => this.removeRoomStatus(index)}>${localize(this.hass, "room_status_remove")}</button></div>
+        </div>`;
+      })}
+      <button class="add" ?disabled=${items.length >= ROOM_STATUS_LIMIT}
+        @click=${() => this.saveRoomStatus([...items, { entity: "", kind: "window" }])}>${localize(this.hass, "room_status_add")}</button>
+    </section>`;
+  }
+
+  private updateRoomStatus(index: number, field: keyof RoomStatusConfig, value: string): void {
+    const items = [...(this.config?.room_status ?? [])].slice(0, ROOM_STATUS_LIMIT);
+    const current = items[index];
+    if (!current) return;
+    const next = { ...current, [field]: value };
+    if (field === "entity") {
+      const oldKind = roomStatusKind(this.hass?.states[current.entity]);
+      if (!current.entity || current.kind === undefined || current.kind === oldKind) {
+        next.kind = roomStatusKind(this.hass?.states[value]);
+      }
+    }
+    items[index] = next;
+    this.saveRoomStatus(items);
+  }
+
+  private removeRoomStatus(index: number): void {
+    this.saveRoomStatus((this.config?.room_status ?? []).filter((_, row) => row !== index));
+  }
+
+  private saveRoomStatus(items: RoomStatusConfig[]): void {
+    if (!this.config) return;
+    this.config = { ...this.config, room_status: items.slice(0, ROOM_STATUS_LIMIT) };
+    fireEvent(this, "config-changed", { config: this.config });
   }
 
   private miniGraphEntities(): MiniGraphEntityConfig[] {
@@ -1161,12 +1240,16 @@ export class MushroomAdditionEditor extends LitElement {
   ): void {
     if (!this.config) return;
     const items: AdditionItemConfig[] = [...(this.config[key] ?? (this.config.entities ?? []).map((entity) => ({ entity })))];
-    if (key === "scene_items" && field === "entity" && typeof value === "string") {
+    if (field === "entity" && typeof value === "string") {
       const current = items[index];
-      const oldDefaults = sceneItemDefaultsFor(this.hass, current.entity);
-      const newDefaults = sceneItemDefaultsFor(this.hass, value);
+      const defaultsFor = key === "scene_items" ? sceneItemDefaultsFor : roomItemDefaultsFor;
+      const oldDefaults = defaultsFor(this.hass, current.entity);
+      const newDefaults = defaultsFor(this.hass, value);
       const next = { ...current, entity: value };
-      for (const defaultField of ["name", "icon", "icon_type", "color", "tap_action"] as const) {
+      const fields = key === "scene_items"
+        ? ["name", "icon", "icon_type", "color", "tap_action"] as const
+        : ["icon", "icon_type", "color", "active_state", "tap_action", "hold_action", "double_tap_action"] as const;
+      for (const defaultField of fields) {
         if (
           current[defaultField] === undefined ||
           JSON.stringify(current[defaultField]) === JSON.stringify(oldDefaults[defaultField])
@@ -1189,7 +1272,7 @@ export class MushroomAdditionEditor extends LitElement {
       : "";
     items.push(key === "scene_items"
       ? sceneItemDefaultsFor(this.hass, defaultEntity)
-      : { entity: "" });
+      : roomItemDefaultsFor(this.hass));
     this.updateItems(key, items);
   }
 

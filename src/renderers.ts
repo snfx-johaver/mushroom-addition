@@ -1,6 +1,8 @@
 import { html, nothing, svg, type TemplateResult } from "lit";
 import type { ActionConfig, AdditionConfig, AdditionItemConfig, CatalogItem, HassEntity, HomeAssistant, RoomViewDevice, WeatherForecast } from "./types";
 import { controlActions } from "./control-actions";
+import { localize } from "./localize";
+import { ROOM_STATUS_KINDS, ROOM_STATUS_LIMIT, roomEntityIcon, roomEntityUnavailable, roomItemDefaultsFor, roomLightRgb, roomStatusActive, roomStatusIcon, roomStatusKind } from "./room";
 import { activeStates, displayName, fireEvent, stateLabel } from "./helpers";
 import { wasteStreamsForConfig } from "./waste-streams";
 import { defaultIconFor } from "./defaults";
@@ -606,27 +608,9 @@ const renderControl = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const roomHoldTimers = new WeakMap<HTMLElement, number>();
-const roomHoldFired = new WeakSet<HTMLElement>();
-
-const roomAction = (
-  target: HTMLElement,
-  ctx: RenderContext,
-  item: AdditionItemConfig,
-  gesture: "tap" | "hold",
-): void => {
-  const action = gesture === "tap"
-    ? item.tap_action ?? { action: "toggle" }
-    : item.hold_action ?? { action: "more-info" };
-  fireEvent(target, "hass-action", {
-    config: { type: ctx.config.type, entity: item.entity, tap_action: action },
-    action: "tap",
-  });
-};
-
 const renderRoom = (ctx: RenderContext): TemplateResult => {
   const sensorItems: AdditionItemConfig[] = (
-    ctx.config.room_sensors?.length
+    ctx.config.room_sensors !== undefined
       ? ctx.config.room_sensors
       : (ctx.config.entities ?? []).map((entity) => ({ entity }))
   ).filter((item) => item.entity).slice(0, 4);
@@ -645,63 +629,59 @@ const renderRoom = (ctx: RenderContext): TemplateResult => {
     : useBrightness && ctx.entity?.state === "on" && brightness !== undefined
       ? `${Math.round(brightness / 2.55)}%`
       : stateLabel(ctx.entity);
-  return ctx.actionSurface(`ulm-room ulm-source-room ${ctx.entity?.state === "unavailable" ? "is-unavailable" : ""}`, html`
+  const light = ctx.config.room_light_entity
+    ? ctx.hass.states[ctx.config.room_light_entity]
+    : ctx.config.entity?.startsWith("light.") ? ctx.entity : undefined;
+  const rgb = ctx.config.ulm_card_dynamic_color === true ? roomLightRgb(ctx.hass, light) : undefined;
+  const statusItems = (ctx.config.room_status ?? []).slice(0, ROOM_STATUS_LIMIT).filter((item) => item.entity);
+  return ctx.actionSurface(`ulm-room ulm-source-room ${rgb ? "dynamic-color" : ""} ${ctx.entity?.state === "unavailable" ? "is-unavailable" : ""}`, html`
     <div class="room-main">
       <span class="room-copy">${heading(ctx, roomLabel)}</span>
       <span class="ulm-icon tone-blue"><ha-icon .icon=${ctx.config.icon || "mdi:sofa-single"}></ha-icon></span>
+      ${statusItems.length ? html`<div class="room-status" role="group" aria-label=${localize(ctx.hass, "room_status")}>
+        ${statusItems.map((item) => {
+          const entity = ctx.hass.states[item.entity];
+          const kind = item.kind && ROOM_STATUS_KINDS.includes(item.kind) ? item.kind : roomStatusKind(entity);
+          const unavailable = roomEntityUnavailable(entity);
+          const active = roomStatusActive(entity, kind);
+          const label = `${displayName({ type: "", entity: item.entity }, entity, ctx.hass)} · ${localize(ctx.hass, `room_status_${kind}`)}: ${localize(ctx.hass, unavailable ? "room_status_unavailable" : active ? "room_status_active" : "room_status_inactive")} (${stateLabel(entity)})`;
+          return html`<button class="room-status-indicator kind-${kind} ${unavailable ? "is-unavailable" : active ? "is-active" : "is-inactive"}"
+            type="button" aria-label=${label} title=${label} ?disabled=${unavailable}
+            ${controlActions({ type: ctx.config.type, entity: item.entity, tap_action: { action: "more-info" } })}>
+            <ha-icon .icon=${entity?.attributes.icon || roomStatusIcon(kind, active)}></ha-icon>
+          </button>`;
+        })}
+      </div>` : nothing}
       ${ctx.entity?.state === "unavailable"
         ? html`<span class="room-unavailable"><ha-icon icon="mdi:exclamation"></ha-icon></span>`
         : nothing}
     </div>
     ${sensorItems.length ? html`<div class="room-entities">${sensorItems.map((item) => {
       const entity = ctx.hass.states[item.entity];
-      const active = entity?.state === (item.active_state || "on");
+      const defaults = roomItemDefaultsFor(ctx.hass, item.entity);
+      const active = !roomEntityUnavailable(entity) && entity?.state === (item.active_state || defaults.active_state);
       const color = configuredColor(item.color, "rgb(var(--ulm-blue))");
       const entityPicture = item.icon_type === "entity-picture"
         ? attr(entity, "entity_picture")
         : undefined;
       return html`<button
         class="metric-pill room-sensor ${active ? "is-active" : ""}"
+        type="button"
+        ?disabled=${roomEntityUnavailable(entity)}
         style=${`--item-color:${color}`}
         aria-label=${item.name || item.label || displayName({ type: "", entity: item.entity }, entity, ctx.hass)}
-        @pointerdown=${(event: PointerEvent) => {
-          event.stopPropagation();
-          const target = event.currentTarget as HTMLElement;
-          roomHoldFired.delete(target);
-          roomHoldTimers.set(target, window.setTimeout(() => {
-            roomHoldFired.add(target);
-            roomAction(target, ctx, item, "hold");
-          }, 500));
-        }}
-        @pointerup=${(event: PointerEvent) => {
-          event.stopPropagation();
-          const target = event.currentTarget as HTMLElement;
-          const timer = roomHoldTimers.get(target);
-          if (timer) window.clearTimeout(timer);
-          roomHoldTimers.delete(target);
-        }}
-        @pointercancel=${(event: PointerEvent) => {
-          const target = event.currentTarget as HTMLElement;
-          const timer = roomHoldTimers.get(target);
-          if (timer) window.clearTimeout(timer);
-          roomHoldTimers.delete(target);
-        }}
-        @click=${(event: Event) => {
-          const target = event.currentTarget as HTMLElement;
-          if (roomHoldFired.has(target)) {
-            roomHoldFired.delete(target);
-            event.stopPropagation();
-            return;
-          }
-          event.stopPropagation();
-          roomAction(target, ctx, item, "tap");
-        }}
+        ${controlActions({
+          type: ctx.config.type, entity: item.entity,
+          tap_action: item.tap_action ?? defaults.tap_action,
+          hold_action: item.hold_action ?? defaults.hold_action,
+          double_tap_action: item.double_tap_action ?? defaults.double_tap_action,
+        })}
       >${entityPicture
         ? html`<span class="room-sensor-picture" style=${`background-image:url("${String(entityPicture)}")`}></span>`
-        : html`<ha-icon .icon=${item.icon || entity?.attributes.icon || "mdi:circle-small"}></ha-icon>`
-      }<span>${item.name || item.label || stateLabel(entity)}</span></button>`;
+        : html`<ha-icon .icon=${item.icon || roomEntityIcon(entity, item.entity)}></ha-icon>`
+      }<span class="room-sensor-label">${stateLabel(entity)}</span></button>`;
     })}</div>` : nothing}
-  `);
+  `, rgb ? `--room-rgb:${rgb.join(",")};` : "");
 };
 
 const configuredEntities = (ctx: RenderContext): HassEntity[] => {
@@ -918,58 +898,48 @@ const renderRoomView = (ctx: RenderContext): TemplateResult => {
     [ctx.config.group_water, groups.water, "Water", "mdi:water"],
   ] as const;
   const deviceSlots = [
-    ["lights", ctx.config.group_lights, groups.lights, "Lights", "mdi:lightbulb-group"],
-    ["shutters", ctx.config.group_windows_shutters, groups.shutters, "Shutters", "mdi:window-shutter"],
-    ["outlets", ctx.config.group_outlets, groups.outlets, "Outlets", "mdi:power-plug"],
-    ["tv", ctx.config.group_tv, groups.tv, "Television", "mdi:television"],
+    ["lights", ctx.config.group_lights, groups.lights, "Lights", groups.lights?.state === "on" ? "mdi:lightbulb-group" : "mdi:lightbulb-group-off"],
+    ["shutters", ctx.config.group_windows_shutters, groups.shutters, "Shutters", groups.shutters?.state === "on" ? "mdi:window-shutter-open" : "mdi:window-shutter"],
+    ["outlets", ctx.config.group_outlets, groups.outlets, "Outlets", groups.outlets?.state === "on" ? "mdi:power-plug" : "mdi:power-plug-off"],
+    ["tv", ctx.config.group_tv, groups.tv, "Television", groups.tv?.state === "on" ? "mdi:television" : "mdi:television-off"],
   ] as const;
   const unavailable = [...sensorSlots.map(([id]) => id), ...deviceSlots.map(([, id]) => id)]
     .reduce<number>((sum, id) => sum + (id ? unavailableCount(id) : 0), 0);
   return ctx.actionSurface("custom-room-view", html`
     ${cardHeading(ctx, stateLabel(ctx.entity), displayName(ctx.config, ctx.entity, ctx.hass))}
     ${ctx.config.temperature || ctx.config.humidity ? html`
-      <section class="room-view-section" aria-label="Climate">
-        <h3>Climate</h3>
         <button class="room-view-summary" aria-label="Climate · More information"
           ${controlActions(infoActions(ctx.config.temperature ?? ctx.config.humidity!))}>
-          ${sourceIconBubble(climateContext, climateEntity?.attributes.icon || "mdi:thermometer", "var(--primary-color)", false, "room-view-icon")}
+          ${sourceIconBubble(climateContext, climateEntity?.attributes.icon || "mdi:home-variant-outline", "var(--primary-color)", false, "room-view-icon")}
           ${heading(climateContext,
             ctx.config.climate_secondary ?? (ctx.config.humidity && ctx.config.temperature ? stateLabel(humidity) : undefined))}
         </button>
-      </section>` : nothing}
-    <section class="room-view-section" aria-label="Sensor status">
-      <h3>Sensor status <small>Indicators · Tap for details</small></h3>
-      <div class="room-view-status">
-        ${sensorSlots.map(([entityId, entity, label, sensorIcon]) => entityId ? html`
+      ` : nothing}
+      <div class="room-view-status" aria-label="Sensor status">
+        ${sensorSlots.map(([entityId, entity, label, sensorIcon]) => entityId && (countOn(entity) || unavailableCount(entityId)) ? html`
           <button class="room-view-indicator ${countOn(entity) ? "is-active" : ""} ${unavailableCount(entityId) ? "is-unavailable" : ""}"
             aria-label=${`${label}: ${unavailableCount(entityId) ? "Unavailable" : stateLabel(entity)} · More information`}
+            title=${`${label}: ${unavailableCount(entityId) ? "Unavailable" : stateLabel(entity)}`}
             ${controlActions(infoActions(entityId))}>
-            <ha-icon .icon=${sensorIcon}></ha-icon>
-            <span>${label}<small>${unavailableCount(entityId) ? `${unavailableCount(entityId)} unavailable` : countOn(entity) ? `${countOn(entity)} active` : stateLabel(entity)}</small></span>
+            <ha-icon .icon=${unavailableCount(entityId) ? "mdi:alert-circle-outline" : sensorIcon}></ha-icon>
             ${countOn(entity) > 1 ? html`<i>${countOn(entity)}</i>` : nothing}
           </button>` : nothing)}
-        ${!sensorSlots.some(([id]) => id) ? html`<span class="room-view-empty">No sensors configured</span>` : nothing}
         ${lowBatteries.length ? html`
           <button class="room-view-indicator is-unavailable" aria-label="Low batteries"
             ${controlActions(infoActions(lowBatteries[0]!.entity_id))}>
-            <ha-icon icon="mdi:battery-20"></ha-icon><span>Low batteries<small>${lowBatteries.length}</small></span>
+            <ha-icon icon="mdi:battery-20"></ha-icon><i>${lowBatteries.length}</i>
           </button>` : nothing}
-        ${unavailable ? html`<span class="room-view-warning" role="status"><ha-icon icon="mdi:alert-circle-outline"></ha-icon>${unavailable} unavailable</span>` : nothing}
+        ${unavailable ? html`<span class="room-view-warning" role="status" aria-label=${`${unavailable} unavailable`} title=${`${unavailable} unavailable`}><ha-icon icon="mdi:alert-circle-outline"></ha-icon></span>` : nothing}
+        ${!sensorSlots.some(([, entity]) => countOn(entity)) && !lowBatteries.length && !unavailable ? html`<span class="room-view-clear"><ha-icon icon="mdi:check"></ha-icon></span>` : nothing}
       </div>
-    </section>
-    <section class="room-view-section" aria-label="Device controls">
-      <h3>Device controls <small>Buttons · Configurable actions</small></h3>
-      <div class="room-view-actions">
+      <div class="room-view-actions" aria-label="Device controls">
         ${deviceSlots.map(([device, entityId, entity, label, deviceIcon]) => entityId ? html`
           <button class=${activeStates.has(entity?.state ?? "") ? "is-active" : ""} aria-label=${label}
             ?disabled=${missing(entity)} ${controlActions(deviceActions(device, entityId))}>
             <ha-icon .icon=${missing(entity) ? "mdi:exclamation-thick" : deviceIcon}></ha-icon>
-            <span>${label}<small>${missing(entity) ? "Unavailable" : stateLabel(entity)}</small></span>
             ${countOn(entity) ? html`<i>${countOn(entity)}</i>` : nothing}
           </button>` : nothing)}
-        ${!deviceSlots.some(([, id]) => id) ? html`<span class="room-view-empty">No devices configured</span>` : nothing}
       </div>
-    </section>
   `);
 };
 
@@ -1020,8 +990,8 @@ const renderRoomOverview = (ctx: RenderContext): TemplateResult => {
   const label = ctx.config.secondary || (light
     ? lightOn && brightness ? `${Math.round(brightness / 2.55)}%` : stateLabel(light)
     : stateLabel(ctx.entity));
-  const rgb = attr(light, "rgb_color");
-  const dynamic = configured<boolean>(ctx, "ulm_card_dynamic_color") === true && lightOn && Array.isArray(rgb);
+  const rgb = roomLightRgb(ctx.hass, light);
+  const dynamic = configured<boolean>(ctx, "ulm_card_dynamic_color") === true && rgb !== undefined;
   const toggle = (event: Event, entity?: HassEntity): void => {
     if (entity) runControlAction(event, ctx, { action: "toggle" }, entity.entity_id);
   };
@@ -1037,7 +1007,7 @@ const renderRoomOverview = (ctx: RenderContext): TemplateResult => {
     </button>`;
   };
   return ctx.actionSurface(`custom-room-overview ${lightOn ? "light-on" : ""} ${dynamic ? "dynamic-color" : ""}`, html`
-    <div class="room-overview-main" style=${dynamic ? `--room-rgb:${rgb.slice(0, 3).join(",")};` : ""}>
+    <div class="room-overview-main">
       ${iconBubble(ctx, "mdi:sofa", lightOn ? "yellow" : "grey")}
       ${heading(ctx, label)}
     </div>
@@ -1045,7 +1015,7 @@ const renderRoomOverview = (ctx: RenderContext): TemplateResult => {
       ${light ? control(light, "light") : nothing}
       ${cover ? control(cover, "cover") : climate ? control(climate, "climate") : nothing}
     </div>
-  `);
+  `, dynamic ? `--room-rgb:${rgb!.join(",")};` : "");
 };
 
 const renderWasher = (ctx: RenderContext): TemplateResult => {

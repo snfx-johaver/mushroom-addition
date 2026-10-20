@@ -227,10 +227,25 @@ export const sharedStyles = css`
   .room-entities { display: flex; flex-direction: column; justify-content: flex-end; gap: 7px; }
   .room-entities .metric-pill { width: 46px; min-height: 46px; justify-content: center; overflow: hidden; padding: 0; color: transparent; }
   .room-sensor { border: 0; cursor: pointer; }
-  .room-sensor ha-icon { color: var(--item-color); }
-  .room-sensor-picture { display: block; width: 38px; height: 38px; border-radius: 50%; background-position: center; background-size: cover; }
+  .room-sensor > ha-icon { flex: 0 0 24px; width: 24px; height: 24px; --mdc-icon-size: 24px; color: var(--item-color); }
+  .room-sensor-picture { display: block; flex: 0 0 38px; width: 38px; height: 38px; border-radius: 50%; background-position: center; background-size: cover; }
   .room-sensor.is-active { background: color-mix(in srgb, var(--item-color) 18%, transparent); }
-  .room-sensor span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .room-sensor .room-sensor-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .room-sensor:disabled { cursor: default; opacity: .45; }
+  .ulm-source-room.dynamic-color { background: rgba(var(--room-rgb), .2); }
+  .ulm-source-room.dynamic-color .room-main > .ulm-icon { color: rgb(var(--room-rgb)); background: rgba(var(--room-rgb), .3); }
+  .room-status { position: absolute; left: 17px; bottom: 10px; z-index: 2; display: flex; gap: 5px; }
+  .room-status-indicator { display: grid; place-items: center; width: 25px; height: 25px; padding: 0; border: 0; border-radius: 50%; color: var(--secondary-text-color); background: var(--card-background-color); cursor: pointer; }
+  .room-status-indicator > ha-icon { flex: 0 0 18px; width: 18px; height: 18px; --mdc-icon-size: 18px; }
+  .room-status-indicator.is-active { color: rgb(var(--ulm-yellow)); }
+  .room-status-indicator.is-unavailable { opacity: .45; cursor: default; }
+  .room-status-indicator.kind-water.is-active { color: rgb(var(--ulm-blue)); animation: room-status-pulse 1.6s ease-in-out infinite; }
+  .room-status-indicator.kind-smoke.is-active { color: rgb(var(--ulm-red)); animation: room-status-pulse 1.6s ease-in-out infinite; }
+  .room-status-indicator:focus-visible, .room-sensor:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+  @keyframes room-status-pulse { 50% { opacity: .4; } }
+  @media (prefers-reduced-motion: reduce) {
+    .room-status-indicator.kind-water.is-active, .room-status-indicator.kind-smoke.is-active { animation: none; }
+  }
   .room-unavailable {
     position: absolute;
     bottom: 22%;
@@ -310,30 +325,22 @@ export const sharedStyles = css`
   }
   .alarm-time-controls > b { text-align: center; font-size: 18px; }
   .custom-alarm-time.is-horizontal { grid-template-columns: minmax(0, 1fr) minmax(180px, 1fr); align-items: center; }
-  .custom-room-view { display: grid; min-width: 0; gap: 12px; padding: 12px; }
-  .room-view-section { min-width: 0; padding-top: 10px; border-top: 1px solid var(--divider-color); }
-  .room-view-section h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; margin: 0 0 8px; font-size: 13px; font-weight: 600; }
-  .room-view-section h3 small { color: var(--secondary-text-color); font-size: 11px; font-weight: 400; }
-  .room-view-summary { display: flex; width: 100%; min-width: 0; min-height: 48px; align-items: center; gap: 10px; padding: 4px 0; border: 0; border-radius: 12px; background: transparent; color: var(--primary-text-color); font: inherit; text-align: start; cursor: pointer; }
+  .custom-room-view { display: grid; min-width: 0; min-height: 150px; gap: 8px; padding: 12px; }
+  .room-view-summary { display: flex; width: 100%; min-width: 0; align-items: center; gap: 10px; padding: 0; border: 0; background: transparent; color: var(--primary-text-color); font: inherit; text-align: start; cursor: pointer; }
   .room-view-summary .ulm-copy { min-width: 0; }
   .room-view-icon { position: relative; display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: rgba(var(--ulm-grey), .1); color: rgba(var(--ulm-grey), .45); }
   .room-view-icon > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
-  .room-view-status, .room-view-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; min-width: 0; }
-  .room-view-status button, .room-view-actions button { position: relative; display: flex; min-width: 0; min-height: 48px; align-items: center; gap: 8px; padding: 8px; border: 0; color: var(--primary-text-color); font: inherit; text-align: start; cursor: pointer; }
-  .room-view-status button { border: 1px solid var(--divider-color); border-radius: 24px; background: transparent; }
-  .room-view-status button > ha-icon, .room-view-actions button > ha-icon { flex-shrink: 0; --mdc-icon-size: 20px; }
-  .room-view-status button > span, .room-view-actions button > span { min-width: 0; overflow-wrap: anywhere; font-size: 12px; }
-  .room-view-status button small, .room-view-actions button small { display: block; margin-top: 2px; color: var(--secondary-text-color); font-size: 11px; }
-  .room-view-status button.is-active > ha-icon { color: rgb(var(--ulm-yellow)); }
+  .room-view-status { display: flex; min-height: 28px; align-items: center; justify-content: center; gap: 2px; }
+  .room-view-status button, .room-view-clear, .room-view-warning { position: relative; display: grid; width: 35px; height: 28px; padding: 0; place-items: center; border: 0; background: transparent; color: rgba(var(--ulm-grey), .7); }
+  .room-view-status button > ha-icon { --mdc-icon-size: 20px; }
   .room-view-status .is-unavailable, .room-view-warning { color: var(--error-color, #db4437); }
-  .room-view-warning, .room-view-empty { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px; font-size: 12px; }
-  .room-view-empty { color: var(--secondary-text-color); }
   .room-view-warning ha-icon { --mdc-icon-size: 18px; }
-  .room-view-actions button { border-radius: 14px; background: rgba(var(--ulm-grey), .08); }
+  .room-view-actions { display: flex; gap: 7px; }
+  .room-view-actions button { position: relative; display: grid; min-width: 40px; height: 44px; flex: 1; padding: 0; place-items: center; border: 0; border-radius: 14px; background: rgba(var(--ulm-grey), .08); color: rgba(var(--ulm-grey), .7); cursor: pointer; }
   .room-view-actions button.is-active { background: rgba(var(--ulm-yellow), .25); color: rgb(var(--ulm-yellow)); }
-  .room-view-actions button:disabled { opacity: .6; cursor: not-allowed; }
-  .room-view-actions i, .room-view-status i { position: absolute; top: -3px; right: 4px; display: grid; min-width: 16px; height: 16px; place-items: center; border-radius: 9px; background: rgb(var(--ulm-blue)); color: #fff; font-size: 10px; font-style: normal; }
-  .room-view-section button:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+  .room-view-actions button:disabled { opacity: .45; cursor: not-allowed; }
+  .room-view-actions i, .room-view-status i { position: absolute; top: 5px; right: 30%; display: grid; min-width: 16px; height: 16px; place-items: center; border-radius: 9px; background: rgb(var(--ulm-blue)); color: #fff; font-size: 10px; font-style: normal; }
+  .custom-room-view button:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
   .custom-welcome { display: grid; gap: 18px; padding: 14px; }
   .welcome-toolbar { display: flex; justify-content: space-between; }
   .welcome-toolbar button { display: grid; width: 38px; height: 38px; padding: 0; place-items: center; border: 0; border-radius: 50%; background: var(--card-background-color); color: inherit; box-shadow: 0 2px 7px rgba(0,0,0,.12); }

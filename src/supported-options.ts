@@ -4,6 +4,7 @@ export const isRemovedPopupOption = (name: string): boolean =>
   /popup|browser_mod/i.test(name);
 
 const replacedOptions: Partial<Record<string, readonly string[]>> = {
+  card_room: ["ulm_input_select", "ulm_input_select_option", "input_select_entity", "input_select_option"],
   card_battery: [
     "ulm_card_battery_battery_level_danger",
     "ulm_card_battery_battery_level_warning",

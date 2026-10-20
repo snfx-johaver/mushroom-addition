@@ -183,7 +183,7 @@ describe("queued default batch one certification", () => {
   });
 
   it.each([
-    ["card_room", ["entity", "label_use_temperature", "label_use_brightness", "input_select_entity", "input_select_option"]],
+    ["card_room", ["entity", "label_use_temperature", "label_use_brightness", "room_light_entity", "ulm_card_dynamic_color"]],
     ["card_scenes", ["entity", "variant", "scene_buttons_only", "name"]],
   ])("exposes a dedicated %s graphical editor", (sourceId, fields) => {
     const item = CATALOG.find((entry) => entry.upstreamId === sourceId)!;
@@ -192,22 +192,13 @@ describe("queued default batch one certification", () => {
     expect(schema.map((field) => field.name)).not.toContain("use_entity_picture");
   });
 
-  it("migrates documented upstream variables into semantic defaults", () => {
+  it("ignores obsolete Room helper variables without synthesizing an action", () => {
     expect(normalizeConfig({
       type: "custom:mushroom-addition-card-room",
       entity: "light.joris_iris_1",
       ulm_input_select: "input_select.room",
       ulm_input_select_option: "Office",
-    })).toMatchObject({
-      input_select_entity: "input_select.room",
-      input_select_option: "Office",
-      double_tap_action: {
-        action: "perform-action",
-        perform_action: "input_select.select_option",
-        target: { entity_id: "input_select.room" },
-        data: { option: "Office" },
-      },
-    });
+    }).double_tap_action).toBeUndefined();
   });
 
   it("covers room and scene state styling", async () => {
@@ -257,11 +248,11 @@ describe("queued default batch one certification", () => {
     expect(action).toHaveBeenLastCalledWith(expect.objectContaining({
       detail: {
         action: "tap",
-        config: {
+        config: expect.objectContaining({
           type: "custom:mushroom-addition-card-room",
           entity: "sensor.office_joris_motion_illuminance",
-          tap_action: { action: "toggle" },
-        },
+          tap_action: { action: "more-info" },
+        }),
       },
     }));
 
@@ -271,12 +262,12 @@ describe("queued default batch one certification", () => {
     sensor.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
     expect(action).toHaveBeenLastCalledWith(expect.objectContaining({
       detail: {
-        action: "tap",
-        config: {
+        action: "hold",
+        config: expect.objectContaining({
           type: "custom:mushroom-addition-card-room",
           entity: "sensor.office_joris_motion_illuminance",
-          tap_action: { action: "more-info" },
-        },
+          hold_action: { action: "more-info" },
+        }),
       },
     }));
     vi.useRealTimers();
@@ -288,12 +279,7 @@ describe("queued default batch one certification", () => {
         action: "double_tap",
         config: expect.objectContaining({
           entity: "light.joris_iris_1",
-          double_tap_action: {
-            action: "perform-action",
-            perform_action: "input_select.select_option",
-            target: { entity_id: "input_select.room" },
-            data: { option: "Office" },
-          },
+          double_tap_action: undefined,
         }),
       },
     }));

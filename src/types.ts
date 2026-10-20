@@ -80,6 +80,13 @@ export interface AdditionItemConfig {
   service_data?: Record<string, unknown>;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+
+export type RoomStatusKind = "window" | "door" | "motion" | "water" | "smoke";
+export interface RoomStatusConfig {
+  entity: string;
+  kind?: RoomStatusKind;
 }
 
 export interface WasteStreamConfig {
@@ -156,6 +163,9 @@ export interface AdditionConfig extends RoomViewDeviceActions {
   scene_items?: AdditionItemConfig[];
   scene_buttons_only?: boolean;
   room_sensors?: AdditionItemConfig[];
+  room_status?: RoomStatusConfig[];
+  room_light_entity?: string;
+  ulm_card_dynamic_color?: boolean;
   carousel_items?: AdditionItemConfig[];
   carousel_loop?: boolean;
   carousel_show_header?: boolean;

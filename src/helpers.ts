@@ -102,9 +102,8 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
       : upstream.navigation_path
     ? { action: "navigate", navigation_path: upstream.navigation_path }
     : sourceDefaultAction ?? { action: title || welcomeScenes ? "none" : upstream.entity ? "more-info" : "none" };
-  const roomDoubleTap = String(config.type).includes("card-room") &&
-    upstream.input_select_entity &&
-    upstream.input_select_option
+  const roomDoubleTap = type.includes("card-room") && !type.endsWith("mushroom-addition-card-room") &&
+    upstream.input_select_entity && upstream.input_select_option
     ? {
       action: "perform-action",
       perform_action: "input_select.select_option",
@@ -191,7 +190,7 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
   if (String(config.type).includes("card-power-outlet")) {
     migrated.consumption_entity ??= entityId(config.ulm_card_power_outlet_consumption_sensor);
   }
-  if (String(config.type).includes("card-room")) {
+  if (String(config.type).includes("card-room") && !String(config.type).endsWith("mushroom-addition-card-room")) {
     migrated.input_select_entity ??= entityId(config.ulm_input_select);
     migrated.input_select_option ??= typeof config.ulm_input_select_option === "string"
       ? config.ulm_input_select_option

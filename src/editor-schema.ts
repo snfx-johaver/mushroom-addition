@@ -452,8 +452,8 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         entity(),
         toggle("label_use_temperature"),
         toggle("label_use_brightness"),
-        entity(["input_select"], "input_select_entity"),
-        text("input_select_option"),
+        entity(["light"], "room_light_entity"),
+        toggle("ulm_card_dynamic_color"),
         ...presentation(),
       ]
     : item.upstreamId === "card_scenes"

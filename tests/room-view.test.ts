@@ -64,22 +64,21 @@ const pointer = (button: HTMLButtonElement, type: string) =>
 afterEach(() => { document.body.replaceChildren(); vi.useRealTimers(); });
 
 describe("Roomview independent headers and sections", () => {
-  it("keeps person presentation separate from useful climate defaults and labeled groups", async () => {
+  it("keeps the compact card appearance with independent climate defaults", async () => {
     const { root } = await render({ icon: "mdi:account", icon_type: "entity-picture" });
     expect(root.querySelector(".card-heading .ulm-name")?.textContent).toBe("Joris");
     expect(root.querySelector(".card-heading .entity-picture")?.getAttribute("style")).toContain("/joris.jpg");
     expect(root.querySelector(".room-view-summary .ulm-name")?.textContent).toBe("21 °C");
     expect(root.querySelector(".room-view-summary .ulm-label")?.textContent).toBe("55 %");
     expect(root.querySelector(".room-view-summary ha-icon")?.getAttribute("icon")).not.toBe("mdi:account");
-    expect((root.querySelector(".room-view-summary ha-icon") as HTMLElement & { icon: string }).icon).toBe("mdi:thermometer");
-    expect([...root.querySelectorAll("section")].map((section) => section.getAttribute("aria-label")))
-      .toEqual(["Climate", "Sensor status", "Device controls"]);
-    expect(root.querySelectorAll(".room-view-status .room-view-indicator")).toHaveLength(5);
-    expect(root.querySelector(".room-view-status")?.textContent).toContain("Windows");
-    expect(root.querySelector(".room-view-status")?.textContent).toContain("off");
+    expect((root.querySelector(".room-view-summary ha-icon") as HTMLElement & { icon: string }).icon).toBe("mdi:home-variant-outline");
+    expect(root.querySelectorAll("section, h3")).toHaveLength(0);
+    expect(root.querySelectorAll(".room-view-status .room-view-indicator")).toHaveLength(2);
+    expect(root.querySelector(".room-view-status")?.textContent?.replace(/\s/g, "")).toBe("21");
     expect(root.querySelector(".room-view-status i")?.textContent).toBe("2");
     expect(root.querySelector(".room-view-actions i")?.textContent).toBe("2");
-    expect(root.querySelector(".room-view-actions")?.textContent).toContain("Television");
+    expect(root.querySelector('.room-view-actions button[aria-label="Television"]')).not.toBeNull();
+    expect(root.querySelector(".room-view-actions span")).toBeNull();
   });
 
   it("supports independent names, icons, information selectors and custom secondary text", async () => {
@@ -139,7 +138,7 @@ describe("Roomview independent headers and sections", () => {
       "binary_sensor.unavailable": state("binary_sensor.unavailable", "unavailable"),
       "group.doors": state("group.doors", "off", { entity_id: ["binary_sensor.door1", "binary_sensor.missing_door"] }),
     });
-    expect(root.querySelector(".room-view-warning")?.textContent).toContain("5 unavailable");
+    expect(root.querySelector(".room-view-warning")?.getAttribute("aria-label")).toBe("5 unavailable");
     expect(root.querySelectorAll(".room-view-status .is-unavailable")).toHaveLength(5);
     expect(root.querySelector(".room-view-clear")).toBeNull();
     expect(button("Television").disabled).toBe(true);
@@ -147,15 +146,15 @@ describe("Roomview independent headers and sections", () => {
     expect(actions).toHaveLength(0);
   });
 
-  it("omits unconfigured climate and shows empty sensor/device context rather than clear", async () => {
+  it("omits unconfigured climate without adding visible empty-state sections", async () => {
     const { root } = await render({
       temperature: undefined, humidity: undefined, group_doors: undefined, group_windows: undefined,
       group_motions: undefined, group_water: undefined, group_lights: undefined,
       group_windows_shutters: undefined, group_outlets: undefined, group_tv: undefined,
     });
     expect(root.querySelector('[aria-label="Climate"]')).toBeNull();
-    expect(root.querySelectorAll(".room-view-empty")).toHaveLength(2);
-    expect(root.querySelector(".room-view-clear")).toBeNull();
+    expect(root.querySelectorAll(".room-view-empty, section, h3")).toHaveLength(0);
+    expect(root.querySelector(".room-view-clear")).not.toBeNull();
   });
 });
 
@@ -310,17 +309,18 @@ describe("Roomview graphical editor and responsive structure", () => {
     });
   });
 
-  it("uses bounded two-column mobile grids, readable labels and minimum touch targets", async () => {
+  it("retains the compact icon rows with accessible labels", async () => {
     const { root } = await render({ name: "A long main header that must truncate" });
     for (const selector of [".room-view-status", ".room-view-actions"]) {
-      expect(root.querySelector(selector)?.closest("section")?.querySelector("h3")).not.toBeNull();
+      expect(root.querySelector(selector)?.closest("section")).toBeNull();
       for (const control of root.querySelectorAll(`${selector} button`)) {
-        expect(control.querySelector("span")?.textContent?.trim()).toBeTruthy();
+        expect(control.getAttribute("aria-label")).toBeTruthy();
+        expect(control.querySelector("span")).toBeNull();
       }
     }
     const styles = sharedStyles.cssText;
-    expect(styles).toMatch(/\.room-view-status, \.room-view-actions\s*\{[^}]*repeat\(2, minmax\(0, 1fr\)\)/);
-    expect(styles).toMatch(/\.room-view-status button, \.room-view-actions button\s*\{[^}]*min-width: 0;[^}]*min-height: 48px/);
-    expect(styles).toContain(".room-view-section button:focus-visible");
+    expect(styles).toMatch(/\.room-view-actions\s*\{[^}]*display: flex/);
+    expect(styles).toMatch(/\.room-view-actions button\s*\{[^}]*height: 44px/);
+    expect(styles).toContain(".custom-room-view button:focus-visible");
   });
 });

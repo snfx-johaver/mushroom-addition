@@ -138,8 +138,8 @@ and color, like official Mushroom cards.
 
 ### Roomview
 
-Roomview separates its primary entity header from **Climate**, **Sensor status**
-and **Device controls**. The graphical editor puts primary entity presentation
+Roomview keeps its compact appearance. **Climate**, **Sensor status**
+and **Device controls** are sections in the graphical editor only, which puts primary entity presentation
 first, then gives each section its own controls. Existing `temperature`, `humidity`
 and `group_*` entity bindings are unchanged.
 
@@ -150,10 +150,10 @@ and `climate_secondary` custom text. By default it shows temperature and humidit
 A configured climate name replaces the primary temperature text unless
 `climate_primary_info` selects otherwise. Leave `climate_secondary_info` unset
 for custom text or humidity; `state` selects the temperature entity's state.
-Climate icons use the override, temperature entity icon, then a thermometer,
+Climate icons use the override, temperature entity icon, then the original room icon,
 independently of the primary entity icon. Entity pictures come from temperature.
 
-Sensor indicators retain labels and inactive states; missing/unknown/unavailable
+Sensor indicators retain compact icons with accessible labels; missing/unknown/unavailable
 entities and missing group members are reported rather than showing an all-clear.
 Group active counts, low battery counts, and unavailable counts remain visible.
 Indicators open entity information; they are visually distinct from device buttons.
@@ -185,6 +185,46 @@ can be partially used. Slot times may be non-contiguous and sales may precede
 purchases: this is an estimate, not a battery-capacity-aware operating schedule.
 Missing prices, an unavailable trade-size entity or insufficient separate slots
 produce an explicit message rather than a fabricated profit.
+
+The **Room Card** (`custom:mushroom-addition-card-room`, not Roomview) has a
+**Status indicators** section under **Features** in its visual editor. Add up to
+four small entity icons of kind `window`, `door`, `motion` (including occupancy),
+`water` (moisture) or `smoke` (fire). These are separate from the existing
+`room_sensors` action buttons. Triggered water/smoke icons pulse blue/red; reduced
+motion keeps a static alert color. Inactive icons stay neutral, unavailable or
+unknown entities are dimmed and disabled, and each indicator exposes its name
+and state accessibly. Available indicators open entity details when tapped.
+
+Enable **Use the light color as the room accent** (`ulm_card_dynamic_color`)
+and choose **Room accent light** (`room_light_entity`), or use the main light
+entity. The accent uses an on light's RGB, including an active RGB group member
+when the group has no RGB. Off, unavailable, missing or invalid RGB retains the
+normal theme. No light service calls are made by the accent.
+
+Room selection helper options and their implicit double-tap action are removed
+for Room; old `input_select_entity`, `input_select_option`, `ulm_input_select`
+and `ulm_input_select_option` values are ignored. Explicit standard card actions
+still work. Room action buttons populate entity-specific icons, picture mode,
+active state, blue color and tap/hold/double-tap defaults on entity selection.
+Inferred values refresh on entity changes while explicit overrides are retained.
+Sensors open details by default; other entities toggle. Legacy button names are
+kept as accessible labels, not editable/visible names. Scene names are unchanged.
+
+```yaml
+type: custom:mushroom-addition-card-room
+entity: sensor.room_temperature
+room_light_entity: light.living_room
+ulm_card_dynamic_color: true
+room_status:
+  - entity: binary_sensor.window
+    kind: window
+  - entity: binary_sensor.leak
+    kind: water
+  - entity: binary_sensor.smoke
+    kind: smoke
+room_sensors:
+  - entity: light.living_room
+```
 
 The **Game Console Card** supports automatic, Xbox, PlayStation and Nintendo
 platform selection. Its single header uses the profile image, profile name and

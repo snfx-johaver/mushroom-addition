@@ -226,6 +226,9 @@ export const populatedDefaultsFor = (
             icon: "mdi:sofa-single",
             label_use_temperature: true,
             label_use_brightness: false,
+            ulm_card_dynamic_color: false,
+            room_status: [],
+            room_light_entity: entityId?.startsWith("light.") ? entityId : undefined,
           }
           : item.upstreamId === "custom_card_media_player_sonos"
         ? {

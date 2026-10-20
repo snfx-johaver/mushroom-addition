@@ -1,6 +1,7 @@
 import type { AdditionConfig, CatalogItem, HomeAssistant } from "./types";
 import { populatedDefaultsFor } from "./defaults";
 import { sceneItemDefaultsFor } from "./scene-item-defaults";
+import { roomItemDefaultsFor } from "./room";
 import { sonosControlCount } from "./sonos-controls";
 import { inferConsolePlatform, resolveConsoleEntities } from "./console";
 
@@ -442,7 +443,10 @@ export const createStubConfig = (
           findEntity(["sensor"], ["temperature"]),
         ]
           .filter((entityId): entityId is string => Boolean(entityId))
-          .map((entityId) => ({ entity: entityId })),
+          .map((entityId) => roomItemDefaultsFor(hass, entityId)),
+        room_status: [],
+        ulm_card_dynamic_color: false,
+        room_light_entity: findEntity(["light"], ["room"]) ?? findEntity(["light"], []),
       }
       : {}),
     ...(descriptor.upstreamId === "card_scenes"

@@ -314,7 +314,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
       "state"
     ],
     "stateDriven": true,
-    "animated": false,
+    "animated": true,
     "actions": [
       "double_tap_action",
       "hold_action",
@@ -351,7 +351,10 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
       "button-card"
     ],
     "backendRequirements": [],
-    "deviations": [],
+    "deviations": [
+      "Room selection helpers are ignored by this component; use explicit standard actions instead. Roomview and other components retain their own behavior.",
+      "Original Room extensions add up to four typed status indicators and an optional RGB light accent. Water/smoke alerts respect reduced motion. Room action buttons infer entity defaults and retain legacy names only for accessibility."
+    ],
     "sourceDigest": "e72f25403653d056e1b206e2056f3898e0d469d35656c7f6a25d956e3a5f3fad"
   },
   {

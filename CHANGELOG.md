@@ -4,10 +4,14 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Updates to 0.0.1 (no version bump)
 
-- Added independent Roomview climate presentation, clearly labeled climate,
-  sensor status and device sections, and per-device graphical tap/hold/double-tap
-  actions with isolated keyboard/pointer handling. Inactive and unavailable
-  sensors retain their context instead of showing a false all-clear.
+- Added Room's Features status-indicator editor (up to four), water/smoke alert
+  pulses with reduced-motion support, and configurable RGB light accents.
+  Removed Room selection helpers and Room-only custom button-name editing;
+  fixed action-button icon sizing, entity defaults and gesture isolation.
+- Added independent Roomview climate presentation, grouped climate,
+  sensor status and device settings in the editor only, and per-device graphical tap/hold/double-tap
+  actions with isolated keyboard/pointer handling. Restored the original compact
+  card appearance; unavailable sensors do not show a false all-clear.
 - Fixed Astronomy's default header icon to use a sun instead of an information icon.
 - Added Mushroom-compatible Sonos media information, volume display, selectable
   volume/playback controls, and collapse-when-off behavior with feature-aware
