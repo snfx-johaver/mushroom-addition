@@ -217,6 +217,8 @@ export interface AdditionConfig {
   moon_entity?: string;
   moon_altitude_entity?: string;
   moon_azimuth_entity?: string;
+  moon_rising_entity?: string;
+  moon_setting_entity?: string;
   moon_right_ascension_entity?: string;
   moon_declination_entity?: string;
   moon_distance_entity?: string;
