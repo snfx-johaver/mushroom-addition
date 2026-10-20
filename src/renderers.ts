@@ -1169,7 +1169,10 @@ const orbitPositionStyle = (
   const normalizedAzimuth = azimuth === undefined ? 180 : ((azimuth % 360) + 360) % 360;
   const normalizedAltitude = Math.max(-90, Math.min(90, altitude ?? 0));
   const x = normalizedAzimuth / 360 * 100;
-  const y = 50 - normalizedAltitude / 180 * 100;
+  const horizonY = 62 / 90 * 100;
+  const y = normalizedAltitude >= 0
+    ? horizonY - normalizedAltitude / 90 * (horizonY - 4)
+    : horizonY + Math.abs(normalizedAltitude) / 90 * (96 - horizonY);
   return `--${prefix}-x:${x.toFixed(2)}%;--${prefix}-y:${y.toFixed(2)}%`;
 };
 
@@ -1210,18 +1213,17 @@ const renderSunCard = (ctx: RenderContext): TemplateResult => {
       `${entity.entity_id} ${String(attr(entity, "friendly_name") ?? "")}`.toLowerCase().includes("moon"));
   const moonAltitude = astronomyMetricEntity(ctx, "moon_altitude_entity", "altitude");
   const moonAzimuth = astronomyMetricEntity(ctx, "moon_azimuth_entity", "azimuth");
-  const moonRightAscension = astronomyMetricEntity(ctx, "moon_right_ascension_entity", "right_ascension");
-  const moonDeclination = astronomyMetricEntity(ctx, "moon_declination_entity", "declination");
-  const moonDistance = astronomyMetricEntity(ctx, "moon_distance_entity", "distance_km");
-  const moonAngularDiameter = astronomyMetricEntity(ctx, "moon_angular_diameter_entity", "angular_diameter_arcmin");
-  const moonPhaseAngle = astronomyMetricEntity(ctx, "moon_phase_angle_entity", "phase_angle");
-  const moonIllumination = astronomyMetricEntity(ctx, "moon_illumination_entity", "illumination_pct");
+  const moonRising = configuredEntity(ctx, "moon_rising_entity") ??
+    astronomyMetricEntity(ctx, "moon_rising_entity", "next_rising") ??
+    astronomyMetricEntity(ctx, "moon_rising_entity", "moonrise");
+  const moonSetting = configuredEntity(ctx, "moon_setting_entity") ??
+    astronomyMetricEntity(ctx, "moon_setting_entity", "next_setting") ??
+    astronomyMetricEntity(ctx, "moon_setting_entity", "moonset");
   const moonNextFull = astronomyMetricEntity(ctx, "moon_next_full_moon_entity", "next_full_moon");
   const moonNextNew = astronomyMetricEntity(ctx, "moon_next_new_moon_entity", "next_new_moon");
   const moonHorizon = astronomyMetricEntity(ctx, "moon_above_horizon_entity", "is_moon_above_horizon");
   const moonEntities = [
-    moonPhase, moonAltitude, moonAzimuth, moonRightAscension, moonDeclination, moonDistance,
-    moonAngularDiameter, moonPhaseAngle, moonIllumination, moonNextFull, moonNextNew, moonHorizon,
+    moonPhase, moonAltitude, moonAzimuth, moonRising, moonSetting, moonNextFull, moonNextNew, moonHorizon,
   ];
   const showMoon = configured<boolean>(ctx, "showMoon") !== false && moonEntities.some(Boolean);
   const moonNumber = (entity: HassEntity | undefined, maximumFractionDigits = 2): string => {
@@ -1244,31 +1246,39 @@ const renderSunCard = (ctx: RenderContext): TemplateResult => {
   const moonAbove = moonHorizon
     ? ["on", "true", "above_horizon"].includes(moonHorizon.state.toLowerCase())
     : (moonAltitudeValue ?? -1) >= 0;
-  const moonMetric = (
-    label: string,
-    entity: HassEntity | undefined,
-    iconName: string,
-    value = moonNumber(entity),
-  ) => entity ? html`
-    <span class="moon-metric">
-      <ha-icon .icon=${iconName}></ha-icon>
-      <span><small>${label}</small><b>${value}</b></span>
-    </span>
-  ` : nothing;
   return ctx.actionSurface(`custom-sun-card ${configured<boolean>(ctx, "darkMode") ? "is-dark" : ""}`, html`
     ${title ? html`<b class="sun-title">${title}</b>` : nothing}
-    <div class="sun-times"><span><small>Sunrise</small><b>${format(rising)}</b></span><span><small>Sunset</small><b>${format(setting)}</b></span></div>
-    <div class="sun-arc">
+    <div class="astronomy-times">
+      <span><small>Sunrise</small><b>${format(rising)}</b></span>
+      <span><small>Moonrise</small><b>${format(moonRising?.state)}</b></span>
+      <span><small>Moonset</small><b>${format(moonSetting?.state)}</b></span>
+      <span><small>Sunset</small><b>${format(setting)}</b></span>
+    </div>
+    <div class="sun-arc astronomy-arc">
       <svg viewBox="0 0 300 90" preserveAspectRatio="none"><path class="sun-night" d="M0,62 Q60,115 105,62"></path><path class="sun-day" d="M0,62 Q150,-45 300,62"></path><line x1="0" y1="62" x2="300" y2="62"></line></svg>
       <span class="sun-marker" style=${orbitPositionStyle(azimuth, elevation, "sun")}></span>
+      ${showMoon && (moonAltitude || moonAzimuth) ? html`
+        <span class=${`moon-marker astronomy-moon-marker ${moonAbove ? "is-above" : "is-below"}`}
+          style=${orbitPositionStyle(moonAzimuthValue, moonAltitudeValue, "moon")}>
+          <ha-icon .icon=${moonPhaseIcon(moonPhaseState)}></ha-icon>
+        </span>
+      ` : nothing}
     </div>
     <div class="sun-footer"><span><small>Dawn</small><b>${format(dawn)}</b></span><span><small>Solar noon</small><b>${format(noon)}</b></span><span><small>Dusk</small><b>${format(dusk)}</b></span></div>
-    ${(configured<boolean>(ctx, "showAzimuth") || configured<boolean>(ctx, "showElevation")) ? html`
-      <div class="sun-position">
-        ${configured<boolean>(ctx, "showAzimuth") ? html`<span>Azimuth <b>${azimuth ?? "—"}°</b></span>` : nothing}
-        ${configured<boolean>(ctx, "showElevation") ? html`<span>Elevation <b>${elevation ?? "—"}°</b></span>` : nothing}
+    <div class="astronomy-position-rows">
+      <div>
+        <b>Sun:</b>
+        <span>Azimuth <strong>${azimuth ?? "—"}°</strong></span>
+        <span>Elevation <strong>${elevation ?? "—"}°</strong></span>
       </div>
-    ` : nothing}
+      ${showMoon ? html`
+        <div>
+          <b>Moon:</b>
+          <span>Azimuth <strong>${moonNumber(moonAzimuth)}</strong></span>
+          <span>Elevation <strong>${moonNumber(moonAltitude)}</strong></span>
+        </div>
+      ` : nothing}
+    </div>
     ${showMoon ? html`
       <section class="moon-section">
         <div class="moon-heading">
@@ -1277,33 +1287,10 @@ const renderSunCard = (ctx: RenderContext): TemplateResult => {
             <b>Moon</b>
             <small>${stateLabel(moonPhase)} · ${moonAbove ? "Above horizon" : "Below horizon"}</small>
           </span>
-          ${moonIllumination ? html`<b class="moon-illumination">${moonNumber(moonIllumination, 1)}</b>` : nothing}
         </div>
-        ${(moonAltitude || moonAzimuth) ? html`
-          <div class="moon-arc">
-            <svg viewBox="0 0 300 82" preserveAspectRatio="none">
-              <path class="moon-sky" d="M0,41 Q150,-35 300,41 L300,82 L0,82 Z"></path>
-              <line x1="0" y1="41" x2="300" y2="41"></line>
-            </svg>
-            <span class=${`moon-marker ${moonAbove ? "is-above" : "is-below"}`}
-              style=${orbitPositionStyle(moonAzimuthValue, moonAltitudeValue, "moon")}>
-              <ha-icon .icon=${moonPhaseIcon(moonPhaseState)}></ha-icon>
-            </span>
-          </div>
-          <div class="moon-position">
-            <span>Azimuth <b>${moonNumber(moonAzimuth)}</b></span>
-            <span>Altitude <b>${moonNumber(moonAltitude)}</b></span>
-          </div>
-        ` : nothing}
         <div class="moon-metrics">
-          ${moonMetric("Illumination", moonIllumination, "mdi:brightness-percent", moonNumber(moonIllumination, 1))}
-          ${moonMetric("Phase angle", moonPhaseAngle, "mdi:angle-acute")}
-          ${moonMetric("Right ascension", moonRightAscension, "mdi:axis-x-arrow")}
-          ${moonMetric("Declination", moonDeclination, "mdi:axis-y-arrow")}
-          ${moonMetric("Distance", moonDistance, "mdi:map-marker-distance", moonNumber(moonDistance, 0))}
-          ${moonMetric("Angular diameter", moonAngularDiameter, "mdi:circle-outline")}
-          ${moonMetric("Next full Moon", moonNextFull, "mdi:moon-full", moonDate(moonNextFull))}
-          ${moonMetric("Next new Moon", moonNextNew, "mdi:moon-new", moonDate(moonNextNew))}
+          ${moonNextFull ? html`<span class="moon-metric"><ha-icon .icon=${"mdi:moon-full"}></ha-icon><span><small>Next full Moon</small><b>${moonDate(moonNextFull)}</b></span></span>` : nothing}
+          ${moonNextNew ? html`<span class="moon-metric"><ha-icon .icon=${"mdi:moon-new"}></ha-icon><span><small>Next new Moon</small><b>${moonDate(moonNextNew)}</b></span></span>` : nothing}
         </div>
       </section>
     ` : nothing}
