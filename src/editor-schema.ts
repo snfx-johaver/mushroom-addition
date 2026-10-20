@@ -438,8 +438,25 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         ...presentation(),
         toggle("carousel_loop"),
         toggle("carousel_show_labels"),
-        number("carousel_visible_items", 3, 11),
         number("carousel_initial_index", 0, 50),
+        select("carousel_effect", [
+          { value: "coverflow", label: "Coverflow" },
+          { value: "slide", label: "Slide" },
+        ]),
+        toggle("carousel_grab_cursor"),
+        toggle("carousel_centered_slides"),
+        select("carousel_slides_per_view", [
+          { value: "auto", label: "Automatic" },
+          ...Array.from({ length: 11 }, (_, index) => ({
+            value: String(index + 1),
+            label: String(index + 1),
+          })),
+        ]),
+        number("carousel_coverflow_rotate", -180, 180),
+        number("carousel_coverflow_stretch", -200, 200),
+        number("carousel_coverflow_depth", 0, 1000),
+        number("carousel_coverflow_modifier", 0, 5),
+        toggle("carousel_coverflow_slide_shadows"),
       ]
     : item.upstreamId === "custom_card_playstation"
       ? [

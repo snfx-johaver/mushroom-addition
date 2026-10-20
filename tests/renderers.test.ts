@@ -974,6 +974,19 @@ describe("family renderers", () => {
       carousel_loop: true,
       carousel_show_labels: true,
       carousel_visible_items: 5,
+      parameters: {
+        effect: "coverflow",
+        grabCursor: true,
+        centeredSlides: true,
+        slidesPerView: "auto",
+        coverflowEffect: {
+          rotate: 0,
+          stretch: 0,
+          depth: 400,
+          modifier: 1,
+          slideShadows: true,
+        },
+      },
       carousel_items: [
         { entity: "light.kitchen", name: "Lights", icon: "mdi:lightbulb", tap_action: { action: "toggle" } },
         { entity: "scene.relax", name: "Relax", icon: "mdi:palette", tap_action: { action: "more-info" } },
@@ -989,6 +1002,19 @@ describe("family renderers", () => {
     const buttons = [...(carousel.shadowRoot?.querySelectorAll("button") ?? [])] as HTMLButtonElement[];
     expect(buttons).toHaveLength(3);
     expect(buttons[0].getAttribute("aria-selected")).toBe("true");
+    expect(carousel.shadowRoot?.querySelector(".carousel")?.classList.contains("grab-cursor")).toBe(true);
+    expect(buttons[1].style.transform).toContain("translateZ(-400px)");
+    expect(buttons[1].style.transform).toContain("rotateY(0deg)");
+    expect(buttons[1].dataset.shadow).toBe("true");
+    const swipeSurface = carousel.shadowRoot?.querySelector(".carousel") as HTMLElement;
+    swipeSurface.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: 160, pointerId: 10 }));
+    swipeSurface.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, clientX: 120, pointerId: 10 }));
+    await carousel.updateComplete;
+    expect(buttons[1].getAttribute("aria-selected")).toBe("true");
+    swipeSurface.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: 120, pointerId: 11 }));
+    swipeSurface.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, clientX: 160, pointerId: 11 }));
+    await carousel.updateComplete;
+    expect(buttons[0].getAttribute("aria-selected")).toBe("true");
     buttons[1].dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: 100, pointerId: 1 }));
     buttons[1].dispatchEvent(new PointerEvent("pointerup", { bubbles: true, clientX: 100, pointerId: 1 }));
     await carousel.updateComplete;
@@ -1001,6 +1027,54 @@ describe("family renderers", () => {
     element.remove();
   });
 
+  it("applies configurable coverflow geometry and the flat slide effect", async () => {
+    const carousel = document.createElement("mushroom-addition-entity-carousel") as HTMLElement & {
+      hass: HomeAssistant;
+      config: AdditionConfig;
+      updateComplete: Promise<boolean>;
+    };
+    carousel.hass = hass;
+    carousel.config = {
+      type: "custom:mushroom-addition-custom-card-entity-carousel",
+      carousel_effect: "coverflow",
+      carousel_grab_cursor: false,
+      carousel_centered_slides: false,
+      carousel_slides_per_view: 2,
+      carousel_coverflow_rotate: 30,
+      carousel_coverflow_stretch: 10,
+      carousel_coverflow_depth: 200,
+      carousel_coverflow_modifier: 2,
+      carousel_coverflow_slide_shadows: false,
+      carousel_items: [
+        { entity: "light.kitchen" },
+        { entity: "scene.relax" },
+        { entity: "media_player.tv" },
+      ],
+    };
+    document.body.append(carousel);
+    await carousel.updateComplete;
+    const buttons = [...(carousel.shadowRoot?.querySelectorAll("button") ?? [])] as HTMLButtonElement[];
+    expect(carousel.shadowRoot?.querySelector(".carousel")?.classList.contains("grab-cursor")).toBe(false);
+    expect(buttons[0].style.transform).toContain("translateX(-39px)");
+    expect(buttons[1].style.transform).toContain("translateX(39px)");
+    expect(buttons[1].style.transform).toContain("translateZ(-400px)");
+    expect(buttons[1].style.transform).toContain("rotateY(-60deg)");
+    expect(buttons[1].dataset.shadow).toBe("false");
+    expect(buttons[2].hidden).toBe(true);
+
+    carousel.config = {
+      ...carousel.config,
+      carousel_effect: "slide",
+      carousel_centered_slides: true,
+      carousel_slides_per_view: 3,
+    };
+    await carousel.updateComplete;
+    const slideButton = carousel.shadowRoot?.querySelectorAll("button")[1] as HTMLButtonElement;
+    expect(slideButton.style.transform).toContain("translateZ(0px)");
+    expect(slideButton.style.transform).toContain("rotateY(0deg)");
+    carousel.remove();
+  });
+
   it("exposes carousel behavior and item management through the graphical editor", async () => {
     const item = CATALOG.find((candidate) => candidate.upstreamId === "custom_card_entity_carousel")!;
     const schema = editorSchemaFor(item);
@@ -1010,8 +1084,16 @@ describe("family renderers", () => {
       "layout",
       "carousel_loop",
       "carousel_show_labels",
-      "carousel_visible_items",
       "carousel_initial_index",
+      "carousel_effect",
+      "carousel_grab_cursor",
+      "carousel_centered_slides",
+      "carousel_slides_per_view",
+      "carousel_coverflow_rotate",
+      "carousel_coverflow_stretch",
+      "carousel_coverflow_depth",
+      "carousel_coverflow_modifier",
+      "carousel_coverflow_slide_shadows",
     ]));
 
     const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {

@@ -107,6 +107,27 @@ statistics, caching, logarithmic scales, smoothing, animation, and Home
 Assistant actions without requiring another frontend resource. See the
 [configuration and example guide](docs/MINI_GRAPH_CARD.md).
 
+The **Entity Carousel Card** includes dependency-free slide and coverflow
+effects with graphical controls for cursor behavior, centering, automatic or
+fixed slides per view, rotation, spacing, depth, intensity, and slide shadows.
+Existing Swipe Card-style YAML can also use the source-compatible `parameters`
+shape:
+
+```yaml
+type: custom:mushroom-addition-custom-card-entity-carousel
+parameters:
+  effect: coverflow
+  grabCursor: true
+  centeredSlides: true
+  slidesPerView: auto
+  coverflowEffect:
+    rotate: 0
+    stretch: 0
+    depth: 400
+    modifier: 1
+    slideShadows: true
+```
+
 ## Design and behavior
 
 Registrations share typed configuration, entity/state formatting, action

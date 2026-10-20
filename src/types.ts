@@ -109,6 +109,22 @@ export interface SonosShortcutsConfig {
   buttons?: SonosShortcutConfig[];
 }
 
+export interface CarouselCoverflowEffectConfig {
+  rotate?: number;
+  stretch?: number;
+  depth?: number;
+  modifier?: number;
+  slideShadows?: boolean;
+}
+
+export interface CarouselParametersConfig {
+  effect?: "slide" | "coverflow";
+  grabCursor?: boolean;
+  centeredSlides?: boolean;
+  slidesPerView?: "auto" | number;
+  coverflowEffect?: CarouselCoverflowEffectConfig;
+}
+
 export interface AdditionConfig {
   type: string;
   entity?: string;
@@ -121,6 +137,16 @@ export interface AdditionConfig {
   carousel_show_labels?: boolean;
   carousel_visible_items?: number;
   carousel_initial_index?: number;
+  carousel_effect?: "slide" | "coverflow";
+  carousel_grab_cursor?: boolean;
+  carousel_centered_slides?: boolean;
+  carousel_slides_per_view?: "auto" | number | string;
+  carousel_coverflow_rotate?: number;
+  carousel_coverflow_stretch?: number;
+  carousel_coverflow_depth?: number;
+  carousel_coverflow_modifier?: number;
+  carousel_coverflow_slide_shadows?: boolean;
+  parameters?: CarouselParametersConfig;
   cartridges?: PrinterCartridgeConfig[];
   waste_streams?: WasteStreamConfig[];
   shortcuts?: SonosShortcutsConfig;
