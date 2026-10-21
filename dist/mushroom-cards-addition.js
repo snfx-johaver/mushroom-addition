@@ -45430,8 +45430,7 @@ let Be = class extends ze {
       `pointer-events:${this.singleSlideEffect && !o ? "none" : "auto"}`,
       `filter:saturate(${Math.max(0.45, 1 - i * 0.14)})`,
       `--carousel-color:var(--${s}-color, ${s})`,
-      `--carousel-shadow-opacity:${x}`,
-      `--carousel-shadow-angle:${g < 0 ? 270 : 90}deg`
+      `--carousel-shadow-opacity:${x}`
     ].join(";"), G = e.icon_type === "entity-picture" ? l?.attributes.entity_picture : void 0, oe = l ? !Ml.has(l.state.toLowerCase()) : !1;
     return u`
       <button
@@ -45618,10 +45617,8 @@ Be.styles = Ve`
       border: 0;
       border-radius: 18px;
       color: var(--primary-text-color);
-      background:
-        linear-gradient(145deg, color-mix(in srgb, var(--card-background-color) 92%, white 8%),
-        color-mix(in srgb, var(--card-background-color) 86%, black 14%));
-      box-shadow: 0 5px 16px rgb(0 0 0 / 28%);
+      background: var(--card-background-color);
+      box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
       transition: transform 270ms cubic-bezier(.2,.8,.2,1), opacity 270ms ease, filter 110ms ease;
       cursor: pointer;
       transform-style: preserve-3d;
@@ -45632,11 +45629,7 @@ Be.styles = Ve`
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      background: linear-gradient(
-        var(--carousel-shadow-angle, 90deg),
-        rgb(0 0 0 / var(--carousel-shadow-opacity, 0)),
-        transparent 72%
-      );
+      background: rgb(0 0 0 / var(--carousel-shadow-opacity, 0));
       content: "";
       pointer-events: none;
     }
@@ -45645,10 +45638,7 @@ Be.styles = Ve`
       color: var(--carousel-color, var(--primary-color));
     }
     .item.entity-active {
-      background:
-        linear-gradient(145deg,
-          color-mix(in srgb, var(--carousel-color, var(--primary-color)) 28%, var(--card-background-color)),
-          color-mix(in srgb, var(--carousel-color, var(--primary-color)) 12%, var(--card-background-color)));
+      background: color-mix(in srgb, var(--carousel-color, var(--primary-color)) 20%, var(--card-background-color));
     }
     .item[hidden] { display: none; }
     button:focus-visible, input:focus-visible, .carousel:focus-visible {
@@ -45656,6 +45646,7 @@ Be.styles = Ve`
     }
     .viewport.has-navigation { display: grid; grid-template-columns: 32px minmax(0, 1fr) 32px; align-items: center; gap: 4px; }
     .navigation {
+      box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
       width: 32px; height: 32px; padding: 0; display: grid; place-items: center;
       border: 0; border-radius: 12px; background: color-mix(in srgb, var(--primary-text-color) 8%, transparent);
       color: var(--primary-text-color); cursor: pointer;
@@ -46039,6 +46030,7 @@ Te.styles = Ve`
     .items { display: grid; gap: 10px; min-width: 0; }
     .entry { position: relative; min-width: 0; }
     button { font: inherit; color: inherit; cursor: pointer; }
+    .more, .close { box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12)); }
     .item { box-sizing: border-box; position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-width: 0; height: var(--item-height); padding: 8px; text-align: left; border: 1px solid var(--divider-color); border-radius: var(--radius); background: var(--card-background-color, var(--ha-card-background)); }
     .item.shadow { box-shadow: 0 2px 6px rgba(0,0,0,.12); }
     .item:focus-visible, .more:focus-visible { outline: 2px solid var(--primary-color); outline-offset: -2px; }
@@ -46687,6 +46679,7 @@ na.styles = Ve`
     summary { cursor: pointer; font-size: 14px; font-weight: 600; padding: 8px 0; }
     .statistics { display: grid; grid-template-columns: repeat(var(--columns), minmax(0, 1fr)); gap: 8px; }
     button { font: inherit; color: inherit; cursor: pointer; }
+    button.metric, button.entity, button.duration { box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12)); }
     .metric { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 8px; text-align: left; padding: 12px; border: 0; border-radius: 14px; background: var(--secondary-background-color); min-width: 0; }
     .metric ha-icon { --mdc-icon-size: 22px; color: var(--accent); grid-row: span 2; align-self: center; }
     .value { font-size: 16px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
@@ -51145,6 +51138,7 @@ const A_ = Ve`
     cursor: pointer;
   }
   .ulm-control {
+    box-shadow: var(--addition-raised-shadow);
     display: grid;
     place-items: center;
     width: 34px;
@@ -51373,7 +51367,7 @@ const A_ = Ve`
   .room-view-status .is-unavailable, .room-view-warning { color: var(--error-color, #db4437); }
   .room-view-warning ha-icon { --mdc-icon-size: 18px; }
   .room-view-actions { display: flex; gap: 7px; }
-  .room-view-actions button { position: relative; display: grid; min-width: 40px; height: 44px; flex: 1; padding: 0; place-items: center; border: 0; border-radius: 14px; background: rgba(var(--ulm-grey), .08); color: rgba(var(--ulm-grey), .7); cursor: pointer; }
+  .room-view-actions button { position: relative; display: grid; min-width: 40px; height: 44px; flex: 1; padding: 0; place-items: center; border: 0; border-radius: 14px; background: rgba(var(--ulm-grey), .08); color: rgba(var(--ulm-grey), .7); cursor: pointer; box-shadow: var(--addition-raised-shadow); }
   .room-view-actions button.is-active { background: rgba(var(--ulm-yellow), .25); color: rgb(var(--ulm-yellow)); }
   .room-view-actions button:disabled { opacity: .45; cursor: not-allowed; }
   .room-view-actions i, .room-view-status i { position: absolute; top: 5px; right: 30%; display: grid; min-width: 16px; height: 16px; place-items: center; border-radius: 9px; background: rgb(var(--ulm-blue)); color: #fff; font-size: 10px; font-style: normal; }
@@ -51474,7 +51468,15 @@ const A_ = Ve`
   }
   .moon-marker.is-below { opacity: .62; }
   .astronomy-moon-marker { z-index: 2; }
-  .moon-marker ha-icon { --mdc-icon-size: 20px; }
+  .moon-marker ha-icon {
+    --mdc-icon-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    line-height: 0;
+  }
   .moon-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
   .moon-metric {
     display: grid;
@@ -51519,6 +51521,7 @@ const A_ = Ve`
   .sonos-controls button[aria-pressed="true"] { color: rgb(var(--rgb-blue, 3, 169, 244)); }
   .sonos-controls button:disabled, .sonos-volume input:disabled { cursor: not-allowed; opacity: .45; }
   .sonos-controls button {
+    box-shadow: var(--addition-raised-shadow);
     min-height: 42px; border: 0; border-radius: 13px; background: rgba(var(--ulm-grey), .08); color: var(--primary-text-color);
   }
   .sonos-details { min-width: 0; }
@@ -51532,6 +51535,7 @@ const A_ = Ve`
   .sonos-details-always-visible { padding-top: 4px; }
   .sonos-switches { display: flex; flex-wrap: wrap; gap: 8px; padding: 4px 0 10px; }
   .sonos-switches button {
+    box-shadow: var(--addition-raised-shadow);
     display: inline-flex; min-height: 40px; align-items: center; gap: 6px; padding: 0 12px;
     border: 1px solid var(--divider-color); border-radius: 20px; background: var(--card-background-color, var(--ha-card-background, #fff));
     color: var(--primary-text-color); font: inherit; font-size: 12px; font-weight: 700;
@@ -51553,6 +51557,7 @@ const A_ = Ve`
     display: grid; grid-template-columns: repeat(var(--sonos-shortcut-columns, 4), minmax(0, 1fr)); gap: 8px;
   }
   .sonos-shortcuts button {
+    box-shadow: var(--addition-raised-shadow);
     display: grid; min-width: 0; min-height: 56px; place-items: center; gap: 4px; padding: 8px 4px;
     border: 1px solid var(--divider-color); border-radius: 14px;
     background: var(--card-background-color, var(--ha-card-background, #fff));
@@ -51619,9 +51624,9 @@ const A_ = Ve`
   .tablet-header .ulm-name { font-size: 14px; }
   .tablet-header .ulm-label { font-size: 12px; }
   .tablet-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-  .tablet-controls button { display: grid; height: 42px; place-items: center; border: 0; border-radius: 14px; background: rgba(var(--tone), .2); color: rgb(var(--tone)); cursor: pointer; }
+  .tablet-controls button { display: grid; height: 42px; place-items: center; border: 0; border-radius: 14px; background: rgba(var(--tone), .2); color: rgb(var(--tone)); cursor: pointer; box-shadow: var(--addition-raised-shadow); }
   .tablet-controls button ha-icon { --mdc-icon-size: 22px; }
-  .tablet-controls button.is-active { background: rgba(var(--tone), .3); box-shadow: inset 0 0 0 2px rgba(var(--tone), .35); }
+  .tablet-controls button.is-active { background: rgba(var(--tone), .3); box-shadow: var(--addition-raised-shadow), inset 0 0 0 2px rgba(var(--tone), .35); }
   .tablet-controls button:disabled { opacity: .3; cursor: not-allowed; }
   .tablet-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: 8px; text-align: center; }
   .tablet-metrics span { display: grid; gap: 2px; }
@@ -51687,6 +51692,7 @@ const A_ = Ve`
   .console-social b { font-size: 10px; font-variant-numeric: tabular-nums; }
   .console-controls { display: flex; justify-content: flex-end; }
   .console-controls button {
+    box-shadow: var(--addition-raised-shadow);
     display: inline-flex; min-height: 32px; align-items: center; gap: 6px; padding: 0 10px;
     border: 0; border-radius: 12px; background: rgba(var(--console-tone), .16);
     color: rgb(var(--console-tone)); font: inherit; font-size: 11px; font-weight: 700; cursor: pointer;
@@ -55327,6 +55333,7 @@ Un.styles = Ve`
     hui-conditional-card { flex: 1; min-width: 0; }
     hui-conditional-card[hidden] { display: none !important; }
     .entity { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; min-width: 42px;
+      box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
       height: var(--feature-height, 42px); border: 0; border-radius: var(--ha-card-border-radius, 12px);
       background: color-mix(in srgb, var(--disabled-color, var(--secondary-text-color)) 14%,
         var(--ha-card-background, var(--card-background-color))); cursor: pointer;

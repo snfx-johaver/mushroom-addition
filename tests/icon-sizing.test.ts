@@ -29,6 +29,16 @@ describe("default Mushroom icon sizing", () => {
     expect(ruleFor(".astronomy-times")).toContain("repeat(4, minmax(0, 1fr))");
     expect(ruleFor(".astronomy-times small, .sun-footer small")).toContain("overflow-wrap: anywhere");
   });
+  it("centers the moon icon inside its orbit marker without an inline baseline offset", () => {
+    const icon = ruleFor(".moon-marker ha-icon");
+    expect(icon).toContain("display: flex");
+    expect(icon).toContain("align-items: center");
+    expect(icon).toContain("justify-content: center");
+    expect(icon).toContain("width: 20px");
+    expect(icon).toContain("height: 20px");
+    expect(icon).toContain("line-height: 0");
+    expect(icon).toContain("--mdc-icon-size: 20px");
+  });
   it("matches scene and welcome button surfaces without changing their shapes and keeps weather/date transparent", () => {
     for (const selector of [".scene-button", ".welcome-items > button", ".welcome-toolbar button"]) {
       expect(ruleFor(selector)).toContain("border: 0");
@@ -43,6 +53,33 @@ describe("default Mushroom icon sizing", () => {
     expect(ruleFor(".welcome-items > button")).toContain("border-radius: 25px");
     expect(ruleFor(".welcome-date")).toContain("background: transparent");
     expect(ruleFor(".welcome-date")).toContain("border: 0");
+  });
+  it.each([
+    ".ulm-control",
+    ".room-view-actions button",
+    ".sonos-controls button",
+    ".sonos-switches button",
+    ".sonos-shortcuts button",
+    ".tablet-controls button",
+    ".console-controls button",
+  ])("gives %s the shared remote-style button shadow without changing state colors", selector => {
+    expect(ruleFor(selector)).toContain("box-shadow: var(--addition-raised-shadow)");
+  });
+  it("retains the tablet active indicator alongside the raised shadow", () => {
+    expect(ruleFor(".tablet-controls button.is-active")).toContain(
+      "box-shadow: var(--addition-raised-shadow), inset 0 0 0 2px",
+    );
+  });
+  it.each([
+    ["entity-carousel.ts", ".navigation"],
+    ["pi-hole.ts", "button.metric, button.entity, button.duration"],
+    ["upcoming-media.ts", ".more, .close"],
+    ["area-advanced.ts", ".entity"],
+  ])("shares subtle button elevation in %s", (file, selector) => {
+    const source = readFileSync(join(process.cwd(), "src", file), "utf8");
+    const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const rule = source.match(new RegExp(`${escaped}\\s*\\{([^}]+)\\}`))?.[1];
+    expect(rule).toContain("box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12))");
   });
   it("reserves bottom shadow space inside Welcome navigation and scrolls narrow rows instead of clipping", () => {
     expect(ruleFor(".welcome-items")).toContain("padding: 4px 4px 10px");

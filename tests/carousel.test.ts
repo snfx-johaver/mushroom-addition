@@ -206,8 +206,12 @@ describe("Carousel entity defaults and gestures", () => {
       expect(card.shadowRoot!.querySelector(".navigation, .pagination, .scrollbar")).toBeNull();
     });
 
-    it("keeps tile surfaces borderless but provides a keyboard focus outline and reduced motion", () => {
+    it("keeps tile surfaces solid and borderless with keyboard focus and reduced motion", () => {
       const styles = MushroomAdditionEntityCarousel.styles.cssText;
+      expect(styles).not.toContain("gradient(");
+      expect(styles.match(/\.item \{[^}]+\}/)?.[0]).toContain("background: var(--card-background-color)");
+      expect(styles.match(/\.item.entity-active \{[^}]+\}/)?.[0]).toContain("20%");
+      expect(styles.match(/\.item::after \{[^}]+\}/)?.[0]).toContain("background: rgb(0 0 0 / var(--carousel-shadow-opacity, 0))");
       expect(styles.match(/\.item \{[^}]+\}/)?.[0]).toContain("border: 0");
       expect(styles.match(/\.item.active \{[^}]+\}/)?.[0]).not.toMatch(/border|inset/);
       expect(styles).toContain(":focus-visible");

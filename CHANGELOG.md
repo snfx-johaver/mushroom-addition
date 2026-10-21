@@ -2,6 +2,14 @@
 
 Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
+## Unreleased
+
+- Match the TV remote's subtle button shadows across other card controls,
+  without changing their colors, shapes or layouts.
+- Center the Astronomy moon icon within its circular orbit marker.
+- Use solid carousel button colors instead of gradients, preserving active
+  colors, optional coverflow shading and existing button sizes and layouts.
+
 ## [0.5.1] - 2026-10-21
 
 - Publish the current fixes from a matching source tag and release build for

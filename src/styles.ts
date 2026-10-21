@@ -108,6 +108,7 @@ export const sharedStyles = css`
     cursor: pointer;
   }
   .ulm-control {
+    box-shadow: var(--addition-raised-shadow);
     display: grid;
     place-items: center;
     width: 34px;
@@ -336,7 +337,7 @@ export const sharedStyles = css`
   .room-view-status .is-unavailable, .room-view-warning { color: var(--error-color, #db4437); }
   .room-view-warning ha-icon { --mdc-icon-size: 18px; }
   .room-view-actions { display: flex; gap: 7px; }
-  .room-view-actions button { position: relative; display: grid; min-width: 40px; height: 44px; flex: 1; padding: 0; place-items: center; border: 0; border-radius: 14px; background: rgba(var(--ulm-grey), .08); color: rgba(var(--ulm-grey), .7); cursor: pointer; }
+  .room-view-actions button { position: relative; display: grid; min-width: 40px; height: 44px; flex: 1; padding: 0; place-items: center; border: 0; border-radius: 14px; background: rgba(var(--ulm-grey), .08); color: rgba(var(--ulm-grey), .7); cursor: pointer; box-shadow: var(--addition-raised-shadow); }
   .room-view-actions button.is-active { background: rgba(var(--ulm-yellow), .25); color: rgb(var(--ulm-yellow)); }
   .room-view-actions button:disabled { opacity: .45; cursor: not-allowed; }
   .room-view-actions i, .room-view-status i { position: absolute; top: 5px; right: 30%; display: grid; min-width: 16px; height: 16px; place-items: center; border-radius: 9px; background: rgb(var(--ulm-blue)); color: #fff; font-size: 10px; font-style: normal; }
@@ -437,7 +438,15 @@ export const sharedStyles = css`
   }
   .moon-marker.is-below { opacity: .62; }
   .astronomy-moon-marker { z-index: 2; }
-  .moon-marker ha-icon { --mdc-icon-size: 20px; }
+  .moon-marker ha-icon {
+    --mdc-icon-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    line-height: 0;
+  }
   .moon-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
   .moon-metric {
     display: grid;
@@ -482,6 +491,7 @@ export const sharedStyles = css`
   .sonos-controls button[aria-pressed="true"] { color: rgb(var(--rgb-blue, 3, 169, 244)); }
   .sonos-controls button:disabled, .sonos-volume input:disabled { cursor: not-allowed; opacity: .45; }
   .sonos-controls button {
+    box-shadow: var(--addition-raised-shadow);
     min-height: 42px; border: 0; border-radius: 13px; background: rgba(var(--ulm-grey), .08); color: var(--primary-text-color);
   }
   .sonos-details { min-width: 0; }
@@ -495,6 +505,7 @@ export const sharedStyles = css`
   .sonos-details-always-visible { padding-top: 4px; }
   .sonos-switches { display: flex; flex-wrap: wrap; gap: 8px; padding: 4px 0 10px; }
   .sonos-switches button {
+    box-shadow: var(--addition-raised-shadow);
     display: inline-flex; min-height: 40px; align-items: center; gap: 6px; padding: 0 12px;
     border: 1px solid var(--divider-color); border-radius: 20px; background: var(--card-background-color, var(--ha-card-background, #fff));
     color: var(--primary-text-color); font: inherit; font-size: 12px; font-weight: 700;
@@ -516,6 +527,7 @@ export const sharedStyles = css`
     display: grid; grid-template-columns: repeat(var(--sonos-shortcut-columns, 4), minmax(0, 1fr)); gap: 8px;
   }
   .sonos-shortcuts button {
+    box-shadow: var(--addition-raised-shadow);
     display: grid; min-width: 0; min-height: 56px; place-items: center; gap: 4px; padding: 8px 4px;
     border: 1px solid var(--divider-color); border-radius: 14px;
     background: var(--card-background-color, var(--ha-card-background, #fff));
@@ -582,9 +594,9 @@ export const sharedStyles = css`
   .tablet-header .ulm-name { font-size: 14px; }
   .tablet-header .ulm-label { font-size: 12px; }
   .tablet-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-  .tablet-controls button { display: grid; height: 42px; place-items: center; border: 0; border-radius: 14px; background: rgba(var(--tone), .2); color: rgb(var(--tone)); cursor: pointer; }
+  .tablet-controls button { display: grid; height: 42px; place-items: center; border: 0; border-radius: 14px; background: rgba(var(--tone), .2); color: rgb(var(--tone)); cursor: pointer; box-shadow: var(--addition-raised-shadow); }
   .tablet-controls button ha-icon { --mdc-icon-size: 22px; }
-  .tablet-controls button.is-active { background: rgba(var(--tone), .3); box-shadow: inset 0 0 0 2px rgba(var(--tone), .35); }
+  .tablet-controls button.is-active { background: rgba(var(--tone), .3); box-shadow: var(--addition-raised-shadow), inset 0 0 0 2px rgba(var(--tone), .35); }
   .tablet-controls button:disabled { opacity: .3; cursor: not-allowed; }
   .tablet-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: 8px; text-align: center; }
   .tablet-metrics span { display: grid; gap: 2px; }
@@ -650,6 +662,7 @@ export const sharedStyles = css`
   .console-social b { font-size: 10px; font-variant-numeric: tabular-nums; }
   .console-controls { display: flex; justify-content: flex-end; }
   .console-controls button {
+    box-shadow: var(--addition-raised-shadow);
     display: inline-flex; min-height: 32px; align-items: center; gap: 6px; padding: 0 10px;
     border: 0; border-radius: 12px; background: rgba(var(--console-tone), .16);
     color: rgb(var(--console-tone)); font: inherit; font-size: 11px; font-weight: 700; cursor: pointer;

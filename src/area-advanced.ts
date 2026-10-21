@@ -444,6 +444,7 @@ export class MushroomAreaControlsAdvanced extends LitElement {
     hui-conditional-card { flex: 1; min-width: 0; }
     hui-conditional-card[hidden] { display: none !important; }
     .entity { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; min-width: 42px;
+      box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
       height: var(--feature-height, 42px); border: 0; border-radius: var(--ha-card-border-radius, 12px);
       background: color-mix(in srgb, var(--disabled-color, var(--secondary-text-color)) 14%,
         var(--ha-card-background, var(--card-background-color))); cursor: pointer;

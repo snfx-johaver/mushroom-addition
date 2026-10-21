@@ -198,6 +198,7 @@ export class MushroomUpcomingMedia extends LitElement {
     .items { display: grid; gap: 10px; min-width: 0; }
     .entry { position: relative; min-width: 0; }
     button { font: inherit; color: inherit; cursor: pointer; }
+    .more, .close { box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12)); }
     .item { box-sizing: border-box; position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-width: 0; height: var(--item-height); padding: 8px; text-align: left; border: 1px solid var(--divider-color); border-radius: var(--radius); background: var(--card-background-color, var(--ha-card-background)); }
     .item.shadow { box-shadow: 0 2px 6px rgba(0,0,0,.12); }
     .item:focus-visible, .more:focus-visible { outline: 2px solid var(--primary-color); outline-offset: -2px; }

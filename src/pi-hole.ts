@@ -142,6 +142,7 @@ export class MushroomPiHole extends LitElement {
     summary { cursor: pointer; font-size: 14px; font-weight: 600; padding: 8px 0; }
     .statistics { display: grid; grid-template-columns: repeat(var(--columns), minmax(0, 1fr)); gap: 8px; }
     button { font: inherit; color: inherit; cursor: pointer; }
+    button.metric, button.entity, button.duration { box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12)); }
     .metric { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 8px; text-align: left; padding: 12px; border: 0; border-radius: 14px; background: var(--secondary-background-color); min-width: 0; }
     .metric ha-icon { --mdc-icon-size: 22px; color: var(--accent); grid-row: span 2; align-self: center; }
     .value { font-size: 16px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; }

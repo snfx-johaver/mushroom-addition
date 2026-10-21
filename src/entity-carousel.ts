@@ -55,10 +55,8 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       border: 0;
       border-radius: 18px;
       color: var(--primary-text-color);
-      background:
-        linear-gradient(145deg, color-mix(in srgb, var(--card-background-color) 92%, white 8%),
-        color-mix(in srgb, var(--card-background-color) 86%, black 14%));
-      box-shadow: 0 5px 16px rgb(0 0 0 / 28%);
+      background: var(--card-background-color);
+      box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
       transition: transform 270ms cubic-bezier(.2,.8,.2,1), opacity 270ms ease, filter 110ms ease;
       cursor: pointer;
       transform-style: preserve-3d;
@@ -69,11 +67,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      background: linear-gradient(
-        var(--carousel-shadow-angle, 90deg),
-        rgb(0 0 0 / var(--carousel-shadow-opacity, 0)),
-        transparent 72%
-      );
+      background: rgb(0 0 0 / var(--carousel-shadow-opacity, 0));
       content: "";
       pointer-events: none;
     }
@@ -82,10 +76,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       color: var(--carousel-color, var(--primary-color));
     }
     .item.entity-active {
-      background:
-        linear-gradient(145deg,
-          color-mix(in srgb, var(--carousel-color, var(--primary-color)) 28%, var(--card-background-color)),
-          color-mix(in srgb, var(--carousel-color, var(--primary-color)) 12%, var(--card-background-color)));
+      background: color-mix(in srgb, var(--carousel-color, var(--primary-color)) 20%, var(--card-background-color));
     }
     .item[hidden] { display: none; }
     button:focus-visible, input:focus-visible, .carousel:focus-visible {
@@ -93,6 +84,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     }
     .viewport.has-navigation { display: grid; grid-template-columns: 32px minmax(0, 1fr) 32px; align-items: center; gap: 4px; }
     .navigation {
+      box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
       width: 32px; height: 32px; padding: 0; display: grid; place-items: center;
       border: 0; border-radius: 12px; background: color-mix(in srgb, var(--primary-text-color) 8%, transparent);
       color: var(--primary-text-color); cursor: pointer;
@@ -276,7 +268,6 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       `filter:saturate(${Math.max(0.45, 1 - distance * 0.14)})`,
       `--carousel-color:var(--${color}-color, ${color})`,
       `--carousel-shadow-opacity:${shadowOpacity}`,
-      `--carousel-shadow-angle:${visualOffset < 0 ? 270 : 90}deg`,
     ].join(";");
     const picture = item.icon_type === "entity-picture"
       ? entity?.attributes.entity_picture
