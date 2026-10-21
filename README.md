@@ -9,7 +9,7 @@ and support for all 33 Mushroom languages.** Energy, media, rooms, batteries,
 graphs, remotes and more. Pick a card, pick your entities, enjoy your dashboard.
 YAML is still welcome; it just isn't compulsory.
 
-![Illustrated preview of Mushroom Addition cards](docs/assets/cards-preview.svg)
+![Mushroom Addition dashboard cards in a light theme](docs/assets/readme-preview.png)
 
 A big thank-you to **[Mushroom](https://github.com/piitaya/lovelace-mushroom)**
 for the roots. We grew a few more caps. This is an independent companion project,
