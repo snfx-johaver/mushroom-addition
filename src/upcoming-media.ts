@@ -203,7 +203,7 @@ export class MushroomUpcomingMedia extends LitElement {
     .item.shadow { box-shadow: 0 2px 6px rgba(0,0,0,.12); }
     .item:focus-visible, .more:focus-visible { outline: 2px solid var(--primary-color); outline-offset: -2px; }
     .item:disabled { cursor: default; }
-    .art { position: relative; display: grid; flex: 0 0 auto; place-items: center; width: calc((var(--item-height) - 18px) * 2 / 3); height: 100%; border-radius: max(0px, calc(var(--radius) - 5px)); overflow: hidden; background: var(--secondary-background-color); color: var(--secondary-text-color); }
+    .art { position: relative; display: grid; flex: 0 0 auto; place-items: center; width: calc((var(--item-height) - 18px) * 2 / 3); height: 100%; border-radius: max(0px, calc(var(--radius) - 5px)); overflow: hidden; background: var(--addition-neutral-background); color: var(--secondary-text-color); }
     .art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .art ha-icon { --mdc-icon-size: 28px; }
     .copy { position: relative; display: grid; gap: 4px; flex: 1; min-width: 0; }
@@ -218,13 +218,13 @@ export class MushroomUpcomingMedia extends LitElement {
     .fanart .copy { padding: 4px; color: #fff; }
     .fanart .line { color: #eee; }
     .fanart.text-shadow .copy { text-shadow: 0 1px 3px #000; }
-    .more { display: block; width: 100%; margin-top: 10px; padding: 9px; border: 0; border-radius: 10px; background: var(--secondary-background-color); font-size: 12px; }
+    .more { display: block; width: 100%; margin-top: 10px; padding: 9px; border: 0; border-radius: 10px; background: var(--addition-neutral-background); font-size: 12px; }
     .message { padding: 12px 0; font-size: 12px; color: var(--secondary-text-color); }
     [role="alert"] { color: var(--error-color, #db4437); }
     dialog { box-sizing: border-box; width: min(960px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); padding: 12px; border: 1px solid var(--divider-color); border-radius: 16px; background: var(--card-background-color, #fff); color: var(--primary-text-color); }
     dialog::backdrop { background: rgba(0,0,0,.8); }
     dialog iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; }
-    .close { display: block; margin: 0 0 8px auto; padding: 8px 12px; border: 0; border-radius: 10px; background: var(--secondary-background-color); }
+    .close { display: block; margin: 0 0 8px auto; padding: 8px 12px; border: 0; border-radius: 10px; background: var(--addition-neutral-background); }
     .tooltip { box-sizing: border-box; position: fixed; inset: auto; margin: 0; width: min(320px, calc(100vw - 24px)); max-height: 180px; overflow: auto; padding: 12px; border: 1px solid var(--divider-color); border-radius: 12px; font-size: 12px; line-height: 1.5; white-space: pre-wrap; background: var(--card-background-color, #fff); color: var(--primary-text-color); pointer-events: none; box-shadow: 0 3px 12px rgba(0,0,0,.25); }
   `;
 

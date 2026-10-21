@@ -8,6 +8,13 @@ elevation, 12px internal spacing, compact name/state typography, circular
 low-opacity icon fields, and state-driven accent colors. Components share these
 tokens but not a generic layout.
 
+Neutral controls and inset surfaces use Mushroom's
+`rgba(var(--rgb-primary-text-color), .05)` convention; unfilled progress tracks
+use `rgba(var(--rgb-secondary-text-color), .2)`. Shared tokens provide light/dark
+fallbacks, respect `--mush-rgb-grey` and `--mush-rgb-disabled`, and keep active
+accent colors separate. Raised-button shadows and card-specific geometry are
+intentional additions, not changes to the neutral palette.
+
 | Family | Recognizable layout and behavior | Primary reference IDs |
 |---|---|---|
 | Scene | Compact heading plus a grid of scene activation pills | `card_templates/cards/card_scenes_welcome.yaml`, `docs/usage/cards/card_scenes.md` |

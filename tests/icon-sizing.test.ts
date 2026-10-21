@@ -10,6 +10,36 @@ const ruleFor = (selector: string): string => {
 };
 
 describe("default Mushroom icon sizing", () => {
+  it("matches Mushroom neutral control, slider and disabled color tokens", () => {
+    expect(ruleFor(":host")).toContain("--addition-neutral-background: rgba(var(--rgb-primary-text-color, 33, 33, 33), .05)");
+    expect(ruleFor(":host")).toContain("--addition-track-background: rgba(var(--rgb-secondary-text-color, 114, 114, 114), .2)");
+    expect(ruleFor(":host")).toContain("--ulm-grey: var(--mush-rgb-grey, var(--rgb-grey, 158, 158, 158))");
+    expect(ruleFor(":host")).toContain("--addition-disabled-background: rgba(var(--addition-disabled-rgb), .2)");
+    expect(ruleFor(":host([dark])")).toContain("--addition-disabled-rgb: var(--mush-rgb-disabled, var(--rgb-disabled, 111, 111, 111))");
+  });
+  it.each([
+    ".ulm-control, .scene-button", ".metric-pill", ".room-status-indicator",
+    ".schedule-list span", ".waste-row", ".room-view-actions button",
+    ".washer-stages", ".moon-symbol", ".moon-metric", ".sonos-controls button",
+    ".tablet-battery-icon", ".flower-metrics > span",
+  ])("uses Mushroom's neutral background for %s", selector => {
+    expect(ruleFor(selector)).toContain("background: var(--addition-neutral-background)");
+  });
+  it.each([
+    ".battery-track", ".device-progress", ".toner-bars i", ".tablet-battery-bar", ".flower-bars i",
+  ])("uses Mushroom's slider-track neutral for %s without changing its dimensions", selector => {
+    expect(ruleFor(selector)).toContain("background: var(--addition-track-background)");
+  });
+  it.each([".nas-metrics-ring-track", ".speedtest-track", ".hems-track", ".panel-health-gauge-track"])("uses themed neutral stroke for %s", selector => {
+    expect(ruleFor(selector)).toContain("stroke: var(--addition-track-background)");
+  });
+  it("keeps existing colored fills, active states and raised surfaces intact", () => {
+    expect(ruleFor(".tablet-controls button")).toContain("background: rgba(var(--tone), .2)");
+    expect(ruleFor(".room-view-actions button.is-active")).toContain("rgba(var(--ulm-yellow), .25)");
+    expect(ruleFor(".scene-button")).toContain("background: var(--addition-raised-background)");
+    expect(ruleFor(".toner-bars i")).toContain("height: 30px");
+    expect(ruleFor(".alarm-time-controls .ulm-control")).toContain("height: 56px");
+  });
   it("uses Mushroom typography and icon sizes throughout NAS metrics without narrow-screen downscaling", () => {
     for (const selector of [".nas-metrics-tile-icon", ".nas-metrics-metrics i"]) {
       expect(ruleFor(selector)).toContain("width: var(--mush-icon-size, 40px)");

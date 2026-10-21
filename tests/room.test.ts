@@ -309,7 +309,7 @@ describe("Room status indicators", () => {
     });
 
     it("gives small status indicators the same neutral surface as square sensor buttons", () => {
-      expect(sharedStyles.cssText).toContain("background: rgba(var(--ulm-grey), .08); cursor: pointer; }");
+      expect(sharedStyles.cssText).toContain("background: var(--addition-neutral-background); cursor: pointer; }");
       expect(sharedStyles.cssText).not.toContain("color: var(--secondary-text-color); background: var(--card-background-color); cursor: pointer;");
     });
     it("keeps Room neutral when disabled and clears accents on config/entity changes", async () => {

@@ -91,7 +91,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     .navigation {
       box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
       width: 32px; height: 32px; padding: 0; display: grid; place-items: center;
-      border: 0; border-radius: 12px; background: color-mix(in srgb, var(--primary-text-color) 8%, transparent);
+      border: 0; border-radius: 12px; background: var(--addition-neutral-background);
       color: var(--primary-text-color); cursor: pointer;
     }
     .navigation:disabled { opacity: .35; cursor: default; }

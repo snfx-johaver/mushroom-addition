@@ -143,18 +143,18 @@ export class MushroomPiHole extends LitElement {
     .statistics { display: grid; grid-template-columns: repeat(var(--columns), minmax(0, 1fr)); gap: 8px; }
     button { font: inherit; color: inherit; cursor: pointer; }
     button.metric, button.entity, button.duration { box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12)); }
-    .metric { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 8px; text-align: left; padding: 12px; border: 0; border-radius: 14px; background: var(--secondary-background-color); min-width: 0; }
+    .metric { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 8px; text-align: left; padding: 12px; border: 0; border-radius: 14px; background: var(--addition-neutral-background); min-width: 0; }
     .metric ha-icon { --mdc-icon-size: 22px; color: var(--accent); grid-row: span 2; align-self: center; }
     .value { font-size: 16px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
     .label { color: var(--secondary-text-color); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .list, .pause { display: grid; gap: 8px; }
-    .entity { display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box; min-height: 44px; padding: 8px 10px; border: 0; border-radius: 12px; background: var(--secondary-background-color); text-align: left; min-width: 0; font-size: 12px; }
+    .entity { display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box; min-height: 44px; padding: 8px 10px; border: 0; border-radius: 12px; background: var(--addition-neutral-background); text-align: left; min-width: 0; font-size: 12px; }
     .entity ha-icon { --mdc-icon-size: 22px; color: var(--accent); flex-shrink: 0; }
     .entity .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .entity .state { color: var(--secondary-text-color); }
-    .entity.active { background: color-mix(in srgb, var(--accent) 12%, var(--secondary-background-color)); }
+    .entity.active { background: color-mix(in srgb, var(--accent) 12%, var(--addition-neutral-background)); }
     .durations { display: flex; flex-wrap: wrap; gap: 8px; }
-    .duration { flex: 1; padding: 10px; min-width: 64px; border: 0; border-radius: 12px; background: var(--secondary-background-color); font-size: 12px; }
+    .duration { flex: 1; padding: 10px; min-width: 64px; border: 0; border-radius: 12px; background: var(--addition-neutral-background); font-size: 12px; }
     select { width: 100%; padding: 9px; border: 1px solid var(--divider-color); border-radius: 10px; font: inherit; font-size: 12px; color: var(--primary-text-color); background: var(--card-background-color, var(--ha-card-background)); }
     button:disabled { opacity: .55; cursor: default; }
     button:focus-visible, select:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

@@ -4,6 +4,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Match Mushroom's neutral controls to primary-text RGB at 5% opacity and
+  progress tracks to secondary-text RGB at 20%, including theme-aware grey
+  and disabled colors. Keep card geometry and colored active states intact.
 - Wrap carousel pagination dots on narrow cards instead of adding a horizontal
   overflow scrollbar; preserve the separately configurable position slider.
 - Give Scenes and Welcome Scenes the same pill dimensions, labels and
