@@ -57,6 +57,8 @@ export const upcomingSize = (value: number | undefined, fallback: number, min: n
   typeof value === "number" && Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : fallback;
 
 export const readUpcomingData = (entity?: HassEntity, attribute = "data", hass?: HomeAssistant): UpcomingData => {
+  // Older editors offered this display-only attribute as a media source.
+  if (attribute === "friendly_name") attribute = "data";
   const empty = { items: [], defaults: {} };
   if (!entity) return { ...empty, error: localize(hass, "message.choose_media") };
   if (["unknown", "unavailable"].includes(entity.state)) return { ...empty, error: localize(hass, "message.media_unavailable") };
@@ -84,6 +86,11 @@ export const readUpcomingData = (entity?: HassEntity, attribute = "data", hass?:
   }
   return { items, defaults };
 };
+
+export const upcomingDataAttributes = (entity?: HassEntity): string[] =>
+  entity ? Object.keys(entity.attributes).filter(attribute =>
+    attribute !== "friendly_name" &&
+    !readUpcomingData({ ...entity, state: "0" }, attribute).error) : [];
 
 const matches = (item: UpcomingItem, attribute: string | undefined, value: string | undefined, exact = false): boolean =>
   !attribute || (exact

@@ -4,6 +4,10 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## [0.5.0] - 2026-10-21
 
+- Limit Upcoming Media's data-source selector to list-compatible attributes,
+  excluding display metadata such as friendly name. Recover old friendly-name
+  selections using the standard `data` attribute.
+
 - Update GitHub Actions to supported Node.js 24 releases, removing the
   deprecated Action-runtime warnings, and pin the Ubuntu runner version.
 - Prevent accidental household screenshot uploads from the documentation

@@ -4,7 +4,8 @@ import { CATALOG } from "../src/catalog";
 import { createStubConfig } from "../src/stub";
 import { MushroomAdditionCard } from "../src/card";
 import { MushroomAdditionEditor } from "../src/editor";
-import { MushroomUpcomingMedia, readUpcomingData, upcomingItems, upcomingMediaUrl, upcomingText } from "../src/upcoming-media";
+import { MushroomUpcomingMedia, readUpcomingData, upcomingDataAttributes, upcomingItems, upcomingMediaUrl, upcomingText } from "../src/upcoming-media";
+import { editorSchemaFor } from "../src/editor-schema";
 import type { AdditionConfig, HassEntity, HomeAssistant } from "../src/types";
 
 const type = "custom:mushroom-addition-upcoming-media-card";
@@ -27,6 +28,29 @@ async function create(config: Partial<AdditionConfig> = {}) {
 afterEach(() => { document.body.replaceChildren(); vi.useRealTimers(); vi.restoreAllMocks(); });
 
 describe("Upcoming Media", () => {
+  it("offers only media-list attributes, not display metadata, and recovers the old friendly-name selection", async () => {
+    const entity = sensor();
+    entity.attributes = {
+      ...entity.attributes, icon: "mdi:film", count: 3,
+      alternate: JSON.stringify(items), empty: [], invalid: "[broken", numbers: [1, 2],
+    };
+    expect(upcomingDataAttributes(entity)).toEqual(["data", "alternate", "empty"]);
+    expect(readUpcomingData(entity, "friendly_name").items).toHaveLength(3);
+    expect(readUpcomingData(entity, "invalid").error).toBeTruthy();
+    const hass = { ...makeHass(), states: { [entity.entity_id]: entity } };
+    const descriptor = CATALOG.find(item => item.upstreamId === "upcoming_media")!;
+    const schema = editorSchemaFor(descriptor, { type, entity: entity.entity_id }, hass);
+    expect(schema.find(field => field.name === "upcoming_data_attribute")?.selector).toEqual({
+      select: { mode: "dropdown", options: ["data", "alternate", "empty"].map(value => ({ value, label: value })) },
+    });
+    const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
+    editor.hass = hass;
+    editor.setConfig({ type, entity: entity.entity_id, upcoming_data_attribute: "friendly_name" });
+    document.body.append(editor);
+    await editor.updateComplete;
+    const form = editor.shadowRoot!.querySelector("ha-form") as HTMLElement & { data: AdditionConfig };
+    expect(form.data.upcoming_data_attribute).toBe("data");
+  });
   it("reads list and JSON data, uses formatting metadata, and never drops the first real item", () => {
     const result = readUpcomingData(sensor());
     expect(result.items).toHaveLength(3);

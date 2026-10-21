@@ -201,6 +201,8 @@ export class MushroomAdditionEditor extends LitElement {
     const alias = LEGACY_ALIASES.find((item) => item.tag === tag);
     this.config = {
       ...migrateRoomLightConfig(config),
+      ...(tag === "mushroom-addition-upcoming-media-card" && config.upcoming_data_attribute === "friendly_name"
+        ? { upcoming_data_attribute: "data" } : {}),
       variant: config.variant ?? alias?.variant,
     };
   }
@@ -209,7 +211,7 @@ export class MushroomAdditionEditor extends LitElement {
     if (!this.hass || !this.config) return nothing;
     const item = getCatalogItem(this.config.type.replace(/^custom:/, ""));
     if (!item) return nothing;
-    const schema = editorSchemaFor(item, this.config);
+    const schema = editorSchemaFor(item, this.config, this.hass);
     const upstreamSchema = additionalEditorSchemaFor(item, this.config).filter((field) =>
       item.upstreamId !== "custom_card_trash" ||
       (!field.name.startsWith("ulm_card_datum_") && !field.name.includes("ophaling")));

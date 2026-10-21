@@ -1,4 +1,5 @@
-import type { AdditionConfig, CatalogItem } from "./types";
+import type { AdditionConfig, CatalogItem, HomeAssistant } from "./types";
+import { upcomingDataAttributes } from "./upcoming-media";
 import { PARITY_BY_ID } from "./parity.generated";
 import { canonicalNameOptions, isReplacedUpstreamOption, supportedUpstreamOption } from "./supported-options";
 import { variantForSource } from "./catalog";
@@ -292,7 +293,7 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
   entity: (item) => [...common(item), text("secondary")],
 };
 
-export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): EditorField[] => {
+export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass?: HomeAssistant): EditorField[] => {
   if (item.upstreamId === "pi_hole_card") return [
     entity(["switch", "sensor", "binary_sensor"]),
     ...presentation(),
@@ -342,7 +343,9 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
     return [
       entity(["sensor"]),
       ...presentation(),
-      { name: "upcoming_data_attribute", selector: { attribute: { entity_id: config?.entity } } },
+      select("upcoming_data_attribute", [...new Set([
+        "data", ...upcomingDataAttributes(config?.entity ? hass?.states[config.entity] : undefined),
+      ])].map(value => ({ value, label: value }))),
       select("upcoming_image_style", [{ value: "poster", label: "Poster beside text" }, { value: "fanart", label: "Full-width artwork" }]),
       number("upcoming_max_items", 1, 50),
       { name: "upcoming_item_height", selector: { number: { min: 80, max: 320, step: 4, mode: "slider", unit_of_measurement: "px" } } },

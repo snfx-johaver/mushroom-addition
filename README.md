@@ -46,7 +46,9 @@ Your next episode deserves better than a forgotten watchlist.
 **Upcoming Media** (`custom:mushroom-addition-upcoming-media-card`) reads a
 sensor's media list, including the usual `data` format from Plex, Kodi, Radarr,
 Sonarr and Trakt-compatible sensors. Pick the sensor and data attribute in
-**Context**; no service-specific backend is bundled.
+**Context**; no service-specific backend is bundled. The data attribute normally
+stays on `data`. Other attributes are offered only when they contain a media
+list (or its JSON representation), never display metadata such as friendly name.
 
 The visual editor covers poster/fanart artwork, item sizing, columns, sorting,
 filters, flags, collapsed lists, summary tooltips and tap actions. Title and four
