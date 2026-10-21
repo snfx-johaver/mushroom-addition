@@ -1,7 +1,16 @@
 import { LitElement, css, html, nothing, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { fireEvent } from "./helpers";
-import type { ActionConfig, AdditionConfig, AdditionItemConfig, HassEntity, HomeAssistant } from "./types";
+import type { ActionConfig, AdditionConfig, AdditionItemConfig, CarouselEffect, HassEntity, HomeAssistant } from "./types";
+
+export const carouselControlEnabled = (
+  config: AdditionConfig | undefined, key: "pagination" | "navigation" | "scrollbar",
+): boolean => {
+  const direct = config?.[`carousel_${key}`];
+  if (typeof direct === "boolean") return direct;
+  const parameter = config?.parameters?.[key];
+  return parameter !== null && typeof parameter === "object" ? parameter.enabled !== false : parameter === true;
+};
 
 const inactiveStates = new Set(["off", "unknown", "unavailable", "none", "idle"]);
 
@@ -30,7 +39,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       height: 70px;
       transform-style: preserve-3d;
     }
-    button {
+    .item {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -40,19 +49,20 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       height: 58px;
       margin: -29px;
       padding: 0;
-      border: 1px solid color-mix(in srgb, var(--divider-color) 72%, transparent);
+      border: 0;
       border-radius: 18px;
       color: var(--primary-text-color);
       background:
         linear-gradient(145deg, color-mix(in srgb, var(--card-background-color) 92%, white 8%),
         color-mix(in srgb, var(--card-background-color) 86%, black 14%));
       box-shadow: 0 5px 16px rgb(0 0 0 / 28%);
-      transition: transform 130ms cubic-bezier(.2,.8,.2,1), opacity 110ms ease, filter 110ms ease;
+      transition: transform 270ms cubic-bezier(.2,.8,.2,1), opacity 270ms ease, filter 110ms ease;
       cursor: pointer;
       transform-style: preserve-3d;
+      backface-visibility: hidden;
       will-change: transform;
     }
-    button::after {
+    .item::after {
       position: absolute;
       inset: 0;
       border-radius: inherit;
@@ -64,21 +74,40 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       content: "";
       pointer-events: none;
     }
-    button[data-shadow="false"]::after { display: none; }
-    button.active {
+    .item[data-shadow="false"]::after { display: none; }
+    .item.active {
       color: var(--carousel-color, var(--primary-color));
-      border-color: color-mix(in srgb, var(--carousel-color, var(--primary-color)) 55%, var(--divider-color));
-      box-shadow:
-        0 8px 22px rgb(0 0 0 / 38%),
-        inset 0 0 0 1px color-mix(in srgb, var(--carousel-color, var(--primary-color)) 22%, transparent);
     }
-    button.entity-active {
+    .item.entity-active {
       background:
         linear-gradient(145deg,
           color-mix(in srgb, var(--carousel-color, var(--primary-color)) 28%, var(--card-background-color)),
           color-mix(in srgb, var(--carousel-color, var(--primary-color)) 12%, var(--card-background-color)));
     }
-    button[hidden] { display: none; }
+    .item[hidden] { display: none; }
+    button:focus-visible, input:focus-visible, .carousel:focus-visible {
+      outline: 2px solid var(--primary-color); outline-offset: 2px;
+    }
+    .viewport.has-navigation { display: grid; grid-template-columns: 32px minmax(0, 1fr) 32px; align-items: center; gap: 4px; }
+    .navigation {
+      width: 32px; height: 32px; padding: 0; display: grid; place-items: center;
+      border: 0; border-radius: 12px; background: color-mix(in srgb, var(--primary-text-color) 8%, transparent);
+      color: var(--primary-text-color); cursor: pointer;
+    }
+    .navigation:disabled { opacity: .35; cursor: default; }
+    .navigation ha-icon { --mdc-icon-size: 22px; }
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 2px; padding: 0 8px; }
+    .pagination.bullets { overflow-x: auto; }
+    .dot {
+      flex: 0 0 24px; width: 24px; height: 24px; border: 0; padding: 0;
+      display: grid; place-items: center; background: transparent; cursor: pointer;
+    }
+    .dot::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--secondary-text-color); opacity: .4; }
+    .dot[aria-current="true"]::before { background: var(--primary-color); opacity: 1; }
+    .pagination output { font-size: 12px; color: var(--secondary-text-color); line-height: 24px; }
+    .pagination progress { width: 100%; height: 5px; margin: 8px 0; accent-color: var(--primary-color); }
+    .scrollbar { display: block; box-sizing: border-box; width: calc(100% - 16px); height: 20px; margin: 0 8px; accent-color: var(--primary-color); cursor: pointer; }
+    @media (prefers-reduced-motion: reduce) { .item { transition: none; } }
     ha-icon, ha-state-icon { --mdc-icon-size: 28px; pointer-events: none; }
     .picture {
       width: 34px;
@@ -125,6 +154,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
   private pointerItemIndex?: number;
   private pointerStartedOnItem = false;
   private resizeObserver?: ResizeObserver;
+  private observedCarousel?: HTMLElement;
 
   protected willUpdate(changed: Map<PropertyKey, unknown>): void {
     if (changed.has("config")) {
@@ -144,8 +174,16 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     const visible = this.visibleCount;
     const activeItem = items[this.selectedIndex];
     const activeEntity = this.entityFor(activeItem);
+    const navigation = carouselControlEnabled(this.config, "navigation");
+    const loop = this.config?.carousel_loop !== false;
     return html`
+      <div class="viewport ${navigation ? "has-navigation" : ""}"
+        @pointerdown=${this.stopControlEvent} @click=${this.stopControlEvent} @dblclick=${this.stopControlEvent}>
+      ${navigation ? html`<button class="navigation" aria-label="Previous item"
+        ?disabled=${items.length < 2 || (!loop && this.selectedIndex === 0)}
+        @click=${() => this.select(-1)}><ha-icon icon="mdi:chevron-left"></ha-icon></button>` : nothing}
       <div class=${`carousel ${this.grabCursor ? "grab-cursor" : ""} ${this.dragging ? "dragging" : ""}`}
+        data-effect=${this.effect}
         style=${`perspective:${Math.max(520, this.coverflowDepth * 2)}px`}
         role="listbox"
         aria-label="Entity carousel"
@@ -168,7 +206,36 @@ export class MushroomAdditionEntityCarousel extends LitElement {
           </div>
         `}
       </div>
+      ${navigation ? html`<button class="navigation" aria-label="Next item"
+        ?disabled=${items.length < 2 || (!loop && this.selectedIndex === items.length - 1)}
+        @click=${() => this.select(1)}><ha-icon icon="mdi:chevron-right"></ha-icon></button>` : nothing}
+      </div>
+      <div @pointerdown=${this.stopControlEvent} @click=${this.stopControlEvent}
+        @dblclick=${this.stopControlEvent} @keydown=${this.stopControlEvent} @keyup=${this.stopControlEvent}>
+        ${carouselControlEnabled(this.config, "pagination") ? this.renderPagination() : nothing}
+        ${carouselControlEnabled(this.config, "scrollbar") ? html`
+          <input class="scrollbar" type="range" min="0" max=${items.length - 1} step="1"
+            .value=${String(this.selectedIndex)} ?disabled=${items.length < 2}
+            aria-label="Carousel position" aria-valuetext=${this.itemName(activeItem, activeEntity)}
+            @input=${(event: Event) => this.selectIndex(Number((event.currentTarget as HTMLInputElement).value))}>
+        ` : nothing}
+      </div>
     `;
+  }
+
+  private readonly stopControlEvent = (event: Event): void => { event.stopPropagation(); };
+
+  private renderPagination(): TemplateResult {
+    const parameter = this.config?.parameters?.pagination;
+    const type = this.config?.carousel_pagination_type ??
+      (parameter && typeof parameter === "object" ? parameter.type : undefined) ?? "bullets";
+    return html`<div class="pagination ${type}">
+      ${type === "fraction" ? html`<output aria-live="polite">${this.selectedIndex + 1} / ${this.items.length}</output>`
+        : type === "progressbar" ? html`<progress aria-label="Carousel progress" value=${this.selectedIndex + 1} max=${this.items.length}></progress>`
+        : this.items.map((item, index) => html`<button class="dot"
+            aria-label=${`Go to ${this.itemName(item)}`} aria-current=${index === this.selectedIndex ? "true" : "false"}
+            @click=${() => this.selectIndex(index)}></button>`)}
+    </div>`;
   }
 
   private renderItem(item: AdditionItemConfig, index: number, visible: number): TemplateResult {
@@ -183,7 +250,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     const slideStep = Math.max(18, 58 + stretch);
     const visualOffset = offset + this.dragOffset / slideStep;
     const visualDistance = Math.abs(visualOffset);
-    const alignmentOffset = this.centeredSlides ? 0 : -((visible - 1) * slideStep) / 2;
+    const alignmentOffset = this.singleSlideEffect || this.centeredSlides ? 0 : -((visible - 1) * slideStep) / 2;
     const translate = alignmentOffset + offset * slideStep + this.dragOffset;
     const depth = this.effect === "coverflow" ? -visualDistance * this.coverflowDepth * modifier : 0;
     const rotate = this.effect === "coverflow" ? visualOffset * -this.coverflowRotate * modifier : 0;
@@ -191,10 +258,17 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     const shadowOpacity = this.coverflowSlideShadows
       ? Math.min(0.48, visualDistance * 0.16 * Math.max(0.25, modifier))
       : 0;
+    const progress = offset + Math.max(-1, Math.min(1, this.dragOffset / 58));
+    const transform = this.effect === "fade" ? "translateX(0px)"
+      : this.effect === "cube" ? `rotateY(${progress * 90}deg)`
+      : this.effect === "flip" ? `rotateY(${progress * 180}deg)`
+      : `translateX(${translate}px) translateZ(${depth}px) rotateY(${rotate}deg)`;
     const style = [
-      `transform:translateX(${translate}px) translateZ(${depth}px) rotateY(${rotate}deg)`,
+      `transform:${transform}`,
+      `transform-origin:${this.effect === "cube" ? "50% 50% -29px" : "50% 50%"}`,
       `z-index:${100 - distance}`,
-      `opacity:${opacity}`,
+      `opacity:${this.effect === "fade" ? Math.max(0, 1 - Math.abs(progress)) : this.singleSlideEffect ? 1 : opacity}`,
+      `pointer-events:${this.singleSlideEffect && !active ? "none" : "auto"}`,
       `filter:saturate(${Math.max(0.45, 1 - distance * 0.14)})`,
       `--carousel-color:var(--${color}-color, ${color})`,
       `--carousel-shadow-opacity:${shadowOpacity}`,
@@ -209,7 +283,8 @@ export class MushroomAdditionEntityCarousel extends LitElement {
         role="option"
         aria-selected=${active ? "true" : "false"}
         aria-label=${this.itemName(item, entity)}
-        class=${`${active ? "active" : ""} ${isEntityActive ? "entity-active" : ""}`}
+        class=${`item ${active ? "active" : ""} ${isEntityActive ? "entity-active" : ""}`}
+        tabindex=${active ? 0 : -1}
         data-shadow=${this.effect === "coverflow" && this.coverflowSlideShadows ? "true" : "false"}
         data-carousel-index=${index}
         style=${style}
@@ -239,6 +314,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
   }
 
   private get visibleCount(): number {
+    if (this.singleSlideEffect) return 1;
     const configured = this.config?.carousel_slides_per_view ??
       this.config?.parameters?.slidesPerView;
     if (configured === "auto") {
@@ -257,8 +333,12 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     return Math.min(11, Math.max(3, requested));
   }
 
-  private get effect(): "slide" | "coverflow" {
+  private get effect(): CarouselEffect {
     return this.config?.carousel_effect ?? this.config?.parameters?.effect ?? "coverflow";
+  }
+
+  private get singleSlideEffect(): boolean {
+    return ["fade", "cube", "flip"].includes(this.effect);
   }
 
   private get grabCursor(): boolean {
@@ -328,15 +408,18 @@ export class MushroomAdditionEntityCarousel extends LitElement {
   }
 
   private itemIsHidden(offset: number, visible: number): boolean {
+    if (this.singleSlideEffect) return Math.abs(offset) > 1;
     if (!this.centeredSlides) return offset < 0 || offset >= visible;
     const before = Math.floor((visible - 1) / 2);
     const after = Math.ceil((visible - 1) / 2);
     return offset < -before || offset > after;
   }
 
-  protected firstUpdated(): void {
+  protected updated(): void {
     const carousel = this.shadowRoot?.querySelector<HTMLElement>(".carousel");
-    if (!carousel) return;
+    if (!carousel || carousel === this.observedCarousel) return;
+    this.resizeObserver?.disconnect();
+    this.observedCarousel = carousel;
     this.carouselWidth = carousel.clientWidth;
     if (typeof ResizeObserver === "undefined") return;
     this.resizeObserver = new ResizeObserver(([entry]) => {
@@ -350,6 +433,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     this.clearTap();
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
+    this.observedCarousel = undefined;
     super.disconnectedCallback();
   }
 

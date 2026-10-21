@@ -201,18 +201,8 @@ export const sharedStyles = css`
     outline-offset: 2px;
   }
   .welcome-scenes-more ha-icon { --mdc-icon-size: 20px; }
-  .ulm-media { position: relative; display: grid; gap: 12px; overflow: hidden; padding: 12px; }
   .media-art { position: absolute; inset: 0; z-index: 0; background-position: center; background-size: cover; }
   .media-art::after { position: absolute; inset: 0; background: rgba(0,0,0,.25); content: ""; }
-  .media-summary { position: relative; z-index: 1; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px; }
-  .ulm-media.has-art { color: #fff; }
-  .ulm-media.has-art .ulm-label { color: rgba(255,255,255,.75); }
-  .ulm-media.has-art .ulm-icon, .ulm-media.has-art .ulm-control { color: #fff; background: rgba(0,0,0,.25); }
-  .ulm-media .ulm-controls, .ulm-media .ulm-slider { position: relative; z-index: 1; }
-  .media-controls { display: grid; grid-template-columns: repeat(4, 1fr); }
-  .media-controls .ulm-control { width: 100%; }
-  .media-power { position: absolute; top: 12px; right: 12px; z-index: 2; }
-  .media-volume-buttons { justify-content: center; }
   .ulm-security { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px; }
   .security-status { padding: 5px 9px; border-radius: 10px; background: rgba(var(--ulm-green), .12); color: rgb(var(--ulm-green)); font-size: 11px; font-weight: 700; }
   .ulm-navigation { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px; }
@@ -352,17 +342,6 @@ export const sharedStyles = css`
   .welcome-items i { display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: rgba(var(--tone), .18); color: rgb(var(--tone)); font-style: normal; }
   .welcome-items i > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
   .welcome-items small { max-width: 48px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 9px; font-weight: 700; }
-  .custom-room-overview { display: grid; min-height: 112px; grid-template-columns: minmax(0, 1fr) 42px; gap: 12px; padding: 12px; border-radius: 20px; }
-  .room-overview-main { display: grid; min-width: 0; grid-template-rows: auto auto; align-content: space-between; gap: 8px; }
-  .room-overview-main .ulm-icon { justify-self: start; }
-  .room-overview-main .ulm-copy { min-width: 0; }
-  .custom-room-overview.dynamic-color { background: rgba(var(--room-rgb), .2); }
-  .custom-room-overview.dynamic-color .ulm-icon { background: rgba(var(--room-rgb), .3); color: rgb(var(--room-rgb)); }
-  .room-overview-controls { display: flex; flex-direction: column; gap: 5px; }
-  .room-overview-control { display: grid; width: 42px; height: 42px; padding: 0; place-items: center; border: 0; border-radius: 14px; background: rgba(var(--ulm-grey), .08); color: rgba(var(--ulm-grey), .75); }
-  .room-overview-control.light.state-on { background: rgba(var(--ulm-yellow), .2); color: rgb(var(--ulm-yellow)); }
-  .room-overview-control.climate.state-heat { background: rgba(var(--ulm-red), .2); color: rgb(var(--ulm-red)); }
-  .room-overview-control.climate.state-cool, .room-overview-control.cover.state-closed { background: rgba(var(--ulm-blue), .2); color: rgb(var(--ulm-blue)); }
   .washer-heading .washer-power { font-size: 12px; font-weight: 700; }
   .washer-stages { display: grid; grid-template-columns: repeat(var(--washer-stage-count, 4), 1fr); border-radius: 22px; background: rgba(var(--ulm-grey), .08); }
   .washer-stages span { display: grid; height: 42px; place-items: center; color: rgba(var(--ulm-grey), .35); }

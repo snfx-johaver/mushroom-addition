@@ -8,6 +8,7 @@ export interface AreaContentOptions {
   sensor_wrap?: boolean;
   sensor_icons?: boolean;
   use_light_color?: boolean;
+  /** Legacy only; accents are derived from the selected area. */
   light_entity?: string;
 }
 interface NativeContentCard extends HTMLElement {
@@ -26,8 +27,23 @@ export const areaCssColor = (color?: string): string | undefined =>
 export function applyAreaContent(card: NativeContentCard, options: AreaContentOptions): void {
   const root = card.shadowRoot;
   if (!root) return;
-  const light = options.light_entity ? card.hass?.states[options.light_entity] : undefined;
-  const rgb = options.use_light_color && card.hass ? roomLightRgb(card.hass, light) : undefined;
+  const hass = card.hass;
+  const area = card._config?.area;
+  let rgb: number[] | undefined;
+  if (options.use_light_color && hass && typeof area === "string") {
+    const excludes = card._config?.exclude_entities as string[] | undefined;
+    const ids = card._domainEntityIds?.(hass.entities, area, ["light"], excludes) ??
+      Object.keys(hass.states).filter(id => {
+        const entry = hass.entities?.[id];
+        const entityArea = entry?.area_id ?? (entry?.device_id ? hass.devices?.[entry.device_id]?.area_id : undefined);
+        return entityArea === area;
+      });
+    for (const id of [...ids].sort()) {
+      if (!id.startsWith("light.") || excludes?.includes(id)) continue;
+      rgb = roomLightRgb(hass, hass.states[id]);
+      if (rgb) break;
+    }
+  }
   card.toggleAttribute("data-light-accent", Boolean(rgb));
   if (rgb) card.style.setProperty("--addition-room-rgb", rgb.join(","));
   else card.style.removeProperty("--addition-room-rgb");
@@ -76,7 +92,6 @@ export function applyAreaContent(card: NativeContentCard, options: AreaContentOp
     return;
   }
   const config = card._config;
-  const hass = card.hass;
   if (!config || !hass || !card._computeSensorsDisplay || !card._groupedSensorEntityIds) {
     throw new Error("This Home Assistant frontend cannot enhance Area sensor content. Disable sensor wrapping/icons or update Home Assistant.");
   }

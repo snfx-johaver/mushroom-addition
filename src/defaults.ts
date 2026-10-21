@@ -36,7 +36,6 @@ const defaultIcons: Array<[RegExp, string]> = [
 export const defaultIconFor = (item: CatalogItem, entity?: HassEntity): string => {
   if (entity?.attributes.icon) return entity.attributes.icon;
   if (item.upstreamId === "custom_card_trash") return "mdi:trash-can-outline";
-  if (item.upstreamId === "custom_card_room_overview") return "mdi:sofa";
   if (item.upstreamId === "custom_card_roomview") return "mdi:home-variant-outline";
   if (item.upstreamId === "custom_card_entity_carousel") return "mdi:view-carousel";
   if (item.upstreamId === "custom_card_sun") return "mdi:weather-sunny";
@@ -243,14 +242,6 @@ export const populatedDefaultsFor = (
           sonos_details_always_visible: false,
           ...resolveSonosControlEntities(hass, entityId),
         }
-      : item.upstreamId === "custom_card_room_overview"
-          ? {
-            ulm_card_room_overview_light_icon_on: "mdi:lightbulb",
-            ulm_card_room_overview_light_icon_off: "mdi:lightbulb-off",
-            ulm_card_room_overview_cover_icon_open: "mdi:blinds-open",
-            ulm_card_room_overview_cover_icon_closed: "mdi:roller-shade-closed",
-            ulm_card_dynamic_color: false,
-          }
           : item.upstreamId === "custom_card_welcome"
             ? {
               nav_1: "house", icon_1: "mdi:home", name_1: "House", color_1: "blue",
@@ -273,6 +264,10 @@ export const populatedDefaultsFor = (
                     carousel_visible_items: 7,
                     carousel_initial_index: 0,
                     carousel_effect: "coverflow",
+                    carousel_navigation: false,
+                    carousel_pagination: false,
+                    carousel_pagination_type: "bullets",
+                    carousel_scrollbar: false,
                     carousel_grab_cursor: true,
                     carousel_centered_slides: true,
                     carousel_slides_per_view: "auto",

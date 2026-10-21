@@ -27,12 +27,13 @@ customElements.define("test-area-content", ContentCard);
 afterEach(() => document.body.replaceChildren());
 
 describe("Area native content enhancements", () => {
-  it("applies the selected active light group RGB only when enabled and clears stale accents", () => {
+  it("derives the active area's light group RGB without a selector and clears stale accents", () => {
     const card = document.createElement("test-area-content") as ContentCard;
     const light: HassEntity = { entity_id: "light.member", state: "on", attributes: { rgb_color: [24, 100, 200] } };
     const group: HassEntity = { entity_id: "light.room", state: "on", attributes: { entity_id: [light.entity_id] } };
-    card.hass = { ...hass, states: { ...hass.states, [light.entity_id]: light, [group.entity_id]: group } };
-    const options = { use_light_color: true, light_entity: group.entity_id };
+    card.hass = { ...hass, states: { ...hass.states, [light.entity_id]: light, [group.entity_id]: group },
+      entities: { [group.entity_id]: { area_id: "office" } } };
+    const options = { use_light_color: true };
     applyAreaContent(card, options);
     expect(card.hasAttribute("data-light-accent")).toBe(true);
     expect(card.style.getPropertyValue("--addition-room-rgb")).toBe("24,100,200");
@@ -49,6 +50,43 @@ describe("Area native content enhancements", () => {
     expect(native).not.toHaveProperty("use_light_color");
     expect(native).not.toHaveProperty("light_entity");
     expect(mergeNativeAreaEdit({ type: "custom:area", ...options }, native)).toMatchObject(options);
+  });
+  it("follows area changes, device inheritance and exclusions, ignoring old manual light selections", () => {
+    const card = document.createElement("test-area-content") as ContentCard;
+    const office: HassEntity = { entity_id: "light.office", state: "on", attributes: { rgb_color: [1, 100, 200] } };
+    const kitchen: HassEntity = { entity_id: "light.kitchen", state: "on", attributes: { rgb_color: [200, 50, 1] } };
+    card.hass = { ...hass, states: { [office.entity_id]: office, [kitchen.entity_id]: kitchen },
+      entities: { [office.entity_id]: { device_id: "desk" }, [kitchen.entity_id]: { area_id: "kitchen" } },
+      devices: { desk: { area_id: "office" } } };
+    const options = { use_light_color: true, light_entity: kitchen.entity_id };
+    applyAreaContent(card, options);
+    expect(card.style.getPropertyValue("--addition-room-rgb")).toBe("1,100,200");
+    card._config.area = "kitchen";
+    applyAreaContent(card, options);
+    expect(card.style.getPropertyValue("--addition-room-rgb")).toBe("200,50,1");
+    card._config.exclude_entities = [kitchen.entity_id];
+    applyAreaContent(card, options);
+    expect(card.hasAttribute("data-light-accent")).toBe(false);
+    expect(card.style.getPropertyValue("--addition-room-rgb")).toBe("");
+    card._config.area = "no_lights";
+    applyAreaContent(card, options);
+    expect(card.hasAttribute("data-light-accent")).toBe(false);
+    expect(card.hass.callService).not.toHaveBeenCalled();
+  });
+  it("prefers the native area's light list and skips unusable RGB lights", () => {
+    const card = Object.assign(document.createElement("test-area-content") as ContentCard, {
+      _domainEntityIds: vi.fn(() => ["light.white", "light.color"]),
+    });
+    card.hass = { ...hass, states: {
+      "light.white": { entity_id: "light.white", state: "on", attributes: { rgb_color: [999, 1, 1] } },
+      "light.color": { entity_id: "light.color", state: "on", attributes: { rgb_color: [2, 3, 4] } },
+    } };
+    applyAreaContent(card, { use_light_color: true });
+    expect(card._domainEntityIds).toHaveBeenCalledWith(card.hass.entities, "office", ["light"], undefined);
+    expect(card.style.getPropertyValue("--addition-room-rgb")).toBe("2,3,4");
+    card._domainEntityIds.mockReturnValue([]);
+    applyAreaContent(card, { use_light_color: true });
+    expect(card.style.getPropertyValue("--addition-room-rgb")).toBe("");
   });
   it("preserves native values, class order, entity icons and resets options without copying aggregation", () => {
     const card = document.createElement("test-area-content") as ContentCard;

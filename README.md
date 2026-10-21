@@ -3,7 +3,7 @@
 [![CI](https://github.com/snfx-johaver/mushroom-cards-addition/actions/workflows/ci.yml/badge.svg)](https://github.com/snfx-johaver/mushroom-cards-addition/actions/workflows/ci.yml)
 
 **Build a more useful Home Assistant dashboard without writing YAML.**
-Mushroom Cards Addition is a HACS-installable collection of **27
+Mushroom Cards Addition is a HACS-installable collection of **25
 dashboard components**, with graphical configuration, theme-aware styling and
 Home Assistant actions. It is a frontend custom-card collection, not a backend
 integration, and works alongside Mushroom without depending on its internals.
@@ -14,8 +14,8 @@ controls, room overviews, battery intelligence, plant and pollen monitoring,
 NAS metrics, speed tests and more. Configure entities, presentation and supported
 controls directly in the dashboard editor; YAML remains available when preferred.
 
-The catalog maps **23 documented sources**—5 default-card sources and 18 custom-card
-sources—to **27 public components**, including five original additions. Related layouts are grouped into graphical
+The catalog maps **21 documented sources**—4 default-card sources and 17 custom-card
+sources—to **25 public components**, including five original additions. Related layouts are grouped into graphical
 variants instead of duplicating picker entries. See the
 [complete, source-linked catalog](docs/CATALOG.md), the generated
 [item-by-item parity matrix](docs/PARITY_MATRIX.md), and the
@@ -79,10 +79,13 @@ lines**, and **Show small grey entity icons beside sensor values**. Sensor value
 still come from native Area aggregation, ordering, exclusions and locale formatting.
 These opt-in enhancements use the native secondary slot and scoped styles. They
 depend on installed frontend internals; recheck them after Home Assistant updates.
-Content also offers **Use the light color as the room accent** and a **Room accent
-light** selector (`use_light_color`, `light_entity`). The subtle card tint is opt-in
-and uses only the configured active light's valid RGB color, including light-group
-members. Turning it off or switching the light off clears the tint; explicit alert
+Content also offers **Use the light color as the room accent** (`use_light_color`).
+No light selector is needed: it automatically uses an active RGB light in the
+card's selected area, respecting native area membership and excluded entities.
+Lights inherit their device's area when they have no entity-level area. The
+first usable light in stable entity-ID order supplies the subtle tint, including
+light-group members. Old `light_entity` values are ignored. Turning the option
+off, changing area or losing all usable active lights clears the tint; explicit alert
 and control colors remain independent. Off/unavailable buttons retain a neutral
 theme-aware background in light and dark themes.
 
@@ -148,9 +151,13 @@ geometry when Home Assistant changes. Structurally identical native controls/fea
 round-tripped without object identities use occurrence matching; use the advanced
 list to reorder duplicate buttons with distinct overrides unambiguously.
 
-### Sonos media controls
+### Media Player Advanced
 
-The Sonos card supports `use_media_info`,
+The separate basic Media Player card has been removed. Existing Sonos card YAML
+continues to work with its existing `custom:mushroom-addition-custom-card-media-player-sonos`
+type; its picker and editor now use the Media Player Advanced name.
+
+Media Player Advanced (previously named Media Player Sonos) supports `use_media_info`,
 `volume_controls`, `media_controls`, and
 `collapsible_controls` options in its visual editor. Volume and media controls
 use native multi-select checkbox lists. Only controls supported by the entity's
@@ -167,11 +174,14 @@ level option. The percentage sits beside the slider, not duplicated in the
 header. The redundant `show_volume_level` editor toggle was removed and that
 legacy setting no longer changes the header.
 
-The working generic media-player controls are also available on Sonos:
-**Show power button** is a separate switch, shown only for supported power
-actions (never duplicated in Media controls). Legacy `media_controls: [on_off]`
+**Show power button** is a separate switch (never duplicated in Media controls).
+Players supporting hardware power use **Turn on/off**. Always-on players such as
+Sonos and Music Assistant without those capabilities use **Standby (stop playback)**
+and **Resume playback**, through supported `media_stop`/`media_play` services;
+this does not physically switch off the speaker. Unsupported actions are hidden.
+Legacy `media_controls: [on_off]`
 still works unless the explicit power switch is off. **Sources and details**
-in Media controls opens HA's existing entity dialog, like the generic card.
+in Media controls opens HA's existing entity dialog.
 **Playback control entity** optionally targets another media player for power,
 playback, mute, shuffle, repeat and volume; its state/capabilities determine the
 controls while artwork/title and Sonos sound settings retain the main entity.
@@ -351,7 +361,7 @@ and choose **Room light (brightness and accent)** (`room_light_entity`), or use 
 entity. The accent uses an on light's RGB, including an active RGB group member
 when the group has no RGB. Off, unavailable, missing or invalid RGB retains the
 normal theme. No light service calls are made by the accent.
-Disabling the accent keeps both **Room** and **Room Overview** backgrounds neutral,
+Disabling the accent keeps the **Room** background neutral,
 even with the light on; individual light controls retain their on/off colors.
 
 Room's **Show temperature label** and **Show brightness label** switches can be
@@ -462,9 +472,25 @@ statistics, caching, logarithmic scales, smoothing, animation, and Home
 Assistant actions without requiring another frontend resource. See the
 [configuration and example guide](docs/MINI_GRAPH_CARD.md).
 
-The **Entity Carousel Card** includes dependency-free slide and coverflow
-effects with graphical controls for cursor behavior, centering, automatic or
+The **Entity Carousel Card** includes dependency-free Slide, Coverflow, Fade,
+Cube and Flip effects with graphical controls for cursor behavior, centering, automatic or
 fixed slides per view, rotation, spacing, depth, intensity, and slide shadows.
+Fade, Cube and Flip automatically use one centered item; the geometry controls
+only apply to Coverflow. Keyboard focus retains a visible outline, but the
+selected tile no longer has a different border or inset ring.
+In **Layout**, enable **Show previous/next buttons**, **Show pagination**
+(clickable dots, item count or progress bar), or **Show draggable position
+scrollbar**. Navigation disables at non-looping endpoints. Pagination and the
+scrollbar select without activating scenes; tap the centered tile to run its
+action. Arrow/Home/End keys, horizontal swipe, wheel, hold and double-tap remain
+available, and reduced-motion preferences disable animated transitions.
+
+Catalogue examples now choose up to seven healthy lighting scenes from one
+room, using Hue room metadata or known light membership and area/device
+registries. The header uses a light in that room when available. Mixed-room,
+non-light and unavailable scenes are excluded; if no room relationship can be
+established, the item list starts empty rather than using unrelated sensors.
+Example scene buttons explicitly activate their scene when tapped.
 Turn off **Show card header** in its graphical editor to hide the title, icon
 and primary/secondary information while keeping the carousel and its item labels.
 Turn off **Show selected item label** as well for a compact, icon-only strip.
@@ -480,6 +506,10 @@ shape:
 type: custom:mushroom-addition-custom-card-entity-carousel
 parameters:
   effect: coverflow
+  navigation: true
+  pagination:
+    type: bullets
+  scrollbar: true
   grabCursor: true
   centeredSlides: true
   slidesPerView: auto

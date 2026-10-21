@@ -283,7 +283,7 @@ describe("Room status indicators", () => {
     });
   });
 
-  describe("Room and Room Overview accent opt-out", () => {
+  describe("Room accent opt-out", () => {
     it("uses one selected light for brightness and accent and migrates brightness-only configs", async () => {
       const home = hass();
       home.states["light.room"] = state("light.room", "on", { brightness: 255, rgb_color: [12, 130, 240] });
@@ -312,11 +312,11 @@ describe("Room status indicators", () => {
       expect(sharedStyles.cssText).toContain("background: rgba(var(--ulm-grey), .08); cursor: pointer; }");
       expect(sharedStyles.cssText).not.toContain("color: var(--secondary-text-color); background: var(--card-background-color); cursor: pointer;");
     });
-    it.each(["card_room", "custom_card_room_overview"])("keeps %s neutral when disabled and clears accents on config/entity changes", async (id) => {
-      const item = CATALOG.find((entry) => entry.upstreamId === id)!;
+    it("keeps Room neutral when disabled and clears accents on config/entity changes", async () => {
+      const item = descriptor;
       const config: AdditionConfig = {
         type: `custom:${item.tag}`, entity: "light.room",
-        room_light_entity: "light.room", ulm_custom_card_room_overview_light_entity: "light.room",
+        room_light_entity: "light.room",
         ulm_card_dynamic_color: false,
       };
       const card = await mount(item.tag, config);
@@ -328,7 +328,6 @@ describe("Room status indicators", () => {
         expect(surface().getAttribute("style")).not.toContain("--room-rgb");
       };
       neutral();
-      if (id === "custom_card_room_overview") expect(card.shadowRoot.querySelector(".room-overview-control.light.state-on")).not.toBeNull();
       card.setConfig({ ...config, ulm_card_dynamic_color: true });
       await card.updateComplete;
       expect(surface().classList.contains("dynamic-color")).toBe(true);
@@ -344,8 +343,6 @@ describe("Room status indicators", () => {
       card.hass = { ...card.hass, states: { ...card.hass.states, "light.room": state("light.room", "on") } };
       await card.updateComplete;
       neutral();
-      expect(sharedStyles.cssText).not.toContain(".custom-room-overview.light-on");
-      expect(sharedStyles.cssText).not.toContain(".custom-room-overview.is-on");
     });
   });
 

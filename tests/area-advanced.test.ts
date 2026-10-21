@@ -154,7 +154,7 @@ describe("native Area card delegation", () => {
     };
     void native.updateComplete;
     expect(form.schema[0].schema.map(field => field.name)).toEqual([
-      "sensor_classes", "alert_color", "sensor_wrap", "sensor_icons", "use_light_color", "light_entity",
+      "sensor_classes", "alert_color", "sensor_wrap", "sensor_icons", "use_light_color",
     ]);
     expect(form.data).toMatchObject({ alert_color: "red", sensor_wrap: true, sensor_icons: true });
     expect(form.computeLabel({ name: "alert_color" })).toBe("Alert icon color");

@@ -33,6 +33,11 @@ describe("catalog coverage", () => {
     expect(CATALOG.some((item) => item.upstreamId === "custom_card_weather_metrics")).toBe(false);
     expect(UPSTREAM_CATALOG.some((item) => item.upstreamId === "custom_card_weather_metrics")).toBe(false);
     expect(publicItemForSource("custom_card_weather_metrics")).toBeUndefined();
+    for (const removed of ["card_media_player", "custom_card_room_overview"]) {
+      expect(CATALOG.some(item => item.upstreamId === removed)).toBe(false);
+      expect(UPSTREAM_CATALOG.some(item => item.upstreamId === removed)).toBe(false);
+      expect(publicItemForSource(removed)).toBeUndefined();
+    }
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_sun")).toBe(true);
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "custom_card_pollen_forecast")).toBe(false);
     expect(PUBLIC_CATALOG.some((item) => item.upstreamId === "advanced_energy_buy_sell")).toBe(true);
@@ -42,9 +47,9 @@ describe("catalog coverage", () => {
   it("matches the documented source counts and keeps the custom card catalog public", () => {
     const sourceCount = (category: string) =>
       UPSTREAM_CATALOG.filter((item) => item.category === category).length;
-    expect(sourceCount("default-card")).toBe(5);
-    expect(sourceCount("custom-card")).toBe(18);
-    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(22);
+    expect(sourceCount("default-card")).toBe(4);
+    expect(sourceCount("custom-card")).toBe(17);
+    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(21);
   });
 
   it("keeps removed contributor names out of renamed public card metadata", () => {
@@ -85,7 +90,7 @@ describe("catalog coverage", () => {
   });
 
   it("inventories upstream popups without exposing nonfunctional variants", () => {
-    expect(UPSTREAM_VARIANTS).toHaveLength(1);
+    expect(UPSTREAM_VARIANTS).toHaveLength(0);
     for (const variant of UPSTREAM_VARIANTS) {
       const component = PUBLIC_CATALOG.find((item) => item.upstreamId === variant.component);
       expect(component?.variants).not.toContain("popup");

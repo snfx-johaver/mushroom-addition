@@ -58,6 +58,36 @@ const render = async (config: Partial<AdditionConfig> = {}, entity = player(), e
 afterEach(() => { document.body.replaceChildren(); vi.useRealTimers(); });
 
 describe("Sonos Mushroom-compatible media controls", () => {
+  it("uses Media Player Advanced as its public picker and editor name", () => {
+    expect(descriptor.name).toBe("Media Player Advanced Card");
+    expect(window.customCards?.find(card => card.type === descriptor.tag)?.name).toContain("Media Player Advanced");
+  });
+
+  it.each([8319551, 8322623])("supports standby and resume with the actual Sonos/Music Assistant feature mask %i", async (features) => {
+    for (const state of ["playing", "buffering", "paused", "idle", "off", "standby"]) {
+      const stopping = ["playing", "buffering", "paused"].includes(state);
+      const label = stopping ? "Standby (stop playback)" : "Resume playback";
+      const service = stopping ? "media_stop" : "media_play";
+      const view = await render({ ...complete, collapsible_controls: true, ulm_card_media_player_idle_off: true },
+        player(state, { supported_features: features }));
+      expect(view.button(label)?.disabled, state).toBe(false);
+      view.button(label)!.click();
+      expect(view.callService).toHaveBeenCalledExactlyOnceWith("media_player", service, { entity_id: entityId });
+      expect(view.button("Turn on")).toBeNull();
+      expect(view.button("Turn off")).toBeNull();
+      view.card.setConfig({ type, entity: entityId, ...complete, ulm_card_media_player_power_button: false });
+      await view.card.updateComplete;
+      expect(view.button(label)).toBeNull();
+    }
+  });
+
+  it("does not substitute playback for a missing direction of one-sided hardware power", async () => {
+    const view = await render(complete, player("off", { supported_features: F.turnOff | F.play | F.stop }));
+    expect(view.button("Turn on")).toBeNull();
+    expect(view.button("Resume playback")).toBeNull();
+    expect(view.callService).not.toHaveBeenCalled();
+  });
+
   it("preserves legacy controls and label when arrays are omitted, but respects empty selections", async () => {
     const legacy = await render({}, player("playing", { supported_features: undefined }));
     expect(legacy.root.querySelector(".ulm-label")?.textContent).toBe("Spotify");
@@ -201,7 +231,7 @@ describe("Sonos Mushroom-compatible media controls", () => {
     [F.next, ["Next track"], false],
     [F.turnOff, ["Turn off"], false],
     [F.pause, ["Pause"], false],
-    [F.stop, ["Stop"], false],
+    [F.stop, ["Standby (stop playback)", "Stop"], false],
     [F.shuffle, ["Shuffle"], false],
     [F.repeat, ["Repeat: off"], false],
     [0, [], false],

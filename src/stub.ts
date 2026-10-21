@@ -1,6 +1,6 @@
 import type { AdditionConfig, CatalogItem, HomeAssistant } from "./types";
 import { populatedDefaultsFor } from "./defaults";
-import { sceneItemDefaultsFor } from "./scene-item-defaults";
+import { roomLightingSceneExample, sceneItemDefaultsFor } from "./scene-item-defaults";
 import { roomItemDefaultsFor } from "./room";
 import { sonosControlCount } from "./sonos-controls";
 import { inferConsolePlatform, resolveConsoleEntities } from "./console";
@@ -114,9 +114,7 @@ export const createStubConfig = (
       ? findEntityByDeviceClass(["temperature"]) ??
         findEntityByDeviceClass(["power", "energy"]) ??
         findEntity(["sensor"], [])
-        : descriptor.upstreamId === "card_media_player"
-            ? findEntity(["media_player"], ["office", "joris", "tv"])
-            : descriptor.upstreamId === "card_battery"
+        : descriptor.upstreamId === "card_battery"
               ? findEntityExcluding(["sensor"], ["battery", "level"], ["state", "charging"]) ??
                 findEntityByDeviceClass(["battery"], [], ["state", "charging"])
               : descriptor.upstreamId === "custom_card_pollen"
@@ -155,8 +153,11 @@ export const createStubConfig = (
       findHealthyEntity(["climate"], []) ??
       findHealthyEntity(["sensor"], [])
     : undefined;
-  const entity = scenePrimary ?? semanticPrimary ??
+  const fallbackEntity = scenePrimary ?? semanticPrimary ??
     firstMatchingEntity(descriptor, hass, entities, entitiesFallback);
+  const carouselExample = descriptor.upstreamId === "custom_card_entity_carousel"
+    ? roomLightingSceneExample(hass, fallbackEntity) : undefined;
+  const entity = carouselExample ? carouselExample.entity : fallbackEntity;
   const panelEntities = descriptor.upstreamId === "advanced_energy_panel_health"
     ? discoveredPanelEntities
     : undefined;
@@ -190,8 +191,6 @@ export const createStubConfig = (
   const tapAction = ["light", "switch", "input_boolean", "fan"].includes(entityDomain ?? "")
     ? { action: "toggle" }
     : { action: entity ? "more-info" : "none" };
-  const uniqueEntities = (candidates: Array<string | undefined>, limit: number): string[] =>
-    [...new Set(candidates.filter((value): value is string => Boolean(value)))].slice(0, limit);
   const inferredConsolePlatform = inferConsolePlatform(hass, entity);
   const stubTapAction = descriptor.upstreamId === "custom_card_sun" ||
     descriptor.upstreamId === "custom_card_pollen" ||
@@ -229,8 +228,7 @@ export const createStubConfig = (
     secondary: entity ? undefined : isText ? "Example" : "Preview",
     variant: defaultVariant,
     tap_action: stubTapAction,
-    show_controls: ["climate", "vacuum", "control"].includes(descriptor.family) ||
-      (descriptor.family === "media" && descriptor.upstreamId !== "card_media_player")
+    show_controls: ["climate", "vacuum", "control", "media"].includes(descriptor.family)
       ? true
       : undefined,
     show_forecast: descriptor.family === "weather",
@@ -365,13 +363,6 @@ export const createStubConfig = (
         humidity: findEntity(["sensor"], ["room", "humidity"]) ?? findEntity(["sensor"], ["humidity"]),
       }
       : {}),
-    ...(descriptor.upstreamId === "custom_card_room_overview"
-      ? {
-        ulm_custom_card_room_overview_light_entity: findEntity(["light"], ["room"]) ?? findEntity(["light"], []),
-        ulm_custom_card_room_overview_climate_entity: findEntity(["climate"], ["room"]) ?? findEntity(["climate"], []),
-        ulm_custom_card_room_overview_cover_entity: findEntity(["cover"], ["room"]) ?? findEntity(["cover"], []),
-      }
-      : {}),
     ...(descriptor.upstreamId === "custom_card_welcome"
       ? {
         ulm_card_welcome_collapse: findEntity(["input_boolean"], ["welcome"]),
@@ -475,11 +466,8 @@ export const createStubConfig = (
         carousel_coverflow_depth: 400,
         carousel_coverflow_modifier: 1,
         carousel_coverflow_slide_shadows: true,
-        carousel_items: uniqueEntities(entitiesFallback, 7).map((carouselEntity) => ({
-          entity: carouselEntity,
-          name: hass?.states[carouselEntity]?.attributes.friendly_name,
-          color: "primary",
-        })),
+        name: carouselExample?.name,
+        carousel_items: carouselExample?.items ?? [],
       }
       : {}),
   };

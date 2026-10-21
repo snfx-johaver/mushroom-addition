@@ -14,7 +14,7 @@ tokens but not a generic layout.
 | Battery | Threshold-colored battery icon, large percentage and level bar | `card_templates/cards/card_battery.yaml`, `docs/usage/cards/card_battery.md` |
 | Energy/power | Current value emphasis, source-specific graph, or gauge composition | `custom_cards/custom_card_more_power_outlet/` |
 | Sensor/graph | Current sensor reading plus deterministic compact history/sparkline treatment | `card_templates/2-line_cards/card_graph.yaml`, `docs/usage/cards/card_graph.md` |
-| Media | Artwork or app/device icon, title/state, optional transport controls | `card_templates/cards/card_media_player.yaml`, `docs/usage/cards/card_media_player.md` |
+| Media Player Advanced | Artwork or entity icon, title/state, capability-aware transport, volume and power/standby controls | `src/renderers.ts`, `src/sonos-controls.ts` |
 | Navigation | Direction icon, destination copy and trailing chevron | `card_templates/cards/card_navigate.yaml` |
 
 ## Source-derived composition coverage

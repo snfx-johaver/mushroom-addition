@@ -4,24 +4,22 @@ This manifest maps the documented card catalog to Mushroom Cards Addition
 registrations. It is generated from `src/catalog.ts`; CI rejects duplicate
 IDs, missing source paths, invalid namespaces, or broken popup mappings.
 
-**Coverage:** 23 documented upstream card sources map to
-27 public card components.
+**Coverage:** 21 documented upstream card sources map to
+25 public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
-of duplicate picker entries. 1 popup templates and
+of duplicate picker entries. 0 popup templates and
 1 implementation helpers are inventoried but are not
 public registrations.
 
 | Public ID | Category | Addition type | Family | UI variants | Covered source IDs |
 |---|---|---|---|---|---|
 | `card_battery` | default-card | `custom:mushroom-addition-card-battery` | battery | default | `card_battery` |
-| `card_media_player` | default-card | `custom:mushroom-addition-card-media-player` | media | default, controls, artwork | `card_media_player` |
 | `card_room` | default-card | `custom:mushroom-addition-card-room` | presence | default, with-sensors | `card_room` |
 | `card_scenes` | default-card | `custom:mushroom-addition-card-scenes` | scene | welcome-pills, scene-grid | `card_scenes`<br>`custom_card_scenes` |
 | `card_welcome_scenes` | default-card | `custom:mushroom-addition-card-welcome-scenes` | scene | default | `card_welcome_scenes` |
 | `custom_card_trash` | custom-card | `custom:mushroom-addition-custom-card-trash` | sensor | default | `custom_card_trash` |
 | `custom_card_alarm_time` | custom-card | `custom:mushroom-addition-custom-card-alarm-time` | alarm-time | default | `custom_card_alarm_time` |
 | `custom_card_roomview` | custom-card | `custom:mushroom-addition-custom-card-roomview` | presence | default | `custom_card_roomview` |
-| `custom_card_room_overview` | custom-card | `custom:mushroom-addition-custom-card-room-overview` | presence | default | `custom_card_room_overview` |
 | `custom_card_welcome` | custom-card | `custom:mushroom-addition-custom-card-welcome` | presence | default | `custom_card_welcome` |
 | `custom_card_washer` | custom-card | `custom:mushroom-addition-custom-card-washer` | control | default | `custom_card_washer` |
 | `custom_card_sun` | custom-card | `custom:mushroom-addition-custom-card-sun` | weather | default | `custom_card_sun` |
@@ -58,7 +56,7 @@ Standard Home Assistant actions are used instead.
 
 | Popup template | Addition component | Public behavior | Reference path |
 |---|---|---|---|
-| `popup_media_player` | `card_media_player` | Not exposed; use standard card actions | `reference_catalog/popups/popup_media_player.yaml` |
+
 
 ## Source-only helpers
 

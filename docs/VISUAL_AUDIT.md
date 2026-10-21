@@ -2,7 +2,7 @@
 
 This is the source-by-source acceptance ledger for the card catalog.
 
-**Progress: 0/23 fully E2E accepted. Stage totals — picker 0, editor 0, visual 0, states 0, interactions 0, live 0.**
+**Progress: 0/21 fully E2E accepted. Stage totals — picker 0, editor 0, visual 0, states 0, interactions 0, live 0.**
 
 An entry is fully accepted only when all six independent stages pass: picker,
 graphical editor, visual parity, state behavior, interactions, and live Home
@@ -17,14 +17,12 @@ metadata, and structural tests do not constitute acceptance.
 | Source | Category | Public card | Variant | Composition | Reference | Comparison | Picker | Editor | Visual | States | Interactions | Live | Reviewer notes | Exact deviations |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `card_battery` | default-card | `card_battery` | — | `card_battery` | Source: `reference_catalog/cards/card_battery.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
-| `card_media_player` | default-card | `card_media_player` | — | `card_media_player` | Source: `reference_catalog/cards/card_media_player.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `card_room` | default-card | `card_room` | — | `card_room` | Source: `reference_catalog/cards/card_room.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `card_scenes` | default-card | `card_scenes` | welcome-pills | `card_scenes:welcome-pills` | Source: `reference_catalog/cards/card_scenes_welcome.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `card_welcome_scenes` | default-card | `card_welcome_scenes` | — | `card_welcome_scenes` | Source: `reference_catalog/cards/card_welcome_scenes.yaml` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_trash` | custom-card | `custom_card_trash` | — | `custom_card_trash` | Source: `custom_cards/custom_card_trash` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_alarm_time` | custom-card | `custom_card_alarm_time` | — | `custom_card_alarm_time` | Source: `custom_cards/custom_card_alarm_time` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_roomview` | custom-card | `custom_card_roomview` | — | `custom_card_roomview` | Source: `custom_cards/custom_card_roomview` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
-| `custom_card_room_overview` | custom-card | `custom_card_room_overview` | — | `custom_card_room_overview` | Source: `custom_cards/custom_card_room_overview` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_welcome` | custom-card | `custom_card_welcome` | — | `custom_card_welcome` | Source: `custom_cards/custom_card_welcome` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_washer` | custom-card | `custom_card_washer` | — | `custom_card_washer` | Source: `custom_cards/custom_card_washer` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |
 | `custom_card_sun` | custom-card | `custom_card_sun` | — | `custom_card_sun` | Source: `custom_cards/custom_card_sun` | — | No | No | No | No | No | No | Historical attributed audit metadata was removed; this canonical card requires fresh certification. | — |

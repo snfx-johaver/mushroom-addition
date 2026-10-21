@@ -4,6 +4,22 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Updates to 0.0.1 (no version bump)
 
+- Renamed Media Player Sonos to Media Player Advanced. Its power control now uses
+  explicitly labelled standby/stop and resume actions on always-on players that
+  advertise playback but no hardware power capability.
+- Removed the separate basic Media Player card after verifying Advanced's power,
+  playback and volume controls, retaining the existing Sonos YAML type.
+- Removed Room Overview from the public catalogue, renderer, editor, examples
+  and source inventory. Room, Roomview and Area advanced are unchanged by removal.
+- Area advanced now derives its optional RGB accent from lights in the selected
+  area, respecting exclusions and on/off availability. Removed the redundant
+  light picker; old manual selections no longer override the area's lights.
+- Removed Entity Carousel's selected-tile border/inset ring while retaining
+  keyboard focus indicators. Added editable navigation, dots/count/progress
+  pagination, a draggable position scrollbar, and single-item Fade/Cube/Flip
+  effects alongside Slide/Coverflow, without adding an external dependency.
+  Catalogue examples now use healthy lighting scenes aligned to one room
+  instead of a mixture of unrelated entities.
 - Brought working generic media-player options to Sonos: a separate,
   capability-aware power switch, Sources/details, artist/album details,
   an optional playback target, custom volume steps and idle/standby collapse.

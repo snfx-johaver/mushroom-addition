@@ -12,6 +12,7 @@ import type {
 } from "./types";
 import { CATALOG, getCatalogItem, LEGACY_ALIASES } from "./catalog";
 import { clearCardIcon, fireEvent, migrateRoomLightConfig } from "./helpers";
+import { carouselControlEnabled } from "./entity-carousel";
 import { SONOS_CONTROLS } from "./sonos-controls";
 import { CONSOLE_ENTITIES } from "./console";
 import { editorHelper, localize } from "./localize";
@@ -73,6 +74,7 @@ const layoutFields = new Set([
   "carousel_effect", "carousel_grab_cursor", "carousel_centered_slides",
   "carousel_slides_per_view", "carousel_coverflow_rotate", "carousel_coverflow_stretch",
   "carousel_coverflow_depth", "carousel_coverflow_modifier", "carousel_coverflow_slide_shadows",
+  "carousel_navigation", "carousel_pagination", "carousel_pagination_type", "carousel_scrollbar",
 ]);
 const interactionFields = new Set([
   "tap_action", "hold_action", "double_tap_action", "navigation_path", "settings_path",
@@ -235,6 +237,11 @@ export class MushroomAdditionEditor extends LitElement {
         mini_graph_loading_indicator: miniGraphShow?.loading_indicator ?? true,
       } : {}),
       ...(item.upstreamId === "custom_card_entity_carousel" ? {
+        carousel_navigation: carouselControlEnabled(this.config, "navigation"),
+        carousel_pagination: carouselControlEnabled(this.config, "pagination"),
+        carousel_scrollbar: carouselControlEnabled(this.config, "scrollbar"),
+        carousel_pagination_type: this.config.carousel_pagination_type ??
+          (this.config.parameters?.pagination && typeof this.config.parameters.pagination === "object" ? this.config.parameters.pagination.type : undefined) ?? "bullets",
         carousel_effect: this.config.carousel_effect ??
           this.config.parameters?.effect ??
           "coverflow",

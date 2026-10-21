@@ -684,13 +684,12 @@ export class MushroomAreaAdvancedEditor extends LitElement {
     if (!editor._schema) throw new Error("This Home Assistant frontend cannot extend the Area editor Content schema.");
     const labels: Record<string, string> = { alert_color: "Alert icon color",
       sensor_wrap: "Wrap sensor values onto additional lines", sensor_icons: "Show small grey entity icons beside sensor values",
-      use_light_color: "Use the light color as the room accent", light_entity: "Room accent light" };
+      use_light_color: "Use the light color as the room accent" };
     const helpers: Record<string, string> = {
       alert_color: "Changes the colored alert circles, including the compact alert badge. Clear to use Home Assistant's default.",
       sensor_wrap: "Keeps all selected sensor classes visible instead of truncating a long row.",
       sensor_icons: "Uses each sensor entity's default icon. Values and aggregation remain controlled by Home Assistant.",
-      use_light_color: "Uses the configured light's RGB color for the active room card.",
-      light_entity: "Select a light or light group. Accent appears only while it is on with a valid RGB color.",
+      use_light_color: "Automatically uses an active RGB light in this card's area. No light selection is needed; excluded lights are ignored.",
     };
     const schema = editor._schema.bind(editor);
     const cache = new WeakMap<AreaEditorField[], AreaEditorField[]>();
@@ -703,7 +702,6 @@ export class MushroomAreaAdvancedEditor extends LitElement {
         { name: "sensor_wrap", selector: { boolean: {} } },
         { name: "sensor_icons", selector: { boolean: {} } },
         { name: "use_light_color", selector: { boolean: {} } },
-        { name: "light_entity", selector: { entity: { domain: "light" } } },
       ] });
         cache.set(base, extended);
       }

@@ -1,7 +1,7 @@
 import type { CatalogItem } from "./types";
 
 const baseCards = [
-  "battery", "media_player",
+  "battery",
   "room", "scenes",
   "welcome_scenes",
 ] as const;
@@ -9,7 +9,7 @@ const baseCards = [
 const customCards = [
   "trash", "alarm_time",
   "roomview",
-  "room_overview", "welcome",
+  "welcome",
   "washer", "sun",
   "input_datetime",
   "media_player_sonos",
@@ -53,12 +53,9 @@ const familyFor = (id: string): string => {
   return "entity";
 };
 
-export const UPSTREAM_VARIANTS = [
-  { id: "popup_media_player", component: "card_media_player", sourcePath: "reference_catalog/popups/popup_media_player.yaml" },
-] as const;
+export const UPSTREAM_VARIANTS: readonly { id: string; component: string; sourcePath: string }[] = [];
 
 const variants: Record<string, string[]> = {
-  card_media_player: ["default", "controls", "artwork"],
   card_room: ["default", "with-sensors"],
   card_scenes: ["list", "welcome"],
 };
@@ -123,6 +120,7 @@ const makeItem = (
     custom_card_pollen: "Pollen",
     custom_card_sun: "Astronomy",
     custom_card_entity_carousel: "Entity Carousel",
+    custom_card_media_player_sonos: "Media Player Advanced",
   };
   const displayDescriptions: Partial<Record<string, string>> = {
     custom_card_trash: "Mushroom-style trash collection schedule card.",
@@ -133,6 +131,7 @@ const makeItem = (
     custom_card_pollen: "Mushroom-style pollen level card.",
     custom_card_sun: "Mushroom-style Sun and Moon position, phase, timing, and ephemeris card.",
     custom_card_entity_carousel: "Dependency-free swipeable entity and action carousel with cover-flow navigation.",
+    custom_card_media_player_sonos: "Advanced media player with artwork, playback, volume, power or standby controls, shortcuts and optional Sonos sound settings.",
   };
   return {
     upstreamId,

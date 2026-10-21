@@ -482,7 +482,18 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         select("carousel_effect", [
           { value: "coverflow", label: "Coverflow" },
           { value: "slide", label: "Slide" },
+          { value: "fade", label: "Fade" },
+          { value: "cube", label: "Cube" },
+          { value: "flip", label: "Flip" },
         ]),
+        toggle("carousel_navigation"),
+        toggle("carousel_pagination"),
+        select("carousel_pagination_type", [
+          { value: "bullets", label: "Dots" },
+          { value: "fraction", label: "Item count" },
+          { value: "progressbar", label: "Progress bar" },
+        ]),
+        toggle("carousel_scrollbar"),
         toggle("carousel_grab_cursor"),
         toggle("carousel_centered_slides"),
         select("carousel_slides_per_view", [
@@ -687,20 +698,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
           entity(["group", domain], key),
           ...["tap", "hold", "double_tap"].map((gesture) => action(`${device}_${gesture}_action`)),
         ]),
-        ...presentation(),
-      ]
-    : item.upstreamId === "custom_card_room_overview"
-      ? [
-        entity(),
-        entity(["light"], "ulm_custom_card_room_overview_light_entity"),
-        entity(["climate"], "ulm_custom_card_room_overview_climate_entity"),
-        entity(["cover"], "ulm_custom_card_room_overview_cover_entity"),
-        { name: "ulm_card_room_overview_light_icon_on", selector: { icon: {} } },
-        { name: "ulm_card_room_overview_light_icon_off", selector: { icon: {} } },
-        { name: "ulm_card_room_overview_cover_icon_open", selector: { icon: {} } },
-        { name: "ulm_card_room_overview_cover_icon_closed", selector: { icon: {} } },
-        toggle("ulm_card_dynamic_color"),
-        text("secondary"),
         ...presentation(),
       ]
     : item.upstreamId === "custom_card_welcome"

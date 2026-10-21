@@ -97,7 +97,6 @@ const entityFor: Record<string, string | undefined> = {
   card_binary_sensor_alert: "binary_sensor.window",
   card_generic: "sensor.temperature",
   card_generic_swap: "sensor.temperature",
-  card_media_player: "media_player.tv",
   card_room: "light.kitchen",
   card_scenes: "scene.relax",
   card_welcome_scenes: "scene.relax",
@@ -109,7 +108,6 @@ const referenceFor: Record<string, string> = {
   card_binary_sensor_alert: "card_binary_sensor_alert.png",
   card_generic: "card_generic.png",
   card_generic_swap: "card_generic_swap.png",
-  card_media_player: "card_media_player_art_controls.png",
   card_navigate: "card_navigate.png",
   card_room: "room-card.png",
   card_scenes: "card_scenes.png",
@@ -156,10 +154,6 @@ const variantsFor = (sourceId: string, base: AdditionConfig): AdditionConfig[] =
     case "card_binary_sensor_alert": return [
       { ...base, entity: "binary_sensor.window" },
       { ...base, entity: "binary_sensor.window_closed" },
-    ];
-    case "card_media_player": return [
-      { ...base, show_controls: false, ulm_card_media_player_enable_art: false },
-      { ...base, show_controls: true, ulm_card_media_player_enable_art: true, ulm_card_media_player_enable_controls: true },
     ];
     case "card_room": return [{
       ...base,

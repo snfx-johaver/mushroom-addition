@@ -262,14 +262,6 @@ const fixtures: Fixture[] = [
     humidity: "sensor.room_humidity",
   } },
   { id: "elapsed-time", entity: "input_datetime.cat_litter", reference: "custom_card_elapsed_time.png", width: 320, config: { icon: "mdi:toilet" } },
-  { id: "room-overview", entity: "light.room", reference: "custom_card_room_overview_light.png", width: 320, config: {
-    name: "Living room",
-    icon: "mdi:sofa",
-    ulm_custom_card_room_overview_light_entity: "light.room",
-    ulm_custom_card_room_overview_climate_entity: "climate.living",
-    ulm_custom_card_room_overview_cover_entity: "cover.room",
-    secondary: "🌡️ 23 °C  💧 67%",
-  } },
   { id: "welcome", entity: "person.lewis", reference: "custom_card_welcome_light.png", width: 420, config: {
     name: "Lewis",
     ulm_card_welcome_collapse: "input_boolean.welcome_toggle",

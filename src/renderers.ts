@@ -473,93 +473,6 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const renderMedia = (ctx: RenderContext): TemplateResult => {
-  const picture = configured<boolean>(ctx, "ulm_card_media_player_enable_art") === false
-    ? undefined
-    : attr(ctx.entity, "entity_picture");
-  const consoleIcon = "mdi:sony-playstation";
-  const controlsEntity = configured<string>(ctx, "ulm_card_media_player_player_controls_entity") || ctx.config.entity;
-  const controlsState = controlsEntity ? ctx.hass.states[controlsEntity] : ctx.entity;
-  const controllable = controlsEntity?.startsWith("media_player.") === true;
-  const collapsed = configured<boolean>(ctx, "ulm_card_media_player_collapsible") === true && (
-    ["off", "standby"].includes(ctx.entity?.state ?? "") ||
-    (configured<boolean>(ctx, "ulm_card_media_player_idle_off") === true && ctx.entity?.state === "idle")
-  );
-  const showControls = !collapsed && (
-    ctx.config.show_controls === true ||
-    configured<boolean>(ctx, "ulm_card_media_player_enable_controls") === true
-  );
-  const volumeStep = configured<number>(ctx, "ulm_card_media_player_enable_volume_adjust") ||
-    (attr(controlsState, "device_class") === "speaker" ? .05 :
-      attr(controlsState, "device_class") === "tv" ? .01 : .025);
-  const volume = Number(attr(controlsState, "volume_level") ?? 0);
-  const sourceAction: ActionConfig = { action: "more-info" };
-  const active = activeStates.has(ctx.entity?.state ?? "");
-  const mediaColor = configuredColor(
-    configured<string>(ctx, "ulm_card_media_player_color"),
-    "rgb(var(--rgb-blue, 33, 150, 243))",
-  );
-  return ctx.actionSurface(`ulm-media ${picture ? "has-art" : ""} ${collapsed ? "is-collapsed" : ""}`, html`
-    ${picture ? html`<span class="media-art" style=${`background-image:url("${String(picture)}")`}></span>` : nothing}
-    <div class="media-summary">
-      ${sourceIconBubble(ctx, icon(ctx, ctx.descriptor.upstreamId === "custom_card_playstation" ? consoleIcon : "mdi:speaker"), mediaColor, active)}
-      ${heading(ctx, configured<boolean>(ctx, "ulm_card_media_player_more_info") === true
-        ? [attr(ctx.entity, "media_artist"), attr(ctx.entity, "media_album_name")].filter(Boolean).join(" · ") || stateLabel(ctx.entity)
-        : String(attr(ctx.entity, "media_album_name") ?? attr(ctx.entity, "media_artist") ?? stateLabel(ctx.entity)))}
-    </div>
-    ${configured<boolean>(ctx, "ulm_card_media_player_power_button") === true ? html`
-      <div class="media-power">${button("Toggle power", "mdi:power", (event) => {
-        event.stopPropagation();
-        ctx.service("homeassistant", "toggle", { entity_id: ctx.config.entity });
-      })}</div>
-    ` : nothing}
-    ${controllable && showControls ? html`<div class="ulm-controls media-controls">
-      ${button("Previous", "mdi:skip-previous", (event) => { event.stopPropagation(); ctx.service("media_player", "media_previous_track", { entity_id: controlsEntity }); })}
-      ${button(ctx.entity?.state === "playing" ? "Pause" : "Play", ctx.entity?.state === "playing" ? "mdi:pause" : "mdi:play", (event) => {
-        event.stopPropagation();
-        ctx.service("media_player", "media_play_pause", { entity_id: controlsEntity });
-      })}
-      ${button("Next", "mdi:skip-next", (event) => { event.stopPropagation(); ctx.service("media_player", "media_next_track", { entity_id: controlsEntity }); })}
-      ${button("Sources", "mdi:playlist-music", (event) => runControlAction(event, ctx, sourceAction, controlsEntity))}
-    </div>` : nothing}
-    ${controllable && !collapsed && configured<boolean>(ctx, "ulm_card_media_player_enable_volume_slider") === true ? html`
-      <input class="ulm-slider" type="range" min="0" max="100"
-        aria-label="Volume"
-        .value=${String(Math.round(volume * 100))}
-        @pointerdown=${(event: Event) => event.stopPropagation()}
-        @change=${(event: Event) => ctx.service("media_player", "volume_set", {
-          entity_id: controlsEntity,
-          volume_level: Number((event.target as HTMLInputElement).value) / 100,
-        })}>
-    ` : nothing}
-    ${controllable && !collapsed && configured<boolean>(ctx, "ulm_card_media_player_enable_volume_buttons") === true ? html`
-      <div class="ulm-controls media-volume-buttons">
-        ${button("Mute or unmute", "mdi:volume-mute", (event) => {
-          event.stopPropagation();
-          ctx.service("media_player", "volume_mute", {
-            entity_id: controlsEntity,
-            is_volume_muted: attr(controlsState, "is_volume_muted") !== true,
-          });
-        })}
-        ${button("Volume down", "mdi:volume-minus", (event) => {
-          event.stopPropagation();
-          ctx.service("media_player", "volume_set", {
-            entity_id: controlsEntity,
-            volume_level: Math.max(0, volume - volumeStep),
-          });
-        })}
-        ${button("Volume up", "mdi:volume-plus", (event) => {
-          event.stopPropagation();
-          ctx.service("media_player", "volume_set", {
-            entity_id: controlsEntity,
-            volume_level: Math.min(1, volume + volumeStep),
-          });
-        })}
-      </div>
-    ` : nothing}
-  `);
-};
-
 const renderSecurity = (ctx: RenderContext): TemplateResult => {
   const armed = ctx.entity?.state.startsWith("armed") || ctx.entity?.state === "locked";
   return ctx.actionSurface(`ulm-security ${armed ? "is-armed" : ""}`, html`
@@ -972,43 +885,6 @@ const renderWelcome = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const renderRoomOverview = (ctx: RenderContext): TemplateResult => {
-  const light = entityFromConfig(ctx, "ulm_custom_card_room_overview_light_entity");
-  const climate = entityFromConfig(ctx, "ulm_custom_card_room_overview_climate_entity");
-  const cover = entityFromConfig(ctx, "ulm_custom_card_room_overview_cover_entity");
-  const lightOn = light?.state === "on";
-  const brightness = numeric(attr(light, "brightness"));
-  const label = ctx.config.secondary || (light
-    ? lightOn && brightness ? `${Math.round(brightness / 2.55)}%` : stateLabel(light)
-    : stateLabel(ctx.entity));
-  const rgb = roomLightRgb(ctx.hass, light);
-  const dynamic = configured<boolean>(ctx, "ulm_card_dynamic_color") === true && rgb !== undefined;
-  const toggle = (event: Event, entity?: HassEntity): void => {
-    if (entity) runControlAction(event, ctx, { action: "toggle" }, entity.entity_id);
-  };
-  const control = (entity: HassEntity, kind: "light" | "climate" | "cover") => {
-    const iconName = kind === "light"
-      ? configured<string>(ctx, lightOn ? "ulm_card_room_overview_light_icon_on" : "ulm_card_room_overview_light_icon_off") || (lightOn ? "mdi:lightbulb" : "mdi:lightbulb-off")
-      : kind === "cover"
-        ? configured<string>(ctx, entity.state === "closed" ? "ulm_card_room_overview_cover_icon_closed" : "ulm_card_room_overview_cover_icon_open") || (entity.state === "closed" ? "mdi:roller-shade-closed" : "mdi:blinds-open")
-        : ({ auto: "mdi:autorenew", cool: "mdi:snowflake", heat: "mdi:fire", dry: "mdi:water", heat_cool: "mdi:sun-snowflake", fan_only: "mdi:fan", off: "mdi:snowflake-off" }[entity.state] ?? "mdi:thermostat");
-    return html`<button class="room-overview-control ${kind} state-${entity.state}" aria-label=${displayName({ type: "", entity: entity.entity_id }, entity, ctx.hass)}
-      ?disabled=${entity.state === "unavailable"} @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => toggle(event, entity)}>
-      <ha-icon .icon=${iconName}></ha-icon>
-    </button>`;
-  };
-  return ctx.actionSurface(`custom-room-overview ${dynamic ? "dynamic-color" : ""}`, html`
-    <div class="room-overview-main">
-      ${iconBubble(ctx, "mdi:sofa", lightOn ? "yellow" : "grey")}
-      ${heading(ctx, label)}
-    </div>
-    <div class="room-overview-controls">
-      ${light ? control(light, "light") : nothing}
-      ${cover ? control(cover, "cover") : climate ? control(climate, "climate") : nothing}
-    </div>
-  `, dynamic ? `--room-rgb:${rgb!.join(",")};` : "");
-};
-
 const renderWasher = (ctx: RenderContext): TemplateResult => {
   const power = entityFromConfig(ctx, "washer_power_entity") ??
     entityFromConfig(ctx, "power_entity") ??
@@ -1331,9 +1207,17 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
     button(label, iconName, (event) => { stopEvent(event); mediaService(service, data); }, controlsUnavailable);
   const powerOn = ["off", "standby"].includes(controlsState ?? "") || controlsUnavailable;
   const showPower = ctx.config.ulm_card_media_player_power_button ?? mediaControls.includes("on_off");
-  const powerControl = showPower &&
-    supports(powerOn ? SONOS_MEDIA_FEATURES.turnOn : SONOS_MEDIA_FEATURES.turnOff)
-    ? mediaButton(powerOn ? "Turn on" : "Turn off", "mdi:power", powerOn ? "turn_on" : "turn_off")
+  const playbackPower = !supports(SONOS_MEDIA_FEATURES.turnOn | SONOS_MEDIA_FEATURES.turnOff);
+  const powerService = supports(powerOn ? SONOS_MEDIA_FEATURES.turnOn : SONOS_MEDIA_FEATURES.turnOff)
+    ? powerOn ? "turn_on" : "turn_off"
+    : playbackPower && ["playing", "paused", "buffering"].includes(controlsState ?? "") && supports(SONOS_MEDIA_FEATURES.stop)
+      ? "media_stop"
+      : playbackPower && ["idle", "on", "off", "standby"].includes(controlsState ?? "") && supports(SONOS_MEDIA_FEATURES.play)
+        ? "media_play" : undefined;
+  const powerLabel = powerService === "media_stop" ? "Standby (stop playback)"
+    : powerService === "media_play" ? "Resume playback" : powerOn ? "Turn on" : "Turn off";
+  const powerControl = showPower && powerService
+    ? mediaButton(powerLabel, "mdi:power", powerService)
     : nothing;
   const playing = controlsState === "playing";
   const playbackService = features === undefined
@@ -1781,7 +1665,7 @@ const renderEntityCarousel = (ctx: RenderContext): TemplateResult => {
       ${showPresentation ? html`
         <div class="metric-heading entity-carousel-presentation">
           ${sourceIconBubble(ctx, icon(ctx, "mdi:view-carousel"), "var(--primary-color)", true)}
-          ${heading(ctx, stateLabel(ctx.entity), ctx.descriptor.name)}
+          ${heading(ctx, stateLabel(ctx.entity), ctx.config.name ? displayName(ctx.config, ctx.entity, ctx.hass) : ctx.descriptor.name)}
         </div>
       ` : nothing}
       <mushroom-addition-entity-carousel
@@ -2439,11 +2323,9 @@ const renderGeneric = (ctx: RenderContext): TemplateResult => {
 export const renderByFamily = (ctx: RenderContext): TemplateResult => {
   switch (ctx.descriptor.upstreamId) {
     case "card_battery": return renderDefaultBattery(ctx);
-    case "card_media_player": return renderMedia(ctx);
     case "custom_card_trash": return renderTrash(ctx);
     case "custom_card_alarm_time": return renderAlarmTimeCard(ctx);
     case "custom_card_roomview": return renderRoomView(ctx);
-    case "custom_card_room_overview": return renderRoomOverview(ctx);
     case "custom_card_welcome": return renderWelcome(ctx);
     case "custom_card_washer": return renderWasher(ctx);
     case "custom_card_sun": return renderSunCard(ctx);
@@ -2473,7 +2355,7 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "battery": return renderBattery(ctx);
     case "energy":
     case "sensor": return renderMetric(ctx);
-    case "media": return renderMedia(ctx);
+    case "media": return renderSonos(ctx);
     case "security": return renderSecurity(ctx);
     case "navigation": return renderNavigation(ctx);
     case "control": return renderControl(ctx);

@@ -50,8 +50,8 @@ describe("entity-driven default header icons", () => {
   it("does not mistake linked metric/control icons for a header override, while retaining real legacy header overrides", () => {
     expect(normalizeConfig({ type: "custom:mushroom-addition-custom-card-nas-metrics",
       disk_icon: "mdi:harddisk", temperature_icon: "mdi:thermometer" }).icon).toBeUndefined();
-    const config = { type: "custom:mushroom-addition-card-media-player", ulm_card_media_player_icon: "mdi:television" };
-    expect(normalizeConfig(config).icon).toBe("mdi:television");
+    const config = { type: "custom:mushroom-addition-card-battery", ulm_card_battery_icon: "mdi:battery" };
+    expect(normalizeConfig(config).icon).toBe("mdi:battery");
     expect(normalizeConfig(clearCardIcon(config)).icon).toBeUndefined();
   });
 });

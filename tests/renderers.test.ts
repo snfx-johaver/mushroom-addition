@@ -504,7 +504,6 @@ describe("family renderers", () => {
 
   it.each([
     ["card_battery", "mushroom-addition-card-battery", "sensor.battery", "ulm-default-battery", "battery-track"],
-    ["card_media_player", "mushroom-addition-card-media-player", "media_player.tv", "ulm-media", "sparkline"],
     ["card_room", "mushroom-addition-card-room", "light.kitchen", "ulm-room", "sparkline"],
     ["card_scenes", "mushroom-addition-card-scenes", "scene.relax", "scene-pills", "sparkline"],
     ["card_welcome_scenes", "mushroom-addition-card-welcome-scenes", "scene.relax", "welcome-scenes", "sparkline"],
@@ -609,7 +608,7 @@ describe("family renderers", () => {
   it.each([
     ["scene", "mushroom-addition-card-scenes", "scene.relax", "scene-grid"],
     ["battery", "mushroom-addition-card-battery", "sensor.battery", "ulm-default-battery"],
-    ["media", "mushroom-addition-card-media-player", "media_player.tv", "ulm-media"],
+    ["media", "mushroom-addition-custom-card-media-player-sonos", "media_player.tv", "custom-sonos"],
   ])("renders distinct %s markup", async (_family, tag, entity, marker) => {
     const item = CATALOG.find((entry) => entry.tag === tag)!;
     const markup = await render(tag, {
@@ -866,7 +865,7 @@ describe("family renderers", () => {
     const signatures = {
       scene: familySignature(await render("mushroom-addition-card-scenes", { type: "custom:mushroom-addition-card-scenes", entity: "scene.relax", entities: ["scene.relax"] })),
       battery: familySignature(await render("mushroom-addition-card-battery", { type: "custom:mushroom-addition-card-battery", entity: "sensor.battery" })),
-      media: familySignature(await render("mushroom-addition-card-media-player", { type: "custom:mushroom-addition-card-media-player", entity: "media_player.tv" })),
+      media: familySignature(await render("mushroom-addition-custom-card-media-player-sonos", { type: "custom:mushroom-addition-custom-card-media-player-sonos", entity: "media_player.tv" })),
     };
     expect(signatures).toMatchInlineSnapshot(`
       {
@@ -879,11 +878,11 @@ describe("family renderers", () => {
           "ulm-label",
         ],
         "media": [
-          "ulm-media",
           "ulm-icon",
           "ulm-copy",
           "ulm-name",
           "ulm-label",
+          "ulm-control",
         ],
         "scene": [
           "ulm-scenes",

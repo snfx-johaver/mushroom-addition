@@ -26,8 +26,10 @@ export interface HomeAssistant {
   config?: { unit_system?: { temperature?: string } };
   entities?: Record<string, {
     device_id?: string | null;
+    area_id?: string | null;
     platform?: string;
   }>;
+  devices?: Record<string, { area_id?: string | null }>;
   language?: string;
   user?: { name?: string };
   localize?: (key: string) => string;
@@ -132,8 +134,14 @@ export interface CarouselCoverflowEffectConfig {
   slideShadows?: boolean;
 }
 
+export type CarouselEffect = "slide" | "coverflow" | "fade" | "cube" | "flip";
+export type CarouselPagination = "bullets" | "fraction" | "progressbar";
+
 export interface CarouselParametersConfig {
-  effect?: "slide" | "coverflow";
+  effect?: CarouselEffect;
+  pagination?: boolean | { enabled?: boolean; type?: CarouselPagination };
+  navigation?: boolean | { enabled?: boolean };
+  scrollbar?: boolean | { enabled?: boolean };
   grabCursor?: boolean;
   centeredSlides?: boolean;
   slidesPerView?: "auto" | number;
@@ -182,7 +190,11 @@ export interface AdditionConfig extends RoomViewDeviceActions {
   carousel_show_labels?: boolean;
   carousel_visible_items?: number;
   carousel_initial_index?: number;
-  carousel_effect?: "slide" | "coverflow";
+  carousel_effect?: CarouselEffect;
+  carousel_pagination?: boolean;
+  carousel_pagination_type?: CarouselPagination;
+  carousel_navigation?: boolean;
+  carousel_scrollbar?: boolean;
   carousel_grab_cursor?: boolean;
   carousel_centered_slides?: boolean;
   carousel_slides_per_view?: "auto" | number | string;
