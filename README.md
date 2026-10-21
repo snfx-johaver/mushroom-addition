@@ -88,6 +88,25 @@ For implementation details, see the [parity matrix](docs/PARITY_MATRIX.md) and
 [visual specification](docs/VISUAL_SPEC.md). All 33 language catalogs have
 complete message coverage; independent native-speaker review is still welcome.
 
+## Roots and references
+
+Good mushrooms don't grow in a vacuum. Thanks to these projects for the
+design ideas, configuration references and behavior that helped this one grow:
+
+| Project | Contribution |
+|---|---|
+| [Mushroom](https://github.com/piitaya/lovelace-mushroom) | Visual style, presentation conventions and translation guidance. |
+| [UI Lovelace Minimalist](https://github.com/UI-Lovelace-Minimalist/UI) | Card concepts and YAML references for Battery, Room, Scenes, Trash, Washer, Printer, Plant and more. |
+| [Mini Graph Card](https://github.com/kalkih/mini-graph-card) | Mini Graph configuration and chart behavior; see the third-party notices below. |
+| [Upcoming Media Card](https://github.com/custom-cards/upcoming-media-card) | Upcoming Media data formats, artwork and media-list features. |
+| [TV Card](https://github.com/usernein/tv-card) | Remote controls, touchpad and haptic interaction references. |
+| [Pi-hole Card](https://github.com/homeassistant-extras/pi-hole-card) | Pi-hole statistics and blocking-control references. |
+| [Home Assistant](https://github.com/home-assistant/frontend) | Native editors, selectors, actions, entity formatting and the Area card used by Advanced Area. |
+
+These are references, not a shopping list of required installations.
+Mushroom Addition works without the separate custom cards above. Individual
+cards still need suitable Home Assistant entities or integrations for their data.
+
 ## License
 
 [MIT](LICENSE). Required attribution is retained in
