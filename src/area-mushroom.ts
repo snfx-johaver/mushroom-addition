@@ -73,7 +73,7 @@ export async function applyMushroomAreaPresentation(element: HTMLElement, observ
     root.append(style);
   }
   await Promise.all([...root.querySelectorAll<HTMLElement>(
-    "ha-tile-container, ha-tile-info, ha-tile-icon, hui-card-features, hui-area-controls-card-feature, mushroom-addition-area-controls-advanced, hui-conditional-card",
+    "ha-tile-container, ha-tile-info, ha-tile-icon, hui-card-features, hui-card-feature, hui-area-controls-card-feature, mushroom-addition-area-controls-advanced, hui-conditional-card",
   )].map(child => applyMushroomAreaPresentation(child, observer)));
 }
 

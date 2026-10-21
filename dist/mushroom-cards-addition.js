@@ -44928,9 +44928,11 @@ Ne.styles = Ee`
     .art { position: relative; display: grid; flex: 0 0 auto; place-items: center; width: calc((var(--item-height) - 24px) * 2 / 3); height: 100%; border-radius: max(0px, calc(var(--radius) - 4px)); overflow: hidden; background: var(--addition-neutral-background); color: var(--secondary-text-color); }
     .art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .art ha-icon { --mdc-icon-size: 28px; }
-    .copy { position: relative; display: grid; gap: 4px; flex: 1; min-width: 0; }
+    .copy { position: relative; display: grid; gap: 4px; flex: 1; min-width: 0; max-height: 100%; overflow: hidden; }
     .title { font-size: var(--title-size); line-height: var(--mush-card-primary-line-height, 20px); font-weight: var(--mush-card-primary-font-weight, 500); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--title-color, var(--mush-card-primary-color, inherit)); }
     .line { font-size: var(--line-size); line-height: var(--mush-card-secondary-line-height, 16px); font-weight: var(--mush-card-secondary-font-weight, 400); color: var(--mush-card-secondary-color, var(--secondary-text-color)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .title, .more, .close { letter-spacing: var(--mush-card-primary-letter-spacing, .1px); }
+    .line { letter-spacing: var(--mush-card-secondary-letter-spacing, .4px); }
     .flag { position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; color: var(--flag-color); background: var(--card-background-color, #fff); }
     .flag ha-icon { --mdc-icon-size: 16px; }
     .item:has(.flag) .title { padding-right: 26px; }
@@ -45647,6 +45649,8 @@ ia.styles = Ee`
     .metric ha-icon { display: grid; place-items: center; width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); border-radius: 50%; background: color-mix(in srgb, var(--accent) 20%, transparent); --mdc-icon-size: var(--mush-icon-symbol-size, 24px); color: var(--accent); grid-row: span 2; align-self: center; }
     .value { color: var(--mush-card-primary-color, var(--primary-text-color)); font-size: var(--mush-card-primary-font-size, 14px); line-height: var(--mush-card-primary-line-height, 20px); font-weight: var(--mush-card-primary-font-weight, 500); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .label { color: var(--mush-card-secondary-color, var(--secondary-text-color)); font-size: var(--mush-card-secondary-font-size, 12px); line-height: var(--mush-card-secondary-line-height, 16px); font-weight: var(--mush-card-secondary-font-weight, 400); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    summary, .value, .entity, .duration { letter-spacing: var(--mush-card-primary-letter-spacing, .1px); }
+    .label, .entity .state { letter-spacing: var(--mush-card-secondary-letter-spacing, .4px); }
     .list, .pause { display: grid; gap: 8px; }
     .entity { display: flex; align-items: center; gap: 12px; width: 100%; box-sizing: border-box; min-height: var(--mush-control-height, 42px); padding: 8px 12px; border: 0; border-radius: var(--mush-control-border-radius, 12px); background: var(--addition-neutral-background); text-align: left; min-width: 0; color: var(--mush-card-primary-color, var(--primary-text-color)); font-size: var(--mush-card-primary-font-size, 14px); line-height: var(--mush-card-primary-line-height, 20px); font-weight: var(--mush-card-primary-font-weight, 500); }
     .entity ha-icon { --mdc-icon-size: 24px; color: var(--accent); flex-shrink: 0; }
@@ -50484,6 +50488,8 @@ const v_ = Ee`
   .pollen-extreme ha-icon { --mdc-icon-size: 11px; }
   .custom-pollen b { overflow: hidden; max-width: 100%; color: var(--mush-card-primary-color, var(--primary-text-color)); font-size: var(--mush-card-primary-font-size, 14px); line-height: var(--mush-card-primary-line-height, 20px); font-weight: var(--mush-card-primary-font-weight, 500); text-overflow: ellipsis; white-space: nowrap; }
   .custom-pollen small { max-width: 100%; color: var(--mush-card-secondary-color, var(--secondary-text-color)); font-size: var(--mush-card-secondary-font-size, 12px); line-height: var(--mush-card-secondary-line-height, 16px); font-weight: var(--mush-card-secondary-font-weight, 400); overflow-wrap: anywhere; }
+  .nas-metrics-tile b, .nas-metrics-metrics b, .tablet-metrics b, .tablet-battery-row b, .tablet-battery-bar b, .console-social b, .console-controls button, .speedtest-value-copy b, .custom-pollen b { letter-spacing: var(--mush-card-primary-letter-spacing, .1px); }
+  .nas-metrics-tile small, .nas-metrics-metrics small, .tablet-metrics small, .tablet-battery-row small, .console-top-stats b, .speedtest-value-copy small, .custom-pollen small { letter-spacing: var(--mush-card-secondary-letter-spacing, .4px); }
   .advanced-energy-management {
     box-sizing: border-box;
     padding: 12px;
@@ -54393,7 +54399,7 @@ async function Hr(e, a) {
     i.dataset.areaMushroom = "", i.textContent = n, t.append(i);
   }
   await Promise.all([...t.querySelectorAll(
-    "ha-tile-container, ha-tile-info, ha-tile-icon, hui-card-features, hui-area-controls-card-feature, mushroom-addition-area-controls-advanced, hui-conditional-card"
+    "ha-tile-container, ha-tile-info, ha-tile-icon, hui-card-features, hui-card-feature, hui-area-controls-card-feature, mushroom-addition-area-controls-advanced, hui-conditional-card"
   )].map((i) => Hr(i, a)));
 }
 const On = class On extends Ve {

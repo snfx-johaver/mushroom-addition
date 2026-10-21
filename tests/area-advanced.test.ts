@@ -120,6 +120,15 @@ describe("native Area card delegation", () => {
     expect(comparison.shadowRoot!.querySelectorAll("style[data-area-mushroom]")).toHaveLength(1);
     expect(info.shadowRoot!.querySelector("style")?.textContent).toContain("--mush-card-primary-font-weight, 500");
     expect(info.shadowRoot!.querySelector("style")?.textContent).toContain("--mush-card-secondary-line-height, 16px");
+    const features = document.createElement("hui-card-features");
+    const feature = document.createElement("hui-card-feature");
+    const controls = document.createElement("hui-area-controls-card-feature");
+    features.attachShadow({ mode: "open" }).append(feature);
+    feature.attachShadow({ mode: "open" }).append(controls);
+    controls.attachShadow({ mode: "open" }).innerHTML = "<ha-control-button></ha-control-button>";
+    comparison.shadowRoot!.append(features);
+    await applyMushroomAreaPresentation(comparison);
+    expect(controls.shadowRoot!.querySelector("style")?.textContent).toContain("--mush-control-height, 42px");
   });
   it("localizes the missing-area message when Home Assistant arrives after configuration", async () => {
     const card = document.createElement(AREA_TAG) as MushroomAreaAdvancedCard;

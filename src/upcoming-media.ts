@@ -207,9 +207,11 @@ export class MushroomUpcomingMedia extends LitElement {
     .art { position: relative; display: grid; flex: 0 0 auto; place-items: center; width: calc((var(--item-height) - 24px) * 2 / 3); height: 100%; border-radius: max(0px, calc(var(--radius) - 4px)); overflow: hidden; background: var(--addition-neutral-background); color: var(--secondary-text-color); }
     .art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .art ha-icon { --mdc-icon-size: 28px; }
-    .copy { position: relative; display: grid; gap: 4px; flex: 1; min-width: 0; }
+    .copy { position: relative; display: grid; gap: 4px; flex: 1; min-width: 0; max-height: 100%; overflow: hidden; }
     .title { font-size: var(--title-size); line-height: var(--mush-card-primary-line-height, 20px); font-weight: var(--mush-card-primary-font-weight, 500); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--title-color, var(--mush-card-primary-color, inherit)); }
     .line { font-size: var(--line-size); line-height: var(--mush-card-secondary-line-height, 16px); font-weight: var(--mush-card-secondary-font-weight, 400); color: var(--mush-card-secondary-color, var(--secondary-text-color)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .title, .more, .close { letter-spacing: var(--mush-card-primary-letter-spacing, .1px); }
+    .line { letter-spacing: var(--mush-card-secondary-letter-spacing, .4px); }
     .flag { position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; color: var(--flag-color); background: var(--card-background-color, #fff); }
     .flag ha-icon { --mdc-icon-size: 16px; }
     .item:has(.flag) .title { padding-right: 26px; }

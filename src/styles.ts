@@ -707,6 +707,8 @@ export const sharedStyles = css`
   .pollen-extreme ha-icon { --mdc-icon-size: 11px; }
   .custom-pollen b { overflow: hidden; max-width: 100%; color: var(--mush-card-primary-color, var(--primary-text-color)); font-size: var(--mush-card-primary-font-size, 14px); line-height: var(--mush-card-primary-line-height, 20px); font-weight: var(--mush-card-primary-font-weight, 500); text-overflow: ellipsis; white-space: nowrap; }
   .custom-pollen small { max-width: 100%; color: var(--mush-card-secondary-color, var(--secondary-text-color)); font-size: var(--mush-card-secondary-font-size, 12px); line-height: var(--mush-card-secondary-line-height, 16px); font-weight: var(--mush-card-secondary-font-weight, 400); overflow-wrap: anywhere; }
+  .nas-metrics-tile b, .nas-metrics-metrics b, .tablet-metrics b, .tablet-battery-row b, .tablet-battery-bar b, .console-social b, .console-controls button, .speedtest-value-copy b, .custom-pollen b { letter-spacing: var(--mush-card-primary-letter-spacing, .1px); }
+  .nas-metrics-tile small, .nas-metrics-metrics small, .tablet-metrics small, .tablet-battery-row small, .console-top-stats b, .speedtest-value-copy small, .custom-pollen small { letter-spacing: var(--mush-card-secondary-letter-spacing, .4px); }
   .advanced-energy-management {
     box-sizing: border-box;
     padding: 12px;
