@@ -4,6 +4,10 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## [0.5.0] - 2026-10-21
 
+- Fix "Unknown item" color-picker warnings in Upcoming Media and other cards
+  by registering theme and custom default colors as native picker choices.
+  Automatic colors stay theme-aware and do not write overrides into the card.
+
 - Renamed the project and repository to Mushroom Addition, with a refreshed
   introduction and a big thank-you to Mushroom. Existing card types and the
   installed JavaScript filename remain compatible.

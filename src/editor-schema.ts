@@ -81,7 +81,18 @@ const colorDefaults: Record<string, string> = {
 };
 const color = (name: string): EditorField => ({
   name,
-  selector: { ui_color: { default_color: colorDefaults[name] } },
+  selector: {
+    ui_color: {
+      default_color: colorDefaults[name],
+      ...(/^(var\(|#)/.test(colorDefaults[name] ?? "") ? {
+        extra_options: [{
+          value: colorDefaults[name],
+          label: colorDefaults[name].startsWith("var(") ? "Automatic" : colorDefaults[name],
+          display_color: colorDefaults[name],
+        }],
+      } : {}),
+    },
+  },
 });
 const presentationField = (field: EditorField): EditorField => ({ ...field, presentation: true });
 const presentationGrid = (schema: EditorField[]): EditorField => ({

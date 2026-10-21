@@ -6,6 +6,7 @@ import { upstreamEditorSchemaFor } from "../src/editor-schema";
 import { additionalEditorSchemaFor } from "../src/editor-schema";
 import { defaultIconFor, populatedDefaultsFor } from "../src/defaults";
 import type { EditorField } from "../src/editor-schema";
+import { localizeEditorSchema } from "../src/localized-schema";
 
 const flattenSchema = (schema: EditorField[]): EditorField[] =>
   schema.flatMap((field) => field.schema ? flattenSchema(field.schema) : field);
@@ -148,6 +149,39 @@ describe("family editor schemas", () => {
   it("uses clear labels without legacy contributor terminology", () => {
     expect(localize(undefined, "show_name")).toBe("Show name");
     expect(localize(undefined, "ulm_language")).not.toMatch(/\bUlm\b/i);
+  });
+
+  it("registers non-palette defaults as valid color choices without changing their values", () => {
+    for (const item of CATALOG) {
+      for (const field of flattenSchema([...editorSchemaFor(item), ...upstreamEditorSchemaFor(item)])) {
+        const selector = field.selector?.ui_color as {
+          default_color?: string;
+          extra_options?: Array<{ value: string; label: string; display_color: string }>;
+        } | undefined;
+        if (!selector?.default_color || !/^(var\(|#)/.test(selector.default_color)) continue;
+        expect(selector.extra_options).toContainEqual({
+          value: selector.default_color,
+          label: selector.default_color.startsWith("var(") ? "Automatic" : selector.default_color,
+          display_color: selector.default_color,
+        });
+      }
+    }
+  });
+
+  it("localizes automatic media colors while preserving theme expressions", () => {
+    const media = CATALOG.find(item => item.upstreamId === "upcoming_media")!;
+    const fields = flattenSchema(localizeEditorSchema({ language: "nl" } as Parameters<typeof localizeEditorSchema>[0], editorSchemaFor(media)));
+    for (const name of ["title", "line1", "line2", "line3", "line4", "flag"]) {
+      const selector = fields.find(field => field.name === `upcoming_${name}_color`)?.selector?.ui_color as {
+        default_color: string;
+        extra_options: Array<{ value: string; label: string; display_color: string }>;
+      };
+      expect(selector.extra_options).toEqual([{
+        value: selector.default_color,
+        label: "Automatisch",
+        display_color: selector.default_color,
+      }]);
+    }
   });
 
   it("explains every standard editor field", () => {
