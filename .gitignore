@@ -3,3 +3,8 @@ coverage/
 .playwright-mcp/
 .tmp-reference-catalog/
 *.log
+/docs/assets/**/*.png
+/docs/assets/**/*.jpg
+/docs/assets/**/*.jpeg
+/docs/assets/**/*.webp
+/docs/assets/**/*.gif

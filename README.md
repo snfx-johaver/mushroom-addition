@@ -673,6 +673,10 @@ update `src/catalog.ts` when upstream coverage changes. Run
 `npm run docs:catalog` after catalog edits and `npm run validate` before opening
 a pull request.
 
+Keep live household screenshots and raw Home Assistant audit exports outside
+the repository. Use synthetic entities and sanitized fixtures for examples;
+raster screenshots under `docs/assets/` are ignored to prevent accidental uploads.
+
 ## License
 
 Mushroom Addition is MIT licensed. Mushroom and Home Assistant
