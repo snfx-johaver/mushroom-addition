@@ -1,12 +1,5 @@
 # Third-Party Notices
 
-## mini-graph-card
-
-The integrated Mini Graph Card implements the public configuration and behavior
-of [kalkih/mini-graph-card](https://github.com/kalkih/mini-graph-card).
-
-Copyright (c) 2018-2019 Karl Kihlström
-
 Licensed under the MIT License:
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
