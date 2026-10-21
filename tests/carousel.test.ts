@@ -206,6 +206,14 @@ describe("Carousel entity defaults and gestures", () => {
       expect(card.shadowRoot!.querySelector(".navigation, .pagination, .scrollbar")).toBeNull();
     });
 
+    it("wraps pagination dots on narrow cards without an overflow scrollbar", () => {
+      const styles = MushroomAdditionEntityCarousel.styles.cssText;
+      const bullets = styles.match(/\.pagination.bullets \{[^}]+\}/)?.[0];
+      expect(bullets).toContain("flex-wrap: wrap");
+      expect(bullets).not.toContain("overflow-x: auto");
+      expect(styles).toContain("flex: 0 0 24px");
+    });
+
     it("keeps tile surfaces solid and borderless with keyboard focus and reduced motion", () => {
       const styles = MushroomAdditionEntityCarousel.styles.cssText;
       expect(styles).not.toContain("gradient(");

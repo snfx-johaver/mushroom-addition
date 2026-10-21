@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Wrap carousel pagination dots on narrow cards instead of adding a horizontal
+  overflow scrollbar; preserve the separately configurable position slider.
 - Give Scenes and Welcome Scenes the same pill dimensions, labels and
   responsive single-row sizing as Welcome buttons, scrolling only when needed.
 - Match carousel buttons to the neutral tiles and colored circular icons

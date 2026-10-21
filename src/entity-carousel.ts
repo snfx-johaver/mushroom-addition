@@ -97,7 +97,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     .navigation:disabled { opacity: .35; cursor: default; }
     .navigation ha-icon { --mdc-icon-size: 22px; }
     .pagination { display: flex; justify-content: center; align-items: center; gap: 2px; padding: 0 8px; }
-    .pagination.bullets { overflow-x: auto; }
+    .pagination.bullets { flex-wrap: wrap; min-width: 0; }
     .dot {
       flex: 0 0 24px; width: 24px; height: 24px; border: 0; padding: 0;
       display: grid; place-items: center; background: transparent; cursor: pointer;
