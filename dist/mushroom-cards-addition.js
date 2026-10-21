@@ -44940,6 +44940,7 @@ Ne.styles = Ee`
     .fanart .art::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, rgba(0,0,0,.88), rgba(0,0,0,.4)); }
     .fanart.transparent .art::after { background: linear-gradient(90deg, rgba(0,0,0,.78), transparent); }
     .fanart .copy { padding: 4px; color: #fff; }
+    .fanart .title { color: var(--title-color, #fff); }
     .fanart .line { color: #eee; }
     .fanart.text-shadow .copy { text-shadow: 0 1px 3px #000; }
     .more { display: block; width: 100%; min-height: var(--mush-control-height, 42px); margin-top: 12px; padding: 8px 12px; border: 0; border-radius: var(--mush-control-border-radius, 12px); background: var(--addition-neutral-background); font-size: var(--mush-card-primary-font-size, 14px); line-height: var(--mush-card-primary-line-height, 20px); font-weight: var(--mush-card-primary-font-weight, 500); }
@@ -50473,8 +50474,7 @@ const v_ = Ee`
   .speedtest-ring path { fill: none; stroke-linecap: round; stroke-width: 8; }
   .speedtest-track { stroke: var(--addition-track-background); }
   .speedtest-value { stroke: var(--speedtest-color); stroke-dasharray: var(--speedtest-value) 100; }
-  .speedtest-value-copy { position: relative; display: grid; min-width: 0; max-width: 100%; place-items: center; text-align: center; }
-  .speedtest-value-copy ha-icon, .speedtest-value-copy b { position: relative; top: 9px; }
+  .speedtest-value-copy { position: relative; display: grid; box-sizing: border-box; min-width: 0; max-width: 100%; padding-top: 8px; place-items: center; text-align: center; }
   .speedtest-value-copy ha-icon { --mdc-icon-size: 24px; }
   .speedtest-value-copy b { margin-top: 2px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--mush-card-primary-color, var(--primary-text-color)); font-size: var(--mush-card-primary-font-size, 14px); line-height: var(--mush-card-primary-line-height, 20px); font-weight: var(--mush-card-primary-font-weight, 500); }
   .speedtest-value-copy small { margin-top: 4px; max-width: 100%; color: var(--mush-card-secondary-color, var(--secondary-text-color)); font-size: var(--mush-card-secondary-font-size, 12px); line-height: var(--mush-card-secondary-line-height, 16px); font-weight: var(--mush-card-secondary-font-weight, 400); overflow-wrap: anywhere; }
@@ -54336,54 +54336,54 @@ customElements.get(Ka) || customElements.define(Ka, $e);
 customElements.get(`${Fa}-editor`) || customElements.define(`${Fa}-editor`, Re);
 const Rd = "mushroom-addition-area-card-mushroom", Od = {
   "hui-area-card": `
-    :host {
+    :host([data-area-mushroom]) {
       --ha-card-border-radius: var(--mush-card-border-radius, 12px);
       --feature-height: var(--mush-control-height, 42px);
       --addition-neutral-background: rgba(var(--rgb-primary-text-color, 33, 33, 33), .05);
     }
-    ha-card { border-radius: var(--mush-card-border-radius, 12px); }
-    .picture .icon-container { --mdc-icon-size: var(--mush-icon-size, 36px); }
-    .addition-sensors { font-size: var(--mush-card-secondary-font-size, 12px);
+    :host ha-card { border-radius: var(--mush-card-border-radius, 12px); }
+    :host .picture .icon-container { --mdc-icon-size: var(--mush-icon-size, 36px); }
+    :host .addition-sensors { font-size: var(--mush-card-secondary-font-size, 12px);
       line-height: var(--mush-card-secondary-line-height, 16px);
       color: var(--mush-card-secondary-color, var(--secondary-text-color)); }
   `,
   "ha-tile-container": `
-    .content { gap: 12px; padding: 12px; min-height: 60px; }
-    .content.vertical { padding: 12px; }
-    ::slotted([slot="features"]) { padding: 0 12px 12px; }
+    :host .content { gap: 12px; padding: 12px; min-height: 60px; }
+    :host .content.vertical { padding: 12px; }
+    :host ::slotted([slot="features"]) { padding: 0 12px 12px; }
   `,
   "ha-tile-info": `
-    .primary { font-size: var(--mush-card-primary-font-size, 14px);
+    :host .primary { font-size: var(--mush-card-primary-font-size, 14px);
       font-weight: var(--mush-card-primary-font-weight, 500);
       line-height: var(--mush-card-primary-line-height, 20px);
       letter-spacing: var(--mush-card-primary-letter-spacing, .1px);
       color: var(--mush-card-primary-color, var(--primary-text-color)); }
-    .secondary { font-size: var(--mush-card-secondary-font-size, 12px);
+    :host .secondary { font-size: var(--mush-card-secondary-font-size, 12px);
       font-weight: var(--mush-card-secondary-font-weight, 400);
       line-height: var(--mush-card-secondary-line-height, 16px);
       letter-spacing: var(--mush-card-secondary-letter-spacing, .4px);
       color: var(--mush-card-secondary-color, var(--secondary-text-color)); }
   `,
   "ha-tile-icon": `
-    :host { --tile-icon-size: var(--mush-icon-size, 36px);
+    :host([data-area-mushroom]) { --tile-icon-size: var(--mush-icon-size, 36px);
       --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
-    .container { border-radius: 50%; background: color-mix(in srgb, var(--tile-color) 20%, transparent); }
-    .container ha-icon, .container ha-svg-icon { color: var(--tile-color); }
+    :host .container { border-radius: 50%; background: color-mix(in srgb, var(--tile-color) 20%, transparent); }
+    :host .container ha-icon, :host .container ha-svg-icon { color: var(--tile-color); }
   `,
   "hui-card-features": `
-    :host { --feature-height: var(--mush-control-height, 42px); }
+    :host([data-area-mushroom]) { --feature-height: var(--mush-control-height, 42px); }
   `,
   "hui-area-controls-card-feature": `
-    ha-control-button { --control-button-border-radius: var(--mush-control-border-radius, 12px);
+    :host ha-control-button { --control-button-border-radius: var(--mush-control-border-radius, 12px);
       --control-button-height: var(--mush-control-height, 42px);
       --control-button-background-opacity: .05;
       --control-button-background-color: var(--primary-text-color); }
-    ha-control-button.active { --control-button-background-color: var(--feature-color);
+    :host ha-control-button.active { --control-button-background-color: var(--feature-color);
       --control-button-background-opacity: .2; }
   `,
   "mushroom-addition-area-controls-advanced": `
-    .entity { border-radius: var(--mush-control-border-radius, 12px); }
-    .button-label { font-size: var(--mush-card-secondary-font-size, 12px);
+    :host .entity { border-radius: var(--mush-control-border-radius, 12px); }
+    :host .button-label { font-size: var(--mush-card-secondary-font-size, 12px);
       line-height: var(--mush-card-secondary-line-height, 16px);
       font-weight: var(--mush-card-secondary-font-weight, 400); }
   `
@@ -54395,6 +54395,7 @@ async function Hr(e, a) {
   a?.observe(t, { childList: !0, subtree: !0 });
   const n = Od[e.localName];
   if (n && !t.querySelector("style[data-area-mushroom]")) {
+    e.dataset.areaMushroom = "";
     const i = document.createElement("style");
     i.dataset.areaMushroom = "", i.textContent = n, t.append(i);
   }

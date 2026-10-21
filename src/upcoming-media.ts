@@ -219,6 +219,7 @@ export class MushroomUpcomingMedia extends LitElement {
     .fanart .art::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, rgba(0,0,0,.88), rgba(0,0,0,.4)); }
     .fanart.transparent .art::after { background: linear-gradient(90deg, rgba(0,0,0,.78), transparent); }
     .fanart .copy { padding: 4px; color: #fff; }
+    .fanart .title { color: var(--title-color, #fff); }
     .fanart .line { color: #eee; }
     .fanart.text-shadow .copy { text-shadow: 0 1px 3px #000; }
     .more { display: block; width: 100%; min-height: var(--mush-control-height, 42px); margin-top: 12px; padding: 8px 12px; border: 0; border-radius: var(--mush-control-border-radius, 12px); background: var(--addition-neutral-background); font-size: var(--mush-card-primary-font-size, 14px); line-height: var(--mush-card-primary-line-height, 20px); font-weight: var(--mush-card-primary-font-weight, 500); }

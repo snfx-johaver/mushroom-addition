@@ -692,8 +692,7 @@ export const sharedStyles = css`
   .speedtest-ring path { fill: none; stroke-linecap: round; stroke-width: 8; }
   .speedtest-track { stroke: var(--addition-track-background); }
   .speedtest-value { stroke: var(--speedtest-color); stroke-dasharray: var(--speedtest-value) 100; }
-  .speedtest-value-copy { position: relative; display: grid; min-width: 0; max-width: 100%; place-items: center; text-align: center; }
-  .speedtest-value-copy ha-icon, .speedtest-value-copy b { position: relative; top: 9px; }
+  .speedtest-value-copy { position: relative; display: grid; box-sizing: border-box; min-width: 0; max-width: 100%; padding-top: 8px; place-items: center; text-align: center; }
   .speedtest-value-copy ha-icon { --mdc-icon-size: 24px; }
   .speedtest-value-copy b { margin-top: 2px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--mush-card-primary-color, var(--primary-text-color)); font-size: var(--mush-card-primary-font-size, 14px); line-height: var(--mush-card-primary-line-height, 20px); font-weight: var(--mush-card-primary-font-weight, 500); }
   .speedtest-value-copy small { margin-top: 4px; max-width: 100%; color: var(--mush-card-secondary-color, var(--secondary-text-color)); font-size: var(--mush-card-secondary-font-size, 12px); line-height: var(--mush-card-secondary-line-height, 16px); font-weight: var(--mush-card-secondary-font-weight, 400); overflow-wrap: anywhere; }

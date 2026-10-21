@@ -120,6 +120,8 @@ describe("native Area card delegation", () => {
     expect(comparison.shadowRoot!.querySelectorAll("style[data-area-mushroom]")).toHaveLength(1);
     expect(info.shadowRoot!.querySelector("style")?.textContent).toContain("--mush-card-primary-font-weight, 500");
     expect(info.shadowRoot!.querySelector("style")?.textContent).toContain("--mush-card-secondary-line-height, 16px");
+    expect(info.shadowRoot!.querySelector("style")?.textContent).toContain(":host .primary");
+    expect(comparison.hasAttribute("data-area-mushroom")).toBe(true);
     const features = document.createElement("hui-card-features");
     const feature = document.createElement("hui-card-feature");
     const controls = document.createElement("hui-area-controls-card-feature");
