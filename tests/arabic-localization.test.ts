@@ -14,7 +14,7 @@ const catalogs = [
     current: translationCatalogs.ar,
     additions: arabicLabels,
     installedCount: 416,
-    addedCount: 770,
+    addedCount: 762,
     installedHash: "7a8bc099665048efc9d82d38c3fb086502ccd9a6e99915e84181426c3bb8c639",
   },
   {
@@ -22,7 +22,7 @@ const catalogs = [
     current: helperCatalogs.ar,
     additions: arabicHelpers,
     installedCount: 1,
-    addedCount: 575,
+    addedCount: 547,
     installedHash: "95e2ab070f7e44547b785e0280ea648d06cc51aaf36171ce8e44515cfd339335",
   },
 ] as const;
@@ -57,15 +57,15 @@ describe("complete original Arabic localization", () => {
     expect(helperCatalogs.ar.entity).toBe("كيان Home Assistant الذي تعرضه هذه البطاقة وتتحكم فيه.");
   });
 
-  it("keeps shared graph labels and the six diagnostics separate for a strict total of 1768", () => {
+  it("keeps shared graph labels and the six diagnostics separate for a strict total of 1732", () => {
     expect(Object.keys(arabicLabels).filter(key => key.startsWith("ui.graph."))).toEqual([]);
     expect(Object.keys(nativeDiagnosticCatalogs.ar).sort()).toEqual(Object.keys(nativeDiagnosticCatalogs.en).sort());
     expect(Object.keys(nativeDiagnosticCatalogs.ar)).toHaveLength(6);
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1186);
-    expect(Object.keys(englishHelpers)).toHaveLength(576);
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1178);
+    expect(Object.keys(englishHelpers)).toHaveLength(548);
     expect(Object.keys(translationCatalogs.en).length + Object.keys(englishHelpers).length +
-      Object.keys(nativeDiagnosticCatalogs.en).length).toBe(1768);
-    expect(Object.keys(arabicLabels).length + Object.keys(arabicHelpers).length).toBe(1345);
+      Object.keys(nativeDiagnosticCatalogs.en).length).toBe(1732);
+    expect(Object.keys(arabicLabels).length + Object.keys(arabicHelpers).length).toBe(1309);
     expect(localeDirection("ar")).toBe("rtl");
   });
 
@@ -203,9 +203,6 @@ describe("complete original Arabic localization", () => {
     expect(arabicHelpers.ulm_card_media_player_power_button).toContain("لا يقطع ذلك الكهرباء");
     expect(arabicHelpers.ulm_card_media_player_power_button).toContain("يبقى ظاهرًا عند طي بقية");
     expect(arabicHelpers.ulm_card_media_player_enable_volume_adjust).toContain("دعم تعيين مستوى الصوت");
-    for (const device of ["lights", "shutters", "outlets", "tv"]) {
-      expect(arabicHelpers[`${device}_double_tap_action`]).toContain("دون تنفيذ إجراء النقر المفرد أيضًا");
-    }
     expect(arabicLabels["ui.area.sensor_icons_help"]).toContain("تظل القيم والتجميع تحت تحكم Home Assistant");
     expect(arabicLabels["ui.area.use_light_color_help"]).toContain("تُتجاهل الإضاءات المستبعدة");
     expect(arabicLabels[

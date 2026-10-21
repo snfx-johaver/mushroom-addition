@@ -8,7 +8,6 @@ const baseCards = [
 
 const customCards = [
   "trash", "alarm_time",
-  "roomview",
   "welcome",
   "washer", "sun",
   "input_datetime",

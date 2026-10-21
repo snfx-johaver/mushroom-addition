@@ -39,7 +39,6 @@ const defaultIcons: Array<[RegExp, string]> = [
 export const defaultIconFor = (item: CatalogItem, entity?: HassEntity): string => {
   if (entity?.attributes.icon) return entity.attributes.icon;
   if (item.upstreamId === "custom_card_trash") return "mdi:trash-can-outline";
-  if (item.upstreamId === "custom_card_roomview") return "mdi:home-variant-outline";
   if (item.upstreamId === "custom_card_entity_carousel") return "mdi:view-carousel";
   if (item.upstreamId === "custom_card_sun") return "mdi:weather-sunny";
   if (item.upstreamId === "custom_card_speedtest_gauges") return "mdi:speedometer";
@@ -256,6 +255,11 @@ export const populatedDefaultsFor = (
         }
           : item.upstreamId === "custom_card_welcome"
             ? {
+              welcome_weather_icon_type: "automatic",
+              welcome_weather_primary_info: "temperature",
+              welcome_weather_secondary_info: "date",
+              welcome_weather_date_format: "month_day",
+              welcome_weather_tap_action: { action: "more-info" },
               nav_1: "house", icon_1: "mdi:home", name_1: "House", color_1: "blue",
               nav_2: "lights", icon_2: "mdi:lightbulb", name_2: "Lights", color_2: "yellow",
               nav_3: "security", icon_3: "mdi:shield", name_3: "Secure", color_3: "green",

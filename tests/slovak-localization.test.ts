@@ -26,14 +26,14 @@ const codeLiterals = (text: string) =>
 
 describe("complete Slovak card localization", () => {
   it("adds exactly the missing keys and preserves the installed Slovak baseline", () => {
-    expect(Object.keys(slovakLabels)).toHaveLength(770);
-    expect(Object.keys(slovakHelpers)).toHaveLength(575);
+    expect(Object.keys(slovakLabels)).toHaveLength(762);
+    expect(Object.keys(slovakHelpers)).toHaveLength(547);
     expect(Object.keys(installedLabels)).toHaveLength(416);
     expect(Object.keys(installedHelpers)).toHaveLength(1);
     expect(fingerprint(installedLabels)).toBe("0fc6ddf546401198b58523b69141d2ed81dbbe17f27c37a154c8cc07e57fb829");
     expect(fingerprint(installedHelpers)).toBe("629db3db6c3f84e2d3e2343980c0d2e998353010bde88f1577e1ea642f016f28");
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1186);
-    expect(Object.keys(englishHelpers)).toHaveLength(576);
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1178);
+    expect(Object.keys(englishHelpers)).toHaveLength(548);
 
     for (const [english, installed, additions] of catalogs) {
       expect(Object.keys(additions).sort()).toEqual(
@@ -137,9 +137,6 @@ describe("complete Slovak card localization", () => {
     expect(slovakHelpers.room_temperature_entity).toContain("číselné teploty s jednotkou teploty");
     expect(slovakHelpers.room_brightness_entity).toContain("hlavné svetlo, potom");
     expect(slovakHelpers.icon).toContain("iba vtedy, keď nie je dostupná entita");
-    expect(slovakHelpers.lights_hold_action).toContain("500 ms");
-    expect(slovakHelpers.lights_double_tap_action).toContain("bez spustenia akcie jednotlivého ťuknutia");
-    expect(slovakHelpers.lights_double_tap_action).toContain("None ju vypne");
     expect(slovakHelpers.ulm_card_media_player_power_button).toContain("napájanie reproduktora sa tým nepreruší");
     expect(slovakLabels["ui.area.sensor_icons_help"]).toContain("naďalej riadi Home Assistant");
     expect(slovakLabels["ui.area.use_light_color_help"]).toContain("vylúčené svetlá sa ignorujú");

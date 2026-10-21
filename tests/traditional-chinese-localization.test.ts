@@ -10,8 +10,8 @@ import {
 const labels = { ...translationCatalogs["zh-Hant"], ...traditionalChineseLabels };
 const helpers = { ...helperCatalogs["zh-Hant"], ...traditionalChineseHelpers };
 const catalogs = [
-  [translationCatalogs.en, translationCatalogs["zh-Hant"], traditionalChineseLabels, labels, 770],
-  [englishHelpers, helperCatalogs["zh-Hant"], traditionalChineseHelpers, helpers, 575],
+  [translationCatalogs.en, translationCatalogs["zh-Hant"], traditionalChineseLabels, labels, 762],
+  [englishHelpers, helperCatalogs["zh-Hant"], traditionalChineseHelpers, helpers, 547],
 ] as const;
 const technicalTerms = new Set(["ui.renderer.CPU", "ui.renderer.RAM", "ui.renderer.Ping"]);
 
@@ -25,8 +25,8 @@ describe("complete Traditional Chinese localization", () => {
         expect(placeholders(merged[key]), key).toEqual(placeholders(source));
       }
     }
-    expect(Object.keys(labels)).toHaveLength(1186);
-    expect(Object.keys(helpers)).toHaveLength(576);
+    expect(Object.keys(labels)).toHaveLength(1178);
+    expect(Object.keys(helpers)).toHaveLength(548);
   });
 
   it("adds only missing keys and preserves the entire installed baseline before and after wiring", () => {
@@ -126,9 +126,6 @@ describe("complete Traditional Chinese localization", () => {
       room_brightness_entity: ["brightness"],
       room_light_entity: ["RGB"],
     };
-    for (const kind of ["lights", "shutters", "outlets", "tv"]) {
-      examples[`${kind}_hold_action`] = ["500 ms"];
-    }
     for (const [key, literals] of Object.entries(examples)) {
       for (const literal of literals) expect(helpers[key], `${key}: ${literal}`).toContain(literal);
     }
@@ -171,16 +168,10 @@ describe("complete Traditional Chinese localization", () => {
     expect(helpers.ulm_card_media_player_power_button).toContain("其他控制摺疊時仍保留");
     expect(helpers.collapsible_controls).toContain("未知和不可用的實體無法控制");
     expect(helpers.volume_controls).toContain("隱藏實體不支援的控制");
-    expect(helpers.climate_name).toContain("不會更改主實體標題");
     expect(helpers.room_temperature_entity).toContain("具有溫度單位的數值溫度");
     expect(helpers.room_brightness_entity).toContain("預設先使用主燈光");
     expect(helpers.icon).toContain("清空則跟隨實體在 Home Assistant 中的圖示");
     expect(helpers.moon_entity).toContain("留空時自動發現 Home Assistant 的 Moon 整合");
-    for (const kind of ["lights", "shutters", "outlets", "tv"]) {
-      expect(helpers[`${kind}_tap_action`]).toContain("僅此裝置");
-      expect(helpers[`${kind}_hold_action`]).toContain("500 ms");
-      expect(helpers[`${kind}_double_tap_action`]).toContain("不會同時執行單擊操作");
-    }
   });
 
   it("uses appropriate Traditional Chinese UI vocabulary and retains native Area limitations", () => {

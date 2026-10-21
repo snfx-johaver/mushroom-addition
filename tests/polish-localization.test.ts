@@ -4,8 +4,8 @@ import { placeholders } from "../src/translation-coverage";
 import { polishHelpers, polishLabels } from "../src/translations/pl";
 
 const catalogs = [
-  [translationCatalogs.en, translationCatalogs.pl, polishLabels, 770],
-  [englishHelpers, helperCatalogs.pl, polishHelpers, 575],
+  [translationCatalogs.en, translationCatalogs.pl, polishLabels, 762],
+  [englishHelpers, helperCatalogs.pl, polishHelpers, 547],
 ] as const;
 
 describe("complete Polish card localization", () => {
@@ -98,7 +98,6 @@ describe("complete Polish card localization", () => {
       carousel_button_width: ["32-160"],
       carousel_button_height: ["32-160"],
       carousel_icon_size: ["12-96"],
-      lights_hold_action: ["500 ms"],
       mode_solar_first_label: ["Smart Matching"],
       mode_smart_saving_label: ["Dynamic Smart Matching"],
       mode_smart_trading_label: ["Dynamic Trading + Smart Matching"],

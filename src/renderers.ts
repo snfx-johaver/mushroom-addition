@@ -1,5 +1,5 @@
 import { html, nothing, svg, type TemplateResult } from "lit";
-import type { ActionConfig, AdditionConfig, AdditionItemConfig, CatalogItem, HassEntity, HomeAssistant, RoomViewDevice, WeatherForecast } from "./types";
+import type { ActionConfig, AdditionConfig, AdditionItemConfig, CatalogItem, HassEntity, HomeAssistant, WeatherForecast } from "./types";
 import { controlActions } from "./control-actions";
 import { localize, localizeText } from "./localize";
 import { ROOM_STATUS_KINDS, ROOM_STATUS_LIMIT, roomEntityIcon, roomEntityUnavailable, roomItemDefaultsFor, roomLightEntity, roomLightRgb, roomSecondary, roomStatusActive, roomStatusIcon, roomStatusKind } from "./room";
@@ -8,6 +8,7 @@ import { wasteStreamsForConfig } from "./waste-streams";
 import { defaultIconFor } from "./defaults";
 import { renderEntityIcon } from "./entity-icon";
 import { resolveColor } from "./colors";
+import { rangeProgress, updateRangeProgress } from "./control-styles";
 import {
   resolveSonosControlEntities,
   SONOS_NUMBER_CONTROLS,
@@ -738,114 +739,33 @@ const renderAlarmTimeCard = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const groupMembers = (ctx: RenderContext, entity: HassEntity | undefined): HassEntity[] => {
-  const ids = attr(entity, "entity_id");
-  return Array.isArray(ids)
-    ? ids.map(String).map((id) => ctx.hass.states[id]).filter((state): state is HassEntity => Boolean(state))
-    : entity ? [entity] : [];
-};
-
-const renderRoomView = (ctx: RenderContext): TemplateResult => {
-  const named = (key: string): HassEntity | undefined => entityFromConfig(ctx, key);
-  const temperature = named("temperature");
-  const humidity = named("humidity");
-  const groups = {
-    doors: named("group_doors"), windows: named("group_windows"), motions: named("group_motions"),
-    water: named("group_water"), lights: named("group_lights"), shutters: named("group_windows_shutters"),
-    outlets: named("group_outlets"), tv: named("group_tv"),
-  };
-  const lowBatteries = Object.values(groups).flatMap((group) => groupMembers(ctx, group))
-    .filter((entity) => (numeric(attr(entity, "battery")) ?? 101) <= 20);
-  const countOn = (entity: HassEntity | undefined): number =>
-    groupMembers(ctx, entity).filter((member) => member.state === "on" || member.state === "open").length;
-  const missing = (entity?: HassEntity): boolean =>
-    !entity || ["unavailable", "unknown"].includes(entity.state);
-  const unavailableCount = (entityId: string): number => {
-    const entity = ctx.hass.states[entityId];
-    const ids = attr(entity, "entity_id");
-    const members = Array.isArray(ids) ? ids.map(String) : [entityId];
-    const count = members.filter((id) => missing(ctx.hass.states[id])).length;
-    return Math.max(missing(entity) ? 1 : 0, count);
-  };
-  const infoActions = (entityId: string): AdditionConfig => ({
-    type: ctx.config.type, entity: entityId, tap_action: { action: "more-info" },
-  });
-  const deviceActions = (device: RoomViewDevice, entityId: string): AdditionConfig => ({
-    ...infoActions(entityId),
-    tap_action: ctx.config[`${device}_tap_action`] ?? { action: "more-info" },
-    hold_action: ctx.config[`${device}_hold_action`] ?? { action: "more-info" },
-    double_tap_action: ctx.config[`${device}_double_tap_action`] ?? { action: "toggle" },
-  });
-  const climateEntity = ctx.config.temperature ? temperature : humidity;
-  const climateContext: RenderContext = {
-    ...ctx,
-    entity: climateEntity,
-    config: {
-      type: ctx.config.type,
-      entity: ctx.config.temperature ?? ctx.config.humidity,
-      name: ctx.config.climate_name,
-      icon: ctx.config.climate_icon,
-      icon_type: ctx.config.climate_icon_type ?? "icon",
-      primary_info: ctx.config.climate_primary_info ?? (ctx.config.climate_name ? "name" : "state"),
-      secondary_info: ctx.config.climate_secondary_info,
-      secondary: ctx.config.climate_secondary,
-    },
-  };
-  const sensorSlots = [
-    [ctx.config.group_doors, groups.doors, localizeText(ctx.hass, "Doors"), "mdi:door-open"],
-    [ctx.config.group_windows, groups.windows, localizeText(ctx.hass, "Windows"), "mdi:window-open-variant"],
-    [ctx.config.group_motions, groups.motions, localizeText(ctx.hass, "Motion"), "mdi:motion-sensor"],
-    [ctx.config.group_water, groups.water, localizeText(ctx.hass, "Water"), "mdi:water"],
-  ] as const;
-  const deviceSlots = [
-    ["lights", ctx.config.group_lights, groups.lights, localizeText(ctx.hass, "Lights"), groups.lights?.state === "on" ? "mdi:lightbulb-group" : "mdi:lightbulb-group-off"],
-    ["shutters", ctx.config.group_windows_shutters, groups.shutters, localizeText(ctx.hass, "Shutters"), groups.shutters?.state === "on" ? "mdi:window-shutter-open" : "mdi:window-shutter"],
-    ["outlets", ctx.config.group_outlets, groups.outlets, localizeText(ctx.hass, "Outlets"), groups.outlets?.state === "on" ? "mdi:power-plug" : "mdi:power-plug-off"],
-    ["tv", ctx.config.group_tv, groups.tv, localizeText(ctx.hass, "Television"), groups.tv?.state === "on" ? "mdi:television" : "mdi:television-off"],
-  ] as const;
-  const unavailable = [...sensorSlots.map(([id]) => id), ...deviceSlots.map(([, id]) => id)]
-    .reduce<number>((sum, id) => sum + (id ? unavailableCount(id) : 0), 0);
-  return ctx.actionSurface("custom-room-view", html`
-    ${cardHeading(ctx, stateLabel(ctx.entity, ctx.hass), displayName(ctx.config, ctx.entity, ctx.hass))}
-    ${ctx.config.temperature || ctx.config.humidity ? html`
-        <button class="room-view-summary" aria-label="${localizeText(ctx.hass, "Climate · More information")}"
-          ${controlActions(infoActions(ctx.config.temperature ?? ctx.config.humidity!))}>
-          ${sourceIconBubble(climateContext, climateEntity?.attributes.icon || "mdi:home-variant-outline", "var(--primary-color)", false, "room-view-icon")}
-          ${heading(climateContext,
-            ctx.config.climate_secondary ?? (ctx.config.humidity && ctx.config.temperature ? stateLabel(humidity, ctx.hass) : undefined))}
-        </button>
-      ` : nothing}
-      <div class="room-view-status" aria-label="${localizeText(ctx.hass, "Sensor status")}">
-        ${sensorSlots.map(([entityId, entity, label, sensorIcon]) => entityId && (countOn(entity) || unavailableCount(entityId)) ? html`
-          <button class="room-view-indicator ${countOn(entity) ? "is-active" : ""} ${unavailableCount(entityId) ? "is-unavailable" : ""}"
-            aria-label=${localize(ctx.hass, "ui.renderer.more_info", { label, state: unavailableCount(entityId) ? localizeText(ctx.hass, "Unavailable") : stateLabel(entity, ctx.hass) })}
-            title=${`${label}: ${unavailableCount(entityId) ? localizeText(ctx.hass, "Unavailable") : stateLabel(entity, ctx.hass)}`}
-            ${controlActions(infoActions(entityId))}>
-            <ha-icon .icon=${unavailableCount(entityId) ? "mdi:alert-circle-outline" : sensorIcon}></ha-icon>
-            ${countOn(entity) > 1 ? html`<i>${countOn(entity)}</i>` : nothing}
-          </button>` : nothing)}
-        ${lowBatteries.length ? html`
-          <button class="room-view-indicator is-unavailable" aria-label="${localizeText(ctx.hass, "Low batteries")}"
-            ${controlActions(infoActions(lowBatteries[0]!.entity_id))}>
-            <ha-icon icon="mdi:battery-20"></ha-icon><i>${lowBatteries.length}</i>
-          </button>` : nothing}
-        ${unavailable ? html`<span class="room-view-warning" role="status" aria-label=${localize(ctx.hass, "ui.renderer.unavailable_count", { count: unavailable })} title=${localize(ctx.hass, "ui.renderer.unavailable_count", { count: unavailable })}><ha-icon icon="mdi:alert-circle-outline"></ha-icon></span>` : nothing}
-        ${!sensorSlots.some(([, entity]) => countOn(entity)) && !lowBatteries.length && !unavailable ? html`<span class="room-view-clear"><ha-icon icon="mdi:check"></ha-icon></span>` : nothing}
-      </div>
-      <div class="room-view-actions" aria-label="${localizeText(ctx.hass, "Device controls")}">
-        ${deviceSlots.map(([device, entityId, entity, label, deviceIcon]) => entityId ? html`
-          <button class=${activeStates.has(entity?.state ?? "") ? "is-active" : ""} aria-label=${label}
-            ?disabled=${missing(entity)} ${controlActions(deviceActions(device, entityId))}>
-            <ha-icon .icon=${missing(entity) ? "mdi:exclamation-thick" : deviceIcon}></ha-icon>
-            ${countOn(entity) ? html`<i>${countOn(entity)}</i>` : nothing}
-          </button>` : nothing)}
-      </div>
-  `);
-};
-
 const renderWelcome = (ctx: RenderContext): TemplateResult => {
   const collapse = entityFromConfig(ctx, "ulm_card_welcome_collapse");
   const weather = entityFromConfig(ctx, "ulm_weather");
+  const weatherIcon = ctx.config.welcome_weather_icon_type === "icon"
+    ? ctx.config.welcome_weather_icon || "mdi:weather-partly-cloudy"
+    : weatherIcons[weather?.state ?? ""]?.[0] ?? "mdi:weather-partly-cloudy";
+  const weatherInfo = (mode: NonNullable<AdditionConfig["welcome_weather_primary_info"]>): string => {
+    if (mode === "none") return "";
+    if (mode === "date") {
+      const format = ctx.config.welcome_weather_date_format;
+      const options: Intl.DateTimeFormatOptions = format && format !== "month_day"
+        ? { dateStyle: format } : { month: "short", day: "numeric" };
+      return new Intl.DateTimeFormat(ctx.hass.language, { ...options, timeZone: ctx.hass.config?.time_zone }).format(new Date());
+    }
+    if (mode === "name") return weather ? displayName({ type: "", entity: weather.entity_id }, weather, ctx.hass) : stateLabel(undefined, ctx.hass);
+    if (mode === "temperature" && weather && !["unknown", "unavailable"].includes(weather.state)) {
+      const temperature = attr(weather, "temperature");
+      if (typeof temperature === "number" && Number.isFinite(temperature)) {
+        const unit = String(attr(weather, "temperature_unit") || ctx.hass.config?.unit_system?.temperature || "");
+        return `${new Intl.NumberFormat(ctx.hass.language, { maximumFractionDigits: 1 }).format(temperature)}${unit}`;
+      }
+    }
+    return stateLabel(weather, ctx.hass);
+  };
+  const weatherPrimary = weatherInfo(ctx.config.welcome_weather_primary_info ?? "temperature");
+  const weatherSecondary = weatherInfo(ctx.config.welcome_weather_secondary_info ?? "date");
+  const weatherAction = ctx.config.welcome_weather_tap_action ?? { action: "more-info" };
   const collapsed = collapse?.state === "on";
   const items = Array.from({ length: 5 }, (_, index) => index + 1).map((index) => ({
     nav: configured<string>(ctx, `nav_${index}`),
@@ -860,10 +780,15 @@ const renderWelcome = (ctx: RenderContext): TemplateResult => {
         @click=${(event: Event) => { event.stopPropagation(); if (collapse) ctx.service("input_boolean", "toggle", { entity_id: collapse.entity_id }); }}>
         <ha-icon .icon=${collapsed ? "mdi:chevron-down" : "mdi:chevron-up"}></ha-icon>
       </button>
-      <button aria-label="${localizeText(ctx.hass, "Weather information")}" ?disabled=${!weather}
+      <button class="welcome-weather" aria-label="${[localizeText(ctx.hass, "Weather information"), weatherPrimary, weatherSecondary].filter(Boolean).join(", ")}"
+        ?disabled=${weatherAction.action === "none" || (weatherAction.action === "more-info" && !weather)}
         @pointerdown=${(event: Event) => event.stopPropagation()}
-        @click=${(event: Event) => { if (weather) runControlAction(event, ctx, { action: "more-info" }, weather.entity_id); }}>
-        <ha-icon icon="mdi:thermometer"></ha-icon>
+        @click=${(event: Event) => runControlAction(event, ctx, weatherAction, weather?.entity_id)}>
+        ${ctx.config.welcome_weather_icon_type === "none" ? nothing : html`<ha-icon .icon=${weatherIcon}></ha-icon>`}
+        ${weatherPrimary || weatherSecondary ? html`<span class="welcome-weather-copy">
+          ${weatherPrimary ? html`<span class="welcome-weather-primary">${weatherPrimary}</span>` : nothing}
+          ${weatherSecondary ? html`<span class="welcome-weather-secondary">${weatherSecondary}</span>` : nothing}
+        </span>` : nothing}
       </button>
       <button aria-label="${localizeText(ctx.hass, "Dashboard settings")}" @pointerdown=${(event: Event) => event.stopPropagation()}
         @click=${(event: Event) => runControlAction(event, ctx, { action: "navigate", navigation_path: "/config/dashboard" })}>
@@ -1300,7 +1225,9 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
           <label>
             <ha-icon .icon=${control.icon}></ha-icon>
             <span>${localizeText(ctx.hass, control.label)}</span>
-            <input type="range" min=${min} max=${max} step=${step} .value=${String(value)}
+            <input class="mushroom-range" type="range" min=${min} max=${max} step=${step} .value=${String(value)}
+              style=${`--range-color:rgb(var(--ulm-blue));--range-progress:${rangeProgress(value, min, max)}`}
+              @input=${updateRangeProgress}
               ?disabled=${unavailable || ["unavailable", "unknown"].includes(entity.state)}
               aria-label=${localizeText(ctx.hass, control.label)}
               @change=${(event: Event) => {
@@ -1352,7 +1279,9 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
         ${volumeButtons ? volumeButton(true) : nothing}
         ${volumeControls.includes("volume_set") && supports(SONOS_MEDIA_FEATURES.volumeSet)
           ? html`<label class="sonos-volume">
-              <input type="range" min="0" max="100" step="1" .value=${String(volume)}
+              <input class="mushroom-range" type="range" min="0" max="100" step="1" .value=${String(volume)}
+                style=${`--range-color:rgb(var(--ulm-blue));--range-progress:${rangeProgress(volume, 0, 100)}`}
+                @input=${updateRangeProgress}
                 aria-label="${localizeText(ctx.hass, "Volume level")}" ?disabled=${controlsUnavailable}
                 @change=${(event: Event) => {
                   stopEvent(event);
@@ -2325,7 +2254,6 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "card_battery": return renderDefaultBattery(ctx);
     case "custom_card_trash": return renderTrash(ctx);
     case "custom_card_alarm_time": return renderAlarmTimeCard(ctx);
-    case "custom_card_roomview": return renderRoomView(ctx);
     case "custom_card_welcome": return renderWelcome(ctx);
     case "custom_card_washer": return renderWasher(ctx);
     case "custom_card_sun": return renderSunCard(ctx);

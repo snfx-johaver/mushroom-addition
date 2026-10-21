@@ -509,9 +509,6 @@ const translations: Record<string, Record<string, string>> = {
     tablet_ram_entity: "RAM usage sensor",
     tablet_disk_entity: "Disk usage sensor",
     tablet_power_entity: "Power state entity",
-    group_lights: "Lights group", group_motions: "Motion group", group_doors: "Doors group",
-    group_windows: "Windows group", group_outlets: "Outlets group", group_tv: "Televisions group",
-    group_water: "Water sensors group", group_windows_shutters: "Shutters group",
     temperature: "Temperature sensor", humidity: "Humidity sensor",
     ulm_show_button: "Show oscillation button",
     ulm_button_icon: "Oscillation button icon",
@@ -982,27 +979,6 @@ export const englishHelpers: Record<string, string> = {
   ulm_card_alarm_time_icon: "Icon shown beside the alarm name and state.",
   ulm_card_alarm_time_color: "Accent color used while the alarm is active.",
   ulm_card_media_player_with_controls_name: "Friendly name shown for the media player.",
-  temperature: "Temperature sensor shown in the RoomView header.",
-  humidity: "Humidity sensor shown in the RoomView header.",
-  climate_name: "Independent Roomview climate name, including composed entity, area or device names. Does not change the primary entity header.",
-  climate_icon: "Independent climate icon override. Defaults to the temperature entity icon, then a thermometer.",
-  climate_icon_type: "Shows a climate icon, the temperature entity picture, or no climate icon.",
-  climate_primary_info: "Climate primary text: temperature state by default, or the configured climate name, state, or none.",
-  climate_secondary_info: "Optional climate secondary override using the temperature entity's name or state, or none. Leave unset for humidity or custom text.",
-  climate_secondary: "Custom climate secondary text when no secondary information override is selected; defaults to humidity.",
-  ...Object.fromEntries(["lights", "shutters", "outlets", "tv"].flatMap((device) => [
-    [`${device}_tap_action`, "Single-tap or keyboard action for this device only. Defaults to more information about its configured control entity; None disables it."],
-    [`${device}_hold_action`, "Hold action for this device only, after 500 ms. Defaults to more information; None disables it."],
-    [`${device}_double_tap_action`, "Double-tap action for this device only. Defaults to the legacy toggle, without also running the single-tap action; None disables it."],
-  ])),
-  group_lights: "Named Home Assistant group containing the room lights.",
-  group_motions: "Named Home Assistant group containing motion sensors.",
-  group_doors: "Named Home Assistant group containing door sensors.",
-  group_windows: "Named Home Assistant group containing window sensors.",
-  group_outlets: "Named Home Assistant group containing outlets.",
-  group_tv: "Named Home Assistant group containing televisions.",
-  group_water: "Named Home Assistant group containing water sensors.",
-  group_windows_shutters: "Named Home Assistant group containing window shutters.",
   ulm_card_dynamic_color: "Uses the configured light's RGB color for the active room card.",
   ulm_show_button: "Shows the source oscillation service button beside the speed slider.",
   ulm_button_icon: "Icon displayed on the source fan service button.",
@@ -1303,7 +1279,17 @@ export const helperCatalogs: Record<string, Record<string, string>> = {
 };
 
 export const editorHelper = (key: string, hass?: HomeAssistant): string | undefined => {
-  const helperKey = /^upcoming_(title|line[1-4])_text$/.test(key) ? "upcoming_text_template" : key;
+  if (key === "welcome_weather_date_format") return localize(hass, "upcoming_date_format");
+  if (key === "welcome_weather_icon_type") {
+    return ["Automatic", "Icon", "None"].map(label => localizeText(hass, label)).join(" / ");
+  }
+  const welcomeHelpers: Record<string, string> = {
+    welcome_weather_icon: "icon",
+    welcome_weather_primary_info: "primary_info",
+    welcome_weather_secondary_info: "secondary_info",
+    welcome_weather_tap_action: "tap_action",
+  };
+  const helperKey = welcomeHelpers[key] ?? (/^upcoming_(title|line[1-4])_text$/.test(key) ? "upcoming_text_template" : key);
   return helperCatalogs[normalizeLocale(hass?.language)]?.[helperKey] ?? englishHelpers[helperKey];
 };
 

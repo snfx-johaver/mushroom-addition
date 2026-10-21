@@ -4,8 +4,8 @@ import { placeholders } from "../src/translation-coverage";
 import { russianHelpers, russianLabels } from "../src/translations/ru";
 
 const catalogs = [
-  { english: translationCatalogs.en, baseline: translationCatalogs.ru, additions: russianLabels, installed: 416, added: 770 },
-  { english: englishHelpers, baseline: helperCatalogs.ru, additions: russianHelpers, installed: 1, added: 575 },
+  { english: translationCatalogs.en, baseline: translationCatalogs.ru, additions: russianLabels, installed: 416, added: 762 },
+  { english: englishHelpers, baseline: helperCatalogs.ru, additions: russianHelpers, installed: 1, added: 547 },
 ];
 
 describe("complete Russian card localization", () => {
@@ -104,12 +104,6 @@ describe("complete Russian card localization", () => {
       carousel_button_width: ["32-160"],
       carousel_button_height: ["32-160"],
       carousel_icon_size: ["12-96"],
-      lights_hold_action: ["500 ms", "None"],
-      lights_tap_action: ["None"],
-      lights_double_tap_action: ["None"],
-      shutters_hold_action: ["500 ms", "None"],
-      outlets_hold_action: ["500 ms", "None"],
-      tv_hold_action: ["500 ms", "None"],
       mode_solar_first_label: ["Smart Matching"],
       mode_smart_saving_label: ["Dynamic Smart Matching"],
       mode_smart_trading_label: ["Dynamic Trading + Smart Matching"],

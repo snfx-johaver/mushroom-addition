@@ -39,29 +39,6 @@ import type {
 
 type EditorSectionId = "context" | "content" | "layout" | "interactions" | "features";
 
-const roomViewSections = [
-  { id: "primary", title: "Primary entity presentation", icon: "mdi:account-circle-outline" },
-  { id: "climate", title: "Climate", icon: "mdi:thermometer" },
-  { id: "sensors", title: "Sensor status", icon: "mdi:shield-check-outline" },
-  { id: "devices", title: "Device controls", icon: "mdi:gesture-tap" },
-  { id: "actions", title: "Card interactions", icon: "mdi:gesture-tap-button" },
-] as const;
-type RoomViewSection = typeof roomViewSections[number]["id"];
-const roomViewSectionFor = (name: string): RoomViewSection => {
-  if (name === "temperature" || name === "humidity" || name.startsWith("climate_")) return "climate";
-  if (["group_motions", "group_doors", "group_windows", "group_water"].includes(name)) return "sensors";
-  if (["group_lights", "group_windows_shutters", "group_outlets", "group_tv"].includes(name) ||
-    /^(lights|shutters|outlets|tv)_/.test(name)) return "devices";
-  if (interactionFields.has(name)) return "actions";
-  return "primary";
-};
-const roomViewFields = (fields: EditorField[], section: RoomViewSection): EditorField[] =>
-  fields.flatMap((field) => {
-    if (!field.schema) return roomViewSectionFor(field.name) === section ? [field] : [];
-    const schema = roomViewFields(field.schema, section);
-    return schema.length ? [{ ...field, schema }] : [];
-  });
-
 const editorSections: Array<{ id: EditorSectionId; title: string; icon: string }> = [
   { id: "context", title: "Context", icon: "mdi:shape-outline" },
   { id: "content", title: "Content", icon: "mdi:format-align-left" },
@@ -89,30 +66,13 @@ const layoutFields = new Set([
 const interactionFields = new Set([
   "tap_action", "hold_action", "double_tap_action", "navigation_path", "settings_path",
 ]);
-
-const roomViewLabels: Record<string, string> = {
-  temperature: "Temperature entity",
-  humidity: "Humidity entity",
-  climate_name: "Climate name",
-  climate_icon: "Climate icon",
-  climate_icon_type: "Climate icon type",
-  climate_primary_info: "Climate primary information",
-  climate_secondary_info: "Climate secondary information (default: humidity)",
-  climate_secondary: "Custom climate secondary text",
-  group_doors: "Doors status entity",
-  group_windows: "Windows status entity",
-  group_motions: "Motion status entity",
-  group_water: "Water status entity",
-  group_lights: "Lights control entity",
-  group_windows_shutters: "Shutters control entity",
-  group_outlets: "Outlets control entity",
-  group_tv: "Television control entity",
-  ...Object.fromEntries(
-    [["lights", "Lights"], ["shutters", "Shutters"], ["outlets", "Outlets"], ["tv", "Television"]]
-      .flatMap(([key, label]) =>
-        [["tap", "tap"], ["hold", "hold"], ["double_tap", "double tap"]]
-          .map(([gesture, name]) => [`${key}_${gesture}_action`, `${label}: ${name} action`])),
-  ),
+const welcomeWeatherLabels: Record<string, string> = {
+  welcome_weather_icon: "icon",
+  welcome_weather_icon_type: "icon_type",
+  welcome_weather_primary_info: "primary_info",
+  welcome_weather_secondary_info: "secondary_info",
+  welcome_weather_date_format: "upcoming_date_format",
+  welcome_weather_tap_action: "tap_action",
 };
 
 const sectionForField = (field: EditorField): EditorSectionId => {
@@ -128,6 +88,8 @@ const sectionForField = (field: EditorField): EditorSectionId => {
   if (/^upcoming_(image_style|item_height|corner_radius|max_columns|overflow|title_size|line_size|box_shadows|text_shadows|transparency)$/.test(field.name)) return "layout";
   if (/^upcoming_(item_behavior|item_action|url|trailers|links)$/.test(field.name)) return "interactions";
   if (field.name === "entity") return "context";
+  if (field.name === "ulm_weather") return "context";
+  if (field.name.startsWith("welcome_weather_") && !field.name.endsWith("_action")) return "content";
   if (interactionFields.has(field.name) || field.name.endsWith("_action")) return "interactions";
   if (
     layoutFields.has(field.name) ||
@@ -229,15 +191,6 @@ export class MushroomAdditionEditor extends LitElement {
           this.config.media_controls?.includes("on_off") ?? false,
         media_controls: (this.config.media_controls ?? populatedDefaults.media_controls)?.filter(control => control !== "on_off"),
       } : {}),
-      ...(item.upstreamId === "custom_card_roomview" ? {
-        climate_icon_type: this.config.climate_icon_type ?? "icon",
-        climate_primary_info: this.config.climate_primary_info ?? (this.config.climate_name ? "name" : "state"),
-        ...Object.fromEntries(["lights", "shutters", "outlets", "tv"].flatMap((device) =>
-          ["tap", "hold", "double_tap"].map((gesture) => {
-            const key = `${device}_${gesture}_action`;
-            return [key, this.config![key] ?? { action: gesture === "double_tap" ? "toggle" : "more-info" }];
-          }))),
-      } : {}),
       ...(item.upstreamId === "mini_graph_card" ? {
         mini_graph_show_state: miniGraphShow?.state === "last"
           ? "last"
@@ -311,13 +264,6 @@ export class MushroomAdditionEditor extends LitElement {
         ? "horizontal"
         : this.config.layout ?? populatedDefaults.layout,
     };
-    if (item.upstreamId === "custom_card_roomview") {
-      return html`<div class="editor-sections room-view-editor">
-        ${roomViewSections.map((section) => this.renderEditorSection(
-          section, roomViewFields([...schema, ...upstreamSchema], section.id), formData, nothing, false,
-        ))}
-      </div>`;
-    }
     const customFeatures = item.upstreamId === "mini_graph_card"
       ? this.renderMiniGraphEditors()
       : item.upstreamId === "remote_card"
@@ -401,14 +347,14 @@ export class MushroomAdditionEditor extends LitElement {
   }
 
   private readonly computeLabel = (schema: { name: string }): string =>
-    this.config?.type.endsWith("pi-hole-card") && schema.name === "entity"
+    welcomeWeatherLabels[schema.name]
+      ? `${localize(this.hass, "ulm_weather")}: ${localize(this.hass, welcomeWeatherLabels[schema.name]!)}`
+      : this.config?.type.endsWith("pi-hole-card") && schema.name === "entity"
       ? localize(this.hass, "editor.pihole_entity")
       : this.config?.type.endsWith("upcoming-media-card") && schema.name === "entity"
       ? localize(this.hass, "editor.media_entity")
       : this.config?.type.endsWith("remote-card") && schema.name === "entity"
       ? localize(this.hass, "editor.remote_entity")
-      : this.config?.type.includes("custom-card-roomview") && roomViewLabels[schema.name]
-      ? localizeText(this.hass, roomViewLabels[schema.name]!)
       : this.config?.type.includes("custom-card-trash") && schema.name === "entity"
       ? "Optional card entity"
       : this.config?.type.includes("custom-card-washer") && schema.name === "entity"

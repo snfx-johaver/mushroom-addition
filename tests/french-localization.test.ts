@@ -72,7 +72,6 @@ describe("complete French label and helper catalogs", () => {
       carousel_button_height: ["32-160"],
       carousel_icon_size: ["12-96"],
       carousel_effect: ["Coverflow", "Slide", "Fade", "Cube", "Flip"],
-      lights_hold_action: ["500 ms"],
       ulm_custom_card_washer_remote_control: ["true", "on"],
       battery_warning_threshold: ["50%"],
       battery_low_threshold: ["20%"],
@@ -98,7 +97,6 @@ describe("complete French label and helper catalogs", () => {
     expect(helpers.carousel_scrollbar).toContain("n’active pas l’entité");
     expect(helpers.ulm_card_media_player_power_button).toContain("ne coupe pas l’alimentation");
     expect(helpers.ulm_card_media_player_power_button).toContain("autres commandes sont repliées");
-    expect(helpers.climate_name).toContain("Ne modifie pas l’en-tête de l’entité principale");
     expect(helpers.upcoming_text_template).toContain("Aucun JavaScript, HTML ou Jinja n’est exécuté");
   });
 });

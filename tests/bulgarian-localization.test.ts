@@ -27,14 +27,14 @@ const codeLiterals = (text: string) =>
 
 describe("complete Bulgarian card localization", () => {
   it("adds exactly the missing labels and helpers without changing installed translations", () => {
-    expect(Object.keys(bulgarianLabels)).toHaveLength(770);
-    expect(Object.keys(bulgarianHelpers)).toHaveLength(575);
+    expect(Object.keys(bulgarianLabels)).toHaveLength(762);
+    expect(Object.keys(bulgarianHelpers)).toHaveLength(547);
     expect(Object.keys(installedLabels)).toHaveLength(416);
     expect(Object.keys(installedHelpers)).toHaveLength(1);
     expect(fingerprint(installedLabels)).toBe("2f454396a39f8f335195c5fa4523c94b2d579368a49fde8104a638e5b93a29d0");
     expect(fingerprint(installedHelpers)).toBe("ebabe16006dd0d892b4e4dca06b0fe7191e32bd27a50c95e4caeaedeb2bd4286");
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1186);
-    expect(Object.keys(englishHelpers)).toHaveLength(576);
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1178);
+    expect(Object.keys(englishHelpers)).toHaveLength(548);
     expect(Object.keys(bulgarianLabels).some(key => key.startsWith("ui.graph."))).toBe(false);
 
     for (const [english, installed, additions] of catalogs) {
@@ -130,8 +130,6 @@ describe("complete Bulgarian card localization", () => {
     expect(bulgarianHelpers.room_temperature_entity).toContain("числови температури с единица за температура");
     expect(bulgarianHelpers.room_brightness_entity).toContain("основната лампа, а след това");
     expect(bulgarianHelpers.icon).toContain("само когато няма наличен обект");
-    expect(bulgarianHelpers.lights_hold_action).toContain("500 ms");
-    expect(bulgarianHelpers.lights_double_tap_action).toContain("без да се изпълнява и действието при единично докосване");
     expect(bulgarianLabels["ui.area.sensor_icons_help"]).toContain("управляват от Home Assistant");
     expect(bulgarianLabels["ui.area.use_light_color_help"]).toContain("изключените лампи се пропускат");
     expect(bulgarianLabels["ui.runtime_group_membership_icon_and_actions_stay_native_add_an_entity_button_for_a_custom_icon_name_or_action_04800467"])

@@ -3,8 +3,8 @@ import { englishHelpers, helperCatalogs, translationCatalogs } from "../src/loca
 import { placeholders } from "../src/translation-coverage";
 import { romanianHelpers, romanianLabels } from "../src/translations/ro";
 
-const labelSupplementSize = 770;
-const helperSupplementSize = 575;
+const labelSupplementSize = 762;
+const helperSupplementSize = 547;
 
 const catalogs = [
   [translationCatalogs.en, translationCatalogs.ro, romanianLabels],
@@ -98,7 +98,6 @@ describe("complete Romanian label and helper catalog", () => {
       carousel_effect: ["Coverflow", "Slide", "Fade", "Cube", "Flip"],
       carousel_button_width: ["32-160"],
       carousel_icon_size: ["12-96"],
-      lights_hold_action: ["500 ms"],
       mode_smart_trading_label: ["Dynamic Trading + Smart Matching"],
       show_grid_phases: ["L1", "L2", "L3"],
     };

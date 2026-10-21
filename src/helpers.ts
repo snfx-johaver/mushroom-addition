@@ -148,8 +148,7 @@ const configuredValue = (config: AdditionConfig, pattern: RegExp): unknown =>
   Object.entries(config).find(([key, value]) => pattern.test(key) && value !== undefined)?.[1];
 
 const upstreamCompatibility = (config: AdditionConfig): AdditionConfig => {
-  const independentClimate = String(config.type).includes("custom-card-roomview");
-  const name = configuredValue(config, independentClimate ? /^(?!climate_).*_name$/ : /_name$/);
+  const name = configuredValue(config, /_name$/);
   const item = getCatalogItem(config.type.replace(/^custom:/, ""));
   const icon = cardIconKeys(item)
     .map(key => config[key]).find(value => typeof value === "string" && value);

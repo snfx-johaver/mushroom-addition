@@ -1,7 +1,9 @@
 import { css, unsafeCSS } from "lit";
 import { resolveColorRgb } from "./colors";
+import { mediaControlStyles } from "./control-styles";
 
 export const sharedStyles = css`
+  ${mediaControlStyles}
   :host {
     --ulm-blue: ${unsafeCSS(resolveColorRgb("blue"))};
     --ulm-yellow: ${unsafeCSS(resolveColorRgb("yellow"))};
@@ -132,11 +134,15 @@ export const sharedStyles = css`
     box-shadow: var(--addition-raised-shadow);
     display: grid;
     place-items: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 12px;
+    box-sizing: border-box;
+    width: calc(var(--mush-control-height, 42px) * var(--mush-control-button-ratio, 1));
+    height: var(--mush-control-height, 42px);
+    border-radius: var(--mush-control-border-radius, 12px);
   }
-  .ulm-control ha-icon { --mdc-icon-size: 18px; }
+  .ulm-control ha-icon { --mdc-icon-size: var(--mush-control-icon-size, calc(var(--mush-control-height, 42px) * .5)); }
+  .ulm-control:hover:not(:disabled) { background: color-mix(in srgb, var(--primary-text-color) 13%, transparent); }
+  .ulm-control:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+  .ulm-control:disabled { color: rgb(var(--addition-disabled-rgb)); background: var(--addition-disabled-background); cursor: not-allowed; }
   .metric-pill {
     display: inline-flex;
     align-items: center;
@@ -175,12 +181,18 @@ export const sharedStyles = css`
   .metric-extremes { display: flex; justify-content: space-between; color: var(--secondary-text-color); font-size: 11px; }
   .ulm-scenes { padding: 12px; }
   .scene-grid { display: flex; min-width: 0; gap: 8px; overflow-x: auto; padding: 4px 4px 10px; margin: -4px -4px -10px; }
-  .scene-button { display: flex; min-width: 52px; flex: 1; flex-direction: column; align-items: center; gap: 6px; padding: 7px 4px 10px; border: 0; border-radius: 25px; background: var(--addition-raised-background); color: var(--primary-text-color); box-shadow: var(--addition-raised-shadow); }
-  .scene-button, .welcome-items > button { font-family: inherit; }
+  .scene-button { display: flex; min-width: 52px; flex: 1; flex-direction: column; align-items: center; gap: 6px; border: 0; border-radius: 25px; background: var(--addition-raised-background); color: var(--primary-text-color); box-shadow: var(--addition-raised-shadow); }
+  .scene-button, .welcome-items > button {
+    font-family: inherit;
+    box-sizing: border-box;
+    min-height: calc(var(--mush-icon-size, 36px) + var(--mush-card-secondary-line-height, 16px) * 2 + 24px);
+    justify-content: center;
+    padding: 9px 4px;
+  }
+  .ulm-scenes > .automatic-presentation { margin-bottom: var(--mush-spacing, 12px); }
   .scene-button > span, .welcome-items small {
     display: -webkit-box;
     width: 100%;
-    min-height: calc(var(--mush-card-secondary-line-height, 16px) * 2);
     overflow: hidden;
     overflow-wrap: anywhere;
     white-space: normal;
@@ -343,44 +355,39 @@ export const sharedStyles = css`
     background: var(--addition-neutral-background);
   }
   .waste-row ha-icon { --mdc-icon-size: 17px; color: var(--waste-color, rgb(var(--ulm-green))); }
-  .waste-row b, .waste-row small { font-size: 11px; }
-  .waste-row small { color: var(--secondary-text-color); }
+  .waste-row b { font-size: var(--mush-card-primary-font-size, 14px); font-weight: var(--mush-card-primary-font-weight, 500); line-height: var(--mush-card-primary-line-height, 20px); }
+  .waste-row small { color: var(--mush-card-secondary-color, var(--secondary-text-color)); font-size: var(--mush-card-secondary-font-size, 12px); font-weight: var(--mush-card-secondary-font-weight, 400); line-height: var(--mush-card-secondary-line-height, 16px); }
+  .waste-row b, .waste-row small { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .alarm-time-controls {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: center;
-    gap: 10px;
+    gap: var(--mush-control-spacing, 12px);
   }
   .alarm-time-controls .ulm-control {
     width: 100%;
-    height: 56px;
-    border-radius: 18px;
+    height: var(--mush-control-height, 42px);
+    border-radius: var(--mush-control-border-radius, 12px);
   }
   .alarm-time-controls > b { text-align: center; font-size: 18px; }
   .custom-alarm-time.is-horizontal { grid-template-columns: minmax(0, 1fr) minmax(180px, 1fr); align-items: center; }
-  .custom-room-view { display: grid; min-width: 0; min-height: 150px; gap: 8px; padding: 12px; }
-  .room-view-summary { display: flex; width: 100%; min-width: 0; align-items: center; gap: 10px; padding: 0; border: 0; background: transparent; color: var(--primary-text-color); font: inherit; text-align: start; cursor: pointer; }
-  .room-view-summary .ulm-copy { min-width: 0; }
-  .room-view-icon { position: relative; display: grid; width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); place-items: center; border-radius: 50%; background: var(--addition-disabled-background); color: rgb(var(--addition-disabled-rgb)); }
-  .room-view-icon > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667)); }
-  .room-view-status { display: flex; min-height: 28px; align-items: center; justify-content: center; gap: 2px; }
-  .room-view-status button, .room-view-clear, .room-view-warning { position: relative; display: grid; width: 35px; height: 28px; padding: 0; place-items: center; border: 0; background: transparent; color: var(--secondary-text-color); }
-  .room-view-status button > ha-icon { --mdc-icon-size: 20px; }
-  .room-view-status .is-unavailable, .room-view-warning { color: var(--error-color, #db4437); }
-  .room-view-warning ha-icon { --mdc-icon-size: 18px; }
-  .room-view-actions { display: flex; gap: 7px; }
-  .room-view-actions button { position: relative; display: grid; min-width: 40px; height: 44px; flex: 1; padding: 0; place-items: center; border: 0; border-radius: 14px; background: var(--addition-neutral-background); color: var(--secondary-text-color); cursor: pointer; box-shadow: var(--addition-raised-shadow); }
-  .room-view-actions button.is-active { background: rgba(var(--ulm-yellow), .25); color: rgb(var(--ulm-yellow)); }
-  .room-view-actions button:disabled { opacity: .45; cursor: not-allowed; }
-  .room-view-actions i, .room-view-status i { position: absolute; top: 5px; right: 30%; display: grid; min-width: 16px; height: 16px; place-items: center; border-radius: 9px; background: rgb(var(--ulm-blue)); color: #fff; font-size: 10px; font-style: normal; }
-  .custom-room-view button:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
   .custom-welcome { display: grid; gap: 18px; padding: 14px; }
   .welcome-toolbar { display: flex; justify-content: space-between; }
   .welcome-toolbar button { display: grid; width: 38px; height: 38px; padding: 0; place-items: center; border: 0; border-radius: 50%; background: var(--addition-raised-background); color: inherit; box-shadow: var(--addition-raised-shadow); }
   .welcome-toolbar button:disabled { visibility: hidden; }
+  .custom-welcome .welcome-toolbar { display: grid; grid-template-columns: 38px minmax(0, 1fr) 38px; }
+  .welcome-toolbar button.welcome-weather { display: flex; justify-self: center; align-items: center; justify-content: center; gap: 8px; width: auto; max-width: 100%; min-width: 0; height: auto; min-height: 42px; padding: 4px 8px; border-radius: var(--mush-control-border-radius, 12px); background: transparent; box-shadow: none; font: inherit; text-align: start; cursor: pointer; }
+  .welcome-toolbar button.welcome-weather:disabled { visibility: visible; cursor: default; }
+  .welcome-weather > ha-icon { flex: 0 0 auto; --mdc-icon-size: 24px; color: var(--secondary-text-color); }
+  .welcome-weather-copy { display: flex; flex-direction: column; min-width: 0; }
+  .welcome-weather-primary, .welcome-weather-secondary { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .welcome-weather-primary { font-size: var(--mush-card-primary-font-size, 14px); font-weight: var(--mush-card-primary-font-weight, 500); line-height: var(--mush-card-primary-line-height, 20px); color: var(--mush-card-primary-color, var(--primary-text-color)); }
+  .welcome-weather-secondary { font-size: var(--mush-card-secondary-font-size, 12px); font-weight: var(--mush-card-secondary-font-weight, 400); line-height: var(--mush-card-secondary-line-height, 16px); color: var(--mush-card-secondary-color, var(--secondary-text-color)); }
+  .welcome-weather:hover:not(:disabled) { background: var(--addition-neutral-background); }
+  .welcome-weather:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
   .welcome-greeting { font-size: 23px; line-height: 1.08; }
   .welcome-items { display: flex; gap: 8px; overflow-x: auto; padding: 4px 4px 10px; margin: -4px -4px -10px; }
-  .welcome-items > button { display: flex; min-width: 52px; flex: 1; flex-direction: column; align-items: center; gap: 6px; padding: 7px 4px 10px; border: 0; border-radius: 25px; background: var(--addition-raised-background); color: inherit; box-shadow: var(--addition-raised-shadow); }
+  .welcome-items > button { display: flex; min-width: 52px; flex: 1; flex-direction: column; align-items: center; gap: 6px; border: 0; border-radius: 25px; background: var(--addition-raised-background); color: inherit; box-shadow: var(--addition-raised-shadow); }
   .welcome-items i { display: grid; width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); place-items: center; border-radius: 50%; background: rgba(var(--tone), .18); color: rgb(var(--tone)); font-style: normal; }
   .welcome-items i > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667)); }
   .washer-heading .washer-power { font-size: 12px; font-weight: 700; }
@@ -388,18 +395,17 @@ export const sharedStyles = css`
   .washer-stages span { display: grid; height: 42px; place-items: center; color: rgb(var(--addition-disabled-rgb)); }
   .washer-stages span.is-active { color: var(--primary-text-color); }
   .washer-stages span.is-active ha-icon { padding: 9px; border-radius: 50%; background: var(--card-background-color); }
-  .washer-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-  .washer-controls .ulm-control { width: 100%; height: 42px; border-radius: 16px; }
+  .washer-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--mush-control-spacing, 12px); }
+  .washer-controls .ulm-control { width: 100%; height: var(--mush-control-height, 42px); border-radius: var(--mush-control-border-radius, 12px); }
   .washer-remote { color: var(--secondary-text-color); font-size: 11px; text-align: center; }
-  .custom-sun-card { display: grid; min-height: 210px; gap: 8px; padding: 18px; }
-  .astronomy-times { display: grid; min-width: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
-  .astronomy-times span, .sun-footer span { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
+  .custom-sun-card { display: grid; min-height: 210px; gap: var(--mush-spacing, 12px); padding: var(--mush-spacing, 12px); }
+  .astronomy-times { display: grid; min-width: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--mush-spacing, 12px); }
+  .astronomy-times span, .sun-footer span { display: flex; min-width: 0; flex-direction: column; gap: 0; }
   .astronomy-times span:nth-child(2), .astronomy-times span:nth-child(3) { align-items: center; }
   .astronomy-times span:last-child, .sun-footer span:last-child { align-items: flex-end; }
-  .astronomy-times small, .sun-footer small { color: var(--secondary-text-color); overflow-wrap: anywhere; }
-  .astronomy-times b { font-size: 16px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .astronomy-times small, .sun-footer small { color: var(--mush-card-secondary-color, var(--secondary-text-color)); overflow-wrap: anywhere; font-size: var(--mush-card-secondary-font-size, 12px); font-weight: var(--mush-card-secondary-font-weight, 400); line-height: var(--mush-card-secondary-line-height, 16px); letter-spacing: var(--mush-card-secondary-letter-spacing, .4px); }
+  .astronomy-times b, .sun-footer b { font-size: var(--mush-card-primary-font-size, 14px); font-weight: var(--mush-card-primary-font-weight, 500); line-height: var(--mush-card-primary-line-height, 20px); letter-spacing: var(--mush-card-primary-letter-spacing, .1px); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
   .sun-footer { display: flex; justify-content: space-between; }
-  .sun-footer b { font-size: 13px; }
   .sun-arc { position: relative; height: 90px; }
   .sun-arc svg { display: block; width: 100%; height: 90px; overflow: visible; }
   .sun-arc line { stroke: rgba(var(--ulm-grey), .18); }
@@ -418,42 +424,42 @@ export const sharedStyles = css`
     background: #ffd45c;
     transform: translate(-50%, -50%);
   }
-  .astronomy-position-rows { display: grid; gap: 4px; font-size: 12px; }
+  .astronomy-position-rows { display: grid; gap: 4px; font-size: var(--mush-card-secondary-font-size, 12px); line-height: var(--mush-card-secondary-line-height, 16px); color: var(--mush-card-secondary-color, var(--secondary-text-color)); }
   .astronomy-position-rows > div {
     display: grid;
     grid-template-columns: 44px minmax(0, auto) minmax(0, auto);
     justify-content: start;
     gap: 14px;
   }
-  .astronomy-position-rows strong { font-variant-numeric: tabular-nums; }
+  .astronomy-position-rows strong { font-variant-numeric: tabular-nums; font-weight: var(--mush-card-primary-font-weight, 500); color: var(--primary-text-color); }
   .moon-section {
     display: grid;
-    gap: 10px;
+    gap: var(--mush-spacing, 12px);
     margin-top: 6px;
-    padding-top: 14px;
+    padding-top: var(--mush-spacing, 12px);
     border-top: 1px solid var(--divider-color, rgba(var(--ulm-grey), .18));
   }
   .moon-heading {
     display: grid;
     min-width: 0;
-    grid-template-columns: 40px minmax(0, 1fr);
+    grid-template-columns: var(--mush-icon-size, 36px) minmax(0, 1fr);
     align-items: center;
     gap: 12px;
   }
   .moon-symbol {
     display: grid;
-    width: 40px;
-    height: 40px;
+    width: var(--mush-icon-size, 36px);
+    height: var(--mush-icon-size, 36px);
     place-items: center;
     border-radius: 50%;
     background: var(--addition-neutral-background);
     color: var(--primary-text-color);
   }
-  .moon-symbol ha-icon { --mdc-icon-size: 25px; }
+  .moon-symbol ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667)); }
   .moon-copy { display: grid; min-width: 0; gap: 2px; }
   .moon-copy b, .moon-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .moon-copy b { font-size: 14px; }
-  .moon-copy small { color: var(--secondary-text-color); font-size: 12px; text-transform: capitalize; }
+  .moon-copy b { font-size: var(--mush-card-primary-font-size, 14px); font-weight: var(--mush-card-primary-font-weight, 500); line-height: var(--mush-card-primary-line-height, 20px); }
+  .moon-copy small { color: var(--mush-card-secondary-color, var(--secondary-text-color)); font-size: var(--mush-card-secondary-font-size, 12px); line-height: var(--mush-card-secondary-line-height, 16px); text-transform: capitalize; }
   .moon-marker {
     position: absolute;
     left: var(--moon-x);
@@ -478,7 +484,7 @@ export const sharedStyles = css`
     height: 20px;
     line-height: 0;
   }
-  .moon-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+  .moon-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--mush-spacing, 12px); }
   .moon-metric {
     display: grid;
     min-width: 0;
@@ -493,11 +499,11 @@ export const sharedStyles = css`
   .moon-metric > ha-icon { --mdc-icon-size: 19px; color: var(--secondary-text-color); }
   .moon-metric > span { display: grid; min-width: 0; gap: 1px; }
   .moon-metric small, .moon-metric b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .moon-metric small { color: var(--secondary-text-color); font-size: 10px; }
-  .moon-metric b { font-size: 12px; font-variant-numeric: tabular-nums; }
+  .moon-metric small { color: var(--mush-card-secondary-color, var(--secondary-text-color)); font-size: var(--mush-card-secondary-font-size, 12px); font-weight: var(--mush-card-secondary-font-weight, 400); line-height: var(--mush-card-secondary-line-height, 16px); }
+  .moon-metric b { font-size: var(--mush-card-primary-font-size, 14px); font-weight: var(--mush-card-primary-font-weight, 500); line-height: var(--mush-card-primary-line-height, 20px); font-variant-numeric: tabular-nums; }
   .media-platform { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-purple), .75); color: #fff; }
-  .input-datetime-controls { display: grid; grid-template-columns: repeat(3, 1fr); align-items: center; gap: 7px; }
-  .input-datetime-controls .ulm-control { width: 100%; height: 42px; border-radius: 14px; }
+  .input-datetime-controls { display: grid; grid-template-columns: repeat(3, 1fr); align-items: center; gap: var(--mush-control-spacing, 12px); }
+  .input-datetime-controls .ulm-control { width: 100%; height: var(--mush-control-height, 42px); border-radius: var(--mush-control-border-radius, 12px); }
   .input-datetime-controls .hold-control { font-size: 16px; font-weight: 700; }
   .custom-sonos, .custom-printer,
   .custom-nas-metrics, .custom-tablet { display: grid; gap: 10px; padding: 12px; }
@@ -513,17 +519,17 @@ export const sharedStyles = css`
     border-color: rgba(255,255,255,.22); background: rgba(0,0,0,.32); color: #fff;
   }
   .sonos-controls {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(42px, 1fr)); align-items: center; gap: 7px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(var(--mush-control-height, 42px), 1fr)); align-items: center; gap: var(--mush-control-spacing, 12px);
   }
   .sonos-controls:empty { display: none; }
   .sonos-volume { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; min-width: 0; }
   .sonos-volume input { flex: 1; min-width: 0; accent-color: rgb(var(--ulm-blue)); }
   .sonos-volume output { font-variant-numeric: tabular-nums; }
   .sonos-controls button[aria-pressed="true"] { color: rgb(var(--ulm-blue)); }
-  .sonos-controls button:disabled, .sonos-volume input:disabled { cursor: not-allowed; opacity: .45; }
+  .sonos-controls button:disabled { cursor: not-allowed; opacity: .45; }
   .sonos-controls button {
     box-shadow: var(--addition-raised-shadow);
-    min-height: 42px; border: 0; border-radius: 13px; background: var(--addition-neutral-background); color: var(--primary-text-color);
+    min-height: var(--mush-control-height, 42px); border: 0; border-radius: var(--mush-control-border-radius, 12px); background: var(--addition-neutral-background); color: var(--primary-text-color);
   }
   .sonos-details { min-width: 0; }
   .sonos-details summary {
@@ -544,13 +550,14 @@ export const sharedStyles = css`
   .sonos-switches button.is-active {
     background: rgba(var(--ulm-blue), .12);
   }
-  .sonos-switches button:disabled, .sonos-sliders input:disabled { cursor: not-allowed; opacity: .45; }
+  .sonos-switches button:disabled { cursor: not-allowed; opacity: .45; }
   .sonos-switches ha-icon { --mdc-icon-size: 18px; color: rgb(var(--ulm-blue)); }
   .sonos-sliders { display: grid; gap: 8px; padding-top: 4px; }
   .sonos-sliders label {
-    display: grid; grid-template-columns: 26px minmax(112px, .8fr) minmax(120px, 1fr) 34px;
-    min-height: 40px; align-items: center; gap: 8px; color: var(--primary-text-color); font-size: 13px;
+    display: grid; grid-template-columns: 26px minmax(0, .8fr) minmax(0, 1fr) 34px;
+    min-height: var(--mush-control-height, 42px); align-items: center; gap: 8px; color: var(--primary-text-color); font-size: var(--mush-card-secondary-font-size, 12px);
   }
+  .sonos-sliders label > span { min-width: 0; overflow-wrap: anywhere; }
   .sonos-sliders label > ha-icon { --mdc-icon-size: 18px; color: rgb(var(--ulm-blue)); }
   .sonos-sliders input { width: 100%; accent-color: rgb(var(--ulm-blue)); }
   .sonos-sliders output { color: var(--primary-text-color); text-align: right; font-variant-numeric: tabular-nums; }
@@ -577,7 +584,7 @@ export const sharedStyles = css`
   .toner-bars span { display: block; min-height: 30px; }
   .toner-bars i { position: relative; display: grid; box-sizing: border-box; height: 30px; overflow: hidden; place-items: center; border: 1px solid var(--divider-color); border-radius: 10px; background: var(--addition-track-background); font-style: normal; }
   .toner-bars em { position: absolute; inset: 0 auto 0 0; width: var(--level); background: var(--toner); }
-  .toner-bars b { position: relative; z-index: 1; padding: 2px 7px; border-radius: 999px; background: color-mix(in srgb, var(--card-background-color, #fff) 88%, transparent); color: var(--primary-text-color); font-size: 12px; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .toner-bars b { position: relative; z-index: 1; padding: 2px 7px; border-radius: 999px; background: color-mix(in srgb, var(--card-background-color, #fff) 88%, transparent); color: var(--mush-card-primary-color, var(--primary-text-color)); font-size: var(--mush-card-primary-font-size, 14px); line-height: var(--mush-card-primary-line-height, 20px); font-variant-numeric: tabular-nums; font-weight: var(--mush-card-primary-font-weight, 500); }
   .custom-nas-metrics { gap: 12px; padding: 12px; }
   .nas-metrics-top { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .nas-metrics-tile { box-sizing: border-box; display: grid; min-height: 66px; grid-template-columns: var(--mush-icon-size, 36px) minmax(0, 1fr); align-items: center; gap: 12px; padding: 12px; border: 0; border-radius: 30px; background: transparent; color: var(--primary-text-color); text-align: left; }

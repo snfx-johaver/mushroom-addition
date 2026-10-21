@@ -69,8 +69,8 @@ const catalogs = [
 
 describe("complete Serbian card localization", () => {
   it("adds exactly the missing labels and helpers without changing the installed baseline", () => {
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1186);
-    expect(Object.keys(englishHelpers)).toHaveLength(576);
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1178);
+    expect(Object.keys(englishHelpers)).toHaveLength(548);
 
     for (const { locale, labels, helpers, installedLabels, installedHelpers } of catalogs) {
       const labelsBeforeAdditions = installedWithout(installedLabels, labels);
@@ -79,8 +79,8 @@ describe("complete Serbian card localization", () => {
       expect(Object.keys(helpersBeforeAdditions)).toHaveLength(1);
       expect(fingerprint(labelsBeforeAdditions)).toBe(fingerprints[locale].labels);
       expect(fingerprint(helpersBeforeAdditions)).toBe(fingerprints[locale].helpers);
-      expect(Object.keys(labels)).toHaveLength(770);
-      expect(Object.keys(helpers)).toHaveLength(575);
+      expect(Object.keys(labels)).toHaveLength(762);
+      expect(Object.keys(helpers)).toHaveLength(547);
       expect(Object.keys(labels).sort()).toEqual(
         Object.keys(translationCatalogs.en).filter((key) => !Object.hasOwn(labelsBeforeAdditions, key)).sort(),
       );
@@ -186,12 +186,6 @@ describe("complete Serbian card localization", () => {
       carousel_button_width: ["32-160"],
       carousel_button_height: ["32-160"],
       carousel_icon_size: ["12-96"],
-      lights_hold_action: ["500 ms", "None"],
-      lights_tap_action: ["None"],
-      lights_double_tap_action: ["None"],
-      shutters_hold_action: ["500 ms", "None"],
-      outlets_hold_action: ["500 ms", "None"],
-      tv_hold_action: ["500 ms", "None"],
       mode_solar_first_label: ["Smart Matching"],
       mode_smart_saving_label: ["Dynamic Smart Matching"],
       mode_smart_trading_label: ["Dynamic Trading + Smart Matching"],

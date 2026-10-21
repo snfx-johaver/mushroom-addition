@@ -11,7 +11,7 @@ describe("Home Assistant registration", () => {
     for (const alias of LEGACY_ALIASES) expect(customElements.get(alias.tag)).toBeDefined();
   });
 
-  it.each(["custom-card-weather-metrics", "custom-card-room-overview", "card-media-player"])("does not register the removed %s card or expose it in the picker", (removed) => {
+  it.each(["custom-card-weather-metrics", "custom-card-room-overview", "custom-card-roomview", "card-media-player"])("does not register the removed %s card or expose it in the picker", (removed) => {
     const tag = `mushroom-addition-${removed}`;
     expect(customElements.get(tag)).toBeUndefined();
     expect(window.customCards?.some((item) => item.type === tag)).toBe(false);
@@ -341,7 +341,6 @@ describe("Home Assistant registration", () => {
 
   it.each([
     ["mushroom-addition-custom-card-trash", "mdi:trash-can-outline"],
-    ["mushroom-addition-custom-card-roomview", "mdi:home-variant-outline"],
   ])("leaves the default icon entity-driven for %s", (tag) => {
     const constructor = customElements.get(tag) as typeof HTMLElement & {
       getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;

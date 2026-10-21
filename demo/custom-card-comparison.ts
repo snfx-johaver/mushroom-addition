@@ -250,17 +250,6 @@ const fixtures: Fixture[] = [
   },
   { id: "alarm-time", entity: "input_boolean.alarm", config: { datetime_entity: "input_datetime.alarm", ulm_card_alarm_time_step: 15 } },
   { id: "camera", entity: "camera.driveway", reference: "screenshot_custom_camera1.png", width: 250, config: { name: "Driveway", show_name: true, show_state: true, aspect_ratio: "16:9", fit_mode: "cover" } },
-  { id: "roomview", entity: "", reference: "custom_card_roomview_1.png", width: 320, config: {
-    icon: "mdi:home-variant-outline",
-    group_lights: "group.room_lights",
-    group_motions: "group.room_motions",
-    group_doors: "group.room_doors",
-    group_outlets: "group.room_outlets",
-    group_tv: "group.room_tv",
-    group_windows_shutters: "group.room_shutters",
-    temperature: "sensor.room_temperature",
-    humidity: "sensor.room_humidity",
-  } },
   { id: "elapsed-time", entity: "input_datetime.cat_litter", reference: "custom_card_elapsed_time.png", width: 320, config: { icon: "mdi:toilet" } },
   { id: "welcome", entity: "person.resident", reference: "custom_card_welcome_light.png", width: 420, config: {
     name: "Resident",

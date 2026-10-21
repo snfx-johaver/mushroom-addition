@@ -11,8 +11,8 @@ import {
 } from "../src/translations/pt-BR";
 
 const catalogs = [
-  [translationCatalogs.en, translationCatalogs["pt-PT"], europeanPortugueseLabels, 770, 416],
-  [englishHelpers, helperCatalogs["pt-PT"], europeanPortugueseHelpers, 575, 1],
+  [translationCatalogs.en, translationCatalogs["pt-PT"], europeanPortugueseLabels, 762, 416],
+  [englishHelpers, helperCatalogs["pt-PT"], europeanPortugueseHelpers, 547, 1],
 ] as const;
 
 describe("complete European Portuguese card translations", () => {
@@ -133,10 +133,6 @@ describe("complete European Portuguese card translations", () => {
       carousel_button_height: ["pixels"],
       carousel_icon_size: ["12-96", "pixels"],
       carousel_coverflow_stretch: ["pixels"],
-      lights_hold_action: ["500 ms"],
-      shutters_hold_action: ["500 ms"],
-      outlets_hold_action: ["500 ms"],
-      tv_hold_action: ["500 ms"],
       mode_solar_first_label: ["Smart Matching"],
       mode_smart_saving_label: ["Dynamic Smart Matching"],
       mode_smart_trading_label: ["Dynamic Trading + Smart Matching"],
@@ -200,8 +196,6 @@ describe("complete European Portuguese card translations", () => {
     expect(europeanPortugueseHelpers.ulm_card_media_player_enable_volume_adjust)
       .toContain("exige suporte à definição de volume");
     expect(europeanPortugueseHelpers.carousel_scrollbar).toContain("não ativa a entidade");
-    expect(europeanPortugueseHelpers.lights_double_tap_action)
-      .toContain("sem executar também a ação de toque simples");
     expect(europeanPortugueseLabels[
       "ui.runtime_content_name_icon_and_icon_color_accept_home_assistant_jinja_templates_templates_run_in_home_assistant_not_in_the_browser_errors_are_shown_on_the_button_preview_f15200eb"
     ]).toContain("no Home Assistant, não no navegador");

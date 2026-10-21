@@ -20,7 +20,7 @@ describe("default Mushroom icon sizing", () => {
   });
   it.each([
     ".ulm-control, .scene-button", ".metric-pill", ".room-status-indicator",
-    ".schedule-list span", ".waste-row", ".room-view-actions button",
+    ".schedule-list span", ".waste-row",
     ".washer-stages", ".moon-symbol", ".moon-metric", ".sonos-controls button",
     ".tablet-battery-icon", ".flower-metrics > span",
   ])("uses Mushroom's neutral background for %s", selector => {
@@ -36,10 +36,9 @@ describe("default Mushroom icon sizing", () => {
   });
   it("keeps existing colored fills, active states and raised surfaces intact", () => {
     expect(ruleFor(".tablet-controls button")).toContain("background: rgba(var(--tone), .2)");
-    expect(ruleFor(".room-view-actions button.is-active")).toContain("rgba(var(--ulm-yellow), .25)");
     expect(ruleFor(".scene-button")).toContain("background: var(--addition-raised-background)");
     expect(ruleFor(".toner-bars i")).toContain("height: 30px");
-    expect(ruleFor(".alarm-time-controls .ulm-control")).toContain("height: 56px");
+    expect(ruleFor(".alarm-time-controls .ulm-control")).toContain("height: var(--mush-control-height, 42px)");
   });
   it("also uses the neutral surface in separate-shadow controls without restyling native Area controls", () => {
     for (const file of ["entity-carousel.ts", "pi-hole.ts", "upcoming-media.ts", "area-advanced.ts"]) {
@@ -96,7 +95,6 @@ describe("default Mushroom icon sizing", () => {
   });
   it.each([
     ".ulm-control",
-    ".room-view-actions button",
     ".sonos-controls button",
     ".sonos-switches button",
     ".sonos-shortcuts button",
@@ -156,7 +154,7 @@ describe("default Mushroom icon sizing", () => {
       expect(ruleFor(".welcome-items")).toContain(property);
     }
     for (const property of [
-      "min-width: 52px", "flex: 1", "gap: 6px", "padding: 7px 4px 10px",
+      "min-width: 52px", "flex: 1", "gap: 6px",
       "border-radius: 25px", "box-shadow: var(--addition-raised-shadow)",
     ]) {
       expect(ruleFor(".scene-button")).toContain(property);
@@ -166,11 +164,16 @@ describe("default Mushroom icon sizing", () => {
       "width: 100%", "font-size: var(--mush-card-secondary-font-size, 12px)",
       "font-weight: var(--mush-card-secondary-font-weight, 400)", "white-space: normal",
       "overflow-wrap: anywhere", "-webkit-line-clamp: 2",
-      "min-height: calc(var(--mush-card-secondary-line-height, 16px) * 2)",
     ]) {
       expect(ruleFor(".scene-button > span, .welcome-items small")).toContain(property);
     }
     expect(styles).not.toContain(".source-scene-grid .scene-grid");
+    const centered = ruleFor(".scene-button, .welcome-items > button");
+    expect(centered).toContain("justify-content: center");
+    expect(centered).toContain("padding: 9px 4px");
+    expect(centered).toContain("min-height: calc(var(--mush-icon-size, 36px) + var(--mush-card-secondary-line-height, 16px) * 2 + 24px)");
+    expect(ruleFor(".scene-button > span, .welcome-items small")).not.toContain("min-height");
+    expect(ruleFor(".ulm-scenes > .automatic-presentation")).toContain("margin-bottom: var(--mush-spacing, 12px)");
   });
   it("uses theme-controlled Mushroom-style borders for standalone cards", () => {
     const border = "border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, #e0e0e0))";
@@ -187,7 +190,6 @@ describe("default Mushroom icon sizing", () => {
 
   it.each([
     ".scene-button i",
-    ".room-view-icon",
     ".welcome-items i",
     ".tablet-icon",
     ".tablet-battery-icon",

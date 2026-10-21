@@ -4,7 +4,7 @@
 
 Your dashboard called. It wants fewer YAML headaches and a little more fun(gus).
 
-**28 Home Assistant dashboard cards, with visual editors, theme-aware styling
+**27 Home Assistant dashboard cards, with visual editors, theme-aware styling
 and support for all 33 Mushroom languages.** Energy, media, rooms, batteries,
 graphs, remotes and more. Pick a card, pick your entities, enjoy your dashboard.
 YAML is still welcome; it just isn't compulsory.

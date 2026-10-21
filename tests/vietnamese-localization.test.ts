@@ -39,14 +39,14 @@ const acceptedUnchangedTerms = new Set([
 
 describe("complete Vietnamese card localization", () => {
   it("adds exactly the missing inventory before and after catalog wiring", () => {
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1186);
-    expect(Object.keys(englishHelpers)).toHaveLength(576);
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1178);
+    expect(Object.keys(englishHelpers)).toHaveLength(548);
     expect(Object.keys(nativeDiagnosticCatalogs.en)).toHaveLength(6);
-    expect(Object.keys(translationCatalogs.en).length + Object.keys(englishHelpers).length + 6).toBe(1768);
+    expect(Object.keys(translationCatalogs.en).length + Object.keys(englishHelpers).length + 6).toBe(1732);
     expect(Object.keys(installedLabels)).toHaveLength(416);
     expect(Object.keys(installedHelpers)).toHaveLength(1);
-    expect(Object.keys(vietnameseLabels)).toHaveLength(770);
-    expect(Object.keys(vietnameseHelpers)).toHaveLength(575);
+    expect(Object.keys(vietnameseLabels)).toHaveLength(762);
+    expect(Object.keys(vietnameseHelpers)).toHaveLength(547);
     expect(fingerprint(installedLabels)).toBe("6db737bf3546397e8f1712f3758dd9ed0bfdb2b0835e560a9b9e1ae58bdda8d3");
     expect(fingerprint(installedHelpers)).toBe("e9b991363034f3894e5bd1a4d6add7697ff4797a7a2be84518b9ce784730523e");
 
@@ -119,6 +119,5 @@ describe("complete Vietnamese card localization", () => {
     expect(vietnameseHelpers.pihole_metrics).toContain("không bao giờ được thay bằng không");
     expect(vietnameseHelpers.remote_entity).toContain("Không bao giờ gửi lệnh");
     expect(vietnameseHelpers.ulm_card_media_player_enable_volume_adjust).toContain("0.05 = 5%");
-    expect(vietnameseHelpers.lights_hold_action).toContain("500 ms");
   });
 });

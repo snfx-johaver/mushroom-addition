@@ -68,7 +68,12 @@ describe("Sonos Mushroom-compatible media controls", () => {
     expect(callService).toHaveBeenCalledWith("homeassistant", "toggle", { entity_id: "switch.office_crossfade" });
     const bass = root.querySelector<HTMLInputElement>('input[aria-label="Tiefen"]')!;
     expect(bass).not.toBeNull();
+    expect(bass.style.getPropertyValue("--range-progress")).toBe("60%");
+    callService.mockClear();
     bass.value = "-3";
+    bass.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(bass.style.getPropertyValue("--range-progress")).toBe("35%");
+    expect(callService).not.toHaveBeenCalled();
     bass.dispatchEvent(new Event("change", { bubbles: true }));
     expect(callService).toHaveBeenCalledWith("number", "set_value", { entity_id: "number.office_bass", value: -3 });
   });
@@ -120,8 +125,10 @@ describe("Sonos Mushroom-compatible media controls", () => {
       button(label)!.click();
     }
     const slider = root.querySelector<HTMLInputElement>(".sonos-volume input")!;
+    expect(slider.style.getPropertyValue("--range-progress")).toBe("42%");
     slider.value = "67";
     slider.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(slider.style.getPropertyValue("--range-progress")).toBe("67%");
     expect(callService).toHaveBeenCalledTimes(9);
     slider.dispatchEvent(new Event("change", { bubbles: true }));
     expect(callService.mock.calls).toEqual([

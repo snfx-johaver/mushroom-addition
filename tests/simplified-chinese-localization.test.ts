@@ -116,9 +116,6 @@ describe("complete Simplified Chinese localization", () => {
       moon_altitude_entity: ["Astronomy Space Suite"],
       console_platform: ["Xbox", "PlayStation", "Nintendo"],
     };
-    for (const kind of ["lights", "shutters", "outlets", "tv"]) {
-      literals[`${kind}_hold_action`] = ["500 ms"];
-    }
     for (const [key, examples] of Object.entries(literals)) {
       for (const example of examples) expect(helpers[key], `${key}: ${example}`).toContain(example);
     }
@@ -151,7 +148,6 @@ describe("complete Simplified Chinese localization", () => {
     expect(helpers.ulm_card_media_player_power_button).toContain("其他控制折叠时仍保留");
     expect(helpers.collapsible_controls).toContain("未知和不可用的实体无法控制");
     expect(helpers.volume_controls).toContain("隐藏实体不支持的控制");
-    expect(helpers.climate_name).toContain("不会更改主实体标题");
     expect(helpers.room_temperature_entity).toContain("具有温度单位的数值温度");
   });
 

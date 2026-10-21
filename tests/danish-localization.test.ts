@@ -23,9 +23,9 @@ const codeLiterals = (text: string) =>
 
 describe("complete Danish card localization", () => {
   it("adds exactly the missing keys without changing the installed Danish translations", () => {
-    expect(Object.keys(danishLabels)).toHaveLength(770);
-    expect(Object.keys(danishHelpers)).toHaveLength(575);
-    expect(Object.keys(danishLabels).length + Object.keys(danishHelpers).length).toBe(1345);
+    expect(Object.keys(danishLabels)).toHaveLength(762);
+    expect(Object.keys(danishHelpers)).toHaveLength(547);
+    expect(Object.keys(danishLabels).length + Object.keys(danishHelpers).length).toBe(1309);
     expect(fingerprint(installedLabels)).toBe("b4db9acd56bb41445dacbcecda095fc7f0b8457d36aec0594429205f52560b8a");
     expect(fingerprint(installedHelpers)).toBe("b826d6369013861027950108f3a688aa378273b557f720cb21d09b8e5e9cb12a");
 
@@ -103,11 +103,6 @@ describe("complete Danish card localization", () => {
     })) {
       for (const literal of literals) expect(danishHelpers[key], key).toContain(literal);
     }
-    for (const domain of ["lights", "shutters", "outlets", "tv"]) {
-      for (const action of ["tap", "hold", "double_tap"]) {
-        expect(danishHelpers[`${domain}_${action}_action`]).toContain("Ingen (None)");
-      }
-    }
     for (const [key, literals] of Object.entries({
       buy_sell_feed_in_fee: ["€/kWh"],
       buy_sell_trade_energy: ["(kWh)"],
@@ -143,8 +138,6 @@ describe("complete Danish card localization", () => {
     expect(danishHelpers.room_temperature_entity).toContain("numeriske temperaturer med en temperaturenhed");
     expect(danishHelpers.room_brightness_entity).toContain("det primære lys, derefter");
     expect(danishHelpers.icon).toContain("kun, når ingen entitet er tilgængelig");
-    expect(danishHelpers.lights_hold_action).toContain("500 ms");
-    expect(danishHelpers.lights_double_tap_action).toContain("uden også at udføre enkelttrykhandlingen");
     expect(danishHelpers.ulm_card_media_player_power_button).toContain("afbryder ikke strømmen til højttaleren");
     expect(danishHelpers.buy_sell_trade_efficiency).toContain("efter lagringstab");
     expect(danishHelpers.tariff_markup_entity).toContain("før moms");

@@ -420,15 +420,18 @@ export class MushroomMiniGraphCard extends LitElement {
       cursor: pointer;
     }
     ha-card.group { border: 0; border-radius: 0; box-shadow: none; background: transparent; }
-    .content { display: grid; gap: 10px; padding: 14px; }
-    .header { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .content { display: grid; gap: var(--mush-spacing, 12px); padding: var(--mush-spacing, 12px); }
+    .header { display: flex; align-items: center; gap: var(--mush-spacing, 12px); min-width: 0; }
     .header[data-align="left"] { justify-content: flex-start; }
     .header[data-align="right"] { justify-content: flex-end; }
     .header[data-align="center"] { justify-content: center; }
-    .name { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: var(--mcg-title-font-weight, 500); letter-spacing: var(--mcg-title-letter-spacing); }
-    .icon { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: color-mix(in srgb, currentColor 14%, transparent); }
-    .icon img { width: 25px; height: 25px; object-fit: contain; border-radius: 50%; }
-    .icon ha-icon, .icon ha-state-icon { --mdc-icon-size: 20px; }
+    .name { display: flex; flex-direction: column; min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: var(--mcg-title-font-weight, var(--mush-card-primary-font-weight, 500)); letter-spacing: var(--mcg-title-letter-spacing, var(--mush-card-primary-letter-spacing, .1px)); }
+    .ulm-name, .ulm-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ulm-name { color: var(--mush-card-primary-color, inherit); line-height: var(--mush-card-primary-line-height, 20px); }
+    .ulm-label { color: var(--mush-card-secondary-color, var(--secondary-text-color)); font-size: var(--mush-card-secondary-font-size, 12px); font-weight: var(--mush-card-secondary-font-weight, 400); line-height: var(--mush-card-secondary-line-height, 16px); letter-spacing: var(--mush-card-secondary-letter-spacing, .4px); }
+    .icon { display: grid; place-items: center; flex: 0 0 auto; width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); border-radius: 50%; background: color-mix(in srgb, currentColor 14%, transparent); }
+    .icon img { width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); object-fit: cover; border-radius: 50%; }
+    .icon ha-icon, .icon ha-state-icon { --mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667)); }
     .states { display: flex; align-items: baseline; gap: 12px; min-width: 0; }
     .states[data-align="right"] { justify-content: flex-end; text-align: right; }
     .states[data-align="center"] { justify-content: center; text-align: center; }
@@ -455,15 +458,16 @@ export class MushroomMiniGraphCard extends LitElement {
       justify-content: space-between;
       pointer-events: none;
       color: var(--secondary-text-color);
-      font-size: 10px;
+      font-size: var(--mush-card-secondary-font-size, 12px);
+      line-height: var(--mush-card-secondary-line-height, 16px);
     }
     .labels.secondary { align-items: flex-end; }
     ha-card.labels-hover .labels { opacity: 0; transition: opacity .15s ease; }
     ha-card.labels-hover .graph:hover .labels { opacity: 1; }
-    .legend { display: flex; flex-wrap: wrap; gap: 7px 12px; color: var(--secondary-text-color); font-size: 11px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 7px 12px; color: var(--mush-card-secondary-color, var(--secondary-text-color)); font-size: var(--mush-card-secondary-font-size, 12px); line-height: var(--mush-card-secondary-line-height, 16px); }
     .legend-item { display: inline-flex; align-items: center; gap: 5px; min-width: 0; }
     .legend-item span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .statistics { display: flex; flex-wrap: wrap; gap: 8px 14px; color: var(--secondary-text-color); font-size: 11px; }
+    .statistics { display: flex; flex-wrap: wrap; gap: 8px 14px; color: var(--mush-card-secondary-color, var(--secondary-text-color)); font-size: var(--mush-card-secondary-font-size, 12px); line-height: var(--mush-card-secondary-line-height, 16px); }
     .statistics b { color: var(--primary-text-color); }
     .loading, .warning { display: grid; place-items: center; min-height: 90px; color: var(--secondary-text-color); font-size: 12px; text-align: center; }
     .warning { color: var(--error-color, #db4437); }
@@ -592,7 +596,7 @@ export class MushroomMiniGraphCard extends LitElement {
     const presentation = this.presentation(primary);
     return html`
       <div class="header" data-align=${this.config?.align_header ?? "default"}
-        style=${`font-size:${this.config?.font_size_header ?? 14}px`}>
+        style=${this.config?.font_size_header === undefined ? "font-size:var(--mush-card-primary-font-size, 14px)" : `font-size:${this.config.font_size_header}px`}>
         ${this.config?.align_icon === "left" ? icon : nothing}
         ${show.name ? html`
           <span class="name shared-presentation" style=${show.name_adaptive_color ? `color:${adaptive}` : ""}>

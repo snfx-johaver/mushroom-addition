@@ -22,8 +22,8 @@ describe("Indonesian label and helper catalogs", () => {
         expect(placeholders(merged[key]), key).toEqual(placeholders(original));
       }
     }
-    expect(Object.keys(indonesianLabels)).toHaveLength(770);
-    expect(Object.keys(indonesianHelpers)).toHaveLength(575);
+    expect(Object.keys(indonesianLabels)).toHaveLength(762);
+    expect(Object.keys(indonesianHelpers)).toHaveLength(547);
   });
 
   it("preserves the Indonesian entries already installed in the base catalogs", () => {
@@ -84,7 +84,6 @@ describe("Indonesian label and helper catalogs", () => {
       carousel_effect: ["Coverflow", "Slide", "Fade", "Cube", "Flip"],
       carousel_button_width: ["32-160"],
       carousel_icon_size: ["12-96"],
-      lights_hold_action: ["500 ms"],
       mode_smart_trading_label: ["Dynamic Trading + Smart Matching"],
       show_grid_phases: ["L1", "L2", "L3"],
       grid_phase_1_entity: ["L1"],

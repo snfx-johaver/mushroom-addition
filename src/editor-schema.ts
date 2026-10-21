@@ -777,53 +777,27 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
         color("panel_color_5"),
         ...presentation(),
       ]
-    : item.upstreamId === "custom_card_roomview"
-      ? [
-        entity(item.preferredDomains),
-        entity(["group", "binary_sensor"], "group_motions"),
-        entity(["group", "binary_sensor"], "group_doors"),
-        entity(["group", "binary_sensor"], "group_windows"),
-        entity(["group", "binary_sensor"], "group_water"),
-        entity(["sensor"], "temperature"),
-        entity(["sensor"], "humidity"),
-        {
-          name: "climate_name",
-          selector: { entity_name: {} },
-          context: { entity: "temperature" },
-        },
-        {
-          name: "climate_icon",
-          selector: { icon: {} },
-          context: { icon_entity: "temperature" },
-        },
-        select("climate_icon_type", [
-          { value: "icon", label: "Icon" },
-          { value: "entity-picture", label: "Entity picture" },
-          { value: "none", label: "None" },
-        ]),
-        ...["climate_primary_info", "climate_secondary_info"].map((name) =>
-          select(name, [
-            { value: "name", label: "Name" },
-            { value: "state", label: "State" },
-            { value: "none", label: "None" },
-          ])),
-        text("climate_secondary"),
-        ...[
-          { device: "lights", key: "group_lights", domain: "light" },
-          { device: "shutters", key: "group_windows_shutters", domain: "cover" },
-          { device: "outlets", key: "group_outlets", domain: "switch" },
-          { device: "tv", key: "group_tv", domain: "media_player" },
-        ].flatMap(({ device, key, domain }) => [
-          entity(["group", domain], key),
-          ...["tap", "hold", "double_tap"].map((gesture) => action(`${device}_${gesture}_action`)),
-        ]),
-        ...presentation(),
-      ]
     : item.upstreamId === "custom_card_welcome"
       ? [
         entity(["person"]),
         entity(["input_boolean"], "ulm_card_welcome_collapse"),
         entity(["weather"], "ulm_weather"),
+        select("welcome_weather_icon_type", [
+          { value: "automatic", label: "Automatic" }, { value: "icon", label: "Icon" }, { value: "none", label: "None" },
+        ]),
+        ...(config?.welcome_weather_icon_type === "icon" ? [{ name: "welcome_weather_icon", selector: { icon: {} } }] : []),
+        ...["primary", "secondary"].map(line => select(`welcome_weather_${line}_info`, [
+          { value: "temperature", label: "Temperature" }, { value: "state", label: "State" },
+          { value: "date", label: "Date" }, { value: "name", label: "Name" }, { value: "none", label: "None" },
+        ])),
+        select("welcome_weather_date_format", [
+          { value: "month_day", label: new Intl.DateTimeFormat(hass?.language, { month: "short", day: "numeric", timeZone: hass?.config?.time_zone }).format(new Date()) },
+          ...(["short", "medium", "long", "full"] as const).map(dateStyle => ({
+            value: dateStyle,
+            label: new Intl.DateTimeFormat(hass?.language, { dateStyle, timeZone: hass?.config?.time_zone }).format(new Date()),
+          })),
+        ]),
+        action("welcome_weather_tap_action"),
         ...Array.from({ length: 5 }, (_, index) => index + 1).flatMap((index) => [
           text(`nav_${index}`),
           { name: `icon_${index}`, selector: { icon: {} } },

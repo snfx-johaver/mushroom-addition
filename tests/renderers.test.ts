@@ -340,7 +340,6 @@ describe("family renderers", () => {
 
   it.each([
     "custom_card_pollen",
-    "custom_card_roomview",
     "custom_card_nas_metrics",
     "custom_card_speedtest_gauges",
     "advanced_home_energy_management",
@@ -625,7 +624,6 @@ describe("family renderers", () => {
   it.each([
     ["trash", "sensor.power", "custom-waste-card", "waste-grid"],
     ["alarm-time", "input_boolean.alarm", "custom-alarm-time", "alarm-time-controls"],
-    ["roomview", "sensor.temperature", "custom-room-view", "room-view-actions"],
     ["welcome", "person.resident", "custom-welcome", "welcome-items"],
     ["washer", "switch.washer", "custom-washer", "washer-stages"],
     ["sun", "sun.sun", "custom-sun-card", "sun-arc"],

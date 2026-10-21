@@ -62,7 +62,9 @@ describe("Remote Card", () => {
   it("commits volume once, respects custom steps and changes sources", async () => {
     const card = await create({ remote_volume_step: 10 });
     const slider = card.shadowRoot!.querySelector<HTMLInputElement>('input[type="range"]')!;
+    expect(slider.style.getPropertyValue("--range-progress")).toBe("40%");
     slider.value = "65"; slider.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(slider.style.getPropertyValue("--range-progress")).toBe("65%");
     expect(card.hass!.callService).not.toHaveBeenCalled();
     slider.dispatchEvent(new Event("change", { bubbles: true }));
     expect(card.hass!.callService).toHaveBeenLastCalledWith("media_player", "volume_set", { entity_id: "media_player.tv", volume_level: .65 });
@@ -70,6 +72,14 @@ describe("Remote Card", () => {
     expect(card.hass!.callService).toHaveBeenLastCalledWith("media_player", "volume_set", { entity_id: "media_player.tv", volume_level: .5 });
     const source = card.shadowRoot!.querySelector<HTMLSelectElement>("select")!; source.value = "TV"; source.dispatchEvent(new Event("change", { bubbles: true }));
     expect(card.hass!.callService).toHaveBeenLastCalledWith("media_player", "select_source", { entity_id: "media_player.tv", source: "TV" });
+  });
+  it("uses Mushroom sizing by default while preserving explicit Remote button sizes", async () => {
+    const card = await create();
+    const size = () => card.shadowRoot!.querySelector<HTMLElement>(".remote")!.style.getPropertyValue("--button-size");
+    expect(size()).toBe("var(--mush-control-height, 42px)");
+    card.config = { ...card.config!, remote_button_size: 56 };
+    await card.updateComplete;
+    expect(size()).toBe("56px");
   });
   it("disables unusable absolute volume and never bypasses an explicit command override", async () => {
     const hass = makeHass();

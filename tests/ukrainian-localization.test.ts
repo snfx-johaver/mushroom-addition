@@ -26,8 +26,8 @@ const codeLiterals = (value: string) =>
 
 describe("complete Ukrainian card localization", () => {
   it("adds exactly the missing inventory without changing installed translations", () => {
-    expect(Object.keys(ukrainianLabels)).toHaveLength(770);
-    expect(Object.keys(ukrainianHelpers)).toHaveLength(575);
+    expect(Object.keys(ukrainianLabels)).toHaveLength(762);
+    expect(Object.keys(ukrainianHelpers)).toHaveLength(547);
     expect(Object.keys(installedLabels)).toHaveLength(416);
     expect(Object.keys(installedHelpers)).toHaveLength(1);
     expect(fingerprint(installedLabels)).toBe("ce93a320bab4ca775946ac2988ea94d9c5f24efe6a9ba71fadea53c270345279");
@@ -42,8 +42,8 @@ describe("complete Ukrainian card localization", () => {
         expect(merged[key], key).toBe(value);
       }
     }
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1186);
-    expect(Object.keys(englishHelpers)).toHaveLength(576);
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1178);
+    expect(Object.keys(englishHelpers)).toHaveLength(548);
   });
 
   it("provides nonblank Ukrainian values and preserves every placeholder", () => {
@@ -112,8 +112,6 @@ describe("complete Ukrainian card localization", () => {
     expect(ukrainianHelpers.room_temperature_entity).toContain("одиницею температури");
     expect(ukrainianHelpers.room_brightness_entity).toContain("основний світильник, потім");
     expect(ukrainianHelpers.icon).toContain("за відсутності сутності");
-    expect(ukrainianHelpers.lights_hold_action).toContain("500 ms");
-    expect(ukrainianHelpers.lights_double_tap_action).toContain("без одночасного виконання");
     expect(ukrainianLabels["ui.area.sensor_icons_help"]).toContain("керує Home Assistant");
     expect(ukrainianLabels["ui.area.use_light_color_help"]).toContain("виключені світильники ігноруються");
     expect(ukrainianLabels["ui.runtime_group_membership_icon_and_actions_stay_native_add_an_entity_button_for_a_custom_icon_name_or_action_04800467"]).toContain("залишаються вбудованими");

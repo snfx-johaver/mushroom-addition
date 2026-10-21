@@ -4,6 +4,22 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Remove the Roomview card, including its registration, graphical editor,
+  renderer, styles and examples. The separate Room card remains available.
+- Replace Welcome's fixed thermometer shortcut with a weather-aware icon,
+  current temperature and secondary date. Expose icon, both information lines,
+  date format and weather tap action in the graphical editor, preserving the
+  selected weather provider and navigation controls.
+- Align Astronomy labels/spacing, Alarm Time/Washer/Input Datetime controls,
+  Trash/Printer typography and Mini Graph headers/supporting text with
+  Mushroom theme tokens. Preserve astronomy graphics, graph readings and
+  matched 30px Trash/Printer rows.
+- Give Sonos and Remote shared themed native range tracks, keyboard focus and
+  disabled styling; style the Remote source selector consistently. Preserve
+  service behavior and custom Remote button sizes.
+- Center scene/navigation pill content vertically and separate the plain
+  Scenes header from its button row.
+
 - Give Scenes and Welcome navigation pills the same hover highlight and
   keyboard-focus outline as Welcome Scenes, without changing their layout.
 

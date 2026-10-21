@@ -207,7 +207,7 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     ],
     "backendRequirements": [],
     "deviations": [
-      "Room selection helpers are ignored by this component; use explicit standard actions instead. Roomview and other components retain their own behavior.",
+      "Room selection helpers are ignored by this component; use explicit standard actions instead. Other components retain their own behavior.",
       "Original Room extensions add up to four typed status indicators and an optional RGB light accent. Water/smoke alerts respect reduced motion. Room action buttons infer entity defaults and retain legacy names only for accessibility."
     ],
     "sourceDigest": "e72f25403653d056e1b206e2056f3898e0d469d35656c7f6a25d956e3a5f3fad"
@@ -496,61 +496,6 @@ export const PARITY_ENTRIES: readonly ParityEntry[] = [
     "backendRequirements": [],
     "deviations": [],
     "sourceDigest": "d4453221cd292b5d2f057fb0c78f73af4a54bc6446377ee9c410c69390c573e0"
-  },
-  {
-    "upstreamId": "custom_card_roomview",
-    "sourcePath": "custom_cards/custom_card_roomview",
-    "publicId": "custom_card_roomview",
-    "rendererId": "custom_card_roomview",
-    "layoutProfile": "card:button-card",
-    "primitives": [
-      "button-card"
-    ],
-    "customFields": [
-      "header",
-      "header_card",
-      "icon",
-      "label"
-    ],
-    "stateDriven": true,
-    "animated": false,
-    "actions": [
-      "double_tap_action",
-      "tap_action"
-    ],
-    "variables": [
-      {
-        "name": "ulm_actions_card",
-        "defaultValue": "<documented/inherited>",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_card_tap_action",
-        "defaultValue": "\"[[[ return variables.ulm_card_tap_action; ]]]\"",
-        "selector": "action"
-      },
-      {
-        "name": "ulm_card_tap_navigate_path",
-        "defaultValue": "\"[[[ return variables.ulm_card_tap_navigate_path; ]]]\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_input_select",
-        "defaultValue": "\"[[[ return variables.ulm_input_select; ]]]\"",
-        "selector": "text"
-      },
-      {
-        "name": "ulm_input_select_option",
-        "defaultValue": "\"[[[ return variables.ulm_input_select_option; ]]]\"",
-        "selector": "text"
-      }
-    ],
-    "dependencies": [
-      "button-card"
-    ],
-    "backendRequirements": [],
-    "deviations": [],
-    "sourceDigest": "a8781de5079b414542ff3cc6653c01448336db8433e9dcbdcb2aa6900d2cf7c8"
   },
   {
     "upstreamId": "custom_card_welcome",

@@ -9,7 +9,7 @@ const catalogs = [
     english: translationCatalogs.en,
     baseline: translationCatalogs["ko-KR"],
     additions: koreanLabels,
-    addedCount: 770,
+    addedCount: 762,
     installedCount: 416,
     installedHash: "e5c5d8917c6134af96b0aea8623440989c87931d97d1a4a444d831ecfa121747",
   },
@@ -17,7 +17,7 @@ const catalogs = [
     english: englishHelpers,
     baseline: helperCatalogs["ko-KR"],
     additions: koreanHelpers,
-    addedCount: 575,
+    addedCount: 547,
     installedCount: 1,
     installedHash: "2d3dcaee1b0a9c12432e107306b7b0efdf70d01cc9ba62051e9d3543102467a4",
   },
@@ -58,9 +58,9 @@ describe("complete Korean card translations", () => {
     }
     expect(koreanLabels).not.toHaveProperty("entity");
     expect(koreanHelpers).not.toHaveProperty("entity");
-    expect(Object.keys(koreanLabels).length + Object.keys(koreanHelpers).length).toBe(1345);
+    expect(Object.keys(koreanLabels).length + Object.keys(koreanHelpers).length).toBe(1309);
     expect(Object.keys(translationCatalogs.en).length + Object.keys(englishHelpers).length + 6)
-      .toBe(1768);
+      .toBe(1732);
   });
 
   it("uses original Korean wording and retains numeric examples and technical units", () => {
@@ -117,10 +117,6 @@ describe("complete Korean card translations", () => {
       ulm_custom_card_window_handle: ["Closed", "Tilted", "Open"],
       ulm_card_battery_charger_type_entity_id: ["wireless", "AC", "USB", "charging"],
       carousel_effect: ["Coverflow", "Slide", "Fade", "Cube", "Flip"],
-      lights_hold_action: ["500 ms", "None"],
-      shutters_hold_action: ["500 ms", "None"],
-      outlets_hold_action: ["500 ms", "None"],
-      tv_hold_action: ["500 ms", "None"],
       mode_solar_first_label: ["Smart Matching"],
       mode_smart_saving_label: ["Dynamic Smart Matching"],
       mode_smart_trading_label: ["Dynamic Trading + Smart Matching"],
@@ -173,7 +169,6 @@ describe("complete Korean card translations", () => {
     expect(koreanHelpers.ulm_card_media_player_power_button).toContain("다른 제어를 접어도");
     expect(koreanHelpers.ulm_card_media_player_enable_volume_adjust).toContain("음량 설정을 지원해야 합니다");
     expect(koreanHelpers.carousel_scrollbar).toContain("엔티티를 활성화하지 않습니다");
-    expect(koreanHelpers.lights_double_tap_action).toContain("한 번 탭 동작은 함께 실행하지 않습니다");
   });
 
   it("preserves native Area ownership, template errors, and automatic controls", () => {

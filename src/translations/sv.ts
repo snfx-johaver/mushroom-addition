@@ -416,14 +416,6 @@ export const swedishLabels: Record<string, string> = {
   tablet_ram_entity: "Sensor för RAM-användning",
   tablet_disk_entity: "Sensor för diskanvändning",
   tablet_power_entity: "Entitet för strömtillstånd",
-  group_lights: "Lampgrupp",
-  group_motions: "Rörelsegrupp",
-  group_doors: "Dörrgrupp",
-  group_windows: "Fönstergrupp",
-  group_outlets: "Uttagsgrupp",
-  group_tv: "TV-grupp",
-  group_water: "Grupp för vattensensorer",
-  group_windows_shutters: "Grupp för jalusier",
   ulm_show_button: "Visa oscilleringsknapp",
   ulm_button_icon: "Oscilleringsknappens ikon",
   ulm_button_service: "Tjänst för oscillering",
@@ -772,9 +764,6 @@ export const swedishLabels: Record<string, string> = {
 };
 
 const linkedSpeakerHelp = "Väljs automatiskt från Sonos-enheten som är kopplad till den primära mediespelaren.";
-const deviceTapHelp = "Enkeltryck eller tangentbordsåtgärd endast för den här enheten. Visar som standard mer information om den inställda kontrollentiteten. Ingen inaktiverar åtgärden.";
-const deviceHoldHelp = "Långt tryck endast för den här enheten, efter 500 ms. Visar som standard mer information. Ingen inaktiverar åtgärden.";
-const deviceDoubleTapHelp = "Dubbeltryck endast för den här enheten. Använder som standard den äldre växlingsåtgärden utan att även utföra enkeltrycksåtgärden. Ingen inaktiverar åtgärden.";
 const consoleAccountHelp = "Hittas automatiskt på konsolkontots enhet när den är tillgänglig.";
 
 export const swedishHelpers: Record<string, string> = {
@@ -1050,34 +1039,6 @@ export const swedishHelpers: Record<string, string> = {
   ulm_card_alarm_time_icon: "Ikon bredvid larmets namn och tillstånd.",
   ulm_card_alarm_time_color: "Accentfärg när larmet är aktivt.",
   ulm_card_media_player_with_controls_name: "Läsbart namn för mediespelaren.",
-  temperature: "Temperatursensor i RoomViews rubrik.",
-  humidity: "Luftfuktighetssensor i RoomViews rubrik.",
-  climate_name: "Separat klimatnamn för Roomview, även sammansatta entitets-, områdes- eller enhetsnamn. Ändrar inte huvudentitetens rubrik.",
-  climate_icon: "Separat egen klimatikon. Använder som standard temperaturentitetens ikon, därefter en termometer.",
-  climate_icon_type: "Visar en klimatikon, temperaturentitetens bild eller ingen klimatikon.",
-  climate_primary_info: "Primär klimattext: temperaturtillstånd som standard, alternativt inställt klimatnamn, tillstånd eller inget.",
-  climate_secondary_info: "Valfri sekundär klimattext med temperaturentitetens namn, tillstånd eller inget. Lämna oinställt för luftfuktighet eller egen text.",
-  climate_secondary: "Egen sekundär klimattext när ingen särskild sekundärinformation har valts. Luftfuktighet används som standard.",
-  lights_tap_action: deviceTapHelp,
-  lights_hold_action: deviceHoldHelp,
-  lights_double_tap_action: deviceDoubleTapHelp,
-  shutters_tap_action: deviceTapHelp,
-  shutters_hold_action: deviceHoldHelp,
-  shutters_double_tap_action: deviceDoubleTapHelp,
-  outlets_tap_action: deviceTapHelp,
-  outlets_hold_action: deviceHoldHelp,
-  outlets_double_tap_action: deviceDoubleTapHelp,
-  tv_tap_action: deviceTapHelp,
-  tv_hold_action: deviceHoldHelp,
-  tv_double_tap_action: deviceDoubleTapHelp,
-  group_lights: "Namngiven Home Assistant-grupp med rummets lampor.",
-  group_motions: "Namngiven Home Assistant-grupp med rörelsesensorer.",
-  group_doors: "Namngiven Home Assistant-grupp med dörrsensorer.",
-  group_windows: "Namngiven Home Assistant-grupp med fönstersensorer.",
-  group_outlets: "Namngiven Home Assistant-grupp med uttag.",
-  group_tv: "Namngiven Home Assistant-grupp med TV-apparater.",
-  group_water: "Namngiven Home Assistant-grupp med vattensensorer.",
-  group_windows_shutters: "Namngiven Home Assistant-grupp med fönsterjalusier.",
   ulm_card_dynamic_color: "Använder den valda lampans RGB-färg för det aktiva rumskortet.",
   ulm_show_button: "Visar källans tjänstknapp för oscillering bredvid hastighetsreglaget.",
   ulm_button_icon: "Ikon på källans tjänstknapp för fläkten.",

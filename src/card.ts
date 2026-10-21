@@ -20,6 +20,7 @@ export class MushroomAdditionCard extends LitElement {
   private unsubscribeForecast?: () => void;
   private forecastGeneration = 0;
   private energyBuySellTimer?: number;
+  private welcomeTimer?: number;
   private forecast: WeatherForecast[] = [];
   @state() private sceneOverflowExpanded = false;
 
@@ -32,6 +33,7 @@ export class MushroomAdditionCard extends LitElement {
     this.sceneOverflowExpanded = false;
     if (previousKey !== this.forecastKey(normalized)) this.stopForecastSubscription();
     this.scheduleEnergyBuySellRefresh();
+    this.scheduleWelcomeRefresh();
     this.requestUpdate();
     void this.subscribeForecast();
   }
@@ -95,12 +97,25 @@ export class MushroomAdditionCard extends LitElement {
     this.clearGestures();
     this.stopForecastSubscription();
     this.stopEnergyBuySellRefresh();
+    this.stopWelcomeRefresh();
     super.disconnectedCallback();
   }
 
   public connectedCallback(): void {
     super.connectedCallback();
     this.scheduleEnergyBuySellRefresh();
+    this.scheduleWelcomeRefresh();
+  }
+
+  private scheduleWelcomeRefresh(): void {
+    this.stopWelcomeRefresh();
+    if (this.descriptor?.upstreamId !== "custom_card_welcome" || !this.isConnected) return;
+    this.welcomeTimer = window.setInterval(() => this.requestUpdate(), 60_000);
+  }
+
+  private stopWelcomeRefresh(): void {
+    if (this.welcomeTimer !== undefined) window.clearInterval(this.welcomeTimer);
+    this.welcomeTimer = undefined;
   }
 
   private scheduleEnergyBuySellRefresh(): void {

@@ -384,21 +384,6 @@ export const createStubConfig = (
           findEntity(["sensor"], ["ping"]),
       }
       : {}),
-    ...(descriptor.upstreamId === "custom_card_roomview"
-      ? {
-        entity: undefined,
-        group_lights: findEntity(["group", "light"], ["lights"]),
-        group_motions: findEntity(["group", "binary_sensor"], ["motions"]),
-        group_doors: findEntity(["group", "binary_sensor"], ["doors"]),
-        group_windows: findEntity(["group", "binary_sensor"], ["windows"]),
-        group_outlets: findEntity(["group", "switch"], ["outlets"]),
-        group_tv: findEntity(["group", "media_player"], ["tv"]),
-        group_water: findEntity(["group", "binary_sensor"], ["water"]),
-        group_windows_shutters: findEntity(["group", "cover"], ["shutters"]),
-        temperature: findEntity(["sensor"], ["room", "temperature"]) ?? findEntity(["sensor"], ["temperature"]),
-        humidity: findEntity(["sensor"], ["room", "humidity"]) ?? findEntity(["sensor"], ["humidity"]),
-      }
-      : {}),
     ...(descriptor.upstreamId === "custom_card_welcome"
       ? {
         ulm_card_welcome_collapse: findEntity(["input_boolean"], ["welcome"]),

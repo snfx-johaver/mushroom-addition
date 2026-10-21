@@ -28,6 +28,28 @@ padding. Their labels use two lines of theme-aware secondary text across the
 available pill width, with full names available through accessible labels and
 tooltips. Carousel captions use the same two-line secondary-text scale.
 
+Scene/navigation pills center their icon-and-label group vertically, reserving
+enough height for two label lines without reserving an empty line in short
+labels. Plain Scenes headers have a theme-controlled gap before the button row.
+
+Welcome's center toolbar uses the selected weather provider's condition icon,
+current temperature as primary text and localized date as secondary text.
+The graphical editor exposes automatic/custom/hidden icons, independent
+information-line selections, date-format previews and the weather tap action.
+Date formatting uses Home Assistant's language and time zone, refreshing
+without requiring an entity update. Navigation and collapse controls remain
+independent of this weather presentation.
+
+Alarm Time, Washer and Input Datetime controls honor Mushroom control height,
+radius and spacing tokens (42px / 12px defaults). Sonos and Remote retain native
+range inputs and their keyboard/service semantics, with shared themed tracks,
+value indicators, focus and disabled states. Remote source selection uses the
+same control sizing; explicitly configured Remote button sizes still win.
+Astronomy typography and spacing follow the shared theme without replacing
+its graphics. Trash and Printer keep 30px rows with themed primary/secondary
+text. Mini Graph keeps its large value and explicit font-size overrides while
+aligning its header, icon and supporting text with Mushroom tokens.
+
 | Family | Recognizable layout and behavior | Primary reference IDs |
 |---|---|---|
 | Scene | Compact heading plus a grid of scene activation pills | `card_templates/cards/card_scenes_welcome.yaml`, `docs/usage/cards/card_scenes.md` |

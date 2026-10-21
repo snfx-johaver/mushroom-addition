@@ -7,6 +7,7 @@ import { resolveColor } from "./colors";
 import { upcomingSize } from "./upcoming-media";
 import { SONOS_MEDIA_FEATURES as MEDIA } from "./sonos-controls";
 import { localize, localizeText } from "./localize";
+import { mediaControlStyles, rangeProgress, updateRangeProgress } from "./control-styles";
 
 export const REMOTE_SECTIONS: Record<RemoteSection, string> = {
   power: "Power and utility buttons", navigation: "Navigation", source: "Source selector",
@@ -19,7 +20,7 @@ export const REMOTE_DEFAULTS = {
   remote_playback_controls: ["previous", "play_pause", "stop", "next"],
   remote_power_controls: ["power", "home", "back", "menu"],
   remote_haptics: "all", remote_double_tap: "back", remote_swipe_distance: 32,
-  remote_touchpad_height: 144, remote_button_size: 44, remote_accent_color: "blue",
+  remote_touchpad_height: 144, remote_button_size: 42, remote_accent_color: "blue",
 } satisfies Partial<AdditionConfig>;
 
 const keys = {
@@ -89,15 +90,17 @@ export class MushroomRemote extends LitElement {
   private firstTap?: number;
 
   public static styles = css`
+    ${mediaControlStyles}
     :host { display: block; width: 100%; min-width: 0; color: var(--primary-text-color); }
-    .remote { display: grid; gap: 16px; }
-    .row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; min-width: 0; }
+    .remote { display: grid; gap: var(--mush-control-spacing, 12px); }
+    .row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--mush-control-spacing, 12px); min-width: 0; }
     button { font: inherit; color: inherit; cursor: pointer; }
-    .key { display: grid; place-items: center; box-sizing: border-box; width: var(--button-size); height: var(--button-size); padding: 0; border: 0; border-radius: 50%; background: var(--addition-raised-background, var(--secondary-background-color)); box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12)); color: var(--accent); flex: 0 0 auto; }
+    .key { display: grid; place-items: center; box-sizing: border-box; width: var(--button-size); height: var(--button-size); padding: 0; border: 0; border-radius: var(--mush-control-border-radius, 12px); background: var(--addition-raised-background, var(--secondary-background-color)); box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12)); color: var(--accent); flex: 0 0 auto; }
     .key ha-icon { --mdc-icon-size: 24px; pointer-events: none; }
     button:disabled { color: var(--disabled-text-color); cursor: default; opacity: .65; }
     button:focus-visible, .pad:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
     .key:active:not(:disabled) { background: color-mix(in srgb, var(--accent) 16%, var(--addition-raised-background, var(--secondary-background-color))); box-shadow: none; }
+    .key:hover:not(:disabled), .shortcut:hover:not(:disabled) { background: color-mix(in srgb, var(--primary-text-color) 13%, transparent); }
     .dpad { display: grid; grid-template-columns: repeat(3, var(--button-size)); gap: 8px; justify-content: center; }
     .dpad .up { grid-area: 1 / 2; } .dpad .left { grid-area: 2 / 1; } .dpad .select { grid-area: 2 / 2; }
     .dpad .right { grid-area: 2 / 3; } .dpad .down { grid-area: 3 / 2; }
@@ -107,7 +110,6 @@ export class MushroomRemote extends LitElement {
     .pad-content ha-icon { --mdc-icon-size: 32px; color: var(--accent); }
     .volume input { flex: 1; min-width: 40px; width: 60px; accent-color: var(--accent); }
     .volume output { min-width: 35px; font-size: 12px; text-align: right; }
-    select { width: 100%; padding: 10px; border: 1px solid var(--divider-color); border-radius: 12px; color: var(--primary-text-color); background: var(--card-background-color, var(--ha-card-background)); font: inherit; font-size: 14px; }
     .keypad { display: grid; grid-template-columns: repeat(3, var(--button-size)); gap: 10px; justify-content: center; }
     .keypad .zero { grid-column: 2; }
     .shortcut { display: flex; align-items: center; gap: 7px; max-width: 100%; min-height: 40px; padding: 8px 12px; border: 0; border-radius: 14px; color: var(--accent); background: var(--addition-raised-background, var(--secondary-background-color)); box-shadow: var(--addition-raised-shadow); }
@@ -143,7 +145,8 @@ export class MushroomRemote extends LitElement {
     const sections = config.remote_sections ?? REMOTE_DEFAULTS.remote_sections;
     return html`<div class="remote" style=${styleMap({
       "--accent": resolveColor(config.remote_accent_color, "var(--primary-color)"),
-      "--button-size": `${upcomingSize(config.remote_button_size, 44, 32, 64)}px`,
+      "--button-size": config.remote_button_size === undefined
+        ? "var(--mush-control-height, 42px)" : `${upcomingSize(config.remote_button_size, 42, 32, 64)}px`,
       "--pad-height": `${upcomingSize(config.remote_touchpad_height, 144, 80, 280)}px`,
     })} @pointerdown=${this.stop} @click=${this.stop} @dblclick=${this.stop} @keydown=${this.stop}>
       ${!this.canSend && sections.some(section => ["navigation", "channels", "keypad"].includes(section)) ? html`<div class="message">${localize(this.hass, "message.remote_navigation")}</div>` : nothing}
@@ -168,7 +171,7 @@ export class MushroomRemote extends LitElement {
     if (section === "source") {
       const media = this.entities.media;
       const sources = Array.isArray(media?.attributes.source_list) ? media.attributes.source_list.filter((source): source is string => typeof source === "string") : [];
-      return html`<select aria-label=${localize(this.hass, "ui.source")} ?disabled=${!this.supports(2048) || !sources.length} .value=${String(media?.attributes.source || "")}
+      return html`<select class="mushroom-select" aria-label=${localize(this.hass, "ui.source")} ?disabled=${!this.supports(2048) || !sources.length} .value=${String(media?.attributes.source || "")}
         @change=${(event: Event) => void this.call("media_player", "select_source", { entity_id: media?.entity_id, source: (event.target as HTMLSelectElement).value })}>
         <option value="" disabled>${localize(this.hass, sources.length ? "ui.choose_source" : "ui.no_sources")}</option>
         ${sources.map(source => html`<option value=${source}>${source}</option>`)}
@@ -180,7 +183,9 @@ export class MushroomRemote extends LitElement {
       return html`<div class="row volume">
         ${mode !== "slider" ? this.button("volume_down") : nothing}
         ${this.button("mute")}
-        ${mode !== "buttons" ? html`<input type="range" aria-label=${localizeText(this.hass, "TV volume")} min="0" max="100" step=${upcomingSize(config.remote_volume_step, 5, 1, 20)}
+        ${mode !== "buttons" ? html`<input class="mushroom-range" type="range" aria-label=${localizeText(this.hass, "TV volume")} min="0" max="100" step=${upcomingSize(config.remote_volume_step, 5, 1, 20)}
+          style=${`--range-color:var(--accent);--range-progress:${rangeProgress(valid ? volume * 100 : 0, 0, 100)}`}
+          @input=${updateRangeProgress}
           .value=${String(valid ? Math.round(volume * 100) : 0)} ?disabled=${!this.supports(MEDIA.volumeSet) || !valid}
           @change=${(event: Event) => {
             this.feedback("slider");

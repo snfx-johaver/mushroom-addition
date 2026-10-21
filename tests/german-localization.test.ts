@@ -25,6 +25,5 @@ describe("German card and editor labels", () => {
     expect(localize(hass, "room_status_inactive")).toBe("Inaktiv");
     expect(localize(hass, "ulm_custom_card_washer_pause_action")).toBe("Pausenaktion");
     expect(localize(hass, "tariff_markup_entity")).toBe("Tarifaufschlag");
-    expect(localize(hass, "group_windows")).toBe("Fenstergruppe");
   });
 });

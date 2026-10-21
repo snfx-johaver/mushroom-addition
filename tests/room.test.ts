@@ -506,8 +506,6 @@ describe("Room-only helper removal and button controls", () => {
     expect(normalizeConfig({ ...config, ulm_input_select: "input_select.other", ulm_input_select_option: "Other" }).double_tap_action).toBeUndefined();
     const action = { action: "navigate", navigation_path: "/room" };
     expect(normalizeConfig({ ...config, double_tap_action: action }).double_tap_action).toEqual(action);
-    expect(normalizeConfig({ ...config, type: "custom:mushroom-addition-custom-card-roomview" }).double_tap_action)
-      .toMatchObject({ perform_action: "input_select.select_option" });
     expect(populatedDefaultsFor(descriptor, hass(), "light.room")).toMatchObject({ room_status: [], ulm_card_dynamic_color: false, room_light_entity: "light.room" });
   });
 

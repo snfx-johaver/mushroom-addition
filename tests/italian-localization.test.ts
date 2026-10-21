@@ -89,7 +89,6 @@ describe("complete Italian label and helper catalog", () => {
       carousel_effect: ["Coverflow", "Slide", "Fade", "Cube", "Flip"],
       carousel_button_width: ["32-160"],
       carousel_icon_size: ["12-96"],
-      lights_hold_action: ["500 ms"],
       mode_smart_trading_label: ["Dynamic Trading + Smart Matching"],
       show_grid_phases: ["L1", "L2", "L3"],
     };

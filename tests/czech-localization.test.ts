@@ -9,7 +9,7 @@ const catalogs = [
     english: translationCatalogs.en,
     baseline: translationCatalogs.cs,
     additions: czechLabels,
-    addedCount: 770,
+    addedCount: 762,
     installedCount: 416,
     installedHash: "0225a82c42967afb2c922d09103c67665e22f92280eb5843939532792d466f33",
   },
@@ -17,7 +17,7 @@ const catalogs = [
     english: englishHelpers,
     baseline: helperCatalogs.cs,
     additions: czechHelpers,
-    addedCount: 575,
+    addedCount: 547,
     installedCount: 1,
     installedHash: "245c6bc7bb9ccaa28bf190bacc74aafc90865c9c07ebb56397d8103d0d06a45f",
   },
@@ -126,10 +126,6 @@ describe("complete Czech card translations", () => {
       ulm_custom_card_window_handle: ["Closed", "Tilted", "Open"],
       ulm_card_battery_charger_type_entity_id: ["wireless", "AC", "USB", "charging"],
       carousel_effect: ["Coverflow", "Slide", "Fade", "Cube", "Flip"],
-      lights_hold_action: ["500 ms", "None"],
-      shutters_hold_action: ["500 ms", "None"],
-      outlets_hold_action: ["500 ms", "None"],
-      tv_hold_action: ["500 ms", "None"],
       mode_solar_first_label: ["Smart Matching"],
       mode_smart_saving_label: ["Dynamic Smart Matching"],
       mode_smart_trading_label: ["Dynamic Trading + Smart Matching"],
@@ -184,7 +180,6 @@ describe("complete Czech card translations", () => {
     expect(czechHelpers.ulm_card_media_player_power_button).toContain("při sbalení ostatního ovládání");
     expect(czechHelpers.ulm_card_media_player_enable_volume_adjust).toContain("vyžaduje podporu");
     expect(czechHelpers.carousel_scrollbar).toContain("neaktivuje entitu");
-    expect(czechHelpers.lights_double_tap_action).toContain("bez souběžného spuštění akce jednoduchého klepnutí");
   });
 
   it("retains native Area ownership, template errors, and automatic controls", () => {
