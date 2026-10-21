@@ -55682,7 +55682,7 @@ ue([
 ], Ie.prototype, "conditionsError");
 customElements.get(Ka) || customElements.define(Ka, Ne);
 customElements.get(`${Fa}-editor`) || customElements.define(`${Fa}-editor`, Ie);
-const Wd = "0.5.0";
+const Wd = "0.5.1";
 for (const e of Ct)
   if (!customElements.get(e.tag)) {
     if (e.upstreamId === "area_card_advanced") {

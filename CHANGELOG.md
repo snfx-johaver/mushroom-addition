@@ -2,6 +2,16 @@
 
 Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
+## [0.5.1] - 2026-10-21
+
+- Publish the current fixes from a matching source tag and release build for
+  HACS: compatible Upcoming Media data-source choices, recovery of old
+  friendly-name selections, and theme-aware native color-picker defaults.
+- Shorten the README to installation and everyday essentials, keeping the
+  preview and a thank-you to Mushroom.
+- Keep household screenshots and raw visual-audit dumps out of published
+  assets. Existing card types, layouts and JavaScript filename stay compatible.
+
 ## [0.5.0] - 2026-10-21
 
 - Limit Upcoming Media's data-source selector to list-compatible attributes,
@@ -200,3 +210,4 @@ releases.
 
 [0.0.1]: https://github.com/snfx-johaver/mushroom-addition/releases/tag/v0.0.1
 [0.5.0]: https://github.com/snfx-johaver/mushroom-addition/releases/tag/v0.5.0
+[0.5.1]: https://github.com/snfx-johaver/mushroom-addition/releases/tag/v0.5.1
