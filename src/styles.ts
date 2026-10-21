@@ -1,14 +1,15 @@
-import { css } from "lit";
+import { css, unsafeCSS } from "lit";
+import { resolveColorRgb } from "./colors";
 
 export const sharedStyles = css`
   :host {
-    --ulm-blue: 3, 169, 244;
-    --ulm-yellow: 255, 193, 7;
-    --ulm-red: 244, 67, 54;
-    --ulm-green: 76, 175, 80;
-    --ulm-orange: 255, 152, 0;
-    --ulm-purple: 156, 39, 176;
-    --ulm-grey: var(--mush-rgb-grey, var(--rgb-grey, 158, 158, 158));
+    --ulm-blue: ${unsafeCSS(resolveColorRgb("blue"))};
+    --ulm-yellow: ${unsafeCSS(resolveColorRgb("yellow"))};
+    --ulm-red: ${unsafeCSS(resolveColorRgb("red"))};
+    --ulm-green: ${unsafeCSS(resolveColorRgb("green"))};
+    --ulm-orange: ${unsafeCSS(resolveColorRgb("orange"))};
+    --ulm-purple: ${unsafeCSS(resolveColorRgb("purple"))};
+    --ulm-grey: ${unsafeCSS(resolveColorRgb("grey"))};
     --addition-neutral-background: rgba(var(--rgb-primary-text-color, 33, 33, 33), .05);
     --addition-track-background: rgba(var(--rgb-secondary-text-color, 114, 114, 114), .2);
     --addition-disabled-rgb: var(--mush-rgb-disabled, var(--rgb-disabled, 189, 189, 189));
@@ -55,14 +56,14 @@ export const sharedStyles = css`
   .ulm-icon {
     display: grid;
     place-items: center;
-    width: var(--mush-icon-size, 40px);
-    height: var(--mush-icon-size, 40px);
+    width: var(--mush-icon-size, 36px);
+    height: var(--mush-icon-size, 36px);
     border-radius: 50%;
     color: rgb(var(--tone, var(--ulm-blue)));
     background: rgba(var(--tone, var(--ulm-blue)), .16);
     flex: 0 0 auto;
   }
-  .ulm-icon > ha-icon, .ulm-icon > ha-state-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
+  .ulm-icon > ha-icon, .ulm-icon > ha-state-icon { --mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667)); }
   .ulm-icon.entity-picture { background-position: center; background-size: cover; }
   .source-icon {
     color: color-mix(in srgb, var(--source-color) 20%, rgba(var(--ulm-grey), .35));
@@ -88,7 +89,7 @@ export const sharedStyles = css`
   .tone-orange { --tone: var(--ulm-orange); }
   .tone-purple { --tone: var(--ulm-purple); }
   .tone-grey { --tone: var(--ulm-grey); }
-  .ulm-copy { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
+  .ulm-copy { display: flex; min-width: 0; flex-direction: column; gap: 0; }
   .ulm-name, .ulm-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .multiline-secondary .ulm-label {
     overflow: visible; text-overflow: clip; white-space: normal;
@@ -96,7 +97,7 @@ export const sharedStyles = css`
   .card-heading {
     display: flex;
     min-width: 0;
-    min-height: var(--mush-icon-size, 40px);
+    min-height: var(--mush-icon-size, 36px);
     align-items: center;
     gap: 12px;
   }
@@ -105,8 +106,21 @@ export const sharedStyles = css`
   .upcoming-card, .remote-card, .pi-hole-card { padding: 12px; }
   .upcoming-card > .card-heading, .remote-card > .card-heading, .pi-hole-card > .card-heading { margin-bottom: 12px; }
   .upcoming-card > .automatic-presentation, .remote-card > .automatic-presentation { margin-bottom: 12px; }
-  .ulm-name { font-size: 14px; font-weight: 600; }
-  .ulm-label { color: var(--secondary-text-color); font-size: 12px; text-transform: capitalize; }
+  .ulm-name {
+    color: var(--mush-card-primary-color, var(--primary-text-color));
+    font-size: var(--mush-card-primary-font-size, 14px);
+    font-weight: var(--mush-card-primary-font-weight, 500);
+    line-height: var(--mush-card-primary-line-height, 20px);
+    letter-spacing: var(--mush-card-primary-letter-spacing, .1px);
+  }
+  .ulm-label {
+    color: var(--mush-card-secondary-color, var(--secondary-text-color));
+    font-size: var(--mush-card-secondary-font-size, 12px);
+    font-weight: var(--mush-card-secondary-font-weight, 400);
+    line-height: var(--mush-card-secondary-line-height, 16px);
+    letter-spacing: var(--mush-card-secondary-letter-spacing, .4px);
+    text-transform: capitalize;
+  }
   .ulm-controls { display: flex; align-items: center; gap: 7px; }
   .ulm-control, .scene-button {
     border: 0;
@@ -151,7 +165,7 @@ export const sharedStyles = css`
   .ulm-metric { padding: 0 12px 12px; }
   .metric-heading { padding-left: 0; padding-right: 0; }
   .entity-carousel-presentation { padding: 12px; }
-  .entity-carousel-presentation .ulm-icon > ha-state-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
+  .entity-carousel-presentation .ulm-icon > ha-state-icon { --mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667)); }
   .entity-carousel-presentation .ulm-copy { justify-content: center; }
   .metric-value { color: rgb(var(--ulm-blue)); font-size: 20px; font-weight: 650; }
   .sparkline { width: 100%; height: 48px; overflow: visible; }
@@ -162,9 +176,24 @@ export const sharedStyles = css`
   .ulm-scenes { padding: 12px; }
   .scene-grid { display: flex; min-width: 0; gap: 8px; overflow-x: auto; padding: 4px 4px 10px; margin: -4px -4px -10px; }
   .scene-button { display: flex; min-width: 52px; flex: 1; flex-direction: column; align-items: center; gap: 6px; padding: 7px 4px 10px; border: 0; border-radius: 25px; background: var(--addition-raised-background); color: var(--primary-text-color); box-shadow: var(--addition-raised-shadow); }
-  .scene-button > span { max-width: 48px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 9px; font-weight: 700; }
-  .scene-button i { display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: rgba(var(--ulm-purple), .14); font-style: normal; }
-  .scene-button i > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
+  .scene-button, .welcome-items > button { font-family: inherit; }
+  .scene-button > span, .welcome-items small {
+    display: -webkit-box;
+    width: 100%;
+    min-height: calc(var(--mush-card-secondary-line-height, 16px) * 2);
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    font-size: var(--mush-card-secondary-font-size, 12px);
+    font-weight: var(--mush-card-secondary-font-weight, 400);
+    line-height: var(--mush-card-secondary-line-height, 16px);
+    letter-spacing: var(--mush-card-secondary-letter-spacing, .4px);
+    color: var(--mush-card-secondary-color, var(--secondary-text-color));
+  }
+  .scene-button i { display: grid; width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); place-items: center; border-radius: 50%; background: rgba(var(--ulm-purple), .14); font-style: normal; }
+  .scene-button i > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667)); }
   .scene-button i { background: color-mix(in srgb, var(--item-color) 18%, transparent); }
   .scene-entity-picture { display: block; width: 100%; height: 100%; border-radius: inherit; background-position: center; background-size: cover; }
   .scene-button ha-icon { --mdc-icon-size: 22px; color: var(--item-color); }
@@ -332,8 +361,8 @@ export const sharedStyles = css`
   .custom-room-view { display: grid; min-width: 0; min-height: 150px; gap: 8px; padding: 12px; }
   .room-view-summary { display: flex; width: 100%; min-width: 0; align-items: center; gap: 10px; padding: 0; border: 0; background: transparent; color: var(--primary-text-color); font: inherit; text-align: start; cursor: pointer; }
   .room-view-summary .ulm-copy { min-width: 0; }
-  .room-view-icon { position: relative; display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: var(--addition-disabled-background); color: rgb(var(--addition-disabled-rgb)); }
-  .room-view-icon > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
+  .room-view-icon { position: relative; display: grid; width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); place-items: center; border-radius: 50%; background: var(--addition-disabled-background); color: rgb(var(--addition-disabled-rgb)); }
+  .room-view-icon > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667)); }
   .room-view-status { display: flex; min-height: 28px; align-items: center; justify-content: center; gap: 2px; }
   .room-view-status button, .room-view-clear, .room-view-warning { position: relative; display: grid; width: 35px; height: 28px; padding: 0; place-items: center; border: 0; background: transparent; color: var(--secondary-text-color); }
   .room-view-status button > ha-icon { --mdc-icon-size: 20px; }
@@ -352,9 +381,8 @@ export const sharedStyles = css`
   .welcome-greeting { font-size: 23px; line-height: 1.08; }
   .welcome-items { display: flex; gap: 8px; overflow-x: auto; padding: 4px 4px 10px; margin: -4px -4px -10px; }
   .welcome-items > button { display: flex; min-width: 52px; flex: 1; flex-direction: column; align-items: center; gap: 6px; padding: 7px 4px 10px; border: 0; border-radius: 25px; background: var(--addition-raised-background); color: inherit; box-shadow: var(--addition-raised-shadow); }
-  .welcome-items i { display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: rgba(var(--tone), .18); color: rgb(var(--tone)); font-style: normal; }
-  .welcome-items i > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
-  .welcome-items small { max-width: 48px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 9px; font-weight: 700; }
+  .welcome-items i { display: grid; width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); place-items: center; border-radius: 50%; background: rgba(var(--tone), .18); color: rgb(var(--tone)); font-style: normal; }
+  .welcome-items i > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667)); }
   .washer-heading .washer-power { font-size: 12px; font-weight: 700; }
   .washer-stages { display: grid; grid-template-columns: repeat(var(--washer-stage-count, 4), 1fr); border-radius: 22px; background: var(--addition-neutral-background); }
   .washer-stages span { display: grid; height: 42px; place-items: center; color: rgb(var(--addition-disabled-rgb)); }
@@ -489,9 +517,9 @@ export const sharedStyles = css`
   }
   .sonos-controls:empty { display: none; }
   .sonos-volume { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; min-width: 0; }
-  .sonos-volume input { flex: 1; min-width: 0; accent-color: rgb(var(--rgb-blue, 3, 169, 244)); }
+  .sonos-volume input { flex: 1; min-width: 0; accent-color: rgb(var(--ulm-blue)); }
   .sonos-volume output { font-variant-numeric: tabular-nums; }
-  .sonos-controls button[aria-pressed="true"] { color: rgb(var(--rgb-blue, 3, 169, 244)); }
+  .sonos-controls button[aria-pressed="true"] { color: rgb(var(--ulm-blue)); }
   .sonos-controls button:disabled, .sonos-volume input:disabled { cursor: not-allowed; opacity: .45; }
   .sonos-controls button {
     box-shadow: var(--addition-raised-shadow);
@@ -514,17 +542,17 @@ export const sharedStyles = css`
     color: var(--primary-text-color); font: inherit; font-size: 12px; font-weight: 700;
   }
   .sonos-switches button.is-active {
-    background: rgba(var(--rgb-blue, 3, 169, 244), .12);
+    background: rgba(var(--ulm-blue), .12);
   }
   .sonos-switches button:disabled, .sonos-sliders input:disabled { cursor: not-allowed; opacity: .45; }
-  .sonos-switches ha-icon { --mdc-icon-size: 18px; color: rgb(var(--rgb-blue, 3, 169, 244)); }
+  .sonos-switches ha-icon { --mdc-icon-size: 18px; color: rgb(var(--ulm-blue)); }
   .sonos-sliders { display: grid; gap: 8px; padding-top: 4px; }
   .sonos-sliders label {
     display: grid; grid-template-columns: 26px minmax(112px, .8fr) minmax(120px, 1fr) 34px;
     min-height: 40px; align-items: center; gap: 8px; color: var(--primary-text-color); font-size: 13px;
   }
-  .sonos-sliders label > ha-icon { --mdc-icon-size: 18px; color: rgb(var(--rgb-blue, 3, 169, 244)); }
-  .sonos-sliders input { width: 100%; accent-color: rgb(var(--rgb-blue, 3, 169, 244)); }
+  .sonos-sliders label > ha-icon { --mdc-icon-size: 18px; color: rgb(var(--ulm-blue)); }
+  .sonos-sliders input { width: 100%; accent-color: rgb(var(--ulm-blue)); }
   .sonos-sliders output { color: var(--primary-text-color); text-align: right; font-variant-numeric: tabular-nums; }
   .sonos-shortcuts {
     display: grid; grid-template-columns: repeat(var(--sonos-shortcut-columns, 4), minmax(0, 1fr)); gap: 8px;
@@ -537,7 +565,7 @@ export const sharedStyles = css`
     color: var(--primary-text-color); cursor: pointer;
   }
   .sonos-shortcuts button:disabled { cursor: not-allowed; opacity: .45; }
-  .sonos-shortcuts ha-icon { --mdc-icon-size: 22px; color: rgb(var(--rgb-blue, 3, 169, 244)); }
+  .sonos-shortcuts ha-icon { --mdc-icon-size: 22px; color: rgb(var(--ulm-blue)); }
   .sonos-shortcuts span {
     min-width: 0; max-width: 100%; overflow: hidden; font-size: 11px; font-weight: 700;
     text-overflow: ellipsis; white-space: nowrap;
@@ -552,18 +580,18 @@ export const sharedStyles = css`
   .toner-bars b { position: relative; z-index: 1; padding: 2px 7px; border-radius: 999px; background: color-mix(in srgb, var(--card-background-color, #fff) 88%, transparent); color: var(--primary-text-color); font-size: 12px; font-variant-numeric: tabular-nums; font-weight: 600; }
   .custom-nas-metrics { gap: 12px; padding: 12px; }
   .nas-metrics-top { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .nas-metrics-tile { box-sizing: border-box; display: grid; min-height: 66px; grid-template-columns: var(--mush-icon-size, 40px) minmax(0, 1fr); align-items: center; gap: 12px; padding: 12px; border: 0; border-radius: 30px; background: transparent; color: var(--primary-text-color); text-align: left; }
+  .nas-metrics-tile { box-sizing: border-box; display: grid; min-height: 66px; grid-template-columns: var(--mush-icon-size, 36px) minmax(0, 1fr); align-items: center; gap: 12px; padding: 12px; border: 0; border-radius: 30px; background: transparent; color: var(--primary-text-color); text-align: left; }
   button.nas-metrics-tile { cursor: pointer; }
-  .nas-metrics-tile-icon { display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: rgba(var(--tone), .2); color: rgb(var(--tone)); }
-  .nas-metrics-tile-icon ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
+  .nas-metrics-tile-icon { display: grid; width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); place-items: center; border-radius: 50%; background: rgba(var(--tone), .2); color: rgb(var(--tone)); }
+  .nas-metrics-tile-icon ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667)); }
   .nas-metrics-tile > span:last-child, .nas-metrics-metrics > span > span { display: grid; }
   .nas-metrics-tile b, .nas-metrics-metrics b { font-size: var(--mush-card-primary-font-size, 14px); line-height: 20px; font-weight: 600; }
   .nas-metrics-tile small, .nas-metrics-metrics small { color: var(--secondary-text-color); font-size: var(--mush-card-secondary-font-size, 12px); line-height: 20px; font-weight: 400; }
   .nas-metrics-body { display: grid; grid-template-columns: minmax(150px, .9fr) minmax(180px, 1.2fr); align-items: center; gap: 18px; }
   .nas-metrics-metrics { display: grid; gap: 12px; }
-  .nas-metrics-metrics > span { display: grid; min-height: 48px; grid-template-columns: var(--mush-icon-size, 40px) minmax(0, 1fr); align-items: center; gap: 12px; }
-  .nas-metrics-metrics i { display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: rgba(var(--tone), .2); color: rgb(var(--tone)); font-style: normal; }
-  .nas-metrics-metrics i ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
+  .nas-metrics-metrics > span { display: grid; min-height: 48px; grid-template-columns: var(--mush-icon-size, 36px) minmax(0, 1fr); align-items: center; gap: 12px; }
+  .nas-metrics-metrics i { display: grid; width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); place-items: center; border-radius: 50%; background: rgba(var(--tone), .2); color: rgb(var(--tone)); font-style: normal; }
+  .nas-metrics-metrics i ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667)); }
   .nas-metrics-rings { width: 100%; max-width: 190px; justify-self: center; overflow: visible; transform: rotate(-90deg); }
   .nas-metrics-ring-track, .nas-metrics-ring-value { fill: none; stroke-width: 6; }
   .nas-metrics-ring-track { stroke: var(--addition-track-background); }
@@ -574,7 +602,7 @@ export const sharedStyles = css`
     .nas-metrics-tile {
       min-width: 0;
       min-height: 66px;
-      grid-template-columns: var(--mush-icon-size, 40px) minmax(0, 1fr);
+      grid-template-columns: var(--mush-icon-size, 36px) minmax(0, 1fr);
       gap: 9px;
       padding: 9px 10px;
       border-radius: 24px;
@@ -585,17 +613,15 @@ export const sharedStyles = css`
     .nas-metrics-metrics { gap: 6px; }
     .nas-metrics-metrics > span {
       min-height: 46px;
-      grid-template-columns: var(--mush-icon-size, 40px) minmax(0, 1fr);
+      grid-template-columns: var(--mush-icon-size, 36px) minmax(0, 1fr);
       gap: 8px;
     }
     .nas-metrics-rings { width: 132px; max-width: 100%; }
   }
   .custom-tablet { gap: 14px; padding: 18px; }
-  .tablet-header { display: grid; grid-template-columns: var(--mush-icon-size, 40px) minmax(0, 1fr); align-items: center; gap: 12px; }
-  .tablet-icon { display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: rgba(var(--ulm-blue), .2); color: rgb(var(--ulm-blue)); }
-  .tablet-icon > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
-  .tablet-header .ulm-name { font-size: 14px; }
-  .tablet-header .ulm-label { font-size: 12px; }
+  .tablet-header { display: grid; grid-template-columns: var(--mush-icon-size, 36px) minmax(0, 1fr); align-items: center; gap: 12px; }
+  .tablet-icon { display: grid; width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); place-items: center; border-radius: 50%; background: rgba(var(--ulm-blue), .2); color: rgb(var(--ulm-blue)); }
+  .tablet-icon > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667)); }
   .tablet-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .tablet-controls button { display: grid; height: 42px; place-items: center; border: 0; border-radius: 14px; background: rgba(var(--tone), .2); color: rgb(var(--tone)); cursor: pointer; box-shadow: var(--addition-raised-shadow); }
   .tablet-controls button ha-icon { --mdc-icon-size: 22px; }
@@ -606,9 +632,9 @@ export const sharedStyles = css`
   .tablet-metrics span.is-unavailable { opacity: .55; }
   .tablet-metrics b { overflow: hidden; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
   .tablet-metrics small { color: var(--secondary-text-color); font-size: 12px; font-weight: 600; }
-  .tablet-battery-row { display: grid; grid-template-columns: var(--mush-icon-size, 40px) minmax(0, 1fr); align-items: center; gap: 12px; }
-  .tablet-battery-icon { display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: var(--addition-neutral-background); color: var(--secondary-text-color); }
-  .tablet-battery-icon > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
+  .tablet-battery-row { display: grid; grid-template-columns: var(--mush-icon-size, 36px) minmax(0, 1fr); align-items: center; gap: 12px; }
+  .tablet-battery-icon { display: grid; width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); place-items: center; border-radius: 50%; background: var(--addition-neutral-background); color: var(--secondary-text-color); }
+  .tablet-battery-icon > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667)); }
   .tablet-battery-row > span:last-child { display: grid; }
   .tablet-battery-row b { font-size: 14px; } .tablet-battery-row small { color: var(--secondary-text-color); font-size: 12px; font-weight: 600; }
   .tablet-battery-bar { position: relative; height: 35px; overflow: hidden; border-radius: 18px; background: var(--addition-track-background); }
@@ -641,12 +667,12 @@ export const sharedStyles = css`
     min-width: 0;
   }
   .console-logo {
-    display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%;
+    display: grid; width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); place-items: center; border-radius: 50%;
     flex: 0 0 auto;
     background: rgba(var(--console-tone), .18); color: rgb(var(--console-tone));
   }
   .console-logo.has-picture { background-position: center; background-size: cover; }
-  .console-logo ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
+  .console-logo ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667)); }
   .state-unavailable .console-logo, .state-unknown .console-logo {
     color: var(--secondary-text-color); background: var(--addition-neutral-background);
   }
@@ -703,8 +729,8 @@ export const sharedStyles = css`
   .pollen-heading { grid-column: 1 / -1; min-width: 0; }
   .pollen-item { display: grid; min-width: 0; min-height: 92px; place-items: center; gap: 3px; padding: 6px 3px; border: 0; border-radius: var(--border-radius, 12px); background: transparent; color: var(--primary-text-color); text-align: center; cursor: pointer; }
   .pollen-item:disabled { cursor: default; opacity: .55; }
-  .pollen-item-icon { position: relative; display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--pollen) 20%, transparent); color: var(--pollen); }
-  .pollen-item-icon > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
+  .pollen-item-icon { position: relative; display: grid; width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--pollen) 20%, transparent); color: var(--pollen); }
+  .pollen-item-icon > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667)); }
   .pollen-extreme { position: absolute; top: -3px; right: -4px; display: grid; width: 18px; height: 18px; place-items: center; border: 2px solid var(--card-background-color); border-radius: 50%; background: rgba(var(--color-red, 244, 67, 54), 1); color: white; }
   .pollen-extreme ha-icon { --mdc-icon-size: 11px; }
   .custom-pollen b { overflow: hidden; max-width: 100%; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }

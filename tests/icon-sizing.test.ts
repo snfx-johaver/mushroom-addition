@@ -1,8 +1,9 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { sharedStyles } from "../src/styles";
 
-const styles = readFileSync(join(process.cwd(), "src", "styles.ts"), "utf8");
+const styles = sharedStyles.cssText;
 
 const ruleFor = (selector: string): string => {
   const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -51,9 +52,9 @@ describe("default Mushroom icon sizing", () => {
   });
   it("uses Mushroom typography and icon sizes throughout NAS metrics without narrow-screen downscaling", () => {
     for (const selector of [".nas-metrics-tile-icon", ".nas-metrics-metrics i"]) {
-      expect(ruleFor(selector)).toContain("width: var(--mush-icon-size, 40px)");
-      expect(ruleFor(selector)).toContain("height: var(--mush-icon-size, 40px)");
-      expect(ruleFor(`${selector} ha-icon`)).toContain("--mdc-icon-size: var(--mush-icon-symbol-size, 24px)");
+      expect(ruleFor(selector)).toContain("width: var(--mush-icon-size, 36px)");
+      expect(ruleFor(selector)).toContain("height: var(--mush-icon-size, 36px)");
+      expect(ruleFor(`${selector} ha-icon`)).toContain("--mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667))");
     }
     expect(styles).toContain("font-size: var(--mush-card-primary-font-size, 14px)");
     expect(styles).toContain("font-size: var(--mush-card-secondary-font-size, 12px)");
@@ -154,9 +155,13 @@ describe("default Mushroom icon sizing", () => {
       expect(ruleFor(".scene-button")).toContain(property);
       expect(ruleFor(".welcome-items > button")).toContain(property);
     }
-    for (const property of ["max-width: 48px", "font-size: 9px", "font-weight: 700"]) {
-      expect(ruleFor(".scene-button > span")).toContain(property);
-      expect(ruleFor(".welcome-items small")).toContain(property);
+    for (const property of [
+      "width: 100%", "font-size: var(--mush-card-secondary-font-size, 12px)",
+      "font-weight: var(--mush-card-secondary-font-weight, 400)", "white-space: normal",
+      "overflow-wrap: anywhere", "-webkit-line-clamp: 2",
+      "min-height: calc(var(--mush-card-secondary-line-height, 16px) * 2)",
+    ]) {
+      expect(ruleFor(".scene-button > span, .welcome-items small")).toContain(property);
     }
     expect(styles).not.toContain(".source-scene-grid .scene-grid");
   });
@@ -168,9 +173,9 @@ describe("default Mushroom icon sizing", () => {
     expect(miniGraph).toContain("ha-card.group { border: 0;");
   });
   it("uses the Mushroom defaults for shared icon shapes and symbols", () => {
-    expect(ruleFor(".ulm-icon")).toContain("width: var(--mush-icon-size, 40px)");
-    expect(ruleFor(".ulm-icon")).toContain("height: var(--mush-icon-size, 40px)");
-    expect(styles).toContain(".ulm-icon > ha-icon, .ulm-icon > ha-state-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }");
+    expect(ruleFor(".ulm-icon")).toContain("width: var(--mush-icon-size, 36px)");
+    expect(ruleFor(".ulm-icon")).toContain("height: var(--mush-icon-size, 36px)");
+    expect(styles).toContain(".ulm-icon > ha-icon, .ulm-icon > ha-state-icon { --mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667)); }");
   });
 
   it.each([
@@ -182,8 +187,32 @@ describe("default Mushroom icon sizing", () => {
     ".pollen-item-icon",
     ".console-logo",
   ])("keeps %s aligned with the shared icon shape", (selector) => {
-    expect(ruleFor(selector)).toContain("width: var(--mush-icon-size, 40px)");
-    expect(ruleFor(selector)).toContain("height: var(--mush-icon-size, 40px)");
+    expect(ruleFor(selector)).toContain("width: var(--mush-icon-size, 36px)");
+    expect(ruleFor(selector)).toContain("height: var(--mush-icon-size, 36px)");
   });
 
+  it("honors the complete Mushroom shared header typography contract", () => {
+    for (const [selector, kind, size, weight, height, spacing] of [
+      [".ulm-name", "primary", "14px", "500", "20px", ".1px"],
+      [".ulm-label", "secondary", "12px", "400", "16px", ".4px"],
+    ]) {
+      const rule = ruleFor(selector);
+      expect(rule).toContain(`font-size: var(--mush-card-${kind}-font-size, ${size})`);
+      expect(rule).toContain(`font-weight: var(--mush-card-${kind}-font-weight, ${weight})`);
+      expect(rule).toContain(`line-height: var(--mush-card-${kind}-line-height, ${height})`);
+      expect(rule).toContain(`letter-spacing: var(--mush-card-${kind}-letter-spacing, ${spacing})`);
+    }
+    expect(ruleFor(".ulm-copy")).toContain("gap: 0");
+    expect(styles).not.toContain("var(--mush-icon-size, 40px)");
+  });
+  it.each(["blue", "yellow", "red", "green", "orange", "purple", "grey"])("resolves shared %s accents through Mushroom palette overrides", name => {
+    expect(ruleFor(":host")).toContain(`--ulm-${name}: var(--mush-rgb-${name}, var(--rgb-${name},`);
+  });
+  it("gives carousel captions the same theme-aware two-line secondary scale", () => {
+    const carousel = readFileSync(join(process.cwd(), "src", "entity-carousel.ts"), "utf8");
+    expect(carousel).toContain("font-size: var(--mush-card-secondary-font-size, 12px)");
+    expect(carousel).toContain("line-height: var(--mush-card-secondary-line-height, 16px)");
+    expect(carousel).toContain("-webkit-line-clamp: 2");
+    expect(carousel).toContain('title=${this.itemName(activeItem, activeEntity)}');
+  });
 });

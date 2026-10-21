@@ -4,6 +4,13 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Align shared headers with Mushroom's 36px icon circles, 500-weight primary
+  typography and theme-controlled text metrics. Share Mushroom accent-palette
+  defaults and overrides across named colors and legacy accent roles.
+- Make Scenes, Welcome and Carousel labels theme-aware 12px secondary text
+  with two-line wrapping and full-name tooltips, preserving responsive pill
+  sizing, shadows and the existing horizontal overflow behavior.
+
 - Match Mushroom's neutral controls to primary-text RGB at 5% opacity and
   progress tracks to secondary-text RGB at 20%, including theme-aware grey
   and disabled colors. Keep card geometry and colored active states intact.

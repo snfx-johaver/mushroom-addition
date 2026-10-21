@@ -675,8 +675,23 @@ describe("family renderers", () => {
         },
       ],
     });
-    expect(markup).toContain("--item-color:rgb(var(--rgb-deep-purple, 110, 65, 171))");
+    expect(markup).toContain("--item-color:rgb(var(--mush-rgb-deep-purple, var(--rgb-deep-purple, 110, 65, 171)))");
     expect(markup).not.toContain("--color-deep-purple");
+  });
+
+  it("preserves complete scene names for accessible labels and tooltips", async () => {
+    const name = "Evening relaxation lighting across the entire downstairs area";
+    const markup = await render("mushroom-addition-card-scenes", {
+      type: "custom:mushroom-addition-card-scenes",
+      scene_buttons_only: true,
+      scene_items: [{ entity: "scene.preview", name }],
+    });
+    const root = document.createElement("div");
+    root.innerHTML = markup;
+    const button = root.querySelector<HTMLElement>(".scene-button")!;
+    expect(button.getAttribute("aria-label")).toBe(name);
+    expect(button.title).toBe(name);
+    expect(button.querySelector("span")?.textContent).toBe(name);
   });
 
   it("supports entity pictures on individual room sensor buttons", async () => {

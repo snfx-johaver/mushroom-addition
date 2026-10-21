@@ -15,6 +15,19 @@ fallbacks, respect `--mush-rgb-grey` and `--mush-rgb-disabled`, and keep active
 accent colors separate. Raised-button shadows and card-specific geometry are
 intentional additions, not changes to the neutral palette.
 
+Shared header icon circles default to 36px, with proportional symbols and
+`--mush-icon-size` / `--mush-icon-symbol-size` overrides. Primary text defaults
+to 14px, weight 500 and 20px line height; secondary text uses 12px, weight 400
+and 16px line height. Both honor Mushroom's size, weight, line-height,
+letter-spacing and text-color theme variables. Named accent colors and shared
+legacy accent roles resolve through the same palette, preferring
+`--mush-rgb-*`, then `--rgb-*`, then Mushroom's standard RGB defaults.
+
+Scenes and Welcome pills retain identical flexible row geometry and shadow
+padding. Their labels use two lines of theme-aware secondary text across the
+available pill width, with full names available through accessible labels and
+tooltips. Carousel captions use the same two-line secondary-text scale.
+
 | Family | Recognizable layout and behavior | Primary reference IDs |
 |---|---|---|
 | Scene | Compact heading plus a grid of scene activation pills | `card_templates/cards/card_scenes_welcome.yaml`, `docs/usage/cards/card_scenes.md` |

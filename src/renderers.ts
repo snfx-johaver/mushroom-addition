@@ -438,8 +438,9 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
       const entityPicture = item.icon_type === "entity-picture"
         ? attr(entity, "entity_picture")
         : undefined;
+      const name = item.name || item.label || displayName({ type: "", entity: item.entity }, entity, ctx.hass);
       return html`
-      <button @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
+      <button aria-label=${name} title=${name} @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
         event.stopPropagation();
         if (sourceGrid && !item.tap_action) {
           const domain = item.entity.split(".", 1)[0];
@@ -456,7 +457,7 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
           ? html`<span class="scene-entity-picture" style=${`background-image:url("${String(entityPicture)}")`}></span>`
           : html`<ha-icon .icon=${item.icon || entity?.attributes.icon || "mdi:palette"}></ha-icon>`
         }</i>
-        <span>${item.name || item.label || displayName({ type: "", entity: item.entity }, entity, ctx.hass)}</span>
+        <span>${name}</span>
       </button>`;
     })}</div>`}
   `);
@@ -871,7 +872,7 @@ const renderWelcome = (ctx: RenderContext): TemplateResult => {
     </div>
     <div class="welcome-greeting">${heading(ctx, timeGreeting(ctx.hass, new Date().getHours()))}</div>
     ${collapsed ? nothing : html`<div class="welcome-items">${items.map((item) => html`
-      <button class="tone-${item.color}" aria-label=${item.name}
+      <button class="tone-${item.color}" aria-label=${item.name} title=${item.name}
         @pointerdown=${(event: Event) => event.stopPropagation()}
         @click=${(event: Event) => runControlAction(event, ctx, { action: "navigate", navigation_path: item.nav })}>
         <i><ha-icon .icon=${item.icon}></ha-icon></i><small>${item.name}</small>

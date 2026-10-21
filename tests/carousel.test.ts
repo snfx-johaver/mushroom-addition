@@ -31,6 +31,16 @@ function tap(card: MushroomAdditionEntityCarousel) {
 afterEach(() => { document.body.replaceChildren(); vi.useRealTimers(); });
 
 describe("Carousel entity defaults and gestures", () => {
+  it("keeps the complete caption available when long names wrap or clamp", async () => {
+    const name = "Evening relaxation lighting across the entire downstairs area";
+    const card = await create({ carousel_items: [{ entity: entity.entity_id, name }] });
+    const caption = card.shadowRoot!.querySelector<HTMLElement>(".label")!;
+    expect(caption.textContent).toContain(name);
+    expect(caption.title).toBe(name);
+    const option = card.shadowRoot!.querySelector<HTMLElement>(".item")!;
+    expect(option.getAttribute("aria-label")).toContain(name);
+  });
+
   it("uses native state icons unless explicitly overridden, including picture fallback", async () => {
     const card = await create();
     const icon = card.shadowRoot!.querySelector("ha-state-icon") as HTMLElement & { stateObj: unknown; hass: unknown; _config: unknown; _connection: unknown; _entities: unknown };

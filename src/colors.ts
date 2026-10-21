@@ -25,6 +25,11 @@ const themeColorFallbacks: Record<string, string> = {
   disabled: "189, 189, 189",
 };
 
+export const resolveColorRgb = (name: string): string | undefined => {
+  const fallback = themeColorFallbacks[name];
+  return fallback ? `var(--mush-rgb-${name}, var(--rgb-${name}, ${fallback}))` : undefined;
+};
+
 export const resolveColor = (value: string | undefined, fallback: string): string => {
   const candidate = value?.trim() || fallback.trim();
   if (candidate === "primary") {
@@ -33,6 +38,6 @@ export const resolveColor = (value: string | undefined, fallback: string): strin
   if (candidate === "accent") {
     return value ? `var(--accent-color, ${fallback})` : "var(--accent-color)";
   }
-  const rgb = themeColorFallbacks[candidate];
-  return rgb ? `rgb(var(--rgb-${candidate}, ${rgb}))` : candidate;
+  const rgb = resolveColorRgb(candidate);
+  return rgb ? `rgb(${rgb})` : candidate;
 };

@@ -117,15 +117,20 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       pointer-events: none;
     }
     .label {
-      min-height: 20px;
+      display: -webkit-box;
+      min-height: calc(var(--mush-card-secondary-line-height, 16px) * 2);
       max-width: calc(100% - 24px);
       overflow: hidden;
-      color: var(--primary-text-color);
-      font-size: 13px;
-      font-weight: 600;
+      overflow-wrap: anywhere;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      color: var(--mush-card-secondary-color, var(--secondary-text-color));
+      font-size: var(--mush-card-secondary-font-size, 12px);
+      font-weight: var(--mush-card-secondary-font-weight, 400);
+      line-height: var(--mush-card-secondary-line-height, 16px);
+      letter-spacing: var(--mush-card-secondary-letter-spacing, .4px);
       text-align: center;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      white-space: normal;
     }
     .state {
       margin-left: 6px;
@@ -199,7 +204,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
           ${items.map((item, index) => this.renderItem(item, index, visible))}
         </div>
         ${this.config?.carousel_show_labels === false ? nothing : html`
-          <div class="label">
+          <div class="label" title=${this.itemName(activeItem, activeEntity)}>
             ${this.itemName(activeItem, activeEntity)}
             ${this.showEntityState(activeEntity)
               ? html`<span class="state">${activeEntity?.state}</span>`
