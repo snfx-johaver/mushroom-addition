@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="240" viewBox="0 0 1000 240" role="img" aria-labelledby="title description">
+  <title id="title">Mushroom Addition</title>
+  <desc id="description">27 Home Assistant dashboard cards with visual editors and support for 33 languages. A project banner, not a dashboard screenshot.</desc>
+  <rect width="1000" height="240" rx="24" fill="#f3f7fa"/>
+  <circle cx="110" cy="120" r="62" fill="#d9efff"/>
+  <path d="M74 124a36 36 0 0 1 72 0Z" fill="#2196f3"/>
+  <path d="M100 124h20v30a10 10 0 0 1-20 0Z" fill="#1565c0"/>
+  <circle cx="98" cy="106" r="6" fill="#fff"/>
+  <circle cx="124" cy="113" r="8" fill="#fff"/>
+  <g font-family="system-ui, sans-serif" fill="#172b3a">
+    <text x="208" y="98" font-size="38" font-weight="600">Mushroom Addition</text>
+    <text x="208" y="143" font-size="22">A little more fun(gus) for Home Assistant.</text>
+    <text x="208" y="183" font-size="18" fill="#4b6170">27 dashboard cards  |  Visual editors  |  33 languages</text>
+  </g>
+</svg>

@@ -4,6 +4,10 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Remove obsolete source-comparison pages and their broken local reference
+  image links. Retain the current catalog demo and regression fixtures.
+- Replace the outdated dashboard screenshot with a data-free project banner.
+
 - Use concise functional card names with the consistent `Mushroom Addition:`
   picker prefix. Existing card type IDs and saved dashboard configurations are
   unchanged.
