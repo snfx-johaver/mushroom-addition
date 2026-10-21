@@ -1,0 +1,120 @@
+{
+  "upstreamCommit": "f8a9cb67a53f91367f1dffe18516aa983b463cb5",
+  "inspectedAt": "2026-09-23",
+  "liveAccepted": false,
+  "fixture": "demo/default-batch-one-comparison.html",
+  "test": "tests/default-batch-one-certification.test.ts",
+  "sources": {
+    "card_room": {
+      "liveConfig": {
+        "entity": "light.office_accent",
+        "room_sensors": [
+          {
+            "entity": "sensor.office_motion_illuminance",
+            "label": "Light"
+          },
+          {
+            "entity": "sensor.bedroom_temperature_2",
+            "label": "Temperature"
+          }
+        ]
+      },
+      "visibleInteractions": [
+        {
+          "surface": "card",
+          "gesture": "tap",
+          "payload": {
+            "action": "more-info",
+            "entity": "light.office_accent"
+          }
+        },
+        {
+          "surface": "room sensor",
+          "gesture": "tap",
+          "payload": {
+            "action": "toggle",
+            "entity": "<room_sensors[n].entity>"
+          }
+        },
+        {
+          "surface": "room sensor",
+          "gesture": "hold",
+          "payload": {
+            "action": "more-info",
+            "entity": "<room_sensors[n].entity>"
+          }
+        },
+        {
+          "surface": "card",
+          "gesture": "double_tap",
+          "payload": {
+            "action": "perform-action",
+            "perform_action": "input_select.select_option",
+            "target": {
+              "entity_id": "<input_select_entity>"
+            },
+            "data": {
+              "option": "<input_select_option>"
+            }
+          },
+          "visibility": "only when input_select_entity and input_select_option are configured"
+        }
+      ],
+      "artifact": "docs/assets/visual-audit/card_room-comparison.png"
+    },
+    "card_scenes": {
+      "liveConfig": {
+        "scene_items": [
+          {
+            "entity": "scene.living_room_relax",
+            "label": "Relax"
+          },
+          {
+            "entity": "scene.living_room_dimmed",
+            "label": "Dimmed"
+          }
+        ]
+      },
+      "visibleInteractions": [
+        {
+          "entityDomain": "scene",
+          "service": "scene.turn_on",
+          "data": {
+            "entity_id": "<scene_items[n].entity>"
+          }
+        },
+        {
+          "entityDomain": "media_player",
+          "service": "media_player.media_play_pause",
+          "data": {
+            "entity_id": "<scene_items[n].entity>"
+          }
+        },
+        {
+          "entityDomain": "input_select",
+          "service": "input_select.select_option",
+          "data": {
+            "entity_id": "<scene_items[n].entity>",
+            "option": "<scene_items[n].state>"
+          }
+        },
+        {
+          "entityDomain": "script",
+          "service": "script.turn_on",
+          "data": {
+            "entity_id": "<scene_items[n].entity>"
+          }
+        },
+        {
+          "entityDomain": "other",
+          "service": "homeassistant.toggle",
+          "data": {
+            "entity_id": "<scene_items[n].entity>"
+          }
+        }
+      ],
+      "artifact": "docs/assets/visual-audit/card_scenes-comparison.png"
+    }
+  },
+  "provenance": "Sanitized historical fixture; not current UI certification."
+}

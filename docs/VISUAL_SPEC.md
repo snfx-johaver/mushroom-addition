@@ -23,10 +23,11 @@ The parity generator inspects each exact catalog `sourcePath`, including YAML
 and README files in custom-card directories. It records 15 materially distinct
 composition profiles built from button-card, native card, popup, control,
 chart, entities, image, vertical-stack, and horizontal-stack primitives.
-[`catalog-fixture.png`](assets/catalog-fixture.png) contains exactly one
-browser-rendered example of every public card. The fixture is ordered by the checked catalog,
-labeled with the public ID/family, and does not add overview cards, duplicate
-state galleries, or decorative variants.
+The live development fixture at `/demo/` renders one example of every public
+card, ordered by the checked catalog and labeled with its public ID/family.
+It does not add overview cards, duplicate state galleries or decorative variants.
+Historical screenshots and raw live-instance audit dumps are not distributed:
+they can contain household-specific names and entity identifiers.
 
 Every documented source maps explicitly to a public `rendererId` and, where
 sources are combined, a stable variant. Shared Lit primitives are reused, but
@@ -63,18 +64,19 @@ are explicit (`temperature_entity`, `humidity_entity`, `battery_entity`,
 only appear for families that use them. Legacy `primary_entity` and known
 source entity-variable names are migrated to `entity` during normalization.
 
-The editor also contains an expandable **Implemented upstream options**
-section. The parity matrix inventories every discovered source variable, but
-the editor exposes only options that are wired to rendering or a valid Home
-Assistant service. This prevents inert switches and misleading controls.
+The editor groups settings into **Context**, **Content**, **Layout**,
+**Interactions** and **Features**. The parity matrix inventories every
+discovered source variable, but the editor exposes only options that are wired
+to rendering or a valid Home Assistant service. This prevents inert switches
+and misleading controls.
 Supported source options retain their original YAML key and use native Home
 Assistant entity, action, icon, boolean, number, or text selectors.
 
 ## Visual verification
 
 `demo/` provides deterministic representative states for the complete checked
-card catalog, exactly once per registration. The current browser-rendered
-fixture is committed at [`docs/assets/catalog-fixture.png`](assets/catalog-fixture.png).
+card catalog, exactly once per registration. Run `npm run demo` and open `/demo/`
+to inspect it with generic, local example data.
 The generated [`VISUAL_AUDIT.md`](VISUAL_AUDIT.md) ledger records exact
 accepted/total progress, source references, deterministic fixtures, comparison
 artifacts, structural contracts, and individually reviewed deviations. The

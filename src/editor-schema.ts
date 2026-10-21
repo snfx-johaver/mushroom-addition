@@ -3,6 +3,8 @@ import { PARITY_BY_ID } from "./parity.generated";
 import { canonicalNameOptions, isReplacedUpstreamOption, supportedUpstreamOption } from "./supported-options";
 import { variantForSource } from "./catalog";
 import { FLOWER_BARS, flowerBarsForConfig, flowerEntityConfigKey } from "./flower";
+import { REMOTE_KEYS } from "./remote-card";
+import { PIHOLE_METRICS, PIHOLE_SECTIONS } from "./pi-hole";
 
 export interface EditorField {
   name: string;
@@ -34,6 +36,14 @@ const select = (name: string, options: Array<{ value: string; label: string }>):
   selector: { select: { mode: "dropdown", options } },
 });
 const colorDefaults: Record<string, string> = {
+  pihole_accent_color: "green",
+  remote_accent_color: "blue",
+  upcoming_flag_color: "var(--primary-color)",
+  upcoming_title_color: "var(--primary-text-color)",
+  upcoming_line1_color: "var(--secondary-text-color)",
+  upcoming_line2_color: "var(--secondary-text-color)",
+  upcoming_line3_color: "var(--secondary-text-color)",
+  upcoming_line4_color: "var(--secondary-text-color)",
   battery_healthy_color: "green",
   battery_warning_color: "yellow",
   battery_low_color: "orange",
@@ -272,6 +282,98 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
 };
 
 export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): EditorField[] => {
+  if (item.upstreamId === "pi_hole_card") return [
+    entity(["switch", "sensor", "binary_sensor"]),
+    ...presentation(),
+    { name: "pihole_device_ids", selector: { device: { multiple: true } } },
+    toggle("pihole_show_header"),
+    { name: "pihole_metrics", selector: { select: { multiple: true, mode: "dropdown", options: Object.entries(PIHOLE_METRICS).map(([value, metric]) => ({ value, label: metric.name })) } } },
+    { name: "pihole_collapsed_sections", selector: { select: { multiple: true, mode: "dropdown", options: Object.entries(PIHOLE_SECTIONS).map(([value, label]) => ({ value, label })) } } },
+    { name: "pihole_hidden_entities", selector: { entity: { multiple: true } } },
+    { name: "pihole_pause_durations", selector: { select: { multiple: true, custom_value: true, mode: "dropdown", options: [{ value: "30", label: "30 seconds" }, { value: "60", label: "1 minute" }, { value: "300", label: "5 minutes" }, { value: "900", label: "15 minutes" }, { value: "3600", label: "1 hour" }] } } },
+    select("pihole_pause_service", [{ value: "auto", label: "Automatic (integration and service availability)" }, { value: "pi_hole.disable", label: "Pi-hole v5 / Home Assistant core" }, { value: "pi_hole_v6.disable", label: "Pi-hole v6" }, { value: "custom", label: "Custom Home Assistant action" }]),
+    ...(config?.pihole_pause_service === "custom" ? [
+      action("pihole_pause_action"), text("pihole_duration_field"),
+      select("pihole_duration_format", [{ value: "seconds", label: "Number of seconds" }, { value: "duration", label: "HH:MM:SS duration" }]),
+    ] : []),
+    number("pihole_columns", 1, 4), color("pihole_accent_color"),
+    { name: "pihole_chart_metrics", selector: { select: { multiple: true, mode: "dropdown", options: [{ value: "cpu", label: "CPU usage (%)" }, { value: "memory", label: "Memory usage (%)" }] } } },
+    number("pihole_chart_hours", 1, 168), number("pihole_chart_height", 80, 300),
+    action("pihole_metric_tap_action"), action("pihole_metric_hold_action"), action("pihole_metric_double_tap_action"),
+  ];
+  if (item.upstreamId === "remote_card") {
+    return [
+      entity(["media_player", "remote"]),
+      ...presentation(),
+      entity(["remote"], "remote_entity"), entity(["media_player"], "remote_media_entity"),
+      select("remote_transport", [{ value: "auto", label: "Automatic (paired remote or Samsung)" }, { value: "remote", label: "Remote: send command" }, { value: "samsung", label: "Samsung: media player key codes" }]),
+      select("remote_preset", [{ value: "auto", label: "Automatic" }, { value: "generic", label: "Generic remote" }, { value: "android_tv", label: "Android / Google TV" }, { value: "apple_tv", label: "Apple TV" }, { value: "roku", label: "Roku" }, { value: "samsung", label: "Samsung TV" }]),
+      text("remote_device"),
+      select("remote_navigation", [{ value: "touchpad", label: "Touchpad" }, { value: "buttons", label: "Directional buttons" }, { value: "both", label: "Touchpad and buttons" }]),
+      select("remote_volume", [{ value: "slider", label: "Slider and mute" }, { value: "buttons", label: "Buttons and mute" }, { value: "both", label: "Slider, buttons and mute" }]),
+      number("remote_volume_step", 1, 20),
+      { name: "remote_button_size", selector: { number: { min: 32, max: 64, step: 2, mode: "slider", unit_of_measurement: "px" } } },
+      { name: "remote_touchpad_height", selector: { number: { min: 80, max: 280, step: 4, mode: "slider", unit_of_measurement: "px" } } },
+      color("remote_accent_color"),
+      select("remote_haptics", [{ value: "all", label: "Buttons and volume slider" }, { value: "buttons", label: "Buttons only" }, { value: "slider", label: "Volume slider only" }, { value: "none", label: "Off" }]),
+      select("remote_double_tap", [{ value: "back", label: "Back" }, { value: "home", label: "Home" }, { value: "menu", label: "Menu" }, { value: "custom", label: "Custom key code" }, { value: "disabled", label: "Disabled (immediate single tap)" }]),
+      ...(config?.remote_double_tap === "custom" ? [text("remote_double_tap_command")] : []),
+      { name: "remote_swipe_distance", selector: { number: { min: 12, max: 80, step: 2, mode: "slider", unit_of_measurement: "px" } } },
+      { name: "remote_power_controls", selector: { select: { multiple: true, mode: "dropdown", options: REMOTE_KEYS.filter(key => ["power", "home", "back", "menu", "info"].includes(key.value)) } } },
+      { name: "remote_playback_controls", selector: { select: { multiple: true, mode: "dropdown", options: REMOTE_KEYS.filter(key => ["previous", "play_pause", "stop", "next", "rewind", "forward"].includes(key.value)) } } },
+    ];
+  }
+  if (item.upstreamId === "upcoming_media") {
+    const mediaAttributes = ["title", "episode", "number", "airdate", "aired", "rating", "runtime", "studio", "genres", "flag", "artist", "album", "channel"];
+    const attributeChoice = (name: string): EditorField => ({
+      name, selector: { select: { mode: "dropdown", custom_value: true, options: mediaAttributes.map(value => ({ value, label: value === "airdate" ? "Air date" : value[0].toUpperCase() + value.slice(1) })) } },
+    });
+    return [
+      entity(["sensor"]),
+      ...presentation(),
+      { name: "upcoming_data_attribute", selector: { attribute: { entity_id: config?.entity } } },
+      select("upcoming_image_style", [{ value: "poster", label: "Poster beside text" }, { value: "fanart", label: "Full-width artwork" }]),
+      number("upcoming_max_items", 1, 50),
+      { name: "upcoming_item_height", selector: { number: { min: 80, max: 320, step: 4, mode: "slider", unit_of_measurement: "px" } } },
+      { name: "upcoming_corner_radius", selector: { number: { min: 0, max: 32, mode: "slider", unit_of_measurement: "px" } } },
+      toggle("upcoming_overflow"),
+      ...(config?.upcoming_overflow ? [number("upcoming_max_columns", 1, 6)] : [
+        select("upcoming_collapse_mode", [{ value: "none", label: "Show all" }, { value: "count", label: "Show first items, expand the rest" }, { value: "matching", label: "Matching items first, expand the rest" }]),
+        ...(config?.upcoming_collapse_mode === "count" ? [number("upcoming_collapse_count", 1, 50)] : []),
+        ...(config?.upcoming_collapse_mode === "matching" ? [attributeChoice("upcoming_group_attribute"), text("upcoming_group_value")] : []),
+      ]),
+      { name: "upcoming_sort_by", selector: { select: { mode: "dropdown", custom_value: true, options: [{ value: "", label: "Sensor order" }, ...mediaAttributes.map(value => ({ value, label: value === "airdate" ? "Air date" : value[0].toUpperCase() + value.slice(1) }))] } } },
+      toggle("upcoming_sort_ascending"),
+      attributeChoice("upcoming_filter_attribute"),
+      ...(config?.upcoming_filter_attribute ? [
+        select("upcoming_filter_match", [{ value: "contains", label: "Contains" }, { value: "exact", label: "Equals" }]),
+        text("upcoming_filter_value"),
+      ] : []),
+      select("upcoming_flag_filter", [{ value: "all", label: "All media" }, { value: "flagged", label: "Flagged only" }, { value: "unflagged", label: "Unflagged only" }]),
+      toggle("upcoming_show_flag"),
+      ...(config?.upcoming_show_flag !== false ? [
+        { name: "upcoming_flag_icon", selector: { icon: {} } }, text("upcoming_flag_label"), color("upcoming_flag_color"),
+      ] : []),
+      toggle("upcoming_hide_empty"),
+      select("upcoming_clock", [{ value: "locale", label: "Home Assistant language default" }, { value: "12", label: "12-hour" }, { value: "24", label: "24-hour" }]),
+      { name: "upcoming_date_format", selector: { select: { mode: "dropdown", custom_value: true, options: [
+        { value: "locale", label: "Localized date" }, { value: "dd/mm/yyyy", label: "Day / month / year" },
+        { value: "mm/dd/yyyy", label: "Month / day / year" }, { value: "yyyy-mm-dd", label: "Year - month - day" },
+      ] } } },
+      ...["title", "line1", "line2", "line3", "line4"].map(line => ({
+        type: "grid" as const, name: "", schema: [text(`upcoming_${line}_text`), color(`upcoming_${line}_color`)],
+      })),
+      number("upcoming_title_size", 12, 24),
+      number("upcoming_line_size", 10, 18),
+      toggle("upcoming_box_shadows"), toggle("upcoming_text_shadows"), toggle("upcoming_transparency"),
+      toggle("upcoming_tooltips"),
+      ...(config?.upcoming_tooltips ? [number("upcoming_tooltip_delay", 0, 3000, 50)] : []),
+      select("upcoming_item_behavior", [{ value: "automatic", label: "Open media / trailer automatically" }, { value: "more-info", label: "Sensor more information" }, { value: "action", label: "Custom Home Assistant action" }, { value: "none", label: "No action" }]),
+      ...(config?.upcoming_item_behavior === "action" ? [action("upcoming_item_action")] : [
+        toggle("upcoming_trailers"), toggle("upcoming_links"), text("upcoming_url"),
+      ]),
+    ];
+  }
   if (item.upstreamId === "mini_graph_card") {
     return [
       entity(["sensor", "binary_sensor", "input_number"]),

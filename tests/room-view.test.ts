@@ -16,7 +16,7 @@ type Card = HTMLElement & {
 const state = (id: string, value: string, attributes: HassEntity["attributes"] = {}): HassEntity =>
   ({ entity_id: id, state: value, attributes });
 const base: AdditionConfig = {
-  type, entity: "person.joris", temperature: "sensor.temperature", humidity: "sensor.humidity",
+  type, entity: "person.resident", temperature: "sensor.temperature", humidity: "sensor.humidity",
   group_doors: "group.doors", group_windows: "binary_sensor.window",
   group_motions: "binary_sensor.motion", group_water: "binary_sensor.water",
   group_lights: "group.lights", group_windows_shutters: "cover.shutters",
@@ -27,7 +27,7 @@ const render = async (config: Partial<AdditionConfig> = {}, states: HomeAssistan
   card.hass = {
     callService: vi.fn(async () => undefined),
     states: {
-      "person.joris": state("person.joris", "home", { friendly_name: "Joris", entity_picture: "/joris.jpg" }),
+      "person.resident": state("person.resident", "home", { friendly_name: "Resident", entity_picture: "/resident.jpg" }),
       "sensor.temperature": state("sensor.temperature", "21", { friendly_name: "Room temperature", unit_of_measurement: "°C" }),
       "sensor.humidity": state("sensor.humidity", "55", { unit_of_measurement: "%" }),
       "group.doors": state("group.doors", "on", { entity_id: ["binary_sensor.door1", "binary_sensor.door2"] }),
@@ -66,8 +66,8 @@ afterEach(() => { document.body.replaceChildren(); vi.useRealTimers(); });
 describe("Roomview independent headers and sections", () => {
   it("keeps the compact card appearance with independent climate defaults", async () => {
     const { root } = await render({ icon: "mdi:account", icon_type: "entity-picture" });
-    expect(root.querySelector(".card-heading .ulm-name")?.textContent).toBe("Joris");
-    expect(root.querySelector(".card-heading .entity-picture")?.getAttribute("style")).toContain("/joris.jpg");
+    expect(root.querySelector(".card-heading .ulm-name")?.textContent).toBe("Resident");
+    expect(root.querySelector(".card-heading .entity-picture")?.getAttribute("style")).toContain("/resident.jpg");
     expect(root.querySelector(".room-view-summary .ulm-name")?.textContent).toBe("21 °C");
     expect(root.querySelector(".room-view-summary .ulm-label")?.textContent).toBe("55 %");
     expect(root.querySelector(".room-view-summary ha-icon")?.getAttribute("icon")).not.toBe("mdi:account");
@@ -93,9 +93,9 @@ describe("Roomview independent headers and sections", () => {
     expect(root.querySelector(".room-view-summary .ulm-label")?.textContent).toBe("Comfortable");
     expect((root.querySelector(".room-view-summary ha-icon") as HTMLElement & { icon: string }).icon).toBe("mdi:thermostat");
     const independent = await render({ climate_name: "Climate only", climate_icon: "mdi:snowflake" });
-    expect(independent.root.querySelector(".card-heading .ulm-name")?.textContent).toBe("Joris");
+    expect(independent.root.querySelector(".card-heading .ulm-name")?.textContent).toBe("Resident");
     expect((independent.root.querySelector(".card-heading ha-state-icon") as HTMLElement & { stateObj: HassEntity }).stateObj.entity_id)
-      .toBe("person.joris");
+      .toBe("person.resident");
   });
 
   it("handles composed climate names using HA's entity-name formatter", async () => {
@@ -103,7 +103,7 @@ describe("Roomview independent headers and sections", () => {
       climate_name: [{ type: "area" }, { type: "entity" }],
       climate_primary_info: "name", climate_secondary_info: "state",
     });
-    const formatEntityName = vi.fn((entity: HassEntity) => entity.entity_id === "sensor.temperature" ? "Living room Temperature" : "Joris");
+    const formatEntityName = vi.fn((entity: HassEntity) => entity.entity_id === "sensor.temperature" ? "Living room Temperature" : "Resident");
     card.hass = { ...card.hass, formatEntityName };
     await card.updateComplete;
     expect(root.querySelector(".room-view-summary .ulm-name")?.textContent).toBe("Living room Temperature");
@@ -122,7 +122,7 @@ describe("Roomview independent headers and sections", () => {
     });
     expect(hidden.root.querySelector(".room-view-summary ha-icon")).toBeNull();
     expect(hidden.root.querySelectorAll(".room-view-summary .ulm-name, .room-view-summary .ulm-label")).toHaveLength(0);
-    expect(hidden.root.querySelector(".card-heading .ulm-name")?.textContent).toBe("Joris");
+    expect(hidden.root.querySelector(".card-heading .ulm-name")?.textContent).toBe("Resident");
     const entityIcon = await render({}, {
       "sensor.temperature": state("sensor.temperature", "22", { icon: "mdi:thermostat-box" }),
     });
@@ -303,7 +303,7 @@ describe("Roomview graphical editor and responsive structure", () => {
       detail: { value: { ...forms[1].data, climate_secondary: "Comfort", climate_primary_info: "name" } },
     }));
     expect(changes.mock.calls[0][0].detail.config).toMatchObject({
-      entity: "person.joris", temperature: "sensor.temperature", humidity: "sensor.humidity",
+      entity: "person.resident", temperature: "sensor.temperature", humidity: "sensor.humidity",
       climate_name: [{ type: "area" }], climate_icon_type: "none", climate_secondary: "Comfort",
       lights_tap_action: { action: "none" }, tv_hold_action: { action: "navigate", navigation_path: "/tv" },
     });

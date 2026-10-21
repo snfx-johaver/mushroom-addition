@@ -29,7 +29,7 @@ const states: HomeAssistant["states"] = {
   "sensor.waste": { entity_id: "sensor.waste", state: "TODAY", attributes: { friendly_name: "Paper", icon: "mdi:trash-can", daysTo: 0 } },
   "sensor.time": { entity_id: "sensor.time", state: "19:15", attributes: { friendly_name: "Time" } },
   "weather.home": { entity_id: "weather.home", state: "partlycloudy", attributes: { friendly_name: "Home weather", temperature: 18 } },
-  "person.joris": { entity_id: "person.joris", state: "home", attributes: { friendly_name: "Joris", entity_picture: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' rx='32' fill='%23d6aa8d'/%3E%3Ccircle cx='32' cy='24' r='12' fill='%2345342d'/%3E%3C/svg%3E" } },
+  "person.resident": { entity_id: "person.resident", state: "home", attributes: { friendly_name: "Resident", entity_picture: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' rx='32' fill='%23d6aa8d'/%3E%3Ccircle cx='32' cy='24' r='12' fill='%2345342d'/%3E%3C/svg%3E" } },
   "media_player.console": { entity_id: "media_player.console", state: "playing", attributes: { friendly_name: "PlayStation 4", media_title: "Gran Turismo", entity_picture: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='120'%3E%3Cdefs%3E%3ClinearGradient id='g'%3E%3Cstop stop-color='%236f4a2f'/%3E%3Cstop offset='1' stop-color='%23d79a44'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='480' height='120' fill='url(%23g)'/%3E%3C/svg%3E" } },
   "light.qubino": { entity_id: "light.qubino", state: "on", attributes: { friendly_name: "Pilot wire", brightness: 128 } },
   "input_select.ordres_fil_pilote": { entity_id: "input_select.ordres_fil_pilote", state: "Comfort", attributes: { friendly_name: "Pilot wire order" } },
@@ -75,11 +75,12 @@ const fixtures: Array<{
 
 const main = document.querySelector("#comparisons")!;
 for (const fixture of fixtures) {
+  const tag = `mushroom-addition-custom-card-${fixture.slug}`;
+  if (!customElements.get(tag)) continue;
   const section = document.createElement("section");
   section.dataset.source = fixture.sourceId;
   section.style.setProperty("--width", `${fixture.width}px`);
   section.innerHTML = `<h2>${fixture.sourceId}</h2><div class="columns"><div><div class="column-label">Pinned source composition</div><div class="source">${fixture.reference}</div></div><div><div class="column-label">Lit implementation</div><div class="implementation"></div></div></div>`;
-  const tag = `mushroom-addition-custom-card-${fixture.slug}`;
   const card = document.createElement(tag) as HTMLElement & { hass: HomeAssistant; setConfig(config: AdditionConfig): void };
   card.hass = hass;
   card.setConfig({ type: `custom:${tag}`, ...fixture.config });

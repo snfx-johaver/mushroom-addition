@@ -33,7 +33,7 @@ const states: HomeAssistant["states"] = {
   "sensor.speedtest_upload": { entity_id: "sensor.speedtest_upload", state: "17.19", attributes: { friendly_name: "Upload", unit_of_measurement: "Mbit/s" } },
   "sensor.speedtest_ping": { entity_id: "sensor.speedtest_ping", state: "24", attributes: { friendly_name: "Ping", unit_of_measurement: "ms" } },
   "climate.living_room": { entity_id: "climate.living_room", state: "off", attributes: { friendly_name: "Living room", current_temperature: 19.5, temperature: 21 } },
-  "device_tracker.joris_mobile": { entity_id: "device_tracker.joris_mobile", state: "home", attributes: { friendly_name: "Joris mobile" } },
+  "device_tracker.resident_mobile": { entity_id: "device_tracker.resident_mobile", state: "home", attributes: { friendly_name: "Resident mobile" } },
   "water_heater.hot_water": { entity_id: "water_heater.hot_water", state: "eco", attributes: { friendly_name: "Hot water" } },
   "sensor.hot_water_power": { entity_id: "sensor.hot_water_power", state: "835", attributes: { friendly_name: "Hot water power", unit_of_measurement: "W" } },
 };
@@ -85,6 +85,7 @@ const requested = new URLSearchParams(location.search).get("source");
 const container = document.querySelector("#comparisons")!;
 for (const fixture of fixtures.filter((candidate) => !requested || candidate.sourceId === requested)) {
   const tag = `mushroom-addition-custom-card-${fixture.slug}`;
+  if (!customElements.get(tag)) continue;
   const section = document.createElement("section");
   section.className = "comparison";
   section.dataset.source = fixture.sourceId;

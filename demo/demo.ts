@@ -19,7 +19,7 @@ const hass: HomeAssistant = {
     "weather.home": { entity_id: "weather.home", state: "partlycloudy", attributes: { friendly_name: "Home", temperature: 17, temperature_unit: "°C", humidity: 68 } },
     "climate.living": { entity_id: "climate.living", state: "heat", attributes: { friendly_name: "Living room", current_temperature: 19, temperature: 21 } },
     "light.kitchen": { entity_id: "light.kitchen", state: "on", attributes: { friendly_name: "Kitchen lights", brightness: 172 } },
-    "person.joris": { entity_id: "person.joris", state: "home", attributes: { friendly_name: "Joris" } },
+    "person.resident": { entity_id: "person.resident", state: "home", attributes: { friendly_name: "Resident" } },
     "sensor.battery": { entity_id: "sensor.battery", state: "72", attributes: { friendly_name: "Phone battery", unit_of_measurement: "%" } },
     "sensor.power": { entity_id: "sensor.power", state: "843", attributes: { friendly_name: "Home power", unit_of_measurement: "W" } },
     "switch.outlet": { entity_id: "switch.outlet", state: "on", attributes: { friendly_name: "Office outlet" } },

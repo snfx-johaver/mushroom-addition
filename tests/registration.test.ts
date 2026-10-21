@@ -282,7 +282,7 @@ describe("Home Assistant registration", () => {
           type: "custom:mushroom-addition-custom-card-trash",
           entity: "sensor.rest",
           name_mode: "entity",
-          name: "pietjeds",
+          name: "Custom collection",
           primary_info: "name",
           secondary_info: "default",
           waste_streams: [],
@@ -290,7 +290,7 @@ describe("Home Assistant registration", () => {
       },
     }));
     const config = (changed.mock.calls[0][0] as CustomEvent<{ config: AdditionConfig }>).detail.config;
-    expect(config.name).toBe("pietjeds");
+    expect(config.name).toBe("Custom collection");
     expect(config).not.toHaveProperty("name_mode");
     editor.remove();
   });

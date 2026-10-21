@@ -14,7 +14,7 @@ const popupRows = UPSTREAM_VARIANTS.map((item) =>
 
 const content = `# Catalog coverage
 
-This manifest maps the documented card catalog to Mushroom Cards Addition
+This manifest maps the documented card catalog to Mushroom Addition
 registrations. It is generated from \`src/catalog.ts\`; CI rejects duplicate
 IDs, missing source paths, invalid namespaces, or broken popup mappings.
 

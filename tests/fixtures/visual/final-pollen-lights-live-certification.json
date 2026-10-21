@@ -1,0 +1,91 @@
+{
+  "certifiedAt": "2026-09-23T23:06:30+02:00",
+  "homeAssistant": {
+    "url": "http://home-assistant.invalid:8123",
+    "dashboard": "mushroom-addition-catalog",
+    "cardWidth": 330
+  },
+  "candidate": {
+    "commit": "6a42f7b4d87525cdc7464f6117cc4c03b2d990d2",
+    "resource": "/local/community/mushroom-cards-addition/mushroom-cards-addition.js?v=1.6.0-pollen-1d18e109",
+    "sha256": "1D18E10912363DD3FD172353A3868CCAA1DD46FDC5CBDD02F0CB565154CAFCB7",
+    "bytes": 485670
+  },
+  "dashboard": {
+    "cardCount": 82,
+    "replaced": 2,
+    "appended": 0
+  },
+  "sources": {
+    "custom_card_pollen": {
+      "config": {
+        "entity": "sensor.kleenex_pollen_radar_home_grass",
+        "trees_entity": "sensor.kleenex_pollen_radar_home_trees",
+        "grass_entity": "sensor.kleenex_pollen_radar_home_grass",
+        "weeds_entity": "sensor.kleenex_pollen_radar_home_weeds",
+        "tap_action": {
+          "action": "none"
+        }
+      },
+      "renderedText": "Kleenex Pollen Radar (Home) Trees None; Grass None; Weeds None",
+      "geometry": {
+        "width": 330,
+        "height": 108,
+        "clientWidth": 330,
+        "scrollWidth": 330
+      },
+      "pickerRegistered": true,
+      "editorFields": [
+        "entity",
+        "trees_entity",
+        "custom_card_pollen_tree_name",
+        "custom_card_pollen_tree_icon",
+        "grass_entity",
+        "custom_card_pollen_grass_name",
+        "custom_card_pollen_grass_icon",
+        "weeds_entity",
+        "custom_card_pollen_weed_name",
+        "custom_card_pollen_weed_icon",
+        "name_mode",
+        "name",
+        "icon",
+        "icon_type",
+        "layout",
+        "fill_container",
+        "primary_info",
+        "secondary_info",
+        "tap_action",
+        "hold_action",
+        "double_tap_action"
+      ],
+      "safeInteractions": [
+        {
+          "surface": "trees",
+          "action": "more-info",
+          "entity": "sensor.kleenex_pollen_radar_home_trees"
+        },
+        {
+          "surface": "grass",
+          "action": "more-info",
+          "entity": "sensor.kleenex_pollen_radar_home_grass"
+        },
+        {
+          "surface": "weeds",
+          "action": "more-info",
+          "entity": "sensor.kleenex_pollen_radar_home_weeds"
+        }
+      ],
+      "serviceCalls": [],
+      "screenshot": "live-final-mushroom-addition-custom-card-pollen.png",
+      "liveAccepted": true
+    }
+  },
+  "result": {
+    "accepted": 1,
+    "overflowFailures": 0,
+    "pickerFailures": 0,
+    "editorFailures": 0,
+    "interactionFailures": 0
+  },
+  "provenance": "Sanitized historical fixture; not current UI certification."
+}

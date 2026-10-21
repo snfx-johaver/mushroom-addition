@@ -63,9 +63,9 @@ customElements.define("hui-area-controls-card-feature", NativeControls);
 customElements.define("hui-conditional-card", NativeConditional);
 customElements.define("hui-conditions-editor", class extends HTMLElement {});
 if (!customElements.get(AREA_TAG)) customElements.define(AREA_TAG, MushroomAreaAdvancedCard);
-const base: AreaAdvancedConfig = { type: `custom:${AREA_TAG}`, area: "office_joris" };
+const base: AreaAdvancedConfig = { type: `custom:${AREA_TAG}`, area: "office" };
 const hass: HomeAssistant = {
-  areas: { office_joris: { area_id: "office_joris", name: "Office" } },
+  areas: { office: { area_id: "office", name: "Office" } },
   states: Object.fromEntries(["sensor.test", "button.test", "scene.test", "script.test", "light.test", "select.test"].map((entity_id) =>
     [entity_id, { entity_id, state: "on", attributes: { friendly_name: entity_id } }])),
   callService: vi.fn(async () => undefined),
@@ -84,6 +84,17 @@ beforeEach(() => { vi.clearAllMocks(); areaWindow.loadCardHelpers = loader; });
 afterEach(() => { document.body.replaceChildren(); delete areaWindow.loadCardHelpers; vi.useRealTimers(); });
 
 describe("native Area card delegation", () => {
+  it("localizes the missing-area message when Home Assistant arrives after configuration", async () => {
+    const card = document.createElement(AREA_TAG) as MushroomAreaAdvancedCard;
+    card.setConfig({ type: base.type });
+    document.body.append(card);
+    await settle(card);
+    expect(card.shadowRoot!.textContent).toContain("Select an area in the native Area editor.");
+    card.hass = { ...hass, language: "de" };
+    await settle(card);
+    expect(card.shadowRoot!.textContent).toContain("Wähle einen Bereich im nativen Bereichskarten-Editor aus.");
+    expect(createCardElement).not.toHaveBeenCalled();
+  });
   it("registers the exact picker name, native editor and real-area stub", async () => {
     await import("../src/index");
     expect(window.customCards?.find((card) => card.type === AREA_TAG)?.name)
@@ -191,13 +202,16 @@ describe("native Area card delegation", () => {
     const card = document.createElement(AREA_TAG) as MushroomAreaAdvancedCard;
     card.setConfig(base); document.body.append(card);
     await vi.advanceTimersByTimeAsync(8001); await settle(card);
-    expect(card.shadowRoot!.textContent).toContain("timed out");
+    expect(card.shadowRoot!.textContent).toContain("The native component (loadCardHelpers) took too long to load.");
+    card.hass = { ...hass, language: "nl" };
+    await settle(card);
+    expect(card.shadowRoot!.textContent).toContain("Het laden van de ingebouwde component (loadCardHelpers) duurde te lang.");
     areaWindow.loadCardHelpers = vi.fn(async () => ({
       createCardElement: vi.fn(async () => document.createElement("hui-error-card") as NativeArea),
     }));
     (card.shadowRoot!.querySelector("button") as HTMLButtonElement).click();
     await settle(card);
-    expect(card.shadowRoot!.textContent).toContain("does not provide the native Area card");
+    expect(card.shadowRoot!.textContent).toContain("De vereiste ingebouwde component (hui-area-card) is niet beschikbaar.");
   });
   it("ignores stale asynchronous card creation", async () => {
     let resolve!: (card: NativeArea) => void;
@@ -217,7 +231,7 @@ describe("native Area card delegation", () => {
 describe("advanced controls inside the native feature position", () => {
   async function feature(controls?: AreaFeature["controls"]) {
     const element = document.createElement(AREA_FEATURE_TAG) as MushroomAreaControlsAdvanced;
-    element.hass = hass; element.context = { area_id: "office_joris", exclude_entities: ["light.other"] };
+    element.hass = hass; element.context = { area_id: "office", exclude_entities: ["light.other"] };
     element.position = "inline"; element.color = "#123456";
     element.setConfig({ type: `custom:${AREA_FEATURE_TAG}`, ...(controls ? { controls } : {}) });
     document.body.append(element); await settle(element); return element;
@@ -266,7 +280,7 @@ describe("advanced controls inside the native feature position", () => {
   it.each<ActionConfig>([
     { action: "navigate", navigation_path: "/lovelace/test" },
     { action: "more-info", entity: "light.test" },
-    { action: "perform-action", perform_action: "light.turn_on", target: { area_id: "office_joris" },
+    { action: "perform-action", perform_action: "light.turn_on", target: { area_id: "office" },
       data: { brightness: 80 }, confirmation: { text: "Sure?" } },
     { action: "call-service", service: "scene.turn_on", service_data: { entity_id: "scene.test" } },
     { action: "url", url_path: "https://example.org" },
@@ -304,6 +318,11 @@ describe("advanced controls inside the native feature position", () => {
     expect(button.querySelector(".button-icon + .button-label")!.textContent).toBe("Office");
     expect(button.querySelector("img")!.getAttribute("src")).toBe("/local/office.png");
     expect(element.shadowRoot!.querySelectorAll(".button-label")[1].textContent).toBe("21 °C");
+    const formatEntityState = vi.fn(() => "21,0 °C");
+    element.hass = { ...element.hass!, formatEntityState };
+    await settle(element);
+    expect(element.shadowRoot!.querySelectorAll(".button-label")[1].textContent).toBe("21,0 °C");
+    expect(formatEntityState).toHaveBeenCalledWith(element.hass.states["sensor.test"]);
     const styles = MushroomAreaControlsAdvanced.styles.cssText;
     expect(styles).toContain("flex-direction: column");
     expect(styles).toContain("margin-top: auto");
@@ -448,7 +467,7 @@ describe("native Area editor round trips", () => {
     expect(mergeNativeAreaEdit(config, { ...native, features: [] }).features).toEqual([]);
     expect(mergeNativeAreaEdit(config, { ...native, features: [{ type: "area-controls", controls: [] }] }).features![0].controls).toEqual([]);
     expect(mergeNativeAreaEdit(config, { ...native, features: [{ type: "area-controls" }] }).features![0].controls).toBeUndefined();
-    expect(mergeNativeAreaEdit(config, { type: "area", area: "office_joris" }).features).toBeUndefined();
+    expect(mergeNativeAreaEdit(config, { type: "area", area: "office" }).features).toBeUndefined();
   });
   it("uses preserved native object identities for duplicate reorders/removals and native feature edits", () => {
     const config = { ...base, features };
@@ -487,7 +506,16 @@ describe("native Area editor round trips", () => {
     expect((events.mock.calls[0][0] as CustomEvent).detail.config).toEqual({ ...base, features, display_type: "camera" });
     const newHass = { ...hass, language: "nl" }; editor.hass = newHass; await settle(editor);
     expect(native.hass).toBe(newHass);
-    (editor.shadowRoot!.querySelector('[aria-label="Edit button"]') as HTMLButtonElement).click(); await settle(editor);
+    expect(editor.shadowRoot!.querySelector(".edit-icon")!.getAttribute("aria-label")).toBe("Knop bewerken");
+    (editor.shadowRoot!.querySelector(".edit-icon") as HTMLButtonElement).click(); await settle(editor);
+    const translatedForm = editor.shadowRoot!.querySelector("ha-form") as HTMLElement & {
+      computeLabel: (field: { name: string }) => string;
+      schema: { name: string; selector: { select?: { options: { value: string; label: string }[] } } }[];
+    };
+    expect(translatedForm.computeLabel({ name: "entity_id" })).toBe("Entiteit (elk domein)");
+    const contentOptions = translatedForm.schema.find(field => field.name === "content_info")!.selector.select!.options;
+    expect(contentOptions.map(option => option.value)).toEqual(["none", "name", "state", "last-changed", "last-updated", "attribute", "custom"]);
+    expect(contentOptions.find(option => option.value === "custom")?.label).toBe("Eigen tekst");
     editor.shadowRoot!.querySelector("ha-form")!.dispatchEvent(new CustomEvent("value-changed", { bubbles: true, composed: true,
       detail: { value: { entity_id: "sensor.test", icon: "mdi:new", icon_color: "blue", tap_action: { action: "none" } } } }));
     const saved = (events.mock.calls.at(-1)![0] as CustomEvent).detail.config as AreaAdvancedConfig;

@@ -61,7 +61,7 @@ afterEach(() => document.body.replaceChildren());
 describe("final pollen and lights certification", () => {
   it("records authenticated live rendering, picker, editor, and interaction evidence", () => {
     const evidence = JSON.parse(readFileSync(join(
-      process.cwd(), "docs", "assets", "visual-audit", "final-pollen-lights-live-certification.json",
+      process.cwd(), "tests", "fixtures", "visual", "final-pollen-lights-live-certification.json",
     ), "utf8")) as {
       candidate: { commit: string; sha256: string; resource: string };
       sources: Record<string, {
@@ -98,7 +98,7 @@ describe("final pollen and lights certification", () => {
 
   it("records matched-width local geometry and exact payloads separately from live evidence", () => {
     const evidence = JSON.parse(readFileSync(join(
-      process.cwd(), "docs", "assets", "visual-audit", "final-pollen-lights-local-certification.json",
+      process.cwd(), "tests", "fixtures", "visual", "final-pollen-lights-local-certification.json",
     ), "utf8")) as {
       liveAccepted: boolean;
       geometry: Record<string, { referenceWidth: number; implementationWidth: number; regions: Record<string, number> }>;

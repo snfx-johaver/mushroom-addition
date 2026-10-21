@@ -34,7 +34,7 @@ interface TabletGeometry {
 }
 
 const evidence = JSON.parse(readFileSync(
-  join(process.cwd(), "docs", "assets", "visual-audit", "priority-responsive-geometry.json"),
+  join(process.cwd(), "tests", "fixtures", "visual", "priority-responsive-geometry.json"),
   "utf8",
 )) as {
   nas510: NasGeometry;

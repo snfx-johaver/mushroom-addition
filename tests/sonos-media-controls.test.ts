@@ -58,6 +58,20 @@ const render = async (config: Partial<AdditionConfig> = {}, entity = player(), e
 afterEach(() => { document.body.replaceChildren(); vi.useRealTimers(); });
 
 describe("Sonos Mushroom-compatible media controls", () => {
+  it("translates linked sound controls while preserving their service targets and values", async () => {
+    const { card, root, callService } = await render({ sonos_details_always_visible: true });
+    card.hass = { ...card.hass, language: "de" };
+    await card.updateComplete;
+    const crossfade = root.querySelector<HTMLButtonElement>(".sonos-switches button")!;
+    expect(crossfade.textContent).toContain("Überblenden");
+    crossfade.click();
+    expect(callService).toHaveBeenCalledWith("homeassistant", "toggle", { entity_id: "switch.office_crossfade" });
+    const bass = root.querySelector<HTMLInputElement>('input[aria-label="Tiefen"]')!;
+    expect(bass).not.toBeNull();
+    bass.value = "-3";
+    bass.dispatchEvent(new Event("change", { bubbles: true }));
+    expect(callService).toHaveBeenCalledWith("number", "set_value", { entity_id: "number.office_bass", value: -3 });
+  });
   it("uses Media Player Advanced as its public picker and editor name", () => {
     expect(descriptor.name).toBe("Media Player Advanced Card");
     expect(window.customCards?.find(card => card.type === descriptor.tag)?.name).toContain("Media Player Advanced");
@@ -101,7 +115,7 @@ describe("Sonos Mushroom-compatible media controls", () => {
 
   it("renders each configured control and sends exact service payloads", async () => {
     const { root, button, callService } = await render(complete);
-    for (const label of ["Turn off", "Mute", "Volume down", "Shuffle", "Previous track", "Pause", "Next track", "Repeat: off", "Volume up"]) {
+    for (const label of ["Turn off", "Mute", "Volume down", "Shuffle", "Previous track", "Pause", "Next track", "Repeat: Off", "Volume up"]) {
       expect(button(label), label).not.toBeNull();
       button(label)!.click();
     }
@@ -233,7 +247,7 @@ describe("Sonos Mushroom-compatible media controls", () => {
     [F.pause, ["Pause"], false],
     [F.stop, ["Standby (stop playback)", "Stop"], false],
     [F.shuffle, ["Shuffle"], false],
-    [F.repeat, ["Repeat: off"], false],
+    [F.repeat, ["Repeat: Off"], false],
     [0, [], false],
   ])("gates controls against supported_features=%i", async (features, labels, slider) => {
     const { root } = await render(complete, player("playing", { supported_features: features }));
@@ -265,8 +279,16 @@ describe("Sonos Mushroom-compatible media controls", () => {
 
   it.each([["off", "all"], ["all", "one"], ["one", "off"]])("cycles repeat %s to %s", async (repeat, next) => {
     const { button, callService } = await render(complete, player("playing", { repeat }));
-    button(`Repeat: ${repeat}`)!.click();
+    button(`Repeat: ${repeat[0].toUpperCase()}${repeat.slice(1)}`)!.click();
     expect(callService).toHaveBeenCalledExactlyOnceWith("media_player", "repeat_set", { entity_id: entityId, repeat: next });
+  });
+
+  it("translates repeat labels without changing the repeat mode sent to the player", async () => {
+    const { card, button, callService } = await render(complete, player("playing", { repeat: "all" }));
+    card.hass = { ...card.hass, language: "de" };
+    await card.updateComplete;
+    button("Wiederholen: Alle")!.click();
+    expect(callService).toHaveBeenCalledExactlyOnceWith("media_player", "repeat_set", { entity_id: entityId, repeat: "one" });
   });
 
   it("inverts mute and shuffle attributes", async () => {

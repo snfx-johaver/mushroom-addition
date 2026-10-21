@@ -1,11 +1,11 @@
 # Catalog coverage
 
-This manifest maps the documented card catalog to Mushroom Cards Addition
+This manifest maps the documented card catalog to Mushroom Addition
 registrations. It is generated from `src/catalog.ts`; CI rejects duplicate
 IDs, missing source paths, invalid namespaces, or broken popup mappings.
 
 **Coverage:** 21 documented upstream card sources map to
-25 public card components.
+28 public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
 of duplicate picker entries. 0 popup templates and
 1 implementation helpers are inventoried but are not
@@ -33,6 +33,9 @@ public registrations.
 | `custom_card_speedtest_gauges` | custom-card | `custom:mushroom-addition-custom-card-speedtest-gauges` | energy | default | `custom_card_speedtest_gauges` |
 | `custom_card_pollen` | custom-card | `custom:mushroom-addition-custom-card-pollen` | weather | default | `custom_card_pollen` |
 | `mini_graph_card` | custom-card | `custom:mushroom-addition-mini-graph-card` | energy | line, bar | `mini_graph_card` |
+| `pi_hole_card` | custom-card | `custom:mushroom-addition-pi-hole-card` | sensor | default | `pi_hole_card` |
+| `upcoming_media` | custom-card | `custom:mushroom-addition-upcoming-media-card` | media | default | `upcoming_media` |
+| `remote_card` | custom-card | `custom:mushroom-addition-remote-card` | media | default | `remote_card` |
 | `area_card_advanced` | custom-card | `custom:mushroom-addition-area-card-advanced` | presence | default | `area_card_advanced` |
 | `custom_card_entity_carousel` | custom-card | `custom:mushroom-addition-custom-card-entity-carousel` | sensor | default | `custom_card_entity_carousel` |
 | `advanced_home_energy_management` | custom-card | `custom:mushroom-addition-advanced-home-energy-management` | energy | default | `advanced_home_energy_management` |

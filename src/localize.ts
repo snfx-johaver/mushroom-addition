@@ -1,7 +1,163 @@
 import type { HomeAssistant } from "./types";
+import { commonTranslations } from "./translations/common";
+import { optionTranslations } from "./translations/options";
+import { translatedHelpers } from "./translations/helpers";
+import { messageTranslations } from "./translations/messages";
+import { controlLabelTranslations } from "./translations/control-labels";
+import { mediaLabelTranslations } from "./translations/media-labels";
+import { editorControlTranslations } from "./translations/editor-controls";
+import { editorGuidanceTranslations } from "./translations/editor-guidance";
+import { mediaOptionTranslations } from "./translations/media-options";
+import { remoteOptionTranslations } from "./translations/remote-options";
+import { presentationOptionTranslations } from "./translations/presentation-options";
+import { dutchLabels, dutchHelpers } from "./translations/nl";
+import { runtimeTranslations } from "./translations/runtime";
+import { greetingPollenTranslations } from "./translations/greetings-pollen";
+import { runtimeControlTranslations } from "./translations/runtime-controls";
+import { germanLabels } from "./translations/de";
+import { germanHelpers } from "./translations/de-helpers";
+import { spanishLabels, spanishHelpers } from "./translations/es";
+import { runtimeDeviceTranslations } from "./translations/runtime-devices";
+import { frenchLabels, frenchHelpers } from "./translations/fr";
+import { runtimeValueTranslations } from "./translations/runtime-values";
+import { simplifiedChineseLabels, simplifiedChineseHelpers } from "./translations/zh-Hans";
+import { italianLabels, italianHelpers } from "./translations/it";
+import { traditionalChineseLabels, traditionalChineseHelpers } from "./translations/zh-Hant";
+import { brazilianPortugueseLabels, brazilianPortugueseHelpers } from "./translations/pt-BR";
+import { polishLabels, polishHelpers } from "./translations/pl";
+import { russianLabels, russianHelpers } from "./translations/ru";
+import { europeanPortugueseLabels, europeanPortugueseHelpers } from "./translations/pt-PT";
+import { ukrainianLabels, ukrainianHelpers } from "./translations/uk";
+import { czechLabels, czechHelpers } from "./translations/cs";
+import { slovakLabels, slovakHelpers } from "./translations/sk";
+import { graphErrorTranslations } from "./translations/graph-errors";
+import { danishLabels, danishHelpers } from "./translations/da";
+import { norwegianLabels, norwegianHelpers } from "./translations/nb";
+import { romanianLabels, romanianHelpers } from "./translations/ro";
+import { finnishLabels, finnishHelpers } from "./translations/fi";
+import { turkishLabels, turkishHelpers } from "./translations/tr";
+import { indonesianLabels, indonesianHelpers } from "./translations/id";
+import { bulgarianLabels, bulgarianHelpers } from "./translations/bg";
+import { koreanLabels, koreanHelpers } from "./translations/ko-KR";
+import { greekLabels, greekHelpers } from "./translations/el";
+import { vietnameseLabels, vietnameseHelpers } from "./translations/vi";
+import { swedishLabels, swedishHelpers } from "./translations/sv";
+import { serbianLabels, serbianHelpers } from "./translations/sr";
+import { serbianLatinLabels, serbianLatinHelpers } from "./translations/sr-Latn";
+import { hebrewLabels, hebrewHelpers } from "./translations/he";
+import { arabicLabels, arabicHelpers } from "./translations/ar";
+import { slovenianLabels, slovenianHelpers } from "./translations/sl";
+import { catalanLabels, catalanHelpers } from "./translations/ca";
+import { hungarianLabels, hungarianHelpers } from "./translations/hu";
+
+export const SUPPORTED_LOCALES = [
+  "ar", "bg", "ca", "cs", "da", "de", "el", "en", "es", "fi", "fr", "he", "hu", "id", "it",
+  "ko-KR", "nb", "nl", "pl", "pt-BR", "pt-PT", "ro", "ru", "sk", "sl", "sr-Latn", "sr",
+  "sv", "tr", "uk", "vi", "zh-Hans", "zh-Hant",
+] as const;
+export type SupportedLocale = typeof SUPPORTED_LOCALES[number];
+
+export const normalizeLocale = (language?: string): SupportedLocale => {
+  const parts = (language ?? "en").trim().replaceAll("_", "-").toLowerCase().split("-");
+  const base = parts[0];
+  if (base === "pt") return parts.includes("br") ? "pt-BR" : "pt-PT";
+  if (base === "zh") {
+    if (parts.includes("hant")) return "zh-Hant";
+    if (parts.includes("hans")) return "zh-Hans";
+    return parts.some(part => ["tw", "hk", "mo"].includes(part)) ? "zh-Hant" : "zh-Hans";
+  }
+  if (base === "sr") return parts.includes("latn") ? "sr-Latn" : "sr";
+  if (base === "ko") return "ko-KR";
+  if (base === "no") return "nb";
+  return SUPPORTED_LOCALES.includes(base as SupportedLocale) ? base as SupportedLocale : "en";
+};
+
+export const localeDirection = (language?: string): "rtl" | "ltr" =>
+  ["ar", "he"].includes(normalizeLocale(language)) ? "rtl" : "ltr";
 
 const translations: Record<string, Record<string, string>> = {
   en: {
+    upcoming_data_attribute: "Media data attribute",
+    upcoming_max_items: "Maximum media items",
+    upcoming_image_style: "Artwork layout",
+    upcoming_item_height: "Media item height",
+    upcoming_corner_radius: "Artwork corner radius",
+    upcoming_max_columns: "Maximum columns",
+    upcoming_overflow: "Fill the available height, then wrap into columns",
+    upcoming_collapse_mode: "Collapsed media",
+    upcoming_collapse_count: "Initially visible items",
+    upcoming_group_attribute: "Prioritize this attribute",
+    upcoming_group_value: "Priority value",
+    upcoming_sort_by: "Sort media by",
+    upcoming_sort_ascending: "Ascending order",
+    upcoming_filter_attribute: "Filter by attribute (clear for all media)",
+    upcoming_filter_value: "Filter value",
+    upcoming_filter_match: "Filter comparison",
+    upcoming_flag_filter: "Flagged item visibility",
+    upcoming_show_flag: "Show item flags",
+    upcoming_flag_icon: "Flag icon",
+    upcoming_flag_label: "Flag description",
+    upcoming_flag_color: "Flag color",
+    upcoming_date_format: "Date format",
+    upcoming_clock: "Clock format",
+    upcoming_title_text: "Media title template",
+    upcoming_line1_text: "First line template",
+    upcoming_line2_text: "Second line template",
+    upcoming_line3_text: "Third line template",
+    upcoming_line4_text: "Fourth line template",
+    upcoming_title_color: "Media title color",
+    upcoming_line1_color: "First line color",
+    upcoming_line2_color: "Second line color",
+    upcoming_line3_color: "Third line color",
+    upcoming_line4_color: "Fourth line color",
+    upcoming_title_size: "Media title size",
+    upcoming_line_size: "Detail text size",
+    upcoming_box_shadows: "Raised media items",
+    upcoming_text_shadows: "Artwork text shadows",
+    upcoming_transparency: "Transparent artwork gradient",
+    upcoming_tooltips: "Show summaries on hover or focus",
+    upcoming_tooltip_delay: "Summary delay (milliseconds)",
+    upcoming_trailers: "Open trailers when available",
+    upcoming_links: "Open media deep links when available",
+    upcoming_url: "Custom media URL template",
+    upcoming_item_behavior: "Media item tap behavior",
+    upcoming_item_action: "Custom media item action",
+    upcoming_hide_empty: "Hide the card when no items match",
+    remote_entity: "Command remote (automatic from the TV's device)",
+    remote_media_entity: "Media player (automatic from the selected device)",
+    remote_transport: "Command transport",
+    remote_preset: "Remote key preset",
+    remote_device: "Command device (optional, for IR remotes)",
+    remote_navigation: "Navigation controls",
+    remote_volume: "Volume controls",
+    remote_volume_step: "Volume step (%)",
+    remote_playback_controls: "Playback buttons",
+    remote_power_controls: "Power and utility buttons",
+    remote_haptics: "Haptic feedback",
+    remote_double_tap: "Touchpad double-tap action",
+    remote_double_tap_command: "Double-tap command code",
+    remote_swipe_distance: "Swipe distance per command",
+    remote_touchpad_height: "Touchpad height",
+    remote_button_size: "Remote button size",
+    remote_accent_color: "Remote accent color",
+    pihole_device_ids: "Pi-hole devices",
+    pihole_metrics: "Visible statistics (in selected order)",
+    pihole_collapsed_sections: "Initially collapsed sections",
+    pihole_hidden_entities: "Hidden entities",
+    pihole_pause_durations: "Pause durations",
+    pihole_pause_service: "Temporary pause backend",
+    pihole_pause_action: "Custom pause action",
+    pihole_duration_field: "Duration parameter name",
+    pihole_duration_format: "Duration parameter format",
+    pihole_columns: "Statistic columns",
+    pihole_accent_color: "Pi-hole accent color",
+    pihole_chart_hours: "System history hours",
+    pihole_chart_height: "System chart height",
+    pihole_chart_metrics: "System history sensors",
+    pihole_show_header: "Show card header",
+    pihole_metric_tap_action: "Statistic tap action",
+    pihole_metric_hold_action: "Statistic hold action",
+    pihole_metric_double_tap_action: "Statistic double-tap action",
     entity: "Entity", name: "Name", name_mode: "Name", secondary: "Custom secondary information", icon: "Icon",
     icon_color: "Icon color", variant: "Card style", layout: "Content layout",
     icon_type: "Icon type", fill_container: "Fill container",
@@ -468,18 +624,158 @@ const translations: Record<string, Record<string, string>> = {
   },
 };
 
-export const localize = (hass: HomeAssistant | undefined, key: string): string => {
-  const language = hass?.language?.split("-")[0] ?? "en";
-  return translations[language]?.[key] ?? translations.en[key] ??
+export const translationCatalogs: Record<string, Record<string, string>> = Object.fromEntries(
+  SUPPORTED_LOCALES.map(locale => [locale, {
+    ...translations[locale],
+    ...(locale === "en" ? Object.fromEntries(Object.entries(commonTranslations.en).filter(([key]) => key.startsWith("ui."))) : commonTranslations[locale]),
+    ...optionTranslations[locale],
+    ...messageTranslations[locale],
+    ...controlLabelTranslations[locale],
+    ...mediaLabelTranslations[locale],
+    ...editorControlTranslations[locale],
+    ...editorGuidanceTranslations[locale],
+    ...mediaOptionTranslations[locale],
+    ...remoteOptionTranslations[locale],
+    ...presentationOptionTranslations[locale],
+    ...(locale === "nl" ? dutchLabels : {}),
+    ...runtimeTranslations[locale],
+    ...greetingPollenTranslations[locale],
+    ...runtimeControlTranslations[locale],
+    ...(locale === "de" ? germanLabels : {}),
+    ...(locale === "es" ? spanishLabels : {}),
+    ...(locale === "fr" ? frenchLabels : {}),
+    ...(locale === "zh-Hans" ? simplifiedChineseLabels : {}),
+    ...(locale === "it" ? italianLabels : {}),
+    ...(locale === "zh-Hant" ? traditionalChineseLabels : {}),
+    ...(locale === "pt-BR" ? brazilianPortugueseLabels : {}),
+    ...(locale === "pl" ? polishLabels : {}),
+    ...(locale === "ru" ? russianLabels : {}),
+    ...(locale === "pt-PT" ? europeanPortugueseLabels : {}),
+    ...(locale === "uk" ? ukrainianLabels : {}),
+    ...(locale === "cs" ? czechLabels : {}),
+    ...(locale === "sk" ? slovakLabels : {}),
+    ...(locale === "da" ? danishLabels : {}),
+    ...(locale === "nb" ? norwegianLabels : {}),
+    ...(locale === "ro" ? romanianLabels : {}),
+    ...(locale === "fi" ? finnishLabels : {}),
+    ...(locale === "tr" ? turkishLabels : {}),
+    ...(locale === "id" ? indonesianLabels : {}),
+    ...(locale === "bg" ? bulgarianLabels : {}),
+    ...(locale === "ko-KR" ? koreanLabels : {}),
+    ...(locale === "el" ? greekLabels : {}),
+    ...(locale === "vi" ? vietnameseLabels : {}),
+    ...(locale === "sv" ? swedishLabels : {}),
+    ...(locale === "sr" ? serbianLabels : {}),
+    ...(locale === "sr-Latn" ? serbianLatinLabels : {}),
+    ...(locale === "he" ? hebrewLabels : {}),
+    ...(locale === "ar" ? arabicLabels : {}),
+    ...(locale === "sl" ? slovenianLabels : {}),
+    ...(locale === "ca" ? catalanLabels : {}),
+    ...(locale === "hu" ? hungarianLabels : {}),
+    ...runtimeDeviceTranslations[locale],
+    ...runtimeValueTranslations[locale],
+    ...graphErrorTranslations[locale],
+  }]),
+);
+
+// Several source-compatible config fields intentionally share the same display label.
+for (const locale of SUPPORTED_LOCALES) {
+  if (locale === "en") continue;
+  const catalog = translationCatalogs[locale];
+  const translatedLabels = new Map(
+    Object.keys(catalog).map(key => [translationCatalogs.en[key], catalog[key]]),
+  );
+  for (const [key, label] of Object.entries(translationCatalogs.en)) {
+    const translated = translatedLabels.get(label);
+    if (!catalog[key] && translated) catalog[key] = translated;
+  }
+}
+
+export const localize = (
+  hass: HomeAssistant | undefined,
+  key: string,
+  values: Record<string, string | number> = {},
+): string => {
+  const language = normalizeLocale(hass?.language);
+  const message = translationCatalogs[language]?.[key] ?? translationCatalogs.en[key] ??
     key
       .replace(/^ulm_(?:custom_)?card_/, "")
       .replace(/^(?:custom_)?card_/, "")
       .replace(/^ulm_/, "")
       .replaceAll("_", " ")
       .replace(/\b\w/g, (letter) => letter.toUpperCase());
+  return message.replace(/\{(\w+)\}/g, (placeholder, name: string) =>
+    Object.hasOwn(values, name) ? String(values[name]) : placeholder);
 };
 
-const helpers: Record<string, string> = {
+export const englishHelpers: Record<string, string> = {
+  pihole_show_header: "Show the shared Mushroom heading above the Pi-hole sections.",
+  pihole_collapsed_sections: "Sections initially folded away; tap their heading to expand them.",
+  pihole_hidden_entities: "Exclude these entities from automatic discovery, controls and history.",
+  pihole_columns: "Number of statistic tiles per row. Narrow cards use a single column.",
+  pihole_accent_color: "Accent for statistic icons and active blocking switches.",
+  pihole_chart_hours: "Hours of recorder history shown for CPU and memory.",
+  pihole_chart_height: "Height of the system-history graph in pixels.",
+  pihole_metric_hold_action: "Action when holding a statistic tile. Empty means no action.",
+  pihole_metric_double_tap_action: "Action when double-tapping a statistic tile. A configured action delays single taps briefly to avoid duplicates.",
+  upcoming_image_style: "Use a poster beside the text or fanart behind it.",
+  upcoming_max_items: "Limit the media list after filtering, sorting and priority grouping.",
+  upcoming_item_height: "Height of each media item, including its artwork, in pixels.",
+  upcoming_corner_radius: "Round the artwork and item corners by this many pixels.",
+  upcoming_collapse_mode: "Show the full list, keep the first few items visible, or prioritize matching items.",
+  upcoming_sort_by: "Attribute used for numeric, date or title sorting. Empty preserves the sensor order.",
+  upcoming_sort_ascending: "Sort from smallest or earliest to largest or latest. Missing values always stay last.",
+  upcoming_flag_filter: "Show every item, only flagged items, or only items without a flag.",
+  upcoming_show_flag: "Show the configured marker on flagged media items.",
+  upcoming_flag_icon: "Icon used for a flagged item.",
+  upcoming_flag_label: "Accessible description of the flag marker.",
+  upcoming_flag_color: "Color of the flag marker.",
+  upcoming_clock: "Format media times using your Home Assistant language, a 12-hour clock, or a 24-hour clock.",
+  upcoming_title_color: "Optional title color. Empty keeps the theme-aware artwork default.",
+  upcoming_line1_color: "Optional first-line color. Empty keeps the theme-aware artwork default.",
+  upcoming_line2_color: "Optional second-line color. Empty keeps the theme-aware artwork default.",
+  upcoming_line3_color: "Optional third-line color. Empty keeps the theme-aware artwork default.",
+  upcoming_line4_color: "Optional fourth-line color. Empty keeps the theme-aware artwork default.",
+  upcoming_title_size: "Media title font size in pixels.",
+  upcoming_line_size: "Media detail font size in pixels.",
+  upcoming_box_shadows: "Give media items a subtle raised shadow.",
+  upcoming_text_shadows: "Add a shadow behind text over full-width artwork.",
+  upcoming_transparency: "Fade the full-width artwork gradient to transparent.",
+  upcoming_tooltips: "Reveal a media summary on hover or keyboard focus.",
+  upcoming_item_behavior: "Choose automatic links and trailers, sensor details, a custom action, or no tap action.",
+  upcoming_links: "Allow the automatic media action to open a supported deep link.",
+  remote_navigation: "Choose the touchpad, directional buttons, or both.",
+  remote_volume: "Choose a volume slider, volume buttons, or both. Mute stays beside them.",
+  remote_volume_step: "Volume percentage added or removed by each button press when absolute volume control is available.",
+  remote_button_size: "Width and height of remote buttons in pixels.",
+  remote_touchpad_height: "Touchpad height in pixels.",
+  remote_accent_color: "Accent used by the touchpad and focused controls.",
+  remote_power_controls: "Choose and order the controls in the power row.",
+  remote_playback_controls: "Choose and order the playback controls.",
+  upcoming_data_attribute: "Select the sensor attribute containing a media-object list or its JSON string. Compatible sensors normally use data; their first formatting-only object is read as defaults, not shown as media.",
+  upcoming_text_template: "Plain-text tokens such as $title, $episode, $number, $rating, $runtime, $release, $day, $date, $time, $studio or any item attribute. Leave blank for the sensor's default; use $empty to hide a line. No JavaScript, HTML or Jinja is executed.",
+  upcoming_url: "Optional URL such as https://www.themoviedb.org/tv/$tmdb_id. Values are URL-encoded. This URL takes priority over trailers and deep links; only HTTP(S) and supported media-app links are allowed.",
+  upcoming_overflow: "Fit items down the available screen height before adding responsive columns. Narrow cards stay in one column. Collapse settings are ignored while enabled.",
+  upcoming_filter_attribute: "Choose or type an item attribute, then its value and comparison. Clear this field to stop filtering.",
+  upcoming_group_value: "Items equal to this value are shown first; the remaining items can be expanded. For example, flag = true prioritizes unwatched items.",
+  upcoming_date_format: "Use the Home Assistant locale, or a pattern containing dd, mm, yy or yyyy. Times use Home Assistant's configured time zone.",
+  upcoming_hide_empty: "Hides only a valid empty or filtered list. Missing sensors, invalid JSON and unavailable data still show an explicit error.",
+  upcoming_trailers: "YouTube trailers play in an accessible, closeable dialog after a tap. Other supported trailer URLs open externally. No trailer is loaded automatically.",
+  remote_entity: "Optional override. Otherwise a remote entity on the primary TV's device is selected. Never sends commands to an unrelated room's remote.",
+  remote_media_entity: "Optional override for volume, playback and sources. Otherwise uses the primary media player or one on the selected remote's device.",
+  remote_transport: "Automatic prefers remote.send_command. Samsung play_media / send_key is used only for a detected Samsung TV; generic players are not assumed to support Samsung codes.",
+  remote_device: "Optional device value sent with remote.send_command, for integrations such as IR remotes. This is a command-device name, not a Home Assistant device ID.",
+  remote_preset: "Maps common controls to TV-specific command names. Override individual commands in Features instead of replacing every key.",
+  remote_haptics: "Uses Home Assistant's haptic event. Actual vibration depends on the app/device; the setting never changes which command is sent.",
+  remote_swipe_distance: "Distance in pixels for each directional command. Commands are throttled to avoid flooding the TV. Touchpad also supports arrow keys, Enter, Space, Backspace and Home.",
+  remote_double_tap: "Single tap waits briefly when double tap is enabled, so a double tap sends only its configured command, not an extra Select.",
+  pihole_device_ids: "One or more Pi-hole devices. Entities are discovered through their device registry and translation keys, including v5 and v6 names. When omitted, the primary entity's device is used.",
+  pihole_metrics: "Counts are summed across mapped sensors; CPU/memory are averaged; temperature shows the maximum. Blocked percentage uses total blocked / total queries when both are known, otherwise the available percentage sensors are averaged. Missing or unavailable mapped values are never replaced by zero.",
+  pihole_pause_durations: "Choose presets or add whole seconds, 30s, 5m, 1h30m, or 1h:30m:15s. Invalid entries remain visibly disabled. Pausing is backend-timed and survives closing the browser.",
+  pihole_pause_service: "Automatic verifies the selected switch's integration and available disable service. A temporary pause never falls back to a permanent switch-off or a browser timer.",
+  pihole_duration_field: "For a custom action, the clicked duration is inserted into action data under this parameter name. Other configured action data is preserved.",
+  pihole_chart_metrics: "Uses the existing recorder-backed Mini Graph renderer for percentage CPU/memory history. No Pi-hole API credentials or extra chart dependency are required.",
+  pihole_metric_tap_action: "By default, opens the first contributing sensor. A custom action receives the clicked metric's entity as context.",
   entity: "The Home Assistant entity shown and controlled by this card.",
   room_light_entity: "One light for both the brightness label and optional room accent. Defaults to the primary entity when it is a light. Only valid brightness is shown; active RGB group members are supported for the accent.",
   room_temperature_entity: "Optional sensor or climate entity for the temperature label. Defaults to the primary entity. Only numeric temperatures with a temperature unit are shown.",
@@ -969,4 +1265,58 @@ const helpers: Record<string, string> = {
   custom_card_pollen_weed_icon: "Optional weed item icon; leave empty to use the entity icon or source default.",
 };
 
-export const editorHelper = (key: string): string | undefined => helpers[key];
+export const helperCatalogs: Record<string, Record<string, string>> = {
+  ...translatedHelpers,
+  nl: { ...translatedHelpers.nl, ...dutchHelpers },
+  de: { ...translatedHelpers.de, ...germanHelpers },
+  es: { ...translatedHelpers.es, ...spanishHelpers },
+  fr: { ...translatedHelpers.fr, ...frenchHelpers },
+  "zh-Hans": { ...translatedHelpers["zh-Hans"], ...simplifiedChineseHelpers },
+  it: { ...translatedHelpers.it, ...italianHelpers },
+  "zh-Hant": { ...translatedHelpers["zh-Hant"], ...traditionalChineseHelpers },
+  "pt-BR": { ...translatedHelpers["pt-BR"], ...brazilianPortugueseHelpers },
+  pl: { ...translatedHelpers.pl, ...polishHelpers },
+  ru: { ...translatedHelpers.ru, ...russianHelpers },
+  "pt-PT": { ...translatedHelpers["pt-PT"], ...europeanPortugueseHelpers },
+  uk: { ...translatedHelpers.uk, ...ukrainianHelpers },
+  cs: { ...translatedHelpers.cs, ...czechHelpers },
+  sk: { ...translatedHelpers.sk, ...slovakHelpers },
+  da: { ...translatedHelpers.da, ...danishHelpers },
+  nb: { ...translatedHelpers.nb, ...norwegianHelpers },
+  ro: { ...translatedHelpers.ro, ...romanianHelpers },
+  fi: { ...translatedHelpers.fi, ...finnishHelpers },
+  tr: { ...translatedHelpers.tr, ...turkishHelpers },
+  id: { ...translatedHelpers.id, ...indonesianHelpers },
+  bg: { ...translatedHelpers.bg, ...bulgarianHelpers },
+  "ko-KR": { ...translatedHelpers["ko-KR"], ...koreanHelpers },
+  el: { ...translatedHelpers.el, ...greekHelpers },
+  vi: { ...translatedHelpers.vi, ...vietnameseHelpers },
+  sv: { ...translatedHelpers.sv, ...swedishHelpers },
+  sr: { ...translatedHelpers.sr, ...serbianHelpers },
+  "sr-Latn": { ...translatedHelpers["sr-Latn"], ...serbianLatinHelpers },
+  he: { ...translatedHelpers.he, ...hebrewHelpers },
+  ar: { ...translatedHelpers.ar, ...arabicHelpers },
+  sl: { ...translatedHelpers.sl, ...slovenianHelpers },
+  ca: { ...translatedHelpers.ca, ...catalanHelpers },
+  hu: { ...translatedHelpers.hu, ...hungarianHelpers },
+  en: englishHelpers,
+};
+
+export const editorHelper = (key: string, hass?: HomeAssistant): string | undefined => {
+  const helperKey = /^upcoming_(title|line[1-4])_text$/.test(key) ? "upcoming_text_template" : key;
+  return helperCatalogs[normalizeLocale(hass?.language)]?.[helperKey] ?? englishHelpers[helperKey];
+};
+
+const englishLabelKeys = new Map(
+  [
+    ...Object.entries(translationCatalogs.en),
+    ...Object.entries(commonTranslations.en),
+    ...Object.entries(optionTranslations.en),
+  ].map(([key, label]) => [label, key]),
+);
+
+/** Translate only built-in UI text. Never pass user-provided names or values here. */
+export const localizeText = (hass: HomeAssistant | undefined, label: string): string => {
+  const key = englishLabelKeys.get(label);
+  return key ? localize(hass, key) : label;
+};

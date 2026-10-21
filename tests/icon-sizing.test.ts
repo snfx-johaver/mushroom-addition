@@ -20,6 +20,15 @@ describe("default Mushroom icon sizing", () => {
     expect(styles).toContain("font-size: var(--mush-card-secondary-font-size, 12px)");
     expect(styles).not.toContain(".nas-metrics-tile b, .nas-metrics-metrics b { font-size: 16px");
   });
+  it("lets narrow NAS chart columns shrink without reducing the icon or text sizes", () => {
+    expect(styles).toContain("grid-template-columns: minmax(0, 1fr) minmax(0, min(132px, 45%))");
+    expect(styles).not.toContain("grid-template-columns: minmax(112px, 1fr) minmax(120px, 132px)");
+  });
+  it("wraps long astronomy translations within the existing four-column layout", () => {
+    expect(ruleFor(".astronomy-times")).toContain("min-width: 0");
+    expect(ruleFor(".astronomy-times")).toContain("repeat(4, minmax(0, 1fr))");
+    expect(ruleFor(".astronomy-times small, .sun-footer small")).toContain("overflow-wrap: anywhere");
+  });
   it("matches scene and welcome button surfaces without changing their shapes and keeps weather/date transparent", () => {
     for (const selector of [".scene-button", ".welcome-items > button", ".welcome-toolbar button"]) {
       expect(ruleFor(selector)).toContain("border: 0");

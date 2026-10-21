@@ -1,0 +1,144 @@
+{
+  "capturedAt": "2026-09-23T22:27:24.595+02:00",
+  "sources": [
+    "custom_card_washer",
+    "custom_card_sun"
+  ],
+  "configs": {
+    "custom_card_washer": {
+      "entity": "sensor.wasmachine_operation_state",
+      "power_entity": "sensor.wasmachine_plug_power",
+      "door_entity": "sensor.wasmachine_door",
+      "finished_entity": "sensor.wasmachine_program_finished"
+    },
+    "custom_card_sun": {
+      "entity": "sun.sun"
+    }
+  },
+  "interactions": {
+    "custom_card_washer": [
+      {
+        "control": "start-or-pause",
+        "event": "hass-action",
+        "payloads": {
+          "stopped": {
+            "action": "tap",
+            "config": {
+              "entity": "sensor.wasmachine_operation_state",
+              "tap_action": {
+                "action": "call-service",
+                "service": "switch.turn_on",
+                "service_data": {
+                  "entity_id": "switch.washer_start"
+                }
+              }
+            }
+          },
+          "running": {
+            "action": "tap",
+            "config": {
+              "entity": "sensor.wasmachine_operation_state",
+              "tap_action": {
+                "action": "call-service",
+                "service": "switch.turn_on",
+                "service_data": {
+                  "entity_id": "switch.washer_pause"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "control": "stop",
+        "event": "hass-action",
+        "payload": {
+          "action": "tap",
+          "config": {
+            "entity": "sensor.wasmachine_operation_state",
+            "tap_action": {
+              "action": "call-service",
+              "service": "switch.turn_on",
+              "service_data": {
+                "entity_id": "switch.washer_stop"
+              }
+            }
+          }
+        }
+      },
+      {
+        "control": "delayed-start",
+        "event": "hass-action",
+        "payload": {
+          "action": "tap",
+          "config": {
+            "entity": "input_boolean.wasmachine_delayed_start",
+            "tap_action": {
+              "action": "toggle"
+            }
+          }
+        }
+      },
+      {
+        "control": "delay-minus-15",
+        "service": "input_datetime.set_datetime",
+        "data": {
+          "entity_id": "input_datetime.wasmachine_delayed_start",
+          "time": "08:15:00"
+        }
+      },
+      {
+        "control": "delay-plus-1",
+        "service": "input_datetime.set_datetime",
+        "data": {
+          "entity_id": "input_datetime.wasmachine_delayed_start",
+          "time": "08:31:00"
+        }
+      },
+      {
+        "control": "delay-plus-15",
+        "service": "input_datetime.set_datetime",
+        "data": {
+          "entity_id": "input_datetime.wasmachine_delayed_start",
+          "time": "08:45:00"
+        }
+      }
+    ],
+    "custom_card_sun": [
+      {
+        "surface": "card",
+        "event": "hass-action",
+        "payload": {
+          "action": "tap",
+          "config": {
+            "entity": "sun.sun",
+            "tap_action": {
+              "action": "none"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "browserEvidence": {
+    "custom_card_washer": {
+      "width": 375,
+      "height": 255,
+      "visibleButtons": 3,
+      "enabledButtons": 2,
+      "mdiPaths": 11,
+      "actionsExercised": [
+        "configured pause action",
+        "configured stop action",
+        "outer more-info"
+      ]
+    },
+    "custom_card_sun": {
+      "width": 500,
+      "height": 231,
+      "visibleButtons": 0,
+      "actionExercised": "none"
+    }
+  },
+  "provenance": "Sanitized historical fixture; not current UI certification."
+}

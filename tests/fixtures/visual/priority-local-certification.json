@@ -1,0 +1,77 @@
+{
+  "capturedAt": "2026-09-23T19:41:30.196Z",
+  "environment": "Chromium via Playwright MCP against demo/custom-card-comparison.html",
+  "automatedEvidence": {
+    "pickerEditorStateTest": "tests/priority-certification.test.ts",
+    "interactionUnitTest": "tests/renderers.test.ts"
+  },
+  "browserInteractions": {
+    "custom_card_nas_metrics": {
+      "controlsClicked": 1,
+      "cardSurfaceClicks": 1,
+      "actions": [
+        {
+          "gesture": "tap",
+          "source": "status tile",
+          "action": "more-info",
+          "entity": "binary_sensor.hn_nas_status"
+        },
+        {
+          "gesture": "tap",
+          "source": "card surface",
+          "action": "more-info",
+          "entity": "binary_sensor.hn_nas_status"
+        }
+      ]
+    },
+    "custom_card_tablet": {
+      "controlsClicked": 6,
+      "serviceCalls": [
+        [
+          "homeassistant",
+          "toggle",
+          {
+            "entity_id": "switch.hallway_tablet_usb"
+          }
+        ],
+        [
+          "homeassistant",
+          "toggle",
+          {
+            "entity_id": "switch.hallway_tablet_motion"
+          }
+        ],
+        [
+          "homeassistant",
+          "toggle",
+          {
+            "entity_id": "switch.hallway_tablet_display"
+          }
+        ],
+        [
+          "button",
+          "press",
+          {
+            "entity_id": "button.hallway_tablet_restart"
+          }
+        ],
+        [
+          "homeassistant",
+          "toggle",
+          {
+            "entity_id": "switch.hallway_tablet_maintenance"
+          }
+        ],
+        [
+          "button",
+          "press",
+          {
+            "entity_id": "button.hallway_tablet_reload"
+          }
+        ]
+      ],
+      "cardActionsTriggered": 0
+    }
+  },
+  "provenance": "Sanitized historical fixture; not current UI certification."
+}

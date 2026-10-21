@@ -1,0 +1,139 @@
+{
+  "nas-metrics": {
+    "capturedAt": "2026-09-23T19:40:51.006Z",
+    "implementation": {
+      "width": 510,
+      "height": 360
+    },
+    "reference": {
+      "width": 511.86,
+      "height": 360
+    },
+    "surface": {
+      "width": 510,
+      "height": 360
+    },
+    "icons": {
+      ".nas-metrics-tile-icon ha-icon": [
+        {
+          "width": 24,
+          "height": 24
+        },
+        {
+          "width": 24,
+          "height": 24
+        }
+      ],
+      ".nas-metrics-metrics ha-icon": [
+        {
+          "width": 24,
+          "height": 24
+        },
+        {
+          "width": 24,
+          "height": 24
+        },
+        {
+          "width": 24,
+          "height": 24
+        }
+      ]
+    },
+    "buttons": {
+      ".nas-metrics-tile": [
+        {
+          "width": 231,
+          "height": 102
+        },
+        {
+          "width": 231,
+          "height": 102
+        }
+      ]
+    }
+  },
+  "tablet": {
+    "capturedAt": "2026-09-23T19:31:23.44Z",
+    "implementation": {
+      "width": 390,
+      "height": 340
+    },
+    "reference": {
+      "width": 396.27,
+      "height": 360
+    },
+    "surface": {
+      "width": 390,
+      "height": 340
+    },
+    "icons": {
+      ".tablet-icon ha-icon": [
+        {
+          "width": 22,
+          "height": 22
+        }
+      ],
+      ".tablet-controls ha-icon": [
+        {
+          "width": 22,
+          "height": 22
+        },
+        {
+          "width": 22,
+          "height": 22
+        },
+        {
+          "width": 22,
+          "height": 22
+        },
+        {
+          "width": 22,
+          "height": 22
+        },
+        {
+          "width": 22,
+          "height": 22
+        },
+        {
+          "width": 22,
+          "height": 22
+        }
+      ],
+      ".tablet-battery-icon ha-icon": [
+        {
+          "width": 22,
+          "height": 22
+        }
+      ]
+    },
+    "buttons": {
+      ".tablet-controls button": [
+        {
+          "width": 112.66,
+          "height": 42
+        },
+        {
+          "width": 112.67,
+          "height": 42
+        },
+        {
+          "width": 112.66,
+          "height": 42
+        },
+        {
+          "width": 112.66,
+          "height": 42
+        },
+        {
+          "width": 112.67,
+          "height": 42
+        },
+        {
+          "width": 112.66,
+          "height": 42
+        }
+      ]
+    }
+  },
+  "provenance": "Sanitized historical fixture; not current UI certification."
+}

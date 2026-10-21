@@ -76,10 +76,10 @@ const baseStates: HomeAssistant["states"] = {
     state: "91",
     attributes: { friendly_name: "Battery", unit_of_measurement: "%" },
   },
-  "person.joris": {
-    entity_id: "person.joris",
+  "person.resident": {
+    entity_id: "person.resident",
     state: "home",
-    attributes: { friendly_name: "Joris", entity_picture: "/local/joris.jpg" },
+    attributes: { friendly_name: "Resident", entity_picture: "/local/resident.jpg" },
   },
   "sensor.person_battery": {
     entity_id: "sensor.person_battery",
@@ -176,7 +176,7 @@ afterEach(() => {
 describe("priority local certification", () => {
   it("records browser evidence for every visible priority interaction", () => {
     const evidence = JSON.parse(readFileSync(
-      join(process.cwd(), "docs", "assets", "visual-audit", "priority-local-certification.json"),
+      join(process.cwd(), "tests", "fixtures", "visual", "priority-local-certification.json"),
       "utf8",
     )) as {
       browserInteractions: Record<string, {
@@ -196,7 +196,7 @@ describe("priority local certification", () => {
     expect(evidence.browserInteractions.custom_card_tablet).toMatchObject({
       controlsClicked: 6,
       serviceCalls: expect.arrayContaining([
-        ["button", "press", { entity_id: "button.bram_tablet_reload" }],
+        ["button", "press", { entity_id: "button.hallway_tablet_reload" }],
       ]),
     });
   });

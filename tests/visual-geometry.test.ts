@@ -15,7 +15,7 @@ interface GeometryEntry {
 }
 
 const geometry = JSON.parse(readFileSync(
-  join(process.cwd(), "docs", "assets", "visual-audit", "priority-card-geometry.json"),
+  join(process.cwd(), "tests", "fixtures", "visual", "priority-card-geometry.json"),
   "utf8",
 )) as Record<string, GeometryEntry>;
 

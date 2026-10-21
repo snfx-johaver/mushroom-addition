@@ -95,6 +95,9 @@ export const sharedStyles = css`
   }
   .card-heading > .ulm-copy { flex: 1; }
   .automatic-presentation { min-width: 0; }
+  .upcoming-card, .remote-card, .pi-hole-card { padding: 12px; }
+  .upcoming-card > .card-heading, .remote-card > .card-heading, .pi-hole-card > .card-heading { margin-bottom: 12px; }
+  .upcoming-card > .automatic-presentation, .remote-card > .automatic-presentation { margin-bottom: 12px; }
   .ulm-name { font-size: 14px; font-weight: 600; }
   .ulm-label { color: var(--secondary-text-color); font-size: 12px; text-transform: capitalize; }
   .ulm-controls { display: flex; align-items: center; gap: 7px; }
@@ -158,7 +161,7 @@ export const sharedStyles = css`
   .scene-entity-picture { display: block; width: 100%; height: 100%; border-radius: inherit; background-position: center; background-size: cover; }
   .scene-button ha-icon { --mdc-icon-size: 22px; color: var(--item-color); }
   .scene-button.is-active { background: color-mix(in srgb, var(--item-color) 12%, var(--addition-raised-background)); }
-  .ulm-source-scenes .scene-grid { flex-wrap: nowrap; justify-content: space-evenly; }
+  .ulm-source-scenes .scene-grid { flex-wrap: nowrap; justify-content: space-evenly; min-width: 0; overflow-x: auto; }
   .welcome-scenes {
     --welcome-surface: var(
       --secondary-background-color,
@@ -357,11 +360,11 @@ export const sharedStyles = css`
   .washer-controls .ulm-control { width: 100%; height: 42px; border-radius: 16px; }
   .washer-remote { color: var(--secondary-text-color); font-size: 11px; text-align: center; }
   .custom-sun-card { display: grid; min-height: 210px; gap: 8px; padding: 18px; }
-  .astronomy-times { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .astronomy-times { display: grid; min-width: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
   .astronomy-times span, .sun-footer span { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
   .astronomy-times span:nth-child(2), .astronomy-times span:nth-child(3) { align-items: center; }
   .astronomy-times span:last-child, .sun-footer span:last-child { align-items: flex-end; }
-  .astronomy-times small, .sun-footer small { color: var(--secondary-text-color); }
+  .astronomy-times small, .sun-footer small { color: var(--secondary-text-color); overflow-wrap: anywhere; }
   .astronomy-times b { font-size: 16px; font-weight: 500; font-variant-numeric: tabular-nums; }
   .sun-footer { display: flex; justify-content: space-between; }
   .sun-footer b { font-size: 13px; }
@@ -563,7 +566,7 @@ export const sharedStyles = css`
     }
     .nas-metrics-tile > span:last-child { min-width: 0; overflow: hidden; }
     .nas-metrics-tile b, .nas-metrics-tile small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .nas-metrics-body { grid-template-columns: minmax(112px, 1fr) minmax(120px, 132px); gap: 8px; }
+    .nas-metrics-body { grid-template-columns: minmax(0, 1fr) minmax(0, min(132px, 45%)); gap: 8px; }
     .nas-metrics-metrics { gap: 6px; }
     .nas-metrics-metrics > span {
       min-height: 46px;

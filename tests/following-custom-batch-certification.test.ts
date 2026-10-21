@@ -152,23 +152,23 @@ const states: HomeAssistant["states"] = {
       hvac_action: "heating",
     },
   },
-  "sensor.yvette_mobile_battery_level": {
-    entity_id: "sensor.yvette_mobile_battery_level",
+  "sensor.phone_battery_level": {
+    entity_id: "sensor.phone_battery_level",
     state: "18",
-    attributes: { friendly_name: "Yvette battery", unit_of_measurement: "%" },
+    attributes: { friendly_name: "Phone battery", unit_of_measurement: "%" },
   },
-  "sensor.yvette_mobile_battery_state": {
-    entity_id: "sensor.yvette_mobile_battery_state",
+  "sensor.phone_battery_state": {
+    entity_id: "sensor.phone_battery_state",
     state: "charging",
-    attributes: { friendly_name: "Yvette battery state" },
+    attributes: { friendly_name: "Phone battery state" },
   },
-  "sensor.yvette_mobile_charger_type": {
-    entity_id: "sensor.yvette_mobile_charger_type",
+  "sensor.phone_charger_type": {
+    entity_id: "sensor.phone_charger_type",
     state: "wireless",
-    attributes: { friendly_name: "Yvette charger type" },
+    attributes: { friendly_name: "Phone charger type" },
   },
-  "media_player.office_joris_sonos": {
-    entity_id: "media_player.office_joris_sonos",
+  "media_player.office_sonos": {
+    entity_id: "media_player.office_sonos",
     state: "playing",
     attributes: {
       friendly_name: "Office Sonos",
@@ -186,8 +186,8 @@ const states: HomeAssistant["states"] = {
       ],
     },
   },
-  "media_player.office_joris_tv_2": {
-    entity_id: "media_player.office_joris_tv_2",
+  "media_player.office_tv_2": {
+    entity_id: "media_player.office_tv_2",
     state: "off",
     attributes: { friendly_name: "Office TV" },
   },
@@ -221,7 +221,7 @@ afterEach(() => document.body.replaceChildren());
 describe("following custom batch certification", () => {
   it("records deterministic browser evidence for exactly the remaining requested sources", () => {
     const evidence = JSON.parse(readFileSync(
-      join(process.cwd(), "docs", "assets", "visual-audit", "following-custom-batch-local-certification.json"),
+      join(process.cwd(), "tests", "fixtures", "visual", "following-custom-batch-local-certification.json"),
       "utf8",
     )) as {
       sources: string[];

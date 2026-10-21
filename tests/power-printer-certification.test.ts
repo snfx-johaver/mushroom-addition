@@ -190,7 +190,7 @@ afterEach(() => {
 describe("power and printer custom batch certification", () => {
   it("records exact local interaction evidence and live-safe configurations", () => {
     const evidence = JSON.parse(readFileSync(
-      join(process.cwd(), "docs", "assets", "visual-audit", "power-printer-local-certification.json"),
+      join(process.cwd(), "tests", "fixtures", "visual", "power-printer-local-certification.json"),
       "utf8",
     )) as {
       upstreamCommit: string;
@@ -205,15 +205,15 @@ describe("power and printer custom batch certification", () => {
       "custom_card_printer",
     ]);
     expect(evidence.interactions.custom_card_media_player_sonos.exactPayloads).toEqual([
-      ["media_player", "volume_down", { entity_id: "media_player.office_joris_sonos" }],
-      ["media_player", "media_play_pause", { entity_id: "media_player.office_joris_sonos" }],
-      ["media_player", "volume_up", { entity_id: "media_player.office_joris_sonos" }],
+      ["media_player", "volume_down", { entity_id: "media_player.office_sonos" }],
+      ["media_player", "media_play_pause", { entity_id: "media_player.office_sonos" }],
+      ["media_player", "volume_up", { entity_id: "media_player.office_sonos" }],
     ]);
   });
 
   it("records deterministic matched-width geometry for all six comparisons", () => {
     const geometry = JSON.parse(readFileSync(
-      join(process.cwd(), "docs", "assets", "visual-audit", "power-printer-geometry.json"),
+      join(process.cwd(), "tests", "fixtures", "visual", "power-printer-geometry.json"),
       "utf8",
     )) as Record<string, {
       implementation: { width: number; height: number };

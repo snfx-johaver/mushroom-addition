@@ -95,12 +95,12 @@ for (const item of CATALOG) {
     name: item.upstreamId === "area_card_advanced" ? "Mushroom Addition - Area card advanced" : `Mushroom Addition: ${item.name}`,
     description: item.description,
     preview: true,
-    documentationURL: "https://github.com/snfx-johaver/mushroom-cards-addition",
+    documentationURL: "https://github.com/snfx-johaver/mushroom-addition",
   });
 }
 
 console.info(
-  `%c MUSHROOM-CARDS-ADDITION %c ${VERSION} · ${CATALOG.length} components `,
+  `%c MUSHROOM ADDITION %c ${VERSION} · ${CATALOG.length} components `,
   "color: white; background: #03a9f4; font-weight: 700;",
   "color: #03a9f4; background: white; font-weight: 700;",
 );

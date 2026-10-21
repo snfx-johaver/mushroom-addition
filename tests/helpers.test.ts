@@ -17,6 +17,16 @@ describe("shared card behavior", () => {
     expect(displayName({ type: "x", name_mode: "none" }, entity)).toBe("");
   });
 
+  it("uses Home Assistant's translated entity state and number formatting when available", () => {
+    const formatEntityState = vi.fn(() => "42 Watt");
+    const hass: HomeAssistant = { language: "de", states: {}, callService: vi.fn(), formatEntityState };
+    expect(stateLabel(entity, hass)).toBe("42 Watt");
+    expect(formatEntityState).toHaveBeenCalledWith(entity);
+    expect(stateLabel(undefined, hass)).toBe("Entität nicht verfügbar");
+    expect(formatEntityState).toHaveBeenCalledTimes(1);
+    expect(stateLabel(entity, { ...hass, formatEntityState: undefined })).toBe("42 W");
+  });
+
   it("renders names composed by Home Assistant's entity name selector", () => {
     const formatEntityName = vi.fn(() => "Kitchen Power");
     const hass = {
@@ -39,8 +49,8 @@ describe("shared card behavior", () => {
       callService: vi.fn(),
       formatEntityName,
     } as HomeAssistant;
-    const name = [{ type: "text" as const, text: "Joris" }, { type: "area" as const }];
-    expect(displayName({ type: "x", name_mode: "entity", name }, entity, hass)).toBe("Joris Kitchen");
+    const name = [{ type: "text" as const, text: "Resident" }, { type: "area" as const }];
+    expect(displayName({ type: "x", name_mode: "entity", name }, entity, hass)).toBe("Resident Kitchen");
     expect(displayName({
       type: "x",
       name_mode: "none",

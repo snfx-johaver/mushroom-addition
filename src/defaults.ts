@@ -5,6 +5,9 @@ import { defaultWasteStreams } from "./waste-streams";
 import { resolveSonosControlEntities } from "./sonos-controls";
 import { resolveConsoleEntities } from "./console";
 import { cardIconKeys } from "./entity-icon";
+import { UPCOMING_MEDIA_DEFAULTS } from "./upcoming-media";
+import { REMOTE_DEFAULTS } from "./remote-card";
+import { PIHOLE_DEFAULTS } from "./pi-hole";
 
 const defaultIcons: Array<[RegExp, string]> = [
   [/input_boolean/, "mdi:toggle-switch"],
@@ -43,6 +46,9 @@ export const defaultIconFor = (item: CatalogItem, entity?: HassEntity): string =
   if (item.upstreamId === "advanced_home_energy_management") return "mdi:home-lightning-bolt-outline";
   if (item.upstreamId === "advanced_energy_buy_sell") return "mdi:chart-timeline-variant";
   if (item.upstreamId === "advanced_energy_panel_health") return "mdi:solar-power-variant";
+  if (item.upstreamId === "upcoming_media") return "mdi:movie-open-outline";
+  if (item.upstreamId === "remote_card") return "mdi:remote-tv";
+  if (item.upstreamId === "pi_hole_card") return "mdi:pi-hole";
   return defaultIcons.find(([pattern]) => pattern.test(item.upstreamId))?.[1] ??
     "mdi:information-outline";
 };
@@ -81,7 +87,13 @@ export const populatedDefaultsFor = (
   entityId?: string,
 ): AdditionConfig => {
   const sourceDefaults: Partial<AdditionConfig> =
-    item.upstreamId === "mini_graph_card"
+    item.upstreamId === "pi_hole_card"
+      ? PIHOLE_DEFAULTS
+      : item.upstreamId === "remote_card"
+      ? REMOTE_DEFAULTS
+      : item.upstreamId === "upcoming_media"
+      ? UPCOMING_MEDIA_DEFAULTS
+      : item.upstreamId === "mini_graph_card"
       ? {
         variant: "line",
         hours_to_show: 24,

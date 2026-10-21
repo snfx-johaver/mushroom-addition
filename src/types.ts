@@ -23,17 +23,21 @@ export type RoomSecondaryPart =
 export interface HomeAssistant {
   states: Record<string, HassEntity>;
   themes?: { darkMode?: boolean };
+  services?: Record<string, Record<string, unknown>>;
   areas?: Record<string, { area_id: string; name: string; [key: string]: unknown }>;
-  config?: { unit_system?: { temperature?: string } };
+  config?: { unit_system?: { temperature?: string }; time_zone?: string };
   entities?: Record<string, {
     device_id?: string | null;
     area_id?: string | null;
     platform?: string;
+    translation_key?: string;
+    original_name?: string;
   }>;
-  devices?: Record<string, { area_id?: string | null }>;
+  devices?: Record<string, { area_id?: string | null; name?: string; name_by_user?: string }>;
   language?: string;
   user?: { name?: string };
   localize?: (key: string) => string;
+  formatEntityState?: (entity: HassEntity) => string;
   formatEntityName?: (
     entity: HassEntity,
     name?: string | EntityNameItem | EntityNameItem[],
@@ -155,7 +159,115 @@ export type RoomViewDeviceActions = Partial<Record<
   ActionConfig
 >>;
 
-export interface AdditionConfig extends RoomViewDeviceActions {
+export interface UpcomingMediaConfig {
+  upcoming_data_attribute?: string;
+  upcoming_max_items?: number;
+  upcoming_image_style?: "poster" | "fanart";
+  upcoming_item_height?: number;
+  upcoming_corner_radius?: number;
+  upcoming_max_columns?: number;
+  upcoming_overflow?: boolean;
+  upcoming_collapse_mode?: "none" | "count" | "matching";
+  upcoming_collapse_count?: number;
+  upcoming_group_attribute?: string;
+  upcoming_group_value?: string;
+  upcoming_sort_by?: string;
+  upcoming_sort_ascending?: boolean;
+  upcoming_filter_attribute?: string;
+  upcoming_filter_value?: string;
+  upcoming_filter_match?: "contains" | "exact";
+  upcoming_flag_filter?: "all" | "flagged" | "unflagged";
+  upcoming_show_flag?: boolean;
+  upcoming_flag_icon?: string;
+  upcoming_flag_label?: string;
+  upcoming_flag_color?: string;
+  upcoming_date_format?: string;
+  upcoming_clock?: "locale" | "12" | "24";
+  upcoming_title_text?: string;
+  upcoming_line1_text?: string;
+  upcoming_line2_text?: string;
+  upcoming_line3_text?: string;
+  upcoming_line4_text?: string;
+  upcoming_title_color?: string;
+  upcoming_line1_color?: string;
+  upcoming_line2_color?: string;
+  upcoming_line3_color?: string;
+  upcoming_line4_color?: string;
+  upcoming_title_size?: number;
+  upcoming_line_size?: number;
+  upcoming_box_shadows?: boolean;
+  upcoming_text_shadows?: boolean;
+  upcoming_transparency?: boolean;
+  upcoming_tooltips?: boolean;
+  upcoming_tooltip_delay?: number;
+  upcoming_trailers?: boolean;
+  upcoming_links?: boolean;
+  upcoming_url?: string;
+  upcoming_item_behavior?: "automatic" | "more-info" | "action" | "none";
+  upcoming_item_action?: ActionConfig;
+  upcoming_hide_empty?: boolean;
+}
+
+export type RemoteSection = "power" | "navigation" | "source" | "volume" | "channels" | "playback" | "keypad" | "shortcuts";
+export interface RemoteButtonConfig {
+  name?: string;
+  icon?: string;
+  color?: string;
+  type?: "command" | "source" | "action";
+  command?: string;
+  source?: string;
+  action?: ActionConfig;
+}
+export interface RemoteCardConfig {
+  remote_entity?: string;
+  remote_media_entity?: string;
+  remote_device?: string;
+  remote_transport?: "auto" | "remote" | "samsung";
+  remote_preset?: "auto" | "generic" | "android_tv" | "apple_tv" | "roku" | "samsung";
+  remote_sections?: RemoteSection[];
+  remote_navigation?: "touchpad" | "buttons" | "both";
+  remote_volume?: "slider" | "buttons" | "both";
+  remote_volume_step?: number;
+  remote_playback_controls?: string[];
+  remote_power_controls?: string[];
+  remote_haptics?: "all" | "buttons" | "slider" | "none";
+  remote_double_tap?: "back" | "home" | "menu" | "custom" | "disabled";
+  remote_double_tap_command?: string;
+  remote_swipe_distance?: number;
+  remote_touchpad_height?: number;
+  remote_button_size?: number;
+  remote_accent_color?: string;
+  remote_commands?: Record<string, string>;
+  remote_buttons?: RemoteButtonConfig[];
+}
+
+export type PiHoleMetric = "queries" | "blocked" | "percentage" | "domains" | "clients" | "cached" | "forwarded" | "cpu" | "memory" | "temperature";
+export type PiHoleSection = "statistics" | "blocking" | "pause" | "controls" | "sensors" | "chart" | "versions";
+export interface PiHoleConfig {
+  pihole_device_ids?: string[];
+  pihole_metrics?: PiHoleMetric[];
+  pihole_sections?: PiHoleSection[];
+  pihole_collapsed_sections?: PiHoleSection[];
+  pihole_metric_entities?: Partial<Record<PiHoleMetric, string[]>>;
+  pihole_entity_order?: string[];
+  pihole_hidden_entities?: string[];
+  pihole_pause_durations?: Array<number | string>;
+  pihole_pause_service?: "auto" | "pi_hole.disable" | "pi_hole_v6.disable" | "custom";
+  pihole_pause_action?: ActionConfig;
+  pihole_duration_field?: string;
+  pihole_duration_format?: "seconds" | "duration";
+  pihole_columns?: number;
+  pihole_accent_color?: string;
+  pihole_chart_hours?: number;
+  pihole_chart_height?: number;
+  pihole_chart_metrics?: Array<"cpu" | "memory">;
+  pihole_show_header?: boolean;
+  pihole_metric_tap_action?: ActionConfig;
+  pihole_metric_hold_action?: ActionConfig;
+  pihole_metric_double_tap_action?: ActionConfig;
+}
+
+export interface AdditionConfig extends RoomViewDeviceActions, UpcomingMediaConfig, RemoteCardConfig, PiHoleConfig {
   type: string;
   temperature?: string;
   humidity?: string;

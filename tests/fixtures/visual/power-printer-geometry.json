@@ -1,0 +1,70 @@
+{
+  "media-player-sonos": {
+    "implementation": {
+      "width": 507,
+      "height": 118
+    },
+    "surface": {
+      "width": 507,
+      "height": 118
+    },
+    "regions": {
+      ".custom-card-heading": [
+        {
+          "width": 483,
+          "height": 42
+        }
+      ],
+      ".sonos-controls button": [
+        {
+          "width": 34,
+          "height": 42
+        },
+        {
+          "width": 34,
+          "height": 42
+        },
+        {
+          "width": 34,
+          "height": 42
+        }
+      ]
+    }
+  },
+  "printer": {
+    "implementation": {
+      "width": 256,
+      "height": 183
+    },
+    "surface": {
+      "width": 256,
+      "height": 183
+    },
+    "regions": {
+      ".custom-card-heading": [
+        {
+          "width": 232,
+          "height": 42
+        }
+      ],
+      ".toner-bars span": [
+        {
+          "width": 232,
+          "height": 20
+        },
+        {
+          "width": 232,
+          "height": 20
+        },
+        {
+          "width": 232,
+          "height": 20
+        },
+        {
+          "width": 232,
+          "height": 20
+        }
+      ]
+    }
+  }
+}

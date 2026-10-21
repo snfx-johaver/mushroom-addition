@@ -121,7 +121,7 @@ describe("Carousel entity defaults and gestures", () => {
       await card.updateComplete;
       expect(selected(card)).toBe("1");
       expect(scrollbar.value).toBe("1");
-      if (pagination === "bullets") expect(root.querySelector('[aria-current="true"]')?.getAttribute("aria-label")).toBe("Go to second");
+      if (pagination === "bullets") expect(root.querySelector('[aria-current="true"]')?.getAttribute("aria-label")).toBe("second");
       if (pagination === "fraction") expect(root.querySelector(".pagination output")?.textContent).toBe("2 / 4");
       if (pagination === "progressbar") expect(root.querySelector("progress")?.value).toBe(2);
       scrollbar.value = "3";

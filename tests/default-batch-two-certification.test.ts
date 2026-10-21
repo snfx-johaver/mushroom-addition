@@ -15,10 +15,10 @@ const states: HomeAssistant["states"] = {
     state: "off",
     attributes: { friendly_name: "Clean living room", icon: "mdi:sofa" },
   },
-  "light.joris_iris_1": {
-    entity_id: "light.joris_iris_1",
+  "light.office_accent": {
+    entity_id: "light.office_accent",
     state: "on",
-    attributes: { friendly_name: "Joris Iris", icon: "mdi:lightbulb", value: "Living room" },
+    attributes: { friendly_name: "Resident Iris", icon: "mdi:lightbulb", value: "Living room" },
   },
   "weather.hcn_ha": {
     entity_id: "weather.hcn_ha",
@@ -189,7 +189,7 @@ describe("queued default batch two certification", () => {  it.each([
         { entity: "media_player.office", name: "Office" },
         { entity: "input_select.mode", name: "Away", state: "Away" },
         { entity: "script.goodnight", name: "Goodnight" },
-        { entity: "light.joris_iris_1", name: "Light" },
+        { entity: "light.office_accent", name: "Light" },
         { entity: "scene.living_room_dimmed", name: "Dashboard", navigation_path: "/lovelace/scenes" },
       ],
     }, makeHass(states, callService));
@@ -204,7 +204,7 @@ describe("queued default batch two certification", () => {  it.each([
       ["media_player", "media_play_pause", { entity_id: "media_player.office" }],
       ["input_select", "select_option", { entity_id: "input_select.mode", option: "Away" }],
       ["script", "goodnight", { entity_id: "script.goodnight" }],
-      ["homeassistant", "toggle", { entity_id: "light.joris_iris_1" }],
+      ["homeassistant", "toggle", { entity_id: "light.office_accent" }],
     ]);
     expect(actions).toHaveBeenCalledWith(expect.objectContaining({
       detail: expect.objectContaining({

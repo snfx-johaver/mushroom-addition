@@ -2,14 +2,16 @@ import type { AdditionConfig, EntityNameItem, HassEntity, HomeAssistant } from "
 import { migrateWasteStreamConfig } from "./waste-streams";
 import { getCatalogItem } from "./catalog";
 import { cardIconKeys } from "./entity-icon";
+import { localizeText } from "./localize";
 
 export const activeStates = new Set([
   "on", "open", "opening", "playing", "home", "heat", "cool", "heating",
   "cleaning", "unlocked", "active",
 ]);
 
-export const stateLabel = (entity?: HassEntity): string => {
-  if (!entity) return "Entity unavailable";
+export const stateLabel = (entity?: HassEntity, hass?: HomeAssistant): string => {
+  if (!entity) return localizeText(hass, "Entity unavailable");
+  if (hass?.formatEntityState) return hass.formatEntityState(entity);
   const unit = entity.attributes.unit_of_measurement;
   return unit ? `${entity.state} ${String(unit)}` : entity.state.replaceAll("_", " ");
 };

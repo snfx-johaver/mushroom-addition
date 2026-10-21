@@ -2,7 +2,58 @@
 
 Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
-## Updates to 0.0.1 (no version bump)
+## [0.5.0] - 2026-10-21
+
+- Renamed the project and repository to Mushroom Addition, with a refreshed
+  introduction and a big thank-you to Mushroom. Existing card types and the
+  installed JavaScript filename remain compatible.
+- Added Upcoming Media: configurable artwork, sensor-data templates, sorting,
+  filtering, flags, collapsed lists, summaries, trailers and media actions.
+- Added Remote Card: device-scoped pairing, touchpad and D-pad navigation,
+  capability-aware media controls, presets, shortcuts, key mappings and haptics.
+- Added Pi-hole Card: multi-device statistics, blocking controls, server-timed
+  pauses, maintenance actions, diagnostics and recorder-backed system history.
+  All three additions have graphical editors and compatible picker defaults.
+- Removed obsolete live-instance screenshots/audit dumps and personal example
+  identifiers. Updated CI/release builds to Node.js 24 for the current test runner,
+  with a Git-history secret scan in CI.
+- Fixed explicit scene action dispatch, nested-control keyboard handling and
+  cancellation of delayed card gestures when configurations change or cards
+  are removed. Scene rows now contain horizontal overflow without reshaping buttons.
+- Isolated Mini Graph histories by entity and attribute, separated state-map
+  caches, and corrected threshold-gradient offset ordering.
+- Corrected Roku rewind/unsupported keys, never-pressed Pi-hole maintenance
+  buttons, and recovery after failed Upcoming Media artwork.
+- Completed all 33 Mushroom language catalogs, with regional/script
+  normalization and right-to-left support: 1,768 labels, helper messages and
+  diagnostics per language. The strict coverage check rejects missing messages
+  and invalid placeholders rather than counting English fallback as translation.
+  User names, entity IDs, command codes and action payloads stay unchanged;
+  duration choices use localized unit names.
+- Moved more legacy card and editor text into the translation catalogs.
+  Greetings, pollen levels and common battery, washer, playback and linked speaker controls,
+  plus plant measurement labels,
+  now follow all 33 languages. Entity state labels use Home Assistant's own
+  formatter; custom names and service commands don't get "helpfully" translated.
+- Translated Mini Graph configuration/history messages into all 33 languages.
+  History warnings follow language changes; external error details stay intact.
+  Advanced Area button state labels now use Home Assistant's native formatter too.
+- Localized native Area compatibility, loading and template diagnostics in all
+  33 languages, keeping component identifiers and external error details intact.
+- Carousel pagination buttons announce their actual item names without an
+  untranslated English prefix.
+- Kept long astronomy translations and narrow NAS charts inside their existing
+  layouts without shrinking Mushroom typography or icons.
+- Fixed Mini Graph picker defaults to prefer healthy temperature/numeric sensors
+  in both preview paths, and populated Trash previews from real waste sensors
+  and collection calendars instead of unrelated entities or blank rows.
+- Corrected combined date/time helper adjustments and disabled time controls
+  for date-only helpers without changing card layouts. Obsolete comparison
+  demos now skip removed registrations instead of failing during loading.
+- Raised the declared Home Assistant minimum to the verified 2026.10.2 target;
+  the previous 2024.4 claim did not cover current native editor selectors.
+
+### Earlier development updates included in this release
 
 - Added Layout sliders for Entity Carousel button width, height and icon size,
   with responsive spacing, proportional entity pictures and size-aware effects.
@@ -106,7 +157,7 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## [0.0.1] - 2026-10-20
 
-First versioned public release of Mushroom Cards Addition. This establishes a
+First versioned public release of Mushroom Addition. This establishes a
 new release baseline; previous internal `1.4.0` build labels were not published
 releases.
 
@@ -134,4 +185,5 @@ releases.
 - One frontend version sourced from `package.json`, with lockfile and tag checks.
 - Tag-triggered validation and downloadable HACS-compatible release assets.
 
-[0.0.1]: https://github.com/snfx-johaver/mushroom-cards-addition/releases/tag/v0.0.1
+[0.0.1]: https://github.com/snfx-johaver/mushroom-addition/releases/tag/v0.0.1
+[0.5.0]: https://github.com/snfx-johaver/mushroom-addition/releases/tag/v0.5.0

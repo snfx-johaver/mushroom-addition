@@ -1,3 +1,4 @@
+import { localizeText } from "./localize";
 import { LitElement, css, html, nothing, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { fireEvent } from "./helpers";
@@ -171,7 +172,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
   protected render(): TemplateResult {
     const items = this.items;
     if (!items.length) {
-      return html`<div class="carousel"><span class="label">Add carousel items in the card editor</span></div>`;
+      return html`<div class="carousel"><span class="label">${localizeText(this.hass, "Add carousel items in the card editor")}</span></div>`;
     }
     const visible = this.visibleCount;
     const activeItem = items[this.selectedIndex];
@@ -182,14 +183,14 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       <div class="viewport ${navigation ? "has-navigation" : ""}"
         style=${`--carousel-button-width:${this.buttonWidth}px;--carousel-button-height:${this.buttonHeight}px;--carousel-stage-height:${this.buttonHeight + 12}px;--carousel-icon-size:${this.iconSize}px;--carousel-picture-size:${Math.min(this.iconSize * 34 / 28, this.maxIconSize)}px`}
         @pointerdown=${this.stopControlEvent} @click=${this.stopControlEvent} @dblclick=${this.stopControlEvent}>
-      ${navigation ? html`<button class="navigation" aria-label="Previous item"
+      ${navigation ? html`<button class="navigation" aria-label="${localizeText(this.hass, "Previous item")}"
         ?disabled=${items.length < 2 || (!loop && this.selectedIndex === 0)}
         @click=${() => this.select(-1)}><ha-icon icon="mdi:chevron-left"></ha-icon></button>` : nothing}
       <div class=${`carousel ${this.grabCursor ? "grab-cursor" : ""} ${this.dragging ? "dragging" : ""}`}
         data-effect=${this.effect}
         style=${`perspective:${Math.max(520, this.coverflowDepth * 2)}px`}
         role="listbox"
-        aria-label="Entity carousel"
+        aria-label="${localizeText(this.hass, "Entity carousel")}"
         tabindex="0"
         @keydown=${this.onKeydown}
         @wheel=${this.onWheel}
@@ -209,7 +210,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
           </div>
         `}
       </div>
-      ${navigation ? html`<button class="navigation" aria-label="Next item"
+      ${navigation ? html`<button class="navigation" aria-label="${localizeText(this.hass, "Next item")}"
         ?disabled=${items.length < 2 || (!loop && this.selectedIndex === items.length - 1)}
         @click=${() => this.select(1)}><ha-icon icon="mdi:chevron-right"></ha-icon></button>` : nothing}
       </div>
@@ -219,7 +220,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
         ${carouselControlEnabled(this.config, "scrollbar") ? html`
           <input class="scrollbar" type="range" min="0" max=${items.length - 1} step="1"
             .value=${String(this.selectedIndex)} ?disabled=${items.length < 2}
-            aria-label="Carousel position" aria-valuetext=${this.itemName(activeItem, activeEntity)}
+            aria-label="${localizeText(this.hass, "Carousel position")}" aria-valuetext=${this.itemName(activeItem, activeEntity)}
             @input=${(event: Event) => this.selectIndex(Number((event.currentTarget as HTMLInputElement).value))}>
         ` : nothing}
       </div>
@@ -234,9 +235,9 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       (parameter && typeof parameter === "object" ? parameter.type : undefined) ?? "bullets";
     return html`<div class="pagination ${type}">
       ${type === "fraction" ? html`<output aria-live="polite">${this.selectedIndex + 1} / ${this.items.length}</output>`
-        : type === "progressbar" ? html`<progress aria-label="Carousel progress" value=${this.selectedIndex + 1} max=${this.items.length}></progress>`
+        : type === "progressbar" ? html`<progress aria-label="${localizeText(this.hass, "Carousel progress")}" value=${this.selectedIndex + 1} max=${this.items.length}></progress>`
         : this.items.map((item, index) => html`<button class="dot"
-            aria-label=${`Go to ${this.itemName(item)}`} aria-current=${index === this.selectedIndex ? "true" : "false"}
+            aria-label=${this.itemName(item)} aria-current=${index === this.selectedIndex ? "true" : "false"}
             @click=${() => this.selectIndex(index)}></button>`)}
     </div>`;
   }

@@ -1,7 +1,7 @@
 import { html, nothing, svg, type TemplateResult } from "lit";
 import type { ActionConfig, AdditionConfig, AdditionItemConfig, CatalogItem, HassEntity, HomeAssistant, RoomViewDevice, WeatherForecast } from "./types";
 import { controlActions } from "./control-actions";
-import { localize } from "./localize";
+import { localize, localizeText } from "./localize";
 import { ROOM_STATUS_KINDS, ROOM_STATUS_LIMIT, roomEntityIcon, roomEntityUnavailable, roomItemDefaultsFor, roomLightEntity, roomLightRgb, roomSecondary, roomStatusActive, roomStatusIcon, roomStatusKind } from "./room";
 import { activeStates, displayName, fireEvent, stateLabel } from "./helpers";
 import { wasteStreamsForConfig } from "./waste-streams";
@@ -32,6 +32,9 @@ import { energyPriceBounds, energyPriceSlots, energyTradeResult, formatEnergyPri
 import type { EnergyTradeSelection } from "./energy-buy-sell";
 import { inverterPanelEntities, panelGaugeColor, panelGaugePercent, summarizePanels } from "./panel-health";
 import "./entity-carousel";
+import { readUpcomingData, upcomingItems } from "./upcoming-media";
+import "./remote-card";
+import "./pi-hole";
 
 export interface RenderContext {
   config: AdditionConfig;
@@ -47,6 +50,8 @@ export interface RenderContext {
 }
 
 const attr = (entity: HassEntity | undefined, key: string): unknown => entity?.attributes[key];
+const timeGreeting = (hass: HomeAssistant, hour: number): string =>
+  localize(hass, hour < 12 ? "ui.greeting_morning" : hour < 18 ? "ui.greeting_afternoon" : "ui.greeting_evening");
 const numeric = (value: unknown): number | undefined => {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : undefined;
@@ -106,26 +111,26 @@ const selectedSecondary = (ctx: RenderContext, recommended?: string): string | u
   switch (ctx.config.secondary_info) {
     case "none": return undefined;
     case "name": return displayName(ctx.config, ctx.entity, ctx.hass);
-    case "state": return stateLabel(ctx.entity);
+    case "state": return stateLabel(ctx.entity, ctx.hass);
     case "last-changed": return ctx.entity?.last_changed
-      ? new Date(ctx.entity.last_changed).toLocaleString()
-      : "Last changed unavailable";
+      ? new Date(ctx.entity.last_changed).toLocaleString(ctx.hass.language)
+      : localizeText(ctx.hass, "Last changed unavailable");
     case "last-updated": return ctx.entity?.last_updated
-      ? new Date(ctx.entity.last_updated).toLocaleString()
-      : "Last updated unavailable";
+      ? new Date(ctx.entity.last_updated).toLocaleString(ctx.hass.language)
+      : localizeText(ctx.hass, "Last updated unavailable");
     default: return ctx.config.secondary || recommended;
   }
 };
 const selectedPrimary = (ctx: RenderContext, recommended?: string): string => {
   switch (ctx.config.primary_info) {
     case "none": return "";
-    case "state": return stateLabel(ctx.entity);
+    case "state": return stateLabel(ctx.entity, ctx.hass);
     case "last-changed": return ctx.entity?.last_changed
-      ? new Date(ctx.entity.last_changed).toLocaleString()
-      : "Last changed unavailable";
+      ? new Date(ctx.entity.last_changed).toLocaleString(ctx.hass.language)
+      : localizeText(ctx.hass, "Last changed unavailable");
     case "last-updated": return ctx.entity?.last_updated
-      ? new Date(ctx.entity.last_updated).toLocaleString()
-      : "Last updated unavailable";
+      ? new Date(ctx.entity.last_updated).toLocaleString(ctx.hass.language)
+      : localizeText(ctx.hass, "Last updated unavailable");
     default: return displayName(ctx.config, ctx.entity, ctx.hass) || recommended || "";
   }
 };
@@ -161,13 +166,13 @@ const heading = (ctx: RenderContext, recommendedSecondary?: string, recommendedP
     `;
   })()}
 `;
-const valueThenName = (ctx: RenderContext, value = stateLabel(ctx.entity)) => html`
+const valueThenName = (ctx: RenderContext, value = stateLabel(ctx.entity, ctx.hass)) => html`
   <span class="value-first">${heading(ctx, displayName(ctx.config, ctx.entity, ctx.hass), value)}</span>
 `;
 
 const cardHeading = (
   ctx: RenderContext,
-  secondary = stateLabel(ctx.entity),
+  secondary = stateLabel(ctx.entity, ctx.hass),
   primary = ctx.descriptor.name,
 ): TemplateResult => html`
   <div class="card-heading">
@@ -257,7 +262,7 @@ const renderBattery = (ctx: RenderContext): TemplateResult => {
   const animate = configured<boolean>(ctx, "ulm_card_battery_charging_animation") === true && charging;
   return ctx.actionSurface(`ulm-battery ${animate ? "is-charging" : ""}`, html`
     ${iconBubble(ctx, charging ? "mdi:battery-charging" : "mdi:battery", tone)}
-    ${heading(ctx, charging ? "Charging" : "Battery level")}
+    ${heading(ctx, charging ? localizeText(ctx.hass, "Charging") : localizeText(ctx.hass, "Battery level"))}
     <span class="battery-value">${Math.round(value)}<small>%</small></span>
     <span class="battery-track"><i style=${`width:${Math.max(0, Math.min(100, value))}%`}></i></span>
   `);
@@ -304,7 +309,7 @@ const renderDefaultBattery = (ctx: RenderContext): TemplateResult => {
           "var(--google-green, #43a047)",
         );
   const animate = configured<boolean>(ctx, "ulm_card_battery_charging_animation") === true && stateCharging;
-  const displayLevel = value === undefined ? stateLabel(ctx.entity) : `${Math.round(value)}%`;
+  const displayLevel = value === undefined ? stateLabel(ctx.entity, ctx.hass) : `${Math.round(value)}%`;
   return ctx.actionSurface(`ulm-row ulm-default-battery ${animate ? "is-charging" : ""}`, html`
     ${sourceIconBubble(ctx, batteryIcon(value, infix), color, true)}
     <span class="value-first">${heading(ctx, displayName(ctx.config, ctx.entity, ctx.hass), displayLevel)}</span>
@@ -338,9 +343,9 @@ const sparkline = (
 };
 
 const renderMetric = (ctx: RenderContext): TemplateResult => ctx.actionSurface("ulm-metric", html`
-  <div class="metric-heading">${iconBubble(ctx, ctx.descriptor.family === "energy" ? "mdi:flash" : "mdi:chart-line", "blue")}${heading(ctx, ctx.entity?.attributes.unit_of_measurement ? String(ctx.entity.attributes.unit_of_measurement) : "Current value")}<span class="metric-value">${stateLabel(ctx.entity)}</span></div>
+  <div class="metric-heading">${iconBubble(ctx, ctx.descriptor.family === "energy" ? "mdi:flash" : "mdi:chart-line", "blue")}${heading(ctx, ctx.entity?.attributes.unit_of_measurement ? String(ctx.entity.attributes.unit_of_measurement) : localizeText(ctx.hass, "Current value"))}<span class="metric-value">${stateLabel(ctx.entity, ctx.hass)}</span></div>
   ${ctx.config.show_graph !== false ? sparkline(ctx) : nothing}
-  ${(linkedState(ctx, "min_entity") || linkedState(ctx, "max_entity")) ? html`<div class="metric-extremes"><span>Min ${stateLabel(linkedState(ctx, "min_entity"))}</span><span>Max ${stateLabel(linkedState(ctx, "max_entity"))}</span></div>` : nothing}
+  ${(linkedState(ctx, "min_entity") || linkedState(ctx, "max_entity")) ? html`<div class="metric-extremes"><span>${localize(ctx.hass, "ui.renderer.minimum_value", { value: stateLabel(linkedState(ctx, "min_entity"), ctx.hass) })}</span><span>${localize(ctx.hass, "ui.renderer.maximum_value", { value: stateLabel(linkedState(ctx, "max_entity"), ctx.hass) })}</span></div>` : nothing}
 `);
 
 const runItemAction = (event: Event, ctx: RenderContext, item: AdditionItemConfig): void => {
@@ -350,16 +355,9 @@ const runItemAction = (event: Event, ctx: RenderContext, item: AdditionItemConfi
     return;
   }
   const action = item.tap_action;
-  const service = action?.service ?? action?.perform_action;
-  if ((action?.action === "call-service" || action?.action === "perform-action") && service) {
-    const [domain, serviceName] = service.split(".", 2);
-    if (domain && serviceName) {
-      ctx.service(domain, serviceName, {
-        entity_id: item.entity,
-        ...(action.service_data ?? action.data ?? {}),
-      });
-      return;
-    }
+  if (action) {
+    runControlAction(event, ctx, action, item.entity);
+    return;
   }
   const [domain, objectId] = item.entity.split(".", 2);
   if (domain === "scene") ctx.service("scene", "turn_on", { entity_id: item.entity });
@@ -396,36 +394,27 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
   const weatherCondition = weatherEntity?.state || "partlycloudy";
   const weatherIcon = weatherIcons[weatherCondition]?.[0] ?? "mdi:weather-partly-cloudy";
   const hour = new Date().getHours();
-  const language = ctx.hass.language?.split("-")[0] ?? "en";
-  const greetings: Record<string, [string, string, string, string]> = {
-    de: ["Hallo", "Guten Morgen", "Guten Tag", "Guten Abend"],
-    en: ["Hello", "Good morning", "Good afternoon", "Good evening"],
-    es: ["Hola", "Buenos días", "Buenas tardes", "Buenas noches"],
-    fr: ["Bonjour", "Bonjour", "Bon après-midi", "Bonsoir"],
-    nl: ["Hallo", "Goedemorgen", "Goedemiddag", "Goedenavond"],
-  };
-  const greetingSet = greetings[language] ?? greetings.en;
-  const greeting = hour >= 18 ? greetingSet[3] : hour >= 12 ? greetingSet[2] : hour >= 5 ? greetingSet[1] : greetingSet[0];
-  const welcomeSecondary = `${greeting}, ${ctx.hass.user?.name || "Home"}!`;
+  const greeting = hour < 5 ? localize(ctx.hass, "ui.greeting_hello") : timeGreeting(ctx.hass, hour);
+  const welcomeSecondary = `${greeting}, ${ctx.hass.user?.name || localize(ctx.hass, "ui.renderer.Home")}!`;
   return ctx.actionSurface(`ulm-scenes ${welcome ? "welcome-scenes" : sourceGrid ? "source-scene-grid" : "scene-pills"} ${ctx.descriptor.upstreamId === "card_scenes" ? "ulm-source-scenes" : ""} ${buttonsOnly ? "scene-buttons-only" : ""}`, html`
     ${welcome && !buttonsOnly ? html`
       <div class="welcome-toolbar">
-        <button class="welcome-toolbar-button" aria-label="Toggle scenes" @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
+        <button class="welcome-toolbar-button" aria-label="${localizeText(ctx.hass, "Toggle scenes")}" @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
           event.stopPropagation();
           if (ctx.config.collapse_entity) {
             ctx.service("input_boolean", "toggle", { entity_id: ctx.config.collapse_entity });
           }
         }}><ha-icon .icon=${collapsed ? "mdi:chevron-down" : "mdi:chevron-up"}></ha-icon></button>
         <span class="welcome-date"><ha-icon .icon=${weatherIcon}></ha-icon>${new Intl.DateTimeFormat(ctx.hass.language, { month: "short", day: "numeric" }).format(new Date())}</span>
-        <button class="welcome-toolbar-button" aria-label="Open dashboard settings" @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => runControlAction(event, ctx, { action: "navigate", navigation_path: String(ctx.config.settings_path || "/config/dashboard") })}><ha-icon icon="mdi:cog-outline"></ha-icon></button>
+        <button class="welcome-toolbar-button" aria-label="${localizeText(ctx.hass, "Open dashboard settings")}" @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => runControlAction(event, ctx, { action: "navigate", navigation_path: String(ctx.config.settings_path || "/config/dashboard") })}><ha-icon icon="mdi:cog-outline"></ha-icon></button>
       </div>
       <div class="welcome-heading">${heading(ctx, welcomeSecondary)}</div>
       ${collapsed ? nothing : html`
         <div class="welcome-scenes-heading">
-          <b>${ctx.config.secondary || "Scenes"}</b>
+          <b>${ctx.config.secondary || localizeText(ctx.hass, "Scenes")}</b>
           ${hasOverflow ? html`
             <button class="welcome-scenes-more"
-              aria-label=${ctx.sceneOverflowExpanded ? "Show fewer scenes" : "Show all scenes"}
+              aria-label=${ctx.sceneOverflowExpanded ? localizeText(ctx.hass, "Show fewer scenes") : localizeText(ctx.hass, "Show all scenes")}
               aria-expanded=${ctx.sceneOverflowExpanded ? "true" : "false"}
               @pointerdown=${(event: Event) => event.stopPropagation()}
               @click=${(event: Event) => {
@@ -477,14 +466,14 @@ const renderSecurity = (ctx: RenderContext): TemplateResult => {
   const armed = ctx.entity?.state.startsWith("armed") || ctx.entity?.state === "locked";
   return ctx.actionSurface(`ulm-security ${armed ? "is-armed" : ""}`, html`
     ${iconBubble(ctx, armed ? "mdi:shield-lock" : "mdi:shield-off", armed ? "green" : "red")}
-    ${heading(ctx, stateLabel(ctx.entity))}
-    ${ctx.config.show_controls ? html`<span class="security-status">${armed ? "Secured" : "Attention"}</span>` : nothing}
+    ${heading(ctx, stateLabel(ctx.entity, ctx.hass))}
+    ${ctx.config.show_controls ? html`<span class="security-status">${armed ? localizeText(ctx.hass, "Secured") : localizeText(ctx.hass, "Attention")}</span>` : nothing}
   `);
 };
 
 const renderNavigation = (ctx: RenderContext): TemplateResult => ctx.actionSurface("ulm-navigation", html`
   ${iconBubble(ctx, ctx.descriptor.upstreamId.includes("back") ? "mdi:arrow-left" : "mdi:arrow-right", "blue")}
-  ${heading(ctx, ctx.config.secondary || ctx.config.navigation_path || "Navigate")}
+  ${heading(ctx, ctx.config.secondary || ctx.config.navigation_path || localizeText(ctx.hass, "Navigate"))}
   <ha-icon icon="mdi:chevron-right"></ha-icon>
 `);
 
@@ -515,8 +504,8 @@ const renderControl = (ctx: RenderContext): TemplateResult => {
   const [domain, service] = controlService(controlEntityId, active ? "off" : "on");
   return ctx.actionSurface(`ulm-control-card ulm-row ${active ? "is-active" : ""}`, html`
     ${iconBubble(ctx, ctx.config.entity?.startsWith("fan.") ? "mdi:fan" : "mdi:power-socket-eu", active ? "yellow" : "grey")}
-    ${heading(ctx, consumption ? `${stateLabel(ctx.entity)} · ${stateLabel(consumption)}` : stateLabel(ctx.entity))}
-    ${controlEntityId && ctx.config.show_controls !== false ? button(active ? "Turn off" : "Turn on", "mdi:power", (event) => {
+    ${heading(ctx, consumption ? `${stateLabel(ctx.entity, ctx.hass)} · ${stateLabel(consumption, ctx.hass)}` : stateLabel(ctx.entity, ctx.hass))}
+    ${controlEntityId && ctx.config.show_controls !== false ? button(active ? localizeText(ctx.hass, "Turn off") : localizeText(ctx.hass, "Turn on"), "mdi:power", (event) => {
       event.stopPropagation();
       ctx.service(domain, service, { entity_id: controlEntityId });
     }) : nothing}
@@ -543,7 +532,7 @@ const renderRoom = (ctx: RenderContext): TemplateResult => {
           const kind = item.kind && ROOM_STATUS_KINDS.includes(item.kind) ? item.kind : roomStatusKind(entity);
           const unavailable = roomEntityUnavailable(entity);
           const active = roomStatusActive(entity, kind);
-          const label = `${displayName({ type: "", entity: item.entity }, entity, ctx.hass)} · ${localize(ctx.hass, `room_status_${kind}`)}: ${localize(ctx.hass, unavailable ? "room_status_unavailable" : active ? "room_status_active" : "room_status_inactive")} (${stateLabel(entity)})`;
+          const label = `${displayName({ type: "", entity: item.entity }, entity, ctx.hass)} · ${localize(ctx.hass, `room_status_${kind}`)}: ${localize(ctx.hass, unavailable ? "room_status_unavailable" : active ? "room_status_active" : "room_status_inactive")} (${stateLabel(entity, ctx.hass)})`;
           return html`<button class="room-status-indicator kind-${kind} ${unavailable ? "is-unavailable" : active ? "is-active" : "is-inactive"}"
             type="button" aria-label=${label} title=${label} ?disabled=${unavailable}
             ${controlActions({ type: ctx.config.type, entity: item.entity, tap_action: { action: "more-info" } })}>
@@ -580,7 +569,7 @@ const renderRoom = (ctx: RenderContext): TemplateResult => {
       >${entityPicture
         ? html`<span class="room-sensor-picture" style=${`background-image:url("${String(entityPicture)}")`}></span>`
         : html`<ha-icon .icon=${item.icon || roomEntityIcon(entity, item.entity)}></ha-icon>`
-      }<span class="room-sensor-label">${stateLabel(entity)}</span></button>`;
+      }<span class="room-sensor-label">${stateLabel(entity, ctx.hass)}</span></button>`;
     })}</div>` : nothing}
   `, rgb ? `--room-rgb:${rgb.join(",")};` : "");
 };
@@ -603,10 +592,10 @@ const renderDetailCard = (ctx: RenderContext, iconName: string, tone = "blue"): 
   return ctx.actionSurface("ulm-detail-card", html`
     <div class="ulm-row">
       ${iconBubble(ctx, iconName, tone)}
-      ${heading(ctx, stateLabel(ctx.entity))}
+      ${heading(ctx, stateLabel(ctx.entity, ctx.hass))}
     </div>
     ${details.length ? html`<div class="detail-grid">${details.map((entity) => html`
-      <span class="metric-pill"><ha-icon .icon=${entity.attributes.icon ?? "mdi:circle-small"}></ha-icon>${stateLabel(entity)}</span>
+      <span class="metric-pill"><ha-icon .icon=${entity.attributes.icon ?? "mdi:circle-small"}></ha-icon>${stateLabel(entity, ctx.hass)}</span>
     `)}</div>` : nothing}
   `);
 };
@@ -616,10 +605,10 @@ const renderScheduleCard = (ctx: RenderContext): TemplateResult => {
   return ctx.actionSurface("ulm-schedule-card", html`
     <div class="ulm-row">
       ${iconBubble(ctx, /pollen/.test(ctx.descriptor.upstreamId) ? "mdi:flower-pollen" : "mdi:trash-can", "green")}
-      ${heading(ctx, stateLabel(ctx.entity))}
+      ${heading(ctx, stateLabel(ctx.entity, ctx.hass))}
     </div>
     <div class="schedule-list">${(details.length ? details : ctx.entity ? [ctx.entity] : []).slice(0, 4).map((entity) => html`
-      <span><b>${displayName({ type: "", entity: entity.entity_id }, entity, ctx.hass)}</b><small>${stateLabel(entity)}</small></span>
+      <span><b>${displayName({ type: "", entity: entity.entity_id }, entity, ctx.hass)}</b><small>${stateLabel(entity, ctx.hass)}</small></span>
     `)}</div>
   `);
 };
@@ -630,11 +619,11 @@ const renderDeviceStatus = (ctx: RenderContext): TemplateResult => {
   return ctx.actionSurface("ulm-device-status", html`
     <div class="ulm-row">
       ${iconBubble(ctx, /printer/.test(ctx.descriptor.upstreamId) ? "mdi:printer" : /nas/.test(ctx.descriptor.upstreamId) ? "mdi:nas" : /washer/.test(ctx.descriptor.upstreamId) ? "mdi:washing-machine" : "mdi:devices", value !== undefined && value < 20 ? "red" : "blue")}
-      ${heading(ctx, stateLabel(ctx.entity))}
+      ${heading(ctx, stateLabel(ctx.entity, ctx.hass))}
       ${value !== undefined ? html`<b class="device-value">${Math.round(value)}${String(ctx.entity?.attributes.unit_of_measurement ?? "")}</b>` : nothing}
     </div>
     ${value !== undefined ? html`<span class="device-progress"><i style=${`width:${Math.max(0, Math.min(100, value))}%`}></i></span>` : nothing}
-    ${details.length ? html`<div class="detail-grid">${details.map((entity) => html`<span class="metric-pill">${stateLabel(entity)}</span>`)}</div>` : nothing}
+    ${details.length ? html`<div class="detail-grid">${details.map((entity) => html`<span class="metric-pill">${stateLabel(entity, ctx.hass)}</span>`)}</div>` : nothing}
   `);
 };
 
@@ -642,8 +631,8 @@ const renderAlarmTime = (ctx: RenderContext): TemplateResult => {
   const time = linkedState(ctx, "datetime_entity");
   return ctx.actionSurface(`ulm-control-card ulm-row ${activeStates.has(ctx.entity?.state ?? "") ? "is-active" : ""}`, html`
     ${iconBubble(ctx, "mdi:alarm", activeStates.has(ctx.entity?.state ?? "") ? "yellow" : "grey")}
-    ${heading(ctx, time ? stateLabel(time) : stateLabel(ctx.entity))}
-    ${ctx.config.show_controls !== false ? button(activeStates.has(ctx.entity?.state ?? "") ? "Disable alarm" : "Enable alarm", "mdi:power", (event) => {
+    ${heading(ctx, time ? stateLabel(time, ctx.hass) : stateLabel(ctx.entity, ctx.hass))}
+    ${ctx.config.show_controls !== false ? button(activeStates.has(ctx.entity?.state ?? "") ? localizeText(ctx.hass, "Disable alarm") : localizeText(ctx.hass, "Enable alarm"), "mdi:power", (event) => {
       event.stopPropagation();
       ctx.service("input_boolean", activeStates.has(ctx.entity?.state ?? "") ? "turn_off" : "turn_on", { entity_id: ctx.config.entity });
     }) : nothing}
@@ -693,8 +682,8 @@ const renderTrash = (ctx: RenderContext): TemplateResult => {
     <div class="custom-card-heading">
       ${iconBubble(ctx, "mdi:trash-can-outline", "green")}
       ${heading(ctx, configured<string>(ctx, "ulm_volgende_ophaling") ||
-        [today ? `Today: ${today}` : "", tomorrow ? `Tomorrow: ${tomorrow}` : ""].filter(Boolean).join(" · ") ||
-        undefined, "Next collections")}
+        [today ? localize(ctx.hass, "ui.renderer.today", { value: today }) : "", tomorrow ? localize(ctx.hass, "ui.renderer.tomorrow", { value: tomorrow }) : ""].filter(Boolean).join(" · ") ||
+        undefined, localizeText(ctx.hass, "Next collections"))}
     </div>
     <div class="waste-grid">${rows.map((stream) => {
       const entity = stream.entity ? ctx.hass.states[stream.entity] : undefined;
@@ -709,19 +698,25 @@ const renderTrash = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
+const helperTime = (entity: HassEntity | undefined): { label: string; minutes: number } | undefined => {
+  if (!entity || entity.attributes.has_time === false) return undefined;
+  const match = /^(?:\d{4}-\d{2}-\d{2} )?([01]\d|2[0-3]):([0-5]\d)(?::[0-5]\d)?$/.exec(entity.state);
+  return match ? { label: `${match[1]}:${match[2]}`, minutes: Number(match[1]) * 60 + Number(match[2]) } : undefined;
+};
+
 const renderAlarmTimeCard = (ctx: RenderContext): TemplateResult => {
   const timeEntity = entityFromConfig(ctx, "ulm_card_alarm_time_datetime") ?? linkedState(ctx, "datetime_entity");
   const step = numeric(configured(ctx, "ulm_card_alarm_time_step")) ?? 15;
-  const current = timeEntity?.state || "00:00:00";
-  const [hours, minutes] = current.split(":").map(Number);
+  const time = helperTime(timeEntity);
   const setMinutes = (delta: number) => {
-    const total = ((hours || 0) * 60 + (minutes || 0) + delta + 1440) % 1440;
+    if (!time) return;
+    const total = ((time.minutes + delta) % 1440 + 1440) % 1440;
     ctx.service("input_datetime", "set_datetime", {
       entity_id: timeEntity?.entity_id,
       time: `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}:00`,
     });
   };
-  const unavailable = !timeEntity || ["unknown", "unavailable"].includes(timeEntity.state.toLowerCase());
+  const unavailable = !time;
   const collapsed = configured<boolean>(ctx, "ulm_card_alarm_time_collapse") === true &&
     !activeStates.has(ctx.entity?.state ?? "");
   const active = activeStates.has(ctx.entity?.state ?? "");
@@ -732,12 +727,12 @@ const renderAlarmTimeCard = (ctx: RenderContext): TemplateResult => {
   return ctx.actionSurface(`custom-alarm-time ${configured<boolean>(ctx, "ulm_card_alarm_time_horizontal") ? "is-horizontal" : ""}`, html`
     <div class="custom-card-heading">
       ${sourceIconBubble(ctx, configured<string>(ctx, "ulm_card_alarm_time_icon") || "mdi:alarm", alarmColor, active)}
-      ${heading(ctx, stateLabel(ctx.entity))}
+      ${heading(ctx, stateLabel(ctx.entity, ctx.hass))}
     </div>
     ${collapsed ? nothing : html`<div class="alarm-time-controls">
-      ${button(`Earlier by ${step} minutes`, "mdi:minus", (event) => { event.stopPropagation(); setMinutes(-step); }, unavailable)}
-      <b>${current.slice(0, 5)}</b>
-      ${button(`Later by ${step} minutes`, "mdi:plus", (event) => { event.stopPropagation(); setMinutes(step); }, unavailable)}
+      ${button(localize(ctx.hass, "ui.renderer.earlier", { minutes: step }), "mdi:minus", (event) => { event.stopPropagation(); setMinutes(-step); }, unavailable)}
+      <b>${time?.label ?? stateLabel(timeEntity, ctx.hass)}</b>
+      ${button(localize(ctx.hass, "ui.renderer.later", { minutes: step }), "mdi:plus", (event) => { event.stopPropagation(); setMinutes(step); }, unavailable)}
     </div>`}
   `);
 };
@@ -796,47 +791,47 @@ const renderRoomView = (ctx: RenderContext): TemplateResult => {
     },
   };
   const sensorSlots = [
-    [ctx.config.group_doors, groups.doors, "Doors", "mdi:door-open"],
-    [ctx.config.group_windows, groups.windows, "Windows", "mdi:window-open-variant"],
-    [ctx.config.group_motions, groups.motions, "Motion", "mdi:motion-sensor"],
-    [ctx.config.group_water, groups.water, "Water", "mdi:water"],
+    [ctx.config.group_doors, groups.doors, localizeText(ctx.hass, "Doors"), "mdi:door-open"],
+    [ctx.config.group_windows, groups.windows, localizeText(ctx.hass, "Windows"), "mdi:window-open-variant"],
+    [ctx.config.group_motions, groups.motions, localizeText(ctx.hass, "Motion"), "mdi:motion-sensor"],
+    [ctx.config.group_water, groups.water, localizeText(ctx.hass, "Water"), "mdi:water"],
   ] as const;
   const deviceSlots = [
-    ["lights", ctx.config.group_lights, groups.lights, "Lights", groups.lights?.state === "on" ? "mdi:lightbulb-group" : "mdi:lightbulb-group-off"],
-    ["shutters", ctx.config.group_windows_shutters, groups.shutters, "Shutters", groups.shutters?.state === "on" ? "mdi:window-shutter-open" : "mdi:window-shutter"],
-    ["outlets", ctx.config.group_outlets, groups.outlets, "Outlets", groups.outlets?.state === "on" ? "mdi:power-plug" : "mdi:power-plug-off"],
-    ["tv", ctx.config.group_tv, groups.tv, "Television", groups.tv?.state === "on" ? "mdi:television" : "mdi:television-off"],
+    ["lights", ctx.config.group_lights, groups.lights, localizeText(ctx.hass, "Lights"), groups.lights?.state === "on" ? "mdi:lightbulb-group" : "mdi:lightbulb-group-off"],
+    ["shutters", ctx.config.group_windows_shutters, groups.shutters, localizeText(ctx.hass, "Shutters"), groups.shutters?.state === "on" ? "mdi:window-shutter-open" : "mdi:window-shutter"],
+    ["outlets", ctx.config.group_outlets, groups.outlets, localizeText(ctx.hass, "Outlets"), groups.outlets?.state === "on" ? "mdi:power-plug" : "mdi:power-plug-off"],
+    ["tv", ctx.config.group_tv, groups.tv, localizeText(ctx.hass, "Television"), groups.tv?.state === "on" ? "mdi:television" : "mdi:television-off"],
   ] as const;
   const unavailable = [...sensorSlots.map(([id]) => id), ...deviceSlots.map(([, id]) => id)]
     .reduce<number>((sum, id) => sum + (id ? unavailableCount(id) : 0), 0);
   return ctx.actionSurface("custom-room-view", html`
-    ${cardHeading(ctx, stateLabel(ctx.entity), displayName(ctx.config, ctx.entity, ctx.hass))}
+    ${cardHeading(ctx, stateLabel(ctx.entity, ctx.hass), displayName(ctx.config, ctx.entity, ctx.hass))}
     ${ctx.config.temperature || ctx.config.humidity ? html`
-        <button class="room-view-summary" aria-label="Climate · More information"
+        <button class="room-view-summary" aria-label="${localizeText(ctx.hass, "Climate · More information")}"
           ${controlActions(infoActions(ctx.config.temperature ?? ctx.config.humidity!))}>
           ${sourceIconBubble(climateContext, climateEntity?.attributes.icon || "mdi:home-variant-outline", "var(--primary-color)", false, "room-view-icon")}
           ${heading(climateContext,
-            ctx.config.climate_secondary ?? (ctx.config.humidity && ctx.config.temperature ? stateLabel(humidity) : undefined))}
+            ctx.config.climate_secondary ?? (ctx.config.humidity && ctx.config.temperature ? stateLabel(humidity, ctx.hass) : undefined))}
         </button>
       ` : nothing}
-      <div class="room-view-status" aria-label="Sensor status">
+      <div class="room-view-status" aria-label="${localizeText(ctx.hass, "Sensor status")}">
         ${sensorSlots.map(([entityId, entity, label, sensorIcon]) => entityId && (countOn(entity) || unavailableCount(entityId)) ? html`
           <button class="room-view-indicator ${countOn(entity) ? "is-active" : ""} ${unavailableCount(entityId) ? "is-unavailable" : ""}"
-            aria-label=${`${label}: ${unavailableCount(entityId) ? "Unavailable" : stateLabel(entity)} · More information`}
-            title=${`${label}: ${unavailableCount(entityId) ? "Unavailable" : stateLabel(entity)}`}
+            aria-label=${localize(ctx.hass, "ui.renderer.more_info", { label, state: unavailableCount(entityId) ? localizeText(ctx.hass, "Unavailable") : stateLabel(entity, ctx.hass) })}
+            title=${`${label}: ${unavailableCount(entityId) ? localizeText(ctx.hass, "Unavailable") : stateLabel(entity, ctx.hass)}`}
             ${controlActions(infoActions(entityId))}>
             <ha-icon .icon=${unavailableCount(entityId) ? "mdi:alert-circle-outline" : sensorIcon}></ha-icon>
             ${countOn(entity) > 1 ? html`<i>${countOn(entity)}</i>` : nothing}
           </button>` : nothing)}
         ${lowBatteries.length ? html`
-          <button class="room-view-indicator is-unavailable" aria-label="Low batteries"
+          <button class="room-view-indicator is-unavailable" aria-label="${localizeText(ctx.hass, "Low batteries")}"
             ${controlActions(infoActions(lowBatteries[0]!.entity_id))}>
             <ha-icon icon="mdi:battery-20"></ha-icon><i>${lowBatteries.length}</i>
           </button>` : nothing}
-        ${unavailable ? html`<span class="room-view-warning" role="status" aria-label=${`${unavailable} unavailable`} title=${`${unavailable} unavailable`}><ha-icon icon="mdi:alert-circle-outline"></ha-icon></span>` : nothing}
+        ${unavailable ? html`<span class="room-view-warning" role="status" aria-label=${localize(ctx.hass, "ui.renderer.unavailable_count", { count: unavailable })} title=${localize(ctx.hass, "ui.renderer.unavailable_count", { count: unavailable })}><ha-icon icon="mdi:alert-circle-outline"></ha-icon></span>` : nothing}
         ${!sensorSlots.some(([, entity]) => countOn(entity)) && !lowBatteries.length && !unavailable ? html`<span class="room-view-clear"><ha-icon icon="mdi:check"></ha-icon></span>` : nothing}
       </div>
-      <div class="room-view-actions" aria-label="Device controls">
+      <div class="room-view-actions" aria-label="${localizeText(ctx.hass, "Device controls")}">
         ${deviceSlots.map(([device, entityId, entity, label, deviceIcon]) => entityId ? html`
           <button class=${activeStates.has(entity?.state ?? "") ? "is-active" : ""} aria-label=${label}
             ?disabled=${missing(entity)} ${controlActions(deviceActions(device, entityId))}>
@@ -854,27 +849,27 @@ const renderWelcome = (ctx: RenderContext): TemplateResult => {
   const items = Array.from({ length: 5 }, (_, index) => index + 1).map((index) => ({
     nav: configured<string>(ctx, `nav_${index}`),
     icon: configured<string>(ctx, `icon_${index}`) || "mdi:circle",
-    name: configured<string>(ctx, `name_${index}`) || `Item ${index}`,
+    name: configured<string>(ctx, `name_${index}`) || localize(ctx.hass, "ui.renderer.item", { number: index }),
     color: configured<string>(ctx, `color_${index}`) || "blue",
   })).filter((item) => item.nav);
   return ctx.actionSurface("custom-welcome", html`
     <div class="welcome-toolbar">
-      <button aria-label="Toggle welcome navigation" ?disabled=${!collapse}
+      <button aria-label="${localizeText(ctx.hass, "Toggle welcome navigation")}" ?disabled=${!collapse}
         @pointerdown=${(event: Event) => event.stopPropagation()}
         @click=${(event: Event) => { event.stopPropagation(); if (collapse) ctx.service("input_boolean", "toggle", { entity_id: collapse.entity_id }); }}>
         <ha-icon .icon=${collapsed ? "mdi:chevron-down" : "mdi:chevron-up"}></ha-icon>
       </button>
-      <button aria-label="Weather information" ?disabled=${!weather}
+      <button aria-label="${localizeText(ctx.hass, "Weather information")}" ?disabled=${!weather}
         @pointerdown=${(event: Event) => event.stopPropagation()}
         @click=${(event: Event) => { if (weather) runControlAction(event, ctx, { action: "more-info" }, weather.entity_id); }}>
         <ha-icon icon="mdi:thermometer"></ha-icon>
       </button>
-      <button aria-label="Dashboard settings" @pointerdown=${(event: Event) => event.stopPropagation()}
+      <button aria-label="${localizeText(ctx.hass, "Dashboard settings")}" @pointerdown=${(event: Event) => event.stopPropagation()}
         @click=${(event: Event) => runControlAction(event, ctx, { action: "navigate", navigation_path: "/config/dashboard" })}>
         <ha-icon icon="mdi:cog-outline"></ha-icon>
       </button>
     </div>
-    <div class="welcome-greeting">${heading(ctx, `Good ${new Date().getHours() < 12 ? "morning" : new Date().getHours() < 18 ? "afternoon" : "evening"}`)}</div>
+    <div class="welcome-greeting">${heading(ctx, timeGreeting(ctx.hass, new Date().getHours()))}</div>
     ${collapsed ? nothing : html`<div class="welcome-items">${items.map((item) => html`
       <button class="tone-${item.color}" aria-label=${item.name}
         @pointerdown=${(event: Event) => event.stopPropagation()}
@@ -951,7 +946,7 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
     <div class="custom-card-heading washer-heading">
       ${iconBubble(ctx, "mdi:washing-machine", powered ? "blue" : "grey")}
       ${heading(ctx, label)}
-      ${power ? html`<b class="washer-power">${stateLabel(power)}</b>` : nothing}
+      ${power ? html`<b class="washer-power">${stateLabel(power, ctx.hass)}</b>` : nothing}
     </div>
     ${powered && stages.length ? html`
       <div class="washer-stages" style=${`--washer-stage-count:${stages.length}`}>
@@ -971,19 +966,19 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
     ${powered && remoteEnabled ? html`
       <div class="washer-controls">
         ${button(
-          stopped ? "Start washer" : "Pause washer",
+          stopped ? localizeText(ctx.hass, "Start washer") : localizeText(ctx.hass, "Pause washer"),
           stopped ? "mdi:play" : "mdi:pause",
           (event) => runWasherAction(event, primaryAction),
           primaryAction.action === "none",
         )}
         ${button(
-          "Stop washer",
+          localizeText(ctx.hass, "Stop washer"),
           "mdi:stop",
           (event) => runWasherAction(event, stopAction),
           stopped || stopAction.action === "none",
         )}
         ${delayed ? button(
-          delayedEnabled ? "Disable delayed start" : "Enable delayed start",
+          delayedEnabled ? localizeText(ctx.hass, "Disable delayed start") : localizeText(ctx.hass, "Enable delayed start"),
           "mdi:alarm",
           (event) => runControlAction(event, ctx, { action: "toggle" }, delayed.entity_id),
           !stopped,
@@ -992,18 +987,18 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
     ` : nothing}
     ${powered && remoteEnabled && delayedEnabled && delayedTime ? html`
       <div class="washer-delay-controls">
-        ${button("Move delayed start 15 minutes earlier", "mdi:arrow-down", (event) => setDelayedMinutes(event, -15))}
-        <button class="washer-delay-time" aria-label="Move delayed start 1 minute later"
+        ${button(localizeText(ctx.hass, "Move delayed start 15 minutes earlier"), "mdi:arrow-down", (event) => setDelayedMinutes(event, -15))}
+        <button class="washer-delay-time" aria-label="${localizeText(ctx.hass, "Move delayed start 1 minute later")}"
           @pointerdown=${(event: Event) => event.stopPropagation()}
           @click=${(event: Event) => setDelayedMinutes(event, 1)}>${delayedTime.state}</button>
-        ${button("Move delayed start 15 minutes later", "mdi:arrow-up", (event) => setDelayedMinutes(event, 15))}
+        ${button(localizeText(ctx.hass, "Move delayed start 15 minutes later"), "mdi:arrow-up", (event) => setDelayedMinutes(event, 15))}
       </div>
     ` : nothing}
     ${(door || finished || remote) ? html`
       <div class="washer-status">
-        ${door ? html`<span><ha-icon icon="mdi:door"></ha-icon>${stateLabel(door)}</span>` : nothing}
-        ${finished ? html`<span><ha-icon icon="mdi:check-circle"></ha-icon>${stateLabel(finished)}</span>` : nothing}
-        ${remote ? html`<span><ha-icon icon="mdi:remote"></ha-icon>${stateLabel(remote)}</span>` : nothing}
+        ${door ? html`<span><ha-icon icon="mdi:door"></ha-icon>${stateLabel(door, ctx.hass)}</span>` : nothing}
+        ${finished ? html`<span><ha-icon icon="mdi:check-circle"></ha-icon>${stateLabel(finished, ctx.hass)}</span>` : nothing}
+        ${remote ? html`<span><ha-icon icon="mdi:remote"></ha-icon>${stateLabel(remote, ctx.hass)}</span>` : nothing}
       </div>
     ` : nothing}
   `);
@@ -1086,7 +1081,7 @@ const renderSunCard = (ctx: RenderContext): TemplateResult => {
   const moonNumber = (entity: HassEntity | undefined, maximumFractionDigits = 2): string => {
     if (!entity || ["unknown", "unavailable"].includes(entity.state)) return "—";
     const value = numeric(entity.state);
-    if (value === undefined) return stateLabel(entity);
+    if (value === undefined) return stateLabel(entity, ctx.hass);
     const unit = String(attr(entity, "unit_of_measurement") ?? "");
     return `${new Intl.NumberFormat(locale, { maximumFractionDigits }).format(value)}${unit ? ` ${unit}` : ""}`;
   };
@@ -1094,7 +1089,7 @@ const renderSunCard = (ctx: RenderContext): TemplateResult => {
     if (!entity || ["unknown", "unavailable"].includes(entity.state)) return "—";
     const value = new Date(entity.state);
     return Number.isNaN(value.getTime())
-      ? stateLabel(entity)
+      ? stateLabel(entity, ctx.hass)
       : new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).format(value);
   };
   const moonPhaseState = moonPhase?.state ?? "unknown";
@@ -1106,10 +1101,10 @@ const renderSunCard = (ctx: RenderContext): TemplateResult => {
   return ctx.actionSurface(`custom-sun-card ${configured<boolean>(ctx, "darkMode") ? "is-dark" : ""}`, html`
     ${title ? html`<b class="sun-title">${title}</b>` : nothing}
     <div class="astronomy-times">
-      <span><small>Sunrise</small><b>${format(rising)}</b></span>
-      <span><small>Moonrise</small><b>${format(moonRising?.state)}</b></span>
-      <span><small>Moonset</small><b>${format(moonSetting?.state)}</b></span>
-      <span><small>Sunset</small><b>${format(setting)}</b></span>
+      <span><small>${localizeText(ctx.hass, "Sunrise")}</small><b>${format(rising)}</b></span>
+      <span><small>${localizeText(ctx.hass, "Moonrise")}</small><b>${format(moonRising?.state)}</b></span>
+      <span><small>${localizeText(ctx.hass, "Moonset")}</small><b>${format(moonSetting?.state)}</b></span>
+      <span><small>${localizeText(ctx.hass, "Sunset")}</small><b>${format(setting)}</b></span>
     </div>
     <div class="sun-arc astronomy-arc">
       <svg viewBox="0 0 300 90" preserveAspectRatio="none"><path class="sun-night" d="M0,62 Q60,115 105,62"></path><path class="sun-day" d="M0,62 Q150,-45 300,62"></path><line x1="0" y1="62" x2="300" y2="62"></line></svg>
@@ -1121,18 +1116,18 @@ const renderSunCard = (ctx: RenderContext): TemplateResult => {
         </span>
       ` : nothing}
     </div>
-    <div class="sun-footer"><span><small>Dawn</small><b>${format(dawn)}</b></span><span><small>Solar noon</small><b>${format(noon)}</b></span><span><small>Dusk</small><b>${format(dusk)}</b></span></div>
+    <div class="sun-footer"><span><small>${localizeText(ctx.hass, "Dawn")}</small><b>${format(dawn)}</b></span><span><small>${localizeText(ctx.hass, "Solar noon")}</small><b>${format(noon)}</b></span><span><small>${localizeText(ctx.hass, "Dusk")}</small><b>${format(dusk)}</b></span></div>
     <div class="astronomy-position-rows">
       <div>
-        <b>Sun:</b>
-        <span>Azimuth <strong>${azimuth ?? "—"}°</strong></span>
-        <span>Elevation <strong>${elevation ?? "—"}°</strong></span>
+        <b>${localizeText(ctx.hass, "Sun:")}</b>
+        <span>${localizeText(ctx.hass, "Azimuth")}<strong>${azimuth ?? "—"}°</strong></span>
+        <span>${localizeText(ctx.hass, "Elevation")}<strong>${elevation ?? "—"}°</strong></span>
       </div>
       ${showMoon ? html`
         <div>
-          <b>Moon:</b>
-          <span>Azimuth <strong>${moonNumber(moonAzimuth)}</strong></span>
-          <span>Elevation <strong>${moonNumber(moonAltitude)}</strong></span>
+          <b>${localizeText(ctx.hass, "Moon:")}</b>
+          <span>${localizeText(ctx.hass, "Azimuth")}<strong>${moonNumber(moonAzimuth)}</strong></span>
+          <span>${localizeText(ctx.hass, "Elevation")}<strong>${moonNumber(moonAltitude)}</strong></span>
         </div>
       ` : nothing}
     </div>
@@ -1141,13 +1136,13 @@ const renderSunCard = (ctx: RenderContext): TemplateResult => {
         <div class="moon-heading">
           <span class="moon-symbol"><ha-icon .icon=${moonPhaseIcon(moonPhaseState)}></ha-icon></span>
           <span class="moon-copy">
-            <b>Moon</b>
-            <small>${stateLabel(moonPhase)} · ${moonAbove ? "Above horizon" : "Below horizon"}</small>
+            <b>${localizeText(ctx.hass, "Moon")}</b>
+            <small>${stateLabel(moonPhase, ctx.hass)} · ${moonAbove ? localizeText(ctx.hass, "Above horizon") : localizeText(ctx.hass, "Below horizon")}</small>
           </span>
         </div>
         <div class="moon-metrics">
-          ${moonNextFull ? html`<span class="moon-metric"><ha-icon .icon=${"mdi:moon-full"}></ha-icon><span><small>Next full Moon</small><b>${moonDate(moonNextFull)}</b></span></span>` : nothing}
-          ${moonNextNew ? html`<span class="moon-metric"><ha-icon .icon=${"mdi:moon-new"}></ha-icon><span><small>Next new Moon</small><b>${moonDate(moonNextNew)}</b></span></span>` : nothing}
+          ${moonNextFull ? html`<span class="moon-metric"><ha-icon .icon=${"mdi:moon-full"}></ha-icon><span><small>${localizeText(ctx.hass, "Next full Moon")}</small><b>${moonDate(moonNextFull)}</b></span></span>` : nothing}
+          ${moonNextNew ? html`<span class="moon-metric"><ha-icon .icon=${"mdi:moon-new"}></ha-icon><span><small>${localizeText(ctx.hass, "Next new Moon")}</small><b>${moonDate(moonNextNew)}</b></span></span>` : nothing}
         </div>
       </section>
     ` : nothing}
@@ -1155,29 +1150,28 @@ const renderSunCard = (ctx: RenderContext): TemplateResult => {
 };
 
 const renderInputDateTime = (ctx: RenderContext): TemplateResult => {
-  const available = Boolean(ctx.entity && !["unavailable", "unknown"].includes(ctx.entity.state));
-  const state = available ? ctx.entity!.state : "00:00:00";
-  const time = state.split(" ").at(-1) || "00:00:00";
-  const [hours, minutes] = time.split(":").map(Number);
+  const time = helperTime(ctx.entity);
+  const available = Boolean(time);
   const setMinutes = (delta: number) => {
-    const total = ((hours || 0) * 60 + (minutes || 0) + delta + 1440) % 1440;
+    if (!time) return;
+    const total = ((time.minutes + delta) % 1440 + 1440) % 1440;
     ctx.service("input_datetime", "set_datetime", {
       entity_id: ctx.config.entity,
       time: `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}:00`,
     });
   };
   return ctx.actionSurface("custom-input-datetime", html`
-    <div class="custom-card-heading">${iconBubble(ctx, "mdi:calendar-clock", "green")}${heading(ctx, stateLabel(ctx.entity))}</div>
+    <div class="custom-card-heading">${iconBubble(ctx, "mdi:calendar-clock", "green")}${heading(ctx, stateLabel(ctx.entity, ctx.hass))}</div>
     <div class="input-datetime-controls">
-      ${button("15 minutes earlier", "mdi:arrow-down", (event) => { event.stopPropagation(); setMinutes(-15); }, !available)}
+      ${button(localizeText(ctx.hass, "15 minutes earlier"), "mdi:arrow-down", (event) => { event.stopPropagation(); setMinutes(-15); }, !available)}
       ${holdButton(
-        "One minute later; hold for one minute earlier",
-        html`<b>${available ? time.slice(0, 5) : "Unavailable"}</b>`,
+        localizeText(ctx.hass, "One minute later; hold for one minute earlier"),
+        html`<b>${time?.label ?? stateLabel(ctx.entity, ctx.hass)}</b>`,
         () => setMinutes(1),
         () => setMinutes(-1),
         !available,
       )}
-      ${button("15 minutes later", "mdi:arrow-up", (event) => { event.stopPropagation(); setMinutes(15); }, !available)}
+      ${button(localizeText(ctx.hass, "15 minutes later"), "mdi:arrow-up", (event) => { event.stopPropagation(); setMinutes(15); }, !available)}
     </div>
   `);
 };
@@ -1214,8 +1208,8 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
       ? "media_stop"
       : playbackPower && ["idle", "on", "off", "standby"].includes(controlsState ?? "") && supports(SONOS_MEDIA_FEATURES.play)
         ? "media_play" : undefined;
-  const powerLabel = powerService === "media_stop" ? "Standby (stop playback)"
-    : powerService === "media_play" ? "Resume playback" : powerOn ? "Turn on" : "Turn off";
+  const powerLabel = powerService === "media_stop" ? localizeText(ctx.hass, "Standby (stop playback)")
+    : powerService === "media_play" ? localizeText(ctx.hass, "Resume playback") : powerOn ? localizeText(ctx.hass, "Turn on") : localizeText(ctx.hass, "Turn off");
   const powerControl = showPower && powerService
     ? mediaButton(powerLabel, "mdi:power", powerService)
     : nothing;
@@ -1229,7 +1223,7 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
         : supports(SONOS_MEDIA_FEATURES.stop) ? "media_stop" : undefined;
   const playbackControl = mediaControls.includes("play_pause_stop") && playbackService
     ? mediaButton(
-      playbackService === "media_stop" ? "Stop" : features === undefined ? "Play or pause" : playing ? "Pause" : "Play",
+      playbackService === "media_stop" ? localizeText(ctx.hass, "Stop") : features === undefined ? localizeText(ctx.hass, "Play or pause") : playing ? localizeText(ctx.hass, "Pause") : localizeText(ctx.hass, "Play"),
       playbackService === "media_stop" ? "mdi:stop" : playing ? "mdi:pause" : "mdi:play",
       playbackService,
     ) : nothing;
@@ -1246,7 +1240,7 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
   const volumeStep = numeric(ctx.config.ulm_card_media_player_enable_volume_adjust);
   const steppedVolume = volumeStep !== undefined && volumeStep > 0 && supports(SONOS_MEDIA_FEATURES.volumeSet);
   const volumeButton = (up: boolean) => mediaButton(
-    up ? "Volume up" : "Volume down", up ? "mdi:volume-plus" : "mdi:volume-minus",
+    up ? localizeText(ctx.hass, "Volume up") : localizeText(ctx.hass, "Volume down"), up ? "mdi:volume-plus" : "mdi:volume-minus",
     steppedVolume ? "volume_set" : up ? "volume_up" : "volume_down",
     steppedVolume ? { volume_level: Math.max(0, Math.min(1, volumeLevel + (up ? 1 : -1) * volumeStep)) } : undefined,
   );
@@ -1257,7 +1251,7 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
   const album = ctx.config.ulm_card_media_player_more_info === true ? attr(ctx.entity, "media_album_name") : undefined;
   const mediaDetails = [artist, album].filter(Boolean).join(" · ");
   const label = mediaDetails || (source && !["idle", "paused", "unavailable", "unknown"].includes(state ?? "")
-    ? String(source) : stateLabel(ctx.entity));
+    ? String(source) : stateLabel(ctx.entity, ctx.hass));
   const mediaContext = { ...ctx, config: { ...ctx.config,
     primary_info: title && !ctx.config.name && [undefined, "default", "name"].includes(ctx.config.primary_info)
       ? undefined : ctx.config.primary_info,
@@ -1291,7 +1285,7 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
             }
           }}>
           <ha-icon .icon=${control.icon}></ha-icon>
-          <span>${control.label}</span>
+          <span>${localizeText(ctx.hass, control.label)}</span>
         </button>
       `)}
     </div>` : nothing}
@@ -1304,10 +1298,10 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
         return html`
           <label>
             <ha-icon .icon=${control.icon}></ha-icon>
-            <span>${control.label}</span>
+            <span>${localizeText(ctx.hass, control.label)}</span>
             <input type="range" min=${min} max=${max} step=${step} .value=${String(value)}
               ?disabled=${unavailable || ["unavailable", "unknown"].includes(entity.state)}
-              aria-label=${control.label}
+              aria-label=${localizeText(ctx.hass, control.label)}
               @change=${(event: Event) => {
                 event.stopPropagation();
                 if (unavailable || ["unavailable", "unknown"].includes(entity.state)) return;
@@ -1334,31 +1328,31 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
       ${powerControl}
       ${!collapsed ? html`
         ${volumeControls.includes("volume_mute") && supports(SONOS_MEDIA_FEATURES.volumeMute)
-          ? html`<button class="ulm-control" aria-label=${muted ? "Unmute" : "Mute"} aria-pressed=${muted}
+          ? html`<button class="ulm-control" aria-label=${muted ? localizeText(ctx.hass, "Unmute") : localizeText(ctx.hass, "Mute")} aria-pressed=${muted}
               ?disabled=${controlsUnavailable} @click=${() => mediaService("volume_mute", { is_volume_muted: !muted })}>
               <ha-icon .icon=${muted ? "mdi:volume-off" : "mdi:volume-high"}></ha-icon>
             </button>` : nothing}
         ${volumeButtons ? volumeButton(false) : nothing}
         ${mediaControls.includes("shuffle") && supports(SONOS_MEDIA_FEATURES.shuffle)
-          ? html`<button class="ulm-control" aria-label="Shuffle" aria-pressed=${attr(controlsEntity, "shuffle") === true}
+          ? html`<button class="ulm-control" aria-label="${localizeText(ctx.hass, "Shuffle")}" aria-pressed=${attr(controlsEntity, "shuffle") === true}
               ?disabled=${controlsUnavailable} @click=${() => mediaService("shuffle_set", { shuffle: attr(controlsEntity, "shuffle") !== true })}>
               <ha-icon icon="mdi:shuffle"></ha-icon>
             </button>` : nothing}
         ${mediaControls.includes("previous") && supports(SONOS_MEDIA_FEATURES.previous)
-          ? mediaButton("Previous track", "mdi:skip-previous", "media_previous_track") : nothing}
+          ? mediaButton(localizeText(ctx.hass, "Previous track"), "mdi:skip-previous", "media_previous_track") : nothing}
         ${playbackControl}
         ${mediaControls.includes("next") && supports(SONOS_MEDIA_FEATURES.next)
-          ? mediaButton("Next track", "mdi:skip-next", "media_next_track") : nothing}
+          ? mediaButton(localizeText(ctx.hass, "Next track"), "mdi:skip-next", "media_next_track") : nothing}
         ${mediaControls.includes("repeat") && supports(SONOS_MEDIA_FEATURES.repeat)
-          ? mediaButton(`Repeat: ${repeat}`, repeat === "one" ? "mdi:repeat-once" : repeat === "off" ? "mdi:repeat-off" : "mdi:repeat",
+          ? mediaButton(localize(ctx.hass, "ui.renderer.repeat", { mode: localizeText(ctx.hass, repeat === "off" ? "Off" : repeat === "one" ? "One" : "All") }), repeat === "one" ? "mdi:repeat-once" : repeat === "off" ? "mdi:repeat-off" : "mdi:repeat",
             "repeat_set", { repeat: repeatNext }) : nothing}
-        ${mediaControls.includes("sources") ? button("Sources and details", "mdi:playlist-music",
+        ${mediaControls.includes("sources") ? button(localizeText(ctx.hass, "Sources and details"), "mdi:playlist-music",
           (event) => runControlAction(event, ctx, { action: "more-info" }, controlsEntityId), controlsUnavailable) : nothing}
         ${volumeButtons ? volumeButton(true) : nothing}
         ${volumeControls.includes("volume_set") && supports(SONOS_MEDIA_FEATURES.volumeSet)
           ? html`<label class="sonos-volume">
               <input type="range" min="0" max="100" step="1" .value=${String(volume)}
-                aria-label="Volume level" ?disabled=${controlsUnavailable}
+                aria-label="${localizeText(ctx.hass, "Volume level")}" ?disabled=${controlsUnavailable}
                 @change=${(event: Event) => {
                   stopEvent(event);
                   mediaService("volume_set", {
@@ -1381,7 +1375,7 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
             @click=${stopEvent} @dblclick=${stopEvent} @keydown=${stopEvent} @keyup=${stopEvent}
             @pointerup=${stopEvent} @pointercancel=${stopEvent}>
             <summary>
-              <span>More details</span>
+              <span>${localizeText(ctx.hass, "More details")}</span>
               <ha-icon icon="mdi:chevron-down"></ha-icon>
             </summary>
             ${detailsContent}
@@ -1393,7 +1387,7 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
         @click=${stopEvent} @dblclick=${stopEvent} @keydown=${stopEvent} @keyup=${stopEvent}>
         ${shortcuts.map((shortcut, index) => html`
           <button
-            aria-label=${shortcut.name || `Play shortcut ${index + 1}`}
+            aria-label=${shortcut.name || localize(ctx.hass, "ui.renderer.shortcut", { number: index + 1 })}
             title=${shortcut.name || shortcut.id || ""}
             ?disabled=${unavailable}
             @click=${(event: Event) => {
@@ -1425,12 +1419,12 @@ const renderPrinter = (ctx: RenderContext): TemplateResult => {
   return ctx.actionSurface("custom-printer", html`
     <div class="custom-card-heading">
       ${iconBubble(ctx, "mdi:printer", ctx.entity?.state === "idle" ? "grey" : "blue")}
-      ${heading(ctx, stateLabel(ctx.entity))}
+      ${heading(ctx, stateLabel(ctx.entity, ctx.hass))}
     </div>
     <div class="toner-bars">${details.map((entity, index) => {
       if (!entity) return nothing;
       const value = Math.max(0, Math.min(100, numeric(entity.state) ?? 0));
-      return html`<span style=${`--toner:${colors[index]};--level:${value}%`}><i><em></em><b>${stateLabel(entity)}</b></i></span>`;
+      return html`<span style=${`--toner:${colors[index]};--level:${value}%`}><i><em></em><b>${stateLabel(entity, ctx.hass)}</b></i></span>`;
     })}</div>
   `);
 };
@@ -1460,13 +1454,13 @@ const renderNasMetrics = (ctx: RenderContext): TemplateResult => {
       fill="none" stroke=${color} stroke-width="6" stroke-linecap="round"
       stroke-dasharray=${circumference} stroke-dashoffset=${offset}></circle>`;
   };
-  const status = ctx.entity?.state === "on" ? "Access" : stateLabel(ctx.entity);
+  const status = ctx.entity?.state === "on" ? localizeText(ctx.hass, "Access") : stateLabel(ctx.entity, ctx.hass);
   const statusTile = html`
-    <button class="nas-metrics-tile status-tile" aria-label="Open NAS status"
+    <button class="nas-metrics-tile status-tile" aria-label="${localizeText(ctx.hass, "Open NAS status")}"
       @pointerdown=${(event: Event) => event.stopPropagation()}
       @click=${(event: Event) => runControlAction(event, ctx, { action: "more-info" })}>
       <span class="nas-metrics-tile-icon tone-blue"><ha-icon icon="mdi:nas"></ha-icon></span>
-      <span><b>Status</b><small>${status}</small></span>
+      <span><b>${localizeText(ctx.hass, "Status")}</b><small>${status}</small></span>
     </button>`;
   if (!online) return ctx.actionSurface("custom-nas-metrics is-off", html`<div class="nas-metrics-top">${statusTile}</div>`);
   return ctx.actionSurface("custom-nas-metrics is-on", html`
@@ -1479,16 +1473,16 @@ const renderNasMetrics = (ctx: RenderContext): TemplateResult => {
             : ""}>
           <ha-icon .icon=${configured<string>(ctx, "disk_icon") || "mdi:harddisk"}></ha-icon>
         </span>
-        <span><b>${configured<string>(ctx, "disk_name") || "Disk"}</b><small>${stateLabel(disk)}</small></span>
+        <span><b>${configured<string>(ctx, "disk_name") || localizeText(ctx.hass, "Disk")}</b><small>${stateLabel(disk, ctx.hass)}</small></span>
       </div>
     </div>
     <div class="nas-metrics-body">
       <div class="nas-metrics-metrics">
-        <span><i class=${hasConfiguredColor("temperature_color") ? "" : "tone-orange"} style=${hasConfiguredColor("temperature_color") ? `color:${colorValue("temperature_color", "orange")}` : ""}><ha-icon .icon=${configured<string>(ctx, "temperature_icon") || "mdi:thermometer"}></ha-icon></i><span><b>${configured<string>(ctx, "temperature_name") || "Temp"}</b><small>${stateLabel(temperature)}</small></span></span>
-        <span><i class=${hasConfiguredColor("memory_color") ? "" : "tone-blue"} style=${hasConfiguredColor("memory_color") ? `color:${colorValue("memory_color", "blue")}` : ""}><ha-icon .icon=${configured<string>(ctx, "memory_icon") || "mdi:memory"}></ha-icon></i><span><b>${configured<string>(ctx, "memory_name") || "Memory"}</b><small>${stateLabel(memory)}</small></span></span>
-        <span><i class=${hasConfiguredColor("cpu_color") ? "" : "tone-green"} style=${hasConfiguredColor("cpu_color") ? `color:${colorValue("cpu_color", "green")}` : ""}><ha-icon .icon=${configured<string>(ctx, "cpu_icon") || "mdi:cpu-64-bit"}></ha-icon></i><span><b>${configured<string>(ctx, "cpu_name") || "CPU"}</b><small>${stateLabel(cpu)}</small></span></span>
+        <span><i class=${hasConfiguredColor("temperature_color") ? "" : "tone-orange"} style=${hasConfiguredColor("temperature_color") ? `color:${colorValue("temperature_color", "orange")}` : ""}><ha-icon .icon=${configured<string>(ctx, "temperature_icon") || "mdi:thermometer"}></ha-icon></i><span><b>${configured<string>(ctx, "temperature_name") || localizeText(ctx.hass, "Temp")}</b><small>${stateLabel(temperature, ctx.hass)}</small></span></span>
+        <span><i class=${hasConfiguredColor("memory_color") ? "" : "tone-blue"} style=${hasConfiguredColor("memory_color") ? `color:${colorValue("memory_color", "blue")}` : ""}><ha-icon .icon=${configured<string>(ctx, "memory_icon") || "mdi:memory"}></ha-icon></i><span><b>${configured<string>(ctx, "memory_name") || localizeText(ctx.hass, "Memory")}</b><small>${stateLabel(memory, ctx.hass)}</small></span></span>
+        <span><i class=${hasConfiguredColor("cpu_color") ? "" : "tone-green"} style=${hasConfiguredColor("cpu_color") ? `color:${colorValue("cpu_color", "green")}` : ""}><ha-icon .icon=${configured<string>(ctx, "cpu_icon") || "mdi:cpu-64-bit"}></ha-icon></i><span><b>${configured<string>(ctx, "cpu_name") || localizeText(ctx.hass, "CPU")}</b><small>${stateLabel(cpu, ctx.hass)}</small></span></span>
       </div>
-      <svg class="nas-metrics-rings" viewBox="0 0 140 140" role="img" aria-label="NAS temperature, memory, and CPU utilization">
+      <svg class="nas-metrics-rings" viewBox="0 0 140 140" role="img" aria-label="${localizeText(ctx.hass, "NAS temperature, memory, and CPU utilization")}">
         ${[58, 48, 38].map((radius) => svg`<circle class="nas-metrics-ring-track" cx="70" cy="70" r=${radius}
           fill="none" stroke="#dedede" stroke-width="6"></circle>`)}
         ${ring(temperature, 58, colorValue("temperature_color", "orange"), numeric(configured(ctx, "temperature_max")) ?? legacyMax("entity_1") ?? 100)}
@@ -1503,17 +1497,17 @@ const renderTablet = (ctx: RenderContext): TemplateResult => {
   const batteryEntity = linkedState(ctx, "battery_entity");
   const battery = Math.max(0, Math.min(100, numeric(batteryEntity?.state) ?? 0));
   const controls = [
-    ["tablet_button_usb_entity", "mdi:usb", "green", "Toggle USB"],
-    ["tablet_button_motion_entity", "mdi:motion-sensor", "green", "Toggle motion"],
-    ["tablet_button_display_entity", "mdi:monitor", "green", "Toggle display"],
-    ["tablet_restart_entity", "mdi:restart-alert", "blue", "Restart tablet"],
-    ["tablet_maintenance_entity", "mdi:account-hard-hat-outline", "orange", "Toggle maintenance mode"],
-    ["tablet_reload_entity", "mdi:reload", "blue", "Reload tablet"],
+    ["tablet_button_usb_entity", "mdi:usb", "green", localizeText(ctx.hass, "Toggle USB")],
+    ["tablet_button_motion_entity", "mdi:motion-sensor", "green", localizeText(ctx.hass, "Toggle motion")],
+    ["tablet_button_display_entity", "mdi:monitor", "green", localizeText(ctx.hass, "Toggle display")],
+    ["tablet_restart_entity", "mdi:restart-alert", "blue", localizeText(ctx.hass, "Restart tablet")],
+    ["tablet_maintenance_entity", "mdi:account-hard-hat-outline", "orange", localizeText(ctx.hass, "Toggle maintenance mode")],
+    ["tablet_reload_entity", "mdi:reload", "blue", localizeText(ctx.hass, "Reload tablet")],
   ] as const;
   const metricCandidates: Array<readonly [string, HassEntity | undefined]> = [
-    ["RAM", linkedState(ctx, "tablet_ram_entity")],
-    ["Disk", linkedState(ctx, "tablet_disk_entity")],
-    ["Power", linkedState(ctx, "tablet_power_entity")],
+    [localizeText(ctx.hass, "RAM"), linkedState(ctx, "tablet_ram_entity")],
+    [localizeText(ctx.hass, "Disk"), linkedState(ctx, "tablet_disk_entity")],
+    [localizeText(ctx.hass, "Power"), linkedState(ctx, "tablet_power_entity")],
   ];
   const metricEntities: Array<readonly [string, HassEntity]> = metricCandidates.flatMap(
     ([label, entity]) => entity ? [[label, entity] as const] : [],
@@ -1524,7 +1518,7 @@ const renderTablet = (ctx: RenderContext): TemplateResult => {
       return entity ? [[controlIcon, tone, label, entity] as const] : [];
     },
   );
-  const status = ctx.entity?.state === "on" ? "Access" : stateLabel(ctx.entity);
+  const status = ctx.entity?.state === "on" ? localizeText(ctx.hass, "Access") : stateLabel(ctx.entity, ctx.hass);
   const activateTabletControl = (event: Event, entity?: HassEntity): void => {
     event.stopPropagation();
     if (!entity) return;
@@ -1547,11 +1541,11 @@ const renderTablet = (ctx: RenderContext): TemplateResult => {
       </button>`;
     })}</div>` : nothing}
     ${metricEntities.length ? html`<div class="tablet-metrics">${metricEntities.map(([label, entity]) => html`
-      <span class=${entity.state.toLowerCase() === "unavailable" ? "is-unavailable" : ""}><b>${stateLabel(entity)}</b><small>${label}</small></span>
+      <span class=${entity.state.toLowerCase() === "unavailable" ? "is-unavailable" : ""}><b>${stateLabel(entity, ctx.hass)}</b><small>${label}</small></span>
     `)}</div>` : nothing}
     ${batteryEntity ? html`<div class="tablet-battery-row">
       <span class="tablet-battery-icon"><ha-icon icon="mdi:battery"></ha-icon></span>
-      <span><b>${stateLabel(batteryEntity)}</b><small>Battery</small></span>
+      <span><b>${stateLabel(batteryEntity, ctx.hass)}</b><small>${localizeText(ctx.hass, "Battery")}</small></span>
     </div>
     <div class="tablet-battery-bar"><i style=${`width:${battery}%`}></i><b>${battery}%</b></div>` : nothing}
   `);
@@ -1584,13 +1578,13 @@ const renderConsoleCard = (ctx: RenderContext): TemplateResult => {
       attr(ctx.entity, "entity_picture");
   const activeArtwork = Boolean(artwork);
   const playing = nowPlaying && !["unknown", "unavailable", "none", ""].includes(nowPlaying.state.toLowerCase())
-    ? stateLabel(nowPlaying)
+    ? stateLabel(nowPlaying, ctx.hass)
     : String(attr(ctx.entity, "media_title") ?? "");
   const consoleName = displayName(ctx.config, ctx.entity, ctx.hass);
   const social = [
-    { entity: followers, icon: "mdi:account-arrow-left", label: "Followers" },
-    { entity: following, icon: "mdi:account-arrow-right", label: "Following" },
-    { entity: friends, icon: "mdi:account-multiple", label: "Friends" },
+    { entity: followers, icon: "mdi:account-arrow-left", label: localizeText(ctx.hass, "Followers") },
+    { entity: following, icon: "mdi:account-arrow-right", label: localizeText(ctx.hass, "Following") },
+    { entity: friends, icon: "mdi:account-multiple", label: localizeText(ctx.hass, "Friends") },
   ].filter(({ entity }) => entity);
   const stats = [
     {
@@ -1623,12 +1617,12 @@ const renderConsoleCard = (ctx: RenderContext): TemplateResult => {
             ${picture && ctx.config.icon_type !== "icon" ? nothing : renderEntityIcon(ctx.hass, ctx.entity, ctx.config.icon, presentation.icon)}
           </span>
         ` : nothing}
-        ${heading(ctx, playing || stateLabel(ctx.entity), consoleName)}
+        ${heading(ctx, playing || stateLabel(ctx.entity, ctx.hass), consoleName)}
         ${stats.length ? html`<span class="console-top-stats">
           ${stats.map(({ entity, icon }) => html`
             <span title=${String(attr(entity, "friendly_name") ?? "")}>
               <ha-icon .icon=${icon}></ha-icon>
-              <b>${stateLabel(entity)}</b>
+              <b>${stateLabel(entity, ctx.hass)}</b>
             </span>
           `)}
         </span>` : nothing}
@@ -1640,11 +1634,11 @@ const renderConsoleCard = (ctx: RenderContext): TemplateResult => {
       </div>` : nothing}
       ${configured<boolean>(ctx, "console_show_controls") !== false && power ? html`
         <div class="console-controls">
-          <button aria-label=${powerOn ? "Turn console off" : "Turn console on"}
+          <button aria-label=${powerOn ? localizeText(ctx.hass, "Turn console off") : localizeText(ctx.hass, "Turn console on")}
             @pointerdown=${(event: Event) => event.stopPropagation()}
             @click=${togglePower}>
             <ha-icon .icon=${powerOn ? "mdi:power" : "mdi:power-standby"}></ha-icon>
-            <span>${powerOn ? "Power off" : "Power on"}</span>
+            <span>${powerOn ? localizeText(ctx.hass, "Power off") : localizeText(ctx.hass, "Power on")}</span>
           </button>
         </div>
       ` : nothing}
@@ -1665,7 +1659,7 @@ const renderEntityCarousel = (ctx: RenderContext): TemplateResult => {
       ${showPresentation ? html`
         <div class="metric-heading entity-carousel-presentation">
           ${sourceIconBubble(ctx, icon(ctx, "mdi:view-carousel"), "var(--primary-color)", true)}
-          ${heading(ctx, stateLabel(ctx.entity), ctx.config.name ? displayName(ctx.config, ctx.entity, ctx.hass) : ctx.descriptor.name)}
+          ${heading(ctx, stateLabel(ctx.entity, ctx.hass), ctx.config.name ? displayName(ctx.config, ctx.entity, ctx.hass) : ctx.descriptor.name)}
         </div>
       ` : nothing}
       <mushroom-addition-entity-carousel
@@ -1707,26 +1701,26 @@ const renderAdvancedHomeEnergyManagement = (ctx: RenderContext): TemplateResult 
     ? ctx.hass.states[config.energy_mode_entity]?.state ?? "-"
     : "-";
   const modeNames: Record<string, string> = {
-    "Smart Matching": config.mode_solar_first_label ?? "Solar first",
-    "Dynamic Smart Matching": config.mode_smart_saving_label ?? "Smart saving",
-    "Dynamic Trading + Smart Matching": config.mode_smart_trading_label ?? "Smart trading",
+    "Smart Matching": config.mode_solar_first_label ?? localizeText(ctx.hass, "Solar first"),
+    "Dynamic Smart Matching": config.mode_smart_saving_label ?? localizeText(ctx.hass, "Smart saving"),
+    "Dynamic Trading + Smart Matching": config.mode_smart_trading_label ?? localizeText(ctx.hass, "Smart trading"),
   };
   const automatic = config.energy_auto_control_entity
     ? ctx.hass.states[config.energy_auto_control_entity]?.state === "on"
     : false;
   const modeLabel = `${modeNames[modeRaw] ?? modeRaw} · ${
-    automatic ? config.energy_auto_label ?? "Auto" : config.energy_manual_label ?? "Manual"
+    automatic ? config.energy_auto_label ?? localizeText(ctx.hass, "Auto") : config.energy_manual_label ?? localizeText(ctx.hass, "Manual")
   }`;
   const batteryState = battery > 20
-    ? `${config.energy_charge_label ?? "Charging"} ${formatPower(battery)}`
+    ? `${config.energy_charge_label ?? localizeText(ctx.hass, "Charging")} ${formatPower(battery)}`
     : battery < -20
-      ? `${config.energy_discharge_label ?? "Discharging"} ${formatPower(battery)}`
-      : config.energy_idle_label ?? "Idle";
+      ? `${config.energy_discharge_label ?? localizeText(ctx.hass, "Discharging")} ${formatPower(battery)}`
+      : config.energy_idle_label ?? localizeText(ctx.hass, "Idle");
   const gridLabel = grid > 20
-    ? config.energy_grid_import_label ?? "GRID · Import"
+    ? config.energy_grid_import_label ?? localizeText(ctx.hass, "GRID · Import")
     : grid < -20
-      ? config.energy_grid_export_label ?? "GRID · Export"
-      : config.energy_grid_label ?? "GRID";
+      ? config.energy_grid_export_label ?? localizeText(ctx.hass, "GRID · Export")
+      : config.energy_grid_label ?? localizeText(ctx.hass, "GRID");
   const importColor = config.import_color ?? "#ff9f43";
   const exportColor = config.export_color ?? "#4cd98b";
   const batteryColor = config.battery_color ?? "#3b82f6";
@@ -1782,10 +1776,10 @@ const renderAdvancedHomeEnergyManagement = (ctx: RenderContext): TemplateResult 
     ${showPresentation ? html`
       <div class="hems-presentation">${cardHeading(ctx)}</div>
     ` : nothing}
-    <svg class="hems-flow" viewBox="0 0 760 650" role="img" aria-label="Advanced home energy live flow">
+    <svg class="hems-flow" viewBox="0 0 760 650" role="img" aria-label="${localizeText(ctx.hass, "Advanced home energy live flow")}">
       <circle cx="380" cy="300" r="80" class="hems-track hems-battery-track"></circle>
       ${bar(80, 0, Math.min(batteryLevel, 99.9) * 3.6, 1, batteryColor)}
-      <text x="380" y="270" class="hems-muted hems-center">▮ Battery</text>
+      <text x="380" y="270" class="hems-muted hems-center">${localizeText(ctx.hass, "▮ Battery")}</text>
       <text x="380" y="318" class="hems-battery-value hems-center">${Math.round(batteryLevel)}%</text>
       <text x="380" y="346" class="hems-muted hems-center">${batteryState}</text>
       <text x="380" y="125" class="hems-time hems-muted hems-center">${time}</text>
@@ -1805,10 +1799,10 @@ const renderAdvancedHomeEnergyManagement = (ctx: RenderContext): TemplateResult 
 
       ${track(265, 188, 262)}
       ${bar(265, 188, 262, solar / (config.solar_scale_max ?? 6000), solarColor, true)}
-      <text x="180" y="395" class="hems-muted">${config.energy_solar_label ?? "Solar Panels"}</text>
+      <text x="180" y="395" class="hems-muted">${config.energy_solar_label ?? localizeText(ctx.hass, "Solar Panels")}</text>
       <text x="180" y="437" class="hems-main-value">☀️ ${formatPower(solar)}</text>
       <text x="180" y="465" class="hems-detail hems-muted">
-        ${config.energy_forecast_label ?? "Expected"} ${forecast.toLocaleString(undefined, {
+        ${config.energy_forecast_label ?? localizeText(ctx.hass, "Expected")} ${forecast.toLocaleString(undefined, {
           minimumFractionDigits: 1,
           maximumFractionDigits: 1,
         })} kWh
@@ -1820,7 +1814,7 @@ const renderAdvancedHomeEnergyManagement = (ctx: RenderContext): TemplateResult 
           Math.abs(batteries[index].power) / (config.battery_unit_scale_max ?? 2400),
           batteries[index].power > 0 ? batteryColor : importColor, true)}
       `) : nothing}
-      <text x="585" y="185" class="hems-muted hems-end">${config.energy_battery_label ?? "Battery"}</text>
+      <text x="585" y="185" class="hems-muted hems-end">${config.energy_battery_label ?? localizeText(ctx.hass, "Battery")}</text>
       ${config.show_battery_units !== false ? batteries.map((unit, index) => svg`
         <text x="585" y=${224 + index * 22} class="hems-detail hems-muted hems-end">
           ${index + 1} <tspan fill=${batteryColor} font-weight="600">${Math.round(unit.level)}%</tspan>
@@ -1830,10 +1824,10 @@ const renderAdvancedHomeEnergyManagement = (ctx: RenderContext): TemplateResult 
 
       ${track(265, 98, 172)}
       ${bar(265, 98, 172, home / (config.home_scale_max ?? 4000), homeColor)}
-      <text x="585" y="395" class="hems-muted hems-end">${config.energy_home_label ?? "HOME"}</text>
+      <text x="585" y="395" class="hems-muted hems-end">${config.energy_home_label ?? localizeText(ctx.hass, "HOME")}</text>
       <text x="585" y="437" class="hems-main-value hems-end">${formatPower(home)} ⌂</text>
       <text x="585" y="465" class="hems-detail hems-muted hems-end">
-        🚗 ${config.energy_ev_label ?? "EV charger"} ${formatPower(ev)}
+        🚗 ${config.energy_ev_label ?? localizeText(ctx.hass, "EV charger")} ${formatPower(ev)}
       </text>
       <text x="380" y="522" class="hems-mode hems-muted hems-center">${modeLabel} ▾</text>
 
@@ -1929,7 +1923,7 @@ const renderEnergyBuySell = (ctx: RenderContext): TemplateResult => {
     "buy_sell_possible_sell_label",
   ] as const;
   const legendLabels = ENERGY_SERIES.map(({ fallback }, index) =>
-    String(ctx.config[legendKeys[index]] || fallback));
+    String(ctx.config[legendKeys[index]] || localizeText(ctx.hass, fallback)));
   const tradeEnergyEntity = ctx.config.buy_sell_trade_energy_entity;
   const tradeEnergy = tradeEnergyEntity
     ? Number(ctx.hass.states[tradeEnergyEntity]?.state)
@@ -1965,9 +1959,9 @@ const renderEnergyBuySell = (ctx: RenderContext): TemplateResult => {
   `;
 
   return ctx.actionSurface("energy-buy-sell-card", html`
-      ${energyCardHeading(ctx, String(ctx.config.buy_sell_title || "Buy and sell moments (all-in €/kWh)"), "Price timeline")}
+      ${energyCardHeading(ctx, String(ctx.config.buy_sell_title || localizeText(ctx.hass, "Buy and sell moments (all-in €/kWh)")), localizeText(ctx.hass, "Price timeline"))}
       <div class="energy-buy-sell-chart" style=${`height:${Math.max(120, Math.min(700, numeric(ctx.config.buy_sell_chart_height) ?? 300))}px`} role="img"
-        aria-label=${`Energy prices and planned actions for the next ${spanHours} hours`}>
+        aria-label=${localize(ctx.hass, "ui.renderer.energy_chart", { hours: spanHours })}>
         <svg viewBox="0 0 720 314" preserveAspectRatio="none" aria-hidden="true">
           ${Array.from({ length: 5 }, (_, index) => {
             const value = bounds.maximum - (bounds.maximum - bounds.minimum) * index / 4;
@@ -2012,14 +2006,14 @@ const renderEnergyBuySell = (ctx: RenderContext): TemplateResult => {
           })}
           ${visibleSlots.length === 0 ? svg`
             <text x=${(plotLeft + plotRight) / 2} y=${(plotTop + plotBottom) / 2}
-              text-anchor="middle" class="energy-chart-empty">No price slots available</text>
+              text-anchor="middle" class="energy-chart-empty">${localizeText(ctx.hass, "No price slots available")}</text>
           ` : nothing}
           ${ctx.config.buy_sell_show_now !== false && now >= start && now <= end ? svg`
             <line x1=${x(now)} y1=${plotTop} x2=${x(now)} y2=${plotBottom + 4}
               class="energy-chart-now" style=${`stroke:${nowColor}`}></line>
             <text x=${x(now)} y=${plotTop - 7} text-anchor="middle" class="energy-chart-now-label"
               style=${`fill:${nowColor}`}>
-              ${ctx.config.buy_sell_now_label || "Now"}
+              ${ctx.config.buy_sell_now_label || localizeText(ctx.hass, "Now")}
             </text>
           ` : nothing}
         </svg>
@@ -2038,15 +2032,15 @@ const renderEnergyBuySell = (ctx: RenderContext): TemplateResult => {
           @click=${(event: Event) => event.stopPropagation()}
           @dblclick=${(event: Event) => event.stopPropagation()}
           @keydown=${(event: Event) => event.stopPropagation()}>
-          <summary>Buy and sell result<ha-icon icon="mdi:chevron-down"></ha-icon></summary>
+          <summary>${localizeText(ctx.hass, "Buy and sell result")}<ha-icon icon="mdi:chevron-down"></ha-icon></summary>
           ${"error" in trade ? html`<p class="energy-card-empty" role="status">${trade.error}</p>` : html`
-            <div class="energy-result-table-scroll" tabindex="0" role="region" aria-label="Buy and sell estimate">
+            <div class="energy-result-table-scroll" tabindex="0" role="region" aria-label="${localizeText(ctx.hass, "Buy and sell estimate")}">
               <table class="energy-result-table">
-                <thead><tr><th scope="col">Action</th><th scope="col">Slots</th><th scope="col">avg €/kWh</th><th scope="col">kWh</th><th scope="col">€</th></tr></thead>
-                <tbody>${tradeRow("Buy", trade.buy, chartColors[1])}${tradeRow("Sell", trade.sell, chartColors[2])}</tbody>
+                <thead><tr><th scope="col">${localizeText(ctx.hass, "Action")}</th><th scope="col">${localizeText(ctx.hass, "Slots")}</th><th scope="col">${localizeText(ctx.hass, "avg €/kWh")}</th><th scope="col">kWh</th><th scope="col">€</th></tr></thead>
+                <tbody>${tradeRow(localizeText(ctx.hass, "Buy"), trade.buy, chartColors[1])}${tradeRow(localizeText(ctx.hass, "Sell"), trade.sell, chartColors[2])}</tbody>
               </table>
             </div>
-            <p class="energy-result-net">Net result for ${Number(tradeEnergy.toFixed(2))} kWh: ${signedMoney(trade.net)} €</p>
+            <p class="energy-result-net">${localize(ctx.hass, "ui.renderer.net_result", { energy: Number(tradeEnergy.toFixed(2)), net: signedMoney(trade.net) })}</p>
             <p class="energy-result-note">
               Calculated for the minimum trade size (${Number(tradeEnergy.toFixed(2))} kWh):
               the cheapest slots to buy and the most expensive remaining slots to sell,
@@ -2084,12 +2078,12 @@ const renderPanelHealth = (ctx: RenderContext): TemplateResult => {
     summary.weakest.value < summary.averageOutput * lowOutputPercent;
   const inactive = summary.activeCount < panels.length;
   const status = panels.length === 0
-    ? "No panel sensors are selected."
+    ? localizeText(ctx.hass, "No panel sensors are selected.")
     : warning
-    ? `Panel ${summary.weakest!.id} is delivering less than ${Math.round(lowOutputPercent * 100)}% of the average. Check for shading or a fault.`
+    ? localize(ctx.hass, "ui.renderer.weak_panel", { panel: summary.weakest!.id, percent: Math.round(lowOutputPercent * 100) })
     : inactive
-      ? `${panels.length - summary.activeCount} panel(s) at zero. This is normal at night; otherwise, check them.`
-      : "All panels are within the expected range of each other.";
+      ? localize(ctx.hass, "ui.renderer.inactive_panels", { count: panels.length - summary.activeCount })
+      : localizeText(ctx.hass, "All panels are within the expected range of each other.");
   const statusIcon = panels.length === 0
     ? "mdi:information-outline"
     : warning || inactive
@@ -2097,16 +2091,16 @@ const renderPanelHealth = (ctx: RenderContext): TemplateResult => {
       : "mdi:check-circle-outline";
   const statusTone = warning ? "warning" : inactive || panels.length === 0 ? "muted" : "success";
   const summaryRows: Array<[string, string]> = [
-    ["Panels reporting", `${summary.activeCount} / ${panels.length}`],
-    ["Combined output", `${Math.round(summary.totalOutput)} W`],
-    ["Average per panel", `${Math.round(summary.averageOutput)} W`],
-    ["Best panel", summary.best ? `${summary.best.id} · ${Math.round(summary.best.value)} W` : "—"],
-    ["Weakest panel", summary.weakest ? `${summary.weakest.id} · ${Math.round(summary.weakest.value)} W` : "—"],
-    ["Best-to-weakest spread", `${Math.round(summary.spread)} W`],
+    [localizeText(ctx.hass, "Panels reporting"), `${summary.activeCount} / ${panels.length}`],
+    [localizeText(ctx.hass, "Combined output"), `${Math.round(summary.totalOutput)} W`],
+    [localizeText(ctx.hass, "Average per panel"), `${Math.round(summary.averageOutput)} W`],
+    [localizeText(ctx.hass, "Best panel"), summary.best ? `${summary.best.id} · ${Math.round(summary.best.value)} W` : "—"],
+    [localizeText(ctx.hass, "Weakest panel"), summary.weakest ? `${summary.weakest.id} · ${Math.round(summary.weakest.value)} W` : "—"],
+    [localizeText(ctx.hass, "Best-to-weakest spread"), `${Math.round(summary.spread)} W`],
   ];
 
   return ctx.actionSurface("panel-health-card", html`
-      ${energyCardHeading(ctx, String(ctx.config.panel_health_title || "Panel health"), "Solar panel output")}
+      ${energyCardHeading(ctx, String(ctx.config.panel_health_title || localizeText(ctx.hass, "Panel health")), localizeText(ctx.hass, "Solar panel output"))}
       ${ctx.config.panel_show_summary !== false ? html`<div class="panel-health-summary">
         ${summaryRows.map(([label, value]) => html`
           <div class="panel-health-summary-row"><span>${label}</span><strong>${value}</strong></div>
@@ -2128,7 +2122,7 @@ const renderPanelHealth = (ctx: RenderContext): TemplateResult => {
             }, panel.entity, ctx.hass) || panel.id;
             return html`
               <button class="panel-health-gauge" type="button"
-                aria-label=${`${panelName}: ${Math.round(panel.value)} watts`}
+                aria-label=${localize(ctx.hass, "ui.renderer.panel_watts", { name: panelName, value: Math.round(panel.value) })}
                 @click=${(event: Event) => runControlAction(event, ctx, { action: "more-info" }, panel.entity.entity_id)}>
                 <svg viewBox="0 0 100 100" aria-hidden="true">
                   <circle cx="50" cy="46" r="37" class="panel-health-gauge-track"></circle>
@@ -2145,9 +2139,7 @@ const renderPanelHealth = (ctx: RenderContext): TemplateResult => {
           })}
         </div>
       ` : panels.length ? nothing : html`
-        <div class="energy-card-empty">
-          Select panel sensors in the card editor, or add sensors with entity IDs beginning with sensor.inverter_4.
-        </div>
+        <div class="energy-card-empty">${localizeText(ctx.hass, "Select panel sensors in the card editor, or add sensors with entity IDs beginning with sensor.inverter_4.")}</div>
       `}
   `);
 };
@@ -2180,20 +2172,20 @@ const renderFlower = (ctx: RenderContext): TemplateResult => {
     const minimum = numeric(info?.min) ?? numeric(attr(sourceEntity, "min")) ?? definition.min;
     const maximum = numeric(info?.max) ?? numeric(attr(sourceEntity, "max")) ?? definition.max;
     const percent = Math.max(0, Math.min(100, ((value - minimum) / Math.max(1, maximum - minimum)) * 100));
-    const display = sourceEntity ? stateLabel(sourceEntity) : String(value);
+    const display = sourceEntity ? stateLabel(sourceEntity, ctx.hass) : String(value);
     return [{ key, definition, sourceEntity, value, percent, display }];
   });
   return ctx.actionSurface("custom-plant", html`
-    <button class="flower-heading" aria-label="Open plant details"
+    <button class="flower-heading" aria-label="${localizeText(ctx.hass, "Open plant details")}"
       @pointerdown=${(event: Event) => event.stopPropagation()}
       @click=${(event: Event) => runControlAction(event, ctx, { action: "more-info" }, plant?.entity_id)}>
       ${iconBubble(ctx, problem ? "mdi:alert-circle" : "mdi:flower", problem ? "red" : "green")}
       ${heading(ctx, problem
-        ? configured<string>(ctx, "ulm_custom_card_plant_problem") || "Problema"
-        : configured<string>(ctx, "ulm_custom_card_plant_correct") || "Correto")}
+        ? configured<string>(ctx, "ulm_custom_card_plant_problem") || localizeText(ctx.hass, "Problem")
+        : configured<string>(ctx, "ulm_custom_card_plant_correct") || localizeText(ctx.hass, "Healthy"))}
     </button>
     ${metrics.length ? html`<div class="flower-bars">${metrics.map(({ key, definition, sourceEntity, percent, display }) => {
-      const label = `${definition.label}: ${display}`;
+      const label = `${localizeText(ctx.hass, definition.label)}: ${display}`;
       return html`<span data-flower-bar=${key} title=${label} aria-label=${label}>
         <ha-icon .icon=${definition.icon}></ha-icon>
         <i><em style=${`width:${percent}%`}></em></i>
@@ -2234,25 +2226,17 @@ const renderSpeedtestGauges = (ctx: RenderContext): TemplateResult => {
   };
   return ctx.actionSurface("custom-speedtest-gauges", html`
     <div class="speedtest-three">
-      ${metric("download_entity", "ulm_custom_card_speedtest_download_speed_entity", "Download", "mdi:download",
+      ${metric("download_entity", "ulm_custom_card_speedtest_download_speed_entity", localizeText(ctx.hass, "Download"), "mdi:download",
         "ulm_custom_card_speedtest_download_speed_color", "rgb(var(--rgb-yellow, 255, 235, 59))", "ulm_custom_card_speedtest_download_speed_max", 100, true)}
-      ${metric("upload_entity", "ulm_custom_card_speedtest_upload_speed_entity", "Upload", "mdi:upload",
+      ${metric("upload_entity", "ulm_custom_card_speedtest_upload_speed_entity", localizeText(ctx.hass, "Upload"), "mdi:upload",
         "ulm_custom_card_speedtest_upload_speed_color", "rgb(var(--rgb-blue, 33, 150, 243))", "ulm_custom_card_speedtest_upload_speed_max", 40, true)}
-      ${metric("ping_entity", "ulm_custom_card_speedtest_ping_entity", "Ping", "mdi:wan",
+      ${metric("ping_entity", "ulm_custom_card_speedtest_ping_entity", localizeText(ctx.hass, "Ping"), "mdi:wan",
         "ulm_custom_card_speedtest_ping_color", "rgb(var(--rgb-green, 76, 175, 80))", "ulm_custom_card_speedtest_ping_max", 85, false)}
     </div>
   `);
 };
 
 const renderPollen = (ctx: RenderContext): TemplateResult => {
-  const translations: Record<string, Record<string, string>> = {
-    en: { none: "None", very_low: "Very low", low: "Low", medium: "Medium", high: "High", very_high: "Very high", tree: "Trees", grass: "Grass", weed: "Weeds" },
-    de: { none: "Keine", very_low: "Sehr niedrig", low: "Niedrig", medium: "Mittel", high: "Hoch", very_high: "Sehr hoch", tree: "Bäume", grass: "Gräser", weed: "Kräuter" },
-    es: { none: "Ninguno", very_low: "Muy bajo", low: "Bajo", medium: "Medio", high: "Alto", very_high: "Muy alto", tree: "Árboles", grass: "Hierbas", weed: "Malezas" },
-    nl: { none: "Geen", very_low: "Zeer laag", low: "Laag", medium: "Gemiddeld", high: "Hoog", very_high: "Extreem hoog", tree: "Bomen", grass: "Grassen", weed: "Kruiden" },
-    pl: { none: "Brak", very_low: "Bardzo słabe", low: "Słabe", medium: "Średnie", high: "Wysokie", very_high: "Bardzo wysokie", tree: "Drzewa", grass: "Trawy", weed: "Zioła" },
-  };
-  const language = translations[(ctx.hass.language ?? "en").split("-")[0]] ?? translations.en;
   const items = [
     {
       entity: linkedState(ctx, "trees_entity"),
@@ -2287,7 +2271,7 @@ const renderPollen = (ctx: RenderContext): TemplateResult => {
       very_high: "rgba(var(--color-pink, 233, 30, 99), 1)",
     };
     return {
-      label: language[normalized] ?? language.none,
+      label: localize(ctx.hass, `ui.pollen_${Object.hasOwn(colors, normalized) ? normalized : "none"}`),
       color: colors[normalized] ?? colors.none,
       extreme: normalized === "very_high",
     };
@@ -2296,7 +2280,7 @@ const renderPollen = (ctx: RenderContext): TemplateResult => {
     <div class="pollen-heading">${cardHeading(ctx)}</div>
     ${items.map((item) => {
       const state = severity(item.entity?.state);
-      const name = item.name || item.entity?.attributes.friendly_name || language[item.kind];
+      const name = item.name || item.entity?.attributes.friendly_name || localize(ctx.hass, `ui.pollen_${item.kind}`);
       const iconName = item.icon || item.entity?.attributes.icon || item.fallbackIcon;
       return html`<button class="pollen-item" style=${`--pollen:${state.color}`}
         ?disabled=${!item.entity}
@@ -2305,7 +2289,7 @@ const renderPollen = (ctx: RenderContext): TemplateResult => {
         <span class="pollen-item-icon"><ha-icon .icon=${iconName}></ha-icon>
           ${state.extreme ? html`<span class="pollen-extreme"><ha-icon .icon=${"mdi:exclamation-thick"}></ha-icon></span>` : nothing}
         </span>
-        <b>${name}</b><small>${item.entity ? state.label : "Entity unavailable"}</small>
+        <b>${name}</b><small>${item.entity ? state.label : localizeText(ctx.hass, "Entity unavailable")}</small>
       </button>`;
     })}
   `);
@@ -2322,6 +2306,21 @@ const renderGeneric = (ctx: RenderContext): TemplateResult => {
 
 export const renderByFamily = (ctx: RenderContext): TemplateResult => {
   switch (ctx.descriptor.upstreamId) {
+    case "remote_card":
+      return ctx.actionSurface("remote-card", html`${cardHeading(ctx, stateLabel(ctx.entity, ctx.hass), displayName(ctx.config, ctx.entity, ctx.hass) || ctx.descriptor.name)}
+        <mushroom-addition-remote .hass=${ctx.hass} .config=${ctx.config}></mushroom-addition-remote>`);
+    case "pi_hole_card": {
+      const header = ctx.config.pihole_show_header === false ? nothing
+        : cardHeading(ctx, stateLabel(ctx.entity, ctx.hass), displayName(ctx.config, ctx.entity, ctx.hass) || ctx.descriptor.name);
+      ctx.presentation.rendered = true;
+      return ctx.actionSurface("pi-hole-card", html`${header}<mushroom-addition-pi-hole .hass=${ctx.hass} .config=${ctx.config}></mushroom-addition-pi-hole>`);
+    }
+    case "upcoming_media": {
+      const data = readUpcomingData(ctx.entity, ctx.config.upcoming_data_attribute);
+      if (ctx.config.upcoming_hide_empty && !data.error && !upcomingItems(data, ctx.config).length) return html``;
+      return ctx.actionSurface("upcoming-card", html`${cardHeading(ctx, stateLabel(ctx.entity, ctx.hass), displayName(ctx.config, ctx.entity, ctx.hass) || ctx.descriptor.name)}
+        <mushroom-addition-upcoming-media .hass=${ctx.hass} .config=${ctx.config}></mushroom-addition-upcoming-media>`);
+    }
     case "card_battery": return renderDefaultBattery(ctx);
     case "custom_card_trash": return renderTrash(ctx);
     case "custom_card_alarm_time": return renderAlarmTimeCard(ctx);

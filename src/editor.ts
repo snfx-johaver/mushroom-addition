@@ -1,5 +1,7 @@
 import { LitElement, css, html, nothing, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
+import { repeat } from "lit/directives/repeat.js";
+import { mdiDelete, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
 import type {
   ActionConfig,
   AdditionConfig,
@@ -9,13 +11,20 @@ import type {
   RoomSecondaryPart,
   SonosShortcutConfig,
   WasteStreamConfig,
+  RemoteButtonConfig,
+  RemoteSection,
+  PiHoleMetric,
+  PiHoleSection,
 } from "./types";
 import { CATALOG, getCatalogItem, LEGACY_ALIASES } from "./catalog";
 import { clearCardIcon, fireEvent, migrateRoomLightConfig } from "./helpers";
 import { carouselControlEnabled } from "./entity-carousel";
+import { REMOTE_DEFAULTS, REMOTE_KEYS, REMOTE_SECTIONS, resolveRemoteEntities } from "./remote-card";
+import { PIHOLE_DEFAULTS, PIHOLE_METRICS, PIHOLE_SECTIONS, piHoleMetricEntities } from "./pi-hole";
 import { SONOS_CONTROLS } from "./sonos-controls";
 import { CONSOLE_ENTITIES } from "./console";
-import { editorHelper, localize } from "./localize";
+import { editorHelper, localize, localizeText } from "./localize";
+import { localizeEditorSchema } from "./localized-schema";
 import { additionalEditorSchemaFor, editorSchemaFor, type EditorField } from "./editor-schema";
 import { populatedDefaultsFor } from "./defaults";
 import { wasteStreamsForConfig } from "./waste-streams";
@@ -107,6 +116,17 @@ const roomViewLabels: Record<string, string> = {
 };
 
 const sectionForField = (field: EditorField): EditorSectionId => {
+  if (field.name === "pihole_device_ids") return "context";
+  if (field.name === "pihole_show_header") return "content";
+  if (/^pihole_(columns|accent_color|chart_height|chart_hours)$/.test(field.name)) return "layout";
+  if (/^pihole_(pause_service|pause_action|duration_field|duration_format|metric_.*_action)$/.test(field.name)) return "interactions";
+  if (["remote_entity", "remote_media_entity", "remote_device", "remote_transport", "remote_preset"].includes(field.name)) return "context";
+  if (/^remote_(navigation|volume|button_size|touchpad_height|accent_color)$/.test(field.name)) return "layout";
+  if (/^remote_(haptics|double_tap|double_tap_command|swipe_distance)$/.test(field.name)) return "interactions";
+  if (field.name === "upcoming_data_attribute") return "context";
+  if (/^upcoming_(title_text|line[1-4]_(text|color)|title_color|date_format|clock)$/.test(field.name)) return "content";
+  if (/^upcoming_(image_style|item_height|corner_radius|max_columns|overflow|title_size|line_size|box_shadows|text_shadows|transparency)$/.test(field.name)) return "layout";
+  if (/^upcoming_(item_behavior|item_action|url|trailers|links)$/.test(field.name)) return "interactions";
   if (field.name === "entity") return "context";
   if (interactionFields.has(field.name) || field.name.endsWith("_action")) return "interactions";
   if (
@@ -163,9 +183,18 @@ export class MushroomAdditionEditor extends LitElement {
     .item-actions { display: flex; justify-content: flex-end; gap: 8px; }
     button { border: 0; border-radius: 10px; padding: 8px 12px; background: var(--secondary-background-color); color: var(--primary-text-color); cursor: pointer; }
     button.add { background: var(--primary-color); color: var(--text-primary-color, #fff); }
+    .compact-controls { display: grid; gap: 8px; }
+    .compact-control { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border: 1px solid var(--divider-color); border-radius: 10px; min-width: 0; }
+    .compact-control .row-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+    .compact-control .handle { display: grid; place-items: center; cursor: grab; color: var(--secondary-text-color); }
+    .compact-control ha-icon-button { --ha-icon-button-size: 32px; color: var(--secondary-text-color); }
+    .compact-control ha-svg-icon { width: 24px; height: 24px; }
+    .remote-detail { padding: 12px; border: 1px solid var(--divider-color); border-radius: 12px; }
   `;
   @property({ attribute: false }) public hass?: HomeAssistant;
   @state() private config?: AdditionConfig;
+  @state() private remoteEditing?: number;
+  @state() private piHoleMapping: PiHoleMetric = "queries";
 
   public setConfig(config: AdditionConfig): void {
     const tag = config.type.replace(/^custom:/, "");
@@ -190,6 +219,9 @@ export class MushroomAdditionEditor extends LitElement {
     const formData = {
       ...populatedDefaults,
       ...this.config,
+      ...(item.upstreamId === "pi_hole_card" ? {
+        pihole_pause_durations: (this.config.pihole_pause_durations ?? PIHOLE_DEFAULTS.pihole_pause_durations).map(String),
+      } : {}),
       ...(item.upstreamId === "custom_card_media_player_sonos" ? {
         ulm_card_media_player_power_button: this.config.ulm_card_media_player_power_button ??
           this.config.media_controls?.includes("on_off") ?? false,
@@ -286,6 +318,10 @@ export class MushroomAdditionEditor extends LitElement {
     }
     const customFeatures = item.upstreamId === "mini_graph_card"
       ? this.renderMiniGraphEditors()
+      : item.upstreamId === "remote_card"
+      ? this.renderRemoteEditor()
+      : item.upstreamId === "pi_hole_card"
+      ? this.renderPiHoleEditor()
       : item.upstreamId === "custom_card_trash"
       ? this.renderWasteStreamEditor()
       : item.upstreamId === "custom_card_media_player_sonos"
@@ -295,13 +331,15 @@ export class MushroomAdditionEditor extends LitElement {
       : item.family === "scene"
         ? this.renderItemEditor(
           "scene_items",
-          "Scene buttons",
+          localizeText(this.hass, "Scene buttons"),
           item.upstreamId === "card_welcome_scenes" ? undefined : ["scene"],
         )
         : item.upstreamId === "card_room"
           ? html`${this.renderItemEditor("room_sensors", localize(this.hass, "room_buttons"))}${this.renderRoomStatusEditor()}`
           : nothing;
     const hasCustomFeatures = item.upstreamId === "mini_graph_card" ||
+      item.upstreamId === "remote_card" ||
+      item.upstreamId === "pi_hole_card" ||
       item.upstreamId === "custom_card_trash" ||
       item.upstreamId === "custom_card_media_player_sonos" ||
       item.upstreamId === "custom_card_entity_carousel" ||
@@ -319,7 +357,7 @@ export class MushroomAdditionEditor extends LitElement {
                 const next = clearCardIcon(this.config!);
                 this.config = next;
                 fireEvent(this, "config-changed", { config: next });
-              }}>Use entity icon</button>
+              }}>${localizeText(this.hass, "Use entity icon")}</button>
             `
             : section.id === "content" && item.upstreamId === "card_room" ? this.renderRoomSecondaryEditor() : nothing,
           section.id === "features" && hasCustomFeatures ||
@@ -341,14 +379,14 @@ export class MushroomAdditionEditor extends LitElement {
       <ha-expansion-panel class="editor-section" outlined .expanded=${section.id === "primary"}>
         <span slot="header" class="section-header">
           <ha-icon .icon=${section.icon}></ha-icon>
-          <span>${section.title}</span>
+          <span>${localizeText(this.hass, section.title)}</span>
         </span>
         <div class="section-body">
           ${schema.length ? html`
             <ha-form
               .hass=${this.hass}
               .data=${formData}
-              .schema=${schema}
+              .schema=${localizeEditorSchema(this.hass, schema)}
               .computeLabel=${this.computeLabel}
               .computeHelper=${this.computeHelper}
               @value-changed=${this.valueChanged}
@@ -361,19 +399,197 @@ export class MushroomAdditionEditor extends LitElement {
   }
 
   private readonly computeLabel = (schema: { name: string }): string =>
-    this.config?.type.includes("custom-card-roomview") && roomViewLabels[schema.name]
-      ? roomViewLabels[schema.name]!
+    this.config?.type.endsWith("pi-hole-card") && schema.name === "entity"
+      ? localize(this.hass, "editor.pihole_entity")
+      : this.config?.type.endsWith("upcoming-media-card") && schema.name === "entity"
+      ? localize(this.hass, "editor.media_entity")
+      : this.config?.type.endsWith("remote-card") && schema.name === "entity"
+      ? localize(this.hass, "editor.remote_entity")
+      : this.config?.type.includes("custom-card-roomview") && roomViewLabels[schema.name]
+      ? localizeText(this.hass, roomViewLabels[schema.name]!)
       : this.config?.type.includes("custom-card-trash") && schema.name === "entity"
       ? "Optional card entity"
       : this.config?.type.includes("custom-card-washer") && schema.name === "entity"
         ? localize(this.hass, "machine_state_entity")
       : localize(this.hass, schema.name);
 
+  private renderPiHoleEditor() {
+    const sections = this.config?.pihole_sections ?? PIHOLE_DEFAULTS.pihole_sections;
+    const metric = this.piHoleMapping;
+    const found = piHoleMetricEntities(this.hass, this.config!)[metric];
+    const order = this.config?.pihole_entity_order ?? [];
+    return html`<section class="item-editor pi-hole-features">
+      <h3>${localize(this.hass, "ui.sections")}</h3><p>${localize(this.hass, "editor.sections_help")}</p>
+      <ha-sortable handle-selector=".handle" @item-moved=${(event: CustomEvent<{ oldIndex: number; newIndex: number }>) => {
+        event.stopPropagation(); this.movePiHoleSection(event.detail.oldIndex, event.detail.newIndex);
+      }}><div class="compact-controls">${repeat(sections, section => section, (section, index) => html`<div class="compact-control">
+        <span class="handle" role="button" tabindex="0" aria-label=${localize(this.hass, "editor.reorder", { name: localizeText(this.hass, PIHOLE_SECTIONS[section]) })} @keydown=${(event: KeyboardEvent) => {
+          if (event.altKey && ["ArrowUp", "ArrowDown"].includes(event.key)) {
+            event.preventDefault(); this.movePiHoleSection(index, index + (event.key === "ArrowUp" ? -1 : 1));
+          }
+        }}><ha-svg-icon .path=${mdiDragHorizontalVariant}></ha-svg-icon></span>
+        <span class="row-label">${localizeText(this.hass, PIHOLE_SECTIONS[section])}</span>
+        <ha-icon-button .path=${mdiDelete} .label=${localize(this.hass, "editor.remove", { name: localizeText(this.hass, PIHOLE_SECTIONS[section]) })} @click=${() => this.saveRemote({ pihole_sections: sections.filter((_, row) => row !== index) })}></ha-icon-button>
+      </div>`)}</div></ha-sortable>
+      <ha-selector aria-label=${localize(this.hass, "editor.add_section", { name: "Pi-hole" })} .hass=${this.hass} .value=${""}
+        .selector=${{ select: { mode: "dropdown", options: Object.entries(PIHOLE_SECTIONS).filter(([key]) => !sections.includes(key as PiHoleSection)).map(([value, label]) => ({ value, label: localizeText(this.hass, label) })) } }}
+        @value-changed=${(event: CustomEvent<{ value: PiHoleSection }>) => {
+          event.stopPropagation();
+          if (event.detail.value && !sections.includes(event.detail.value)) this.saveRemote({ pihole_sections: [...sections, event.detail.value] });
+        }}></ha-selector>
+      <details><summary>${localize(this.hass, "editor.mapping")}</summary><div class="section-body">
+        <p>${localize(this.hass, "editor.mapping_help")}</p>
+        <ha-selector aria-label=${localize(this.hass, "editor.metric")} .hass=${this.hass} .value=${metric}
+          .selector=${{ select: { mode: "dropdown", options: Object.entries(PIHOLE_METRICS).map(([value, definition]) => ({ value, label: localizeText(this.hass, definition.name) })) } }}
+          @value-changed=${(event: CustomEvent<{ value: PiHoleMetric }>) => {
+            event.stopPropagation(); this.piHoleMapping = event.detail.value;
+          }}></ha-selector>
+        <p>${found.length ? localize(this.hass, "editor.mapped", { entities: found.map(entity => entity.attributes.friendly_name || entity.entity_id).join(", ") }) : localize(this.hass, "editor.no_sensor")}</p>
+        <ha-selector aria-label=${localize(this.hass, "editor.sensor_override", { name: localizeText(this.hass, PIHOLE_METRICS[metric].name) })} .hass=${this.hass}
+          .selector=${{ entity: { domain: "sensor", multiple: true } }} .value=${this.config?.pihole_metric_entities?.[metric] ?? []}
+          @value-changed=${(event: CustomEvent<{ value: string[] }>) => {
+            event.stopPropagation();
+            const next = { ...this.config?.pihole_metric_entities };
+            if (event.detail.value?.length) next[metric] = event.detail.value; else delete next[metric];
+            this.saveRemote({ pihole_metric_entities: next });
+          }}></ha-selector>
+        <p>${localize(this.hass, "editor.order_help")}</p>
+        <ha-selector aria-label=${localize(this.hass, "editor.priority_entities")} .hass=${this.hass}
+          .selector=${{ entity: { multiple: true } }} .value=${order} @value-changed=${(event: CustomEvent<{ value: string[] }>) => {
+            event.stopPropagation(); this.saveRemote({ pihole_entity_order: event.detail.value || [] });
+          }}></ha-selector>
+        <ha-sortable handle-selector=".handle" @item-moved=${(event: CustomEvent<{ oldIndex: number; newIndex: number }>) => {
+          event.stopPropagation();
+          const items = [...order], { oldIndex, newIndex } = event.detail;
+          if (oldIndex < 0 || newIndex < 0 || oldIndex >= items.length || newIndex >= items.length) return;
+          items.splice(newIndex, 0, items.splice(oldIndex, 1)[0]); this.saveRemote({ pihole_entity_order: items });
+        }}><div class="compact-controls">${repeat(order, id => id, id => html`<div class="compact-control">
+          <span class="handle"><ha-svg-icon .path=${mdiDragHorizontalVariant}></ha-svg-icon></span>
+          <span class="row-label">${this.hass?.states[id]?.attributes.friendly_name || id}</span>
+          <ha-icon-button .path=${mdiDelete} .label=${localize(this.hass, "editor.restore_order")} @click=${() => this.saveRemote({ pihole_entity_order: order.filter(entity => entity !== id) })}></ha-icon-button>
+        </div>`)}</div></ha-sortable>
+      </div></details>
+    </section>`;
+  }
+  private movePiHoleSection(from: number, to: number): void {
+    const sections = [...(this.config?.pihole_sections ?? PIHOLE_DEFAULTS.pihole_sections)];
+    if (to < 0 || to >= sections.length || from < 0 || from >= sections.length || from === to) return;
+    sections.splice(to, 0, sections.splice(from, 1)[0]);
+    this.saveRemote({ pihole_sections: sections });
+  }
+
+  private renderRemoteEditor() {
+    const sections = this.config?.remote_sections ?? REMOTE_DEFAULTS.remote_sections;
+    const buttons = this.config?.remote_buttons ?? [];
+    const selected = this.remoteEditing === undefined ? undefined : buttons[this.remoteEditing];
+    const sourceList = resolveRemoteEntities(this.hass, this.config!).media?.attributes.source_list;
+    const sources = Array.isArray(sourceList) ? sourceList.filter((value): value is string => typeof value === "string") : [];
+    const mappings = Object.entries(this.config?.remote_commands ?? {});
+    return html`<section class="item-editor remote-features">
+      <h3>${localize(this.hass, "editor.remote_sections")}</h3><p>${localize(this.hass, "editor.remote_sections_help")}</p>
+      <ha-sortable handle-selector=".handle" @item-moved=${(event: CustomEvent<{ oldIndex: number; newIndex: number }>) => {
+        event.stopPropagation(); this.moveRemoteSection(event.detail.oldIndex, event.detail.newIndex);
+      }}><div class="compact-controls">${repeat(sections, section => section, (section, index) => html`
+        <div class="compact-control">
+          <span class="handle" role="button" tabindex="0" aria-label=${localize(this.hass, "editor.reorder", { name: localizeText(this.hass, REMOTE_SECTIONS[section]) })}
+            @keydown=${(event: KeyboardEvent) => {
+              if (event.altKey && ["ArrowUp", "ArrowDown"].includes(event.key)) {
+                event.preventDefault(); this.moveRemoteSection(index, index + (event.key === "ArrowUp" ? -1 : 1));
+              }
+            }}><ha-svg-icon .path=${mdiDragHorizontalVariant}></ha-svg-icon></span>
+          <span class="row-label">${localizeText(this.hass, REMOTE_SECTIONS[section])}</span>
+          <ha-icon-button .path=${mdiDelete} .label=${localize(this.hass, "editor.remove", { name: localizeText(this.hass, REMOTE_SECTIONS[section]) })} @click=${() => this.saveRemote({ remote_sections: sections.filter((_, row) => row !== index) })}></ha-icon-button>
+        </div>`)}
+      </div></ha-sortable>
+      <ha-selector aria-label=${localize(this.hass, "editor.add_remote_section")} .hass=${this.hass} .value=${""}
+        .selector=${{ select: { mode: "dropdown", options: Object.entries(REMOTE_SECTIONS).filter(([key]) => !sections.includes(key as RemoteSection)).map(([value, label]) => ({ value, label: localizeText(this.hass, label) })) } }}
+        @value-changed=${(event: CustomEvent<{ value: RemoteSection }>) => {
+          event.stopPropagation();
+          if (event.detail.value && !sections.includes(event.detail.value)) this.saveRemote({ remote_sections: [...sections, event.detail.value] });
+        }}></ha-selector>
+      <h3>${localize(this.hass, "ui.custom_buttons")}</h3><p>${localize(this.hass, "editor.buttons_help")}</p>
+      ${selected ? html`<div class="remote-detail"><ha-form .hass=${this.hass} .data=${selected}
+        .computeLabel=${this.remoteButtonLabel} .schema=${localizeEditorSchema(this.hass, [
+          { name: "type", selector: { select: { mode: "dropdown", options: [{ value: "command", label: "Remote command" }, { value: "source", label: "TV source" }, { value: "action", label: "Home Assistant action" }] } } },
+          { type: "grid", name: "", schema: [{ name: "name", selector: { text: {} } }, { name: "icon", selector: { icon: {} } }] },
+          { name: "color", selector: { ui_color: {} } },
+          ...(selected.type === "action" ? [{ name: "action", selector: { ui_action: {} } }]
+            : selected.type === "source" ? [{ name: "source", selector: { select: { mode: "dropdown", custom_value: true, options: sources } } }]
+              : [{ name: "command", selector: { text: {} } }]),
+        ])} @value-changed=${(event: CustomEvent<{ value: RemoteButtonConfig }>) => {
+          event.stopPropagation();
+          const next = [...buttons]; next[this.remoteEditing!] = { ...selected, ...event.detail.value };
+          this.saveRemote({ remote_buttons: next });
+        }}></ha-form><button @click=${() => { this.remoteEditing = undefined; }}>${localize(this.hass, "ui.done")}</button></div>` : nothing}
+      <ha-sortable handle-selector=".handle" @item-moved=${(event: CustomEvent<{ oldIndex: number; newIndex: number }>) => {
+        event.stopPropagation(); this.moveRemoteButton(event.detail.oldIndex, event.detail.newIndex);
+      }}><div class="compact-controls">${buttons.map((button, index) => html`
+        <div class="compact-control">
+          <span class="handle" role="button" tabindex="0" aria-label=${localize(this.hass, "editor.reorder_button")}
+            @keydown=${(event: KeyboardEvent) => {
+              if (event.altKey && ["ArrowUp", "ArrowDown"].includes(event.key)) {
+                event.preventDefault(); this.moveRemoteButton(index, index + (event.key === "ArrowUp" ? -1 : 1));
+              }
+            }}><ha-svg-icon .path=${mdiDragHorizontalVariant}></ha-svg-icon></span>
+          <span class="row-label">${button.name || button.source || button.command || localize(this.hass, "editor.button_number", { number: index + 1 })}</span>
+          <ha-icon-button .path=${mdiPencil} .label=${localize(this.hass, "editor.edit_button")} @click=${() => { this.remoteEditing = index; }}></ha-icon-button>
+          <ha-icon-button .path=${mdiDelete} .label=${localize(this.hass, "editor.remove_button")} @click=${() => {
+            this.remoteEditing = undefined;
+            this.saveRemote({ remote_buttons: buttons.filter((_, row) => row !== index) });
+          }}></ha-icon-button>
+        </div>`)}
+      </div></ha-sortable>
+      <button class="add" @click=${() => {
+        this.remoteEditing = buttons.length;
+        this.saveRemote({ remote_buttons: [...buttons, { type: "command", name: "", icon: "mdi:remote", command: "" }],
+          remote_sections: sections.includes("shortcuts") ? sections : [...sections, "shortcuts"] });
+      }}>${localize(this.hass, "editor.add_button")}</button>
+      <h3>${localize(this.hass, "editor.key_mappings")}</h3><p>${localize(this.hass, "editor.commands_help")}</p>
+      ${mappings.map(([key, command]) => html`<div class="compact-control">
+        <span class="row-label">${localizeText(this.hass, REMOTE_KEYS.find(item => item.value === key)?.label || key)}</span>
+        <ha-selector .hass=${this.hass} .selector=${{ text: {} }} .value=${command} @value-changed=${(event: CustomEvent<{ value: string }>) => {
+          event.stopPropagation(); this.saveRemote({ remote_commands: { ...this.config?.remote_commands, [key]: event.detail.value } });
+        }}></ha-selector>
+        <ha-icon-button .path=${mdiDelete} .label=${localize(this.hass, "editor.restore_command")} @click=${() => {
+          const next = { ...this.config?.remote_commands }; delete next[key]; this.saveRemote({ remote_commands: next });
+        }}></ha-icon-button>
+      </div>`)}
+      <ha-selector aria-label=${localize(this.hass, "editor.override_command")} .hass=${this.hass} .value=${""}
+        .selector=${{ select: { mode: "dropdown", options: [...REMOTE_KEYS, ...Array.from({ length: 10 }, (_, value) => ({ value: String(value), label: String(value) }))].filter(item => !Object.hasOwn(this.config?.remote_commands ?? {}, item.value)).map(item => ({ ...item, label: localizeText(this.hass, item.label) })) } }}
+        @value-changed=${(event: CustomEvent<{ value: string }>) => {
+          event.stopPropagation();
+          if (event.detail.value) this.saveRemote({ remote_commands: { ...this.config?.remote_commands, [event.detail.value]: "" } });
+        }}></ha-selector>
+    </section>`;
+  }
+  private readonly remoteButtonLabel = (schema: { name: string }): string =>
+    localizeText(this.hass, ({ type: "Button type", name: "Label", icon: "Icon", color: "Icon color", command: "Command code", source: "TV source", action: "Action" })[schema.name] || schema.name);
+  private saveRemote(value: Partial<AdditionConfig>): void {
+    if (!this.config) return;
+    this.config = { ...this.config, ...value };
+    fireEvent(this, "config-changed", { config: this.config });
+  }
+  private moveRemoteSection(from: number, to: number): void {
+    const sections = [...(this.config?.remote_sections ?? REMOTE_DEFAULTS.remote_sections)];
+    if (to < 0 || to >= sections.length || from < 0 || from >= sections.length || from === to) return;
+    sections.splice(to, 0, sections.splice(from, 1)[0]);
+    this.saveRemote({ remote_sections: sections });
+  }
+  private moveRemoteButton(from: number, to: number): void {
+    const buttons = [...(this.config?.remote_buttons ?? [])];
+    if (to < 0 || to >= buttons.length || from < 0 || from >= buttons.length || from === to) return;
+    const selected = this.remoteEditing === undefined ? undefined : buttons[this.remoteEditing];
+    buttons.splice(to, 0, buttons.splice(from, 1)[0]);
+    this.remoteEditing = selected ? buttons.indexOf(selected) : undefined;
+    this.saveRemote({ remote_buttons: buttons });
+  }
+
   private readonly computeHelper = (schema: { name: string }): string | undefined =>
     editorHelper(
       this.config?.type.includes("custom-card-washer") && schema.name === "entity"
         ? "machine_state_entity"
         : schema.name,
+      this.hass,
     );
 
   private readonly valueChanged = (event: CustomEvent): void => {
@@ -483,12 +699,12 @@ export class MushroomAdditionEditor extends LitElement {
       <section class="item-editor">
         <h3>${title}</h3>
         <p>${key === "scene_items"
-          ? "Each button starts with sensible values from its entity. You can override every value, including its name."
+          ? localizeText(this.hass, "Each button starts with sensible values from its entity. You can override every value, including its name.")
           : localize(this.hass, "room_buttons_help")}</p>
         ${items.map((item, index) => html`
           <div class="item-row">
             <label class="field wide">
-              <span>Button entity</span>
+              <span>${localizeText(this.hass, "Button entity")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ entity: domains?.length ? { domain: domains } : {} }}
@@ -496,11 +712,11 @@ export class MushroomAdditionEditor extends LitElement {
                 @value-changed=${(event: CustomEvent) => this.updateItem(key, index, "entity", event.detail.value)}
               ></ha-selector>
               <small>${key === "scene_items"
-                ? "Select the entity this button controls. Welcome Scenes supports every Home Assistant domain."
-                : "Select the entity represented by this room sensor button."}</small>
+                ? localizeText(this.hass, "Select the entity this button controls. Welcome Scenes supports every Home Assistant domain.")
+                : localizeText(this.hass, "Select the entity represented by this room sensor button.")}</small>
             </label>
             ${key === "scene_items" ? html`<label class="field">
-              <span>Custom name</span>
+              <span>${localizeText(this.hass, "Custom name")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ text: {} }}
@@ -508,50 +724,50 @@ export class MushroomAdditionEditor extends LitElement {
                 @value-changed=${(event: CustomEvent) =>
                   this.updateItem(key, index, "name", event.detail.value)}
               ></ha-selector>
-              <small>Text shown below the button. Change it independently for every button.</small>
+              <small>${localizeText(this.hass, "Text shown below the button. Change it independently for every button.")}</small>
             </label>` : nothing}
             <label class="field">
-              <span>Icon</span>
+              <span>${localizeText(this.hass, "Icon")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ icon: {} }}
                 .value=${item.icon}
                 @value-changed=${(event: CustomEvent) => this.updateItem(key, index, "icon", event.detail.value)}
               ></ha-selector>
-              <small>Defaults to the entity icon or a suitable icon for its domain.</small>
+              <small>${localizeText(this.hass, "Defaults to the entity icon or a suitable icon for its domain.")}</small>
             </label>
             ${key === "room_sensors" || key === "scene_items" ? html`
               <label class="field item-icon-type">
-                <span>Icon type</span>
+                <span>${localizeText(this.hass, "Icon type")}</span>
                 <ha-selector
                   .hass=${this.hass}
                   .selector=${{ select: {
                     mode: "dropdown",
                     options: [
-                      { value: "icon", label: "Icon" },
-                      { value: "entity-picture", label: "Entity picture" },
+                      { value: "icon", label: localizeText(this.hass, "Icon") },
+                      { value: "entity-picture", label: localizeText(this.hass, "Entity picture") },
                     ],
                   } }}
                   .value=${item.icon_type ?? "icon"}
                   @value-changed=${(event: CustomEvent) =>
                     this.updateItem(key, index, "icon_type", event.detail.value)}
                 ></ha-selector>
-                <small>Show the selected icon or the entity picture when one is available.</small>
+                <small>${localizeText(this.hass, "Show the selected icon or the entity picture when one is available.")}</small>
               </label>
             ` : nothing}
             <label class="field">
-              <span>Color</span>
+              <span>${localizeText(this.hass, "Color")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ ui_color: { default_color: key === "room_sensors" ? "blue" : "purple" } }}
                 .value=${item.color}
                 @value-changed=${(event: CustomEvent) => this.updateItem(key, index, "color", event.detail.value)}
               ></ha-selector>
-              <small>Accent color used by the button and its active state.</small>
+              <small>${localizeText(this.hass, "Accent color used by the button and its active state.")}</small>
             </label>
             ${key === "scene_items" ? html`
               <label class="field">
-                <span>Navigation path</span>
+                <span>${localizeText(this.hass, "Navigation path")}</span>
                 <ha-selector
                   .hass=${this.hass}
                   .selector=${{ navigation: {} }}
@@ -559,7 +775,7 @@ export class MushroomAdditionEditor extends LitElement {
                   @value-changed=${(event: CustomEvent) =>
                     this.updateItem(key, index, "navigation_path", event.detail.value)}
                 ></ha-selector>
-                <small>Optional destination selected from your Home Assistant dashboards. It overrides the tap action.</small>
+                <small>${localizeText(this.hass, "Optional destination selected from your Home Assistant dashboards. It overrides the tap action.")}</small>
               </label>
             ` : nothing}
             ${key === "room_sensors" ? html`
@@ -578,7 +794,7 @@ export class MushroomAdditionEditor extends LitElement {
               `)}
             ` : nothing}
             <label class="field">
-              <span>Tap action</span>
+              <span>${localizeText(this.hass, "Tap action")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ ui_action: {} }}
@@ -594,11 +810,11 @@ export class MushroomAdditionEditor extends LitElement {
                 <button class="move-down" ?disabled=${index === items.length - 1}
                   @click=${() => this.moveRoomSensor(index, 1)}>${localize(this.hass, "room_move_down")}</button>
               ` : nothing}
-              <button @click=${() => this.removeItem(key, index)}>Remove</button>
+              <button @click=${() => this.removeItem(key, index)}>${localizeText(this.hass, "Remove")}</button>
             </div>
           </div>
         `)}
-        <button class="add" @click=${() => this.addItem(key)}>Add button</button>
+        <button class="add" @click=${() => this.addItem(key)}>${localizeText(this.hass, "Add button")}</button>
       </section>
     `;
   }
@@ -779,7 +995,7 @@ export class MushroomAdditionEditor extends LitElement {
       { value: "sum", label: "Sum" },
       { value: "delta", label: "Range" },
       { value: "diff", label: "Difference" },
-    ];
+    ].map(option => ({ ...option, label: localizeText(this.hass, option.label) }));
     const booleanFields: Array<[keyof MiniGraphEntityConfig, string]> = [
       ["show_state", "Show state"],
       ["show_legend_state", "State in legend"],
@@ -795,13 +1011,13 @@ export class MushroomAdditionEditor extends LitElement {
     ];
     return html`
       <section class="item-editor mini-graph-entities">
-        <h3>Graph entities</h3>
-        <p>Entities are rendered in this order. Every series can override aggregation, axis, color, visibility, attributes, and smoothing.</p>
+        <h3>${localizeText(this.hass, "Graph entities")}</h3>
+        <p>${localizeText(this.hass, "Entities are rendered in this order. Every series can override aggregation, axis, color, visibility, attributes, and smoothing.")}</p>
         ${entities.map((entry, index) => html`
           <div class="item-row mini-graph-entity-row" data-entity-index=${index}>
-            <h4>${entry.name || entry.entity || `Entity ${index + 1}`}</h4>
+            <h4>${entry.name || entry.entity || localize(this.hass, "ui.renderer.entity_number", { number: index + 1 })}</h4>
             <label class="field wide">
-              <span>Entity</span>
+              <span>${localizeText(this.hass, "Entity")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ entity: { domain: ["sensor", "binary_sensor", "input_number"] } }}
@@ -809,10 +1025,10 @@ export class MushroomAdditionEditor extends LitElement {
                 @value-changed=${(event: CustomEvent) =>
                   this.updateMiniGraphEntity(index, "entity", event.detail.value)}
               ></ha-selector>
-              <small>Recorder history is loaded for this entity. The first entity is also the primary card entity.</small>
+              <small>${localizeText(this.hass, "Recorder history is loaded for this entity. The first entity is also the primary card entity.")}</small>
             </label>
             <label class="field">
-              <span>Name</span>
+              <span>${localizeText(this.hass, "Name")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ text: {} }}
@@ -822,7 +1038,7 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <label class="field">
-              <span>Attribute path</span>
+              <span>${localizeText(this.hass, "Attribute path")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ text: {} }}
@@ -830,10 +1046,10 @@ export class MushroomAdditionEditor extends LitElement {
                 @value-changed=${(event: CustomEvent) =>
                   this.updateMiniGraphEntity(index, "attribute", event.detail.value)}
               ></ha-selector>
-              <small>Optional nested path such as battery.level.</small>
+              <small>${localizeText(this.hass, "Optional nested path such as battery.level.")}</small>
             </label>
             <label class="field">
-              <span>Color</span>
+              <span>${localizeText(this.hass, "Color")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ ui_color: { default_color: "blue" } }}
@@ -843,7 +1059,7 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <label class="field">
-              <span>Unit override</span>
+              <span>${localizeText(this.hass, "Unit override")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ text: {} }}
@@ -853,7 +1069,7 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <label class="field">
-              <span>Aggregation</span>
+              <span>${localizeText(this.hass, "Aggregation")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ select: { mode: "dropdown", options: aggregateOptions } }}
@@ -863,14 +1079,14 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <label class="field">
-              <span>Y-axis</span>
+              <span>${localizeText(this.hass, "Y-axis")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ select: {
                   mode: "dropdown",
                   options: [
-                    { value: "primary", label: "Primary (left)" },
-                    { value: "secondary", label: "Secondary (right)" },
+                    { value: "primary", label: localizeText(this.hass, "Primary (left)") },
+                    { value: "secondary", label: localizeText(this.hass, "Secondary (right)") },
                   ],
                 } }}
                 .value=${entry.y_axis ?? "primary"}
@@ -880,7 +1096,7 @@ export class MushroomAdditionEditor extends LitElement {
             </label>
             ${booleanFields.map(([field, label]) => html`
               <label class="field">
-                <span>${label}</span>
+                <span>${localizeText(this.hass, label)}</span>
                 <ha-selector
                   .hass=${this.hass}
                   .selector=${{ boolean: {} }}
@@ -893,23 +1109,23 @@ export class MushroomAdditionEditor extends LitElement {
               </label>
             `)}
             <div class="item-actions wide">
-              <button ?disabled=${index === 0} @click=${() => this.moveMiniGraphEntity(index, -1)}>Move up</button>
+              <button ?disabled=${index === 0} @click=${() => this.moveMiniGraphEntity(index, -1)}>${localizeText(this.hass, "Move up")}</button>
               <button ?disabled=${index === entities.length - 1}
-                @click=${() => this.moveMiniGraphEntity(index, 1)}>Move down</button>
-              <button @click=${() => this.removeMiniGraphEntity(index)}>Remove</button>
+                @click=${() => this.moveMiniGraphEntity(index, 1)}>${localizeText(this.hass, "Move down")}</button>
+              <button @click=${() => this.removeMiniGraphEntity(index)}>${localizeText(this.hass, "Remove")}</button>
             </div>
           </div>
         `)}
-        <button class="add" @click=${this.addMiniGraphEntity}>Add graph entity</button>
+        <button class="add" @click=${this.addMiniGraphEntity}>${localizeText(this.hass, "Add graph entity")}</button>
       </section>
       <section class="item-editor mini-graph-thresholds">
-        <h3>Color thresholds</h3>
-        <p>Ordered value stops color the graph. Leave intermediate values empty to interpolate them between surrounding stops.</p>
+        <h3>${localizeText(this.hass, "Color thresholds")}</h3>
+        <p>${localizeText(this.hass, "Ordered value stops color the graph. Leave intermediate values empty to interpolate them between surrounding stops.")}</p>
         ${thresholds.map((entry, index) => html`
           <div class="item-row mini-graph-threshold-row" data-threshold-index=${index}>
-            <h4>Threshold ${index + 1}</h4>
+            <h4>${localize(this.hass, "ui.renderer.threshold_number", { number: index + 1 })}</h4>
             <label class="field">
-              <span>Value</span>
+              <span>${localizeText(this.hass, "Value")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ number: { mode: "box", step: "any" } }}
@@ -919,7 +1135,7 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <label class="field">
-              <span>Color</span>
+              <span>${localizeText(this.hass, "Color")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ ui_color: { default_color: "blue" } }}
@@ -929,23 +1145,23 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <div class="item-actions wide">
-              <button ?disabled=${index === 0} @click=${() => this.moveMiniGraphThreshold(index, -1)}>Move up</button>
+              <button ?disabled=${index === 0} @click=${() => this.moveMiniGraphThreshold(index, -1)}>${localizeText(this.hass, "Move up")}</button>
               <button ?disabled=${index === thresholds.length - 1}
-                @click=${() => this.moveMiniGraphThreshold(index, 1)}>Move down</button>
-              <button @click=${() => this.removeMiniGraphThreshold(index)}>Remove</button>
+                @click=${() => this.moveMiniGraphThreshold(index, 1)}>${localizeText(this.hass, "Move down")}</button>
+              <button @click=${() => this.removeMiniGraphThreshold(index)}>${localizeText(this.hass, "Remove")}</button>
             </div>
           </div>
         `)}
-        <button class="add" @click=${this.addMiniGraphThreshold}>Add color threshold</button>
+        <button class="add" @click=${this.addMiniGraphThreshold}>${localizeText(this.hass, "Add color threshold")}</button>
       </section>
       <section class="item-editor mini-graph-state-map">
-        <h3>State map</h3>
-        <p>Map non-numeric states to ordered graph levels. Row order defines each state's numeric position.</p>
+        <h3>${localizeText(this.hass, "State map")}</h3>
+        <p>${localizeText(this.hass, "Map non-numeric states to ordered graph levels. Row order defines each state's numeric position.")}</p>
         ${stateMap.map((entry, index) => html`
           <div class="item-row mini-graph-state-row" data-state-index=${index}>
-            <h4>State ${index + 1}</h4>
+            <h4>${localize(this.hass, "ui.renderer.state_number", { number: index + 1 })}</h4>
             <label class="field">
-              <span>Entity state</span>
+              <span>${localizeText(this.hass, "Entity state")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ text: {} }}
@@ -955,7 +1171,7 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <label class="field">
-              <span>Display label</span>
+              <span>${localizeText(this.hass, "Display label")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ text: {} }}
@@ -965,14 +1181,14 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <div class="item-actions wide">
-              <button ?disabled=${index === 0} @click=${() => this.moveMiniGraphState(index, -1)}>Move up</button>
+              <button ?disabled=${index === 0} @click=${() => this.moveMiniGraphState(index, -1)}>${localizeText(this.hass, "Move up")}</button>
               <button ?disabled=${index === stateMap.length - 1}
-                @click=${() => this.moveMiniGraphState(index, 1)}>Move down</button>
-              <button @click=${() => this.removeMiniGraphState(index)}>Remove</button>
+                @click=${() => this.moveMiniGraphState(index, 1)}>${localizeText(this.hass, "Move down")}</button>
+              <button @click=${() => this.removeMiniGraphState(index)}>${localizeText(this.hass, "Remove")}</button>
             </div>
           </div>
         `)}
-        <button class="add" @click=${this.addMiniGraphState}>Add state mapping</button>
+        <button class="add" @click=${this.addMiniGraphState}>${localizeText(this.hass, "Add state mapping")}</button>
       </section>
     `;
   }
@@ -1094,13 +1310,13 @@ export class MushroomAdditionEditor extends LitElement {
     const streams = wasteStreamsForConfig(this.config);
     return html`
       <section class="item-editor waste-stream-editor">
-        <h3>Waste streams</h3>
-        <p>Each enabled row uses its own sensor or calendar entity. Empty or disabled rows are omitted from the card.</p>
+        <h3>${localizeText(this.hass, "Waste streams")}</h3>
+        <p>${localizeText(this.hass, "Each enabled row uses its own sensor or calendar entity. Empty or disabled rows are omitted from the card.")}</p>
         ${streams.map((stream, index) => html`
           <div class="item-row waste-stream-row" data-stream-index=${index}>
-            <h4>${stream.label || `Waste stream ${index + 1}`}</h4>
+            <h4>${stream.label || localize(this.hass, "ui.renderer.waste_number", { number: index + 1 })}</h4>
             <label class="field">
-              <span>Show this waste stream</span>
+              <span>${localizeText(this.hass, "Show this waste stream")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ boolean: {} }}
@@ -1109,7 +1325,7 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <label class="field wide">
-              <span>Collection date entity</span>
+              <span>${localizeText(this.hass, "Collection date entity")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ entity: { domain: ["sensor", "calendar"] } }}
@@ -1118,7 +1334,7 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <label class="field">
-              <span>Label</span>
+              <span>${localizeText(this.hass, "Label")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ text: {} }}
@@ -1128,7 +1344,7 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <label class="field">
-              <span>Icon</span>
+              <span>${localizeText(this.hass, "Icon")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ icon: {} }}
@@ -1137,7 +1353,7 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <label class="field">
-              <span>Color</span>
+              <span>${localizeText(this.hass, "Color")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ ui_color: { default_color: "green" } }}
@@ -1146,13 +1362,13 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <div class="item-actions wide">
-              <button ?disabled=${index === 0} @click=${() => this.moveWasteStream(index, -1)}>Move up</button>
-              <button ?disabled=${index === streams.length - 1} @click=${() => this.moveWasteStream(index, 1)}>Move down</button>
-              <button @click=${() => this.removeWasteStream(index)}>Remove</button>
+              <button ?disabled=${index === 0} @click=${() => this.moveWasteStream(index, -1)}>${localizeText(this.hass, "Move up")}</button>
+              <button ?disabled=${index === streams.length - 1} @click=${() => this.moveWasteStream(index, 1)}>${localizeText(this.hass, "Move down")}</button>
+              <button @click=${() => this.removeWasteStream(index)}>${localizeText(this.hass, "Remove")}</button>
             </div>
           </div>
         `)}
-        <button class="add" @click=${this.addWasteStream}>Add waste stream</button>
+        <button class="add" @click=${this.addWasteStream}>${localizeText(this.hass, "Add waste stream")}</button>
       </section>
     `;
   }
@@ -1163,25 +1379,25 @@ export class MushroomAdditionEditor extends LitElement {
     const columns = Math.min(8, Math.max(1, Math.round(this.config.shortcuts?.columns ?? 4)));
     return html`
       <section class="item-editor sonos-shortcut-editor">
-        <h3>Playlist shortcuts</h3>
-        <p>Add Sonos playlists or other media IDs. Each shortcut starts playback on the card's primary Sonos entity.</p>
+        <h3>${localizeText(this.hass, "Playlist shortcuts")}</h3>
+        <p>${localizeText(this.hass, "Add Sonos playlists or other media IDs. Each shortcut starts playback on the card's primary Sonos entity.")}</p>
         <div class="item-row">
           <label class="field">
-            <span>Columns</span>
+            <span>${localizeText(this.hass, "Columns")}</span>
             <ha-selector
               .hass=${this.hass}
               .selector=${{ number: { min: 1, max: 8, step: 1, mode: "box" } }}
               .value=${columns}
               @value-changed=${(event: CustomEvent) => this.updateSonosColumns(event.detail.value)}
             ></ha-selector>
-            <small>Number of shortcut buttons shown on each row.</small>
+            <small>${localizeText(this.hass, "Number of shortcut buttons shown on each row.")}</small>
           </label>
         </div>
         ${shortcuts.map((shortcut, index) => html`
           <div class="item-row sonos-shortcut-row" data-shortcut-index=${index}>
-            <h4>${shortcut.name || `Shortcut ${index + 1}`}</h4>
+            <h4>${shortcut.name || localize(this.hass, "ui.renderer.shortcut_number", { number: index + 1 })}</h4>
             <label class="field">
-              <span>Label</span>
+              <span>${localizeText(this.hass, "Label")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ text: {} }}
@@ -1189,10 +1405,10 @@ export class MushroomAdditionEditor extends LitElement {
                 @value-changed=${(event: CustomEvent) =>
                   this.updateSonosShortcut(index, "name", event.detail.value)}
               ></ha-selector>
-              <small>Optional text shown below the icon.</small>
+              <small>${localizeText(this.hass, "Optional text shown below the icon.")}</small>
             </label>
             <label class="field">
-              <span>Icon</span>
+              <span>${localizeText(this.hass, "Icon")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ icon: {} }}
@@ -1202,7 +1418,7 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <label class="field">
-              <span>Media type</span>
+              <span>${localizeText(this.hass, "Media type")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ text: {} }}
@@ -1210,10 +1426,10 @@ export class MushroomAdditionEditor extends LitElement {
                 @value-changed=${(event: CustomEvent) =>
                   this.updateSonosShortcut(index, "type", event.detail.value)}
               ></ha-selector>
-              <small>Use playlist for Spotify playlist IDs, or another media type supported by your player.</small>
+              <small>${localizeText(this.hass, "Use playlist for Spotify playlist IDs, or another media type supported by your player.")}</small>
             </label>
             <label class="field wide">
-              <span>Playlist or media ID</span>
+              <span>${localizeText(this.hass, "Playlist or media ID")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ text: {} }}
@@ -1221,17 +1437,17 @@ export class MushroomAdditionEditor extends LitElement {
                 @value-changed=${(event: CustomEvent) =>
                   this.updateSonosShortcut(index, "id", event.detail.value)}
               ></ha-selector>
-              <small>For example: spotify:playlist:4Peff17x9lxkDupqOF0ive</small>
+              <small>${localize(this.hass, "ui.renderer.example", { value: "spotify:playlist:PLAYLIST_ID" })}</small>
             </label>
             <div class="item-actions wide">
-              <button ?disabled=${index === 0} @click=${() => this.moveSonosShortcut(index, -1)}>Move up</button>
+              <button ?disabled=${index === 0} @click=${() => this.moveSonosShortcut(index, -1)}>${localizeText(this.hass, "Move up")}</button>
               <button ?disabled=${index === shortcuts.length - 1}
-                @click=${() => this.moveSonosShortcut(index, 1)}>Move down</button>
-              <button @click=${() => this.removeSonosShortcut(index)}>Remove</button>
+                @click=${() => this.moveSonosShortcut(index, 1)}>${localizeText(this.hass, "Move down")}</button>
+              <button @click=${() => this.removeSonosShortcut(index)}>${localizeText(this.hass, "Remove")}</button>
             </div>
           </div>
         `)}
-        <button class="add" @click=${this.addSonosShortcut}>Add playlist shortcut</button>
+        <button class="add" @click=${this.addSonosShortcut}>${localizeText(this.hass, "Add playlist shortcut")}</button>
       </section>
     `;
   }
@@ -1241,13 +1457,13 @@ export class MushroomAdditionEditor extends LitElement {
     const items = this.config.carousel_items ?? [];
     return html`
       <section class="item-editor carousel-item-editor">
-        <h3>Carousel items</h3>
-        <p>Add entity-aware icon buttons. Swipe or scroll to move through them; tap the centered item to run its action.</p>
+        <h3>${localizeText(this.hass, "Carousel items")}</h3>
+        <p>${localizeText(this.hass, "Add entity-aware icon buttons. Swipe or scroll to move through them; tap the centered item to run its action.")}</p>
         ${items.map((item, index) => html`
           <div class="item-row carousel-item-row" data-carousel-index=${index}>
-            <h4>${item.name || item.entity || `Item ${index + 1}`}</h4>
+            <h4>${item.name || item.entity || localize(this.hass, "ui.renderer.item", { number: index + 1 })}</h4>
             <label class="field wide">
-              <span>Entity</span>
+              <span>${localizeText(this.hass, "Entity")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ entity: {} }}
@@ -1257,7 +1473,7 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <label class="field">
-              <span>Label</span>
+              <span>${localizeText(this.hass, "Label")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ text: {} }}
@@ -1267,7 +1483,7 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <label class="field">
-              <span>Icon</span>
+              <span>${localizeText(this.hass, "Icon")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ icon: {} }}
@@ -1275,10 +1491,10 @@ export class MushroomAdditionEditor extends LitElement {
                 @value-changed=${(event: CustomEvent) =>
                   this.updateCarouselItem(index, "icon", event.detail.value)}
               ></ha-selector>
-              <button @click=${() => this.updateCarouselItem(index, "icon", undefined)}>Use entity icon</button>
+              <button @click=${() => this.updateCarouselItem(index, "icon", undefined)}>${localizeText(this.hass, "Use entity icon")}</button>
             </label>
             <label class="field">
-              <span>Color</span>
+              <span>${localizeText(this.hass, "Color")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ ui_color: {} }}
@@ -1288,12 +1504,12 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <label class="field">
-              <span>Visual</span>
+              <span>${localizeText(this.hass, "Visual")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ select: { mode: "dropdown", options: [
-                  { value: "icon", label: "Icon" },
-                  { value: "entity-picture", label: "Entity picture" },
+                  { value: "icon", label: localizeText(this.hass, "Icon") },
+                  { value: "entity-picture", label: localizeText(this.hass, "Entity picture") },
                 ] } }}
                 .value=${item.icon_type ?? "icon"}
                 @value-changed=${(event: CustomEvent) =>
@@ -1301,7 +1517,7 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <label class="field wide">
-              <span>Tap action</span>
+              <span>${localizeText(this.hass, "Tap action")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .required=${false}
@@ -1312,7 +1528,7 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <label class="field wide">
-              <span>Hold action</span>
+              <span>${localizeText(this.hass, "Hold action")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .required=${false}
@@ -1323,7 +1539,7 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <label class="field wide">
-              <span>Double-tap action</span>
+              <span>${localizeText(this.hass, "Double-tap action")}</span>
               <ha-selector
                 .hass=${this.hass}
                 .required=${false}
@@ -1334,14 +1550,14 @@ export class MushroomAdditionEditor extends LitElement {
               ></ha-selector>
             </label>
             <div class="item-actions wide">
-              <button ?disabled=${index === 0} @click=${() => this.moveCarouselItem(index, -1)}>Move up</button>
+              <button ?disabled=${index === 0} @click=${() => this.moveCarouselItem(index, -1)}>${localizeText(this.hass, "Move up")}</button>
               <button ?disabled=${index === items.length - 1}
-                @click=${() => this.moveCarouselItem(index, 1)}>Move down</button>
-              <button @click=${() => this.removeCarouselItem(index)}>Remove</button>
+                @click=${() => this.moveCarouselItem(index, 1)}>${localizeText(this.hass, "Move down")}</button>
+              <button @click=${() => this.removeCarouselItem(index)}>${localizeText(this.hass, "Remove")}</button>
             </div>
           </div>
         `)}
-        <button class="add" @click=${this.addCarouselItem}>Add carousel item</button>
+        <button class="add" @click=${this.addCarouselItem}>${localizeText(this.hass, "Add carousel item")}</button>
       </section>
     `;
   }

@@ -30,10 +30,10 @@ const hass: HomeAssistant = {
       state: "on",
       attributes: { friendly_name: "Kitchen", brightness: 153 },
     },
-    "person.joris": {
-      entity_id: "person.joris",
+    "person.resident": {
+      entity_id: "person.resident",
       state: "home",
-      attributes: { friendly_name: "Joris", entity_picture: "/local/joris.jpg" },
+      attributes: { friendly_name: "Resident", entity_picture: "/local/resident.jpg" },
     },
     "sensor.battery": {
       entity_id: "sensor.battery",
@@ -139,7 +139,7 @@ const hass: HomeAssistant = {
     "sensor.nas_temp": { entity_id: "sensor.nas_temp", state: "46", attributes: { friendly_name: "Temp", unit_of_measurement: "°C" } },
     "sensor.nas_memory": { entity_id: "sensor.nas_memory", state: "15", attributes: { friendly_name: "Memory", unit_of_measurement: "%" } },
     "sensor.nas_cpu": { entity_id: "sensor.nas_cpu", state: "19.3", attributes: { friendly_name: "CPU", unit_of_measurement: "%" } },
-    "binary_sensor.tablet": { entity_id: "binary_sensor.tablet", state: "on", attributes: { friendly_name: "Bram Tablet" } },
+    "binary_sensor.tablet": { entity_id: "binary_sensor.tablet", state: "on", attributes: { friendly_name: "Hallway Tablet" } },
     "switch.tablet_usb": { entity_id: "switch.tablet_usb", state: "on", attributes: { friendly_name: "USB" } },
     "switch.tablet_motion": { entity_id: "switch.tablet_motion", state: "on", attributes: { friendly_name: "Motion" } },
     "switch.tablet_display": { entity_id: "switch.tablet_display", state: "on", attributes: { friendly_name: "Display" } },
@@ -150,28 +150,28 @@ const hass: HomeAssistant = {
     "sensor.tablet_disk": { entity_id: "sensor.tablet_disk", state: "17829.9", attributes: { friendly_name: "Disk", unit_of_measurement: "MB" } },
     "binary_sensor.tablet_power": { entity_id: "binary_sensor.tablet_power", state: "off", attributes: { friendly_name: "Power" } },
     "sensor.tablet_battery": { entity_id: "sensor.tablet_battery", state: "91", attributes: { friendly_name: "Battery", unit_of_measurement: "%" } },
-    "binary_sensor.snfx4594": { entity_id: "binary_sensor.snfx4594", state: "on", attributes: { friendly_name: "SNFX4594" } },
-    "sensor.snfx4594_follower": { entity_id: "sensor.snfx4594_follower", state: "31", attributes: { friendly_name: "Followers" } },
-    "sensor.snfx4594_following": { entity_id: "sensor.snfx4594_following", state: "18", attributes: { friendly_name: "Following" } },
-    "sensor.snfx4594_friends": { entity_id: "sensor.snfx4594_friends", state: "42", attributes: { friendly_name: "Friends" } },
-    "sensor.snfx4594_gamer_score": { entity_id: "sensor.snfx4594_gamer_score", state: "11145", attributes: { friendly_name: "Gamerscore" } },
-    "sensor.snfx4594_ranking": { entity_id: "sensor.snfx4594_ranking", state: "Silver", attributes: { friendly_name: "Ranking" } },
-    "sensor.snfx4594_now_playing": { entity_id: "sensor.snfx4594_now_playing", state: "Forza Horizon 5", attributes: { friendly_name: "Now Playing" } },
-    "image.snfx4594_gamerpic": { entity_id: "image.snfx4594_gamerpic", state: "2026-10-20T00:00:00+00:00", attributes: { friendly_name: "Gamerpic", entity_picture: "/api/image/xbox-gamerpic" } },
-    "image.snfx4594_now_playing": { entity_id: "image.snfx4594_now_playing", state: "2026-10-20T00:00:00+00:00", attributes: { friendly_name: "Now Playing artwork", entity_picture: "/api/image/xbox-artwork" } },
-    "remote.snfx4594_console": { entity_id: "remote.snfx4594_console", state: "off", attributes: { friendly_name: "Xbox console" } },
+    "binary_sensor.living_room_console": { entity_id: "binary_sensor.living_room_console", state: "on", attributes: { friendly_name: "Living room console" } },
+    "sensor.living_room_console_follower": { entity_id: "sensor.living_room_console_follower", state: "31", attributes: { friendly_name: "Followers" } },
+    "sensor.living_room_console_following": { entity_id: "sensor.living_room_console_following", state: "18", attributes: { friendly_name: "Following" } },
+    "sensor.living_room_console_friends": { entity_id: "sensor.living_room_console_friends", state: "42", attributes: { friendly_name: "Friends" } },
+    "sensor.living_room_console_gamer_score": { entity_id: "sensor.living_room_console_gamer_score", state: "11145", attributes: { friendly_name: "Gamerscore" } },
+    "sensor.living_room_console_ranking": { entity_id: "sensor.living_room_console_ranking", state: "Silver", attributes: { friendly_name: "Ranking" } },
+    "sensor.living_room_console_now_playing": { entity_id: "sensor.living_room_console_now_playing", state: "Forza Horizon 5", attributes: { friendly_name: "Now Playing" } },
+    "image.living_room_console_gamerpic": { entity_id: "image.living_room_console_gamerpic", state: "2026-10-20T00:00:00+00:00", attributes: { friendly_name: "Gamerpic", entity_picture: "/api/image/xbox-gamerpic" } },
+    "image.living_room_console_now_playing": { entity_id: "image.living_room_console_now_playing", state: "2026-10-20T00:00:00+00:00", attributes: { friendly_name: "Now Playing artwork", entity_picture: "/api/image/xbox-artwork" } },
+    "remote.living_room_console_console": { entity_id: "remote.living_room_console_console", state: "off", attributes: { friendly_name: "Xbox console" } },
   },
   entities: Object.fromEntries([
-    "binary_sensor.snfx4594",
-    "sensor.snfx4594_follower",
-    "sensor.snfx4594_following",
-    "sensor.snfx4594_friends",
-    "sensor.snfx4594_gamer_score",
-    "sensor.snfx4594_ranking",
-    "sensor.snfx4594_now_playing",
-    "image.snfx4594_gamerpic",
-    "image.snfx4594_now_playing",
-    "remote.snfx4594_console",
+    "binary_sensor.living_room_console",
+    "sensor.living_room_console_follower",
+    "sensor.living_room_console_following",
+    "sensor.living_room_console_friends",
+    "sensor.living_room_console_gamer_score",
+    "sensor.living_room_console_ranking",
+    "sensor.living_room_console_now_playing",
+    "image.living_room_console_gamerpic",
+    "image.living_room_console_now_playing",
+    "remote.living_room_console_console",
   ].map((entityId) => [entityId, { device_id: "xbox-account", platform: "xbox" }])),
   callService: async () => undefined,
   connection: {
@@ -216,7 +216,7 @@ const entityFor = (item: (typeof CATALOG)[number]): string => {
   if (domains.includes("weather")) return "weather.home";
   if (domains.includes("climate")) return "climate.living";
   if (domains.includes("light")) return "light.kitchen";
-  if (domains.includes("person")) return "person.joris";
+  if (domains.includes("person")) return "person.resident";
   if (domains.includes("media_player")) return "media_player.tv";
   if (domains.includes("cover")) return "cover.blind";
   if (domains.includes("fan")) return "fan.fixture";
@@ -436,7 +436,7 @@ describe("family renderers", () => {
       type: "custom:mushroom-addition-custom-card-trash",
       entity: "sensor.today",
       name_mode: "entity",
-      name: [{ type: "text", text: "Joris" }, { type: "area" }],
+      name: [{ type: "text", text: "Resident" }, { type: "area" }],
       primary_info: "name",
       secondary_info: "default",
       icon_type: "icon",
@@ -444,19 +444,19 @@ describe("family renderers", () => {
     });
     document.body.append(element);
     await element.updateComplete;
-    expect(element.shadowRoot?.querySelector(".ulm-name")?.textContent?.trim()).toBe("Joris Home");
+    expect(element.shadowRoot?.querySelector(".ulm-name")?.textContent?.trim()).toBe("Resident Home");
     element.remove();
 
     const custom = await render("mushroom-addition-custom-card-trash", {
       type: "custom:mushroom-addition-custom-card-trash",
       entity: "sensor.today",
       name_mode: "entity",
-      name: "pietjeds",
+      name: "Custom collection",
       primary_info: "name",
       secondary_info: "default",
       waste_streams: [],
     });
-    expect(custom).toContain("pietjeds");
+    expect(custom).toContain("Custom collection");
     expect(custom).not.toContain(">Trash type today<");
   });
 
@@ -484,12 +484,12 @@ describe("family renderers", () => {
 
     const picture = await render("mushroom-addition-custom-card-trash", {
       type: "custom:mushroom-addition-custom-card-trash",
-      entity: "person.joris",
+      entity: "person.resident",
       icon_type: "entity-picture",
       waste_streams: [],
     });
     expect(picture).toContain("entity-picture");
-    expect(picture).toContain("/local/joris.jpg");
+    expect(picture).toContain("/local/resident.jpg");
   });
 
   it("gives Icon type precedence over legacy icon settings", async () => {
@@ -626,7 +626,7 @@ describe("family renderers", () => {
     ["trash", "sensor.power", "custom-waste-card", "waste-grid"],
     ["alarm-time", "input_boolean.alarm", "custom-alarm-time", "alarm-time-controls"],
     ["roomview", "sensor.temperature", "custom-room-view", "room-view-actions"],
-    ["welcome", "person.joris", "custom-welcome", "welcome-items"],
+    ["welcome", "person.resident", "custom-welcome", "welcome-items"],
     ["washer", "switch.washer", "custom-washer", "washer-stages"],
     ["sun", "sun.sun", "custom-sun-card", "sun-arc"],
     ["input-datetime", "input_datetime.alarm", "custom-input-datetime", "input-datetime-controls"],
@@ -684,13 +684,13 @@ describe("family renderers", () => {
       type: "custom:mushroom-addition-card-room",
       entity: "light.kitchen",
       room_sensors: [{
-        entity: "person.joris",
+        entity: "person.resident",
         icon: "mdi:account",
         icon_type: "entity-picture",
       }],
     });
     expect(picture).toContain("room-sensor-picture");
-    expect(picture).toContain("/local/joris.jpg");
+    expect(picture).toContain("/local/resident.jpg");
 
     const fallback = document.createElement("mushroom-addition-card-room") as HTMLElement & {
       hass: HomeAssistant;
@@ -725,7 +725,7 @@ describe("family renderers", () => {
     card.setConfig({
       type: "custom:mushroom-addition-card-welcome-scenes",
       scene_items: [{
-        entity: "person.joris",
+        entity: "person.resident",
         icon: "mdi:account",
         icon_type: "entity-picture",
       }, {
@@ -738,7 +738,7 @@ describe("family renderers", () => {
     await card.updateComplete;
     const buttons = card.shadowRoot?.querySelectorAll(".scene-button") ?? [];
     expect(buttons[0].querySelector(".scene-entity-picture")?.getAttribute("style"))
-      .toContain("/local/joris.jpg");
+      .toContain("/local/resident.jpg");
     expect((buttons[1].querySelector("ha-icon") as HTMLElement & { icon: string }).icon)
       .toBe("mdi:battery");
     card.remove();
@@ -815,7 +815,7 @@ describe("family renderers", () => {
     ["printer", "sensor.power", "custom-printer", "toner-bars"],
     ["nas-metrics", "sensor.power", "custom-nas-metrics", "nas-metrics-metrics"],
     ["tablet", "sensor.battery", "custom-tablet", "tablet-header"],
-    ["game-console", "binary_sensor.snfx4594", "custom-console-card", "console-content"],
+    ["game-console", "binary_sensor.living_room_console", "custom-console-card", "console-content"],
     ["scenes", "scene.relax", "ulm-scenes", "scene-grid"],
     ["plant", "sensor.power", "custom-plant", "flower-bars"],
     ["speedtest-gauges", "sensor.power", "custom-speedtest-gauges", "speedtest-three"],
@@ -848,7 +848,7 @@ describe("family renderers", () => {
       const tag = `mushroom-addition-${slug}`;
       const markup = await render(tag, {
         type: `custom:${tag}`,
-        entity: source.upstreamId.includes("person") ? "person.joris"
+        entity: source.upstreamId.includes("person") ? "person.resident"
           : source.upstreamId.includes("weather") ? "weather.home"
             : source.upstreamId.includes("thermostat") || source.upstreamId.includes("aircondition") ? "climate.living"
               : source.upstreamId.includes("light") ? "light.kitchen"
@@ -926,9 +926,9 @@ describe("family renderers", () => {
   it("renders an automatically discovered Xbox profile with compact social counts and replaceable stats", async () => {
     const markup = await render("mushroom-addition-custom-card-game-console", {
       type: "custom:mushroom-addition-custom-card-game-console",
-      entity: "binary_sensor.snfx4594",
-      primary_stat_entity: "sensor.snfx4594_gamer_score",
-      secondary_stat_entity: "sensor.snfx4594_ranking",
+      entity: "binary_sensor.living_room_console",
+      primary_stat_entity: "sensor.living_room_console_gamer_score",
+      secondary_stat_entity: "sensor.living_room_console_ranking",
     });
 
     expect(markup).toContain("console-card platform-xbox");
@@ -981,7 +981,7 @@ describe("family renderers", () => {
     element.hass = { ...hass, callService };
     element.setConfig({
       type: "custom:mushroom-addition-custom-card-game-console",
-      entity: "binary_sensor.snfx4594",
+      entity: "binary_sensor.living_room_console",
       console_platform: "nintendo",
       console_show_controls: true,
       gamerpic_entity: "image.missing",
@@ -990,9 +990,9 @@ describe("family renderers", () => {
     await element.updateComplete;
 
     expect(element.shadowRoot?.innerHTML).toContain("platform-nintendo");
-    expect((element.shadowRoot?.querySelector(".console-logo ha-state-icon") as HTMLElement & { stateObj: { entity_id: string } }).stateObj.entity_id).toBe("binary_sensor.snfx4594");
+    expect((element.shadowRoot?.querySelector(".console-logo ha-state-icon") as HTMLElement & { stateObj: { entity_id: string } }).stateObj.entity_id).toBe("binary_sensor.living_room_console");
     (element.shadowRoot?.querySelector(".console-controls button") as HTMLElement).click();
-    expect(callService).toHaveBeenCalledWith("remote", "turn_on", { entity_id: "remote.snfx4594_console" });
+    expect(callService).toHaveBeenCalledWith("remote", "turn_on", { entity_id: "remote.living_room_console_console" });
     element.remove();
   });
 
@@ -1000,7 +1000,7 @@ describe("family renderers", () => {
     const item = CATALOG.find((candidate) => candidate.upstreamId === "custom_card_playstation")!;
     const schema = editorSchemaFor(item, {
       type: `custom:${item.tag}`,
-      entity: "binary_sensor.snfx4594",
+      entity: "binary_sensor.living_room_console",
     });
     const serialized = JSON.stringify(schema);
     for (const field of [

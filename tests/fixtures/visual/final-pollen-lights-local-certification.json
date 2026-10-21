@@ -1,0 +1,70 @@
+{
+  "pinnedUpstreamCommit": "f8a9cb67a53f91367f1dffe18516aa983b463cb5",
+  "inspectedAt": "2026-09-23",
+  "liveAccepted": false,
+  "liveMappings": {
+    "custom_card_pollen": {
+      "trees_entity": "sensor.kleenex_pollen_radar_home_trees",
+      "grass_entity": "sensor.kleenex_pollen_radar_home_grass",
+      "weeds_entity": "sensor.kleenex_pollen_radar_home_weeds"
+    }
+  },
+  "geometry": {
+    "custom_card_pollen": {
+      "referenceWidth": 368,
+      "implementationWidth": 368,
+      "implementationHeight": 108,
+      "regions": {
+        ".pollen-item": 3,
+        ".pollen-extreme": 1
+      }
+    }
+  },
+  "interactions": {
+    "custom_card_pollen": {
+      "serviceCalls": [],
+      "cardActions": [
+        {
+          "action": "tap",
+          "config": {
+            "type": "custom:mushroom-addition-custom-card-pollen",
+            "entity": "sensor.kleenex_pollen_radar_home_trees",
+            "tap_action": {
+              "action": "more-info"
+            }
+          }
+        },
+        {
+          "action": "tap",
+          "config": {
+            "type": "custom:mushroom-addition-custom-card-pollen",
+            "entity": "sensor.kleenex_pollen_radar_home_grass",
+            "tap_action": {
+              "action": "more-info"
+            }
+          }
+        },
+        {
+          "action": "tap",
+          "config": {
+            "type": "custom:mushroom-addition-custom-card-pollen",
+            "entity": "sensor.kleenex_pollen_radar_home_weeds",
+            "tap_action": {
+              "action": "more-info"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "artifact": "docs/assets/visual-audit/final-pollen-lights-comparison.png",
+  "manualInspection": {
+    "accepted": true,
+    "notes": [
+      "Pollen preserves the three source items, localized names and severity labels, source colors, icons, and very-high badge.",
+      "Lights count preserves the source icon-only hierarchy, count text, active color/background behavior, and default no-action contract.",
+      "The fixture renders real @mdi/js paths; no textual icon abbreviation is used."
+    ]
+  },
+  "provenance": "Sanitized historical fixture; not current UI certification."
+}

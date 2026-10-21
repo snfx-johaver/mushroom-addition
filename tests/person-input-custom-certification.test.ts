@@ -5,10 +5,10 @@ import type { AdditionConfig, HomeAssistant } from "../src/types";
 import "../src/index";
 
 const states: HomeAssistant["states"] = {
-  "person.joris": {
-    entity_id: "person.joris",
+  "person.resident": {
+    entity_id: "person.resident",
     state: "home",
-    attributes: { friendly_name: "Joris", entity_picture: "/local/joris.jpg" },
+    attributes: { friendly_name: "Resident", entity_picture: "/local/resident.jpg" },
   },
   "zone.office": {
     entity_id: "zone.office",

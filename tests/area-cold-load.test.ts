@@ -9,7 +9,7 @@ type LoaderWindow = Window & {
 };
 const loaderWindow = window as LoaderWindow;
 customElements.define(AREA_TAG, MushroomAreaAdvancedCard);
-const config = { type: `custom:${AREA_TAG}`, area: "office_joris" };
+const config = { type: `custom:${AREA_TAG}`, area: "office" };
 const hass: HomeAssistant = { states: {}, callService: vi.fn() };
 async function settle(element: MushroomAreaAdvancedCard | MushroomAreaAdvancedEditor) {
   for (let i = 0; i < 12; i++) { await Promise.resolve(); await element.updateComplete; }
@@ -87,8 +87,8 @@ it("bounds unfinished native imports for card and editor and permits successful 
   card.setConfig(config); editor.setConfig(config); document.body.append(card, editor);
   await settle(card); await settle(editor);
   await vi.advanceTimersByTimeAsync(8001); await settle(card); await settle(editor);
-  expect(card.shadowRoot!.textContent).toContain("did not finish loading");
-  expect(editor.shadowRoot!.textContent).toContain("did not finish loading");
+  expect(card.shadowRoot!.textContent).toContain("The native component (hui-area-card) took too long to load.");
+  expect(editor.shadowRoot!.textContent).toContain("The native component (hui-area-card) took too long to load.");
   registration.mockRestore();
   (card.shadowRoot!.querySelector("button") as HTMLButtonElement).click();
   (editor.shadowRoot!.querySelector("button") as HTMLButtonElement).click();

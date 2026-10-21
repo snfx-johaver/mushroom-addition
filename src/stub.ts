@@ -4,6 +4,8 @@ import { roomLightingSceneExample, sceneItemDefaultsFor } from "./scene-item-def
 import { roomItemDefaultsFor } from "./room";
 import { sonosControlCount } from "./sonos-controls";
 import { inferConsolePlatform, resolveConsoleEntities } from "./console";
+import { readUpcomingData } from "./upcoming-media";
+import { wasteStreamExamples } from "./waste-streams";
 
 const firstMatchingEntity = (
   descriptor: CatalogItem,
@@ -25,6 +27,27 @@ const firstMatchingEntity = (
 
 const sampleName = (descriptor: CatalogItem): string =>
   descriptor.name.replace(/ (Card|Chip)$/, "");
+
+export const miniGraphExampleEntity = (
+  hass?: HomeAssistant,
+  entities: string[] = [],
+  entitiesFallback: string[] = [],
+): string | undefined => {
+  const available = [...new Set([...entities, ...entitiesFallback, ...Object.keys(hass?.states ?? {})])];
+  const numericSensors = available.filter(id => {
+    const entity = hass?.states[id];
+    return id.startsWith("sensor.") && entity !== undefined &&
+      entity.state.trim() !== "" && Number.isFinite(Number(entity.state));
+  });
+  return numericSensors.find(id => {
+    const attributes = hass!.states[id].attributes;
+    return attributes.device_class === "temperature" ||
+      ["°C", "°F", "K"].includes(String(attributes.unit_of_measurement ?? ""));
+  }) ?? numericSensors[0] ??
+    available.find(id => (id.startsWith("sensor.") || id.startsWith("binary_sensor.")) &&
+      hass?.states[id] !== undefined &&
+      !["unknown", "unavailable", ""].includes(hass.states[id].state.trim().toLowerCase()));
+};
 
 export const createStubConfig = (
   descriptor: CatalogItem,
@@ -99,8 +122,19 @@ export const createStubConfig = (
   const sonosPlayer = available
     .filter((entityId) => entityId.startsWith("media_player.") && entityText(entityId).includes("sonos"))
     .sort((left, right) => sonosControlCount(hass, right) - sonosControlCount(hass, left))[0];
+  const wasteExamples = descriptor.upstreamId === "custom_card_trash"
+    ? wasteStreamExamples(hass, entities, entitiesFallback) : undefined;
   const semanticPrimary =
-    descriptor.upstreamId === "advanced_home_energy_management"
+    descriptor.upstreamId === "pi_hole_card"
+      ? orderedMatches(available.filter(id => id.startsWith("switch.") && (
+        /pi_hole/.test(hass?.entities?.[id]?.platform || "") || /pi.?hole/.test(entityText(id))
+      )))[0] ?? orderedMatches(available.filter(id => id.startsWith("sensor.") && /pi_hole/.test(hass?.entities?.[id]?.platform || "")))[0]
+      : descriptor.upstreamId === "remote_card"
+      ? orderedMatches(available.filter(id => id.startsWith("media_player.") && (
+        hass?.states[id]?.attributes.device_class === "tv" ||
+        /samsung|android|apple_tv|roku|webostv|bravia/.test(hass?.entities?.[id]?.platform || "")
+      )))[0] ?? findEntity(["remote"], [])
+      : descriptor.upstreamId === "advanced_home_energy_management"
       ? findEntity(["sensor"], ["hems", "house", "consumption"]) ??
         findEntity(["sensor"], ["house", "consumption"]) ??
         findEntityByDeviceClass(["power"])
@@ -111,9 +145,7 @@ export const createStubConfig = (
         : descriptor.upstreamId === "advanced_energy_panel_health"
           ? discoveredPanelEntities[0]
       : descriptor.upstreamId === "mini_graph_card"
-      ? findEntityByDeviceClass(["temperature"]) ??
-        findEntityByDeviceClass(["power", "energy"]) ??
-        findEntity(["sensor"], [])
+      ? miniGraphExampleEntity(hass, entities, entitiesFallback)
         : descriptor.upstreamId === "card_battery"
               ? findEntityExcluding(["sensor"], ["battery", "level"], ["state", "charging"]) ??
                 findEntityByDeviceClass(["battery"], [], ["state", "charging"])
@@ -148,8 +180,7 @@ export const createStubConfig = (
                                         findEntity(["media_player", "remote"], [])
                                     : undefined;
   const scenePrimary = descriptor.upstreamId === "card_scenes"
-    ? findHealthyEntity(["light"], ["office", "joris"]) ??
-      findHealthyEntity(["light"], []) ??
+    ? findHealthyEntity(["light"], []) ??
       findHealthyEntity(["climate"], []) ??
       findHealthyEntity(["sensor"], [])
     : undefined;
@@ -157,7 +188,11 @@ export const createStubConfig = (
     firstMatchingEntity(descriptor, hass, entities, entitiesFallback);
   const carouselExample = descriptor.upstreamId === "custom_card_entity_carousel"
     ? roomLightingSceneExample(hass, fallbackEntity) : undefined;
-  const entity = carouselExample ? carouselExample.entity : fallbackEntity;
+  const entity = descriptor.upstreamId === "upcoming_media"
+    ? orderedMatches(available.filter(id => id.startsWith("sensor.") && !readUpcomingData(hass?.states[id]).error))[0]
+    : descriptor.upstreamId === "custom_card_trash" ? wasteExamples?.[0]?.entity
+    : ["remote_card", "pi_hole_card"].includes(descriptor.upstreamId) ? semanticPrimary
+    : carouselExample ? carouselExample.entity : fallbackEntity;
   const panelEntities = descriptor.upstreamId === "advanced_energy_panel_health"
     ? discoveredPanelEntities
     : undefined;
@@ -238,6 +273,7 @@ export const createStubConfig = (
       : descriptor.variants?.includes("with-sensors")
       ? entitiesFallback.slice(0, 2)
       : undefined,
+    ...(wasteExamples?.length ? { waste_streams: wasteExamples } : {}),
     panel_entities: panelEntities?.length ? panelEntities : undefined,
     ...(descriptor.upstreamId === "advanced_home_energy_management"
       ? {

@@ -84,11 +84,11 @@ if (!customElements.get("ha-icon")) customElements.define("ha-icon", HaIcon);
 
 const hass: HomeAssistant = {
   states: {
-    "person.joris": { entity_id: "person.joris", state: "home", attributes: { friendly_name: "Joris" } },
-    "sensor.joris_mobile_battery_level": { entity_id: "sensor.joris_mobile_battery_level", state: "72", attributes: { friendly_name: "Battery", unit_of_measurement: "%" } },
+    "person.resident": { entity_id: "person.resident", state: "home", attributes: { friendly_name: "Resident" } },
+    "sensor.resident_mobile_battery_level": { entity_id: "sensor.resident_mobile_battery_level", state: "72", attributes: { friendly_name: "Battery", unit_of_measurement: "%" } },
     "switch.cv_plug": { entity_id: "switch.cv_plug", state: "on", attributes: { friendly_name: "Outlet", icon: "mdi:power-plug" } },
     "sensor.cv_plug_power": { entity_id: "sensor.cv_plug_power", state: "10", attributes: { friendly_name: "Power", unit_of_measurement: "W" } },
-    "light.joris_iris_1": { entity_id: "light.joris_iris_1", state: "on", attributes: { friendly_name: "Living Room", current_temperature: 19.8, unit_of_measurement: "°C" } },
+    "light.office_accent": { entity_id: "light.office_accent", state: "on", attributes: { friendly_name: "Living Room", current_temperature: 19.8, unit_of_measurement: "°C" } },
     "light.room": { entity_id: "light.room", state: "on", attributes: { friendly_name: "Light", icon: "mdi:lightbulb" } },
     "switch.outlet": { entity_id: "switch.outlet", state: "on", attributes: { friendly_name: "Outlet", icon: "mdi:power-plug" } },
     "sensor.temperature": { entity_id: "sensor.temperature", state: "19.8", attributes: { friendly_name: "Temperature", icon: "mdi:thermometer", unit_of_measurement: "°C" } },
@@ -136,7 +136,7 @@ const comparisons: Record<string, Comparison> = {
     referenceY: 0,
     reference: "room-card.png",
     config: {
-      entity: "light.joris_iris_1",
+      entity: "light.office_accent",
       room_sensors: [
         { entity: "light.room", icon: "mdi:lightbulb", color: "#ff9800", active_state: "on", name: "Light" },
         { entity: "switch.outlet", icon: "mdi:power-plug", color: "#00c853", active_state: "on", name: "Outlet" },

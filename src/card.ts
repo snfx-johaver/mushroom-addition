@@ -1,3 +1,4 @@
+import { localizeText } from "./localize";
 import { LitElement, html, nothing, type TemplateResult } from "lit";
 import { property, state } from "lit/decorators.js";
 import type { AdditionConfig, CatalogItem, HomeAssistant, WeatherForecast } from "./types";
@@ -25,6 +26,7 @@ export class MushroomAdditionCard extends LitElement {
   public setConfig(config: AdditionConfig): void {
     if (!config || typeof config !== "object") throw new Error("A card configuration is required.");
     const normalized = normalizeConfig(config);
+    this.clearGestures();
     const previousKey = this.forecastKey(this.config);
     this.config = normalized;
     this.sceneOverflowExpanded = false;
@@ -43,13 +45,19 @@ export class MushroomAdditionCard extends LitElement {
   }
 
   public getCardSize(): number {
+    if (this.descriptor?.upstreamId === "pi_hole_card") return 8;
+    if (this.descriptor?.upstreamId === "remote_card") return 8;
+    if (this.descriptor?.upstreamId === "upcoming_media") {
+      const count = this.config?.upcoming_max_items;
+      return 1 + Math.min(50, Math.max(1, typeof count === "number" && Number.isFinite(count) ? count : 5)) * 2;
+    }
     if (["weather", "climate", "scene", "energy", "sensor"].includes(this.descriptor?.family ?? "")) return 2;
     return 1;
   }
 
   protected render() {
     if (!this.config || !this.descriptor) return nothing;
-    if (!this.hass) return html`<ha-card><div class="preview">Mushroom Addition preview</div></ha-card>`;
+    if (!this.hass) return html`<ha-card><div class="preview">${localizeText(this.hass, "Mushroom Addition preview")}</div></ha-card>`;
     const entity = this.config.entity ? this.hass.states[this.config.entity] : undefined;
     const presentation = { rendered: false };
     const context: RenderContext = {
@@ -84,6 +92,7 @@ export class MushroomAdditionCard extends LitElement {
   }
 
   public disconnectedCallback(): void {
+    this.clearGestures();
     this.stopForecastSubscription();
     this.stopEnergyBuySellRefresh();
     super.disconnectedCallback();
@@ -147,7 +156,7 @@ export class MushroomAdditionCard extends LitElement {
       else this.unsubscribeForecast = unsubscribe;
     } catch (error) {
       if (generation === this.forecastGeneration) this.forecastSubscriptionKey = undefined;
-      console.warn("Mushroom Cards Addition: unable to load weather forecast", error);
+      console.warn("Mushroom Addition: unable to load weather forecast", error);
     }
   }
 
@@ -173,11 +182,20 @@ export class MushroomAdditionCard extends LitElement {
   };
 
   private readonly keydown = (event: KeyboardEvent): void => {
+    if (event.target !== event.currentTarget) return;
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       this.runAction("tap_action");
     }
   };
+
+  private clearGestures(): void {
+    if (this.holdTimer !== undefined) window.clearTimeout(this.holdTimer);
+    if (this.tapTimer !== undefined) window.clearTimeout(this.tapTimer);
+    this.holdTimer = undefined;
+    this.tapTimer = undefined;
+    this.holdFired = false;
+  }
 
   private readonly pointerDown = (): void => {
     this.holdFired = false;

@@ -1,0 +1,60 @@
+{
+  "upstreamCommit": "f8a9cb67a53f91367f1dffe18516aa983b463cb5",
+  "capturedAt": "2026-09-23T22:30:59.043+02:00",
+  "live": false,
+  "liveSafety": "Physical light, media, outlet, printer-power, and HVAC controls were not operated. Exact payloads are certified locally.",
+  "exactLiveConfigs": {
+    "custom_card_media_player_sonos": {
+      "type": "custom:mushroom-addition-custom-card-media-player-sonos",
+      "entity": "media_player.office_sonos",
+      "ulm_card_media_player_with_controls_name": "Office Resident Sonos"
+    },
+    "custom_card_printer": {
+      "type": "custom:mushroom-addition-custom-card-printer",
+      "entity": "binary_sensor.printer_online",
+      "power_entity": "switch.office_plug_4",
+      "power_sensor": "sensor.office_plug_4_power",
+      "error_entity": "binary_sensor.printer_errors"
+    }
+  },
+  "interactions": {
+    "custom_card_media_player_sonos": {
+      "visibleInteractions": [
+        "Header/card tap opens media-player more-info",
+        "Volume down button",
+        "Play/pause button",
+        "Volume up button"
+      ],
+      "exactPayloads": [
+        [
+          "media_player",
+          "volume_down",
+          {
+            "entity_id": "media_player.office_sonos"
+          }
+        ],
+        [
+          "media_player",
+          "media_play_pause",
+          {
+            "entity_id": "media_player.office_sonos"
+          }
+        ],
+        [
+          "media_player",
+          "volume_up",
+          {
+            "entity_id": "media_player.office_sonos"
+          }
+        ]
+      ]
+    },
+    "custom_card_printer": {
+      "visibleInteractions": [
+        "Card/header tap opens printer-status more-info"
+      ],
+      "exactPayloads": []
+    }
+  },
+  "provenance": "Sanitized historical fixture; not current UI certification."
+}

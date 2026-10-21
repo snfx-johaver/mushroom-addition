@@ -1,5 +1,6 @@
 import type { AdditionConfig, AdditionItemConfig, HassEntity, HomeAssistant, RoomStatusKind } from "./types";
 import { displayName, stateLabel } from "./helpers";
+import { localizeText } from "./localize";
 
 const finiteNumber = (value: unknown): number | undefined => {
   if (typeof value !== "number" && (typeof value !== "string" || !value.trim())) return undefined;
@@ -45,7 +46,7 @@ export const roomSecondary = (config: AdditionConfig, hass: HomeAssistant): stri
       switch (part.type) {
         case "text": return part.text?.trim();
         case "name": return primary?.attributes.friendly_name || primary?.entity_id;
-        case "state": return roomEntityUnavailable(primary) ? undefined : stateLabel(primary);
+        case "state": return roomEntityUnavailable(primary) ? undefined : stateLabel(primary, hass);
         case "brightness": return roomBrightnessLabel(primary);
         case "temperature": return roomTemperatureLabel(hass, primary);
         case "attribute": {
@@ -61,8 +62,8 @@ export const roomSecondary = (config: AdditionConfig, hass: HomeAssistant): stri
   if (mode === "name") return displayName(config, primary, hass);
   if (mode === "last-changed" || mode === "last-updated") {
     const timestamp = mode === "last-changed" ? primary?.last_changed : primary?.last_updated;
-    return timestamp ? new Date(timestamp).toLocaleString()
-      : mode === "last-changed" ? "Last changed unavailable" : "Last updated unavailable";
+    return timestamp ? new Date(timestamp).toLocaleString(hass.language)
+      : localizeText(hass, mode === "last-changed" ? "Last changed unavailable" : "Last updated unavailable");
   }
   if (mode !== "state" && config.secondary) return config.secondary;
   const temperature = config.label_use_temperature !== false
@@ -72,8 +73,8 @@ export const roomSecondary = (config: AdditionConfig, hass: HomeAssistant): stri
     ? roomBrightnessLabel(roomLightEntity(config, hass))
     : undefined;
   const labels = [...new Set([temperature, brightness].filter((value): value is string => Boolean(value)))];
-  if (mode === "state") return [...new Set([stateLabel(primary), ...labels])].join(" · ");
-  return labels.join(" · ") || stateLabel(primary);
+  if (mode === "state") return [...new Set([stateLabel(primary, hass), ...labels])].join(" · ");
+  return labels.join(" · ") || stateLabel(primary, hass);
 };
 
 export const ROOM_STATUS_LIMIT = 4;

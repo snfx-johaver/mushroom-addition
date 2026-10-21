@@ -1,7 +1,7 @@
 {
-  "name": "mushroom-cards-addition",
-  "version": "0.0.1",
-  "description": "Mushroom-style Home Assistant dashboard cards with visual editors, advanced energy management, live charts, and device controls.",
+  "name": "mushroom-addition",
+  "version": "0.5.0",
+  "description": "A little more fun(gus) for Home Assistant: Mushroom-style cards, useful extras, and click-not-YAML editors.",
   "type": "module",
   "main": "dist/mushroom-cards-addition.js",
   "files": [
@@ -14,13 +14,14 @@
     "version": "npm run build",
     "check:catalog": "tsx scripts/catalog-doc.ts --check && tsx scripts/check-catalog.ts",
     "check:parity": "tsx scripts/check-parity.ts",
+    "check:locales": "tsx scripts/check-locales.ts",
     "docs:catalog": "tsx scripts/catalog-doc.ts",
     "docs:visual-audit": "tsx scripts/visual-audit-doc.ts",
     "demo": "vite --host 127.0.0.1",
     "lint": "eslint .",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "validate": "npm run check:version && npm run lint && npm run typecheck && npm run check:catalog && npm run check:parity && npm run docs:visual-audit -- --check && npm test && npm run build"
+    "validate": "npm run check:version && npm run lint && npm run typecheck && npm run check:catalog && npm run check:parity && npm run check:locales && npm run docs:visual-audit -- --check && npm test && npm run build"
   },
   "keywords": [
     "home-assistant",
@@ -31,10 +32,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/snfx-johaver/mushroom-cards-addition.git"
+    "url": "git+https://github.com/snfx-johaver/mushroom-addition.git"
   },
   "engines": {
-    "node": ">=20"
+    "node": "^24.0.0 || >=26.0.0"
   },
   "dependencies": {
     "lit": "^3.3.1"

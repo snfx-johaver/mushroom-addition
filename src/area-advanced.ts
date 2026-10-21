@@ -1,9 +1,12 @@
+import { localize, localizeText } from "./localize";
+import { localizeNativeDiagnostic } from "./native-diagnostics";
+import { localizeEditorSchema } from "./localized-schema";
 import { LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators.js";
 import { repeat } from "lit/directives/repeat.js";
 import { mdiDelete, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
 import { controlActions } from "./control-actions";
-import { fireEvent } from "./helpers";
+import { fireEvent, stateLabel } from "./helpers";
 import type { ActionConfig, AdditionConfig, HomeAssistant } from "./types";
 import { applyAreaContent, applyNativeControlColor, areaCssColor, AREA_CONTENT_KEYS, type AreaContentOptions } from "./area-content";
 
@@ -214,11 +217,11 @@ export class MushroomAreaAdvancedCard extends LitElement {
   }
   protected updated() { this.sync(); }
   protected render() {
-    return this.error ? html`<ha-alert alert-type="error">${this.error}
-      <button @click=${() => { this.card = undefined; void this.load(); }}>Retry native Area card</button></ha-alert>`
+    return this.error ? html`<ha-alert alert-type="error">${this.config?.area ? localizeNativeDiagnostic(this.hass, this.error) : localizeText(this.hass, "Select an area in the native Area editor.")}
+      <button @click=${() => { this.card = undefined; void this.load(); }}>${localizeText(this.hass, "Retry native Area card")}</button></ha-alert>`
       : this.card ? html`<div class=${this.loadingControls ? "loading" : "native"}>${this.card}</div>
-        ${this.loadingControls ? html`<div role="status">Loading native Area controls…</div>` : nothing}`
-        : html`<div role="status">Loading native Area card…</div>`;
+        ${this.loadingControls ? html`<div role="status">${localizeText(this.hass, "Loading native Area controls…")}</div>` : nothing}`
+        : html`<div role="status">${localizeText(this.hass, "Loading native Area card…")}</div>`;
   }
   static styles = css`:host { display: block; height: 100%; } .native, hui-area-card { height: 100%; }
     .loading { position: absolute; visibility: hidden; pointer-events: none; }`;
@@ -318,9 +321,9 @@ export class MushroomAreaControlsAdvanced extends LitElement {
     return resolved;
   }
   private conditional(control: AreaControl, index: number) {
-    if (!control.control) return html`<ha-alert alert-type="error">Conditional control needs a nested button.</ha-alert>`;
+    if (!control.control) return html`<ha-alert alert-type="error">${localizeText(this.hass, "Conditional control needs a nested button.")}</ha-alert>`;
     const error = this.conditionalErrors.get(index);
-    if (error) return html`<ha-alert alert-type="error">${error}</ha-alert>`;
+    if (error) return html`<ha-alert alert-type="error">${localizeNativeDiagnostic(this.hass, error)}</ha-alert>`;
     if (!this.conditionals.has(index)) {
       this.conditionals.set(index, null);
       const generation = this.configRevision;
@@ -349,14 +352,14 @@ export class MushroomAreaControlsAdvanced extends LitElement {
       card.preview = false;
       card.hass = this.hass;
     }
-    return card ?? html`<span role="status">Loading conditional control…</span>`;
+    return card ?? html`<span role="status">${localizeText(this.hass, "Loading conditional control…")}</span>`;
   }
   private label(control: AreaControl) {
     const entity = this.hass?.states[control.entity_id ?? ""];
     if (control.type === "template") return control.content ?? control.name ?? "";
     switch (control.content_info ?? (control.name ? "name" : control.content ? "custom" : "none")) {
       case "name": return control.name ?? entity?.attributes.friendly_name ?? control.entity_id ?? "";
-      case "state": return entity ? `${entity.state}${entity.attributes.unit_of_measurement ? ` ${entity.attributes.unit_of_measurement}` : ""}` : "";
+      case "state": return entity ? stateLabel(entity, this.hass) : "";
       case "last-changed": return entity?.last_changed ? html`<ha-relative-time .hass=${this.hass} .datetime=${entity.last_changed}></ha-relative-time>` : "";
       case "last-updated": return entity?.last_updated ? html`<ha-relative-time .hass=${this.hass} .datetime=${entity.last_updated}></ha-relative-time>` : "";
       case "attribute": return String(entity?.attributes[control.attribute ?? ""] ?? "");
@@ -392,7 +395,7 @@ export class MushroomAreaControlsAdvanced extends LitElement {
   }
   protected render() {
     this.toggleAttribute("named", this.config?.controls?.some(namedControl) ?? false);
-    if (this.error) return html`<ha-alert alert-type="error">${this.error}<button @click=${() => void this.load()}>Retry</button></ha-alert>`;
+    if (this.error) return html`<ha-alert alert-type="error">${localizeNativeDiagnostic(this.hass, this.error)}<button @click=${() => void this.load()}>${localizeText(this.hass, "Retry")}</button></ha-alert>`;
     if (!this.config || !this.hass || !this.ready) return nothing;
     if (this.config.controls === undefined) return this.group(undefined, "automatic");
     return html`${this.config.controls.map((configuredControl, index) => {
@@ -403,7 +406,7 @@ export class MushroomAreaControlsAdvanced extends LitElement {
       if (control.domain) {
         // Domain aggregates always remain native: never guess group membership or toggle semantics.
         return html`<div class="domain">${this.group([control.domain], String(index), control)}
-          ${control.icon || control.tap_action ? html`<ha-alert alert-type="warning">Domain icon and tap overrides require an entity control. Select an entity below instead.</ha-alert>` : nothing}</div>`;
+          ${control.icon || control.tap_action ? html`<ha-alert alert-type="warning">${localizeText(this.hass, "Domain icon and tap overrides require an entity control. Select an entity below instead.")}</ha-alert>` : nothing}</div>`;
       }
       const entity = control.entity_id ?? "";
       const entityState = this.hass!.states[entity];
@@ -418,11 +421,11 @@ export class MushroomAreaControlsAdvanced extends LitElement {
         ? (/^(#|rgb|hsl|var\(|color\()/.test(color) ? color : `var(--${color}-color, ${color})`)
         : active ? this.color ?? "var(--state-active-color, var(--primary-color))" : "var(--state-icon-color)";
       const templateError = Object.entries(control).find(([, value]) => typeof value === "string" && value.startsWith("Template error:"));
-      if (templateError) return html`<ha-alert alert-type="error">${templateError[1]}</ha-alert>`;
+      if (templateError) return html`<ha-alert alert-type="error">${localizeNativeDiagnostic(this.hass, String(templateError[1]))}</ha-alert>`;
       const picture = control.use_entity_picture && typeof entityState?.attributes.entity_picture === "string"
         ? entityState.attributes.entity_picture : undefined;
       const label = this.label(control);
-      return html`<button class="entity" ?disabled=${unavailable} aria-label=${String((control.name ?? entityState?.attributes.friendly_name ?? entity) || "Area action")}
+      return html`<button class="entity" ?disabled=${unavailable} aria-label=${String((control.name ?? entityState?.attributes.friendly_name ?? entity) || localize(this.hass, "ui.area.area_action"))}
         aria-pressed=${Boolean(active)} style=${`--control-icon-color:${iconColor}`}
         ${controlActions(actionConfig)}>
         <span class="button-icon">${picture ? html`<img src=${picture} alt="">`
@@ -604,12 +607,12 @@ export class MushroomAreaAdvancedEditor extends LitElement {
   private detail() {
     const control = this.editControl();
     if (!control) return nothing;
-    if (control.domain) return html`<section class="detail" aria-label="Edit native domain group">
-      <button @click=${() => { this.selected = undefined; }}>← Back to buttons</button>
-      <h4>Native ${control.domain} group</h4>
-      <p>Group membership, icon and actions stay native. Add an entity button for a custom icon, name or action.</p>
+    if (control.domain) return html`<section class="detail" aria-label="${localizeText(this.hass, "Edit native domain group")}">
+      <button @click=${() => { this.selected = undefined; }}>${localizeText(this.hass, "← Back to buttons")}</button>
+      <h4>${localize(this.hass, "ui.area.native_group", { domain: control.domain })}</h4>
+      <p>${localizeText(this.hass, "Group membership, icon and actions stay native. Add an entity button for a custom icon, name or action.")}</p>
       <ha-form .hass=${this.hass} .data=${control} .schema=${[{ name: "icon_color", selector: { ui_color: {} } }]}
-        .computeLabel=${() => "Icon color"}
+        .computeLabel=${() => localizeText(this.hass, "Icon color")}
         @value-changed=${(event: CustomEvent<{ value: AreaControl }>) => {
           event.stopPropagation(); this.changeControl({ ...control, ...event.detail.value });
         }}></ha-form></section>`;
@@ -641,36 +644,36 @@ export class MushroomAreaAdvancedEditor extends LitElement {
       content: type === "template" ? "Content template" : "Text to display below the icon", use_entity_picture: "Use entity picture",
       tap_action: "Tap behavior", hold_action: "Hold behavior", double_tap_action: "Double-tap behavior",
     };
-    return html`<section class="detail" aria-label=${`Edit ${type} button`}>
+    const buttonType = localize(this.hass, `ui.area.${type}_button`);
+    return html`<section class="detail" aria-label=${localize(this.hass, `ui.area.edit_${type}`)}>
       <button @click=${() => {
         if (this.selected!.depth) this.selected = { ...this.selected!, depth: this.selected!.depth - 1 };
         else this.selected = undefined;
-      }}>← Back to ${this.selected!.depth ? "conditional button" : "buttons"}</button>
-      <h4>${type === "conditional" ? "Conditional" : type === "template" ? "Template" : type === "action" ? "Action" : "Entity"} button</h4>
+      }}>${this.selected!.depth ? localize(this.hass, "ui.area.back_conditional") : localizeText(this.hass, "← Back to buttons")}</button>
+      <h4>${buttonType}</h4>
       ${type === "conditional" ? html`
-        ${this.conditionsError ? html`<ha-alert alert-type="error">${this.conditionsError}<button @click=${() => void this.ensureConditions()}>Retry</button></ha-alert>` : nothing}
+        ${this.conditionsError ? html`<ha-alert alert-type="error">${localizeNativeDiagnostic(this.hass, this.conditionsError)}<button @click=${() => void this.ensureConditions()}>${localizeText(this.hass, "Retry")}</button></ha-alert>` : nothing}
         <hui-conditions-editor .hass=${this.hass} .conditions=${control.conditions ?? []}
           @value-changed=${(event: CustomEvent<{ value: unknown[] }>) => {
             event.stopPropagation(); this.changeControl({ ...control, conditions: event.detail.value });
           }}></hui-conditions-editor>
-        <p>Conditions use Home Assistant's native conditional card, including nested conditions.</p>
-        <button @click=${() => { this.selected = { ...this.selected!, depth: this.selected!.depth + 1 }; }}>Edit nested ${control.control?.type ?? "entity"} button</button>
-        <label>Nested button type <select aria-label="Nested button type" .value=${control.control?.type ?? "entity"}
+        <p>${localizeText(this.hass, "Conditions use Home Assistant's native conditional card, including nested conditions.")}</p>
+        <button @click=${() => { this.selected = { ...this.selected!, depth: this.selected!.depth + 1 }; }}>${localize(this.hass, "ui.area.edit_nested", { type: localize(this.hass, `ui.area.${control.control?.type ?? "entity"}_button`) })}</button>
+        <label>${localizeText(this.hass, "Nested button type")}<select aria-label="${localizeText(this.hass, "Nested button type")}" .value=${control.control?.type ?? "entity"}
           @change=${(event: Event) => {
             const type = (event.target as HTMLSelectElement).value as AreaControl["type"];
             this.changeControl({ ...control, control: this.newControl(type) });
-          }}>${["entity", "action", "template", "conditional"].map((value) => html`<option value=${value}>${value}</option>`)}</select></label>
+          }}>${["entity", "action", "template", "conditional"].map((value) => html`<option value=${value}>${localize(this.hass, `ui.area.${value}_button`)}</option>`)}</select></label>
       ` : html`
-        ${type === "template" ? html`<p>Content, name, icon and icon color accept Home Assistant Jinja templates.
-          Templates run in Home Assistant, not in the browser. Errors are shown on the button preview.</p>` : nothing}
+        ${type === "template" ? html`<p>${localizeText(this.hass, "Content, name, icon and icon color accept Home Assistant Jinja templates. Templates run in Home Assistant, not in the browser. Errors are shown on the button preview.")}</p>` : nothing}
         <ha-form .hass=${this.hass} .data=${{
           ...control, content_info: control.content_info ?? (control.name ? "name" : control.content ? "custom" : "none"),
           tap_action: control.tap_action ?? (control.entity_id ? defaultAreaAction(control.entity_id) : { action: "none" }),
           hold_action: control.hold_action ?? { action: "none" }, double_tap_action: control.double_tap_action ?? { action: "none" },
-        }} .schema=${schema} .computeLabel=${(field: { name: string }) => labels[field.name] ?? field.name}
+        }} .schema=${localizeEditorSchema(this.hass, schema)} .computeLabel=${(field: { name: string }) => localizeText(this.hass, labels[field.name] ?? field.name)}
           .computeHelper=${(field: { name: string }) => field.name === "attribute"
-            ? "Displays the selected entity property, for example brightness or battery_level. Only used when attribute content is selected."
-            : field.name === "content" && type !== "template" ? "Displays exactly what you type, for example Desk lights. Select Your own text above." : undefined}
+            ? localize(this.hass, "ui.area.attribute_help")
+            : field.name === "content" && type !== "template" ? localize(this.hass, "ui.area.content_help") : undefined}
           @value-changed=${(event: CustomEvent<{ value: AreaControl }>) => {
             event.stopPropagation();
             const updated = { ...control, ...event.detail.value };
@@ -708,21 +711,18 @@ export class MushroomAreaAdvancedEditor extends LitElement {
       return extended;
     };
     const label = editor._computeLabelCallback?.bind(editor), helper = editor._computeHelperCallback?.bind(editor);
-    editor._computeLabelCallback = field => labels[field.name] ?? label?.(field) ?? field.name;
-    editor._computeHelperCallback = field => helpers[field.name] ?? helper?.(field);
+    editor._computeLabelCallback = field => labels[field.name] ? localizeText(this.hass, labels[field.name]) : label?.(field) ?? field.name;
+    editor._computeHelperCallback = field => helpers[field.name] ? localizeText(this.hass, helpers[field.name]) : helper?.(field);
   }
   protected render() {
     if (!this.config) return nothing;
-    return html`${this.error ? html`<ha-alert alert-type="error">${this.error}<button @click=${() => void this.load()}>Retry</button></ha-alert>` : this.editor ?? html`Loading native Area editor…`}
-      <h3>Advanced area controls</h3>
-      <p>Use the native editor above for area, appearance, features and standard domain groups.
-        Edit advanced buttons below. Action, template and conditional buttons are intentionally hidden
-        from native control lists. Names and content appear below icons, aligned to the button bottom.
-        Empty controls show no controls; automatic controls retain Home Assistant defaults.</p>
+    return html`${this.error ? html`<ha-alert alert-type="error">${localizeNativeDiagnostic(this.hass, this.error)}<button @click=${() => void this.load()}>${localizeText(this.hass, "Retry")}</button></ha-alert>` : this.editor ?? html`${localize(this.hass, "ui.area.loading_editor")}`}
+      <h3>${localizeText(this.hass, "Advanced area controls")}</h3>
+      <p>${localizeText(this.hass, "Use the native editor above for area, appearance, features and standard domain groups. Edit advanced buttons below. Action, template and conditional buttons are intentionally hidden from native control lists. Names and content appear below icons, aligned to the button bottom. Empty controls show no controls; automatic controls retain Home Assistant defaults.")}</p>
       ${this.selected ? this.detail() : nothing}
       ${(this.config.features ?? []).map((feature, featureIndex) => feature.type !== "area-controls" ? nothing : html`
-        <fieldset><legend>Area controls feature ${featureIndex + 1}</legend>
-          ${feature.controls === undefined ? html`<p>Automatic native domain controls</p>` : nothing}
+        <fieldset><legend>${localize(this.hass, "ui.area.feature", { number: featureIndex + 1 })}</legend>
+          ${feature.controls === undefined ? html`<p>${localizeText(this.hass, "Automatic native domain controls")}</p>` : nothing}
           <ha-sortable handle-selector=".handle" @item-moved=${(event: CustomEvent<{ oldIndex: number; newIndex: number }>) => {
             event.stopPropagation();
             this.move(featureIndex, event.detail.oldIndex, event.detail.newIndex);
@@ -734,29 +734,29 @@ export class MushroomAreaAdvancedEditor extends LitElement {
           }, (control, index) => {
             const domain = typeof control === "string" ? control : control.domain;
             const item = typeof control === "string" ? {} : control;
-            const title = domain ? `Native ${domain} group` : (item.type ?? "entity").replace(/^./, (letter) => letter.toUpperCase());
+            const title = domain ? localize(this.hass, "ui.area.native_group", { domain }) : localize(this.hass, `ui.area.kind_${item.type ?? "entity"}`);
             const subtitle = item.name ?? this.hass?.states[item.entity_id ?? ""]?.attributes.friendly_name
-              ?? item.entity_id ?? (item.type === "conditional" ? `${item.control?.type ?? "entity"} button` : item.content ?? "");
+              ?? item.entity_id ?? (item.type === "conditional" ? localize(this.hass, `ui.area.${item.control?.type ?? "entity"}_button`) : item.content ?? "");
             return html`<div class="control" role="listitem" data-feature=${featureIndex} data-index=${index}>
-              <div class="handle drag" role="button" tabindex="0" aria-label="Drag to reorder; Alt plus arrow keys to move"
-                title="Drag up or down to reorder. Keyboard: Alt + Up or Down."
+              <div class="handle drag" role="button" tabindex="0" aria-label="${localizeText(this.hass, "Drag to reorder; Alt plus arrow keys to move")}"
+                title="${localizeText(this.hass, "Drag up or down to reorder. Keyboard: Alt + Up or Down.")}"
                 @keydown=${(event: KeyboardEvent) => {
                   if (event.altKey && ["ArrowUp", "ArrowDown"].includes(event.key)) {
                     event.preventDefault(); this.move(featureIndex, index, index + (event.key === "ArrowUp" ? -1 : 1));
                   }
                 }}><ha-svg-icon .path=${mdiDragHorizontalVariant}></ha-svg-icon></div>
               <div class="row-label"><strong>${title}</strong><span>${subtitle}</span></div>
-              <ha-icon-button class="edit-icon" aria-label="Edit button" .label=${"Edit button"} .path=${mdiPencil} @click=${() => {
+              <ha-icon-button class="edit-icon" aria-label="${localizeText(this.hass, "Edit button")}" .label=${localizeText(this.hass, "Edit button")} .path=${mdiPencil} @click=${() => {
                 this.selected = { feature: featureIndex, index, depth: 0 };
                 if (item.type === "conditional") void this.ensureConditions();
               }}></ha-icon-button>
-              <ha-icon-button class="remove-icon" aria-label="Remove control" .label=${"Remove control"} .path=${mdiDelete} @click=${() => {
+              <ha-icon-button class="remove-icon" aria-label="${localizeText(this.hass, "Remove control")}" .label=${localizeText(this.hass, "Remove control")} .path=${mdiDelete} @click=${() => {
                 this.selected = undefined; this.controls(featureIndex, feature.controls!.filter((_, i) => i !== index));
               }}></ha-icon-button>
             </div>`;
           })}</div></ha-sortable>
-          <label>${feature.controls === undefined ? "Replace automatic controls" : "Add button"}
-            <select aria-label="Add button type" .value=${""} @change=${(event: Event) => {
+          <label>${feature.controls === undefined ? localize(this.hass, "ui.area.replace_automatic") : localizeText(this.hass, "Add button")}
+            <select aria-label="${localizeText(this.hass, "Add button type")}" .value=${""} @change=${(event: Event) => {
               const select = event.target as HTMLSelectElement;
               const control = this.newControl(select.value as AreaControl["type"]);
               const controls = [...feature.controls ?? [], control];
@@ -764,12 +764,12 @@ export class MushroomAreaAdvancedEditor extends LitElement {
               this.selected = { feature: featureIndex, index: controls.length - 1, depth: 0 };
               select.value = ""; if (control.type === "conditional") void this.ensureConditions();
             }}>
-              <option value="" disabled selected>Add button…</option>
-              ${["entity", "action", "conditional", "template"].map((value) => html`<option value=${value}>${value.replace(/^./, (letter) => letter.toUpperCase())}</option>`)}
+              <option value="" disabled selected>${localizeText(this.hass, "Add button…")}</option>
+              ${["entity", "action", "conditional", "template"].map((value) => html`<option value=${value}>${localize(this.hass, `ui.area.kind_${value}`)}</option>`)}
             </select>
           </label>
-          <button @click=${() => { this.selected = undefined; this.controls(featureIndex, undefined); }}>Use automatic native controls</button>
-          <button @click=${() => { this.selected = undefined; this.controls(featureIndex, []); }}>Clear controls</button>
+          <button @click=${() => { this.selected = undefined; this.controls(featureIndex, undefined); }}>${localizeText(this.hass, "Use automatic native controls")}</button>
+          <button @click=${() => { this.selected = undefined; this.controls(featureIndex, []); }}>${localizeText(this.hass, "Clear controls")}</button>
         </fieldset>`)}`;
   }
   static styles = css`fieldset { border: 1px solid var(--divider-color); margin: 16px 0; border-radius: 12px; }

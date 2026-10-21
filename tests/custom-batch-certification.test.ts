@@ -45,7 +45,7 @@ const item = (id: string) => CATALOG.find((entry) => entry.upstreamId === id)!;
 describe("first pending custom batch certification", () => {
   it("records exact Chromium interaction and geometry evidence", () => {
     const evidence = JSON.parse(readFileSync(
-      join(process.cwd(), "docs", "assets", "visual-audit", "custom-batch-local-certification.json"),
+      join(process.cwd(), "tests", "fixtures", "visual", "custom-batch-local-certification.json"),
       "utf8",
     )) as {
       browserInteractions: Record<string, { controlsClicked?: number; serviceCalls?: unknown[]; cardActions?: unknown[] }>;

@@ -4,10 +4,53 @@ import {
   calculateBounds,
   interpolateThresholds,
   normalizeMiniGraphConfig,
+  MushroomMiniGraphCard,
   type MiniGraphCardConfig,
 } from "../src/mini-graph";
 import type { AdditionConfig, HomeAssistant } from "../src/types";
 import "../src/index";
+import { CATALOG } from "../src/catalog";
+import { createStubConfig } from "../src/stub";
+import { localizeText, SUPPORTED_LOCALES } from "../src/localize";
+import { graphErrorTranslations } from "../src/translations/graph-errors";
+
+describe("Mini Graph picker examples", () => {
+  const descriptor = CATALOG.find(item => item.upstreamId === "mini_graph_card")!;
+  const configs = (hass: HomeAssistant, preferred: string[] = []) => [
+    MushroomMiniGraphCard.getStubConfig(hass, preferred),
+    createStubConfig(descriptor, hass, preferred),
+  ];
+  const hass: HomeAssistant = {
+    states: {
+      "binary_sensor.ssh": { entity_id: "binary_sensor.ssh", state: "on", attributes: {} },
+      "sensor.dead_temperature": { entity_id: "sensor.dead_temperature", state: "unavailable", attributes: { device_class: "temperature" } },
+      "sensor.power": { entity_id: "sensor.power", state: "500", attributes: { device_class: "power" } },
+      "sensor.room_temperature": { entity_id: "sensor.room_temperature", state: "21.5", attributes: { device_class: "temperature", friendly_name: "Room temperature", unit_of_measurement: "°C" } },
+    },
+    callService: async () => undefined,
+  };
+  it("prefers a healthy temperature sensor over status entities and unavailable temperatures in both paths", () => {
+    for (const config of configs(hass, ["binary_sensor.ssh", "sensor.dead_temperature"])) {
+      expect(config.entity).toBe("sensor.room_temperature");
+      expect(config.name).toBe("Room temperature");
+      expect(config.entities?.[0]).toEqual(
+        typeof config.entities?.[0] === "string" ? "sensor.room_temperature" : expect.objectContaining({ entity: "sensor.room_temperature" }),
+      );
+    }
+  });
+  it("recognizes temperature units without a device class and ignores stale preferred IDs", () => {
+    const source = { ...hass, states: { ...hass.states,
+      "sensor.room_temperature": { ...hass.states["sensor.room_temperature"], attributes: { unit_of_measurement: "°F" } },
+    } };
+    for (const config of configs(source, ["sensor.missing"])) expect(config.entity).toBe("sensor.room_temperature");
+  });
+  it("falls back to a finite numeric sensor rather than an empty, textual or binary sensor", () => {
+    const source = { ...hass, states: Object.fromEntries(Object.entries(hass.states).filter(([id]) => !id.includes("temperature"))) };
+    source.states["sensor.empty"] = { entity_id: "sensor.empty", state: " ", attributes: { device_class: "temperature" } };
+    source.states["sensor.text"] = { entity_id: "sensor.text", state: "Infinity", attributes: { device_class: "temperature" } };
+    for (const config of configs(source, ["sensor.empty", "sensor.text", "binary_sensor.ssh"])) expect(config.entity).toBe("sensor.power");
+  });
+});
 
 const now = Date.parse("2026-10-20T00:00:00.000Z");
 const history = {
@@ -83,6 +126,50 @@ describe("Mini Graph configuration and history processing", () => {
     localStorage.clear();
     vi.useRealTimers();
     vi.restoreAllMocks();
+  });
+  it("renders a real temperature history from the picker stub instead of a binary status", async () => {
+    const hass = makeHass();
+    const config = MushroomMiniGraphCard.getStubConfig(hass, ["binary_sensor.window"]);
+    const card = await renderCard(config, hass);
+    expect(config.entity).toBe("sensor.temperature");
+    expect(card.shadowRoot?.querySelector("path.line")).not.toBeNull();
+    expect(card.shadowRoot?.textContent).not.toContain("No recorder history");
+  });
+
+  it("provides real graph diagnostics in every supported language", () => {
+    expect(Object.keys(graphErrorTranslations).sort()).toEqual([...SUPPORTED_LOCALES].sort());
+    for (const locale of SUPPORTED_LOCALES) {
+      for (const [key, english] of Object.entries(graphErrorTranslations.en)) {
+        const translated = graphErrorTranslations[locale][key];
+        expect(translated.trim(), `${locale}/${key}`).toBeTruthy();
+        expect(localizeText({ ...makeHass(), language: locale }, english)).toBe(translated);
+        if (locale !== "en") expect(translated, `${locale}/${key}`).not.toBe(english);
+      }
+    }
+  });
+
+  it("localizes empty history at render time and preserves unknown external errors", async () => {
+    const hass = { ...makeHass(vi.fn(async () => ({}))), language: "nl" };
+    hass.states["sensor.temperature"] = { ...hass.states["sensor.temperature"], state: "unavailable" };
+    const card = await renderCard({
+      type: "custom:mushroom-addition-mini-graph-card", entities: ["sensor.temperature"], cache: false,
+    }, hass);
+    expect(card.shadowRoot?.querySelector(".warning")?.textContent).toBe(graphErrorTranslations.nl["ui.graph.no_history"]);
+    card.hass = { ...hass, language: "de" };
+    await card.updateComplete;
+    expect(card.shadowRoot?.querySelector(".warning")?.textContent).toBe(graphErrorTranslations.de["ui.graph.no_history"]);
+    const message = "Recorder connection denied (external detail)";
+    const failed = await renderCard({
+      type: "custom:mushroom-addition-mini-graph-card", entities: ["sensor.temperature"], cache: false,
+    }, { ...makeHass(vi.fn(async () => { throw new Error(message); })), language: "nl" });
+    expect(failed.shadowRoot?.querySelector(".warning")?.textContent).toBe(message);
+  });
+
+  it("localizes invalid configuration without swallowing unrelated errors", () => {
+    const card = new MushroomMiniGraphCard();
+    card.hass = { ...makeHass(), language: "nl" };
+    expect(() => card.setConfig({ type: "custom:mushroom-addition-mini-graph-card", entities: [] }))
+      .toThrow(graphErrorTranslations.nl["ui.graph.entity_required"]);
   });
 
   it("normalizes the documented defaults and direct entity shorthand", () => {

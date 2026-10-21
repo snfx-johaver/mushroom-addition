@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="390" viewBox="0 0 900 390" role="img" aria-labelledby="title description">
-  <title id="title">Mushroom Cards Addition</title>
+  <title id="title">Mushroom Addition</title>
   <desc id="description">Illustrated preview of a battery card, energy price chart, entity carousel and game profile using sample values.</desc>
   <rect width="900" height="390" rx="18" fill="#111318"/>
   <g font-family="Arial, sans-serif">
-    <text x="28" y="38" fill="#f1f3f5" font-size="22" font-weight="600">Mushroom Cards Addition</text>
+    <text x="28" y="38" fill="#f1f3f5" font-size="22" font-weight="600">Mushroom Addition</text>
     <text x="28" y="61" fill="#9ba3af" font-size="13">Visual editors. Theme-aware cards. Your Home Assistant dashboard.</text>
     <g fill="#1c2027" stroke="#3a404a">
       <rect x="24" y="82" width="310" height="84" rx="14"/>

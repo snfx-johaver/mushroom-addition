@@ -5,7 +5,7 @@ labels: ["bug"]
 body:
   - type: markdown
     attributes:
-      value: Thanks for helping improve Mushroom Cards Addition.
+      value: Thanks for helping improve Mushroom Addition.
   - type: input
     id: component
     attributes:
@@ -17,7 +17,7 @@ body:
     id: versions
     attributes:
       label: Versions
-      description: Home Assistant, Mushroom Cards Addition, browser
+      description: Home Assistant, Mushroom Addition, browser
     validations:
       required: true
   - type: textarea

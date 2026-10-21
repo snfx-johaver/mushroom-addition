@@ -8,30 +8,30 @@ import type { AdditionConfig, HomeAssistant } from "../src/types";
 import "../src/index";
 
 const states: HomeAssistant["states"] = {
-  "person.joris": {
-    entity_id: "person.joris",
+  "person.resident": {
+    entity_id: "person.resident",
     state: "home",
-    attributes: { friendly_name: "Joris", entity_picture: "/local/joris.jpg" },
+    attributes: { friendly_name: "Resident", entity_picture: "/local/resident.jpg" },
   },
-  "sensor.joris_mobile_battery_level": {
-    entity_id: "sensor.joris_mobile_battery_level",
+  "sensor.resident_mobile_battery_level": {
+    entity_id: "sensor.resident_mobile_battery_level",
     state: "72",
     attributes: { friendly_name: "Battery", unit_of_measurement: "%" },
   },
-  "sensor.joris_eta": {
-    entity_id: "sensor.joris_eta",
+  "sensor.resident_eta": {
+    entity_id: "sensor.resident_eta",
     state: "12",
     attributes: { friendly_name: "ETA", unit_of_measurement: "min" },
   },
-  "sensor.joris_address": {
-    entity_id: "sensor.joris_address",
+  "sensor.resident_address": {
+    entity_id: "sensor.resident_address",
     state: "Home",
     attributes: { friendly_name: "Address" },
   },
   "zone.office": {
     entity_id: "zone.office",
     state: "1",
-    attributes: { friendly_name: "Office", icon: "mdi:office-building", persons: ["person.joris"] },
+    attributes: { friendly_name: "Office", icon: "mdi:office-building", persons: ["person.resident"] },
   },
   "switch.cv_plug": {
     entity_id: "switch.cv_plug",
@@ -43,13 +43,13 @@ const states: HomeAssistant["states"] = {
     state: "10",
     attributes: { friendly_name: "CV plug power", unit_of_measurement: "W" },
   },
-  "light.joris_iris_1": {
-    entity_id: "light.joris_iris_1",
+  "light.office_accent": {
+    entity_id: "light.office_accent",
     state: "on",
     attributes: { friendly_name: "Office", brightness: 128, current_temperature: 21, unit_of_measurement: "°C" },
   },
-  "sensor.office_joris_motion_illuminance": {
-    entity_id: "sensor.office_joris_motion_illuminance",
+  "sensor.office_motion_illuminance": {
+    entity_id: "sensor.office_motion_illuminance",
     state: "85",
     attributes: { friendly_name: "Light", unit_of_measurement: "lx", icon: "mdi:lightbulb" },
   },
@@ -142,7 +142,7 @@ afterEach(() => {
 describe("queued default batch one certification", () => {
   it("records exact live configs without claiming live acceptance", () => {
     const evidence = JSON.parse(readFileSync(
-      join(process.cwd(), "docs", "assets", "visual-audit", "default-batch-one-local-certification.json"),
+      join(process.cwd(), "tests", "fixtures", "visual", "default-batch-one-local-certification.json"),
       "utf8",
     )) as {
       liveAccepted: boolean;
@@ -157,11 +157,11 @@ describe("queued default batch one certification", () => {
 
   it("creates source-specific picker defaults from the exact live entities", () => {
     const expected = {
-      card_room: ["light.joris_iris_1", { room_sensors: expect.arrayContaining([
-        expect.objectContaining({ entity: "sensor.office_joris_motion_illuminance" }),
+      card_room: ["light.office_accent", { room_sensors: expect.arrayContaining([
+        expect.objectContaining({ entity: "sensor.office_motion_illuminance" }),
         expect.objectContaining({ entity: "sensor.bedroom_temperature_2" }),
       ]) }],
-      card_scenes: ["light.joris_iris_1", { scene_items: expect.arrayContaining([
+      card_scenes: ["light.office_accent", { scene_items: expect.arrayContaining([
         expect.objectContaining({ entity: "scene.living_room_relax" }),
         expect.objectContaining({ entity: "scene.living_room_dimmed" }),
       ]) }],
@@ -195,25 +195,25 @@ describe("queued default batch one certification", () => {
   it("ignores obsolete Room helper variables without synthesizing an action", () => {
     expect(normalizeConfig({
       type: "custom:mushroom-addition-card-room",
-      entity: "light.joris_iris_1",
+      entity: "light.office_accent",
       ulm_input_select: "input_select.room",
       ulm_input_select_option: "Office",
     }).double_tap_action).toBeUndefined();
   });
 
   it("covers room and scene state styling", async () => {
-    const room = await renderCard("card_room", { entity: "light.joris_iris_1" });
+    const room = await renderCard("card_room", { entity: "light.office_accent" });
     expect(room.shadowRoot.textContent).toContain("21 °C");
     room.remove();
-    const unavailableRoom = await renderCard("card_room", { entity: "light.joris_iris_1" }, {
+    const unavailableRoom = await renderCard("card_room", { entity: "light.office_accent" }, {
       ...states,
-      "light.joris_iris_1": { ...states["light.joris_iris_1"], state: "unavailable" },
+      "light.office_accent": { ...states["light.office_accent"], state: "unavailable" },
     });
     expect(unavailableRoom.shadowRoot.querySelector(".room-unavailable")).not.toBeNull();
     unavailableRoom.remove();
 
     const scenes = await renderCard("card_scenes", {
-      entity: "light.joris_iris_1",
+      entity: "light.office_accent",
       scene_items: [{ entity: "media_player.office", name: "Media", active_state: "playing" }],
     });
     expect(scenes.shadowRoot.querySelector(".automatic-presentation")).not.toBeNull();
@@ -221,7 +221,7 @@ describe("queued default batch one certification", () => {
     scenes.remove();
 
     const buttonsOnly = await renderCard("card_scenes", {
-      entity: "light.joris_iris_1",
+      entity: "light.office_accent",
       name: "Office scenes",
       secondary_info: "state",
       scene_buttons_only: true,
@@ -236,8 +236,8 @@ describe("queued default batch one certification", () => {
 
   it("dispatches exact room widget Home Assistant actions", async () => {
     const room = await renderCard("card_room", {
-      entity: "light.joris_iris_1",
-      room_sensors: [{ entity: "sensor.office_joris_motion_illuminance" }],
+      entity: "light.office_accent",
+      room_sensors: [{ entity: "sensor.office_motion_illuminance" }],
       input_select_entity: "input_select.room",
       input_select_option: "Office",
     });
@@ -250,7 +250,7 @@ describe("queued default batch one certification", () => {
         action: "tap",
         config: expect.objectContaining({
           type: "custom:mushroom-addition-card-room",
-          entity: "sensor.office_joris_motion_illuminance",
+          entity: "sensor.office_motion_illuminance",
           tap_action: { action: "more-info" },
         }),
       },
@@ -265,7 +265,7 @@ describe("queued default batch one certification", () => {
         action: "hold",
         config: expect.objectContaining({
           type: "custom:mushroom-addition-card-room",
-          entity: "sensor.office_joris_motion_illuminance",
+          entity: "sensor.office_motion_illuminance",
           hold_action: { action: "more-info" },
         }),
       },
@@ -278,7 +278,7 @@ describe("queued default batch one certification", () => {
       detail: {
         action: "double_tap",
         config: expect.objectContaining({
-          entity: "light.joris_iris_1",
+          entity: "light.office_accent",
           double_tap_action: undefined,
         }),
       },
@@ -293,7 +293,7 @@ describe("queued default batch one certification", () => {
         { entity: "media_player.office", name: "Media" },
         { entity: "input_select.scene", name: "Choice", state: "Dimmed" },
         { entity: "script.welcome_home_briefing", name: "Script" },
-        { entity: "light.joris_iris_1", name: "Light" },
+        { entity: "light.office_accent", name: "Light" },
       ],
     }, states, callService);
     for (const button of scenes.shadowRoot.querySelectorAll<HTMLButtonElement>(".scene-button")) button.click();
@@ -302,7 +302,7 @@ describe("queued default batch one certification", () => {
       ["media_player", "media_play_pause", { entity_id: "media_player.office" }],
       ["input_select", "select_option", { entity_id: "input_select.scene", option: "Dimmed" }],
       ["script", "welcome_home_briefing", { entity_id: "script.welcome_home_briefing" }],
-      ["homeassistant", "toggle", { entity_id: "light.joris_iris_1" }],
+      ["homeassistant", "toggle", { entity_id: "light.office_accent" }],
     ]);
   });
 

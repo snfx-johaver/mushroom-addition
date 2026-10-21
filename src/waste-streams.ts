@@ -1,4 +1,4 @@
-import type { AdditionConfig, WasteStreamConfig } from "./types";
+import type { AdditionConfig, HomeAssistant, WasteStreamConfig } from "./types";
 
 export interface WasteStreamPreset extends Required<Pick<WasteStreamConfig, "preset" | "label" | "icon" | "color">> {
   legacyKey?: string;
@@ -33,6 +33,45 @@ const streamFromPreset = (
 
 export const defaultWasteStreams = (): WasteStreamConfig[] =>
   WASTE_STREAM_PRESETS.map((preset) => streamFromPreset(preset));
+
+export const wasteStreamExamples = (
+  hass?: HomeAssistant,
+  entities: string[] = [],
+  entitiesFallback: string[] = [],
+): WasteStreamConfig[] => {
+  const terms: Record<string, RegExp> = {
+    residual: /\b(residual|restafval|restafvalzak|rest|general waste|household waste|rubbish)\b/,
+    paper: /\b(paper|papier|cardboard|karton)\b/,
+    packaging: /\b(packaging|pmd|plastic|plastics|verpakking|verpakkingen)\b/,
+    organic: /\b(organic|gft|bio|biowaste|compost|groente|tuinafval)\b/,
+    glass: /\b(glass|glas)\b/,
+    bulky: /\b(bulky|grofvuil|groot huisvuil)\b/,
+    toxic: /\b(toxic|kca|chemisch)\b/,
+    "christmas-tree": /\b(christmas|kerstboom|kerstbomen)\b/,
+    branches: /\b(branches|takken|snoeiafval)\b/,
+    textile: /\b(textile|textiles|textiel)\b/,
+  };
+  const available = [...new Set([...entities, ...entitiesFallback, ...Object.keys(hass?.states ?? {})])];
+  return available.flatMap(id => {
+    const entity = hass?.states[id];
+    if (!entity || !/^(sensor|calendar)\./.test(id) ||
+      ["", "unknown", "unavailable", "none", "null"].includes(entity.state.trim().toLowerCase())) return [];
+    const text = [id, entity.attributes.friendly_name].filter(Boolean).join(" ").toLowerCase().replaceAll("_", " ");
+    const platform = hass?.entities?.[id]?.platform ?? "";
+    const collection = /\b(waste|trash|garbage|rubbish|recycling|recycle|afval(?:wijzer|info|beheer)?|ophaling|ophaaldag|inzameling|vuilnis)\b/.test(text) ||
+      /waste|trash|afval|garbage/.test(platform);
+    if (!collection || /\b(today|tomorrow|vandaag|morgen|update|updated|last update|days until|dagen tot)\b/.test(text)) return [];
+    const preset = WASTE_STREAM_PRESETS.find(candidate => terms[candidate.preset]?.test(text));
+    if (preset) return [{ ...streamFromPreset(preset, id, true), label: String(entity.attributes.friendly_name || preset.label) }];
+    return [{
+      enabled: true,
+      entity: id,
+      label: String(entity.attributes.friendly_name || id),
+      icon: typeof entity.attributes.icon === "string" ? entity.attributes.icon : "mdi:trash-can",
+      color: "#43a047",
+    }];
+  }).slice(0, 6);
+};
 
 export const wasteStreamsForConfig = (config: AdditionConfig): WasteStreamConfig[] => {
   if (config.waste_streams?.length) return config.waste_streams.map((stream) => ({ ...stream }));

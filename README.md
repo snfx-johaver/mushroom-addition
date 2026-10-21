@@ -1,9 +1,10 @@
-# Mushroom Cards Addition
+# Mushroom Addition
 
-[![CI](https://github.com/snfx-johaver/mushroom-cards-addition/actions/workflows/ci.yml/badge.svg)](https://github.com/snfx-johaver/mushroom-cards-addition/actions/workflows/ci.yml)
+[![CI](https://github.com/snfx-johaver/mushroom-addition/actions/workflows/ci.yml/badge.svg)](https://github.com/snfx-johaver/mushroom-addition/actions/workflows/ci.yml)
 
 **Build a more useful Home Assistant dashboard without writing YAML.**
-Mushroom Cards Addition is a HACS-installable collection of **25
+Your dashboard called. It wants fewer YAML headaches and a little more fun(gus).
+Mushroom Addition is a HACS-installable collection of **28
 dashboard components**, with graphical configuration, theme-aware styling and
 Home Assistant actions. It is a frontend custom-card collection, not a backend
 integration, and works alongside Mushroom without depending on its internals.
@@ -15,7 +16,7 @@ NAS metrics, speed tests and more. Configure entities, presentation and supporte
 controls directly in the dashboard editor; YAML remains available when preferred.
 
 The catalog maps **21 documented sources**—4 default-card sources and 17 custom-card
-sources—to **25 public components**, including five original additions. Related layouts are grouped into graphical
+sources—to **28 public components**, including eight original additions. Related layouts are grouped into graphical
 variants instead of duplicating picker entries. See the
 [complete, source-linked catalog](docs/CATALOG.md), the generated
 [item-by-item parity matrix](docs/PARITY_MATRIX.md), and the
@@ -23,9 +24,13 @@ variants instead of duplicating picker entries. See the
 
 ![Illustrated preview of Mushroom-style battery, energy, carousel and game cards](docs/assets/cards-preview.svg)
 
+**A big thank-you to [Mushroom](https://github.com/piitaya/lovelace-mushroom)**
+for the beautiful foundation and inspiration. You grew the roots; we added a few
+more caps. This is an independent companion project, not an official Mushroom release.
+
 ## Requirements and compatibility
 
-- Home Assistant 2024.4 or newer
+- Home Assistant 2026.10.2 or newer (the minimum verified version; earlier releases are unverified)
 - A modern browser supported by Home Assistant
 - [Mushroom](https://github.com/piitaya/lovelace-mushroom) is recommended for a
   cohesive dashboard, but this plugin does not depend on Mushroom internals.
@@ -35,6 +40,68 @@ The plugin uses Home Assistant's public custom-card surface and native
 provide preview rendering before `hass` is available and explicit unavailable
 states for missing entities.
 
+### Upcoming Media
+
+Your next episode deserves better than a forgotten watchlist.
+**Upcoming Media** (`custom:mushroom-addition-upcoming-media-card`) reads a
+sensor's media list, including the usual `data` format from Plex, Kodi, Radarr,
+Sonarr and Trakt-compatible sensors. Pick the sensor and data attribute in
+**Context**; no service-specific backend is bundled.
+
+The visual editor covers poster/fanart artwork, item sizing, columns, sorting,
+filters, flags, collapsed lists, summary tooltips and tap actions. Title and four
+detail lines accept `$attribute` tokens such as `$title`, `$number`, `$rating`
+and `$runtime`. Blank templates use the sensor's formatting defaults; `$empty`
+hides a line. These are plain text substitutions, not executable templates.
+Dates respect Home Assistant's language and time zone.
+
+Automatic taps open an explicit custom URL first, then a trailer, then a media
+deep link, and otherwise the sensor's more-info dialog. URL template values are
+encoded, and unsafe protocols are rejected visibly. YouTube trailers load in a
+dialog **only after a tap**; other supported trailer links open externally.
+Optional **Hide when empty** hides valid empty/filtered lists, never malformed
+or unavailable sensor data. The picker selects a compatible sensor rather than
+pretending an unrelated temperature sensor knows what is on television.
+
+### Remote Card
+
+**Remote Card** (`custom:mushroom-addition-remote-card`) brings the remote back
+from between the sofa cushions. Select a TV or remote entity; a paired entity is
+discovered only on the same Home Assistant device. Explicit entity overrides,
+transport and device presets are available in **Context**.
+
+Choose a touchpad, directional buttons, or both; add volume, source, playback,
+channel and number controls as needed. **Features** provides compact sortable
+sections, editable shortcuts and per-key command overrides. **Layout** has
+button-size and touchpad-height sliders. Haptics, swipe distance and double-tap
+behavior live under **Interactions**. Keyboard arrows and Enter work too.
+
+Supported native media-player actions are preferred over key codes. Generic
+remotes use `remote.send_command`; Samsung key transport is used only when
+explicitly selected or detected. Unsupported controls are disabled, command
+errors are visible, and volume changes commit when the slider is released.
+IR remotes can pass a configured command-device argument.
+
+### Pi-hole Card
+
+**Pi-hole Card** (`custom:mushroom-addition-pi-hole-card`) keeps an eye on the
+ads trying to sneak past the garden fence. Choose one or more Pi-hole devices,
+or a primary entity whose device supplies the sensors and switches.
+
+Statistics, blocking switches, pause buttons, maintenance actions, diagnostics,
+system history and versions can be reordered or removed in **Features**.
+The compact mapping editor lets you override one metric at a time, hide entities
+and prioritize additional entities without turning the form into a spreadsheet.
+Counts are summed; blocked percentages are weighted only when query and blocked
+counts belong to matching devices. Unavailable values are not invented as zero.
+
+Temporary pause uses an available **backend** Pi-hole v5/v6 disable service,
+not a browser timer or permanent switch-off fallback. Durations accept seconds,
+`5m`, `1h30m` or `HH:MM:SS`; an explicit custom Home Assistant action can receive
+seconds or a duration string. Unsupported pause controls stay disabled with an
+explanation. Maintenance buttons ask for confirmation. Optional CPU/memory
+history uses Home Assistant's recorder through the existing Mini Graph card.
+
 ### Area card advanced
 
 **Mushroom Addition - Area card advanced** (`custom:mushroom-addition-area-card-advanced`)
@@ -42,8 +109,7 @@ hosts the **installed native Home Assistant Area card and its native editor**.
 It does not copy or reimplement Area: camera/picture/icon/compact modes, alerts,
 sensors, exclusions, layout, actions, standard controls and future native options
 are forwarded. This card specifically requires a frontend supporting native Area
-custom features (the target instance is Home Assistant 2026.10.2); the general
-2024.4 minimum above is not a compatibility promise for this card. Missing native
+custom features (verified on Home Assistant 2026.10.2). Missing native
 helpers/components produce visible errors with retry, not a simulated fallback.
 
 In **Advanced area controls**, compact chips-style rows have drag handles,
@@ -102,7 +168,7 @@ omitted from the native editor's controls projection. Saved features retain
 
 ```yaml
 type: custom:mushroom-addition-area-card-advanced
-area: office_joris
+area: office
 display_type: icon
 alert_color: red
 sensor_wrap: true
@@ -216,16 +282,16 @@ through off → all → one → off.
 Until the repository is accepted into HACS:
 
 1. In HACS, open **Custom repositories**, and add
-   `https://github.com/snfx-johaver/mushroom-cards-addition` as a Dashboard
+   `https://github.com/snfx-johaver/mushroom-addition` as a Dashboard
    repository.
-2. Install **Mushroom Cards Addition** and restart Home Assistant if HACS asks.
+2. Install **Mushroom Addition** and restart Home Assistant if HACS asks.
 3. If HACS does not add the resource automatically, add
-   `/hacsfiles/mushroom-cards-addition/mushroom-cards-addition.js` as a
+   `/hacsfiles/mushroom-addition/mushroom-cards-addition.js` as a
    JavaScript module under **Settings → Dashboards → Resources**.
 4. Add a card from the Lovelace card picker and search for
    **Mushroom Addition**.
 
-[Open this repository in HACS](https://my.home-assistant.io/redirect/hacs_repository/?owner=snfx-johaver&repository=mushroom-cards-addition&category=plugin)
+[Open this repository in HACS](https://my.home-assistant.io/redirect/hacs_repository/?owner=snfx-johaver&repository=mushroom-addition&category=plugin)
 
 This is a HACS **Dashboard** repository (category `plugin`), not a backend
 integration. Default-store inclusion requires a reviewed submission to
@@ -233,33 +299,38 @@ integration. Default-store inclusion requires a reviewed submission to
 the custom-repository steps above. The HACS validation job runs without ignored
 checks on every push and pull request.
 
-When a build is refreshed without changing its version, existing HACS users
-must use **Redownload** for v0.0.1 and reload their browser; a same-version update
-does not trigger a new-version notification.
+Upgrade to **v0.5.0** through HACS and reload the browser. If a cached build hangs
+around like an uninvited mushroom, use **Redownload** and hard-refresh the page.
 
 For a manual installation, copy `dist/mushroom-cards-addition.js` into
-`config/www/community/mushroom-cards-addition/` and register
-`/local/community/mushroom-cards-addition/mushroom-cards-addition.js` as a
+`config/www/community/mushroom-addition/` and register
+`/local/community/mushroom-addition/mushroom-cards-addition.js` as a
 module. After replacing a manually installed bundle, use
-`/local/community/mushroom-cards-addition/mushroom-cards-addition.js?v=0.0.1`
+`/local/community/mushroom-addition/mushroom-cards-addition.js?v=0.5.0`
 (or increment the query token) and hard-refresh the Home Assistant frontend to
 invalidate the browser cache.
 
+The repository and HACS display name are now **Mushroom Addition**. Existing
+card tags and the `mushroom-cards-addition.js` bundle filename are deliberately
+unchanged so installed dashboards keep working. Existing GitHub links redirect;
+after HACS redownloads the renamed repository, check the resource's folder and
+keep only one resource entry for this bundle.
+
 ## Versions and releases
 
-Published releases use Semantic Versioning tags (`vMAJOR.MINOR.PATCH`), starting
-with **v0.0.1**. While the project is below 1.0, minor releases may introduce
+Published releases use Semantic Versioning tags (`vMAJOR.MINOR.PATCH`).
+The current release is **v0.5.0**. While the project is below 1.0, minor releases may introduce
 breaking configuration changes; patch releases contain compatible fixes.
-See [release notes](https://github.com/snfx-johaver/mushroom-cards-addition/releases)
+See [release notes](https://github.com/snfx-johaver/mushroom-addition/releases)
 and the [changelog](CHANGELOG.md) before upgrading.
 
 `package.json` is the source of truth for the version displayed by the frontend.
 The lockfile and release tag must match it; `npm run check:version` checks the
-manifests, and `npm run check:version -- v0.0.1` also checks a tag.
+manifests, and `npm run check:version -- v0.5.0` also checks a tag.
 
 To prepare a release from a clean checkout, update the changelog, then run
 `npm version <version> --no-git-tag-version` (for example,
-`npm version 0.0.2 --no-git-tag-version`). This validates the current version,
+`npm version 0.5.1 --no-git-tag-version`). This validates the current version,
 updates both manifests and rebuilds the bundle without creating a commit or tag.
 Run `npm run validate`, commit the manifests, changelog and built `dist` files,
 then push the release commit and an annotated `v<version>` tag. The release
@@ -471,6 +542,11 @@ primary/secondary axes, thresholds, state maps, attributes, fixed values,
 statistics, caching, logarithmic scales, smoothing, animation, and Home
 Assistant actions without requiring another frontend resource. See the
 [configuration and example guide](docs/MINI_GRAPH_CARD.md).
+Picker examples prefer a healthy numeric temperature sensor, then another
+numeric sensor, rather than the first binary status they stumble across.
+Charts use real recorder data; sensors excluded from Recorder can still lack history.
+Trash picker examples discover available waste sensors and collection calendars
+and populate their stream rows instead of choosing an unrelated sensor.
 
 The **Entity Carousel Card** includes dependency-free Slide, Coverflow, Fade,
 Cube and Flip effects with graphical controls for cursor behavior, centering, automatic or
@@ -538,7 +614,7 @@ Related upstream YAML variants are exposed through relevant UI controls.
 Previous separate custom-element tags remain hidden compatibility aliases so
 existing dashboards continue to render without cluttering the picker.
 
-![Representative family renderers](docs/assets/family-fixture.png)
+![Illustrated card examples](docs/assets/cards-preview.svg)
 
 No upstream YAML, JavaScript bundles, or assets are copied. This is an original
 Lit implementation based on documented public behavior. See the per-item source
@@ -559,7 +635,7 @@ The renderer decisions and upstream source references are documented in the
 
 ## Development
 
-Requires Node.js 20 or newer.
+Use Node.js 24 LTS (or Node.js 26+). The test runner does not support Node.js 20.
 
 ```sh
 npm install
@@ -567,8 +643,28 @@ npm run validate
 ```
 
 `npm run validate` runs ESLint, strict TypeScript checking, catalog consistency
-checks, component tests, and the production Vite build. The distributable is
+checks, strict translation coverage, component tests, and the production Vite build. The distributable is
 `dist/mushroom-cards-addition.js`.
+
+### Languages
+
+The cards support the same 33 language identifiers as Mushroom,
+including regional Portuguese, Chinese scripts and Serbian scripts. Language
+selection follows Home Assistant. User-defined names, stored entity states and
+configuration values are never rewritten. State labels and numbers use Home
+Assistant's own formatter when it is available.
+
+All 33 catalogs cover **1,768 messages each**: card and editor labels, helper
+text, selector choices and built-in diagnostics. That includes Arabic and Hebrew
+right-to-left layouts, both Serbian scripts, both Chinese scripts and both
+Portuguese variants. Mushroom's translations guide shared terminology; these
+catalogs have not had independent native-speaker certification in every language.
+
+Your names stay yours. Entity IDs, stored states, command codes and action
+payloads are not translated, and unfamiliar backend error details stay intact.
+`npm run check:locales` rejects missing messages and mismatched placeholders;
+English fallback does not count as translation coverage. New messages must
+pass that same gate before release.
 
 ## Contributing
 
@@ -579,7 +675,7 @@ a pull request.
 
 ## License
 
-Mushroom Cards Addition is MIT licensed. Mushroom and Home Assistant
+Mushroom Addition is MIT licensed. Mushroom and Home Assistant
 are independent projects and trademarks of their respective owners.
 Required third-party copyright and license notices are retained in
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

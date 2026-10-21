@@ -1,0 +1,118 @@
+{
+  "capturedAt": "2026-09-23T20:14:52.66Z",
+  "browserInteractions": {
+    "custom_card_trash": {
+      "visibleControls": 0,
+      "cardActions": [
+        {
+          "config": {
+            "type": "custom:mushroom-addition-custom-card-trash",
+            "entity": "sensor.afvalinfo_home_restafval",
+            "show_icon": true,
+            "show_state": true,
+            "show_controls": true,
+            "primary_info": "name",
+            "secondary_info": "default",
+            "show_today": true,
+            "today_entity": "sensor.afvalinfo_home_trash_type_today",
+            "show_tomorrow": true,
+            "tomorrow_entity": "sensor.afvalinfo_home_trash_type_tomorrow",
+            "waste_streams": [
+              {
+                "enabled": true,
+                "entity": "sensor.afvalinfo_home_restafval",
+                "label": "Residual waste",
+                "icon": "mdi:trash-can",
+                "color": "#43a047"
+              },
+              {
+                "enabled": true,
+                "entity": "sensor.afvalinfo_home_papier",
+                "label": "Paper",
+                "icon": "mdi:newspaper-variant",
+                "color": "#1e88e5"
+              },
+              {
+                "enabled": true,
+                "entity": "sensor.afvalinfo_home_pbd",
+                "label": "Packaging / PBD",
+                "icon": "mdi:recycle",
+                "color": "#f9a825"
+              },
+              {
+                "enabled": true,
+                "entity": "sensor.afvalinfo_home_gft",
+                "label": "Organic / GFT",
+                "icon": "mdi:leaf",
+                "color": "#7cb342"
+              },
+              {
+                "enabled": false,
+                "entity": "",
+                "label": "Glass",
+                "icon": "mdi:bottle-soda",
+                "color": "#00897b"
+              },
+              {
+                "enabled": true,
+                "entity": "sensor.afvalinfo_home_grofvuil",
+                "label": "Bulky waste",
+                "icon": "mdi:sofa",
+                "color": "#8d6e63"
+              }
+            ],
+            "layout": "default",
+            "name_mode": "entity",
+            "icon_type": "icon",
+            "fill_container": false,
+            "tap_action": {
+              "action": "more-info"
+            }
+          },
+          "action": "tap"
+        }
+      ]
+    },
+    "custom_card_alarm_time": {
+      "controlsClicked": 2,
+      "serviceCalls": [
+        [
+          "input_datetime",
+          "set_datetime",
+          {
+            "entity_id": "input_datetime.alarm",
+            "time": "08:15:00"
+          }
+        ],
+        [
+          "input_datetime",
+          "set_datetime",
+          {
+            "entity_id": "input_datetime.alarm",
+            "time": "08:45:00"
+          }
+        ]
+      ]
+    }
+  },
+  "geometry": {
+    "custom_card_trash": {
+      "width": 320,
+      "height": 248,
+      "regions": {
+        ".custom-card-heading": 1,
+        ".waste-row": 5
+      }
+    },
+    "custom_card_alarm_time": {
+      "width": 440,
+      "height": 134,
+      "regions": {
+        ".custom-card-heading": 1,
+        ".alarm-time-controls": 1,
+        ".alarm-time-controls button": 2
+      }
+    }
+  },
+  "provenance": "Sanitized historical fixture; not current UI certification."
+}

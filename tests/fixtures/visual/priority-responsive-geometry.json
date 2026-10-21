@@ -1,0 +1,158 @@
+{
+  "capturedAt": "2026-09-23T19:59:17.114Z",
+  "nas510": {
+    "implementation": {
+      "x": 721.5,
+      "y": -821.03125,
+      "width": 510,
+      "height": 360,
+      "right": 1231.5,
+      "bottom": -461.03125
+    },
+    "card": {
+      "x": 721.5,
+      "y": -821.03125,
+      "width": 510,
+      "height": 360,
+      "right": 1231.5,
+      "bottom": -461.03125
+    },
+    "surface": {
+      "x": 721.5,
+      "y": -821.03125,
+      "width": 510,
+      "height": 360,
+      "right": 1231.5,
+      "bottom": -461.03125
+    },
+    "surfaceClientWidth": 510,
+    "surfaceScrollWidth": 510,
+    "horizontalOverflow": 0,
+    "tiles": [
+      {
+        "x": 739.5,
+        "y": -803.03125,
+        "width": 231,
+        "height": 102,
+        "right": 970.5,
+        "bottom": -701.03125
+      },
+      {
+        "x": 982.5,
+        "y": -803.03125,
+        "width": 231,
+        "height": 102,
+        "right": 1213.5,
+        "bottom": -701.03125
+      }
+    ],
+    "rings": {
+      "x": 988.203125,
+      "y": -679.03125,
+      "width": 190,
+      "height": 190,
+      "right": 1178.203125,
+      "bottom": -489.03125
+    },
+    "computedColumns": "195.422px 260.578px"
+  },
+  "nas330": {
+    "implementation": {
+      "x": 721.5,
+      "y": -355.03125,
+      "width": 330,
+      "height": 266,
+      "right": 1051.5,
+      "bottom": -89.03125
+    },
+    "card": {
+      "x": 721.5,
+      "y": -355.03125,
+      "width": 330,
+      "height": 266,
+      "right": 1051.5,
+      "bottom": -89.03125
+    },
+    "surface": {
+      "x": 721.5,
+      "y": -355.03125,
+      "width": 330,
+      "height": 266,
+      "right": 1051.5,
+      "bottom": -89.03125
+    },
+    "surfaceClientWidth": 330,
+    "surfaceScrollWidth": 330,
+    "horizontalOverflow": 0,
+    "tiles": [
+      {
+        "x": 733.5,
+        "y": -343.03125,
+        "width": 149,
+        "height": 82,
+        "right": 882.5,
+        "bottom": -261.03125
+      },
+      {
+        "x": 890.5,
+        "y": -343.03125,
+        "width": 149,
+        "height": 82,
+        "right": 1039.5,
+        "bottom": -261.03125
+      }
+    ],
+    "rings": {
+      "x": 907.5,
+      "y": -242.03125,
+      "width": 132,
+      "height": 132,
+      "right": 1039.5,
+      "bottom": -110.03125
+    },
+    "computedColumns": "166px 132px"
+  },
+  "tabletPowerBattery330": {
+    "implementation": {
+      "x": 721.5,
+      "y": 482.96875,
+      "width": 330,
+      "height": 234,
+      "right": 1051.5,
+      "bottom": 716.96875
+    },
+    "card": {
+      "x": 721.5,
+      "y": 482.96875,
+      "width": 330,
+      "height": 234,
+      "right": 1051.5,
+      "bottom": 716.96875
+    },
+    "surface": {
+      "x": 721.5,
+      "y": 482.96875,
+      "width": 330,
+      "height": 234,
+      "right": 1051.5,
+      "bottom": 716.96875
+    },
+    "controlsPresent": false,
+    "metrics": [
+      {
+        "rect": {
+          "x": 739.5,
+          "y": 556.96875,
+          "width": 294,
+          "height": 37,
+          "right": 1033.5,
+          "bottom": 593.96875
+        },
+        "text": "offPower"
+      }
+    ],
+    "batteryPresent": true,
+    "text": "Hallway TabletAccess offPower 91 %Battery 91%"
+  },
+  "provenance": "Sanitized historical fixture; not current UI certification."
+}

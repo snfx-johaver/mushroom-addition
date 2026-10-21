@@ -1,7 +1,9 @@
+import { localizeText } from "./localize";
 import { LitElement, css, html, nothing, svg, type TemplateResult } from "lit";
 import { property, state } from "lit/decorators.js";
 import { displayName, fireEvent, stateLabel } from "./helpers";
 import { renderEntityIcon } from "./entity-icon";
+import { miniGraphExampleEntity } from "./stub";
 import type { ActionConfig, AdditionConfig, HassEntity, HomeAssistant } from "./types";
 
 export type MiniGraphAggregate =
@@ -491,12 +493,7 @@ export class MushroomMiniGraphCard extends LitElement {
     entities: string[] = [],
     entitiesFallback: string[] = [],
   ): MiniGraphCardConfig {
-    const available = [...entities, ...entitiesFallback, ...Object.keys(hass?.states ?? {})];
-    const entity = available.find((id) =>
-      (id.startsWith("sensor.") || id.startsWith("binary_sensor.")) &&
-      !["unknown", "unavailable"].includes(hass?.states[id]?.state ?? "")) ??
-      available.find((id) => id.startsWith("sensor.") || id.startsWith("binary_sensor.")) ??
-      "sensor.example";
+    const entity = miniGraphExampleEntity(hass, entities, entitiesFallback) ?? "sensor.example";
     return normalizeMiniGraphConfig({
       type: "custom:mushroom-addition-mini-graph-card",
       entity,
@@ -507,7 +504,14 @@ export class MushroomMiniGraphCard extends LitElement {
   }
 
   public setConfig(config: MiniGraphCardConfig): void {
-    this.config = normalizeMiniGraphConfig(config);
+    try {
+      this.config = normalizeMiniGraphConfig(config);
+    } catch (error) {
+      if (error instanceof Error && error.message === "Mini Graph Card requires at least one entity.") {
+        throw new Error(localizeText(this.hass, error.message));
+      }
+      throw error;
+    }
     this.restartInterval();
     this.requestKey = undefined;
     this.lastEntityStateSignature = this.entityStateSignature();
@@ -542,7 +546,7 @@ export class MushroomMiniGraphCard extends LitElement {
 
   protected render(): TemplateResult | typeof nothing {
     if (!this.config) return nothing;
-    if (!this.hass) return html`<ha-card><div class="loading">Mini Graph preview</div></ha-card>`;
+    if (!this.hass) return html`<ha-card><div class="loading">${localizeText(this.hass, "Mini Graph preview")}</div></ha-card>`;
     const show = normalizeShow(this.config.show);
     const primary = this.series[0];
     const adaptive = primary ? colorForValue(
@@ -567,7 +571,7 @@ export class MushroomMiniGraphCard extends LitElement {
           ${this.loading && show.loading_indicator
             ? html`<div class="loading"><ha-spinner size="small"></ha-spinner></div>`
             : this.error
-              ? html`<div class="warning">${this.error}</div>`
+              ? html`<div class="warning">${localizeText(this.hass, this.error)}</div>`
               : this.renderGraph(show)}
           ${this.renderLegend(show)}
           ${this.renderStatistics(show)}
@@ -652,7 +656,7 @@ export class MushroomMiniGraphCard extends LitElement {
     const entityId = primary?.config.entity ?? this.config.entity;
     const entity = entityId ? this.hass?.states[entityId] : undefined;
     const configuredName = displayName(this.config as unknown as AdditionConfig, entity, this.hass);
-    const state = stateLabel(entity);
+    const state = stateLabel(entity, this.hass);
     const information = (selection: AdditionConfig["primary_info"] | AdditionConfig["secondary_info"]) => {
       switch (selection) {
         case "none": return undefined;
@@ -753,7 +757,7 @@ export class MushroomMiniGraphCard extends LitElement {
       return svg`<linearGradient id=${`mini-graph-${index}`}><stop offset="0%" stop-color=${series.color}/><stop offset="100%" stop-color=${series.color}/></linearGradient>`;
     }
     const stops = thresholds.flatMap((threshold, thresholdIndex) => {
-      const offset = Math.max(0, Math.min(100, 100 - (((threshold.value ?? bounds.min) - bounds.min) / (bounds.max - bounds.min)) * 100));
+      const offset = Math.max(0, Math.min(100, (((threshold.value ?? bounds.min) - bounds.min) / (bounds.max - bounds.min)) * 100));
       if (transition === "hard" && thresholdIndex > 0) {
         return [
           svg`<stop offset=${`${offset}%`} stop-color=${thresholds[thresholdIndex - 1].color}/>`,
@@ -858,10 +862,10 @@ export class MushroomMiniGraphCard extends LitElement {
     const max = Math.max(...values);
     return html`
       <div class="statistics">
-        ${show.average ? html`<span>Average <b>${this.stateLabel(average)} ${primary.unit}</b></span>` : nothing}
+        ${show.average ? html`<span>${localizeText(this.hass, "Average")}<b>${this.stateLabel(average)} ${primary.unit}</b></span>` : nothing}
         ${show.extrema ? html`
-          <span>Minimum <b>${this.stateLabel(min)} ${primary.unit}</b></span>
-          <span>Maximum <b>${this.stateLabel(max)} ${primary.unit}</b></span>
+          <span>${localizeText(this.hass, "Minimum")}<b>${this.stateLabel(min)} ${primary.unit}</b></span>
+          <span>${localizeText(this.hass, "Maximum")}<b>${this.stateLabel(max)} ${primary.unit}</b></span>
         ` : nothing}
       </div>
     `;
@@ -936,7 +940,7 @@ export class MushroomMiniGraphCard extends LitElement {
       const rawHistory = await this.fetchHistory(entities, start, end, forceRefresh, generation);
       if (generation !== this.historyGeneration) return;
       this.series = entities.map((entityConfig, index) =>
-        this.buildSeries(entityConfig, index, rawHistory[entityConfig.entity] ?? [], start, end));
+        this.buildSeries(entityConfig, index, rawHistory[this.historyKey(entityConfig)] ?? [], start, end));
       this.error = this.series.some((entry) => entry.points.length)
         ? undefined
         : "No recorder history is available for the selected entities.";
@@ -961,12 +965,12 @@ export class MushroomMiniGraphCard extends LitElement {
     for (const entity of entities) {
       if (entity.fixed_value) continue;
       const cached = bypassCache ? undefined : this.readCache(entity, start);
-      if (cached) result[entity.entity] = cached;
+      if (cached) result[this.historyKey(entity)] = cached;
       else needsFetch.push(entity);
     }
     if (!needsFetch.length) return result;
     if (!this.hass?.connection?.sendMessagePromise) {
-      for (const entity of needsFetch) result[entity.entity] = this.attributeHistory(entity);
+      for (const entity of needsFetch) result[this.historyKey(entity)] = this.attributeHistory(entity);
       return result;
     }
     const response = await this.hass.connection.sendMessagePromise<unknown>({
@@ -1000,8 +1004,8 @@ export class MushroomMiniGraphCard extends LitElement {
           ? []
           : [{ time: timestamp, value: mapped.value, label: mapped.label }];
       });
-      result[entity.entity] = points.length ? points : this.attributeHistory(entity);
-      this.writeCache(entity, result[entity.entity]);
+      result[this.historyKey(entity)] = points.length ? points : this.attributeHistory(entity);
+      this.writeCache(entity, result[this.historyKey(entity)]);
     }
     return result;
   }
@@ -1073,7 +1077,11 @@ export class MushroomMiniGraphCard extends LitElement {
   }
 
   private cacheKey(entity: MiniGraphEntityConfig): string {
-    return `mushroom-mini-graph:${entity.entity}:${entity.attribute ?? "state"}:${this.config?.hours_to_show}:${this.config?.points_per_hour}`;
+    return `mushroom-mini-graph:${this.historyKey(entity)}:${this.config?.hours_to_show}:${this.config?.points_per_hour}:${JSON.stringify(this.config?.state_map ?? [])}`;
+  }
+
+  private historyKey(entity: MiniGraphEntityConfig): string {
+    return JSON.stringify([entity.entity, entity.attribute ?? null]);
   }
 
   private readCache(entity: MiniGraphEntityConfig, start: number): GraphPoint[] | undefined {
