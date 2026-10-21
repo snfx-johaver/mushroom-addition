@@ -140,6 +140,13 @@ describe("default Mushroom icon sizing", () => {
     expect(ruleFor(".scene-grid")).toContain("overflow-x: auto");
     expect(ruleFor(".scene-button")).not.toContain("min-height: 88px");
   });
+  it("shares the Welcome Scenes hover highlight and keyboard focus across all scene/navigation pills", () => {
+    expect(ruleFor(".welcome-toolbar-button:hover, .scene-button:hover:not(:disabled), .welcome-items > button:hover:not(:disabled)"))
+      .toContain("background: color-mix(in srgb, var(--primary-text-color) 13%, transparent)");
+    expect(ruleFor(".welcome-toolbar-button:focus-visible, .scene-button:focus-visible, .welcome-items > button:focus-visible"))
+      .toContain("outline: 2px solid var(--primary-color, rgb(var(--ulm-blue)))");
+    expect(styles).not.toContain(".welcome-scenes .scene-button:hover");
+  });
   it("matches scene and welcome pill geometry, spacing and labels at every card width", () => {
     for (const property of [
       "display: flex", "gap: 8px", "overflow-x: auto",

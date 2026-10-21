@@ -4,6 +4,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Give Scenes and Welcome navigation pills the same hover highlight and
+  keyboard-focus outline as Welcome Scenes, without changing their layout.
+
 - Align shared headers with Mushroom's 36px icon circles, 500-weight primary
   typography and theme-controlled text metrics. Share Mushroom accent-palette
   defaults and overrides across named colors and legacy accent roles.

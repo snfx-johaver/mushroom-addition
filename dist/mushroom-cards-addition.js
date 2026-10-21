@@ -51257,10 +51257,10 @@ const x_ = Ve`
     box-shadow: none;
   }
   .welcome-toolbar-button { cursor: pointer; }
-  .welcome-toolbar-button:hover, .welcome-scenes .scene-button:hover {
+  .welcome-toolbar-button:hover, .scene-button:hover:not(:disabled), .welcome-items > button:hover:not(:disabled) {
     background: color-mix(in srgb, var(--primary-text-color) 13%, transparent);
   }
-  .welcome-toolbar-button:focus-visible, .welcome-scenes .scene-button:focus-visible {
+  .welcome-toolbar-button:focus-visible, .scene-button:focus-visible, .welcome-items > button:focus-visible {
     outline: 2px solid var(--primary-color, rgb(var(--ulm-blue)));
     outline-offset: 2px;
   }
