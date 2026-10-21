@@ -575,6 +575,7 @@ export interface LovelaceCard extends HTMLElement {
 }
 
 export interface CatalogItem {
+  editorTag?: string;
   upstreamId: string;
   sourcePath: string;
   kind: "card";

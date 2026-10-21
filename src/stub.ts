@@ -55,6 +55,7 @@ export const createStubConfig = (
   entities: string[] = [],
   entitiesFallback: string[] = [],
 ): AdditionConfig => {
+  if (descriptor.family === "nas-dashboard") return { type: `custom:${descriptor.tag}` };
   const available = [...new Set([...entities, ...entitiesFallback, ...Object.keys(hass?.states ?? {})])]
     .filter((entityId) => hass?.states?.[entityId] !== undefined);
   const entityText = (entityId: string): string => {

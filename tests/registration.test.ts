@@ -38,8 +38,9 @@ describe("Home Assistant registration", () => {
         getConfigElement(): Promise<HTMLElement>;
       };
       await expect(constructor.getConfigElement()).resolves.toMatchObject({
-        tagName: ["area_card_advanced", "area_card_mushroom"].includes(item.upstreamId)
-          ? "MUSHROOM-ADDITION-AREA-CARD-ADVANCED-EDITOR" : "MUSHROOM-ADDITION-EDITOR",
+        tagName: item.editorTag?.toUpperCase() ??
+          (["area_card_advanced", "area_card_mushroom"].includes(item.upstreamId)
+            ? "MUSHROOM-ADDITION-AREA-CARD-ADVANCED-EDITOR" : "MUSHROOM-ADDITION-EDITOR"),
       });
     }
   });

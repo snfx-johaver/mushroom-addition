@@ -1,4 +1,5 @@
 import "./editor";
+import "./nas";
 import { CATALOG, LEGACY_ALIASES, PUBLIC_CATALOG } from "./catalog";
 import { MushroomAdditionCard } from "./card";
 import { MushroomMiniGraphCard } from "./mini-graph";
@@ -112,3 +113,7 @@ console.info(
 
 export { CATALOG } from "./catalog";
 export type { AdditionConfig } from "./types";
+export type {
+  CardConfig as NasCardConfig, NasSource, ManualVolumeConfig,
+  ManualDriveConfig, ManualContainerConfig,
+} from "./nas/config";

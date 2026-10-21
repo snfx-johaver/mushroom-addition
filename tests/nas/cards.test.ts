@@ -1,0 +1,627 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+// Adapted from SNFX Synology Cards (Apache-2.0); runs against the integrated bundle.
+import "../../src/index";
+import { BaseSynologyCard } from "../../src/nas/dashboard-cards-base";
+import { SynologyCardEditor } from "../../src/nas/dashboard-cards-editor";
+import { belongsTo, bytes, deviceEntity, formatBytes, formatRate, loadRegistries, percentage, safeUrl, storageSummary, synologyDevices } from "../../src/nas/data";
+import { createFixture, state } from "./fixture";
+import type { CardConfig } from "../../src/nas/config";
+import type { HomeAssistant } from "../../src/nas/ha-types";
+import * as discovery from "../../src/nas/data";
+import { NAS_CATALOG } from "../../src/nas-catalog";
+import { html, type PropertyValues } from "lit";
+
+beforeEach(() => vi.stubGlobal("confirm", vi.fn().mockReturnValue(false)));
+afterEach(() => {
+  document.body.replaceChildren();
+  vi.unstubAllGlobals();
+});
+
+async function mount(tag: string, config: Partial<CardConfig> = {}, hass = createFixture()) {
+  const card = document.createElement(tag) as BaseSynologyCard;
+  card.setConfig({ type: `custom:${tag}`, server: "nas", portainer_endpoint: "synEndpoint", ...config });
+  card.hass = hass;
+  document.body.append(card);
+  await card.updateComplete;
+  await card.updateComplete;
+  return card;
+}
+
+describe("Scoped discovery and values", () => {
+  it("uses registry metadata for renamed entities and refuses other platforms", () => {
+    const hass = createFixture();
+    const registries = { devices: hass.devices!, entities: hass.entities! };
+    expect(deviceEntity(hass, registries, "nas", "cpu_total_load")?.state).toBe("18");
+    expect(deviceEntity(hass, registries, "unraid", "cpu_usage")).toBeUndefined();
+  });
+  it("traverses stack descendants without crossing endpoints or looping", () => {
+    const devices = createFixture().devices!;
+    expect(belongsTo(devices.plex, "synEndpoint", devices)).toBe(true);
+    expect(belongsTo(devices.unraidPlex, "synEndpoint", devices)).toBe(false);
+    devices.stack!.via_device_id = "plex";
+    expect(belongsTo(devices.plex, "synEndpoint", devices)).toBe(false);
+  });
+  it("discovers a linked NAS and storage using parent-device relationships", async () => {
+    const hass = createFixture();
+    hass.devices!.nas!.via_device_id = "unraid";
+    for (const id of ["volume", "disk", "disk2"]) {
+      const device = hass.devices![id]!;
+      delete device.via_device_id;
+      device.parent_device_id = "nas";
+      delete device.model;
+    }
+    const registries = { devices: hass.devices!, entities: hass.entities! };
+    expect(synologyDevices(registries).map((device) => device.id)).toEqual(["nas", "nas2"]);
+    expect(belongsTo(hass.devices!.disk, "nas", hass.devices!)).toBe(true);
+    expect(belongsTo(hass.devices!.volume2, "nas", hass.devices!)).toBe(false);
+    const card = await mount("synology-storage-card", {}, hass);
+    expect(card.shadowRoot!.textContent).toContain("1 Volumes");
+    expect(card.shadowRoot!.textContent).toContain("2 Drives");
+    expect(card.shadowRoot!.textContent).toContain("SMART: normal");
+    expect(card.shadowRoot!.textContent).not.toContain("Other NAS");
+    hass.devices!.nas!.parent_device_id = "disk";
+    expect(belongsTo(hass.devices!.disk, "nas2", hass.devices!)).toBe(false);
+  });
+  it("normalizes units, weights volumes, and rejects partial aggregates", () => {
+    const hass = createFixture();
+    const registries = { devices: hass.devices!, entities: hass.entities! };
+    expect(storageSummary(hass, { type: "", server: "nas" }, registries)).toEqual({ total: 8e12, used: 2e12, percent: 25 });
+    hass.devices!.volume2!.via_device_id = "nas";
+    expect(storageSummary(hass, { type: "", server: "nas" }, registries)).toEqual({ total: 108e12, used: 92e12, percent: 85 });
+    expect(bytes(state("sensor.x", "1", "TiB"))).toBe(1024 ** 4);
+    expect(formatRate(hass.states["sensor.rx"])).toBe("1.25 MB/s");
+    expect(formatRate(state("sensor.x", "1024", "KiB/s"))).toBe("1.05 MB/s");
+    expect(formatRate(state("sensor.x", "unavailable", "kB/s"))).toBe("Unavailable");
+    delete hass.states["sensor.volume_total"];
+    expect(storageSummary(hass, { type: "", server: "nas" }, registries).percent).toBeUndefined();
+  });
+  it("rounds CPU precision and formats byte sizes as GB or TB with at most two decimals", () => {
+    expect(percentage(state("sensor.cpu", "18.126789", "%"), 2)).toBe(18.13);
+    expect(percentage(state("sensor.cpu", "unavailable", "%"), 2)).toBeUndefined();
+    expect(formatBytes(bytes(state("sensor.memory", "512", "MB")))).toBe("0.51 GB");
+    expect(formatBytes(bytes(state("sensor.memory", "512", "MiB")))).toBe("0.54 GB");
+    expect(formatBytes(bytes(state("sensor.memory", "8000", "MB")))).toBe("8 GB");
+    expect(formatBytes(1.234567e12)).toBe("1.23 TB");
+    expect(formatBytes(undefined)).toBe("Unavailable");
+  });
+  it("only allows HTTP(S) DSM links", () => {
+    expect(safeUrl("javascript:alert(1)")).toBeUndefined();
+    expect(safeUrl("https://nas.example:5001")).toBe("https://nas.example:5001/");
+  });
+  it("loads full registries once per HA connection and supports refresh", async () => {
+    const fixture = createFixture();
+    const callWS = vi.fn(async (message: Record<string, unknown>) =>
+      message.type === "config/device_registry/list" ? Object.values(fixture.devices!) : Object.values(fixture.entities!)
+    );
+    const hass = { ...fixture, connection: {}, callWS } as HomeAssistant;
+    await Promise.all([loadRegistries(hass), loadRegistries(hass)]);
+    expect(callWS).toHaveBeenCalledTimes(2);
+    await loadRegistries(hass, true);
+    expect(callWS).toHaveBeenCalledTimes(4);
+  });
+  it("indexes registry metadata once instead of scanning every entity per device and render", () => {
+    const hass = createFixture();
+    for (let i = 0; i < 5000; i++) {
+      const id = `unrelated_${i}`;
+      hass.devices![id] = { id, name: id, identifiers: [["other", id]] };
+      hass.entities![`sensor.${id}`] = { entity_id: `sensor.${id}`, device_id: id, platform: "other" };
+    }
+    let scans = 0;
+    const entities = new Proxy(hass.entities!, { ownKeys(target) { scans++; return Reflect.ownKeys(target); } });
+    const registries = { devices: hass.devices!, entities };
+    const first = synologyDevices(registries);
+    for (let i = 0; i < 100; i++) {
+      expect(synologyDevices(registries)).toBe(first);
+      expect(deviceEntity(hass, registries, "nas", "cpu_total_load")?.state).toBe("18");
+    }
+    expect(scans).toBe(1);
+  });
+  it("lists system devices, not similarly named DSM records or orphaned storage", () => {
+    const hass = createFixture();
+    hass.devices!.phantom = { id: "phantom", name: "DiskStation", identifiers: [["synology_dsm", "serial_legacy"]] };
+    hass.devices!.usb = { id: "usb", name: "DiskStation", identifiers: [["synology_dsm", "serial_usb"]] };
+    hass.entities!["sensor.usb_size"] = { entity_id: "sensor.usb_size", device_id: "usb", platform: "synology_dsm", translation_key: "device_size_total" };
+    delete hass.devices!.volume!.via_device_id;
+    hass.devices!.nas2!.name = "DiskStation";
+    const devices = synologyDevices({ devices: hass.devices!, entities: hass.entities! });
+    expect(devices.map((device) => device.id)).toEqual(["nas", "nas2"]);
+    expect(devices.map((device) => device.name)).toEqual(["DiskStation", "DiskStation"]);
+  });
+  it("recognizes DSM devices through scoped entities when identifiers are omitted", async () => {
+    const hass = createFixture();
+    for (const device of Object.values(hass.devices!)) delete device.identifiers;
+    const registries = { devices: hass.devices!, entities: hass.entities! };
+    expect(synologyDevices(registries).map((device) => device.id)).toEqual(["nas", "nas2"]);
+    const card = await mount("synology-storage-card", {}, hass);
+    expect(card.shadowRoot!.textContent).toContain("1 Volumes");
+    expect(card.shadowRoot!.textContent).toContain("2 Drives");
+    expect(card.shadowRoot!.textContent).not.toContain("Other NAS");
+  });
+});
+
+describe("Cards", () => {
+  it("skips unrelated updates but renders NAS readings and explicit mappings when they change", async () => {
+    class CountingCard extends BaseSynologyCard {
+      updates = 0;
+      protected override render() {
+        return html`<span>${this.getEntity("cpu_usage")?.state}</span>`;
+      }
+      protected override updated(changes: PropertyValues<this>): void {
+        super.updated(changes);
+        this.updates++;
+      }
+    }
+    customElements.define("synology-counting-test-card", CountingCard);
+    const hass = createFixture();
+    const card = await mount("synology-counting-test-card", {}, hass) as CountingCard;
+    const initial = card.updates;
+    for (let i = 0; i < 100; i++) {
+      card.hass = { ...hass, states: { ...hass.states, "sensor.unrelated": state("sensor.unrelated", String(i)) } };
+      await card.updateComplete;
+    }
+    expect(card.updates).toBe(initial);
+    card.hass = { ...hass, states: { ...hass.states, "sensor.renamed_cpu": state("sensor.renamed_cpu", "22", "%") } };
+    await card.updateComplete;
+    expect(card.updates).toBe(initial + 1);
+    expect(card.shadowRoot!.querySelector("span")!.textContent).toBe("22");
+    card.setConfig({ type: "custom:synology-counting-test-card", server: "nas", entities: { cpu_usage: "sensor.manual" } });
+    await card.updateComplete;
+    card.hass = { ...hass, states: { ...hass.states, "sensor.manual": state("sensor.manual", "33", "%") } };
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelector("span")!.textContent).toBe("33");
+  });
+  it("registers only the four supported cards and their visual editors", async () => {
+    expect(NAS_CATALOG).toHaveLength(4);
+    for (const entry of NAS_CATALOG) {
+      expect(entry.tag.startsWith("mushroom-addition-nas-")).toBe(true);
+      expect(customElements.get(`${entry.tag}-editor`)).toBeDefined();
+      const ctor = customElements.get(entry.tag) as CustomElementConstructor & { getStubConfig(): Promise<CardConfig> };
+      expect((await ctor.getStubConfig()).type).toBe(`custom:${entry.tag}`);
+    }
+    expect(customElements.get("unraid-server-card")).toBeUndefined();
+    expect(customElements.get("synology-ups-card")).toBeUndefined();
+    expect(customElements.get("synology-ups-card-editor")).toBeUndefined();
+    expect(customElements.get("synology-network-card")).toBeUndefined();
+    expect(customElements.get("synology-network-card-editor")).toBeUndefined();
+    expect(customElements.get("synology-shares-card")).toBeUndefined();
+    expect(customElements.get("synology-vm-card")).toBeUndefined();
+  });
+  it("defaults every card to full width and automatic height", () => {
+    for (const entry of NAS_CATALOG) {
+      const card = document.createElement(entry.tag) as BaseSynologyCard;
+      card.setConfig({ type: `custom:${entry.tag}` });
+      expect(card.getGridOptions()).toEqual({ columns: "full", rows: "auto", min_columns: 3 });
+    }
+  });
+  it("saves only an unambiguous NAS in picker stubs, never guesses the Docker endpoint", async () => {
+    const ctor = customElements.get("synology-dashboard-card") as CustomElementConstructor & {
+      getStubConfig(hass: HomeAssistant): Promise<CardConfig>;
+    };
+    const hass = createFixture();
+    expect((await ctor.getStubConfig(hass)).server).toBeUndefined();
+    delete hass.devices!.nas2;
+    const single = { ...hass, devices: { ...hass.devices! } };
+    const config = await ctor.getStubConfig(single);
+    expect(config).toEqual({ type: "custom:synology-dashboard-card", server: "nas" });
+    const card = await mount("synology-dashboard-card", config, single);
+    const child = card.shadowRoot!.querySelector("mushroom-addition-nas-server-card") as BaseSynologyCard;
+    await child.updateComplete;
+    expect(child.shadowRoot!.textContent).toContain("18.00%");
+  });
+  it("renders real overview values, not healthy/zero fallbacks", async () => {
+    const hass = createFixture();
+    const card = await mount("synology-server-card", {}, hass);
+    expect(card.shadowRoot!.textContent).toContain("18.00%");
+    expect(card.shadowRoot!.textContent).toContain("25%");
+    expect(card.shadowRoot!.textContent).not.toContain("99%");
+    hass.states["sensor.renamed_cpu"] = state("sensor.renamed_cpu", "unavailable", "%");
+    hass.states["binary_sensor.security"] = state("binary_sensor.security", "unavailable");
+    card.hass = { ...hass };
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelector(".ring-content")!.textContent).toBe("--");
+    expect(card.shadowRoot!.textContent).toContain("Security: Unavailable");
+  });
+  it("does not select a NAS arbitrarily and invalid saved selections do not fall back", async () => {
+    const card = await mount("synology-server-card", { server: "" });
+    expect(card.shadowRoot!.textContent).toContain("Select your Synology");
+    expect(card.shadowRoot!.textContent).not.toContain("18.00%");
+    card.setConfig({ type: "custom:synology-server-card", server: "deleted" });
+    await card.updateComplete;
+    expect(card.shadowRoot!.textContent).not.toContain("18.00%");
+  });
+  it("renders SMART, temperature, volume and threshold states", async () => {
+    const card = await mount("synology-storage-card");
+    const text = card.shadowRoot!.textContent!;
+    expect(text).toContain("SMART: normal");
+    expect(text).toContain("34 °C");
+    expect(text).toContain("Not exceeded");
+    expect(text).not.toContain("Other NAS");
+    expect(text).not.toContain("Unavailable fields");
+    expect(card.shadowRoot!.querySelector("details")).toBeNull();
+  });
+  it("does not mistake unavailable disk status for healthy", async () => {
+    const hass = createFixture();
+    hass.states["sensor.disk_status"] = state("sensor.disk_status", "unavailable");
+    const card = await mount("synology-storage-card", {}, hass);
+    expect(card.shadowRoot!.textContent).toContain("Unavailable");
+  });
+  it("requires explicit Portainer selection and excludes Unraid, stack switches and unavailable controls", async () => {
+    const card = await mount("synology-docker-card");
+    expect(card.shadowRoot!.textContent).toContain("Plex");
+    expect(card.shadowRoot!.textContent).not.toContain("Unraid Plex");
+    expect(card.shadowRoot!.textContent).toContain("1 unavailable");
+    expect(card.shadowRoot!.textContent).not.toContain("Unavailable fields");
+    expect(card.shadowRoot!.querySelector("details")).toBeNull();
+    expect(card.shadowRoot!.querySelector<HTMLButtonElement>('[title="Start Offline"]')!.disabled).toBe(true);
+    card.setConfig({ type: "custom:synology-docker-card", server: "nas" });
+    await card.updateComplete;
+    expect(card.shadowRoot!.textContent).toContain("No endpoint is selected automatically");
+    expect(card.shadowRoot!.querySelectorAll(".container-tile")).toHaveLength(0);
+  });
+  it("uses entity-based start and restart actions and reports service failure", async () => {
+    const hass = createFixture();
+    hass.callService = vi.fn().mockResolvedValue(undefined);
+    const card = await mount("synology-docker-card", {}, hass);
+    card.shadowRoot!.querySelector<HTMLButtonElement>('[title="Start Nginx"]')!.click();
+    await Promise.resolve();
+    expect(hass.callService).toHaveBeenCalledWith("switch", "turn_on", { entity_id: "switch.nginx" });
+    card.shadowRoot!.querySelector<HTMLButtonElement>('[title="Restart Plex"]')!.click();
+    await Promise.resolve();
+    expect(hass.callService).toHaveBeenCalledWith("button", "press", { entity_id: "button.plex_restart" });
+    hass.callService = vi.fn().mockRejectedValue(new Error("Permission denied"));
+    card.shadowRoot!.querySelector<HTMLButtonElement>('[title="Start Nginx"]')!.click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelector('[role="alert"]')?.textContent).toContain("Permission denied");
+  });
+  it("confirms stop, and cancelling sends no action", async () => {
+    const hass = createFixture();
+    hass.callService = vi.fn();
+    vi.mocked(confirm).mockReturnValue(false);
+    const card = await mount("synology-docker-card", {}, hass);
+    card.shadowRoot!.querySelector<HTMLButtonElement>('[title="Stop Plex"]')!.click();
+    expect(hass.callService).not.toHaveBeenCalled();
+    vi.restoreAllMocks();
+  });
+  it("formats CPU and memory consistently across overview, storage and Docker cards", async () => {
+    const hass = createFixture();
+    hass.states["sensor.renamed_cpu"] = state("sensor.renamed_cpu", "18.126789", "%");
+    hass.states["sensor.ram_total"] = state("sensor.ram_total", "8000", "MB");
+    hass.states["sensor.ram_available"] = state("sensor.ram_available", "4000", "MB");
+    hass.states["sensor.plex_cpu"] = state("sensor.plex_cpu", "12.345678", "%");
+    hass.states["sensor.volume_total"] = state("sensor.volume_total", "8000", "MB");
+    hass.states["sensor.volume_used"] = state("sensor.volume_used", "1234.567", "MB");
+    const overview = await mount("synology-server-card", {}, hass);
+    expect(overview.shadowRoot!.textContent).toContain("18.13%");
+    expect(overview.shadowRoot!.textContent).toContain("4 GB / 8 GB");
+    const docker = await mount("synology-docker-card", { view_mode: "list" }, hass);
+    expect(docker.shadowRoot!.textContent).toContain("12.35% CPU");
+    expect(docker.shadowRoot!.textContent).toContain("0.54 GB");
+    expect(docker.shadowRoot!.textContent).not.toContain("MiB");
+    const storage = await mount("synology-storage-card", {}, hass);
+    expect(storage.shadowRoot!.textContent).toContain("1.23 GB / 8 GB");
+  });
+  it("never treats cumulative CPU time as CPU percentage", async () => {
+    const hass = createFixture();
+    hass.states["sensor.plex_cpu"]!.attributes.unit_of_measurement = "ns";
+    const card = await mount("synology-docker-card", { view_mode: "list" }, hass);
+    const rows = card.shadowRoot!.querySelectorAll(".list-row");
+    expect(rows[0]!.textContent).not.toContain("% CPU");
+  });
+  it("renders aggregate download and upload items on the primary card without claiming link state", async () => {
+    const card = await mount("synology-server-card");
+    expect(card.shadowRoot!.textContent).toContain("Download");
+    expect(card.shadowRoot!.textContent).toContain("Upload");
+    expect(card.shadowRoot!.textContent).toContain("1.25 MB/s");
+    expect(card.shadowRoot!.textContent).toContain("500 kB/s");
+    expect(card.shadowRoot!.textContent).not.toContain("Connected");
+  });
+  it("honors hidden tabs and passes endpoint configuration to the embedded Docker card", async () => {
+    const card = await mount("synology-dashboard-card", { tabs: ["docker", "storage"] });
+    expect(card.shadowRoot!.querySelectorAll('[role="tab"]')).toHaveLength(2);
+    expect(card.shadowRoot!.textContent).not.toContain("UPS Power");
+    expect(card.shadowRoot!.querySelector('[role="tab"]')!.textContent).not.toContain("Network");
+    const dockerTab = [...card.shadowRoot!.querySelectorAll<HTMLButtonElement>('[role="tab"]')].find((button) => button.textContent!.includes("Docker"))!;
+    dockerTab.click();
+    await card.updateComplete;
+    const child = card.shadowRoot!.querySelector("mushroom-addition-nas-docker-card") as BaseSynologyCard;
+    await child.updateComplete;
+    await child.updateComplete;
+    expect(child.config.portainer_endpoint).toBe("synEndpoint");
+    expect(child.shadowRoot!.textContent).not.toContain("Unraid Plex");
+    card.setConfig({ type: "custom:synology-dashboard-card", tabs: [] });
+    await card.updateComplete;
+    expect(card.shadowRoot!.textContent).toContain("All tabs are hidden");
+  });
+  it("shows actionable registry failure instead of silently falling back", async () => {
+    const hass = createFixture();
+    hass.callWS = vi.fn().mockRejectedValue(new Error("Registry denied"));
+    const card = await mount("synology-server-card", {}, hass);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelector('[role="alert"]')!.textContent).toContain("Registry denied");
+  });
+});
+
+describe("Visual editor", () => {
+  it("does not render the editor again for unrelated sensor updates", async () => {
+    class CountingEditor extends SynologyCardEditor {
+      renders = 0;
+      protected override render() { this.renders++; return super.render(); }
+    }
+    customElements.define("synology-counting-test-editor", CountingEditor);
+    const editor = document.createElement("synology-counting-test-editor") as CountingEditor;
+    const hass = createFixture();
+    editor.hass = hass;
+    editor.setConfig({ type: "custom:synology-dashboard-card", server: "nas", portainer_endpoint: "synEndpoint" });
+    document.body.append(editor);
+    await editor.updateComplete;
+    const initial = editor.renders;
+    for (let i = 0; i < 100; i++) {
+      editor.hass = { ...hass, states: { ...hass.states, "sensor.unrelated": state("sensor.unrelated", String(i)) } };
+      await editor.updateComplete;
+    }
+    expect(editor.renders).toBe(initial);
+    expect(editor.shadowRoot!.querySelector<HTMLSelectElement>('[aria-label="Synology NAS"]')!.value).toBe("nas");
+    expect(editor.shadowRoot!.querySelector<HTMLSelectElement>('[aria-label="Portainer endpoint"]')!.value).toBe("synEndpoint");
+  });
+  it("does not restart discovery on state updates, and refresh reaches existing cards", async () => {
+    const fixture = createFixture();
+    const connection = {};
+    const callWS = vi.fn(async (message: Record<string, unknown>) =>
+      message.type === "config/device_registry/list" ? Object.values(fixture.devices!) : Object.values(fixture.entities!)
+    );
+    const hass = { ...fixture, connection, callWS } as HomeAssistant;
+    const load = vi.spyOn(discovery, "loadRegistries");
+    const card = await mount("synology-storage-card", {}, hass);
+    const editor = document.createElement("synology-storage-card-editor") as SynologyCardEditor;
+    editor.setConfig({ type: "custom:synology-storage-card" });
+    editor.hass = hass;
+    document.body.append(editor);
+    await editor.updateComplete;
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await editor.updateComplete;
+    expect(editor.shadowRoot!.querySelectorAll('[aria-label="Synology NAS"] option')).toHaveLength(3);
+    for (let i = 0; i < 30; i++) {
+      card.hass = { ...hass };
+      editor.hass = { ...hass };
+      await Promise.all([card.updateComplete, editor.updateComplete]);
+    }
+    expect(load).toHaveBeenCalledTimes(2);
+    expect(callWS).toHaveBeenCalledTimes(2);
+    const oldRegistries = card.registries;
+    editor.shadowRoot!.querySelector<HTMLButtonElement>("button")!.click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    card.hass = { ...hass };
+    await card.updateComplete;
+    expect(callWS).toHaveBeenCalledTimes(4);
+    expect(card.registries).not.toBe(oldRegistries);
+    expect(card.registries).toBe(editor.registries);
+    load.mockRestore();
+  });
+  it("keeps a single discovery in flight while HA states change and populates the selector when it finishes", async () => {
+    const fixture = createFixture();
+    let finish!: () => void;
+    const pending = new Promise<void>((resolve) => { finish = resolve; });
+    const callWS = vi.fn(async (message: Record<string, unknown>) => {
+      await pending;
+      return message.type === "config/device_registry/list" ? Object.values(fixture.devices!) : Object.values(fixture.entities!);
+    });
+    const hass = { ...fixture, connection: {}, callWS } as HomeAssistant;
+    const load = vi.spyOn(discovery, "loadRegistries");
+    const editor = document.createElement("synology-storage-card-editor") as SynologyCardEditor;
+    editor.setConfig({ type: "custom:synology-storage-card" });
+    editor.hass = hass;
+    document.body.append(editor);
+    await editor.updateComplete;
+    for (let i = 0; i < 20; i++) {
+      editor.hass = { ...hass };
+      await editor.updateComplete;
+    }
+    expect(load).toHaveBeenCalledTimes(1);
+    expect(editor.shadowRoot!.querySelector<HTMLSelectElement>('[aria-label="Synology NAS"]')!.disabled).toBe(true);
+    finish();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await editor.updateComplete;
+    const select = editor.shadowRoot!.querySelector<HTMLSelectElement>('[aria-label="Synology NAS"]')!;
+    expect(select.disabled).toBe(false);
+    expect([...select.options].map((option) => option.value)).toEqual(["", "nas", "nas2"]);
+    select.value = "nas";
+    select.dispatchEvent(new Event("change"));
+    await editor.updateComplete;
+    expect(select.value).toBe("nas");
+    expect(load).toHaveBeenCalledTimes(1);
+    load.mockRestore();
+  });
+  it("displays saved device and layout selections on its first render", async () => {
+    const editor = document.createElement("synology-dashboard-card-editor") as SynologyCardEditor;
+    editor.hass = createFixture();
+    editor.setConfig({ type: "custom:synology-dashboard-card", server: "nas2", portainer_endpoint: "synEndpoint", view_mode: "list" });
+    document.body.append(editor);
+    await editor.updateComplete;
+    // happy-dom does not synchronize initial select.value after Lit inserts options.
+    const selected = (label: string) =>
+      editor.shadowRoot!.querySelector<HTMLOptionElement>(`[aria-label="${label}"] option[selected]`)!.value;
+    expect(selected("Synology NAS")).toBe("nas2");
+    expect(selected("Portainer endpoint")).toBe("synEndpoint");
+    expect(selected("Container layout")).toBe("list");
+  });
+  it("saves endpoint, layout, tab visibility and mappings as config-changed", async () => {
+    const editor = document.createElement("synology-dashboard-card-editor") as SynologyCardEditor;
+    editor.hass = createFixture();
+    editor.setConfig({ type: "custom:synology-dashboard-card", container_source: "portainer" });
+    document.body.append(editor);
+    await editor.updateComplete;
+    const listener = vi.fn();
+    editor.addEventListener("config-changed", listener);
+    const select = editor.shadowRoot!.querySelector<HTMLSelectElement>('[aria-label="Portainer endpoint"]')!;
+    select.value = "synEndpoint";
+    select.dispatchEvent(new Event("change"));
+    await editor.updateComplete;
+    expect(listener.mock.lastCall![0].detail.config.portainer_endpoint).toBe("synEndpoint");
+    const layout = editor.shadowRoot!.querySelector<HTMLSelectElement>('[aria-label="Container layout"]')!;
+    layout.value = "list";
+    layout.dispatchEvent(new Event("change"));
+    await editor.updateComplete;
+    expect(listener.mock.lastCall![0].detail.config.view_mode).toBe("list");
+    const picker = editor.shadowRoot!.querySelector("ha-entity-picker")!;
+    picker.dispatchEvent(new CustomEvent("value-changed", { detail: { value: "sensor.manual_cpu" } }));
+    expect(listener.mock.lastCall![0].detail.config.entities.cpu_usage).toBe("sensor.manual_cpu");
+    const storageCheckbox = [...editor.shadowRoot!.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')].find((input) => input.parentElement?.textContent?.includes("Storage & Disks"))!;
+    storageCheckbox.checked = false;
+    storageCheckbox.dispatchEvent(new Event("change"));
+    expect(listener.mock.lastCall![0].detail.config.tabs).toEqual(["overview", "docker"]);
+  });
+
+  describe("Per-card container sources", () => {
+    it("defaults new dashboards to disabled, preserves legacy endpoints, and allows explicit opt-out", async () => {
+      const card = await mount("synology-dashboard-card", { portainer_endpoint: undefined });
+      expect(card.shadowRoot!.querySelectorAll('[role="tab"]')).toHaveLength(2);
+      card.setConfig({ type: "custom:synology-dashboard-card", portainer_endpoint: "synEndpoint" });
+      await card.updateComplete;
+      expect(card.shadowRoot!.querySelectorAll('[role="tab"]')).toHaveLength(3);
+      card.setConfig({ type: "custom:synology-dashboard-card", portainer_endpoint: "synEndpoint", container_source: "disabled" });
+      await card.updateComplete;
+      expect(card.shadowRoot!.querySelectorAll('[role="tab"]')).toHaveLength(2);
+      const standalone = await mount("synology-docker-card", { container_source: "disabled" });
+      expect(standalone.shadowRoot!.querySelectorAll(".container-tile")).toHaveLength(0);
+      expect(standalone.shadowRoot!.textContent).toContain("Container support is disabled");
+    });
+    it("renders manual containers without Portainer, hides unmapped data and uses exact status states", async () => {
+      const hass = createFixture();
+      hass.states["sensor.custom_status"] = { ...state("sensor.custom_status", "running"), attributes: { friendly_name: "Custom container" } };
+      hass.states["sensor.custom_cpu"] = state("sensor.custom_cpu", "123.4567", "%");
+      hass.states["sensor.custom_memory"] = state("sensor.custom_memory", "512", "MiB");
+      const config: Partial<CardConfig> = {
+        container_source: "manual", view_mode: "list",
+        containers: [{ status_entity: "sensor.custom_status", cpu_entity: "sensor.custom_cpu", memory_entity: "sensor.custom_memory" }],
+      };
+      const card = await mount("synology-docker-card", config, hass);
+      expect(card.shadowRoot!.textContent).toContain("Custom container");
+      expect(card.shadowRoot!.textContent).toContain("123.46% CPU");
+      expect(card.shadowRoot!.textContent).toContain("0.54 GB");
+      expect(card.shadowRoot!.textContent).not.toContain("Plex");
+      expect(card.shadowRoot!.querySelector('[title="Start Custom container"]')).toBeNull();
+      expect(card.shadowRoot!.querySelector('[title="Restart Custom container"]')).toBeNull();
+      hass.states["sensor.custom_status"] = state("sensor.custom_status", "paused");
+      card.hass = { ...hass };
+      await card.updateComplete;
+      expect(card.shadowRoot!.textContent).toContain("paused");
+      expect(card.shadowRoot!.textContent).toContain("0 stopped");
+      card.setConfig({ type: "custom:synology-docker-card", container_source: "manual", containers: [{ status_entity: "sensor.custom_status" }] });
+      await card.updateComplete;
+      expect(card.shadowRoot!.textContent).not.toContain("% CPU");
+      expect(card.shadowRoot!.textContent).not.toContain("0.54 GB");
+    });
+    it("uses explicit manual controls, confirms stop and reports action failures", async () => {
+      const hass = createFixture();
+      hass.states["sensor.custom"] = state("sensor.custom", "stopped");
+      hass.states["button.start"] = state("button.start", "unknown");
+      hass.states["script.stop"] = state("script.stop", "off");
+      hass.states["input_button.restart"] = state("input_button.restart", "unknown");
+      hass.callService = vi.fn().mockResolvedValue(undefined);
+      const card = await mount("synology-docker-card", {
+        container_source: "manual",
+        containers: [{
+          name: "Custom", status_entity: "sensor.custom", stopped_state: "stopped",
+          start_entity: "button.start", stop_entity: "script.stop", restart_entity: "input_button.restart",
+        }],
+      }, hass);
+      card.shadowRoot!.querySelector<HTMLButtonElement>('[title="Start Custom"]')!.click();
+      expect(hass.callService).toHaveBeenCalledWith("button", "press", { entity_id: "button.start" });
+      card.shadowRoot!.querySelector<HTMLButtonElement>('[title="Restart Custom"]')!.click();
+      expect(hass.callService).toHaveBeenCalledWith("input_button", "press", { entity_id: "input_button.restart" });
+      hass.states["sensor.custom"] = state("sensor.custom", "running");
+      card.hass = { ...hass };
+      await card.updateComplete;
+      const confirmation = vi.mocked(confirm).mockReturnValue(false);
+      vi.mocked(hass.callService).mockClear();
+      card.shadowRoot!.querySelector<HTMLButtonElement>('[title="Stop Custom"]')!.click();
+      expect(hass.callService).not.toHaveBeenCalled();
+      confirmation.mockReturnValue(true);
+      card.shadowRoot!.querySelector<HTMLButtonElement>('[title="Stop Custom"]')!.click();
+      expect(hass.callService).toHaveBeenCalledWith("script", "turn_on", { entity_id: "script.stop" });
+      hass.callService = vi.fn().mockRejectedValue(new Error("Manual action denied"));
+      card.hass = { ...hass };
+      await card.updateComplete;
+      card.shadowRoot!.querySelector<HTMLButtonElement>('[title="Restart Custom"]')!.click();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      await card.updateComplete;
+      expect(card.shadowRoot!.querySelector('[role="alert"]')!.textContent).toContain("Manual action denied");
+      confirmation.mockRestore();
+    });
+    it("does not enable controls for unavailable, unknown or transitional status or unavailable action entities", async () => {
+      const hass = createFixture();
+      hass.states["sensor.custom"] = state("sensor.custom", "running");
+      hass.states["button.dead"] = state("button.dead", "unavailable");
+      const card = await mount("synology-docker-card", {
+        container_source: "manual", containers: [{
+          name: "Custom", status_entity: "sensor.custom", power_entity: "switch.plex", restart_entity: "button.dead",
+        }],
+      }, hass);
+      expect(card.shadowRoot!.querySelector<HTMLButtonElement>('[title="Restart Custom"]')!.disabled).toBe(true);
+      for (const status of ["unavailable", "unknown", "paused"]) {
+        hass.states["sensor.custom"] = state("sensor.custom", status);
+        card.hass = { ...hass };
+        await card.updateComplete;
+        expect(card.shadowRoot!.querySelector<HTMLButtonElement>('[title="Start Custom"]')!.disabled).toBe(true);
+      }
+    });
+    it("updates manual status, metrics and controls on embedded dashboards without unrelated redraws", async () => {
+      const hass = createFixture();
+      hass.states["sensor.custom"] = state("sensor.custom", "running");
+      hass.states["sensor.custom_cpu"] = state("sensor.custom_cpu", "15", "%");
+      const card = await mount("synology-dashboard-card", {
+        container_source: "manual", tabs: ["docker"], view_mode: "list",
+        containers: [{ status_entity: "sensor.custom", cpu_entity: "sensor.custom_cpu", power_entity: "switch.plex" }],
+      }, hass);
+      const child = card.shadowRoot!.querySelector("mushroom-addition-nas-docker-card") as BaseSynologyCard;
+      await child.updateComplete;
+      expect(child.shadowRoot!.textContent).toContain("15.00% CPU");
+      hass.states["sensor.custom_cpu"] = state("sensor.custom_cpu", "25.555", "%");
+      card.hass = { ...hass };
+      await card.updateComplete;
+      await child.updateComplete;
+      expect(child.shadowRoot!.textContent).toContain("25.55% CPU");
+      hass.states["switch.plex"] = state("switch.plex", "unavailable");
+      card.hass = { ...hass };
+      await card.updateComplete;
+      await child.updateComplete;
+      expect(child.shadowRoot!.querySelector<HTMLButtonElement>('[title="Stop sensor.custom"]')!.disabled).toBe(true);
+    });
+    it("rejects invalid sources, malformed containers and unsupported control domains", () => {
+      const card = document.createElement("synology-docker-card") as BaseSynologyCard;
+      expect(() => card.setConfig({ type: "custom:synology-docker-card", container_source: "invalid" } as unknown as CardConfig)).toThrow("Container source");
+      expect(() => card.setConfig({ type: "custom:synology-docker-card", containers: [null] } as unknown as CardConfig)).toThrow("status entity");
+      expect(() => card.setConfig({ type: "custom:synology-docker-card", containers: [{ status_entity: "sensor.x", restart_entity: "lock.front_door" }] })).toThrow("Unsupported entity");
+      expect(() => card.setConfig({ type: "custom:synology-docker-card", containers: [{ status_entity: "sensor.x", running_state: "running", stopped_state: "running" }] })).toThrow("must be different");
+    });
+    it("edits sources and manual mappings with entity pickers without erasing saved endpoints", async () => {
+      const editor = document.createElement("synology-dashboard-card-editor") as SynologyCardEditor;
+      editor.hass = createFixture();
+      editor.setConfig({ type: "custom:synology-dashboard-card", portainer_endpoint: "synEndpoint" });
+      document.body.append(editor);
+      await editor.updateComplete;
+      const source = editor.shadowRoot!.querySelector<HTMLSelectElement>('[aria-label="Container source"]')!;
+      expect(source.value).toBe("portainer");
+      source.value = "manual";
+      source.dispatchEvent(new Event("change"));
+      await editor.updateComplete;
+      expect(editor.shadowRoot!.querySelector('[aria-label="Portainer endpoint"]')).toBeNull();
+      const add = [...editor.shadowRoot!.querySelectorAll("button")].find((button) => button.textContent === "Add container")!;
+      add.click();
+      await editor.updateComplete;
+      const picker = editor.shadowRoot!.querySelector("fieldset ha-entity-picker")!;
+      picker.dispatchEvent(new CustomEvent("value-changed", { detail: { value: "sensor.custom_status" } }));
+      await editor.updateComplete;
+      expect(editor._config!.containers).toEqual([{ status_entity: "sensor.custom_status" }]);
+      source.value = "disabled";
+      source.dispatchEvent(new Event("change"));
+      await editor.updateComplete;
+      expect(editor.shadowRoot!.querySelector("fieldset")).toBeNull();
+      expect(editor.shadowRoot!.querySelector('[aria-label="Container layout"]')).toBeNull();
+      expect(editor._config!.portainer_endpoint).toBe("synEndpoint");
+      expect(editor._config!.containers![0]!.status_entity).toBe("sensor.custom_status");
+    });
+  });
+});

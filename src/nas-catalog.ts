@@ -1,0 +1,53 @@
+import type { CatalogItem } from "./types";
+
+/** Source: SNFX-Synology-cards, revision 424ca74597e2e68d8320e8be4ba15651f838a8c8. */
+export const NAS_CATALOG: readonly CatalogItem[] = [
+  {
+    upstreamId: "nas_server",
+    sourcePath: "src/nas/server-card.ts",
+    kind: "card",
+    category: "custom-card",
+    family: "nas-dashboard",
+    tag: "mushroom-addition-nas-server-card",
+    editorTag: "mushroom-addition-nas-server-card-editor",
+    name: "NAS - Server Overview",
+    description: "Synology DSM, QNAP or manually mapped CPU, memory, storage, network and system readings.",
+    preferredDomains: ["sensor"],
+  },
+  {
+    upstreamId: "nas_storage",
+    sourcePath: "src/nas/storage-card.ts",
+    kind: "card",
+    category: "custom-card",
+    family: "nas-dashboard",
+    tag: "mushroom-addition-nas-storage-card",
+    editorTag: "mushroom-addition-nas-storage-card-editor",
+    name: "NAS - Storage and Disks",
+    description: "NAS volumes, capacity, physical drives, SMART health, temperatures and threshold alerts.",
+    preferredDomains: ["sensor", "binary_sensor"],
+  },
+  {
+    upstreamId: "nas_docker",
+    sourcePath: "src/nas/docker-card.ts",
+    kind: "card",
+    category: "custom-card",
+    family: "nas-dashboard",
+    tag: "mushroom-addition-nas-docker-card",
+    editorTag: "mushroom-addition-nas-docker-card-editor",
+    name: "NAS - Docker Containers",
+    description: "Endpoint-scoped Portainer discovery or manual containers, grid/list layouts and optional start, stop and restart controls.",
+    preferredDomains: ["sensor", "switch"],
+  },
+  {
+    upstreamId: "nas_dashboard",
+    sourcePath: "src/nas/dashboard-card.ts",
+    kind: "card",
+    category: "custom-card",
+    family: "nas-dashboard",
+    tag: "mushroom-addition-nas-dashboard-card",
+    editorTag: "mushroom-addition-nas-dashboard-card-editor",
+    name: "NAS - Unified Dashboard",
+    description: "Tabbed NAS server overview, storage and optional containers with Synology DSM, QNAP and manual entity sources.",
+    preferredDomains: ["sensor"],
+  },
+];

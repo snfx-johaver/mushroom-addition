@@ -5,7 +5,7 @@ registrations. It is generated from `src/catalog.ts`; CI rejects duplicate
 IDs, missing source paths, invalid namespaces, or broken popup mappings.
 
 **Coverage:** 19 documented upstream card sources map to
-27 public card components.
+31 public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
 of duplicate picker entries. 0 popup templates and
 1 implementation helpers are inventoried but are not
@@ -42,6 +42,10 @@ All picker entries use the prefix **Mushroom Addition:** before the card name.
 | Energy - Home Energy Management | `advanced_home_energy_management` | custom-card | `custom:mushroom-addition-advanced-home-energy-management` | energy | default | `advanced_home_energy_management` |
 | Energy - Buy and Sell | `advanced_energy_buy_sell` | custom-card | `custom:mushroom-addition-advanced-energy-buy-and-sell` | energy | default | `advanced_energy_buy_sell` |
 | Energy - Solar Panel Health | `advanced_energy_panel_health` | custom-card | `custom:mushroom-addition-advanced-energy-panel-health` | energy | default | `advanced_energy_panel_health` |
+| NAS - Server Overview | `nas_server` | custom-card | `custom:mushroom-addition-nas-server-card` | nas-dashboard | default | `nas_server` |
+| NAS - Storage and Disks | `nas_storage` | custom-card | `custom:mushroom-addition-nas-storage-card` | nas-dashboard | default | `nas_storage` |
+| NAS - Docker Containers | `nas_docker` | custom-card | `custom:mushroom-addition-nas-docker-card` | nas-dashboard | default | `nas_docker` |
+| NAS - Unified Dashboard | `nas_dashboard` | custom-card | `custom:mushroom-addition-nas-dashboard-card` | nas-dashboard | default | `nas_dashboard` |
 
 ## Unified component mapping
 

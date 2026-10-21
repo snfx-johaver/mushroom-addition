@@ -57,7 +57,7 @@ describe("family editor schemas", () => {
     const supported = new Set([
       "weather", "climate", "scene", "presence", "battery", "energy",
       "sensor", "media", "cover", "security", "navigation",
-      "text", "camera", "control", "alarm-time", "door", "entity", "bar",
+      "text", "camera", "control", "alarm-time", "door", "entity", "bar", "nas-dashboard",
     ]);
     for (const item of CATALOG) expect(supported.has(item.family)).toBe(true);
   });

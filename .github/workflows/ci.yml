@@ -19,6 +19,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run validate
+      - run: node --import tsx scripts/check-nas-bundle.ts
       - run: git diff --exit-code -- dist/mushroom-cards-addition.js
       - uses: actions/upload-artifact@v7
         with:

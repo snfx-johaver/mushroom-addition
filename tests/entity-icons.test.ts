@@ -20,7 +20,7 @@ describe("entity-driven default header icons", () => {
     expect(normalizeConfig(defaults).icon).toBeUndefined();
   });
 
-  it.each(CATALOG.filter(item => !["card_battery", "custom_card_welcome", "area_card_advanced", "area_card_mushroom"].includes(item.upstreamId)))(
+  it.each(CATALOG.filter(item => item.family !== "nas-dashboard" && !["card_battery", "custom_card_welcome", "area_card_advanced", "area_card_mushroom"].includes(item.upstreamId)))(
     "uses native entity/device-class/state icons for $tag headers without an override", async item => {
       const card = document.createElement(item.tag) as HTMLElement & {
         hass: HomeAssistant; setConfig(config: AdditionConfig): void; updateComplete: Promise<boolean>;

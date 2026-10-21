@@ -49,7 +49,7 @@ describe("catalog coverage", () => {
       UPSTREAM_CATALOG.filter((item) => item.category === category).length;
     expect(sourceCount("default-card")).toBe(3);
     expect(sourceCount("custom-card")).toBe(16);
-    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(24);
+    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(28);
   });
 
   it("keeps removed contributor names out of renamed public card metadata", () => {
@@ -79,6 +79,7 @@ describe("catalog coverage", () => {
       "Game Console", "Flower", "Speedtest", "Pollen", "Graph Advanced", "Pi-hole",
       "Upcoming Media", "Remote", "Area Advanced", "Carousel Slider",
       "Energy - Home Energy Management", "Energy - Buy and Sell", "Energy - Solar Panel Health",
+      "NAS - Server Overview", "NAS - Storage and Disks", "NAS - Docker Containers", "NAS - Unified Dashboard",
     ]);
   });
 

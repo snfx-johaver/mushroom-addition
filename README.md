@@ -4,8 +4,10 @@
 
 Your dashboard called. It wants fewer YAML headaches and a little more fun(gus).
 
-**27 Home Assistant dashboard cards, with visual editors, theme-aware styling
-and support for all 33 Mushroom languages.** Energy, media, rooms, batteries,
+**31 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
+The original 27 support all 33 Mushroom languages; the four imported NAS
+dashboard cards currently retain their upstream English interface.
+Energy, media, rooms, batteries,
 graphs, remotes and more. Pick a card, pick your entities, enjoy your dashboard.
 YAML is still welcome; it just isn't compulsory.
 
@@ -57,6 +59,23 @@ or integrations; installing a card does not install its data source.
 See the **[card catalog](docs/CATALOG.md)** for the complete list and source
 references, or the [changelog](CHANGELOG.md) for what's new.
 
+### NAS dashboard cards and migration
+
+Four additional cards provide **NAS - Server Overview**, **NAS - Storage and
+Disks**, **NAS - Docker Containers**, and **NAS - Unified Dashboard**.
+The existing **NAS** card remains unchanged. Synology DSM, QNAP and manually
+mapped entities are supported; Portainer is optional.
+
+They are included in the main Mushroom Addition module. When migrating from
+SNFX Synology Cards, remove its old Dashboard resource(s) and HACS frontend
+package/custom repository after installing the integrated bundle, then fully
+reload every browser. Keep the NAS/Portainer backend integrations and existing
+dashboard YAML: `synology-*` and `snfx-*` card/editor tags remain hidden
+compatibility aliases. Do not load both frontend bundles.
+
+See [NAS configuration and migration](docs/NAS.md) for supported settings,
+examples and resource paths.
+
 ## Troubleshooting
 
 - **Missing card or old version?** Redownload in HACS, then hard-refresh the
@@ -102,6 +121,7 @@ design ideas, configuration references and behavior that helped this one grow:
 | [TV Card](https://github.com/usernein/tv-card) | Remote controls, touchpad and haptic interaction references. |
 | [Pi-hole Card](https://github.com/homeassistant-extras/pi-hole-card) | Pi-hole statistics and blocking-control references. |
 | [Home Assistant](https://github.com/home-assistant/frontend) | Native editors, selectors, actions, entity formatting and the Area card used by Advanced Area. |
+| [SNFX Synology Cards](https://github.com/snfx-johaver/SNFX-Synology-cards) / [ha-unraid](https://github.com/ruaan-deysel/ha-unraid) | Apache-2.0 NAS server, storage, container and unified dashboard frontend. |
 
 These are references, not a shopping list of required installations.
 Mushroom Addition works without the separate custom cards above. Individual
@@ -109,6 +129,7 @@ cards still need suitable Home Assistant entities or integrations for their data
 
 ## License
 
-[MIT](LICENSE). Required attribution is retained in
+[MIT](LICENSE), except the imported NAS frontend, which remains Apache-2.0.
+Required attribution and the NAS license/NOTICE are retained in
 [Third-party notices](THIRD_PARTY_NOTICES.md). Mushroom and Home Assistant are
 independent projects and trademarks of their respective owners.

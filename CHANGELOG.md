@@ -4,6 +4,13 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Add four NAS cards: Server Overview, Storage and Disks, Docker Containers,
+  and Unified Dashboard. Preserve Synology DSM/QNAP/manual discovery, all
+  upstream entity mappings, editors and optional Portainer/manual controls.
+  Keep the original NAS card and hidden `synology-*`/`snfx-*` card/editor
+  aliases; ship everything in the main bundle with Apache-2.0 notices.
+  Remove the old standalone frontend resource and fully reload when migrating.
+
 - Remove obsolete source-comparison pages and their broken local reference
   image links. Retain the current catalog demo and regression fixtures.
 - Replace the outdated dashboard screenshot with a data-free project banner.

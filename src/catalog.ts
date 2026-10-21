@@ -1,4 +1,6 @@
 import type { CatalogItem } from "./types";
+import { NAS_CATALOG } from "./nas-catalog";
+import { NAS_CARD_ALIASES } from "./nas/config";
 
 const baseCards = [
   "battery",
@@ -325,6 +327,7 @@ export const PUBLIC_CATALOG: readonly CatalogItem[] = [
       };
     }),
   ...NATIVE_CATALOG.map((item) => ({ ...item, sourceIds: [item.upstreamId] })),
+  ...NAS_CATALOG.map((item) => ({ ...item, sourceIds: [item.upstreamId] })),
 ];
 
 export interface CatalogAlias {
@@ -363,6 +366,7 @@ export const CATALOG: readonly CatalogItem[] = PUBLIC_CATALOG;
 
 export const getCatalogItem = (tag: string): CatalogItem | undefined =>
   CATALOG.find((item) => item.tag === tag) ??
+  CATALOG.find((item) => item.tag === NAS_CARD_ALIASES.find((alias) => alias.tag === tag)?.targetTag) ??
   (() => {
     const alias = LEGACY_ALIASES.find((item) => item.tag === tag);
     return alias ? PUBLIC_CATALOG.find((item) => item.tag === alias.targetTag) : undefined;
