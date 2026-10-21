@@ -40,6 +40,15 @@ describe("default Mushroom icon sizing", () => {
     expect(ruleFor(".toner-bars i")).toContain("height: 30px");
     expect(ruleFor(".alarm-time-controls .ulm-control")).toContain("height: 56px");
   });
+  it("also uses the neutral surface in separate-shadow controls without restyling native Area controls", () => {
+    for (const file of ["entity-carousel.ts", "pi-hole.ts", "upcoming-media.ts", "area-advanced.ts"]) {
+      const source = readFileSync(join(process.cwd(), "src", file), "utf8");
+      expect(source).toContain("background: var(--addition-neutral-background");
+    }
+    const area = readFileSync(join(process.cwd(), "src", "area-advanced.ts"), "utf8");
+    expect(area).toContain("rgba(var(--rgb-primary-text-color, 33, 33, 33), .05)");
+    expect(area).toContain('.entity[aria-pressed="true"] { background: color-mix(in srgb, var(--control-icon-color) 16%, transparent)');
+  });
   it("uses Mushroom typography and icon sizes throughout NAS metrics without narrow-screen downscaling", () => {
     for (const selector of [".nas-metrics-tile-icon", ".nas-metrics-metrics i"]) {
       expect(ruleFor(selector)).toContain("width: var(--mush-icon-size, 40px)");

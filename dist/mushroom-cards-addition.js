@@ -55342,8 +55342,7 @@ Un.styles = Ve`
     .entity { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; min-width: 42px;
       box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
       height: var(--feature-height, 42px); border: 0; border-radius: var(--ha-card-border-radius, 12px);
-      background: color-mix(in srgb, var(--disabled-color, var(--secondary-text-color)) 14%,
-        var(--ha-card-background, var(--card-background-color))); cursor: pointer;
+      background: var(--addition-neutral-background, rgba(var(--rgb-primary-text-color, 33, 33, 33), .05)); cursor: pointer;
       color: var(--control-icon-color); --mdc-icon-size: 24px; }
     .entity[aria-pressed="true"] { background: color-mix(in srgb, var(--control-icon-color) 16%, transparent); }
     .entity:disabled { color: var(--disabled-text-color, var(--secondary-text-color)); cursor: default; }
