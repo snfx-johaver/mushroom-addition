@@ -921,7 +921,7 @@ describe("family renderers", () => {
     expect((markup.match(/class="console-social-item"/g) ?? [])).toHaveLength(3);
     expect((markup.match(/shared-presentation/g) ?? [])).toHaveLength(1);
     expect(markup).not.toContain("automatic-presentation");
-    expect(sharedStyles.cssText).toMatch(/\.console-social ha-icon[\s\S]*?width:\s*40px;[\s\S]*?height:\s*40px;/);
+    expect(sharedStyles.cssText).toMatch(/\.console-social ha-icon[\s\S]*?width:\s*var\(--mush-icon-size, 36px\);[\s\S]*?height:\s*var\(--mush-icon-size, 36px\);/);
   });
 
   it("hides the entire carousel header without removing its configured information or items", async () => {
