@@ -3,7 +3,6 @@ import type { CatalogItem } from "./types";
 const baseCards = [
   "battery",
   "room", "scenes",
-  "welcome_scenes",
 ] as const;
 
 const customCards = [
@@ -118,8 +117,9 @@ const makeItem = (
     custom_card_plant: "Flower",
     custom_card_pollen: "Pollen",
     custom_card_sun: "Astronomy",
-    custom_card_entity_carousel: "Entity Carousel",
+    custom_card_entity_carousel: "Carousel Slider",
     custom_card_media_player_sonos: "Media Player Advanced",
+    custom_card_speedtest_gauges: "Speedtest",
   };
   const displayDescriptions: Partial<Record<string, string>> = {
     custom_card_trash: "Mushroom-style trash collection schedule card.",
@@ -142,10 +142,8 @@ const makeItem = (
     family,
     tag,
     name: consoleCard
-      ? "Game Console Card"
-      : upstreamId === "custom_card_nas_metrics"
-        ? "NAS Card"
-      : `${displayNames[upstreamId] ?? humanize(componentId)} Card`,
+      ? "Game Console"
+      : displayNames[upstreamId] ?? humanize(componentId),
     description: consoleCard
       ? "Mushroom-style Xbox, PlayStation, and Nintendo profile, activity, artwork, and control card."
       : upstreamId === "custom_card_nas_metrics"
@@ -186,7 +184,7 @@ export const UPSTREAM_CATALOG: readonly CatalogItem[] = [
     category: "custom-card",
     family: "energy",
     tag: "mushroom-addition-mini-graph-card",
-    name: "Mini Graph Card",
+    name: "Graph Advanced",
     description: "Mushroom-style recorder history card with line and bar charts, aggregation, thresholds, and dual axes.",
     variants: ["line", "bar"],
     variantLabels: { line: "Line graph", bar: "Bar graph" },
@@ -202,7 +200,7 @@ export const NATIVE_CATALOG: readonly CatalogItem[] = [
     category: "custom-card",
     family: "sensor",
     tag: "mushroom-addition-pi-hole-card",
-    name: "Pi-hole Card",
+    name: "Pi-hole",
     description: "Pi-hole v5/v6 statistics, blocking switches, backend-timed pauses, diagnostics and system history with a visual editor.",
     preferredDomains: ["switch", "sensor"],
   },
@@ -224,7 +222,7 @@ export const NATIVE_CATALOG: readonly CatalogItem[] = [
     category: "custom-card",
     family: "media",
     tag: "mushroom-addition-remote-card",
-    name: "Remote Card",
+    name: "Remote",
     description: "Mushroom-style TV remote with a touchpad, directional controls, volume, sources, custom buttons and haptic feedback.",
     preferredDomains: ["media_player", "remote"],
   },
@@ -235,8 +233,19 @@ export const NATIVE_CATALOG: readonly CatalogItem[] = [
     category: "custom-card",
     family: "presence",
     tag: "mushroom-addition-area-card-advanced",
-    name: "Area card advanced",
+    name: "Area Advanced",
     description: "Installed native Home Assistant Area card and editor, with any-entity controls, per-entity icons, colors and tap behaviors.",
+    preferredDomains: [],
+  },
+  {
+    upstreamId: "area_card_mushroom",
+    sourcePath: "src/area-mushroom.ts",
+    kind: "card",
+    category: "custom-card",
+    family: "presence",
+    tag: "mushroom-addition-area-card-mushroom",
+    name: "Area Advanced - Mushroom",
+    description: "Mushroom-styled Area Advanced with the same native area data, camera, controls and visual editor. The original Area Advanced remains available for comparison.",
     preferredDomains: [],
   },
   makeItem("custom_card_entity_carousel", "src/entity-carousel.ts"),
@@ -247,7 +256,7 @@ export const NATIVE_CATALOG: readonly CatalogItem[] = [
     category: "custom-card",
     family: "energy",
     tag: "mushroom-addition-advanced-home-energy-management",
-    name: "Advanced Energy - Home Energy Management",
+    name: "Energy - Home Energy Management",
     description: "Circular whole-home energy dashboard with grid, solar, battery, consumption, tariff, and panel-health intelligence.",
     preferredDomains: ["sensor"],
   },
@@ -258,7 +267,7 @@ export const NATIVE_CATALOG: readonly CatalogItem[] = [
     category: "custom-card",
     family: "energy",
     tag: "mushroom-addition-advanced-energy-buy-and-sell",
-    name: "Advanced Energy - Energy Buy and Sell",
+    name: "Energy - Buy and Sell",
     description: "Mushroom-style electricity price chart with planned grid charging and energy sale periods.",
     preferredDomains: ["sensor"],
   },
@@ -269,7 +278,7 @@ export const NATIVE_CATALOG: readonly CatalogItem[] = [
     category: "custom-card",
     family: "energy",
     tag: "mushroom-addition-advanced-energy-panel-health",
-    name: "Advanced Energy - Panel Health",
+    name: "Energy - Solar Panel Health",
     description: "Mushroom-style solar panel output summary and per-panel performance gauges.",
     preferredDomains: ["sensor"],
   },
@@ -290,7 +299,7 @@ export const COMPONENT_GROUPS: readonly ComponentGroup[] = [
     sources: { card_scenes: "welcome-pills", custom_card_scenes: "scene-grid" },
     variants: ["welcome-pills", "scene-grid"],
     variantLabels: { "welcome-pills": "Welcome scene pills", "scene-grid": "Scene button grid" },
-    name: "Scenes Card",
+    name: "Scenes",
   },
 ] as const;
 

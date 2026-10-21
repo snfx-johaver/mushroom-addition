@@ -78,7 +78,7 @@ describe("Sonos Mushroom-compatible media controls", () => {
     expect(callService).toHaveBeenCalledWith("number", "set_value", { entity_id: "number.office_bass", value: -3 });
   });
   it("uses Media Player Advanced as its public picker and editor name", () => {
-    expect(descriptor.name).toBe("Media Player Advanced Card");
+    expect(descriptor.name).toBe("Media Player Advanced");
     expect(window.customCards?.find(card => card.type === descriptor.tag)?.name).toContain("Media Player Advanced");
   });
 

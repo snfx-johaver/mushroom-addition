@@ -7,7 +7,7 @@ import {
 const rows = PUBLIC_CATALOG.map((item) => {
   const variants = item.variants?.join(", ") ?? "default";
   const sources = (item.sourceIds ?? [item.upstreamId]).map((id) => `\`${id}\``).join("<br>");
-  return `| \`${item.upstreamId}\` | ${item.category} | \`custom:${item.tag}\` | ${item.family} | ${variants} | ${sources} |`;
+  return `| ${item.name} | \`${item.upstreamId}\` | ${item.category} | \`custom:${item.tag}\` | ${item.family} | ${variants} | ${sources} |`;
 });
 const popupRows = UPSTREAM_VARIANTS.map((item) =>
   `| \`${item.id}\` | \`${item.component}\` | Not exposed; use standard card actions | \`${item.sourcePath}\` |`);
@@ -25,8 +25,10 @@ of duplicate picker entries. ${UPSTREAM_VARIANTS.length} popup templates and
 ${SOURCE_ONLY_HELPERS.length} implementation helpers are inventoried but are not
 public registrations.
 
-| Public ID | Category | Addition type | Family | UI variants | Covered source IDs |
-|---|---|---|---|---|---|
+All picker entries use the prefix **Mushroom Addition:** before the card name.
+
+| Card name | Public ID | Category | Addition type | Family | UI variants | Covered source IDs |
+|---|---|---|---|---|---|---|
 ${rows.join("\n")}
 
 ## Unified component mapping

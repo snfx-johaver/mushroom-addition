@@ -233,7 +233,7 @@ describe("priority local certification", () => {
       memory_max: 100,
       cpu_max: 100,
     });
-    expect(nas.name).toBe("NAS Card");
+    expect(nas.name).toBe("NAS");
   });
 
   it.each([

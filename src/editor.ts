@@ -280,7 +280,7 @@ export class MushroomAdditionEditor extends LitElement {
         ? this.renderItemEditor(
           "scene_items",
           localizeText(this.hass, "Scene buttons"),
-          item.upstreamId === "card_welcome_scenes" ? undefined : ["scene"],
+          ["scene"],
         )
         : item.upstreamId === "card_room"
           ? html`${this.renderItemEditor("room_sensors", localize(this.hass, "room_buttons"))}${this.renderRoomStatusEditor()}`

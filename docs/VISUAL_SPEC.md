@@ -40,6 +40,10 @@ Date formatting uses Home Assistant's language and time zone, refreshing
 without requiring an entity update. Navigation and collapse controls remain
 independent of this weather presentation.
 
+The redundant Welcome Scenes card is no longer registered. Use Welcome for
+weather, date, greeting and navigation, or Scenes for scene activation buttons.
+Existing dashboard entries using the removed type must be deleted or replaced.
+
 Alarm Time, Washer and Input Datetime controls honor Mushroom control height,
 radius and spacing tokens (42px / 12px defaults). Sonos and Remote retain native
 range inputs and their keyboard/service semantics, with shared themed tracks,
@@ -98,6 +102,21 @@ Native Content includes alert color, sensor wrapping and grey default-icon
 toggles. The sensor secondary slot preserves native class values and formatting;
 scoped styles change presentation only. Aggregate control colors override native
 button CSS without replacing native membership, state or click handling.
+
+**Area Advanced - Mushroom** is a separate picker entry for comparison with
+**Area Advanced**. Its default is the compact layout with 12px padding/gaps,
+36px icon bubbles, 14px/500 primary text and 12px/400 secondary text, using the
+corresponding Mushroom theme variables. Both entries share the full visual
+editor, native area aggregation, camera/picture layouts, controls and actions.
+Only the comparison instance receives the scoped presentation overrides.
+To compare an existing configuration, duplicate it and change its type to
+`custom:mushroom-addition-area-card-mushroom`; retain the original configuration
+unchanged. Other explicit layout and behavior options remain supported.
+
+Game Console, Upcoming Media, NAS, Tablet, Speedtest, Pollen and Pi-hole use the
+same Mushroom primary/secondary typography and themed 42px/12px controls.
+Their artwork, utilization rings, domain-specific controls and existing raised
+surfaces remain. Upcoming Media retains explicit text/item dimensions.
 
 Each family has a separate schema. The primary entity is always `entity`, shown
 at most once and filtered to suitable Home Assistant domains. Secondary inputs

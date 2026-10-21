@@ -139,7 +139,7 @@ describe("Advanced Energy - Home Energy Management", () => {
       candidate.upstreamId === "advanced_home_energy_management")!;
     expect(item).toMatchObject({
       tag: "mushroom-addition-advanced-home-energy-management",
-      name: "Advanced Energy - Home Energy Management",
+      name: "Energy - Home Energy Management",
       family: "energy",
     });
     const fields = editorSchemaFor(item).flatMap((field) => field.schema ?? [field]);

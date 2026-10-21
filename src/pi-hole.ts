@@ -8,6 +8,7 @@ import { upcomingSize } from "./upcoming-media";
 import { MushroomMiniGraphCard } from "./mini-graph";
 import type { MiniGraphCardConfig } from "./mini-graph";
 import { localize, localizeText } from "./localize";
+import { mediaControlStyles } from "./control-styles";
 
 export const PIHOLE_METRICS: Record<PiHoleMetric, { name: string; icon: string; keys: string[]; unit?: string }> = {
   queries: { name: "DNS queries", icon: "mdi:dns", keys: ["dns_queries_today", "dns_queries", "queries_today"] },
@@ -136,26 +137,27 @@ export class MushroomPiHole extends LitElement {
   private held = false;
 
   public static styles = css`
+    ${mediaControlStyles}
     :host { display: block; width: 100%; min-width: 0; color: var(--primary-text-color); }
     .sections { display: grid; gap: 12px; }
     details { min-width: 0; }
-    summary { cursor: pointer; font-size: 14px; font-weight: 600; padding: 8px 0; }
+    summary { cursor: pointer; color: var(--mush-card-primary-color, var(--primary-text-color)); font-size: var(--mush-card-primary-font-size, 14px); line-height: var(--mush-card-primary-line-height, 20px); font-weight: var(--mush-card-primary-font-weight, 500); padding: 8px 0; }
     .statistics { display: grid; grid-template-columns: repeat(var(--columns), minmax(0, 1fr)); gap: 8px; }
     button { font: inherit; color: inherit; cursor: pointer; }
     button.metric, button.entity, button.duration { box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12)); }
-    .metric { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 8px; text-align: left; padding: 12px; border: 0; border-radius: 14px; background: var(--addition-neutral-background); min-width: 0; }
-    .metric ha-icon { --mdc-icon-size: 22px; color: var(--accent); grid-row: span 2; align-self: center; }
-    .value { font-size: 16px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
-    .label { color: var(--secondary-text-color); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .metric { display: grid; grid-template-columns: var(--mush-icon-size, 36px) minmax(0, 1fr); gap: 0 12px; text-align: left; padding: 12px; border: 0; border-radius: var(--mush-control-border-radius, 12px); background: var(--addition-neutral-background); min-width: 0; }
+    .metric ha-icon { display: grid; place-items: center; width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); border-radius: 50%; background: color-mix(in srgb, var(--accent) 20%, transparent); --mdc-icon-size: var(--mush-icon-symbol-size, 24px); color: var(--accent); grid-row: span 2; align-self: center; }
+    .value { color: var(--mush-card-primary-color, var(--primary-text-color)); font-size: var(--mush-card-primary-font-size, 14px); line-height: var(--mush-card-primary-line-height, 20px); font-weight: var(--mush-card-primary-font-weight, 500); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .label { color: var(--mush-card-secondary-color, var(--secondary-text-color)); font-size: var(--mush-card-secondary-font-size, 12px); line-height: var(--mush-card-secondary-line-height, 16px); font-weight: var(--mush-card-secondary-font-weight, 400); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .list, .pause { display: grid; gap: 8px; }
-    .entity { display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box; min-height: 44px; padding: 8px 10px; border: 0; border-radius: 12px; background: var(--addition-neutral-background); text-align: left; min-width: 0; font-size: 12px; }
-    .entity ha-icon { --mdc-icon-size: 22px; color: var(--accent); flex-shrink: 0; }
+    .entity { display: flex; align-items: center; gap: 12px; width: 100%; box-sizing: border-box; min-height: var(--mush-control-height, 42px); padding: 8px 12px; border: 0; border-radius: var(--mush-control-border-radius, 12px); background: var(--addition-neutral-background); text-align: left; min-width: 0; color: var(--mush-card-primary-color, var(--primary-text-color)); font-size: var(--mush-card-primary-font-size, 14px); line-height: var(--mush-card-primary-line-height, 20px); font-weight: var(--mush-card-primary-font-weight, 500); }
+    .entity ha-icon { --mdc-icon-size: 24px; color: var(--accent); flex-shrink: 0; }
     .entity .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .entity .state { color: var(--secondary-text-color); }
+    .entity .state { max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--mush-card-secondary-color, var(--secondary-text-color)); font-size: var(--mush-card-secondary-font-size, 12px); line-height: var(--mush-card-secondary-line-height, 16px); font-weight: var(--mush-card-secondary-font-weight, 400); }
     .entity.active { background: color-mix(in srgb, var(--accent) 12%, var(--addition-neutral-background)); }
     .durations { display: flex; flex-wrap: wrap; gap: 8px; }
-    .duration { flex: 1; padding: 10px; min-width: 64px; border: 0; border-radius: 12px; background: var(--addition-neutral-background); font-size: 12px; }
-    select { width: 100%; padding: 9px; border: 1px solid var(--divider-color); border-radius: 10px; font: inherit; font-size: 12px; color: var(--primary-text-color); background: var(--card-background-color, var(--ha-card-background)); }
+    .duration { flex: 1; box-sizing: border-box; min-height: var(--mush-control-height, 42px); padding: 8px 12px; min-width: 64px; border: 0; border-radius: var(--mush-control-border-radius, 12px); background: var(--addition-neutral-background); font-size: var(--mush-card-primary-font-size, 14px); line-height: var(--mush-card-primary-line-height, 20px); font-weight: var(--mush-card-primary-font-weight, 500); }
+    button:hover:not(:disabled) { background-color: color-mix(in srgb, var(--primary-text-color) 4%, var(--addition-neutral-background)); }
     button:disabled { opacity: .55; cursor: default; }
     button:focus-visible, select:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     .message { color: var(--secondary-text-color); font-size: 12px; line-height: 1.5; }
@@ -216,7 +218,7 @@ export class MushroomPiHole extends LitElement {
       const targets = this.targets;
       const supported = targets.length > 0 && targets.every(entity => !!piHolePauseService(this.hass, config, entity));
       return html`<div class="pause">
-        <select aria-label=${localize(this.hass, "message.pause_target")} .value=${this.target} @change=${(event: Event) => { this.target = (event.target as HTMLSelectElement).value; }}>
+        <select class="mushroom-select" aria-label=${localize(this.hass, "message.pause_target")} .value=${this.target} @change=${(event: Event) => { this.target = (event.target as HTMLSelectElement).value; }}>
           <option value="all">${localize(this.hass, "message.all_switches")}</option>
           ${this.switches.map(entity => html`<option value=${entity.entity_id} ?disabled=${!available(entity)}>${entity.attributes.friendly_name || entity.entity_id}</option>`)}
         </select>

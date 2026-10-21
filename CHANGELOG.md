@@ -4,6 +4,18 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Use concise functional card names with the consistent `Mushroom Addition:`
+  picker prefix. Existing card type IDs and saved dashboard configurations are
+  unchanged.
+- Add Area Advanced - Mushroom as a separate comparison card with Mushroom
+  typography, icon bubbles, spacing and controls. Retain the original Area
+  Advanced card and share its native area behavior and full visual editor.
+- Align Game Console, Upcoming Media, NAS, Tablet, Speedtest, Pollen and Pi-hole
+  supporting text, control sizing, spacing and theme tokens with Mushroom.
+  Preserve artwork, gauges, existing actions and explicit media sizing.
+
+- Remove the redundant Welcome Scenes card, including its registration,
+  editor, renderer and examples. Welcome and the regular Scenes card remain.
 - Remove the Roomview card, including its registration, graphical editor,
   renderer, styles and examples. The separate Room card remains available.
 - Replace Welcome's fixed thermometer shortcut with a weather-aware icon,

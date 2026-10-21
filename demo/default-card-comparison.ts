@@ -99,7 +99,6 @@ const entityFor: Record<string, string | undefined> = {
   card_generic_swap: "sensor.temperature",
   card_room: "light.kitchen",
   card_scenes: "scene.relax",
-  card_welcome_scenes: "scene.relax",
 };
 
 const referenceFor: Record<string, string> = {
@@ -112,7 +111,6 @@ const referenceFor: Record<string, string> = {
   card_room: "room-card.png",
   card_scenes: "card_scenes.png",
   card_title: "card_title.png",
-  card_welcome_scenes: "card_welcome_scenes.png",
 };
 
 const variantsFor = (sourceId: string, base: AdditionConfig): AdditionConfig[] => {
@@ -172,19 +170,6 @@ const variantsFor = (sourceId: string, base: AdditionConfig): AdditionConfig[] =
         { entity: "scene.movie", icon: "mdi:movie", color: "#ff9800", name: "Film Scene" },
         { entity: "scene.relax", icon: "mdi:lightbulb", color: "#00c853", name: "Scene" },
         { entity: "scene.music", icon: "mdi:music", color: "#ec407a", name: "Music" },
-      ],
-    }];
-    case "card_welcome_scenes": return [{
-      ...base,
-      name: undefined,
-      secondary: "Scenes",
-      collapse_entity: "input_boolean.scenes_collapsed",
-      scene_items: [
-        { entity: "scene.home", icon: "mdi:home", color: "#536dfe", name: "Home" },
-        { entity: "scene.away", icon: "mdi:shield-home", color: "#ff5252", name: "Away" },
-        { entity: "scene.night", icon: "mdi:weather-night", color: "#00c853", name: "Night" },
-        { entity: "scene.movie", icon: "mdi:movie", color: "#ff9800", name: "Film" },
-        { entity: "scene.relax", icon: "mdi:lightbulb", color: "#ff9800", name: "Scene" },
       ],
     }];
     case "card_title": return [{ ...base, name: "Living Room", secondary: "Light" }];

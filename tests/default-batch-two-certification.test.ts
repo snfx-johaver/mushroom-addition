@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { normalizeConfig } from "../src/helpers";
 import { sharedStyles } from "../src/styles";
 import type { AdditionConfig, HomeAssistant } from "../src/types";
 import "../src/index";
@@ -108,82 +107,16 @@ const renderCard = async (
   return element;
 };
 
-const click = (card: TestCard, selector: string): void => {
-  const control = card.shadowRoot.querySelector<HTMLButtonElement>(selector);
-  expect(control, selector).not.toBeNull();
-  control!.click();
-};
-
 afterEach(() => {
   document.body.replaceChildren();
   vi.restoreAllMocks();
 });
 
-describe("queued default batch two certification", () => {  it.each([
-    {
-      tag: "mushroom-addition-card-welcome-scenes",
-      config: { type: "custom:mushroom-addition-card-welcome-scenes", collapse_entity: "input_boolean.dropdown_welcome" },
-      fields: ["collapse_entity", "weather_entity", "settings_path", "collapsed", "tap_action"],
-    },
-  ])("round-trips $tag through its graphical editor", async ({ config, fields }) => {
-    const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {
-      hass: HomeAssistant;
-      setConfig(config: AdditionConfig): void;
-      updateComplete: Promise<boolean>;
-      shadowRoot: ShadowRoot;
-    };
-    editor.hass = makeHass();
-    editor.setConfig(config);
-    document.body.append(editor);
-    await editor.updateComplete;
-    const forms = [...editor.shadowRoot.querySelectorAll<HTMLElement & {
-      schema: Array<{ name: string }>;
-      data: AdditionConfig;
-    }>("ha-form")];
-    const schemaNames = forms.flatMap((form) => form.schema.map((field) => field.name));
-    expect(schemaNames).toEqual(expect.arrayContaining(fields));
-    const changed = vi.fn();
-    editor.addEventListener("config-changed", changed);
-    forms[0].dispatchEvent(new CustomEvent("value-changed", {
-      bubbles: true,
-      composed: true,
-      detail: { value: { ...forms[0].data, name: "Edited" } },
-    }));
-    expect(changed).toHaveBeenCalledWith(expect.objectContaining({
-      detail: { config: expect.objectContaining({ name: "Edited" }) },
-    }));
-  });
-
-  it("migrates legacy source variables into dedicated public config fields", () => {
-    expect(normalizeConfig({
-      type: "custom:mushroom-addition-card-welcome-scenes",
-      ulm_card_welcome_scenes_collapse: "input_boolean.dropdown_welcome",
-      entity_1: {
-        entity_id: "scene.living_room_relax",
-        name: "Relax",
-        icon: "mdi:sofa",
-        color: "yellow",
-        nav_path: "/lovelace/scenes",
-      },
-    })).toMatchObject({
-      collapse_entity: "input_boolean.dropdown_welcome",
-      scene_items: [{
-        entity: "scene.living_room_relax",
-        name: "Relax",
-        icon: "mdi:sofa",
-        color: "yellow",
-        navigation_path: "/lovelace/scenes",
-      }],
-      tap_action: { action: "none" },
-    });
-  });
-
-  it("executes every welcome-scenes control and item domain with exact payloads", async () => {
+describe("regular Scenes service certification", () => {
+  it("executes each Scenes item domain with exact payloads", async () => {
     const callService = vi.fn(async () => undefined);
-    const card = await renderCard("mushroom-addition-card-welcome-scenes", {
-      type: "custom:mushroom-addition-card-welcome-scenes",
-      collapse_entity: "input_boolean.dropdown_welcome",
-      weather_entity: "weather.hcn_ha",
+    const card = await renderCard("mushroom-addition-card-scenes", {
+      type: "custom:mushroom-addition-card-scenes",
       scene_items: [
         { entity: "scene.living_room_relax", name: "Relax" },
         { entity: "media_player.office", name: "Office" },
@@ -195,25 +128,14 @@ describe("queued default batch two certification", () => {  it.each([
     }, makeHass(states, callService));
     const actions = vi.fn();
     card.addEventListener("hass-action", actions);
-    click(card, 'button[aria-label="Toggle scenes"]');
-    click(card, 'button[aria-label="Open dashboard settings"]');
     for (const button of card.shadowRoot.querySelectorAll<HTMLButtonElement>(".scene-button")) button.click();
     expect(callService.mock.calls).toEqual([
-      ["input_boolean", "toggle", { entity_id: "input_boolean.dropdown_welcome" }],
       ["scene", "turn_on", { entity_id: "scene.living_room_relax" }],
       ["media_player", "media_play_pause", { entity_id: "media_player.office" }],
       ["input_select", "select_option", { entity_id: "input_select.mode", option: "Away" }],
       ["script", "goodnight", { entity_id: "script.goodnight" }],
       ["homeassistant", "toggle", { entity_id: "light.office_accent" }],
     ]);
-    expect(actions).toHaveBeenCalledWith(expect.objectContaining({
-      detail: expect.objectContaining({
-        action: "tap",
-        config: expect.objectContaining({
-          tap_action: { action: "navigate", navigation_path: "/config/dashboard" },
-        }),
-      }),
-    }));
     expect(actions).toHaveBeenCalledWith(expect.objectContaining({
       detail: expect.objectContaining({
         action: "tap",
@@ -227,7 +149,7 @@ describe("queued default batch two certification", () => {  it.each([
 });
 
 describe("scene surface styling", () => {
-  it("uses the same shaded scene-button surface for Welcome Scenes and Scenes", () => {
+  it("uses the same shaded scene-button surface for Scenes and Welcome navigation", () => {
     expect(sharedStyles.cssText).toContain(
       ".scene-button { display: flex; min-width: 52px; flex: 1;",
     );

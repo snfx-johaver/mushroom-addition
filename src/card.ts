@@ -1,6 +1,6 @@
 import { localizeText } from "./localize";
 import { LitElement, html, nothing, type TemplateResult } from "lit";
-import { property, state } from "lit/decorators.js";
+import { property } from "lit/decorators.js";
 import type { AdditionConfig, CatalogItem, HomeAssistant, WeatherForecast } from "./types";
 import { handleAction, normalizeConfig } from "./helpers";
 import { sharedStyles } from "./styles";
@@ -22,7 +22,6 @@ export class MushroomAdditionCard extends LitElement {
   private energyBuySellTimer?: number;
   private welcomeTimer?: number;
   private forecast: WeatherForecast[] = [];
-  @state() private sceneOverflowExpanded = false;
 
   public setConfig(config: AdditionConfig): void {
     if (!config || typeof config !== "object") throw new Error("A card configuration is required.");
@@ -30,7 +29,6 @@ export class MushroomAdditionCard extends LitElement {
     this.clearGestures();
     const previousKey = this.forecastKey(this.config);
     this.config = normalized;
-    this.sceneOverflowExpanded = false;
     if (previousKey !== this.forecastKey(normalized)) this.stopForecastSubscription();
     this.scheduleEnergyBuySellRefresh();
     this.scheduleWelcomeRefresh();
@@ -69,10 +67,6 @@ export class MushroomAdditionCard extends LitElement {
       entity,
       forecast: this.forecast,
       presentation,
-      sceneOverflowExpanded: this.sceneOverflowExpanded,
-      toggleSceneOverflow: () => {
-        this.sceneOverflowExpanded = !this.sceneOverflowExpanded;
-      },
       actionSurface: (classes, content, style) => this.actionSurface(
         classes,
         presentation.rendered

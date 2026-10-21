@@ -118,19 +118,15 @@ describe("localized legacy card behavior", () => {
     expect(entity.state).toBe("high");
   });
 
-  it("updates both welcome greetings when the Home Assistant language changes", async () => {
+  it("updates the Welcome greeting when the Home Assistant language changes", async () => {
     vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(new Date(2026, 9, 1, 9));
     const hass = { ...makeHass("ko-KR"), user: { name: "Home" } };
-    const scenes = await cardFor("card_welcome_scenes", hass);
     const welcome = await cardFor("custom_card_welcome", hass);
-    expect(scenes.shadowRoot!.textContent).toContain(`${localize(hass, "ui.greeting_morning")}, Home!`);
     expect(welcome.shadowRoot!.querySelector(".welcome-greeting")?.textContent).toContain(localize(hass, "ui.greeting_morning"));
     const nextHass = { ...hass, language: "zh-Hant" };
-    scenes.hass = nextHass;
     welcome.hass = nextHass;
-    await Promise.all([scenes.updateComplete, welcome.updateComplete]);
-    expect(scenes.shadowRoot!.textContent).toContain("早安, Home!");
+    await welcome.updateComplete;
     expect(welcome.shadowRoot!.querySelector(".welcome-greeting")?.textContent).toContain("早安");
   });
 

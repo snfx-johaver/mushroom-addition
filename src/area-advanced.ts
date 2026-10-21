@@ -207,15 +207,17 @@ export class MushroomAreaAdvancedCard extends LitElement {
       else this.card.style.removeProperty("--feature-height");
       const card = this.card;
       const config = this.config;
-      void Promise.resolve(card.updateComplete).then(() => {
+      void Promise.resolve(card.updateComplete).then(async () => {
         if (card !== this.card || config !== this.config || !this.isConnected) return;
         applyAreaContent(card, config ?? {});
+        await this.applyPresentation(card);
       }).catch((error: unknown) => {
         if (card === this.card && config === this.config) this.error = error instanceof Error ? error.message : String(error);
       });
     }
   }
   protected updated() { this.sync(); }
+  protected applyPresentation(card: HTMLElement): void | Promise<void> { void card; }
   protected render() {
     return this.error ? html`<ha-alert alert-type="error">${this.config?.area ? localizeNativeDiagnostic(this.hass, this.error) : localizeText(this.hass, "Select an area in the native Area editor.")}
       <button @click=${() => { this.card = undefined; void this.load(); }}>${localizeText(this.hass, "Retry native Area card")}</button></ha-alert>`

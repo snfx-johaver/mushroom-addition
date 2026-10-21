@@ -11,6 +11,40 @@ const ruleFor = (selector: string): string => {
 };
 
 describe("default Mushroom icon sizing", () => {
+  it("uses Mushroom typography for the selected supporting metrics without changing other card families", () => {
+    for (const selector of [
+      ".nas-metrics-tile b, .nas-metrics-metrics b",
+      ".tablet-metrics b, .tablet-battery-row b",
+      ".console-social b", ".console-controls button", ".speedtest-value-copy b", ".custom-pollen b",
+    ]) {
+      expect(ruleFor(selector), selector).toContain("--mush-card-primary-font-size, 14px");
+      expect(ruleFor(selector), selector).toContain("--mush-card-primary-font-weight, 500");
+    }
+    for (const selector of [
+      ".nas-metrics-tile small, .nas-metrics-metrics small",
+      ".tablet-metrics small, .tablet-battery-row small", ".console-top-stats b",
+      ".speedtest-value-copy small", ".custom-pollen small",
+    ]) {
+      expect(ruleFor(selector), selector).toContain("--mush-card-secondary-font-size, 12px");
+      expect(ruleFor(selector), selector).toContain("--mush-card-secondary-font-weight, 400");
+    }
+    for (const selector of [".tablet-controls button", ".console-controls button"]) {
+      expect(ruleFor(selector)).toContain("--mush-control-height, 42px");
+      expect(ruleFor(selector)).toContain("--mush-control-border-radius, 12px");
+    }
+    expect(ruleFor(".custom-tablet")).toContain("padding: 12px");
+    expect(ruleFor(".tablet-battery-bar b > span")).toContain("background: color-mix");
+    expect(ruleFor(".console-social")).toContain("flex-wrap: wrap");
+  });
+  it("uses Mushroom tokens inside separate media and Pi-hole shadow roots", () => {
+    for (const file of ["pi-hole.ts", "upcoming-media.ts"]) {
+      const source = readFileSync(join(process.cwd(), "src", file), "utf8");
+      expect(source).toContain("--mush-card-primary-font-weight, 500");
+      expect(source).toContain("--mush-card-secondary-line-height, 16px");
+      expect(source).toContain("--mush-control-height, 42px");
+      expect(source).toContain("--mush-control-border-radius, 12px");
+    }
+  });
   it("matches Mushroom neutral control, slider and disabled color tokens", () => {
     expect(ruleFor(":host")).toContain("--addition-neutral-background: rgba(var(--rgb-primary-text-color, 33, 33, 33), .05)");
     expect(ruleFor(":host")).toContain("--addition-track-background: rgba(var(--rgb-secondary-text-color, 114, 114, 114), .2)");
@@ -90,8 +124,8 @@ describe("default Mushroom icon sizing", () => {
     expect(ruleFor(":host([dark])")).toContain("inset 0 1px 0 rgba(255,255,255,.09)");
     expect(ruleFor(".scene-button")).toContain("border-radius: 25px");
     expect(ruleFor(".welcome-items > button")).toContain("border-radius: 25px");
-    expect(ruleFor(".welcome-date")).toContain("background: transparent");
-    expect(ruleFor(".welcome-date")).toContain("border: 0");
+    expect(ruleFor(".welcome-toolbar button.welcome-weather")).toContain("background: transparent");
+    expect(ruleFor(".welcome-toolbar button")).toContain("border: 0");
   });
   it.each([
     ".ulm-control",
@@ -139,9 +173,9 @@ describe("default Mushroom icon sizing", () => {
     expect(ruleFor(".scene-button")).not.toContain("min-height: 88px");
   });
   it("shares the Welcome Scenes hover highlight and keyboard focus across all scene/navigation pills", () => {
-    expect(ruleFor(".welcome-toolbar-button:hover, .scene-button:hover:not(:disabled), .welcome-items > button:hover:not(:disabled)"))
+    expect(ruleFor(".scene-button:hover:not(:disabled), .welcome-items > button:hover:not(:disabled)"))
       .toContain("background: color-mix(in srgb, var(--primary-text-color) 13%, transparent)");
-    expect(ruleFor(".welcome-toolbar-button:focus-visible, .scene-button:focus-visible, .welcome-items > button:focus-visible"))
+    expect(ruleFor(".scene-button:focus-visible, .welcome-items > button:focus-visible"))
       .toContain("outline: 2px solid var(--primary-color, rgb(var(--ulm-blue)))");
     expect(styles).not.toContain(".welcome-scenes .scene-button:hover");
   });

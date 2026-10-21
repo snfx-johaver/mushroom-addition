@@ -3,6 +3,7 @@ import { CATALOG, LEGACY_ALIASES, PUBLIC_CATALOG } from "./catalog";
 import { MushroomAdditionCard } from "./card";
 import { MushroomMiniGraphCard } from "./mini-graph";
 import { MushroomAreaAdvancedCard } from "./area-advanced";
+import { MushroomAreaCard } from "./area-mushroom";
 import type { AdditionConfig, CatalogItem, HomeAssistant } from "./types";
 import { createStubConfig } from "./stub";
 import { version as VERSION } from "../package.json";
@@ -11,6 +12,10 @@ for (const item of CATALOG) {
   if (!customElements.get(item.tag)) {
     if (item.upstreamId === "area_card_advanced") {
       customElements.define(item.tag, MushroomAreaAdvancedCard);
+      continue;
+    }
+    if (item.upstreamId === "area_card_mushroom") {
+      customElements.define(item.tag, MushroomAreaCard);
       continue;
     }
     if (item.upstreamId === "mini_graph_card") {
@@ -92,7 +97,7 @@ for (const item of CATALOG) {
   if (existing.has(item.tag)) continue;
   window.customCards.push({
     type: item.tag,
-    name: item.upstreamId === "area_card_advanced" ? "Mushroom Addition - Area card advanced" : `Mushroom Addition: ${item.name}`,
+    name: `Mushroom Addition: ${item.name}`,
     description: item.description,
     preview: true,
     documentationURL: "https://github.com/snfx-johaver/mushroom-addition",

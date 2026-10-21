@@ -11,7 +11,7 @@ describe("Home Assistant registration", () => {
     for (const alias of LEGACY_ALIASES) expect(customElements.get(alias.tag)).toBeDefined();
   });
 
-  it.each(["custom-card-weather-metrics", "custom-card-room-overview", "custom-card-roomview", "card-media-player"])("does not register the removed %s card or expose it in the picker", (removed) => {
+  it.each(["custom-card-weather-metrics", "custom-card-room-overview", "custom-card-roomview", "card-welcome-scenes", "card-media-player"])("does not register the removed %s card or expose it in the picker", (removed) => {
     const tag = `mushroom-addition-${removed}`;
     expect(customElements.get(tag)).toBeUndefined();
     expect(window.customCards?.some((item) => item.type === tag)).toBe(false);
@@ -21,6 +21,9 @@ describe("Home Assistant registration", () => {
     const registered = new Set(window.customCards?.map((item) => item.type));
     for (const item of CATALOG) expect(registered.has(item.tag)).toBe(true);
     for (const alias of LEGACY_ALIASES) expect(registered.has(alias.tag)).toBe(false);
+    for (const item of CATALOG) {
+      expect(window.customCards?.find(card => card.type === item.tag)?.name).toBe(`Mushroom Addition: ${item.name}`);
+    }
   });
 
   it("keeps internal terminology out of public picker metadata", () => {
@@ -35,7 +38,7 @@ describe("Home Assistant registration", () => {
         getConfigElement(): Promise<HTMLElement>;
       };
       await expect(constructor.getConfigElement()).resolves.toMatchObject({
-        tagName: item.upstreamId === "area_card_advanced"
+        tagName: ["area_card_advanced", "area_card_mushroom"].includes(item.upstreamId)
           ? "MUSHROOM-ADDITION-AREA-CARD-ADVANCED-EDITOR" : "MUSHROOM-ADDITION-EDITOR",
       });
     }
@@ -120,11 +123,6 @@ describe("Home Assistant registration", () => {
         ["black_entity", "yellow_entity", "magenta_entity", "cyan_entity"],
         undefined,
       ],
-      [
-        "custom:mushroom-addition-card-welcome-scenes",
-        [],
-        "Scene buttons",
-      ],
     ] as const) {
       const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {
         hass: HomeAssistant;
@@ -149,7 +147,6 @@ describe("Home Assistant registration", () => {
   it("renders user-friendly repeatable item controls for scenes and rooms", async () => {
     for (const [type, entity, itemKey] of [
       ["custom:mushroom-addition-card-scenes", "scene.relax", "scene_items"],
-      ["custom:mushroom-addition-card-welcome-scenes", "scene.relax", "scene_items"],
       ["custom:mushroom-addition-card-room", "light.kitchen", "room_sensors"],
     ] as const) {
       const editor = document.createElement("mushroom-addition-editor") as HTMLElement & {
@@ -415,7 +412,7 @@ describe("Home Assistant registration", () => {
   it("exposes one platform-neutral Game Console card with the PlayStation tag as a legacy alias", () => {
         const consoleCard = CATALOG.find((item) => item.upstreamId === "custom_card_playstation");
         expect(consoleCard).toMatchObject({
-          name: "Game Console Card",
+          name: "Game Console",
           tag: "mushroom-addition-custom-card-game-console",
           variants: undefined,
         });

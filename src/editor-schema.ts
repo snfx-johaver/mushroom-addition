@@ -187,7 +187,6 @@ const presentation = (room = false): EditorField[] => [
 
 const fixedIconSources = new Set([
   "card_room",
-  "card_welcome_scenes",
   "custom_card_welcome",
 ]);
 
@@ -235,19 +234,7 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
   ],
   climate: (item) => [...common(item), entity(["sensor"], "humidity_entity"), toggle("show_controls")],
   light: (item) => [...common(item)],
-  scene: (item) => [
-    ...(item.upstreamId === "card_welcome_scenes"
-      ? [entity(), ...presentation()]
-      : common(item)),
-    ...(item.upstreamId === "card_welcome_scenes"
-      ? [
-        entity(["input_boolean"], "collapse_entity"),
-        entity(["weather"], "weather_entity"),
-        navigation("settings_path"),
-        toggle("collapsed"),
-      ]
-      : []),
-  ],
+  scene: (item) => common(item),
   presence: (item, config) => [
     ...common(item),
     ...(item.upstreamId === "card_room" ? [] : [

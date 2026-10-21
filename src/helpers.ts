@@ -72,7 +72,6 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
   const upstream = upstreamCompatibility(migrated);
   const type = String(migrated.type);
   const title = type.includes("card-title");
-  const welcomeScenes = type.includes("card-welcome-scenes");
   const weather = type.includes("card-weather");
   const nativeWeather = type.includes("card-weather-ulm") || migrated.variant === "native";
   const sourceDefaultAction =
@@ -105,7 +104,7 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
           ? { action: "more-info", entity: qubinoTarget }
       : upstream.navigation_path
     ? { action: "navigate", navigation_path: upstream.navigation_path }
-    : sourceDefaultAction ?? { action: title || welcomeScenes ? "none" : upstream.entity ? "more-info" : "none" };
+    : sourceDefaultAction ?? { action: title ? "none" : upstream.entity ? "more-info" : "none" };
   const roomDoubleTap = type.includes("card-room") && !type.endsWith("mushroom-addition-card-room") &&
     upstream.input_select_entity && upstream.input_select_option
     ? {
@@ -234,34 +233,6 @@ export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
     migrated.tablet_ram_entity ??= entityId(config.ulm_custom_card_tablet_par1);
     migrated.tablet_disk_entity ??= entityId(config.ulm_custom_card_tablet_par2);
     migrated.tablet_power_entity ??= entityId(config.ulm_custom_card_tablet_par3);
-  }
-  if (String(config.type).includes("card-welcome-scenes")) {
-    migrated.collapse_entity ??= entityId(config.ulm_card_welcome_scenes_collapse);
-    if (!migrated.scene_items) {
-      const sceneItems = Array.from({ length: 7 }, (_, index) => {
-        const value = config[`entity_${index + 1}`];
-        if (!value || typeof value !== "object") return undefined;
-        const item = value as Record<string, unknown>;
-        const entity = entityId(item);
-        if (!entity) return undefined;
-        return {
-          entity,
-          name: typeof item.name === "string" ? item.name : undefined,
-          icon: typeof item.icon === "string" ? item.icon : undefined,
-          color: typeof item.color === "string" ? item.color : undefined,
-          state: typeof item.state === "string" ? item.state : undefined,
-          navigation_path: typeof item.navigation_path === "string"
-            ? item.navigation_path
-            : typeof item.nav_path === "string"
-              ? item.nav_path
-              : undefined,
-          service_data: item.service_data && typeof item.service_data === "object"
-            ? item.service_data as Record<string, unknown>
-            : undefined,
-        };
-      }).filter((item): item is NonNullable<typeof item> => item !== undefined);
-      if (sceneItems.length) migrated.scene_items = sceneItems;
-    }
   }
   if (String(config.type).includes("custom-card-washer")) {
     migrated.entity ??= entityId(config.ulm_custom_card_washer_machine_state) ??

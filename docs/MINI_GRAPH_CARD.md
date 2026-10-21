@@ -1,12 +1,12 @@
-# Mini Graph Card
+# Graph Advanced
 
-The integrated Mini Graph Card is a Mushroom-styled, fully graphical
+Graph Advanced is a Mushroom-styled, fully graphical
 implementation of the public
 [kalkih/mini-graph-card](https://github.com/kalkih/mini-graph-card)
 configuration surface. It uses Home Assistant's recorder WebSocket API directly;
 the standalone `mini-graph-card` resource is not required.
 
-Add **Mushroom Addition: Mini Graph Card** from the dashboard card picker. The
+Add **Mushroom Addition: Graph Advanced** from the dashboard card picker. The
 editor groups configuration into Context, Content, Layout, Interactions, and
 Features. Closed option sets use dropdowns, while graph entities, color
 thresholds, and state maps use ordered add/remove/reorder controls.

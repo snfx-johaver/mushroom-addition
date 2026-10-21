@@ -195,20 +195,21 @@ export class MushroomUpcomingMedia extends LitElement {
 
   public static styles = css`
     :host { display: block; width: 100%; min-width: 0; color: var(--primary-text-color); }
-    .items { display: grid; gap: 10px; min-width: 0; }
+    .items { display: grid; gap: 12px; min-width: 0; }
     .entry { position: relative; min-width: 0; }
     button { font: inherit; color: inherit; cursor: pointer; }
     .more, .close { box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12)); }
-    .item { box-sizing: border-box; position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-width: 0; height: var(--item-height); padding: 8px; text-align: left; border: 1px solid var(--divider-color); border-radius: var(--radius); background: var(--card-background-color, var(--ha-card-background)); }
+    .item { box-sizing: border-box; position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-width: 0; height: var(--item-height); padding: 12px; text-align: left; border: 0; border-radius: var(--radius); background: var(--ha-card-background, var(--card-background-color)); }
     .item.shadow { box-shadow: 0 2px 6px rgba(0,0,0,.12); }
     .item:focus-visible, .more:focus-visible { outline: 2px solid var(--primary-color); outline-offset: -2px; }
     .item:disabled { cursor: default; }
-    .art { position: relative; display: grid; flex: 0 0 auto; place-items: center; width: calc((var(--item-height) - 18px) * 2 / 3); height: 100%; border-radius: max(0px, calc(var(--radius) - 5px)); overflow: hidden; background: var(--addition-neutral-background); color: var(--secondary-text-color); }
+    .item:hover:not(:disabled)::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--primary-text-color); opacity: .04; pointer-events: none; }
+    .art { position: relative; display: grid; flex: 0 0 auto; place-items: center; width: calc((var(--item-height) - 24px) * 2 / 3); height: 100%; border-radius: max(0px, calc(var(--radius) - 4px)); overflow: hidden; background: var(--addition-neutral-background); color: var(--secondary-text-color); }
     .art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .art ha-icon { --mdc-icon-size: 28px; }
     .copy { position: relative; display: grid; gap: 4px; flex: 1; min-width: 0; }
-    .title { font-size: var(--title-size); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--title-color, inherit); }
-    .line { font-size: var(--line-size); color: var(--secondary-text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .title { font-size: var(--title-size); line-height: var(--mush-card-primary-line-height, 20px); font-weight: var(--mush-card-primary-font-weight, 500); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--title-color, var(--mush-card-primary-color, inherit)); }
+    .line { font-size: var(--line-size); line-height: var(--mush-card-secondary-line-height, 16px); font-weight: var(--mush-card-secondary-font-weight, 400); color: var(--mush-card-secondary-color, var(--secondary-text-color)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .flag { position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; color: var(--flag-color); background: var(--card-background-color, #fff); }
     .flag ha-icon { --mdc-icon-size: 16px; }
     .item:has(.flag) .title { padding-right: 26px; }
@@ -218,13 +219,13 @@ export class MushroomUpcomingMedia extends LitElement {
     .fanart .copy { padding: 4px; color: #fff; }
     .fanart .line { color: #eee; }
     .fanart.text-shadow .copy { text-shadow: 0 1px 3px #000; }
-    .more { display: block; width: 100%; margin-top: 10px; padding: 9px; border: 0; border-radius: 10px; background: var(--addition-neutral-background); font-size: 12px; }
+    .more { display: block; width: 100%; min-height: var(--mush-control-height, 42px); margin-top: 12px; padding: 8px 12px; border: 0; border-radius: var(--mush-control-border-radius, 12px); background: var(--addition-neutral-background); font-size: var(--mush-card-primary-font-size, 14px); line-height: var(--mush-card-primary-line-height, 20px); font-weight: var(--mush-card-primary-font-weight, 500); }
     .message { padding: 12px 0; font-size: 12px; color: var(--secondary-text-color); }
     [role="alert"] { color: var(--error-color, #db4437); }
     dialog { box-sizing: border-box; width: min(960px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); padding: 12px; border: 1px solid var(--divider-color); border-radius: 16px; background: var(--card-background-color, #fff); color: var(--primary-text-color); }
     dialog::backdrop { background: rgba(0,0,0,.8); }
     dialog iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; }
-    .close { display: block; margin: 0 0 8px auto; padding: 8px 12px; border: 0; border-radius: 10px; background: var(--addition-neutral-background); }
+    .close { display: block; min-height: var(--mush-control-height, 42px); margin: 0 0 8px auto; padding: 8px 12px; border: 0; border-radius: var(--mush-control-border-radius, 12px); background: var(--addition-neutral-background); font-size: var(--mush-card-primary-font-size, 14px); font-weight: var(--mush-card-primary-font-weight, 500); }
     .tooltip { box-sizing: border-box; position: fixed; inset: auto; margin: 0; width: min(320px, calc(100vw - 24px)); max-height: 180px; overflow: auto; padding: 12px; border: 1px solid var(--divider-color); border-radius: 12px; font-size: 12px; line-height: 1.5; white-space: pre-wrap; background: var(--card-background-color, #fff); color: var(--primary-text-color); pointer-events: none; box-shadow: 0 3px 12px rgba(0,0,0,.25); }
   `;
 
@@ -272,15 +273,17 @@ export class MushroomUpcomingMedia extends LitElement {
       upcomingSize(config.upcoming_max_columns, 3, 1, 6), Math.floor(this.width / 230),
     )) : 1;
     const availableHeight = Math.min(window.innerHeight - 32, window.innerHeight - Math.max(0, this.getBoundingClientRect().top) - 24);
-    const rows = Math.max(1, Math.min(shown.length, Math.max(Math.ceil(shown.length / columns), Math.floor(availableHeight / (height + 10)))));
+    const rows = Math.max(1, Math.min(shown.length, Math.max(Math.ceil(shown.length / columns), Math.floor(availableHeight / (height + 12)))));
     const actualColumns = config.upcoming_overflow ? Math.max(1, Math.ceil(shown.length / rows)) : 1;
     return html`<div @click=${this.stop} @dblclick=${this.stop} @pointerdown=${this.stop} @keydown=${this.stop}>
       ${data.error ? html`<div class="message" role="alert">${data.error}</div>` : !items.length ? html`<div class="message">${localize(this.hass, "message.empty_media")}</div>` : nothing}
       ${this.actionError ? html`<div class="message" role="alert">${this.actionError}</div>` : nothing}
       <div class="items" style=${styleMap({
         "--item-height": `${height}px`, "--radius": `${upcomingSize(config.upcoming_corner_radius, 12, 0, 32)}px`,
-        "--title-size": `${upcomingSize(config.upcoming_title_size, 14, 12, 24)}px`,
-        "--line-size": `${upcomingSize(config.upcoming_line_size, 12, 10, 18)}px`,
+        "--title-size": config.upcoming_title_size !== undefined && config.upcoming_title_size !== 14
+          ? `${upcomingSize(config.upcoming_title_size, 14, 12, 24)}px` : "var(--mush-card-primary-font-size, 14px)",
+        "--line-size": config.upcoming_line_size !== undefined && config.upcoming_line_size !== 12
+          ? `${upcomingSize(config.upcoming_line_size, 12, 10, 18)}px` : "var(--mush-card-secondary-font-size, 12px)",
         "--flag-color": resolveColor(config.upcoming_flag_color, "var(--primary-color)"),
         "--title-color": config.upcoming_title_color ? resolveColor(config.upcoming_title_color, "inherit") : undefined,
         "grid-template-columns": `repeat(${actualColumns}, minmax(0, 1fr))`,

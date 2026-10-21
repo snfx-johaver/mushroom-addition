@@ -5,6 +5,7 @@ import {
   type AreaAdvancedConfig, type AreaFeature,
 } from "../src/area-advanced";
 import type { ActionConfig, HomeAssistant } from "../src/types";
+import { MUSHROOM_AREA_TAG, MushroomAreaCard, applyMushroomAreaPresentation } from "../src/area-mushroom";
 
 class NativeEditor extends HTMLElement {
   hass?: HomeAssistant;
@@ -84,6 +85,42 @@ beforeEach(() => { vi.clearAllMocks(); areaWindow.loadCardHelpers = loader; });
 afterEach(() => { document.body.replaceChildren(); delete areaWindow.loadCardHelpers; vi.useRealTimers(); });
 
 describe("native Area card delegation", () => {
+  it("keeps the Mushroom comparison card separate and preserves its type in the shared editor", async () => {
+    await import("../src/index");
+    expect(customElements.get(MUSHROOM_AREA_TAG)).toBe(MushroomAreaCard);
+    expect(customElements.get(AREA_TAG)).toBe(MushroomAreaAdvancedCard);
+    const stub = MushroomAreaCard.getStubConfig(hass);
+    expect(stub).toEqual({ ...base, type: `custom:${MUSHROOM_AREA_TAG}`, display_type: "compact" });
+    expect(MushroomAreaAdvancedCard.getStubConfig(hass)).toEqual(base);
+    const card = document.createElement(MUSHROOM_AREA_TAG) as MushroomAreaCard;
+    card.hass = hass;
+    card.setConfig(stub);
+    document.body.append(card);
+    await settle(card);
+    const native = card.shadowRoot!.querySelector("hui-area-card") as NativeArea;
+    expect(native.config).toEqual({ ...stub, type: "area" });
+    card.setConfig({ ...stub, display_type: "camera", aspect_ratio: "4:3", features: [{ type: "area-controls" }] });
+    await settle(card);
+    expect(native.config).toMatchObject({ display_type: "camera", aspect_ratio: "4:3", features: [{ type: "area-controls" }] });
+    const edited = mergeNativeAreaEdit(stub, { ...base, type: "area", name: "Edited" });
+    expect(edited).toMatchObject({ type: `custom:${MUSHROOM_AREA_TAG}`, name: "Edited" });
+    expect((await MushroomAreaCard.getConfigElement()).localName).toBe(`${AREA_TAG}-editor`);
+  });
+  it("scopes Mushroom styles to the comparison instance, including nested shadow roots", async () => {
+    const original = document.createElement("hui-area-card");
+    const comparison = document.createElement("hui-area-card");
+    original.attachShadow({ mode: "open" }).innerHTML = "<ha-card></ha-card>";
+    comparison.attachShadow({ mode: "open" }).innerHTML = "<ha-card><ha-tile-info></ha-tile-info></ha-card>";
+    const info = comparison.shadowRoot!.querySelector("ha-tile-info")!;
+    info.attachShadow({ mode: "open" }).innerHTML = '<span class="primary">Office</span><span class="secondary">21°C</span>';
+    document.body.append(original, comparison);
+    await applyMushroomAreaPresentation(comparison);
+    await applyMushroomAreaPresentation(comparison);
+    expect(original.shadowRoot!.querySelector("style")).toBeNull();
+    expect(comparison.shadowRoot!.querySelectorAll("style[data-area-mushroom]")).toHaveLength(1);
+    expect(info.shadowRoot!.querySelector("style")?.textContent).toContain("--mush-card-primary-font-weight, 500");
+    expect(info.shadowRoot!.querySelector("style")?.textContent).toContain("--mush-card-secondary-line-height, 16px");
+  });
   it("localizes the missing-area message when Home Assistant arrives after configuration", async () => {
     const card = document.createElement(AREA_TAG) as MushroomAreaAdvancedCard;
     card.setConfig({ type: base.type });
@@ -98,7 +135,7 @@ describe("native Area card delegation", () => {
   it("registers the exact picker name, native editor and real-area stub", async () => {
     await import("../src/index");
     expect(window.customCards?.find((card) => card.type === AREA_TAG)?.name)
-      .toBe("Mushroom Addition - Area card advanced");
+      .toBe("Mushroom Addition: Area Advanced");
     expect(MushroomAreaAdvancedCard.getStubConfig(hass)).toEqual(base);
     expect(MushroomAreaAdvancedCard.getStubConfig()).toEqual({ type: base.type });
     expect((await MushroomAreaAdvancedCard.getConfigElement()).localName).toBe(`${AREA_TAG}-editor`);

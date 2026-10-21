@@ -76,7 +76,7 @@ describe("family editor schemas", () => {
   it("keeps the NAS editor limited to functioning controls", () => {
     const nas = CATALOG.find((item) => item.upstreamId === "custom_card_nas_metrics")!;
     const fields = editorSchemaFor(nas).map((field) => field.name);
-    expect(nas.name).toBe("NAS Card");
+    expect(nas.name).toBe("NAS");
     expect(fields).not.toContain("chart_type");
     expect(fields).not.toContain("graph_span");
     expect(fields).toEqual(expect.arrayContaining([
@@ -90,19 +90,6 @@ describe("family editor schemas", () => {
     ]));
   });
 
-  it("exposes clear welcome-scene collapse controls", () => {
-    const welcome = CATALOG.find((item) => item.upstreamId === "card_welcome_scenes")!;
-    const schema = editorSchemaFor(welcome);
-    expect(schema.map((field) => field.name)).toEqual(expect.arrayContaining([
-      "collapse_entity", "collapsed",
-    ]));
-    expect(schema.find((field) => field.name === "entity")?.selector).toEqual({
-      entity: {},
-    });
-    expect(schema.find((field) => field.name === "settings_path")?.selector).toEqual({
-      navigation: {},
-    });
-  });
 
   it("gives every advanced editor option a user-friendly label and explanation", () => {
     for (const item of CATALOG) {

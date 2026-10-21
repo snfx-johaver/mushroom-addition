@@ -280,7 +280,7 @@ describe("family renderers", () => {
   });
 
   it("honors Mushroom name and information fields in every card renderer", async () => {
-    for (const item of CATALOG.filter((entry) => entry.kind === "card" && entry.upstreamId !== "area_card_advanced")) {
+    for (const item of CATALOG.filter((entry) => entry.kind === "card" && !["area_card_advanced", "area_card_mushroom"].includes(entry.upstreamId))) {
       const entity = entityFor(item);
       const element = document.createElement(item.tag) as HTMLElement & {
         hass: HomeAssistant;
@@ -313,7 +313,7 @@ describe("family renderers", () => {
   });
 
   it("uses a configured Name as the default primary information in every card", async () => {
-    for (const item of CATALOG.filter((entry) => entry.kind === "card" && entry.upstreamId !== "area_card_advanced")) {
+    for (const item of CATALOG.filter((entry) => entry.kind === "card" && !["area_card_advanced", "area_card_mushroom"].includes(entry.upstreamId))) {
       const entity = entityFor(item);
       const element = document.createElement(item.tag) as HTMLElement & {
         hass: HomeAssistant;
@@ -383,7 +383,7 @@ describe("family renderers", () => {
   });
 
   it("makes Icon type affect every card renderer", async () => {
-    for (const item of CATALOG.filter((entry) => entry.kind === "card" && entry.upstreamId !== "area_card_advanced")) {
+    for (const item of CATALOG.filter((entry) => entry.kind === "card" && !["area_card_advanced", "area_card_mushroom"].includes(entry.upstreamId))) {
       const entity = entityFor(item);
       const base = {
         type: `custom:${item.tag}`,
@@ -506,7 +506,6 @@ describe("family renderers", () => {
     ["card_battery", "mushroom-addition-card-battery", "sensor.battery", "ulm-default-battery", "battery-track"],
     ["card_room", "mushroom-addition-card-room", "light.kitchen", "ulm-room", "sparkline"],
     ["card_scenes", "mushroom-addition-card-scenes", "scene.relax", "scene-pills", "sparkline"],
-    ["card_welcome_scenes", "mushroom-addition-card-welcome-scenes", "scene.relax", "welcome-scenes", "sparkline"],
   ])("enforces the %s visual structure", async (_id, tag, entity, required, forbidden) => {
     const markup = await render(tag, {
       type: `custom:${tag}`,
@@ -728,15 +727,15 @@ describe("family renderers", () => {
     fallback.remove();
   });
 
-  it("supports entity pictures on individual Welcome Scenes buttons", async () => {
-    const card = document.createElement("mushroom-addition-card-welcome-scenes") as HTMLElement & {
+  it("supports entity pictures on individual Scenes buttons", async () => {
+    const card = document.createElement("mushroom-addition-card-scenes") as HTMLElement & {
       hass: HomeAssistant;
       setConfig(config: AdditionConfig): void;
       updateComplete: Promise<boolean>;
     };
     card.hass = hass;
     card.setConfig({
-      type: "custom:mushroom-addition-card-welcome-scenes",
+      type: "custom:mushroom-addition-card-scenes",
       scene_items: [{
         entity: "person.resident",
         icon: "mdi:account",
@@ -757,37 +756,6 @@ describe("family renderers", () => {
     card.remove();
   });
 
-  it("expands and collapses additional Welcome Scenes from the overflow button", async () => {
-    const tag = "mushroom-addition-card-welcome-scenes";
-    const element = document.createElement(tag) as HTMLElement & {
-      hass: HomeAssistant;
-      setConfig(config: AdditionConfig): void;
-      updateComplete: Promise<boolean>;
-    };
-    element.hass = hass;
-    element.setConfig({
-      type: `custom:${tag}`,
-      scene_items: Array.from({ length: 9 }, (_, index) => ({
-        entity: "scene.relax",
-        name: `Scene ${index + 1}`,
-      })),
-    });
-    document.body.append(element);
-    await element.updateComplete;
-
-    expect(element.shadowRoot?.querySelectorAll(".scene-button")).toHaveLength(7);
-    const more = element.shadowRoot?.querySelector<HTMLButtonElement>(".welcome-scenes-more");
-    expect(more?.getAttribute("aria-expanded")).toBe("false");
-    more?.click();
-    await element.updateComplete;
-    expect(element.shadowRoot?.querySelectorAll(".scene-button")).toHaveLength(9);
-    expect(element.shadowRoot?.querySelector(".welcome-scenes-more")?.getAttribute("aria-expanded")).toBe("true");
-
-    element.shadowRoot?.querySelector<HTMLButtonElement>(".welcome-scenes-more")?.click();
-    await element.updateComplete;
-    expect(element.shadowRoot?.querySelectorAll(".scene-button")).toHaveLength(7);
-    element.remove();
-  });
 
   it.each([
     ["today only", { show_today: true, today_entity: "sensor.today" }, ["Today:", "Residual waste"], ["Tomorrow:"]],
@@ -875,7 +843,7 @@ describe("family renderers", () => {
     }
   });
 
-  it.each(["card_scenes", "custom_card_welcome", "card_welcome_scenes"])(
+  it.each(["card_scenes", "custom_card_welcome"])(
     "updates raised scene surfaces with Home Assistant's theme without replacing %s buttons", async (id) => {
       const item = CATALOG.find(entry => entry.upstreamId === id)!;
       const card = document.createElement(item.tag) as MushroomAdditionCard;

@@ -228,8 +228,7 @@ export const createStubConfig = (
     : { action: entity ? "more-info" : "none" };
   const inferredConsolePlatform = inferConsolePlatform(hass, entity);
   const stubTapAction = descriptor.upstreamId === "custom_card_sun" ||
-    descriptor.upstreamId === "custom_card_pollen" ||
-    descriptor.upstreamId === "card_welcome_scenes"
+    descriptor.upstreamId === "custom_card_pollen"
     ? { action: "none" }
     : descriptor.upstreamId === "custom_card_speedtest_gauges"
       ? {
@@ -429,19 +428,6 @@ export const createStubConfig = (
         scene_items: available
           .filter((entityId) => entityId.startsWith("scene."))
           .slice(0, 7)
-          .map((entityId) => sceneItemDefaultsFor(hass, entityId)),
-      }
-      : {}),
-    ...(descriptor.upstreamId === "card_welcome_scenes"
-      ? {
-        name: undefined,
-        secondary: "Scenes",
-        collapse_entity: findEntity(["input_boolean"], ["collapse"]) ??
-          findEntity(["input_boolean"], ["dropdown"]) ??
-          findEntity(["input_boolean"], []),
-        scene_items: available
-          .filter((entityId) => entityId.startsWith("scene."))
-          .slice(0, 5)
           .map((entityId) => sceneItemDefaultsFor(hass, entityId)),
       }
       : {}),

@@ -44,8 +44,6 @@ export interface RenderContext {
   entity?: HassEntity;
   forecast?: WeatherForecast[];
   presentation: { rendered: boolean };
-  sceneOverflowExpanded: boolean;
-  toggleSceneOverflow: () => void;
   actionSurface: (classes: string, content: TemplateResult, style?: string) => TemplateResult;
   service: (domain: string, service: string, data?: Record<string, unknown>) => void;
 }
@@ -380,54 +378,13 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
       : (ctx.config.entities?.length ? ctx.config.entities : ctx.config.entity ? [ctx.config.entity] : [])
         .map((entity) => ({ entity }))
   ).filter((item) => item.entity);
-  const welcome = ctx.descriptor.upstreamId === "card_welcome_scenes";
   const buttonsOnly = ctx.config.scene_buttons_only === true;
   if (buttonsOnly) ctx.presentation.rendered = true;
   const sourceGrid = ctx.descriptor.upstreamId === "card_scenes" && ctx.config.variant === "scene-grid";
-  const compactLimit = welcome ? 7 : sourceGrid ? 5 : 6;
-  const hasOverflow = welcome && sceneItems.length > compactLimit;
-  const visibleItems = welcome && ctx.sceneOverflowExpanded
-    ? sceneItems
-    : sceneItems.slice(0, compactLimit);
+  const visibleItems = sceneItems.slice(0, sourceGrid ? 5 : 6);
   const collapseEntity = ctx.config.collapse_entity ? ctx.hass.states[ctx.config.collapse_entity] : undefined;
   const collapsed = !buttonsOnly && (ctx.config.collapsed === true || collapseEntity?.state === "on");
-  const weatherEntity = linkedState(ctx, "weather_entity");
-  const weatherCondition = weatherEntity?.state || "partlycloudy";
-  const weatherIcon = weatherIcons[weatherCondition]?.[0] ?? "mdi:weather-partly-cloudy";
-  const hour = new Date().getHours();
-  const greeting = hour < 5 ? localize(ctx.hass, "ui.greeting_hello") : timeGreeting(ctx.hass, hour);
-  const welcomeSecondary = `${greeting}, ${ctx.hass.user?.name || localize(ctx.hass, "ui.renderer.Home")}!`;
-  return ctx.actionSurface(`ulm-scenes ${welcome ? "welcome-scenes" : sourceGrid ? "source-scene-grid" : "scene-pills"} ${ctx.descriptor.upstreamId === "card_scenes" ? "ulm-source-scenes" : ""} ${buttonsOnly ? "scene-buttons-only" : ""}`, html`
-    ${welcome && !buttonsOnly ? html`
-      <div class="welcome-toolbar">
-        <button class="welcome-toolbar-button" aria-label="${localizeText(ctx.hass, "Toggle scenes")}" @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => {
-          event.stopPropagation();
-          if (ctx.config.collapse_entity) {
-            ctx.service("input_boolean", "toggle", { entity_id: ctx.config.collapse_entity });
-          }
-        }}><ha-icon .icon=${collapsed ? "mdi:chevron-down" : "mdi:chevron-up"}></ha-icon></button>
-        <span class="welcome-date"><ha-icon .icon=${weatherIcon}></ha-icon>${new Intl.DateTimeFormat(ctx.hass.language, { month: "short", day: "numeric" }).format(new Date())}</span>
-        <button class="welcome-toolbar-button" aria-label="${localizeText(ctx.hass, "Open dashboard settings")}" @pointerdown=${(event: Event) => event.stopPropagation()} @click=${(event: Event) => runControlAction(event, ctx, { action: "navigate", navigation_path: String(ctx.config.settings_path || "/config/dashboard") })}><ha-icon icon="mdi:cog-outline"></ha-icon></button>
-      </div>
-      <div class="welcome-heading">${heading(ctx, welcomeSecondary)}</div>
-      ${collapsed ? nothing : html`
-        <div class="welcome-scenes-heading">
-          <b>${ctx.config.secondary || localizeText(ctx.hass, "Scenes")}</b>
-          ${hasOverflow ? html`
-            <button class="welcome-scenes-more"
-              aria-label=${ctx.sceneOverflowExpanded ? localizeText(ctx.hass, "Show fewer scenes") : localizeText(ctx.hass, "Show all scenes")}
-              aria-expanded=${ctx.sceneOverflowExpanded ? "true" : "false"}
-              @pointerdown=${(event: Event) => event.stopPropagation()}
-              @click=${(event: Event) => {
-                event.stopPropagation();
-                ctx.toggleSceneOverflow();
-              }}>
-              <ha-icon .icon=${ctx.sceneOverflowExpanded ? "mdi:close" : "mdi:dots-vertical"}></ha-icon>
-            </button>
-          ` : nothing}
-        </div>
-      `}
-    ` : nothing}
+  return ctx.actionSurface(`ulm-scenes ${sourceGrid ? "source-scene-grid" : "scene-pills"} ${ctx.descriptor.upstreamId === "card_scenes" ? "ulm-source-scenes" : ""} ${buttonsOnly ? "scene-buttons-only" : ""}`, html`
     ${collapsed ? nothing : html`<div class="scene-grid">${visibleItems.map((item) => {
       const entity = ctx.hass.states[item.entity];
       const active = item.active_state
@@ -1477,7 +1434,7 @@ const renderTablet = (ctx: RenderContext): TemplateResult => {
       <span class="tablet-battery-icon"><ha-icon icon="mdi:battery"></ha-icon></span>
       <span><b>${stateLabel(batteryEntity, ctx.hass)}</b><small>${localizeText(ctx.hass, "Battery")}</small></span>
     </div>
-    <div class="tablet-battery-bar"><i style=${`width:${battery}%`}></i><b>${battery}%</b></div>` : nothing}
+    <div class="tablet-battery-bar"><i style=${`width:${battery}%`}></i><b><span>${battery}%</span></b></div>` : nothing}
   `);
 };
 
