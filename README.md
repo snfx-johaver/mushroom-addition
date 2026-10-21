@@ -494,6 +494,11 @@ Example scene buttons explicitly activate their scene when tapped.
 Turn off **Show card header** in its graphical editor to hide the title, icon
 and primary/secondary information while keeping the carousel and its item labels.
 Turn off **Show selected item label** as well for a compact, icon-only strip.
+In **Layout**, use the **Button width**, **Button height**, and **Button icon size**
+sliders to resize carousel tiles independently. Defaults remain 58 × 58 px with
+28 px icons. Spacing, automatic visible count, Cube geometry and stage height
+follow the selected size; icons and pictures fit within buttons and wide buttons
+shrink to fit narrow cards. Header and navigation icons are unaffected.
 Use **Use entity icon** to clear a header or item override; Home Assistant then
 chooses the entity's icon, including device-class and state-specific icons.
 Each item's tap, hold and double-tap selectors support **Default** (tap opens

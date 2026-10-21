@@ -479,6 +479,9 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig): Edi
         toggle("carousel_loop"),
         toggle("carousel_show_labels"),
         number("carousel_initial_index", 0, 50),
+        { name: "carousel_button_width", selector: { number: { min: 32, max: 160, step: 1, mode: "slider", unit_of_measurement: "px" } } },
+        { name: "carousel_button_height", selector: { number: { min: 32, max: 160, step: 1, mode: "slider", unit_of_measurement: "px" } } },
+        { name: "carousel_icon_size", selector: { number: { min: 12, max: 96, step: 1, mode: "slider", unit_of_measurement: "px" } } },
         select("carousel_effect", [
           { value: "coverflow", label: "Coverflow" },
           { value: "slide", label: "Slide" },

@@ -46,7 +46,7 @@ describe("Carousel entity defaults and gestures", () => {
     card.config = { type, carousel_items: [{ entity: entity.entity_id, icon_type: "entity-picture" }] };
     await card.updateComplete;
     expect(card.shadowRoot!.querySelector("ha-state-icon")).not.toBeNull();
-    expect(MushroomAdditionEntityCarousel.styles.cssText).toContain("height: 70px");
+    expect(MushroomAdditionEntityCarousel.styles.cssText).toContain("height: var(--carousel-stage-height, 70px)");
     expect(MushroomAdditionEntityCarousel.styles.cssText).not.toContain("min-height: 136px");
   });
 
@@ -55,6 +55,57 @@ describe("Carousel entity defaults and gestures", () => {
     const selected = (card: MushroomAdditionEntityCarousel) => card.shadowRoot!.querySelector<HTMLElement>(".item.active")!.dataset.carouselIndex;
     const matrix = (["coverflow", "slide", "fade", "cube", "flip"] as CarouselEffect[])
       .flatMap(effect => (["bullets", "fraction", "progressbar"] as CarouselPagination[]).map(pagination => ({ effect, pagination })));
+
+    it.each(["coverflow", "slide", "fade", "cube", "flip"] as CarouselEffect[])(
+      "sizes buttons, symbols, stage and effect geometry consistently for %s", async (effect) => {
+        for (const [requested, expected] of [
+          [{}, [58, 58, 28]],
+          [{ carousel_button_width: 80, carousel_button_height: 110, carousel_icon_size: 40 }, [80, 110, 40]],
+          [{ carousel_button_width: 32, carousel_button_height: 32, carousel_icon_size: 96 }, [32, 32, 20]],
+          [{ carousel_button_width: 1000, carousel_button_height: -2, carousel_icon_size: 500 }, [160, 32, 20]],
+        ] as const) {
+          const card = await create({ carousel_items: items, carousel_effect: effect, ...requested });
+          const viewport = card.shadowRoot!.querySelector<HTMLElement>(".viewport")!;
+          const [width, height, icon] = expected;
+          for (const [key, value] of [["button-width", width], ["button-height", height],
+            ["stage-height", height + 12], ["icon-size", icon]] as const) {
+            expect(viewport.style.getPropertyValue(`--carousel-${key}`)).toBe(`${value}px`);
+          }
+          const second = card.shadowRoot!.querySelectorAll(".item")[1];
+          if (effect === "cube") expect(second.getAttribute("style")).toContain(`50% 50% -${width / 2}px`);
+          if (["slide", "coverflow"].includes(effect)) expect(second.getAttribute("style")).toContain(`translateX(${width}px)`);
+          card.remove();
+        }
+      },
+    );
+
+    it("exposes pixel sliders in Layout and preserves sizes with other carousel settings", async () => {
+      const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
+      editor.hass = hass;
+      editor.setConfig({ type, carousel_items: items, carousel_navigation: true, parameters: { effect: "cube" } });
+      document.body.append(editor);
+      await editor.updateComplete;
+      const layout = [...editor.shadowRoot!.querySelectorAll(".editor-section")]
+        .find(section => section.querySelector(".section-header")?.textContent?.trim() === "Layout")!;
+      const form = layout.querySelector<HTMLElement & { data: AdditionConfig; schema: { name: string; selector?: unknown }[] }>("ha-form")!;
+      for (const [name, min, max, initial] of [
+        ["carousel_button_width", 32, 160, 58], ["carousel_button_height", 32, 160, 58],
+        ["carousel_icon_size", 12, 96, 28],
+      ] as const) {
+        expect(form.schema.find(field => field.name === name)?.selector)
+          .toEqual({ number: { min, max, step: 1, mode: "slider", unit_of_measurement: "px" } });
+        expect(form.data[name]).toBe(initial);
+      }
+      const changed = vi.fn();
+      editor.addEventListener("config-changed", changed);
+      form.dispatchEvent(new CustomEvent("value-changed", { detail: { value: {
+        ...form.data, carousel_button_width: 72, carousel_button_height: 96, carousel_icon_size: 36,
+      } }, bubbles: true }));
+      expect(changed.mock.calls.at(-1)![0].detail.config).toMatchObject({
+        carousel_button_width: 72, carousel_button_height: 96, carousel_icon_size: 36,
+        carousel_navigation: true, parameters: { effect: "cube" }, carousel_items: items,
+      });
+    });
 
     it.each(matrix)("synchronizes navigation, $pagination and scrollbar with $effect without triggering actions", async ({ effect, pagination }) => {
       const card = await create({ carousel_items: items, carousel_effect: effect, carousel_loop: false,

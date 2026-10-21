@@ -231,7 +231,7 @@ describe("scene surface styling", () => {
     expect(sharedStyles.cssText).toContain(
       ".scene-button { display: flex; width: 64px; min-width: 64px; min-height: 88px;",
     );
-    expect(sharedStyles.cssText).toContain("box-shadow: 0 2px 7px rgba(0,0,0,.12)");
+    expect(sharedStyles.cssText).toContain("box-shadow: var(--addition-raised-shadow)");
     expect(sharedStyles.cssText).not.toContain(".welcome-scenes .scene-button {");
   });
 });

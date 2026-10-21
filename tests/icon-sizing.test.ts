@@ -21,10 +21,15 @@ describe("default Mushroom icon sizing", () => {
     expect(styles).not.toContain(".nas-metrics-tile b, .nas-metrics-metrics b { font-size: 16px");
   });
   it("matches scene and welcome button surfaces without changing their shapes and keeps weather/date transparent", () => {
-    for (const selector of [".scene-button", ".welcome-items > button"]) {
+    for (const selector of [".scene-button", ".welcome-items > button", ".welcome-toolbar button"]) {
       expect(ruleFor(selector)).toContain("border: 0");
-      expect(ruleFor(selector)).toContain("box-shadow: 0 2px 7px rgba(0,0,0,.12)");
+      expect(ruleFor(selector)).toContain("box-shadow: var(--addition-raised-shadow)");
+      expect(ruleFor(selector)).toContain("background: var(--addition-raised-background)");
     }
+    expect(ruleFor(":host")).toContain("--addition-raised-shadow: 0 2px 7px rgba(0,0,0,.12)");
+    expect(ruleFor(":host([dark])")).toContain("var(--primary-text-color, #fff) 7%");
+    expect(ruleFor(":host([dark])")).toContain("0 3px 8px rgba(0,0,0,.45)");
+    expect(ruleFor(":host([dark])")).toContain("inset 0 1px 0 rgba(255,255,255,.09)");
     expect(ruleFor(".scene-button")).toContain("border-radius: 32px");
     expect(ruleFor(".welcome-items > button")).toContain("border-radius: 25px");
     expect(ruleFor(".welcome-date")).toContain("background: transparent");

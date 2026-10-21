@@ -22,6 +22,7 @@ export type RoomSecondaryPart =
 
 export interface HomeAssistant {
   states: Record<string, HassEntity>;
+  themes?: { darkMode?: boolean };
   areas?: Record<string, { area_id: string; name: string; [key: string]: unknown }>;
   config?: { unit_system?: { temperature?: string } };
   entities?: Record<string, {
@@ -190,6 +191,9 @@ export interface AdditionConfig extends RoomViewDeviceActions {
   carousel_show_labels?: boolean;
   carousel_visible_items?: number;
   carousel_initial_index?: number;
+  carousel_button_width?: number;
+  carousel_button_height?: number;
+  carousel_icon_size?: number;
   carousel_effect?: CarouselEffect;
   carousel_pagination?: boolean;
   carousel_pagination_type?: CarouselPagination;

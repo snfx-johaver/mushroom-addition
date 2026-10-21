@@ -4,6 +4,11 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Updates to 0.0.1 (no version bump)
 
+- Added Layout sliders for Entity Carousel button width, height and icon size,
+  with responsive spacing, proportional entity pictures and size-aware effects.
+- Scene and Welcome buttons retain their raised appearance in dark mode with
+  a slightly lifted surface, subtle top highlight and stronger drop shadow;
+  light-mode styling and each button's shape are preserved.
 - Renamed Media Player Sonos to Media Player Advanced. Its power control now uses
   explicitly labelled standby/stop and resume actions on always-on players that
   advertise playback but no hardware power capability.

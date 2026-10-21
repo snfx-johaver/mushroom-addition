@@ -75,6 +75,10 @@ export class MushroomAdditionCard extends LitElement {
     return renderByFamily(context);
   }
 
+  protected willUpdate(): void {
+    this.toggleAttribute("dark", this.hass?.themes?.darkMode === true);
+  }
+
   protected updated(): void {
     void this.subscribeForecast();
   }

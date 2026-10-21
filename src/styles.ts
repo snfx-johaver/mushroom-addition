@@ -9,9 +9,15 @@ export const sharedStyles = css`
     --ulm-orange: 255, 152, 0;
     --ulm-purple: 156, 39, 176;
     --ulm-grey: 120, 120, 120;
+    --addition-raised-background: var(--card-background-color, var(--ha-card-background, var(--secondary-background-color)));
+    --addition-raised-shadow: 0 2px 7px rgba(0,0,0,.12);
     container-type: inline-size;
     display: block;
     min-width: 0;
+  }
+  :host([dark]) {
+    --addition-raised-background: color-mix(in srgb, var(--primary-text-color, #fff) 7%, var(--ha-card-background, var(--card-background-color, #1c1c1c)));
+    --addition-raised-shadow: 0 3px 8px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.09), 0 0 0 1px rgba(255,255,255,.04);
   }
   .mushroom-addition-card {
     display: block;
@@ -144,14 +150,14 @@ export const sharedStyles = css`
   .metric-extremes { display: flex; justify-content: space-between; color: var(--secondary-text-color); font-size: 11px; }
   .ulm-scenes { padding: 12px; }
   .scene-grid { display: flex; flex-wrap: wrap; gap: 10px; }
-  .scene-button { display: flex; width: 64px; min-width: 64px; min-height: 88px; flex-direction: column; align-items: center; justify-content: space-between; gap: 5px; padding: 7px 5px 10px; border: 0; border-radius: 32px; background: var(--card-background-color, var(--ha-card-background, var(--secondary-background-color))); color: var(--primary-text-color); box-shadow: 0 2px 7px rgba(0,0,0,.12); }
+  .scene-button { display: flex; width: 64px; min-width: 64px; min-height: 88px; flex-direction: column; align-items: center; justify-content: space-between; gap: 5px; padding: 7px 5px 10px; border: 0; border-radius: 32px; background: var(--addition-raised-background); color: var(--primary-text-color); box-shadow: var(--addition-raised-shadow); }
   .scene-button span { width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; }
   .scene-button i { display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: rgba(var(--ulm-purple), .14); font-style: normal; }
   .scene-button i > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
   .scene-button i { background: color-mix(in srgb, var(--item-color) 16%, transparent); }
   .scene-entity-picture { display: block; width: 100%; height: 100%; border-radius: inherit; background-position: center; background-size: cover; }
   .scene-button ha-icon { --mdc-icon-size: 22px; color: var(--item-color); }
-  .scene-button.is-active { background: color-mix(in srgb, var(--item-color) 12%, var(--card-background-color, var(--ha-card-background, var(--secondary-background-color)))); }
+  .scene-button.is-active { background: color-mix(in srgb, var(--item-color) 12%, var(--addition-raised-background)); }
   .ulm-source-scenes .scene-grid { flex-wrap: nowrap; justify-content: space-evenly; }
   .welcome-scenes {
     --welcome-surface: var(
@@ -334,11 +340,11 @@ export const sharedStyles = css`
   .custom-room-view button:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
   .custom-welcome { display: grid; gap: 18px; padding: 14px; }
   .welcome-toolbar { display: flex; justify-content: space-between; }
-  .welcome-toolbar button { display: grid; width: 38px; height: 38px; padding: 0; place-items: center; border: 0; border-radius: 50%; background: var(--card-background-color); color: inherit; box-shadow: 0 2px 7px rgba(0,0,0,.12); }
+  .welcome-toolbar button { display: grid; width: 38px; height: 38px; padding: 0; place-items: center; border: 0; border-radius: 50%; background: var(--addition-raised-background); color: inherit; box-shadow: var(--addition-raised-shadow); }
   .welcome-toolbar button:disabled { visibility: hidden; }
   .welcome-greeting { font-size: 23px; line-height: 1.08; }
   .welcome-items { display: flex; gap: 8px; overflow-x: auto; padding: 4px 4px 10px; margin: -4px -4px -10px; }
-  .welcome-items > button { display: flex; min-width: 52px; flex: 1; flex-direction: column; align-items: center; gap: 6px; padding: 7px 4px 10px; border: 0; border-radius: 25px; background: var(--card-background-color); color: inherit; box-shadow: 0 2px 7px rgba(0,0,0,.12); }
+  .welcome-items > button { display: flex; min-width: 52px; flex: 1; flex-direction: column; align-items: center; gap: 6px; padding: 7px 4px 10px; border: 0; border-radius: 25px; background: var(--addition-raised-background); color: inherit; box-shadow: var(--addition-raised-shadow); }
   .welcome-items i { display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: rgba(var(--tone), .18); color: rgb(var(--tone)); font-style: normal; }
   .welcome-items i > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
   .welcome-items small { max-width: 48px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 9px; font-weight: 700; }

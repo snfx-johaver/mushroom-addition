@@ -5,6 +5,7 @@ import "../src/index";
 import { stateLabel } from "../src/helpers";
 import { PARITY_ENTRIES } from "../src/parity.generated";
 import { sharedStyles } from "../src/styles";
+import type { MushroomAdditionCard } from "../src/card";
 import type { AdditionConfig, HomeAssistant } from "../src/types";
 
 const hass: HomeAssistant = {
@@ -860,6 +861,32 @@ describe("family renderers", () => {
       for (const marker of forbidden) expect(markup, `${source.upstreamId} used ${marker}`).not.toContain(marker);
     }
   });
+
+  it.each(["card_scenes", "custom_card_welcome", "card_welcome_scenes"])(
+    "updates raised scene surfaces with Home Assistant's theme without replacing %s buttons", async (id) => {
+      const item = CATALOG.find(entry => entry.upstreamId === id)!;
+      const card = document.createElement(item.tag) as MushroomAdditionCard;
+      card.hass = { ...hass, themes: { darkMode: true } };
+      card.setConfig({ type: `custom:${item.tag}`, entity: "scene.relax",
+        entities: ["scene.relax"], items: [{ entity: "scene.relax", name: "Relax" }],
+        nav_1: "/lovelace", name_1: "Home" });
+      document.body.append(card);
+      await card.updateComplete;
+      const selector = ".scene-button, .welcome-items > button";
+      const button = card.shadowRoot!.querySelector(selector);
+      expect(button).not.toBeNull();
+      expect(card.hasAttribute("dark")).toBe(true);
+      card.hass = { ...hass, themes: { darkMode: false } };
+      await card.updateComplete;
+      expect(card.hasAttribute("dark")).toBe(false);
+      expect(card.shadowRoot!.querySelector(selector)).toBe(button);
+      card.hass = { ...hass, themes: { darkMode: true } };
+      await card.updateComplete;
+      expect(card.hasAttribute("dark")).toBe(true);
+      expect(card.shadowRoot!.querySelector(selector)).toBe(button);
+      card.remove();
+    },
+  );
 
   it("keeps deterministic family-level visual signatures", async () => {
     const signatures = {

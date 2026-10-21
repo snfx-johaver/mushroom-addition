@@ -13,6 +13,8 @@ export const carouselControlEnabled = (
 };
 
 const inactiveStates = new Set(["off", "unknown", "unavailable", "none", "idle"]);
+const boundedSize = (value: number | undefined, fallback: number, min: number, max: number): number =>
+  Math.min(max, Math.max(min, typeof value === "number" && Number.isFinite(value) ? value : fallback));
 
 @customElement("mushroom-addition-entity-carousel")
 export class MushroomAdditionEntityCarousel extends LitElement {
@@ -36,7 +38,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     .stage {
       position: relative;
       width: 100%;
-      height: 70px;
+      height: var(--carousel-stage-height, 70px);
       transform-style: preserve-3d;
     }
     .item {
@@ -45,9 +47,9 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       left: 50%;
       display: grid;
       place-items: center;
-      width: 58px;
-      height: 58px;
-      margin: -29px;
+      width: var(--carousel-button-width, 58px);
+      height: var(--carousel-button-height, 58px);
+      margin: calc(var(--carousel-button-height, 58px) / -2) calc(var(--carousel-button-width, 58px) / -2);
       padding: 0;
       border: 0;
       border-radius: 18px;
@@ -108,10 +110,10 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     .pagination progress { width: 100%; height: 5px; margin: 8px 0; accent-color: var(--primary-color); }
     .scrollbar { display: block; box-sizing: border-box; width: calc(100% - 16px); height: 20px; margin: 0 8px; accent-color: var(--primary-color); cursor: pointer; }
     @media (prefers-reduced-motion: reduce) { .item { transition: none; } }
-    ha-icon, ha-state-icon { --mdc-icon-size: 28px; pointer-events: none; }
+    .item ha-icon, .item ha-state-icon { --mdc-icon-size: var(--carousel-icon-size, 28px); pointer-events: none; }
     .picture {
-      width: 34px;
-      height: 34px;
+      width: var(--carousel-picture-size, 34px);
+      height: var(--carousel-picture-size, 34px);
       border-radius: 50%;
       background: center / cover no-repeat;
       pointer-events: none;
@@ -178,6 +180,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     const loop = this.config?.carousel_loop !== false;
     return html`
       <div class="viewport ${navigation ? "has-navigation" : ""}"
+        style=${`--carousel-button-width:${this.buttonWidth}px;--carousel-button-height:${this.buttonHeight}px;--carousel-stage-height:${this.buttonHeight + 12}px;--carousel-icon-size:${this.iconSize}px;--carousel-picture-size:${Math.min(this.iconSize * 34 / 28, this.maxIconSize)}px`}
         @pointerdown=${this.stopControlEvent} @click=${this.stopControlEvent} @dblclick=${this.stopControlEvent}>
       ${navigation ? html`<button class="navigation" aria-label="Previous item"
         ?disabled=${items.length < 2 || (!loop && this.selectedIndex === 0)}
@@ -247,7 +250,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     const color = item.color || (entity?.attributes.icon ? "primary" : "primary");
     const modifier = this.coverflowModifier;
     const stretch = this.effect === "coverflow" ? this.coverflowStretch * modifier : 0;
-    const slideStep = Math.max(18, 58 + stretch);
+    const slideStep = Math.max(18, this.buttonWidth + stretch);
     const visualOffset = offset + this.dragOffset / slideStep;
     const visualDistance = Math.abs(visualOffset);
     const alignmentOffset = this.singleSlideEffect || this.centeredSlides ? 0 : -((visible - 1) * slideStep) / 2;
@@ -258,14 +261,14 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     const shadowOpacity = this.coverflowSlideShadows
       ? Math.min(0.48, visualDistance * 0.16 * Math.max(0.25, modifier))
       : 0;
-    const progress = offset + Math.max(-1, Math.min(1, this.dragOffset / 58));
+    const progress = offset + Math.max(-1, Math.min(1, this.dragOffset / this.buttonWidth));
     const transform = this.effect === "fade" ? "translateX(0px)"
       : this.effect === "cube" ? `rotateY(${progress * 90}deg)`
       : this.effect === "flip" ? `rotateY(${progress * 180}deg)`
       : `translateX(${translate}px) translateZ(${depth}px) rotateY(${rotate}deg)`;
     const style = [
       `transform:${transform}`,
-      `transform-origin:${this.effect === "cube" ? "50% 50% -29px" : "50% 50%"}`,
+      `transform-origin:${this.effect === "cube" ? `50% 50% -${this.buttonWidth / 2}px` : "50% 50%"}`,
       `z-index:${100 - distance}`,
       `opacity:${this.effect === "fade" ? Math.max(0, 1 - Math.abs(progress)) : this.singleSlideEffect ? 1 : opacity}`,
       `pointer-events:${this.singleSlideEffect && !active ? "none" : "auto"}`,
@@ -313,13 +316,30 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     return this.config?.carousel_items ?? [];
   }
 
+  private get buttonWidth(): number {
+    const width = boundedSize(this.config?.carousel_button_width, 58, 32, 160);
+    return this.carouselWidth > 0 ? Math.min(width, Math.max(24, this.carouselWidth - 16)) : width;
+  }
+
+  private get buttonHeight(): number {
+    return boundedSize(this.config?.carousel_button_height, 58, 32, 160);
+  }
+
+  private get maxIconSize(): number {
+    return Math.min(this.buttonWidth, this.buttonHeight) - 12;
+  }
+
+  private get iconSize(): number {
+    return Math.min(boundedSize(this.config?.carousel_icon_size, 28, 12, 96), this.maxIconSize);
+  }
+
   private get visibleCount(): number {
     if (this.singleSlideEffect) return 1;
     const configured = this.config?.carousel_slides_per_view ??
       this.config?.parameters?.slidesPerView;
     if (configured === "auto") {
       if (!this.carouselWidth) return this.legacyVisibleCount;
-      return Math.min(11, Math.max(1, Math.floor((this.carouselWidth - 16) / 58)));
+      return Math.min(11, Math.max(1, Math.floor((this.carouselWidth - 16) / this.buttonWidth)));
     }
     const numeric = Number(configured);
     if (Number.isFinite(numeric) && numeric > 0) {
