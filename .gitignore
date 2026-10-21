@@ -9,4 +9,3 @@ coverage/
 /docs/assets/**/*.webp
 /docs/assets/**/*.gif
 /docs/assets/visual-audit/
-!/docs/assets/readme-preview.png

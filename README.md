@@ -9,7 +9,7 @@ and support for all 33 Mushroom languages.** Energy, media, rooms, batteries,
 graphs, remotes and more. Pick a card, pick your entities, enjoy your dashboard.
 YAML is still welcome; it just isn't compulsory.
 
-![Mushroom Addition: 27 dashboard cards, visual editors and 33 languages](docs/assets/project-banner.svg)
+![Mushroom Addition: Home Assistant dashboard cards with visual editors](docs/assets/project-banner.svg)
 
 A big thank-you to **[Mushroom](https://github.com/piitaya/lovelace-mushroom)**
 for the roots. We grew a few more caps. This is an independent companion project,
