@@ -49,7 +49,7 @@ describe("default Mushroom icon sizing", () => {
     expect(ruleFor(":host([dark])")).toContain("var(--primary-text-color, #fff) 7%");
     expect(ruleFor(":host([dark])")).toContain("0 3px 8px rgba(0,0,0,.45)");
     expect(ruleFor(":host([dark])")).toContain("inset 0 1px 0 rgba(255,255,255,.09)");
-    expect(ruleFor(".scene-button")).toContain("border-radius: 32px");
+    expect(ruleFor(".scene-button")).toContain("border-radius: 25px");
     expect(ruleFor(".welcome-items > button")).toContain("border-radius: 25px");
     expect(ruleFor(".welcome-date")).toContain("background: transparent");
     expect(ruleFor(".welcome-date")).toContain("border: 0");
@@ -65,10 +65,19 @@ describe("default Mushroom icon sizing", () => {
   ])("gives %s the shared remote-style button shadow without changing state colors", selector => {
     expect(ruleFor(selector)).toContain("box-shadow: var(--addition-raised-shadow)");
   });
-  it("retains the tablet active indicator alongside the raised shadow", () => {
-    expect(ruleFor(".tablet-controls button.is-active")).toContain(
-      "box-shadow: var(--addition-raised-shadow), inset 0 0 0 2px",
-    );
+  it("uses color rather than an inset border for active tablet controls", () => {
+    expect(ruleFor(".tablet-controls button")).toContain("border: 0");
+    expect(ruleFor(".tablet-controls button.is-active")).toContain("background: rgba(var(--tone), .3)");
+    expect(ruleFor(".tablet-controls button.is-active")).not.toMatch(/inset|border|box-shadow/);
+  });
+  it.each([".sonos-controls button", ".sonos-switches button", ".sonos-shortcuts button"])(
+    "keeps %s borderless while retaining the subtle raised shadow", selector => {
+      expect(ruleFor(selector)).toContain("border: 0");
+      expect(ruleFor(selector)).toContain("box-shadow: var(--addition-raised-shadow)");
+    },
+  );
+  it("does not add a border to active Sonos switches", () => {
+    expect(ruleFor(".sonos-switches button.is-active")).not.toContain("border");
   });
   it.each([
     ["entity-carousel.ts", ".navigation"],
@@ -85,6 +94,32 @@ describe("default Mushroom icon sizing", () => {
     expect(ruleFor(".welcome-items")).toContain("padding: 4px 4px 10px");
     expect(ruleFor(".welcome-items")).toContain("overflow-x: auto");
     expect(ruleFor(".welcome-items")).not.toContain("overflow: hidden");
+  });
+  it("keeps scene pill bottoms and shadows inside the horizontal scrolling area", () => {
+    expect(ruleFor(".scene-grid")).toContain("padding: 4px 4px 10px");
+    expect(ruleFor(".scene-grid")).toContain("overflow-x: auto");
+    expect(ruleFor(".scene-button")).not.toContain("min-height: 88px");
+  });
+  it("matches scene and welcome pill geometry, spacing and labels at every card width", () => {
+    for (const property of [
+      "display: flex", "gap: 8px", "overflow-x: auto",
+      "padding: 4px 4px 10px", "margin: -4px -4px -10px",
+    ]) {
+      expect(ruleFor(".scene-grid")).toContain(property);
+      expect(ruleFor(".welcome-items")).toContain(property);
+    }
+    for (const property of [
+      "min-width: 52px", "flex: 1", "gap: 6px", "padding: 7px 4px 10px",
+      "border-radius: 25px", "box-shadow: var(--addition-raised-shadow)",
+    ]) {
+      expect(ruleFor(".scene-button")).toContain(property);
+      expect(ruleFor(".welcome-items > button")).toContain(property);
+    }
+    for (const property of ["max-width: 48px", "font-size: 9px", "font-weight: 700"]) {
+      expect(ruleFor(".scene-button > span")).toContain(property);
+      expect(ruleFor(".welcome-items small")).toContain(property);
+    }
+    expect(styles).not.toContain(".source-scene-grid .scene-grid");
   });
   it("uses theme-controlled Mushroom-style borders for standalone cards", () => {
     const border = "border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, #e0e0e0))";

@@ -210,8 +210,11 @@ describe("Carousel entity defaults and gestures", () => {
       const styles = MushroomAdditionEntityCarousel.styles.cssText;
       expect(styles).not.toContain("gradient(");
       expect(styles.match(/\.item \{[^}]+\}/)?.[0]).toContain("background: var(--card-background-color)");
-      expect(styles.match(/\.item.entity-active \{[^}]+\}/)?.[0]).toContain("20%");
-      expect(styles.match(/\.item::after \{[^}]+\}/)?.[0]).toContain("background: rgb(0 0 0 / var(--carousel-shadow-opacity, 0))");
+      expect(styles).not.toContain(".item.entity-active {");
+      expect(styles.match(/\.icon-circle \{[^}]+\}/)?.[0]).toContain("border-radius: 50%");
+      expect(styles.match(/\.icon-circle \{[^}]+\}/)?.[0]).toContain("16%");
+      expect(styles.match(/\.item::after \{[^}]+\}/)?.[0]).not.toContain("background:");
+      expect(styles.match(/\.item::after \{[^}]+\}/)?.[0]).toContain("box-shadow:");
       expect(styles.match(/\.item \{[^}]+\}/)?.[0]).toContain("border: 0");
       expect(styles.match(/\.item.active \{[^}]+\}/)?.[0]).not.toMatch(/border|inset/);
       expect(styles).toContain(":focus-visible");

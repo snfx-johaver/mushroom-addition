@@ -45447,9 +45447,9 @@ let Be = class extends ze {
       V.stopPropagation(), V.detail === 0 && (o ? this.runItemAction(e, "tap") : this.selectIndex(a));
     }}
         >
-        ${G ? u`<span class="picture" style=${`background-image:url("${String(G)}")`}></span>` : e.icon ? u`<ha-icon .icon=${e.icon}></ha-icon>` : l ? u`<ha-state-icon .hass=${this.hass} .stateObj=${l}
+        <span class="icon-circle">${G ? u`<span class="picture" style=${`background-image:url("${String(G)}")`}></span>` : e.icon ? u`<ha-icon .icon=${e.icon}></ha-icon>` : l ? u`<ha-state-icon .hass=${this.hass} .stateObj=${l}
                   ._config=${this.hass?.config} ._connection=${this.hass?.connection}
-                  ._entities=${this.hass?.entities}></ha-state-icon>` : u`<ha-icon .icon=${"mdi:circle"}></ha-icon>`}
+                  ._entities=${this.hass?.entities}></ha-state-icon>` : u`<ha-icon .icon=${"mdi:circle"}></ha-icon>`}</span>
       </button>
     `;
   }
@@ -45616,7 +45616,7 @@ Be.styles = Ve`
       padding: 0;
       border: 0;
       border-radius: 18px;
-      color: var(--primary-text-color);
+      color: var(--carousel-color, var(--primary-color));
       background: var(--card-background-color);
       box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
       transition: transform 270ms cubic-bezier(.2,.8,.2,1), opacity 270ms ease, filter 110ms ease;
@@ -45629,7 +45629,7 @@ Be.styles = Ve`
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      background: rgb(0 0 0 / var(--carousel-shadow-opacity, 0));
+      box-shadow: 0 3px 8px rgb(0 0 0 / var(--carousel-shadow-opacity, 0));
       content: "";
       pointer-events: none;
     }
@@ -45637,8 +45637,13 @@ Be.styles = Ve`
     .item.active {
       color: var(--carousel-color, var(--primary-color));
     }
-    .item.entity-active {
-      background: color-mix(in srgb, var(--carousel-color, var(--primary-color)) 20%, var(--card-background-color));
+    .icon-circle {
+      display: grid;
+      place-items: center;
+      width: var(--carousel-picture-size, 40px);
+      height: var(--carousel-picture-size, 40px);
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--carousel-color, var(--primary-color)) 16%, transparent);
     }
     .item[hidden] { display: none; }
     button:focus-visible, input:focus-visible, .carousel:focus-visible {
@@ -51183,16 +51188,15 @@ const A_ = Ve`
   .sparkline.is-filled polygon { fill: color-mix(in srgb, var(--sparkline-fill-color, rgb(var(--ulm-red))) 18%, transparent); }
   .metric-extremes { display: flex; justify-content: space-between; color: var(--secondary-text-color); font-size: 11px; }
   .ulm-scenes { padding: 12px; }
-  .scene-grid { display: flex; flex-wrap: wrap; gap: 10px; }
-  .scene-button { display: flex; width: 64px; min-width: 64px; min-height: 88px; flex-direction: column; align-items: center; justify-content: space-between; gap: 5px; padding: 7px 5px 10px; border: 0; border-radius: 32px; background: var(--addition-raised-background); color: var(--primary-text-color); box-shadow: var(--addition-raised-shadow); }
-  .scene-button span { width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; }
+  .scene-grid { display: flex; min-width: 0; gap: 8px; overflow-x: auto; padding: 4px 4px 10px; margin: -4px -4px -10px; }
+  .scene-button { display: flex; min-width: 52px; flex: 1; flex-direction: column; align-items: center; gap: 6px; padding: 7px 4px 10px; border: 0; border-radius: 25px; background: var(--addition-raised-background); color: var(--primary-text-color); box-shadow: var(--addition-raised-shadow); }
+  .scene-button > span { max-width: 48px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 9px; font-weight: 700; }
   .scene-button i { display: grid; width: var(--mush-icon-size, 40px); height: var(--mush-icon-size, 40px); place-items: center; border-radius: 50%; background: rgba(var(--ulm-purple), .14); font-style: normal; }
   .scene-button i > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, 24px); }
-  .scene-button i { background: color-mix(in srgb, var(--item-color) 16%, transparent); }
+  .scene-button i { background: color-mix(in srgb, var(--item-color) 18%, transparent); }
   .scene-entity-picture { display: block; width: 100%; height: 100%; border-radius: inherit; background-position: center; background-size: cover; }
   .scene-button ha-icon { --mdc-icon-size: 22px; color: var(--item-color); }
-  .scene-button.is-active { background: color-mix(in srgb, var(--item-color) 12%, var(--addition-raised-background)); }
-  .ulm-source-scenes .scene-grid { flex-wrap: nowrap; justify-content: space-evenly; min-width: 0; overflow-x: auto; }
+  .scene-button.is-active { background: var(--addition-raised-background); }
   .welcome-scenes {
     --welcome-surface: var(
       --secondary-background-color,
@@ -51537,11 +51541,11 @@ const A_ = Ve`
   .sonos-switches button {
     box-shadow: var(--addition-raised-shadow);
     display: inline-flex; min-height: 40px; align-items: center; gap: 6px; padding: 0 12px;
-    border: 1px solid var(--divider-color); border-radius: 20px; background: var(--card-background-color, var(--ha-card-background, #fff));
+    border: 0; border-radius: 20px; background: var(--card-background-color, var(--ha-card-background, #fff));
     color: var(--primary-text-color); font: inherit; font-size: 12px; font-weight: 700;
   }
   .sonos-switches button.is-active {
-    border-color: rgb(var(--rgb-blue, 3, 169, 244)); background: rgba(var(--rgb-blue, 3, 169, 244), .12);
+    background: rgba(var(--rgb-blue, 3, 169, 244), .12);
   }
   .sonos-switches button:disabled, .sonos-sliders input:disabled { cursor: not-allowed; opacity: .45; }
   .sonos-switches ha-icon { --mdc-icon-size: 18px; color: rgb(var(--rgb-blue, 3, 169, 244)); }
@@ -51559,7 +51563,7 @@ const A_ = Ve`
   .sonos-shortcuts button {
     box-shadow: var(--addition-raised-shadow);
     display: grid; min-width: 0; min-height: 56px; place-items: center; gap: 4px; padding: 8px 4px;
-    border: 1px solid var(--divider-color); border-radius: 14px;
+    border: 0; border-radius: 14px;
     background: var(--card-background-color, var(--ha-card-background, #fff));
     color: var(--primary-text-color); cursor: pointer;
   }
@@ -51626,7 +51630,7 @@ const A_ = Ve`
   .tablet-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .tablet-controls button { display: grid; height: 42px; place-items: center; border: 0; border-radius: 14px; background: rgba(var(--tone), .2); color: rgb(var(--tone)); cursor: pointer; box-shadow: var(--addition-raised-shadow); }
   .tablet-controls button ha-icon { --mdc-icon-size: 22px; }
-  .tablet-controls button.is-active { background: rgba(var(--tone), .3); box-shadow: var(--addition-raised-shadow), inset 0 0 0 2px rgba(var(--tone), .35); }
+  .tablet-controls button.is-active { background: rgba(var(--tone), .3); }
   .tablet-controls button:disabled { opacity: .3; cursor: not-allowed; }
   .tablet-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: 8px; text-align: center; }
   .tablet-metrics span { display: grid; gap: 2px; }
@@ -51699,7 +51703,6 @@ const A_ = Ve`
   }
   .has-artwork .console-controls button { background: rgba(0,0,0,.38); color: #fff; }
   .console-controls ha-icon { --mdc-icon-size: 16px; }
-  .source-scene-grid .scene-grid { display: grid; grid-template-columns: repeat(5, 64px); justify-content: space-between; gap: 12px; }
   .flower-heading { width: 100%; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; }
   .flower-bars { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 12px; }
   .flower-bars > span {

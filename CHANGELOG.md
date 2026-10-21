@@ -4,6 +4,14 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Give Scenes and Welcome Scenes the same pill dimensions, labels and
+  responsive single-row sizing as Welcome buttons, scrolling only when needed.
+- Match carousel buttons to the neutral tiles and colored circular icons
+  used by scene buttons; keep coverflow shadows outside the tile surface.
+- Reserve space around scrolling scene buttons so their bottoms and shadows
+  are not clipped.
+- Remove tablet active-state outlines and Sonos shortcut/switch borders,
+  retaining state colors, subtle shadows and keyboard focus indicators.
 - Match the TV remote's subtle button shadows across other card controls,
   without changing their colors, shapes or layouts.
 - Center the Astronomy moon icon within its circular orbit marker.

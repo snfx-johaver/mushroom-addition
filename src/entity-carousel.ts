@@ -54,7 +54,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       padding: 0;
       border: 0;
       border-radius: 18px;
-      color: var(--primary-text-color);
+      color: var(--carousel-color, var(--primary-color));
       background: var(--card-background-color);
       box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
       transition: transform 270ms cubic-bezier(.2,.8,.2,1), opacity 270ms ease, filter 110ms ease;
@@ -67,7 +67,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      background: rgb(0 0 0 / var(--carousel-shadow-opacity, 0));
+      box-shadow: 0 3px 8px rgb(0 0 0 / var(--carousel-shadow-opacity, 0));
       content: "";
       pointer-events: none;
     }
@@ -75,8 +75,13 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     .item.active {
       color: var(--carousel-color, var(--primary-color));
     }
-    .item.entity-active {
-      background: color-mix(in srgb, var(--carousel-color, var(--primary-color)) 20%, var(--card-background-color));
+    .icon-circle {
+      display: grid;
+      place-items: center;
+      width: var(--carousel-picture-size, 40px);
+      height: var(--carousel-picture-size, 40px);
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--carousel-color, var(--primary-color)) 16%, transparent);
     }
     .item[hidden] { display: none; }
     button:focus-visible, input:focus-visible, .carousel:focus-visible {
@@ -291,7 +296,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
           else this.selectIndex(index);
         }}
         >
-        ${picture
+        <span class="icon-circle">${picture
           ? html`<span class="picture" style=${`background-image:url("${String(picture)}")`}></span>`
           : item.icon
             ? html`<ha-icon .icon=${item.icon}></ha-icon>`
@@ -299,7 +304,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
               ? html`<ha-state-icon .hass=${this.hass} .stateObj=${entity}
                   ._config=${this.hass?.config} ._connection=${this.hass?.connection}
                   ._entities=${this.hass?.entities}></ha-state-icon>`
-              : html`<ha-icon .icon=${"mdi:circle"}></ha-icon>`}
+              : html`<ha-icon .icon=${"mdi:circle"}></ha-icon>`}</span>
       </button>
     `;
   }

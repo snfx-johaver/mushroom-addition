@@ -229,7 +229,7 @@ describe("queued default batch two certification", () => {  it.each([
 describe("scene surface styling", () => {
   it("uses the same shaded scene-button surface for Welcome Scenes and Scenes", () => {
     expect(sharedStyles.cssText).toContain(
-      ".scene-button { display: flex; width: 64px; min-width: 64px; min-height: 88px;",
+      ".scene-button { display: flex; min-width: 52px; flex: 1;",
     );
     expect(sharedStyles.cssText).toContain("box-shadow: var(--addition-raised-shadow)");
     expect(sharedStyles.cssText).not.toContain(".welcome-scenes .scene-button {");
