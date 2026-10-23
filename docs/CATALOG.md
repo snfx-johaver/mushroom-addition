@@ -5,7 +5,7 @@ registrations. It is generated from `src/catalog.ts`; CI rejects duplicate
 IDs, missing source paths, invalid namespaces, or broken popup mappings.
 
 **Coverage:** 19 documented upstream card sources map to
-31 public card components.
+32 public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
 of duplicate picker entries. 0 popup templates and
 1 implementation helpers are inventoried but are not
@@ -33,6 +33,7 @@ All picker entries use the prefix **Mushroom Addition:** before the card name.
 | Speedtest | `custom_card_speedtest_gauges` | custom-card | `custom:mushroom-addition-custom-card-speedtest-gauges` | energy | default | `custom_card_speedtest_gauges` |
 | Pollen | `custom_card_pollen` | custom-card | `custom:mushroom-addition-custom-card-pollen` | weather | default | `custom_card_pollen` |
 | Graph Advanced | `mini_graph_card` | custom-card | `custom:mushroom-addition-mini-graph-card` | energy | line, bar | `mini_graph_card` |
+| Stock Card | `stock_card` | custom-card | `custom:mushroom-addition-stock-card` | sensor | default | `stock_card` |
 | Pi-hole | `pi_hole_card` | custom-card | `custom:mushroom-addition-pi-hole-card` | sensor | default | `pi_hole_card` |
 | Upcoming Media | `upcoming_media` | custom-card | `custom:mushroom-addition-upcoming-media-card` | media | default | `upcoming_media` |
 | Remote | `remote_card` | custom-card | `custom:mushroom-addition-remote-card` | media | default | `remote_card` |

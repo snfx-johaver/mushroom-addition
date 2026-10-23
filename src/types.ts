@@ -21,6 +21,7 @@ export type RoomSecondaryPart =
   | { type: "attribute"; attribute?: string };
 
 export interface HomeAssistant {
+  callWS?: <T>(message: Record<string, unknown>) => Promise<T>;
   states: Record<string, HassEntity>;
   themes?: { darkMode?: boolean };
   services?: Record<string, Record<string, unknown>>;
@@ -263,6 +264,16 @@ export interface PiHoleConfig {
 }
 
 export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, PiHoleConfig {
+  stock_source?: "entity" | "stock_market_deluxe";
+  stock_currency?: string;
+  stock_symbol?: string;
+  stock_shares?: number;
+  stock_interval?: number;
+  stock_range?: "1D" | "5D" | "1M" | "3M" | "1Y";
+  stock_show_position?: boolean;
+  stock_show_statistics?: boolean;
+  stock_show_volume?: boolean;
+  stock_show_trends?: boolean;
   type: string;
   entity?: string;
   primary_entity?: string;

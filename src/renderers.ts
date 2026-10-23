@@ -36,6 +36,7 @@ import "./entity-carousel";
 import { readUpcomingData, upcomingItems } from "./upcoming-media";
 import "./remote-card";
 import "./pi-hole";
+import "./stock";
 
 export interface RenderContext {
   config: AdditionConfig;
@@ -2193,6 +2194,9 @@ const renderGeneric = (ctx: RenderContext): TemplateResult => {
 
 export const renderByFamily = (ctx: RenderContext): TemplateResult => {
   switch (ctx.descriptor.upstreamId) {
+    case "stock_card":
+      return ctx.actionSurface("stock-card", html`${cardHeading(ctx, ctx.config.secondary, displayName(ctx.config, ctx.entity, ctx.hass) || ctx.descriptor.name)}
+        <mushroom-addition-stock .hass=${ctx.hass} .config=${ctx.config}></mushroom-addition-stock>`);
     case "remote_card":
       return ctx.actionSurface("remote-card", html`${cardHeading(ctx, stateLabel(ctx.entity, ctx.hass), displayName(ctx.config, ctx.entity, ctx.hass) || ctx.descriptor.name)}
         <mushroom-addition-remote .hass=${ctx.hass} .config=${ctx.config}></mushroom-addition-remote>`);

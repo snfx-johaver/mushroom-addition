@@ -1279,6 +1279,8 @@ export const helperCatalogs: Record<string, Record<string, string>> = {
 };
 
 export const editorHelper = (key: string, hass?: HomeAssistant): string | undefined => {
+  const stockHelp = stockEditorHelper(key);
+  if (stockHelp) return localizeText(hass, stockHelp);
   if (key === "welcome_weather_date_format") return localize(hass, "upcoming_date_format");
   if (key === "welcome_weather_icon_type") {
     return ["Automatic", "Icon", "None"].map(label => localizeText(hass, label)).join(" / ");
@@ -1306,3 +1308,4 @@ export const localizeText = (hass: HomeAssistant | undefined, label: string): st
   const key = englishLabelKeys.get(label);
   return key ? localize(hass, key) : label;
 };
+import { stockEditorHelper } from "./stock-data";

@@ -55,6 +55,15 @@ export const createStubConfig = (
   entities: string[] = [],
   entitiesFallback: string[] = [],
 ): AdditionConfig => {
+  if (descriptor.upstreamId === "stock_card") return {
+    type: `custom:${descriptor.tag}`,
+    stock_source: "entity",
+    entity: Object.values(hass?.states ?? {}).find(entity => entity.entity_id.startsWith("sensor.") &&
+      !["unknown", "unavailable"].includes(entity.state) && Number.isFinite(Number(entity.state)) &&
+      (/stock|finance|share|ticker/i.test(entity.entity_id) || typeof entity.attributes.symbol === "string"))?.entity_id,
+    stock_shares: 0, stock_interval: 300, stock_range: "1D",
+    stock_show_position: true, stock_show_statistics: true, stock_show_volume: true, stock_show_trends: true,
+  };
   if (descriptor.family === "nas-dashboard") return { type: `custom:${descriptor.tag}` };
   const available = [...new Set([...entities, ...entitiesFallback, ...Object.keys(hass?.states ?? {})])]
     .filter((entityId) => hass?.states?.[entityId] !== undefined);

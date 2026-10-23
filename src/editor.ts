@@ -6,6 +6,7 @@ import type {
   ActionConfig,
   AdditionConfig,
   AdditionItemConfig,
+  HassEntity,
   HomeAssistant,
   RoomStatusConfig,
   RoomSecondaryPart,
@@ -25,6 +26,7 @@ import { SONOS_CONTROLS } from "./sonos-controls";
 import { CONSOLE_ENTITIES } from "./console";
 import { editorHelper, localize, localizeText } from "./localize";
 import { localizeEditorSchema } from "./localized-schema";
+import { STOCK_METRICS, stockMetricLabel, stockMetricSource } from "./stock-data";
 import { additionalEditorSchemaFor, editorSchemaFor, type EditorField } from "./editor-schema";
 import { populatedDefaultsFor } from "./defaults";
 import { wasteStreamsForConfig } from "./waste-streams";
@@ -38,6 +40,15 @@ import type {
 } from "./mini-graph";
 
 type EditorSectionId = "context" | "content" | "layout" | "interactions" | "features";
+type PreparedEditorSchema = {
+  itemTag: string;
+  config: AdditionConfig;
+  language?: string;
+  timeZone?: string;
+  entityAttributes?: HassEntity["attributes"];
+  dateLabel: string;
+  localized: Record<EditorSectionId, EditorField[]>;
+};
 
 const editorSections: Array<{ id: EditorSectionId; title: string; icon: string }> = [
   { id: "context", title: "Context", icon: "mdi:shape-outline" },
@@ -74,8 +85,21 @@ const welcomeWeatherLabels: Record<string, string> = {
   welcome_weather_date_format: "upcoming_date_format",
   welcome_weather_tap_action: "tap_action",
 };
+const stockLabels: Record<string, string> = {
+  stock_source: "Stock data source",
+  stock_currency: "Currency code (optional, e.g. USD or EUR)",
+  stock_symbol: "Stock symbol",
+  stock_shares: "Shares owned",
+  stock_interval: "Refresh interval (seconds)",
+  stock_range: "Default chart range",
+  stock_show_position: "Show holdings",
+  stock_show_statistics: "Show company statistics",
+  stock_show_volume: "Show trading volume",
+  stock_show_trends: "Show SMA / EMA trends",
+};
 
 const sectionForField = (field: EditorField): EditorSectionId => {
+  if (field.name === "stock_symbol" || field.name === "stock_source") return "context";
   if (field.name === "pihole_device_ids") return "context";
   if (field.name === "pihole_show_header") return "content";
   if (/^pihole_(columns|accent_color|chart_height|chart_hours)$/.test(field.name)) return "layout";
@@ -157,6 +181,7 @@ export class MushroomAdditionEditor extends LitElement {
   @state() private config?: AdditionConfig;
   @state() private remoteEditing?: number;
   @state() private piHoleMapping: PiHoleMetric = "queries";
+  private preparedEditorSchema?: PreparedEditorSchema;
 
   public setConfig(config: AdditionConfig): void {
     const tag = config.type.replace(/^custom:/, "");
@@ -173,15 +198,49 @@ export class MushroomAdditionEditor extends LitElement {
     if (!this.hass || !this.config) return nothing;
     const item = getCatalogItem(this.config.type.replace(/^custom:/, ""));
     if (!item) return nothing;
-    const schema = editorSchemaFor(item, this.config, this.hass);
-    const upstreamSchema = additionalEditorSchemaFor(item, this.config).filter((field) =>
-      item.upstreamId !== "custom_card_trash" ||
-      (!field.name.startsWith("ulm_card_datum_") && !field.name.includes("ophaling")));
-    const groupedSchema = groupEditorFields([...schema, ...upstreamSchema]);
+    const language = this.hass.language;
+    const timeZone = this.hass.config?.time_zone;
+    const entityAttributes = item.upstreamId === "upcoming_media" && this.config.entity
+      ? this.hass.states[this.config.entity]?.attributes : undefined;
+    const dateLabel = item.upstreamId === "custom_card_welcome"
+      ? new Intl.DateTimeFormat(language, { dateStyle: "short", timeZone }).format(new Date()) : "";
+    let preparedSchema = this.preparedEditorSchema;
+    if (
+      !preparedSchema ||
+      preparedSchema.itemTag !== item.tag ||
+      preparedSchema.config !== this.config ||
+      preparedSchema.language !== language ||
+      preparedSchema.timeZone !== timeZone ||
+      preparedSchema.entityAttributes !== entityAttributes ||
+      preparedSchema.dateLabel !== dateLabel
+    ) {
+      const schema = editorSchemaFor(item, this.config, this.hass);
+      const upstreamSchema = additionalEditorSchemaFor(item, this.config, schema).filter((field) =>
+        item.upstreamId !== "custom_card_trash" ||
+        (!field.name.startsWith("ulm_card_datum_") && !field.name.includes("ophaling")));
+      const grouped = groupEditorFields([...schema, ...upstreamSchema]);
+      preparedSchema = {
+        itemTag: item.tag,
+        config: this.config,
+        language,
+        timeZone,
+        entityAttributes,
+        dateLabel,
+        localized: Object.fromEntries(editorSections.map(({ id }) => [
+          id,
+          localizeEditorSchema(this.hass, grouped[id]),
+        ])) as Record<EditorSectionId, EditorField[]>,
+      };
+      this.preparedEditorSchema = preparedSchema;
+    }
     const populatedDefaults = populatedDefaultsFor(item, this.hass, this.config.entity);
     const miniGraphShow = this.config.show as MiniGraphShowConfig | undefined;
     const formData = {
       ...populatedDefaults,
+      ...(item.upstreamId === "stock_card" && this.config.stock_source !== "stock_market_deluxe"
+        ? Object.fromEntries(STOCK_METRICS.map(([key]) => [
+          `stock_${key}_attribute`, stockMetricSource(this.config!, this.hass, key).attribute,
+        ])) : {}),
       ...this.config,
       ...(item.upstreamId === "pi_hole_card" ? {
         pihole_pause_durations: (this.config.pihole_pause_durations ?? PIHOLE_DEFAULTS.pihole_pause_durations).map(String),
@@ -297,7 +356,7 @@ export class MushroomAdditionEditor extends LitElement {
       <div class="editor-sections">
         ${editorSections.map((section) => this.renderEditorSection(
           section,
-          groupedSchema[section.id],
+          preparedSchema.localized[section.id],
           formData,
           section.id === "features" && hasCustomFeatures ? customFeatures
             : section.id === "content" && item.upstreamId === "custom_card_entity_carousel" ? html`
@@ -334,7 +393,7 @@ export class MushroomAdditionEditor extends LitElement {
             <ha-form
               .hass=${this.hass}
               .data=${formData}
-              .schema=${localizeEditorSchema(this.hass, schema)}
+              .schema=${schema}
               .computeLabel=${this.computeLabel}
               .computeHelper=${this.computeHelper}
               @value-changed=${this.valueChanged}
@@ -347,7 +406,9 @@ export class MushroomAdditionEditor extends LitElement {
   }
 
   private readonly computeLabel = (schema: { name: string }): string =>
-    welcomeWeatherLabels[schema.name]
+    stockMetricLabel(schema.name) ? localizeText(this.hass, stockMetricLabel(schema.name)!)
+    : stockLabels[schema.name] ? localizeText(this.hass, stockLabels[schema.name])
+    : welcomeWeatherLabels[schema.name]
       ? `${localize(this.hass, "ulm_weather")}: ${localize(this.hass, welcomeWeatherLabels[schema.name]!)}`
       : this.config?.type.endsWith("pi-hole-card") && schema.name === "entity"
       ? localize(this.hass, "editor.pihole_entity")

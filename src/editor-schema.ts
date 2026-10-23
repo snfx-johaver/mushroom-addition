@@ -6,6 +6,7 @@ import { variantForSource } from "./catalog";
 import { FLOWER_BARS, flowerBarsForConfig, flowerEntityConfigKey } from "./flower";
 import { REMOTE_KEYS } from "./remote-card";
 import { PIHOLE_METRICS, PIHOLE_SECTIONS } from "./pi-hole";
+import { STOCK_METRICS } from "./stock-data";
 
 export interface EditorField {
   name: string;
@@ -281,6 +282,24 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
 };
 
 export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass?: HomeAssistant): EditorField[] => {
+  if (item.upstreamId === "stock_card") return [
+    ...(config?.stock_source === "stock_market_deluxe" ? [] : [entity(["sensor"])]),
+    ...presentation(),
+    select("stock_source", [{ value: "entity", label: "Home Assistant entities (any provider)" },
+      { value: "stock_market_deluxe", label: "Stock Market Deluxe integration" }]),
+    text("stock_symbol"), text("stock_currency"),
+    number("stock_shares", 0, 100000000, 0.001),
+    number("stock_interval", 180, 86400),
+    select("stock_range", ["1D", "5D", "1M", "3M", "1Y"].map(value => ({ value, label: value }))),
+    toggle("stock_show_position"), toggle("stock_show_statistics"),
+    ...(config?.stock_source === "stock_market_deluxe"
+      ? [toggle("stock_show_volume"), toggle("stock_show_trends")]
+      : STOCK_METRICS.flatMap(([key]) => [
+        entity(["sensor", "input_number"], `stock_${key}_entity`),
+        text(`stock_${key}_attribute`),
+      ])),
+    action("tap_action"), action("hold_action"), action("double_tap_action"),
+  ];
   if (item.upstreamId === "pi_hole_card") return [
     entity(["switch", "sensor", "binary_sensor"]),
     ...presentation(),
@@ -996,8 +1015,12 @@ const schemaFieldNames = (fields: EditorField[]): Set<string> =>
   new Set(fields.flatMap((field) =>
     field.schema ? [...schemaFieldNames(field.schema)] : field.name ? [field.name] : []));
 
-export const additionalEditorSchemaFor = (item: CatalogItem, config?: AdditionConfig): EditorField[] => {
-  const configuredFields = schemaFieldNames(editorSchemaFor(item, config));
+export const additionalEditorSchemaFor = (
+  item: CatalogItem,
+  config?: AdditionConfig,
+  configuredSchema?: EditorField[],
+): EditorField[] => {
+  const configuredFields = schemaFieldNames(configuredSchema ?? editorSchemaFor(item, config));
   return upstreamEditorSchemaFor(item, config)
     .filter((field) => !configuredFields.has(field.name));
 };

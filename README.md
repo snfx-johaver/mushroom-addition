@@ -4,7 +4,7 @@
 
 Your dashboard called. It wants fewer YAML headaches and a little more fun(gus).
 
-**31 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
+**32 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
 The original 27 support all 33 Mushroom languages; the four imported NAS
 dashboard cards currently retain their upstream English interface.
 Energy, media, rooms, batteries,
@@ -52,12 +52,45 @@ Choose your entities and configure the card in the visual editor. Layout,
 colors, information and actions are available where supported. Picker previews
 prefer compatible entities already in your Home Assistant instance.
 
+Shared visual editors reuse their form schemas across unrelated state updates,
+while continuing to pass live Home Assistant data to selectors. Configuration,
+language and relevant media-attribute changes refresh the cached schemas.
+
 Cards use your Home Assistant theme and language. Your custom names, entity IDs
 and action values stay untouched. Some cards need their corresponding sensors
 or integrations; installing a card does not install its data source.
 
 See the **[card catalog](docs/CATALOG.md)** for the complete list and source
 references, or the [changelog](CHANGELOG.md) for what's new.
+
+### Stock Card
+
+Choose **Mushroom Addition: Stock Card** in the picker. Its visual editor uses
+the same Context, Content, Layout, Interactions and Features sections as the
+other cards; no separate settings popup or YAML is required.
+
+The default **Home Assistant entities** source works with any stock provider
+that exposes sensors in HA. Select the main price sensor, then map optional
+metrics to its attributes or to separate sensors under Features. Each metric
+has an entity override and an attribute field: an empty attribute reads the
+selected entity's state. Price defaults to the main entity's state; other
+metrics initially look for standard quote attributes (for example,
+`regularMarketChange` and `marketCap`). Unavailable metrics show `--`, not zero.
+Currency can be read from the main entity or overridden in the editor.
+
+Entity-mode charts reuse Graph Advanced and Home Assistant recorder history,
+including configured price attributes. Chart ranges represent elapsed time,
+not trading sessions, and cannot show data older than recorder retention.
+The card does not fetch external APIs, store API keys, or install a provider.
+
+The optional **Stock Market Deluxe integration** source supports its quote
+and historical-price WebSocket API, including volume and SMA/EMA chart overlays.
+For that source only, separately install and configure
+[Stock Market Deluxe](https://github.com/codemonkey2k5/stock-market-deluxe-card).
+Its Python integration handles Yahoo requests, caching, rate limits and stock
+sensors. Mushroom Addition remains frontend-only and does not bundle or rename
+that integration. This is a new Mushroom-style frontend, not a copy of its UI.
+Holdings and display preferences are saved in the dashboard configuration.
 
 ### NAS dashboard cards and migration
 

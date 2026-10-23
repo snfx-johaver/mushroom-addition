@@ -309,8 +309,11 @@ describe("family editor schemas", () => {
 
   it("does not repeat main editor fields in additional appearance and controls", () => {
     for (const item of CATALOG.filter((entry) => entry.kind === "card")) {
-      const configured = new Set(flattenSchema(editorSchemaFor(item)).map((field) => field.name));
-      expect(additionalEditorSchemaFor(item).filter((field) => configured.has(field.name))).toEqual([]);
+      const schema = editorSchemaFor(item);
+      const configured = new Set(flattenSchema(schema).map((field) => field.name));
+      const additional = additionalEditorSchemaFor(item);
+      expect(additionalEditorSchemaFor(item, undefined, schema)).toEqual(additional);
+      expect(additional.filter((field) => configured.has(field.name))).toEqual([]);
     }
     const speedtest = CATALOG.find((item) => item.upstreamId === "custom_card_speedtest_gauges")!;
     expect(additionalEditorSchemaFor(speedtest)).toEqual([]);

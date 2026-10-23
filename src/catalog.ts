@@ -196,6 +196,17 @@ export const UPSTREAM_CATALOG: readonly CatalogItem[] = [
 
 export const NATIVE_CATALOG: readonly CatalogItem[] = [
   {
+    upstreamId: "stock_card",
+    sourcePath: "src/stock.ts",
+    kind: "card",
+    category: "custom-card",
+    family: "sensor",
+    tag: "mushroom-addition-stock-card",
+    name: "Stock Card",
+    description: "Provider-independent stock prices, history and holdings from Home Assistant entities, with optional Stock Market Deluxe data.",
+    preferredDomains: ["sensor"],
+  },
+  {
     upstreamId: "pi_hole_card",
     sourcePath: "src/pi-hole.ts",
     kind: "card",
