@@ -5,8 +5,8 @@
 Your dashboard called. It wants fewer YAML headaches and a little more fun(gus).
 
 **32 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
-The original 27 support all 33 Mushroom languages; the four imported NAS
-dashboard cards currently retain their upstream English interface.
+The original 27 support all 33 Mushroom languages; new Stock-specific labels
+and the four imported NAS dashboard cards currently use English fallbacks.
 Energy, media, rooms, batteries,
 graphs, remotes and more. Pick a card, pick your entities, enjoy your dashboard.
 YAML is still welcome; it just isn't compulsory.

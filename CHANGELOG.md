@@ -4,6 +4,12 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+## 0.5.2 - 2026-10-24
+
+- Add the provider-independent Stock Card with visual entity/attribute mappings,
+  recorder history, holdings and optional Stock Market Deluxe backend support.
+- Reuse shared visual-editor schemas across unrelated Home Assistant updates
+  while keeping entity selectors and configuration-dependent fields current.
 - Add four NAS cards: Server Overview, Storage and Disks, Docker Containers,
   and Unified Dashboard. Preserve Synology DSM/QNAP/manual discovery, all
   upstream entity mappings, editors and optional Portainer/manual controls.
