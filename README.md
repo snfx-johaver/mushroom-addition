@@ -1,35 +1,62 @@
 # Mushroom Addition
 
 [![CI](https://github.com/snfx-johaver/mushroom-addition/actions/workflows/ci.yml/badge.svg)](https://github.com/snfx-johaver/mushroom-addition/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/snfx-johaver/mushroom-addition)](https://github.com/snfx-johaver/mushroom-addition/releases/latest)
 
 Your dashboard called. It wants fewer YAML headaches and a little more fun(gus).
 
 **32 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
-The original 27 support all 33 Mushroom languages; new Stock-specific labels
-and the four imported NAS dashboard cards currently use English fallbacks.
-Energy, media, rooms, batteries,
-graphs, remotes and more. Pick a card, pick your entities, enjoy your dashboard.
+Energy, media, rooms, batteries, graphs, remotes and more.
+Pick a card, pick your entities, enjoy your dashboard.
 YAML is still welcome; it just isn't compulsory.
+
+[![Open Mushroom Addition in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=snfx-johaver&repository=mushroom-addition&category=plugin)
+
+[Browse the cards](docs/CATALOG.md) / [Community post](https://community.home-assistant.io/t/mushroom-addition-integration-more-fungus-to-enjoy/1030164) / [Bugs and ideas](https://github.com/snfx-johaver/mushroom-addition/issues)
 
 ![Mushroom Addition: Home Assistant dashboard cards with visual editors](docs/assets/project-banner.svg)
 
 A big thank-you to **[Mushroom](https://github.com/piitaya/lovelace-mushroom)**
-for the roots. We grew a few more caps. This is an independent companion project,
-not an official Mushroom release, and does not require Mushroom to be installed.
+and its contributors for the roots: clean design, thoughtful controls and
+editors that make dashboards a pleasure to build. We grew a few more caps.
+This is an independent companion project, not an official Mushroom release,
+and does not require Mushroom to be installed.
+
+## A little more fun(gus), in pictures
+
+Real Home Assistant dashboards, shared in the
+[community post](https://community.home-assistant.io/t/mushroom-addition-integration-more-fungus-to-enjoy/1030164).
+Click a screenshot for a closer look.
+
+| Everyday controls and media | Around the house |
+|---|---|
+| [![Alarm, printer, tablet, washer, console and media controls on a real Home Assistant dashboard](https://community-assets.home-assistant.io/original/4X/2/2/b/22b18653285c52a31ca44ff12cc847fbadee713f.png)](https://community-assets.home-assistant.io/original/4X/2/2/b/22b18653285c52a31ca44ff12cc847fbadee713f.png) | [![NAS, speedtest, scenes, plants, pollen, trash and astronomy cards on a real Home Assistant dashboard](https://community-assets.home-assistant.io/original/4X/b/b/7/bb7e904bb6d1b5e68daeec7d6024f78ed833a012.png)](https://community-assets.home-assistant.io/original/4X/b/b/7/bb7e904bb6d1b5e68daeec7d6024f78ed833a012.png) |
+| Printer ink, laundry progress, playback and a remote within reach. | Network stats, scene shortcuts and the small things that keep a home ticking. |
+| **Rooms, graphs and energy** | **NAS dashboards** |
+| [![Room controls, energy flows and history graphs on a real Home Assistant dashboard](https://community-assets.home-assistant.io/original/4X/0/2/6/026ac451af58e280b008f4a834bb261bd43225c5.png)](https://community-assets.home-assistant.io/original/4X/0/2/6/026ac451af58e280b008f4a834bb261bd43225c5.png) | [![Storage, Docker containers and unified layouts from the earlier NAS dashboard](https://community-assets.home-assistant.io/original/4X/c/7/0/c70fa96613cef06f8915c2639d8a013a15f30eb8.png)](https://community-assets.home-assistant.io/original/4X/c/7/0/c70fa96613cef06f8915c2639d8a013a15f30eb8.png) |
+| See how your rooms and energy are doing, with history a glance away. | Storage, drive health and containers together, without jumping between pages. |
+
+These are real setups, not mockups; some cards are only partially configured.
+The NAS image is from the earlier dashboard whose layouts are now included.
+Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all 32.
 
 ## Install with HACS
 
 Mushroom Addition is a **Dashboard** plugin, not a backend integration.
 It requires **Home Assistant 2026.10.2 or newer** and a supported modern browser.
 
-[Open Mushroom Addition in HACS](https://my.home-assistant.io/redirect/hacs_repository/?owner=snfx-johaver&repository=mushroom-addition&category=plugin)
+**Now in the default HACS store.** No custom repository needed.
 
-Until it is accepted into the default HACS catalog:
+[![Open Mushroom Addition in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=snfx-johaver&repository=mushroom-addition&category=plugin)
 
-1. In HACS, open **Custom repositories**.
-2. Add `https://github.com/snfx-johaver/mushroom-addition` with type **Dashboard**.
-3. Install **Mushroom Addition** and reload your browser.
-4. Add a dashboard card and search for **Mushroom Addition**.
+1. Click the button above, or open **HACS** and search for **Mushroom Addition**.
+2. Open it and choose **Download**.
+3. Reload your browser.
+4. Edit a dashboard, add a card and search for **Mushroom Addition**.
+
+Already using a manual copy? Remove its old dashboard resource after installing
+through HACS, keeping only the HACS-managed resource below. Your existing card
+configurations can stay as they are. Reload every open dashboard browser.
 
 If HACS does not register the resource automatically, add this URL as a
 **JavaScript module** under **Settings > Dashboards > Resources**:
@@ -60,8 +87,17 @@ Cards use your Home Assistant theme and language. Your custom names, entity IDs
 and action values stay untouched. Some cards need their corresponding sensors
 or integrations; installing a card does not install its data source.
 
+The original 27 cards support all 33 Mushroom languages. Stock-specific labels
+and the four expanded NAS cards currently use English fallbacks.
+
 See the **[card catalog](docs/CATALOG.md)** for the complete list and source
 references, or the [changelog](CHANGELOG.md) for what's new.
+
+Tried it on your setup? Share your dashboard in the
+[community thread](https://community.home-assistant.io/t/mushroom-addition-integration-more-fungus-to-enjoy/1030164).
+Found a rough edge or have an idea for another card?
+[Open an issue or feature request](https://github.com/snfx-johaver/mushroom-addition/issues)
+and help grow the next batch.
 
 ### Stock Card
 
