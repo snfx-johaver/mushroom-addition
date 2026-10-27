@@ -254,8 +254,6 @@ export const createStubConfig = (
       }
       : descriptor.upstreamId === "custom_card_playstation"
         ? { action: entity ? "more-info" : "none", entity }
-        : descriptor.upstreamId === "advanced_home_energy_management"
-          ? { action: "navigate", navigation_path: "/hems-tower/savings-overview" }
         : descriptor.upstreamId === "custom_card_plant"
           ? { action: "more-info" }
           : tapAction;

@@ -1,7 +1,8 @@
 import { localizeText } from "./localize";
 import { LitElement, css, html, nothing, type TemplateResult } from "lit";
+import { styleMap } from "lit/directives/style-map.js";
 import { customElement, property, state } from "lit/decorators.js";
-import { fireEvent } from "./helpers";
+import { cssUrl, fireEvent } from "./helpers";
 import type { ActionConfig, AdditionConfig, AdditionItemConfig, CarouselEffect, HassEntity, HomeAssistant } from "./types";
 
 export const carouselControlEnabled = (
@@ -302,7 +303,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
         }}
         >
         <span class="icon-circle">${picture
-          ? html`<span class="picture" style=${`background-image:url("${String(picture)}")`}></span>`
+          ? html`<span class="picture" style=${styleMap({ backgroundImage: cssUrl(picture) })}></span>`
           : item.icon
             ? html`<ha-icon .icon=${item.icon}></ha-icon>`
             : entity

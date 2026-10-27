@@ -126,7 +126,6 @@ const config: AdditionConfig = {
   show_grid_phases: true,
   show_battery_units: true,
   show_tariff_timeline: true,
-  tap_action: { action: "navigate", navigation_path: "/hems-tower/savings-overview" },
 };
 
 afterEach(() => {
@@ -168,11 +167,15 @@ describe("Advanced Energy - Home Energy Management", () => {
     }
   });
 
-  it("discovers the source entities and navigation defaults", () => {
+  it("discovers source entities without site-specific navigation defaults", () => {
     const item = CATALOG.find((candidate) =>
       candidate.upstreamId === "advanced_home_energy_management")!;
     const hass: HomeAssistant = { states, callService: vi.fn(async () => undefined) };
-    expect(createStubConfig(item, hass, Object.keys(states), [])).toMatchObject(config);
+    const stub = createStubConfig(item, hass, Object.keys(states), []);
+    expect(stub).toMatchObject(config);
+    expect(stub.navigation_path).toBeUndefined();
+    expect(stub.tap_action).toEqual({ action: "more-info" });
+    expect(stub.tap_action).not.toHaveProperty("navigation_path");
   });
 
   it("renders the circular live-flow dashboard without button-card or card-mod", async () => {

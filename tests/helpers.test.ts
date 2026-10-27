@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { displayName, handleAction, migrateLegacyConfig, normalizeConfig, stateLabel } from "../src/helpers";
+import { cssUrl, displayName, handleAction, migrateLegacyConfig, normalizeConfig, stateLabel } from "../src/helpers";
 import type { AdditionConfig, EntityNameItem, HassEntity, HomeAssistant } from "../src/types";
 
 const entity: HassEntity = {
@@ -9,6 +9,12 @@ const entity: HassEntity = {
 };
 
 describe("shared card behavior", () => {
+  it("escapes entity-provided values before using them in CSS url() strings", () => {
+    expect(cssUrl('/api/image?id="quoted"\\path\nnext')).toBe('url("/api/image?id=\\22 quoted\\22 \\5c path\\a next")');
+    expect(cssUrl("")).toBeUndefined();
+    expect(cssUrl(undefined)).toBeUndefined();
+  });
+
   it("formats state and friendly names", () => {
     expect(stateLabel(entity)).toBe("42 W");
     expect(displayName({ type: "x" }, entity)).toBe("Power");

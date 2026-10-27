@@ -9,6 +9,17 @@ export const activeStates = new Set([
   "cleaning", "unlocked", "active",
 ]);
 
+export const cssUrl = (value: unknown): string | undefined => {
+  if (typeof value !== "string" || !value) return undefined;
+  const escaped = [...value].map((character) => {
+    const codePoint = character.codePointAt(0) ?? 0xfffd;
+    return codePoint <= 0x1f || codePoint === 0x7f || character === '"' || character === "\\"
+      ? `\\${(codePoint || 0xfffd).toString(16)} `
+      : character;
+  }).join("");
+  return `url("${escaped}")`;
+};
+
 export const stateLabel = (entity?: HassEntity, hass?: HomeAssistant): string => {
   if (!entity) return localizeText(hass, "Entity unavailable");
   if (hass?.formatEntityState) return hass.formatEntityState(entity);

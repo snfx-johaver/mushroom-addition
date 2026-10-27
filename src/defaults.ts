@@ -171,11 +171,6 @@ export const populatedDefaultsFor = (
         price_medium_color: "#9ccc65",
         price_high_color: "#fdd835",
         price_critical_color: "#e53935",
-        navigation_path: "/hems-tower/savings-overview",
-        tap_action: {
-          action: "navigate",
-          navigation_path: "/hems-tower/savings-overview",
-        },
       }
       : item.upstreamId === "advanced_energy_buy_sell"
       ? {

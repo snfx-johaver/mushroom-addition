@@ -1,9 +1,10 @@
 import { html, nothing, svg, type TemplateResult } from "lit";
+import { styleMap } from "lit/directives/style-map.js";
 import type { ActionConfig, AdditionConfig, AdditionItemConfig, CatalogItem, HassEntity, HomeAssistant, WeatherForecast } from "./types";
 import { controlActions } from "./control-actions";
 import { localize, localizeText } from "./localize";
 import { ROOM_STATUS_KINDS, ROOM_STATUS_LIMIT, roomEntityIcon, roomEntityUnavailable, roomItemDefaultsFor, roomLightEntity, roomLightRgb, roomSecondary, roomStatusActive, roomStatusIcon, roomStatusKind } from "./room";
-import { activeStates, displayName, fireEvent, stateLabel } from "./helpers";
+import { activeStates, cssUrl, displayName, fireEvent, stateLabel } from "./helpers";
 import { wasteStreamsForConfig } from "./waste-streams";
 import { defaultIconFor } from "./defaults";
 import { renderEntityIcon } from "./entity-icon";
@@ -67,7 +68,7 @@ const sourceIconBubble = (
   if (ctx.config.icon_type === "none") return nothing;
   const picture = ctx.config.icon_type === "entity-picture" ? attr(ctx.entity, "entity_picture") : undefined;
   return picture
-    ? html`<span class="ulm-icon entity-picture ${extraClass}" style=${`background-image:url("${String(picture)}")`}></span>`
+    ? html`<span class="ulm-icon entity-picture ${extraClass}" style=${styleMap({ backgroundImage: cssUrl(picture) })}></span>`
     : html`<span class="ulm-icon source-icon ${active ? "is-source-active" : ""} ${extraClass}"
         style=${`--source-color:${color}`}>
         ${renderEntityIcon(ctx.hass, ctx.entity, ctx.config.icon ||
@@ -104,7 +105,7 @@ const iconBubble = (ctx: RenderContext, fallback: string, tone = "blue", extraCl
   if (ctx.config.icon_type === "none") return nothing;
   const picture = ctx.config.icon_type === "entity-picture" ? attr(ctx.entity, "entity_picture") : undefined;
   return picture
-    ? html`<span class="ulm-icon entity-picture ${extraClass}" style=${`background-image:url("${String(picture)}")`}></span>`
+    ? html`<span class="ulm-icon entity-picture ${extraClass}" style=${styleMap({ backgroundImage: cssUrl(picture) })}></span>`
     : html`<span class="ulm-icon tone-${tone} ${extraClass}">${renderEntityIcon(ctx.hass, ctx.entity, ctx.config.icon, fallback)}</span>`;
 };
 const selectedSecondary = (ctx: RenderContext, recommended?: string): string | undefined => {
@@ -413,7 +414,7 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
         }
       }} style=${`--item-color:${color}`} class="scene-button ${active ? "is-active" : ""}">
         <i>${entityPicture
-          ? html`<span class="scene-entity-picture" style=${`background-image:url("${String(entityPicture)}")`}></span>`
+          ? html`<span class="scene-entity-picture" style=${styleMap({ backgroundImage: cssUrl(entityPicture) })}></span>`
           : html`<ha-icon .icon=${item.icon || entity?.attributes.icon || "mdi:palette"}></ha-icon>`
         }</i>
         <span>${name}</span>
@@ -527,7 +528,7 @@ const renderRoom = (ctx: RenderContext): TemplateResult => {
           double_tap_action: item.double_tap_action ?? defaults.double_tap_action,
         })}
       >${entityPicture
-        ? html`<span class="room-sensor-picture" style=${`background-image:url("${String(entityPicture)}")`}></span>`
+        ? html`<span class="room-sensor-picture" style=${styleMap({ backgroundImage: cssUrl(entityPicture) })}></span>`
         : html`<ha-icon .icon=${item.icon || roomEntityIcon(entity, item.entity)}></ha-icon>`
       }<span class="room-sensor-label">${stateLabel(entity, ctx.hass)}</span></button>`;
     })}</div>` : nothing}
@@ -1203,7 +1204,7 @@ const renderSonos = (ctx: RenderContext): TemplateResult => {
     </div>` : nothing}
   `;
   return ctx.actionSurface(`custom-sonos ${picture ? "has-art" : ""}`, html`
-    ${picture ? html`<span class="media-art" style=${`background-image:url("${String(picture)}")`}></span>` : nothing}
+    ${picture ? html`<span class="media-art" style=${styleMap({ backgroundImage: cssUrl(picture) })}></span>` : nothing}
     <div class="custom-card-heading">
       ${iconBubble(ctx, "mdi:speaker", ctx.entity?.state === "playing" ? "green" : "grey")}
       ${heading(mediaContext, label, title && !ctx.config.name ? String(title) : undefined)}
@@ -1496,12 +1497,12 @@ const renderConsoleCard = (ctx: RenderContext): TemplateResult => {
     ctx.service(powerDomain, powerOn ? "turn_off" : "turn_on", { entity_id: power.entity_id });
   };
   return ctx.actionSurface(`custom-console-card platform-${platform} state-${state} ${activeArtwork ? "has-artwork" : ""}`, html`
-    ${activeArtwork ? html`<div class="console-backdrop" style=${`background-image:url("${String(artwork)}")`}></div>` : nothing}
+    ${activeArtwork ? html`<div class="console-backdrop" style=${styleMap({ backgroundImage: cssUrl(artwork) })}></div>` : nothing}
     <div class="console-content">
       <div class="card-heading console-header">
         ${ctx.config.icon_type !== "none" ? html`
           <span class="console-logo ${picture && ctx.config.icon_type !== "icon" ? "has-picture" : ""}"
-            style=${picture && ctx.config.icon_type !== "icon" ? `background-image:url("${String(picture)}")` : ""}>
+            style=${styleMap({ backgroundImage: picture && ctx.config.icon_type !== "icon" ? cssUrl(picture) : undefined })}>
             ${picture && ctx.config.icon_type !== "icon" ? nothing : renderEntityIcon(ctx.hass, ctx.entity, ctx.config.icon, presentation.icon)}
           </span>
         ` : nothing}

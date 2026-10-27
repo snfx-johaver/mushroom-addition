@@ -4,6 +4,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Safely escape entity-provided image URLs in CSS backgrounds and remove the
+  setup-specific navigation default from Home Energy Management.
+
 ## 0.5.2 - 2026-10-24
 
 - Add the provider-independent Stock Card with visual entity/attribute mappings,
