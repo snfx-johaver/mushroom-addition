@@ -419,6 +419,8 @@ export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, P
   parameters?: CarouselParametersConfig;
   cartridges?: PrinterCartridgeConfig[];
   waste_streams?: WasteStreamConfig[];
+  show_extra_pollen?: boolean;
+  pollen_extra?: WasteStreamConfig[];
   hide_unknown_dates?: boolean;
   shortcuts?: SonosShortcutsConfig;
   use_media_info?: boolean;

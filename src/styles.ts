@@ -717,6 +717,8 @@ export const sharedStyles = css`
   .speedtest-value-copy small { margin-top: 4px; max-width: 100%; color: var(--mush-card-secondary-color, var(--secondary-text-color)); font-size: var(--mush-card-secondary-font-size, 12px); line-height: var(--mush-card-secondary-line-height, 16px); font-weight: var(--mush-card-secondary-font-weight, 400); overflow-wrap: anywhere; }
   .custom-pollen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 12px; }
   .pollen-heading { grid-column: 1 / -1; min-width: 0; }
+  .pollen-extra { grid-column: 1 / -1; margin-top: 4px; }
+  .pollen-extra-row { cursor: pointer; }
   .pollen-item { display: grid; min-width: 0; min-height: 92px; place-items: center; gap: 4px; padding: 8px 4px; border: 0; border-radius: var(--mush-control-border-radius, 12px); background: transparent; color: var(--primary-text-color); text-align: center; cursor: pointer; }
   .pollen-item:disabled { cursor: default; opacity: .55; }
   .pollen-item-icon { position: relative; display: grid; width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--pollen) 20%, transparent); color: var(--pollen); }

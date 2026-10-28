@@ -333,6 +333,8 @@ export class MushroomAdditionEditor extends LitElement {
       ? this.renderPiHoleEditor()
       : item.upstreamId === "custom_card_trash"
       ? this.renderWasteStreamEditor()
+      : item.upstreamId === "custom_card_pollen"
+      ? (this.config.show_extra_pollen === true ? this.renderPollenExtraEditor() : nothing)
       : item.upstreamId === "custom_card_media_player_sonos"
         ? this.renderSonosShortcutEditor()
       : item.upstreamId === "custom_card_entity_carousel"
@@ -1387,6 +1389,60 @@ export class MushroomAdditionEditor extends LitElement {
         <button class="add" @click=${this.addWasteStream}>${localizeText(this.hass, "Add waste stream")}</button>
       </section>
     `;
+  }
+
+  private renderPollenExtraEditor() {
+    if (!this.config) return nothing;
+    const rows = this.config.pollen_extra ?? [];
+    const field = (index: number, name: keyof WasteStreamConfig, label: string, selector: Record<string, unknown>, value: unknown, wide = false) => html`
+      <label class="field${wide ? " wide" : ""}">
+        <span>${localizeText(this.hass, label)}</span>
+        <ha-selector .hass=${this.hass} .selector=${selector} .value=${value}
+          @value-changed=${(event: CustomEvent) => this.updatePollenExtra(index, name, event.detail.value)}></ha-selector>
+      </label>`;
+    return html`
+      <section class="item-editor waste-stream-editor">
+        <h3>${localizeText(this.hass, "Additional pollen sensors")}</h3>
+        <p>${localizeText(this.hass, "Each enabled row is shown below the three main pollen types. Empty or disabled rows are omitted from the card.")}</p>
+        ${rows.map((row, index) => html`
+          <div class="item-row waste-stream-row" data-pollen-index=${index}>
+            <h4>${row.label || `${localizeText(this.hass, "Pollen sensor")} ${index + 1}`}</h4>
+            ${field(index, "enabled", "Show this pollen sensor", { boolean: {} }, row.enabled !== false)}
+            ${field(index, "entity", "Entity", { entity: { domain: ["sensor"] } }, row.entity, true)}
+            ${field(index, "label", "Label", { text: {} }, row.label ?? "")}
+            ${field(index, "icon", "Icon", { icon: {} }, row.icon)}
+            ${field(index, "color", "Color", { ui_color: { default_color: "green" } }, row.color)}
+            <div class="item-actions wide">
+              <button ?disabled=${index === 0} @click=${() => this.movePollenExtra(index, -1)}>${localizeText(this.hass, "Move up")}</button>
+              <button ?disabled=${index === rows.length - 1} @click=${() => this.movePollenExtra(index, 1)}>${localizeText(this.hass, "Move down")}</button>
+              <button @click=${() => this.updatePollenExtras(rows.filter((_, i) => i !== index))}>${localizeText(this.hass, "Remove")}</button>
+            </div>
+          </div>
+        `)}
+        <button class="add" @click=${() => this.updatePollenExtras([...rows, { enabled: true, entity: "", label: "", icon: "mdi:flower-pollen" }])}>${localizeText(this.hass, "Add pollen sensor")}</button>
+      </section>
+    `;
+  }
+
+  private updatePollenExtra(index: number, field: keyof WasteStreamConfig, value: unknown): void {
+    const rows = [...(this.config?.pollen_extra ?? [])];
+    rows[index] = { ...rows[index], [field]: field === "enabled" ? value !== false : value || undefined };
+    this.updatePollenExtras(rows);
+  }
+
+  private movePollenExtra(index: number, direction: -1 | 1): void {
+    const rows = [...(this.config?.pollen_extra ?? [])];
+    const target = index + direction;
+    if (target < 0 || target >= rows.length) return;
+    [rows[index], rows[target]] = [rows[target], rows[index]];
+    this.updatePollenExtras(rows);
+  }
+
+  private updatePollenExtras(rows: WasteStreamConfig[]): void {
+    if (!this.config) return;
+    const next = { ...this.config, pollen_extra: rows };
+    this.config = next;
+    fireEvent(this, "config-changed", { config: next });
   }
 
   private renderSonosShortcutEditor() {

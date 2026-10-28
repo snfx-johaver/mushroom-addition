@@ -301,6 +301,7 @@ program_stage_entity|Ентитет тренутне фазе програма
 washer_power_entity|Сензор снаге машине за прање
 program_select_entity|Избор програма
 datetime_step|Величина корака (минути)
+show_extra_pollen|Додатни сензори полена
 datetime_single_row|Један ред
 datetime_manual_entry|Ручни унос времена
 power_switch_entity|Дугме за напајање
@@ -1205,6 +1206,7 @@ program_stage_entity|Ентитет активне фазе програма м�
 washer_power_entity|Сензор тренутне потрошње снаге машине за прање или сушење.
 program_select_entity|Ентитет избора за падајућу листу програма изнад дугмади.
 datetime_step|Минути које додају или одузимају дугмад горе и доле.
+show_extra_pollen|Приказује додатне сензоре полена испод три главна типа. Додајте колико желите.
 datetime_single_row|Поставља наслов, дугмад и време у један ред.
 datetime_manual_entry|Претвара време у поље у које можете кликнути и куцати.
 power_switch_entity|Прекидач који користи дугме за напајање поред дугмади за паузу и стоп.

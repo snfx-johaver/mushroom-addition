@@ -895,6 +895,7 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
         entity(["sensor"], "weeds_entity"),
         text("custom_card_pollen_weed_name"),
         { name: "custom_card_pollen_weed_icon", selector: { icon: {} } },
+        toggle("show_extra_pollen"),
         ...presentation(),
       ]
     : item.upstreamId === "custom_card_speedtest_gauges"

@@ -29,7 +29,7 @@ const catalogs = [
     installed: installedLabels,
     additions: finnishLabels,
     expectedInstalledFingerprint: "6a9ec4ab1d0adf5bc061d5d375d4cdc995c9c5310dee98cf5e127938c2cb273f",
-    expectedAdditions: 770,
+    expectedAdditions: 771,
   },
   {
     name: "helpers",
@@ -38,7 +38,7 @@ const catalogs = [
     installed: installedHelpers,
     additions: finnishHelpers,
     expectedInstalledFingerprint: "06594ef25c1e1b435b23030d073b0c6c03e3c58618571d716f04b74eb264adaa",
-    expectedAdditions: 555,
+    expectedAdditions: 556,
   },
 ];
 
@@ -82,10 +82,10 @@ describe("complete Finnish localization", () => {
       }
     }
 
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1186);
-    expect(Object.keys(englishHelpers)).toHaveLength(556);
-    expect(Object.keys(finnishLabels)).toHaveLength(770);
-    expect(Object.keys(finnishHelpers)).toHaveLength(555);
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1187);
+    expect(Object.keys(englishHelpers)).toHaveLength(557);
+    expect(Object.keys(finnishLabels)).toHaveLength(771);
+    expect(Object.keys(finnishHelpers)).toHaveLength(556);
     expect(Object.keys(finnishLabels).filter((key) => key.startsWith("ui.graph."))).toEqual([]);
   });
 

@@ -2228,6 +2228,11 @@ const renderPollen = (ctx: RenderContext): TemplateResult => {
       extreme: normalized === "very_high",
     };
   };
+  const extraRows = ctx.config.show_extra_pollen === true
+    ? (ctx.config.pollen_extra ?? [])
+      .filter((stream) => stream.enabled !== false && stream.entity)
+      .map((stream) => ({ stream, entity: ctx.hass.states[stream.entity!] }))
+    : [];
   return ctx.actionSurface("custom-pollen", html`
     <div class="pollen-heading">${cardHeading(ctx)}</div>
     ${items.map((item) => {
@@ -2244,6 +2249,21 @@ const renderPollen = (ctx: RenderContext): TemplateResult => {
         <b>${name}</b><small>${item.entity ? state.label : localizeText(ctx.hass, "Entity unavailable")}</small>
       </button>`;
     })}
+    ${extraRows.length ? html`<div class="waste-grid pollen-extra">${extraRows.map(({ stream, entity }) => {
+      const known = entity && ["none", "very_low", "low", "medium", "high", "very_high"].includes(entity.state.toLowerCase());
+      const level = known ? severity(entity.state) : undefined;
+      const unit = entity?.attributes.unit_of_measurement;
+      const shown = !entity ? localizeText(ctx.hass, "Entity unavailable")
+        : level ? level.label : `${entity.state}${unit ? ` ${String(unit)}` : ""}`;
+      const color = configuredColor(stream.color, level?.color ?? "rgb(var(--rgb-green, 76, 175, 80))");
+      return html`<span class="waste-row pollen-extra-row" style=${`--waste-color:${color}`} role="button" tabindex="0"
+        @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => entity && runControlAction(event, ctx, { action: "more-info" }, entity.entity_id)}>
+        <ha-icon .icon=${stream.icon || entity?.attributes.icon || "mdi:flower-pollen"}></ha-icon>
+        <b>${stream.label || entity?.attributes.friendly_name || stream.entity}</b>
+        <small>${shown}</small>
+      </span>`;
+    })}</div>` : nothing}
   `);
 };
 
