@@ -438,9 +438,9 @@ export class MushroomMiniGraphCard extends LitElement {
     }
     ha-card.card-shadow { box-shadow: var(--ha-card-box-shadow, 0 2px 8px rgba(0,0,0,.08)); }
     ha-card.group { border: 0; border-radius: 0; box-shadow: none; background: transparent; }
-    .content { display: flex; flex-direction: column; box-sizing: border-box; min-height: 100%; gap: var(--mush-spacing, 12px); padding: var(--mush-spacing, 12px); }
+    .content { display: flex; flex-direction: column; box-sizing: border-box; height: 100%; overflow: hidden; gap: var(--mush-spacing, 12px); padding: var(--mush-spacing, 12px); }
     .content > * { flex: 0 0 auto; min-width: 0; }
-    .content > .graph { flex: 1 1 auto; min-height: 60px; }
+    .content > .graph { flex: 1 1 auto; min-height: 32px; }
     .header { display: flex; align-items: center; gap: var(--mush-spacing, 12px); min-width: 0; }
     .header[data-align="left"] { justify-content: flex-start; }
     .header[data-align="right"] { justify-content: flex-end; }
@@ -566,11 +566,20 @@ export class MushroomMiniGraphCard extends LitElement {
   }
 
   public getGridOptions(): { columns: number; rows: number; min_columns: number; min_rows: number } {
-    return { columns: 12, rows: this.getCardSize(), min_columns: 3, min_rows: 2 };
+    return { columns: 12, rows: this.gridRows(), min_columns: 3, min_rows: 2 };
   }
 
   private graphStyle(): string {
-    return `flex-basis:${this.config?.height ?? 150}px;height:${this.config?.height ?? 150}px`;
+    return `flex:1 1 ${this.config?.height ?? 150}px;min-height:32px`;
+  }
+
+  private gridRows(): number {
+    const show = normalizeShow(this.config?.show);
+    const radial = show.graph === "radial" || show.graph === "pie" || show.graph === "donut";
+    const chrome = 24 + (show.name || show.icon ? 48 : 0) + (show.state ? 42 : 0) + (show.legend ? 24 : 0)
+      + (show.average || show.extrema ? 24 : 0);
+    const graph = Number(this.config?.height ?? 150) * (radial ? 0.9 : 0.7);
+    return Math.max(2, Math.ceil((chrome + graph) / 64));
   }
 
   public getCardSize(): number {

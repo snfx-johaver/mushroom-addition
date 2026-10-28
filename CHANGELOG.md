@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Graph Advanced card: the graph now shrinks to fit small card sizes instead of being cut off, and the default grid height is derived from the graph type and visible content.
+
 ## 0.6.0 - 2026-10-29
 
 - Light Area Card: scene lookup is cached per config (runs once), and all light card labels are translated.
