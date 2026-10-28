@@ -3,6 +3,7 @@
 Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
+- Input Datetime card: added step size, single-row layout and manual time entry (click the time to type it).
 - Added a **Card shadow** toggle to the Layout section of every card editor (off by default); the soft shadow around the card border is now opt-in.
 
 - Scenes Card: new "Scenes per row" setting wraps scene buttons onto additional rows (all scenes are now shown).

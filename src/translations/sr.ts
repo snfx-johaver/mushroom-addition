@@ -300,6 +300,9 @@ machine_state_entity|Ентитет стања машине
 program_stage_entity|Ентитет тренутне фазе програма
 washer_power_entity|Сензор снаге машине за прање
 program_select_entity|Избор програма
+datetime_step|Величина корака (минути)
+datetime_single_row|Један ред
+datetime_manual_entry|Ручни унос времена
 power_switch_entity|Дугме за напајање
 grid_power_entity|Снага електричне мреже
 grid_phase_1_entity|Фаза мреже L1
@@ -1201,6 +1204,9 @@ machine_state_entity|Ентитет стања рада, паузе, миров�
 program_stage_entity|Ентитет активне фазе програма машине за прање или сушење.
 washer_power_entity|Сензор тренутне потрошње снаге машине за прање или сушење.
 program_select_entity|Ентитет избора за падајућу листу програма изнад дугмади.
+datetime_step|Минути које додају или одузимају дугмад горе и доле.
+datetime_single_row|Поставља наслов, дугмад и време у један ред.
+datetime_manual_entry|Претвара време у поље у које можете кликнути и куцати.
 power_switch_entity|Прекидач који користи дугме за напајање поред дугмади за паузу и стоп.
 grid_power_entity|Сензор снаге мреже са знаком. Позитивне и негативне вредности приказују се стрелицом смера.
 grid_phase_1_entity|Опциони сензор снаге фазе мреже L1.

@@ -976,11 +976,11 @@ const nr = (e, t, a) => {
     else if (s[m] === o[y]) l[y] = dt(i[m], r[y]), Yt(e, l[y + 1], i[m]), m++, y--;
     else if (s[h] === o[g]) l[g] = dt(i[h], r[g]), Yt(e, i[m], i[h]), h--, g++;
     else if (d === void 0 && (d = nr(o, g, y), c = nr(s, m, h)), d.has(s[m])) if (d.has(s[h])) {
-      const k = c.get(o[g]), S = k !== void 0 ? i[k] : null;
-      if (S === null) {
+      const k = c.get(o[g]), A = k !== void 0 ? i[k] : null;
+      if (A === null) {
         const f = Yt(e, i[m]);
         dt(f, r[g]), l[g] = f;
-      } else l[g] = dt(S, r[g]), Yt(e, i[m], S), i[k] = null;
+      } else l[g] = dt(A, r[g]), Yt(e, i[m], A), i[k] = null;
       g++;
     } else wn(i[h]), h--;
     else wn(i[m]), m++;
@@ -2406,6 +2406,9 @@ const co = new Set(uo.map((e) => e.canonical)), sn = [
   program_stage_entity: "Huidige programmafase",
   washer_power_entity: "Vermogenssensor",
   program_select_entity: "Programmakeuze",
+  datetime_step: "Stapgrootte (minuten)",
+  datetime_single_row: "Eén rij",
+  datetime_manual_entry: "Tijd handmatig typen",
   power_switch_entity: "Aan/uit-knop",
   grid_power_entity: "Netvermogen",
   grid_phase_1_entity: "Netfase L1",
@@ -2985,6 +2988,9 @@ const co = new Set(uo.map((e) => e.canonical)), sn = [
   program_stage_entity: "Entiteit met de actieve programmafase van de wasmachine of droger.",
   washer_power_entity: "Sensor voor het huidige stroomverbruik van de wasmachine of droger.",
   program_select_entity: "Select-entiteit voor de programmakeuzelijst boven de knoppen.",
+  datetime_step: "Minuten die de omhoog- en omlaagknoppen optellen of aftrekken.",
+  datetime_single_row: "Plaatst titel, knoppen en tijd op één rij.",
+  datetime_manual_entry: "Maakt van de tijd een veld waarin je kunt klikken en typen.",
   power_switch_entity: "Schakelaar die de aan/uit-knop naast de pauze- en stopknop gebruikt.",
   grid_power_entity: "Sensor voor netvermogen met teken. Positieve en negatieve waarden worden met een richtingspijl getoond.",
   grid_phase_1_entity: "Optionele vermogenssensor voor netfase L1.",
@@ -4174,6 +4180,9 @@ const or = [
   program_stage_entity: "Aktuelle Programmphase",
   washer_power_entity: "Leistungssensor",
   program_select_entity: "Programmauswahl",
+  datetime_step: "Schrittweite (Minuten)",
+  datetime_single_row: "Einzelne Zeile",
+  datetime_manual_entry: "Zeit manuell eingeben",
   power_switch_entity: "Ein/Aus-Schaltfläche",
   grid_power_entity: "Netzleistung",
   grid_phase_1_entity: "Netzphase L1",
@@ -4762,6 +4771,9 @@ const or = [
   program_stage_entity: "Entität mit dem aktiven Programmabschnitt der Waschmaschine oder des Trockners.",
   washer_power_entity: "Sensor für die aktuelle Leistungsaufnahme der Waschmaschine oder des Trockners.",
   program_select_entity: "Auswahl-Entität für das Programm-Dropdown über den Schaltflächen.",
+  datetime_step: "Minuten, die mit den Auf- und Ab-Tasten addiert oder abgezogen werden.",
+  datetime_single_row: "Platziert Titel, Schaltflächen und Uhrzeit in einer Zeile.",
+  datetime_manual_entry: "Macht die Uhrzeit zu einem Feld, in das man klicken und tippen kann.",
   power_switch_entity: "Schalter für die Ein/Aus-Schaltfläche neben Pause und Stopp.",
   grid_power_entity: "Vorzeichenbehafteter Netzleistungssensor. Positive und negative Werte werden mit einem Richtungspfeil angezeigt.",
   grid_phase_1_entity: "Optionaler Leistungssensor für Netzphase L1.",
@@ -5193,6 +5205,9 @@ const or = [
   program_stage_entity: "Etapa actual del programa",
   washer_power_entity: "Sensor de potencia",
   program_select_entity: "Selección de programa",
+  datetime_step: "Tamaño del paso (minutos)",
+  datetime_single_row: "Una sola fila",
+  datetime_manual_entry: "Escribir la hora manualmente",
   power_switch_entity: "Botón de encendido",
   grid_power_entity: "Potencia de la red",
   grid_phase_1_entity: "Fase L1 de la red",
@@ -6083,6 +6098,9 @@ const or = [
   program_stage_entity: "Entidad que contiene la etapa activa del programa de la lavadora o secadora.",
   washer_power_entity: "Sensor utilizado para mostrar el consumo eléctrico actual de la lavadora o secadora.",
   program_select_entity: "Entidad de selección usada para el desplegable de programas sobre los botones.",
+  datetime_step: "Minutos que suman o restan los botones de subir y bajar.",
+  datetime_single_row: "Coloca el título, los botones y la hora en una sola fila.",
+  datetime_manual_entry: "Convierte la hora en un campo en el que se puede hacer clic y escribir.",
   power_switch_entity: "Interruptor usado por el botón de encendido junto a los botones de pausa y parada.",
   grid_power_entity: "Sensor de potencia de la red con signo. Los valores positivos y negativos se muestran con una flecha de dirección.",
   grid_phase_1_entity: "Sensor de potencia opcional para la fase L1 de la red.",
@@ -6574,6 +6592,9 @@ const or = [
   program_stage_entity: "Étape du programme en cours",
   washer_power_entity: "Capteur de puissance",
   program_select_entity: "Sélection du programme",
+  datetime_step: "Taille du pas (minutes)",
+  datetime_single_row: "Une seule ligne",
+  datetime_manual_entry: "Saisir l'heure manuellement",
   power_switch_entity: "Bouton d'alimentation",
   grid_power_entity: "Puissance du réseau",
   grid_phase_1_entity: "Phase L1 du réseau",
@@ -7443,6 +7464,9 @@ const Ll = {
   program_stage_entity: "Entité contenant l’étape active du programme du lave-linge ou du sèche-linge.",
   washer_power_entity: "Capteur utilisé pour afficher la consommation électrique actuelle du lave-linge ou du sèche-linge.",
   program_select_entity: "Entité de sélection utilisée pour la liste déroulante des programmes au-dessus des boutons.",
+  datetime_step: "Minutes ajoutées ou retirées par les boutons haut et bas.",
+  datetime_single_row: "Place le titre, les boutons et l'heure sur une seule ligne.",
+  datetime_manual_entry: "Transforme l'heure en champ sur lequel cliquer et saisir.",
   power_switch_entity: "Interrupteur utilisé par le bouton d'alimentation à côté des boutons pause et arrêt.",
   grid_power_entity: "Capteur de puissance signée du réseau. Les valeurs positives et négatives sont affichées avec une flèche de direction.",
   ...Object.fromEntries([1, 2, 3].flatMap((e) => [
@@ -7915,6 +7939,9 @@ const Ll = {
   program_stage_entity: "当前程序阶段",
   washer_power_entity: "功率传感器",
   program_select_entity: "程序选择",
+  datetime_step: "步长（分钟）",
+  datetime_single_row: "单行",
+  datetime_manual_entry: "手动输入时间",
   power_switch_entity: "电源按钮",
   grid_power_entity: "电网功率",
   grid_phase_1_entity: "电网 L1 相",
@@ -8805,6 +8832,9 @@ const Ll = {
   program_stage_entity: "包含洗衣机或烘干机当前程序阶段的实体。",
   washer_power_entity: "用于显示洗衣机或烘干机当前用电功率的传感器。",
   program_select_entity: "用于按钮上方程序下拉菜单的选择实体。",
+  datetime_step: "向上和向下按钮增加或减少的分钟数。",
+  datetime_single_row: "将标题、按钮和时间放在同一行。",
+  datetime_manual_entry: "使时间成为可点击并输入的字段。",
   power_switch_entity: "暂停和停止按钮旁电源按钮所使用的开关。",
   grid_power_entity: "带正负号的电网功率传感器。正值和负值会配合方向箭头显示。",
   grid_phase_1_entity: "可选的电网 L1 相功率传感器。",
@@ -9236,6 +9266,9 @@ const Ll = {
   program_stage_entity: "Fase del programma attuale",
   washer_power_entity: "Sensore di potenza",
   program_select_entity: "Selezione programma",
+  datetime_step: "Dimensione del passo (minuti)",
+  datetime_single_row: "Riga singola",
+  datetime_manual_entry: "Digita l'ora manualmente",
   power_switch_entity: "Pulsante di accensione",
   grid_power_entity: "Potenza della rete elettrica",
   grid_phase_1_entity: "Fase di rete L1",
@@ -10126,6 +10159,9 @@ const Ll = {
   program_stage_entity: "Entità che contiene la fase attiva del programma della lavatrice o asciugatrice.",
   washer_power_entity: "Sensore usato per mostrare l'attuale consumo elettrico della lavatrice o asciugatrice.",
   program_select_entity: "Entità di selezione usata per il menu a tendina dei programmi sopra i pulsanti.",
+  datetime_step: "Minuti aggiunti o sottratti dai pulsanti su e giù.",
+  datetime_single_row: "Mette titolo, pulsanti e ora su un'unica riga.",
+  datetime_manual_entry: "Rende l'ora un campo su cui cliccare e scrivere.",
   power_switch_entity: "Interruttore usato dal pulsante di accensione accanto ai pulsanti pausa e stop.",
   grid_power_entity: "Sensore con segno della potenza della rete elettrica. I valori positivi e negativi vengono mostrati con una freccia di direzione.",
   grid_phase_1_entity: "Sensore di potenza facoltativo per la fase di rete L1.",
@@ -10557,6 +10593,9 @@ const Ll = {
   program_stage_entity: "目前程式階段",
   washer_power_entity: "功率感測器",
   program_select_entity: "程式選擇",
+  datetime_step: "步長（分鐘）",
+  datetime_single_row: "單行",
+  datetime_manual_entry: "手動輸入時間",
   power_switch_entity: "電源按鈕",
   grid_power_entity: "電網功率",
   grid_phase_1_entity: "電網 L1 相",
@@ -11447,6 +11486,9 @@ const Ll = {
   program_stage_entity: "包含洗衣機或烘乾機目前程式階段的實體。",
   washer_power_entity: "用於顯示洗衣機或烘乾機目前用電功率的感測器。",
   program_select_entity: "用於按鈕上方程式下拉選單的選擇實體。",
+  datetime_step: "向上與向下按鈕增加或減少的分鐘數。",
+  datetime_single_row: "將標題、按鈕和時間放在同一行。",
+  datetime_manual_entry: "讓時間成為可點擊並輸入的欄位。",
   power_switch_entity: "暫停與停止按鈕旁電源按鈕所使用的開關。",
   grid_power_entity: "帶正負號的電網功率感測器。正值和負值會配合方向箭頭顯示。",
   grid_phase_1_entity: "可選的電網 L1 相功率感測器。",
@@ -11878,6 +11920,9 @@ const Ll = {
   program_stage_entity: "Etapa atual do programa",
   washer_power_entity: "Sensor de potência",
   program_select_entity: "Seleção de programa",
+  datetime_step: "Tamanho do passo (minutos)",
+  datetime_single_row: "Linha única",
+  datetime_manual_entry: "Digitar o horário manualmente",
   power_switch_entity: "Botão de energia",
   grid_power_entity: "Potência da rede elétrica",
   grid_phase_1_entity: "Fase L1 da rede elétrica",
@@ -12768,6 +12813,9 @@ const Ll = {
   program_stage_entity: "Entidade que contém a etapa ativa do programa da lavadora ou secadora.",
   washer_power_entity: "Sensor usado para mostrar o consumo atual de potência da lavadora ou secadora.",
   program_select_entity: "Entidade de seleção usada no menu suspenso de programas acima dos botões.",
+  datetime_step: "Minutos somados ou subtraídos pelos botões de subir e descer.",
+  datetime_single_row: "Coloca título, botões e horário em uma única linha.",
+  datetime_manual_entry: "Transforma o horário em um campo em que é possível clicar e digitar.",
   power_switch_entity: "Interruptor usado pelo botão de energia ao lado dos botões de pausa e parada.",
   grid_power_entity: "Sensor de potência da rede elétrica com sinal. Valores positivos e negativos são exibidos com uma seta de direção.",
   grid_phase_1_entity: "Sensor opcional de potência da fase L1 da rede elétrica.",
@@ -13199,6 +13247,9 @@ const Ll = {
   program_stage_entity: "Bieżący etap programu",
   washer_power_entity: "Czujnik mocy",
   program_select_entity: "Wybór programu",
+  datetime_step: "Rozmiar kroku (minuty)",
+  datetime_single_row: "Jeden wiersz",
+  datetime_manual_entry: "Wpisz czas ręcznie",
   power_switch_entity: "Przycisk zasilania",
   grid_power_entity: "Moc sieci energetycznej",
   grid_phase_1_entity: "Faza L1 sieci energetycznej",
@@ -14089,6 +14140,9 @@ const Ll = {
   program_stage_entity: "Encja zawierająca aktywny etap programu pralki lub suszarki.",
   washer_power_entity: "Czujnik pokazujący bieżący pobór mocy pralki lub suszarki.",
   program_select_entity: "Encja wyboru używana w liście programów nad przyciskami.",
+  datetime_step: "Minuty dodawane lub odejmowane przyciskami w górę i w dół.",
+  datetime_single_row: "Umieszcza tytuł, przyciski i czas w jednym wierszu.",
+  datetime_manual_entry: "Zamienia czas w pole, w które można kliknąć i wpisać wartość.",
   power_switch_entity: "Przełącznik używany przez przycisk zasilania obok przycisków pauzy i stopu.",
   grid_power_entity: "Czujnik mocy sieci energetycznej ze znakiem. Wartości dodatnie i ujemne są wyświetlane ze strzałką kierunku.",
   grid_phase_1_entity: "Opcjonalny czujnik mocy fazy L1 sieci energetycznej.",
@@ -14520,6 +14574,9 @@ const Ll = {
   program_stage_entity: "Текущий этап программы",
   washer_power_entity: "Датчик мощности",
   program_select_entity: "Выбор программы",
+  datetime_step: "Размер шага (минуты)",
+  datetime_single_row: "Одна строка",
+  datetime_manual_entry: "Ввод времени вручную",
   power_switch_entity: "Кнопка питания",
   grid_power_entity: "Мощность электросети",
   grid_phase_1_entity: "Фаза электросети L1",
@@ -15410,6 +15467,9 @@ const Ll = {
   program_stage_entity: "Сущность текущего этапа программы стиральной или сушильной машины.",
   washer_power_entity: "Датчик текущей потребляемой мощности стиральной или сушильной машины.",
   program_select_entity: "Сущность выбора для выпадающего списка программ над кнопками.",
+  datetime_step: "Минуты, добавляемые или вычитаемые кнопками вверх и вниз.",
+  datetime_single_row: "Размещает заголовок, кнопки и время в одной строке.",
+  datetime_manual_entry: "Превращает время в поле, в которое можно щёлкнуть и ввести значение.",
   power_switch_entity: "Переключатель, который использует кнопка питания рядом с кнопками паузы и остановки.",
   grid_power_entity: "Датчик мощности электросети со знаком. Положительные и отрицательные значения отображаются со стрелкой направления.",
   grid_phase_1_entity: "Необязательный датчик мощности фазы электросети L1.",
@@ -15841,6 +15901,9 @@ const Ll = {
   program_stage_entity: "Etapa atual do programa",
   washer_power_entity: "Sensor de potência",
   program_select_entity: "Seleção de programa",
+  datetime_step: "Tamanho do passo (minutos)",
+  datetime_single_row: "Linha única",
+  datetime_manual_entry: "Escrever a hora manualmente",
   power_switch_entity: "Botão de energia",
   grid_power_entity: "Potência da rede elétrica",
   grid_phase_1_entity: "Fase L1 da rede elétrica",
@@ -16731,6 +16794,9 @@ const Ll = {
   program_stage_entity: "Entidade que contém a etapa ativa do programa da máquina de lavar ou máquina de secar.",
   washer_power_entity: "Sensor usado para mostrar o consumo atual de potência da máquina de lavar ou máquina de secar.",
   program_select_entity: "Entidade de seleção usada no menu pendente de programas acima dos botões.",
+  datetime_step: "Minutos somados ou subtraídos pelos botões de subir e descer.",
+  datetime_single_row: "Coloca título, botões e hora numa única linha.",
+  datetime_manual_entry: "Transforma a hora num campo onde é possível clicar e escrever.",
   power_switch_entity: "Interruptor usado pelo botão de energia junto aos botões de pausa e paragem.",
   grid_power_entity: "Sensor de potência da rede elétrica com sinal. Valores positivos e negativos são exibidos com uma seta de direção.",
   grid_phase_1_entity: "Sensor opcional de potência da fase L1 da rede elétrica.",
@@ -17162,6 +17228,9 @@ const Ll = {
   program_stage_entity: "Поточний етап програми",
   washer_power_entity: "Датчик потужності",
   program_select_entity: "Вибір програми",
+  datetime_step: "Розмір кроку (хвилини)",
+  datetime_single_row: "Один рядок",
+  datetime_manual_entry: "Ввести час вручну",
   power_switch_entity: "Кнопка живлення",
   grid_power_entity: "Потужність електромережі",
   grid_phase_1_entity: "Фаза електромережі L1",
@@ -18052,6 +18121,9 @@ const Ll = {
   program_stage_entity: "Сутність з активним етапом програми пральної чи сушильної машини.",
   washer_power_entity: "Датчик для відображення поточного споживання потужності пральною чи сушильною машиною.",
   program_select_entity: "Сутність вибору для випадного списку програм над кнопками.",
+  datetime_step: "Хвилини, які додають або віднімають кнопки вгору та вниз.",
+  datetime_single_row: "Розміщує заголовок, кнопки й час в одному рядку.",
+  datetime_manual_entry: "Перетворює час на поле, в яке можна клацнути й ввести значення.",
   power_switch_entity: "Перемикач, який використовує кнопка живлення поруч із кнопками паузи та зупинки.",
   grid_power_entity: "Датчик потужності електромережі зі знаком. Додатні та від’ємні значення показуються зі стрілкою напрямку.",
   grid_phase_1_entity: "Необов’язковий датчик потужності фази електромережі L1.",
@@ -18483,6 +18555,9 @@ const Ll = {
   program_stage_entity: "Aktuální fáze programu",
   washer_power_entity: "Senzor příkonu",
   program_select_entity: "Výběr programu",
+  datetime_step: "Velikost kroku (minuty)",
+  datetime_single_row: "Jeden řádek",
+  datetime_manual_entry: "Ruční zadání času",
   power_switch_entity: "Tlačítko napájení",
   grid_power_entity: "Výkon elektrické sítě",
   grid_phase_1_entity: "Fáze L1 elektrické sítě",
@@ -19373,6 +19448,9 @@ const Ll = {
   program_stage_entity: "Entita obsahující aktivní fázi programu pračky nebo sušičky.",
   washer_power_entity: "Senzor pro zobrazení aktuálního příkonu pračky nebo sušičky.",
   program_select_entity: "Entita výběru použitá pro rozbalovací nabídku programů nad tlačítky.",
+  datetime_step: "Minuty přičítané nebo odečítané tlačítky nahoru a dolů.",
+  datetime_single_row: "Umístí název, tlačítka a čas na jeden řádek.",
+  datetime_manual_entry: "Změní čas na pole, do kterého lze kliknout a psát.",
   power_switch_entity: "Přepínač používaný tlačítkem napájení vedle tlačítek pauzy a zastavení.",
   grid_power_entity: "Senzor výkonu elektrické sítě se znaménkem. Kladné a záporné hodnoty se zobrazují se směrovou šipkou.",
   grid_phase_1_entity: "Volitelný senzor výkonu fáze L1 elektrické sítě.",
@@ -19804,6 +19882,9 @@ const Ll = {
   program_stage_entity: "Aktuálna fáza programu",
   washer_power_entity: "Senzor výkonu",
   program_select_entity: "Výber programu",
+  datetime_step: "Veľkosť kroku (minúty)",
+  datetime_single_row: "Jeden riadok",
+  datetime_manual_entry: "Ručné zadanie času",
   power_switch_entity: "Tlačidlo napájania",
   grid_power_entity: "Výkon elektrickej siete",
   grid_phase_1_entity: "Fáza elektrickej siete L1",
@@ -20694,6 +20775,9 @@ const Ll = {
   program_stage_entity: "Entita obsahujúca aktívnu fázu programu práčky alebo sušičky.",
   washer_power_entity: "Senzor na zobrazenie aktuálneho príkonu práčky alebo sušičky.",
   program_select_entity: "Entita výberu použitá pre rozbaľovaciu ponuku programov nad tlačidlami.",
+  datetime_step: "Minúty pripočítané alebo odpočítané tlačidlami hore a dole.",
+  datetime_single_row: "Umiestni názov, tlačidlá a čas do jedného riadka.",
+  datetime_manual_entry: "Zmení čas na pole, do ktorého možno kliknúť a písať.",
   power_switch_entity: "Prepínač používaný tlačidlom napájania vedľa tlačidiel pauzy a zastavenia.",
   grid_power_entity: "Senzor výkonu elektrickej siete so znamienkom. Kladné a záporné hodnoty sa zobrazujú so smerovou šípkou.",
   grid_phase_1_entity: "Voliteľný senzor výkonu fázy elektrickej siete L1.",
@@ -21169,6 +21253,9 @@ const Ll = {
   program_stage_entity: "Aktuelt programtrin",
   washer_power_entity: "Effektsensor",
   program_select_entity: "Programvalg",
+  datetime_step: "Trinstørrelse (minutter)",
+  datetime_single_row: "Enkelt række",
+  datetime_manual_entry: "Skriv tid manuelt",
   power_switch_entity: "Tænd/sluk-knap",
   grid_power_entity: "Neteffekt",
   grid_phase_1_entity: "Netfase L1",
@@ -22059,6 +22146,9 @@ const Ll = {
   program_stage_entity: "Entitet med vaskemaskinens eller tørretumblerens aktive programtrin.",
   washer_power_entity: "Sensor til visning af vaskemaskinens eller tørretumblerens aktuelle strømforbrug.",
   program_select_entity: "Valgentitet til programrullemenuen over knapperne.",
+  datetime_step: "Minutter der lægges til eller trækkes fra med op- og ned-knapperne.",
+  datetime_single_row: "Placerer titel, knapper og tid på én række.",
+  datetime_manual_entry: "Gør tiden til et felt, du kan klikke i og skrive.",
   power_switch_entity: "Kontakt brugt af tænd/sluk-knappen ved siden af pause- og stopknapperne.",
   grid_power_entity: "Neteffektsensor med fortegn. Positive og negative værdier vises med en retningspil.",
   grid_phase_1_entity: "Valgfri effektsensor for netfase L1.",
@@ -22490,6 +22580,9 @@ const Ll = {
   program_stage_entity: "Gjeldende programtrinn",
   washer_power_entity: "Effektsensor",
   program_select_entity: "Programvalg",
+  datetime_step: "Trinnstørrelse (minutter)",
+  datetime_single_row: "Enkelt rad",
+  datetime_manual_entry: "Skriv inn tid manuelt",
   power_switch_entity: "Av/på-knapp",
   grid_power_entity: "Netteffekt",
   grid_phase_1_entity: "Nettfase L1",
@@ -23380,6 +23473,9 @@ const Ll = {
   program_stage_entity: "Entitet med vaskemaskinens eller tørketrommelens aktive programtrinn.",
   washer_power_entity: "Sensor som viser vaskemaskinens eller tørketrommelens gjeldende strømforbruk.",
   program_select_entity: "Valgentitet brukt for programlisten over knappene.",
+  datetime_step: "Minutter som legges til eller trekkes fra av opp- og ned-knappene.",
+  datetime_single_row: "Plasserer tittel, knapper og tid på én rad.",
+  datetime_manual_entry: "Gjør tiden til et felt du kan klikke i og skrive.",
   power_switch_entity: "Bryter brukt av av/på-knappen ved siden av pause- og stoppknappene.",
   grid_power_entity: "Sensor for netteffekt med fortegn. Positive og negative verdier vises med en retningspil.",
   grid_phase_1_entity: "Valgfri effektsensor for nettfase L1.",
@@ -23811,6 +23907,9 @@ const Ll = {
   program_stage_entity: "Entitatea etapei curente a programului",
   washer_power_entity: "Senzorul de putere al mașinii",
   program_select_entity: "Selectarea programului",
+  datetime_step: "Dimensiunea pasului (minute)",
+  datetime_single_row: "Un singur rând",
+  datetime_manual_entry: "Introdu ora manual",
   power_switch_entity: "Buton de alimentare",
   grid_power_entity: "Puterea rețelei",
   grid_phase_1_entity: "Faza L1 a rețelei",
@@ -24701,6 +24800,9 @@ const Ll = {
   program_stage_entity: "Entitatea care conține etapa activă a programului mașinii de spălat sau uscătorului.",
   washer_power_entity: "Senzorul folosit pentru afișarea consumului curent al mașinii de spălat sau uscătorului.",
   program_select_entity: "Entitatea de selecție folosită pentru lista de programe de deasupra butoanelor.",
+  datetime_step: "Minutele adăugate sau scăzute de butoanele sus și jos.",
+  datetime_single_row: "Așază titlul, butoanele și ora pe un singur rând.",
+  datetime_manual_entry: "Transformă ora într-un câmp în care poți face clic și scrie.",
   power_switch_entity: "Comutatorul folosit de butonul de alimentare de lângă butoanele de pauză și oprire.",
   grid_power_entity: "Senzor cu puterea semnată a rețelei. Valorile pozitive și negative sunt afișate cu o săgeată direcțională.",
   grid_phase_1_entity: "Senzor de putere opțional pentru faza L1 a rețelei.",
@@ -25132,6 +25234,9 @@ const Ll = {
   program_stage_entity: "Nykyisen ohjelmavaiheen entiteetti",
   washer_power_entity: "Pesukoneen tehoentiteetti",
   program_select_entity: "Ohjelman valinta",
+  datetime_step: "Askelkoko (minuuttia)",
+  datetime_single_row: "Yksi rivi",
+  datetime_manual_entry: "Kirjoita aika käsin",
   power_switch_entity: "Virtapainike",
   grid_power_entity: "Sähköverkon tehoentiteetti",
   grid_phase_1_entity: "Sähköverkon vaihe L1",
@@ -26022,6 +26127,9 @@ const Ll = {
   program_stage_entity: "Entiteetti, joka sisältää pesukoneen tai kuivausrummun aktiivisen ohjelmavaiheen.",
   washer_power_entity: "Anturi, joka näyttää pesukoneen tai kuivausrummun nykyisen virrankulutuksen.",
   program_select_entity: "Valintaentiteetti painikkeiden yläpuolella olevalle ohjelmavalikolle.",
+  datetime_step: "Ylös- ja alas-painikkeiden lisäämät tai vähentämät minuutit.",
+  datetime_single_row: "Sijoittaa otsikon, painikkeet ja ajan samalle riville.",
+  datetime_manual_entry: "Muuttaa ajan kentäksi, johon voi klikata ja kirjoittaa.",
   power_switch_entity: "Kytkin, jota virtapainike käyttää tauko- ja pysäytyspainikkeiden vieressä.",
   grid_power_entity: "Etumerkillinen sähköverkon tehoanturi. Positiiviset ja negatiiviset arvot näytetään suuntanuolen kanssa.",
   grid_phase_1_entity: "Valinnainen sähköverkon vaiheen L1 tehoanturi.",
@@ -26453,6 +26561,9 @@ const Ll = {
   program_stage_entity: "Geçerli program aşaması",
   washer_power_entity: "Güç sensörü",
   program_select_entity: "Program seçimi",
+  datetime_step: "Adım boyutu (dakika)",
+  datetime_single_row: "Tek satır",
+  datetime_manual_entry: "Saati elle yaz",
   power_switch_entity: "Güç düğmesi",
   grid_power_entity: "Şebeke gücü",
   grid_phase_1_entity: "Şebeke fazı L1",
@@ -27343,6 +27454,9 @@ const Ll = {
   program_stage_entity: "Etkin çamaşır veya kurutma programı aşamasını içeren varlık.",
   washer_power_entity: "Çamaşır veya kurutma makinesinin geçerli güç tüketimini gösteren sensör.",
   program_select_entity: "Düğmelerin üstündeki program açılır listesi için seçim varlığı.",
+  datetime_step: "Yukarı ve aşağı düğmelerinin ekleyip çıkardığı dakika.",
+  datetime_single_row: "Başlığı, düğmeleri ve saati tek satıra yerleştirir.",
+  datetime_manual_entry: "Saati tıklayıp yazabileceğiniz bir alana dönüştürür.",
   power_switch_entity: "Duraklat ve durdur düğmelerinin yanındaki güç düğmesinin kullandığı anahtar.",
   grid_power_entity: "Pozitif ve negatif değerleri yön oku ile gösterilen işaretli şebeke gücü sensörü.",
   grid_phase_1_entity: "Şebeke fazı L1 için isteğe bağlı güç sensörü.",
@@ -27720,6 +27834,9 @@ const Ll = {
   program_stage_entity: "Tahap program saat ini",
   washer_power_entity: "Sensor daya",
   program_select_entity: "Pilihan program",
+  datetime_step: "Ukuran langkah (menit)",
+  datetime_single_row: "Satu baris",
+  datetime_manual_entry: "Ketik waktu secara manual",
   power_switch_entity: "Tombol daya",
   grid_power_entity: "Daya jaringan listrik",
   grid_phase_1_entity: "Fase jaringan L1",
@@ -28651,6 +28768,9 @@ const Ll = {
   program_stage_entity: "Entitas tahap program mesin cuci/pengering yang sedang berjalan.",
   washer_power_entity: "Sensor konsumsi daya mesin cuci/pengering saat ini.",
   program_select_entity: "Entitas pilihan untuk menu tarik-turun program di atas tombol.",
+  datetime_step: "Menit yang ditambah atau dikurangi oleh tombol atas dan bawah.",
+  datetime_single_row: "Menempatkan judul, tombol, dan waktu dalam satu baris.",
+  datetime_manual_entry: "Menjadikan waktu bidang yang dapat diklik dan diketik.",
   power_switch_entity: "Sakelar yang digunakan tombol daya di samping tombol jeda dan berhenti.",
   grid_power_entity: "Sensor daya jaringan bertanda. Nilai positif dan negatif ditampilkan dengan panah arah.",
   grid_phase_1_entity: "Sensor daya opsional untuk fase jaringan L1.",
@@ -29095,6 +29215,9 @@ const Ll = {
   program_stage_entity: "Обект за текущия етап на програмата",
   washer_power_entity: "Сензор за мощност",
   program_select_entity: "Избор на програма",
+  datetime_step: "Стъпка (минути)",
+  datetime_single_row: "Един ред",
+  datetime_manual_entry: "Ръчно въвеждане на часа",
   power_switch_entity: "Бутон за захранване",
   grid_power_entity: "Мощност от електрическата мрежа",
   grid_phase_1_entity: "Фаза на мрежата L1",
@@ -29985,6 +30108,9 @@ const Ll = {
   program_stage_entity: "Обект с активния етап на програмата на пералнята или сушилнята.",
   washer_power_entity: "Сензор за текущата консумация на мощност на пералнята или сушилнята.",
   program_select_entity: "Обект за избор, използван за падащото меню с програми над бутоните.",
+  datetime_step: "Минути, добавяни или премахвани от бутоните нагоре и надолу.",
+  datetime_single_row: "Поставя заглавието, бутоните и часа на един ред.",
+  datetime_manual_entry: "Превръща часа в поле, в което можете да щракнете и пишете.",
   power_switch_entity: "Ключ, използван от бутона за захранване до бутоните за пауза и стоп.",
   grid_power_entity: "Сензор за мощност от мрежата със знак. Положителните и отрицателните стойности се показват със стрелка за посоката.",
   grid_phase_1_entity: "Незадължителен сензор за мощност на фаза L1 от мрежата.",
@@ -30416,6 +30542,9 @@ const Ll = {
   program_stage_entity: "현재 프로그램 단계",
   washer_power_entity: "전력 센서",
   program_select_entity: "프로그램 선택",
+  datetime_step: "단계 크기(분)",
+  datetime_single_row: "한 줄",
+  datetime_manual_entry: "시간 직접 입력",
   power_switch_entity: "전원 버튼",
   grid_power_entity: "전력망 전력",
   grid_phase_1_entity: "전력망 L1 상",
@@ -31306,6 +31435,9 @@ const Ll = {
   program_stage_entity: "현재 세탁기 또는 건조기 프로그램 단계가 포함된 엔티티입니다.",
   washer_power_entity: "세탁기 또는 건조기의 현재 전력 소비량을 표시하는 센서입니다.",
   program_select_entity: "버튼 위에 표시되는 프로그램 드롭다운에 사용할 선택 엔티티입니다.",
+  datetime_step: "위/아래 버튼이 더하거나 빼는 분입니다.",
+  datetime_single_row: "제목, 버튼, 시간을 한 줄에 배치합니다.",
+  datetime_manual_entry: "시간을 클릭하여 입력할 수 있는 필드로 만듭니다.",
   power_switch_entity: "일시정지 및 정지 버튼 옆의 전원 버튼이 사용하는 스위치입니다.",
   grid_power_entity: "부호가 있는 전력망 전력 센서입니다. 양수와 음수 값에 방향 화살표를 표시합니다.",
   grid_phase_1_entity: "전력망 L1 상의 선택적 전력 센서입니다.",
@@ -31737,6 +31869,9 @@ const Ll = {
   program_stage_entity: "Τρέχον στάδιο προγράμματος",
   washer_power_entity: "Αισθητήρας ισχύος",
   program_select_entity: "Επιλογή προγράμματος",
+  datetime_step: "Μέγεθος βήματος (λεπτά)",
+  datetime_single_row: "Μία γραμμή",
+  datetime_manual_entry: "Μη αυτόματη εισαγωγή ώρας",
   power_switch_entity: "Κουμπί τροφοδοσίας",
   grid_power_entity: "Ισχύς δικτύου",
   grid_phase_1_entity: "Φάση δικτύου L1",
@@ -32627,6 +32762,9 @@ const Ll = {
   program_stage_entity: "Οντότητα που περιέχει το ενεργό στάδιο προγράμματος του πλυντηρίου ή στεγνωτηρίου.",
   washer_power_entity: "Αισθητήρας που χρησιμοποιείται για την εμφάνιση της τρέχουσας κατανάλωσης ρεύματος του πλυντηρίου ή στεγνωτηρίου.",
   program_select_entity: "Οντότητα επιλογής για το αναπτυσσόμενο μενού προγραμμάτων πάνω από τα κουμπιά.",
+  datetime_step: "Λεπτά που προστίθενται ή αφαιρούνται από τα κουμπιά πάνω και κάτω.",
+  datetime_single_row: "Τοποθετεί τον τίτλο, τα κουμπιά και την ώρα σε μία γραμμή.",
+  datetime_manual_entry: "Κάνει την ώρα πεδίο όπου μπορείτε να κάνετε κλικ και να πληκτρολογήσετε.",
   power_switch_entity: "Διακόπτης που χρησιμοποιεί το κουμπί τροφοδοσίας δίπλα στα κουμπιά παύσης και διακοπής.",
   grid_power_entity: "Αισθητήρας ισχύος δικτύου με πρόσημο. Οι θετικές και οι αρνητικές τιμές εμφανίζονται με βέλος κατεύθυνσης.",
   grid_phase_1_entity: "Προαιρετικός αισθητήρας ισχύος για τη φάση L1 του δικτύου.",
@@ -33058,6 +33196,9 @@ const Ll = {
   program_stage_entity: "Thực thể giai đoạn chương trình hiện tại",
   washer_power_entity: "Cảm biến công suất",
   program_select_entity: "Chọn chương trình",
+  datetime_step: "Kích thước bước (phút)",
+  datetime_single_row: "Một hàng",
+  datetime_manual_entry: "Nhập giờ thủ công",
   power_switch_entity: "Nút nguồn",
   grid_power_entity: "Công suất lưới điện",
   grid_phase_1_entity: "Pha lưới L1",
@@ -33948,6 +34089,9 @@ const Ll = {
   program_stage_entity: "Thực thể chứa giai đoạn chương trình máy giặt/máy sấy đang hoạt động.",
   washer_power_entity: "Cảm biến hiển thị công suất hiện tại của máy giặt hoặc máy sấy.",
   program_select_entity: "Thực thể chọn dùng cho danh sách chương trình phía trên các nút.",
+  datetime_step: "Số phút được thêm hoặc bớt bởi các nút lên và xuống.",
+  datetime_single_row: "Đặt tiêu đề, nút và giờ trên một hàng.",
+  datetime_manual_entry: "Biến giờ thành ô có thể nhấp và nhập.",
   power_switch_entity: "Công tắc được nút nguồn dùng, đặt cạnh nút tạm dừng và dừng.",
   grid_power_entity: "Cảm biến công suất lưới có dấu. Giá trị dương và âm hiển thị cùng mũi tên chỉ hướng.",
   grid_phase_1_entity: "Cảm biến công suất tùy chọn cho pha lưới L1.",
@@ -34379,6 +34523,9 @@ const Ll = {
   program_stage_entity: "Aktuell programfas",
   washer_power_entity: "Effektsensor",
   program_select_entity: "Programval",
+  datetime_step: "Stegstorlek (minuter)",
+  datetime_single_row: "Enkel rad",
+  datetime_manual_entry: "Skriv tid manuellt",
   power_switch_entity: "Strömknapp",
   grid_power_entity: "Elnätseffekt",
   grid_phase_1_entity: "Elnätsfas L1",
@@ -35269,6 +35416,9 @@ const Ll = {
   program_stage_entity: "Entitet som innehåller tvättmaskinens eller torktumlarens aktiva programsteg.",
   washer_power_entity: "Sensor för tvättmaskinens eller torktumlarens aktuella effektförbrukning.",
   program_select_entity: "Valentitet som används för programlistan ovanför knapparna.",
+  datetime_step: "Minuter som läggs till eller dras bort av upp- och nedknapparna.",
+  datetime_single_row: "Placerar rubrik, knappar och tid på en rad.",
+  datetime_manual_entry: "Gör tiden till ett fält du kan klicka i och skriva.",
   power_switch_entity: "Brytare som används av strömknappen bredvid paus- och stoppknapparna.",
   grid_power_entity: "Nätsensor för effekt med tecken. Positiva och negativa värden visas med en riktningspil.",
   grid_phase_1_entity: "Valfri effektsensor för nätfas L1.",
@@ -35700,6 +35850,9 @@ machine_state_entity|Ентитет стања машине
 program_stage_entity|Ентитет тренутне фазе програма
 washer_power_entity|Сензор снаге машине за прање
 program_select_entity|Избор програма
+datetime_step|Величина корака (минути)
+datetime_single_row|Један ред
+datetime_manual_entry|Ручни унос времена
 power_switch_entity|Дугме за напајање
 grid_power_entity|Снага електричне мреже
 grid_phase_1_entity|Фаза мреже L1
@@ -36595,6 +36748,9 @@ machine_state_entity|Ентитет стања рада, паузе, миров�
 program_stage_entity|Ентитет активне фазе програма машине за прање или сушење.
 washer_power_entity|Сензор тренутне потрошње снаге машине за прање или сушење.
 program_select_entity|Ентитет избора за падајућу листу програма изнад дугмади.
+datetime_step|Минути које додају или одузимају дугмад горе и доле.
+datetime_single_row|Поставља наслов, дугмад и време у један ред.
+datetime_manual_entry|Претвара време у поље у које можете кликнути и куцати.
 power_switch_entity|Прекидач који користи дугме за напајање поред дугмади за паузу и стоп.
 grid_power_entity|Сензор снаге мреже са знаком. Позитивне и негативне вредности приказују се стрелицом смера.
 grid_phase_1_entity|Опциони сензор снаге фазе мреже L1.
@@ -37087,6 +37243,9 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   program_stage_entity: "שלב התוכנית הנוכחי",
   washer_power_entity: "חיישן הספק",
   program_select_entity: "בחירת תוכנית",
+  datetime_step: "גודל צעד (דקות)",
+  datetime_single_row: "שורה אחת",
+  datetime_manual_entry: "הקלדת שעה ידנית",
   power_switch_entity: "כפתור הפעלה",
   grid_power_entity: "הספק הרשת",
   grid_phase_1_entity: "פאזה L1 ברשת",
@@ -37977,6 +38136,9 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   program_stage_entity: "ישות המכילה את שלב התוכנית הפעיל של מכונת הכביסה או המייבש.",
   washer_power_entity: "החיישן להצגת צריכת ההספק הנוכחית של מכונת הכביסה או המייבש.",
   program_select_entity: "ישות הבחירה לרשימת התוכניות הנפתחת מעל הכפתורים.",
+  datetime_step: "הדקות שמוסיפים או מורידים כפתורי למעלה ולמטה.",
+  datetime_single_row: "ממקם את הכותרת, הכפתורים והשעה בשורה אחת.",
+  datetime_manual_entry: "הופך את השעה לשדה שאפשר ללחוץ עליו ולהקליד.",
   power_switch_entity: "המתג שבו משתמש כפתור ההפעלה לצד כפתורי ההשהיה והעצירה.",
   grid_power_entity: "חיישן הספק רשת עם סימן. ערכים חיוביים ושליליים מוצגים עם חץ כיוון.",
   grid_phase_1_entity: "חיישן הספק לרשות לפאזה L1 ברשת.",
@@ -38408,6 +38570,9 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   program_stage_entity: "المرحلة الحالية للبرنامج",
   washer_power_entity: "مستشعر القدرة",
   program_select_entity: "اختيار البرنامج",
+  datetime_step: "حجم الخطوة (دقائق)",
+  datetime_single_row: "صف واحد",
+  datetime_manual_entry: "كتابة الوقت يدويًا",
   power_switch_entity: "زر الطاقة",
   grid_power_entity: "قدرة الشبكة",
   grid_phase_1_entity: "طور الشبكة L1",
@@ -39298,6 +39463,9 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   program_stage_entity: "الكيان الذي يحتوي على مرحلة برنامج الغسالة أو المجفف النشطة.",
   washer_power_entity: "المستشعر المستخدم لعرض استهلاك الغسالة أو المجفف الحالي للقدرة.",
   program_select_entity: "كيان الاختيار المستخدم لقائمة البرامج المنسدلة فوق أزرار التحكم.",
+  datetime_step: "الدقائق التي تضيفها أو تزيلها أزرار الأعلى والأسفل.",
+  datetime_single_row: "يضع العنوان والأزرار والوقت في صف واحد.",
+  datetime_manual_entry: "يجعل الوقت حقلًا يمكنك النقر عليه والكتابة فيه. عند الإيقاف، ينقص الضغط الطويل دقيقة.",
   power_switch_entity: "المفتاح الذي يستخدمه زر الطاقة بجانب زري الإيقاف المؤقت والإيقاف.",
   grid_power_entity: "مستشعر قدرة الشبكة ذي الإشارة. تُعرض القيم الموجبة والسالبة مع سهم للاتجاه.",
   grid_phase_1_entity: "مستشعر قدرة اختياري لطور الشبكة L1.",
@@ -39729,6 +39897,9 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   program_stage_entity: "Trenutna faza programa",
   washer_power_entity: "Senzor moči",
   program_select_entity: "Izbira programa",
+  datetime_step: "Velikost koraka (minute)",
+  datetime_single_row: "Ena vrstica",
+  datetime_manual_entry: "Ročni vnos časa",
   power_switch_entity: "Gumb za vklop",
   grid_power_entity: "Moč električnega omrežja",
   grid_phase_1_entity: "Omrežna faza L1",
@@ -40619,6 +40790,9 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   program_stage_entity: "Entiteta z aktivno fazo programa pralnega oziroma sušilnega stroja.",
   washer_power_entity: "Senzor za prikaz trenutne porabe moči pralnega oziroma sušilnega stroja.",
   program_select_entity: "Entiteta izbire za spustni meni programov nad gumbi.",
+  datetime_step: "Minute, ki jih dodata ali odvzameta gumba gor in dol.",
+  datetime_single_row: "Naslov, gumbe in čas postavi v eno vrstico.",
+  datetime_manual_entry: "Čas spremeni v polje, v katero lahko kliknete in vtipkate.",
   power_switch_entity: "Stikalo, ki ga uporablja gumb za vklop poleg gumbov za premor in ustavitev.",
   grid_power_entity: "Senzor moči omrežja s predznakom. Pozitivne in negativne vrednosti so prikazane s smerno puščico.",
   grid_phase_1_entity: "Neobvezen senzor moči omrežne faze L1.",
@@ -41050,6 +41224,9 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   program_stage_entity: "Fase actual del programa",
   washer_power_entity: "Sensor de potència",
   program_select_entity: "Selecció de programa",
+  datetime_step: "Mida del pas (minuts)",
+  datetime_single_row: "Una sola fila",
+  datetime_manual_entry: "Escriu l'hora manualment",
   power_switch_entity: "Botó d'engegada",
   grid_power_entity: "Potència de la xarxa",
   grid_phase_1_entity: "Fase de xarxa L1",
@@ -41940,6 +42117,9 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   program_stage_entity: "Entitat amb la fase activa del programa de la rentadora o assecadora.",
   washer_power_entity: "Sensor del consum de potència actual de la rentadora o assecadora.",
   program_select_entity: "Entitat de selecció usada pel desplegable de programes sobre els botons.",
+  datetime_step: "Minuts afegits o restats pels botons amunt i avall.",
+  datetime_single_row: "Col·loca el títol, els botons i l'hora en una sola fila.",
+  datetime_manual_entry: "Converteix l'hora en un camp on es pot fer clic i escriure.",
   power_switch_entity: "Interruptor que usa el botó d'engegada al costat dels botons de pausa i aturada.",
   grid_power_entity: "Sensor de potència de xarxa amb signe. Els valors positius i negatius es mostren amb una fletxa de direcció.",
   grid_phase_1_entity: "Sensor de potència opcional de la fase de xarxa L1.",
@@ -42371,6 +42551,9 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   program_stage_entity: "Program aktuális szakasza",
   washer_power_entity: "Teljesítményérzékelő",
   program_select_entity: "Programválasztás",
+  datetime_step: "Lépésköz (perc)",
+  datetime_single_row: "Egy sor",
+  datetime_manual_entry: "Idő kézi megadása",
   power_switch_entity: "Bekapcsológomb",
   grid_power_entity: "Hálózati teljesítmény",
   grid_phase_1_entity: "Hálózat L1 fázisa",
@@ -43261,6 +43444,9 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   program_stage_entity: "Entitás a mosógép vagy szárítógép aktív programszakaszával.",
   washer_power_entity: "A mosógép vagy szárítógép aktuális teljesítményfelvételét mutató érzékelő.",
   program_select_entity: "A gombok feletti programlegördülő menühöz használt választó entitás.",
+  datetime_step: "A fel és le gombok által hozzáadott vagy levont percek.",
+  datetime_single_row: "A címet, a gombokat és az időt egy sorba teszi.",
+  datetime_manual_entry: "Az időt kattintható és írható mezővé teszi.",
   power_switch_entity: "A szünet és leállítás gombok melletti bekapcsológomb által használt kapcsoló.",
   grid_power_entity: "Előjeles hálózati teljesítményérzékelő. A pozitív és negatív értékek iránynyíllal jelennek meg.",
   grid_phase_1_entity: "Nem kötelező teljesítményérzékelő a hálózat L1 fázisához.",
@@ -43765,6 +43951,9 @@ const vi = [
     show_forecast: "Show forecast",
     show_controls: "Show controls",
     show_graph: "Show graph",
+    datetime_step: "Step size (minutes)",
+    datetime_single_row: "Single row",
+    datetime_manual_entry: "Type time manually",
     use_entity_picture: "Use entity picture",
     graph_hours: "Graph hours",
     console_platform: "Console platform",
@@ -44470,6 +44659,9 @@ const b = (e, t, a = {}) => {
   collapse_entity: "Input boolean that hides or shows the welcome scene pills.",
   collapsed: "Forces the welcome scene pills to stay hidden.",
   show_controls: "Shows the controls defined by the pinned source design.",
+  datetime_step: "Minutes added or removed by the up and down buttons.",
+  datetime_single_row: "Places the title, buttons and time on one row.",
+  datetime_manual_entry: "Makes the time a field you can click and type into. When off, tapping the time adds one minute and holding subtracts one.",
   show_forecast: "Loads the daily weather forecast used by the detailed source design.",
   show_name: "Shows the configured entity name.",
   show_state: "Shows the configured entity state.",
@@ -44920,7 +45112,7 @@ const b = (e, t, a = {}) => {
     a.download_entity,
     a.upload_entity,
     a.ping_entity
-  ].filter((S) => typeof S == "string"), m = String(a.type).includes("speedtest-gauges"), h = a.variant === "divider-title", g = a.variant === "divider-subtitle", y = m ? {
+  ].filter((A) => typeof A == "string"), m = String(a.type).includes("speedtest-gauges"), h = a.variant === "divider-title", g = a.variant === "divider-subtitle", y = m ? {
     action: "perform-action",
     perform_action: "homeassistant.update_entity",
     target: { entity_id: c }
@@ -45218,15 +45410,15 @@ let Qe = class extends ye {
     </div>`;
   }
   renderItem(e, t, a) {
-    const n = this.itemOffset(t), i = Math.abs(n), r = this.itemIsHidden(n, a), o = t === this.selectedIndex, s = this.entityFor(e), l = e.color || (s?.attributes.icon, "primary"), d = this.coverflowModifier, c = this.effect === "coverflow" ? this.coverflowStretch * d : 0, m = Math.max(18, this.buttonWidth + c), h = n + this.dragOffset / m, g = Math.abs(h), k = (this.singleSlideEffect || this.centeredSlides ? 0 : -((a - 1) * m) / 2) + n * m + this.dragOffset, S = this.effect === "coverflow" ? -g * this.coverflowDepth * d : 0, f = this.effect === "coverflow" ? h * -this.coverflowRotate * d : 0, w = Math.max(0.18, 1 - g * (this.effect === "coverflow" ? 0.16 : 0.08)), A = this.coverflowSlideShadows ? Math.min(0.48, g * 0.16 * Math.max(0.25, d)) : 0, z = n + Math.max(-1, Math.min(1, this.dragOffset / this.buttonWidth)), F = [
-      `transform:${this.effect === "fade" ? "translateX(0px)" : this.effect === "cube" ? `rotateY(${z * 90}deg)` : this.effect === "flip" ? `rotateY(${z * 180}deg)` : `translateX(${k}px) translateZ(${S}px) rotateY(${f}deg)`}`,
+    const n = this.itemOffset(t), i = Math.abs(n), r = this.itemIsHidden(n, a), o = t === this.selectedIndex, s = this.entityFor(e), l = e.color || (s?.attributes.icon, "primary"), d = this.coverflowModifier, c = this.effect === "coverflow" ? this.coverflowStretch * d : 0, m = Math.max(18, this.buttonWidth + c), h = n + this.dragOffset / m, g = Math.abs(h), k = (this.singleSlideEffect || this.centeredSlides ? 0 : -((a - 1) * m) / 2) + n * m + this.dragOffset, A = this.effect === "coverflow" ? -g * this.coverflowDepth * d : 0, f = this.effect === "coverflow" ? h * -this.coverflowRotate * d : 0, w = Math.max(0.18, 1 - g * (this.effect === "coverflow" ? 0.16 : 0.08)), x = this.coverflowSlideShadows ? Math.min(0.48, g * 0.16 * Math.max(0.25, d)) : 0, z = n + Math.max(-1, Math.min(1, this.dragOffset / this.buttonWidth)), F = [
+      `transform:${this.effect === "fade" ? "translateX(0px)" : this.effect === "cube" ? `rotateY(${z * 90}deg)` : this.effect === "flip" ? `rotateY(${z * 180}deg)` : `translateX(${k}px) translateZ(${A}px) rotateY(${f}deg)`}`,
       `transform-origin:${this.effect === "cube" ? `50% 50% -${this.buttonWidth / 2}px` : "50% 50%"}`,
       `z-index:${100 - i}`,
       `opacity:${this.effect === "fade" ? Math.max(0, 1 - Math.abs(z)) : this.singleSlideEffect ? 1 : w}`,
       `pointer-events:${this.singleSlideEffect && !o ? "none" : "auto"}`,
       `filter:saturate(${Math.max(0.45, 1 - i * 0.14)})`,
       `--carousel-color:var(--${l}-color, ${l})`,
-      `--carousel-shadow-opacity:${A}`
+      `--carousel-shadow-opacity:${x}`
     ].join(";"), q = e.icon_type === "entity-picture" ? s?.attributes.entity_picture : void 0, ae = s ? !od.has(s.state.toLowerCase()) : !1;
     return _`
       <button
@@ -45682,8 +45874,8 @@ const ud = {
     }) : "",
     runtime: y === void 0 ? g : [y >= 60 ? `${Math.floor(y / 60)}h` : "", y % 60 ? `${y % 60}m` : ""].filter(Boolean).join(" "),
     empty: ""
-  }, S = (f) => f.replace(/\$([a-z][a-z0-9_]*)/gi, (w, A) => Object.hasOwn(k, A) ? k[A] : Te(t[A]));
-  return k.release = S(Te(t.release) || (s ? "$day, $date $time" : "")), S(e).replace(/\s+/g, " ").trim();
+  }, A = (f) => f.replace(/\$([a-z][a-z0-9_]*)/gi, (w, x) => Object.hasOwn(k, x) ? k[x] : Te(t[x]));
+  return k.release = A(Te(t.release) || (s ? "$day, $date $time" : "")), A(e).replace(/\s+/g, " ").trim();
 };
 let Oe = class extends ye {
   constructor() {
@@ -48056,7 +48248,7 @@ const Co = [
 }, Lo = (e) => `${e}_entity`, v = (e, t = "entity") => ({
   name: t,
   selector: { entity: e?.length ? { domain: e } : {} }
-}), $ = (e) => ({ name: e, selector: { text: {} } }), Md = (e) => ({ name: e, selector: { navigation: {} } }), x = (e) => ({ name: e, selector: { boolean: {} } }), P = (e, t = 1, a = 168, n) => ({
+}), $ = (e) => ({ name: e, selector: { text: {} } }), Md = (e) => ({ name: e, selector: { navigation: {} } }), S = (e) => ({ name: e, selector: { boolean: {} } }), P = (e, t = 1, a = 168, n) => ({
   name: e,
   selector: { number: { min: t, max: a, mode: "box", ...n === void 0 ? {} : { step: n } } }
 }), Dn = (e) => ({
@@ -48171,9 +48363,9 @@ const Co = [
       }
     }
   }),
-  jt(x("multiline_secondary")),
-  jt(x("fill_container")),
-  jt(x("card_shadow")),
+  jt(S("multiline_secondary")),
+  jt(S("fill_container")),
+  jt(S("card_shadow")),
   Cd([
     H("primary_info", [
       { value: "name", label: "Name" },
@@ -48224,9 +48416,9 @@ const Co = [
     ...ve(e),
     v(["sensor"], "temperature_entity"),
     v(["sensor"], "humidity_entity"),
-    x("show_forecast")
+    S("show_forecast")
   ],
-  climate: (e) => [...ve(e), v(["sensor"], "humidity_entity"), x("show_controls")],
+  climate: (e) => [...ve(e), v(["sensor"], "humidity_entity"), S("show_controls")],
   light: (e) => [...ve(e)],
   scene: (e) => ve(e),
   presence: (e, t) => [
@@ -48249,10 +48441,10 @@ const Co = [
     U("battery_low_color"),
     U("battery_critical_color")
   ],
-  energy: (e) => [...ve(e), v(["sensor"], "min_entity"), v(["sensor"], "max_entity"), x("show_graph")],
-  sensor: (e) => [...ve(e), x("show_graph")],
-  media: (e) => [...ve(e), x("show_controls")],
-  cover: (e) => [...ve(e), x("show_controls")],
+  energy: (e) => [...ve(e), v(["sensor"], "min_entity"), v(["sensor"], "max_entity"), S("show_graph")],
+  sensor: (e) => [...ve(e), S("show_graph")],
+  media: (e) => [...ve(e), S("show_controls")],
+  cover: (e) => [...ve(e), S("show_controls")],
   security: (e) => [...ve(e)],
   navigation: (e) => [
     ...e.variants?.length ? [H("variant", e.variants.map((t) => ({
@@ -48266,11 +48458,11 @@ const Co = [
   camera: (e) => [...ve(e)],
   control: (e) => [
     ...ve(e),
-    .../power_outlet|more_power_outlet/.test(e.upstreamId) ? [v(["sensor"], "graph_entity"), x("show_graph")] : [],
-    x("show_controls")
+    .../power_outlet|more_power_outlet/.test(e.upstreamId) ? [v(["sensor"], "graph_entity"), S("show_graph")] : [],
+    S("show_controls")
   ],
-  "alarm-time": (e) => [...ve(e), v(["input_datetime"], "datetime_entity"), x("show_controls")],
-  door: (e) => [...ve(e), v(["lock"], "lock_entity"), v(["sensor"], "battery_entity"), x("show_controls")],
+  "alarm-time": (e) => [...ve(e), v(["input_datetime"], "datetime_entity"), S("show_controls")],
+  door: (e) => [...ve(e), v(["lock"], "lock_entity"), v(["sensor"], "battery_entity"), S("show_controls")],
   entity: (e) => [...ve(e), $("secondary")]
 }, Bo = (e, t, a) => {
   if (e.upstreamId === "stock_card") return [
@@ -48286,9 +48478,9 @@ const Co = [
     P("stock_shares", 0, 1e8, 1e-3),
     P("stock_interval", 180, 86400),
     H("stock_range", bi.filter((r) => r !== "5Y" || t?.stock_source !== "stock_market_deluxe").map((r) => ({ value: r, label: r }))),
-    x("stock_show_position"),
-    x("stock_show_statistics"),
-    ...oa(t) ? [x("stock_show_volume"), x("stock_show_trends")] : [],
+    S("stock_show_position"),
+    S("stock_show_statistics"),
+    ...oa(t) ? [S("stock_show_volume"), S("stock_show_trends")] : [],
     ...t?.stock_source === "stock_market_deluxe" ? [] : Ft.flatMap(([r]) => [
       v(["sensor", "input_number"], `stock_${r}_entity`),
       $(`stock_${r}_attribute`)
@@ -48301,7 +48493,7 @@ const Co = [
     v(["switch", "sensor", "binary_sensor"]),
     ...ee(),
     { name: "pihole_device_ids", selector: { device: { multiple: !0 } } },
-    x("pihole_show_header"),
+    S("pihole_show_header"),
     { name: "pihole_metrics", selector: { select: { multiple: !0, mode: "dropdown", options: Object.entries(ya).map(([r, o]) => ({ value: r, label: o.name })) } } },
     { name: "pihole_collapsed_sections", selector: { select: { multiple: !0, mode: "dropdown", options: Object.entries(Mt).map(([r, o]) => ({ value: r, label: o })) } } },
     { name: "pihole_hidden_entities", selector: { entity: { multiple: !0 } } },
@@ -48359,27 +48551,27 @@ const Co = [
       P("upcoming_max_items", 1, 50),
       { name: "upcoming_item_height", selector: { number: { min: 80, max: 320, step: 4, mode: "slider", unit_of_measurement: "px" } } },
       { name: "upcoming_corner_radius", selector: { number: { min: 0, max: 32, mode: "slider", unit_of_measurement: "px" } } },
-      x("upcoming_overflow"),
+      S("upcoming_overflow"),
       ...t?.upcoming_overflow ? [P("upcoming_max_columns", 1, 6)] : [
         H("upcoming_collapse_mode", [{ value: "none", label: "Show all" }, { value: "count", label: "Show first items, expand the rest" }, { value: "matching", label: "Matching items first, expand the rest" }]),
         ...t?.upcoming_collapse_mode === "count" ? [P("upcoming_collapse_count", 1, 50)] : [],
         ...t?.upcoming_collapse_mode === "matching" ? [o("upcoming_group_attribute"), $("upcoming_group_value")] : []
       ],
       { name: "upcoming_sort_by", selector: { select: { mode: "dropdown", custom_value: !0, options: [{ value: "", label: "Sensor order" }, ...r.map((s) => ({ value: s, label: s === "airdate" ? "Air date" : s[0].toUpperCase() + s.slice(1) }))] } } },
-      x("upcoming_sort_ascending"),
+      S("upcoming_sort_ascending"),
       o("upcoming_filter_attribute"),
       ...t?.upcoming_filter_attribute ? [
         H("upcoming_filter_match", [{ value: "contains", label: "Contains" }, { value: "exact", label: "Equals" }]),
         $("upcoming_filter_value")
       ] : [],
       H("upcoming_flag_filter", [{ value: "all", label: "All media" }, { value: "flagged", label: "Flagged only" }, { value: "unflagged", label: "Unflagged only" }]),
-      x("upcoming_show_flag"),
+      S("upcoming_show_flag"),
       ...t?.upcoming_show_flag !== !1 ? [
         { name: "upcoming_flag_icon", selector: { icon: {} } },
         $("upcoming_flag_label"),
         U("upcoming_flag_color")
       ] : [],
-      x("upcoming_hide_empty"),
+      S("upcoming_hide_empty"),
       H("upcoming_clock", [{ value: "locale", label: "Home Assistant language default" }, { value: "12", label: "12-hour" }, { value: "24", label: "24-hour" }]),
       { name: "upcoming_date_format", selector: { select: { mode: "dropdown", custom_value: !0, options: [
         { value: "locale", label: "Localized date" },
@@ -48394,15 +48586,15 @@ const Co = [
       })),
       P("upcoming_title_size", 12, 24),
       P("upcoming_line_size", 10, 18),
-      x("upcoming_box_shadows"),
-      x("upcoming_text_shadows"),
-      x("upcoming_transparency"),
-      x("upcoming_tooltips"),
+      S("upcoming_box_shadows"),
+      S("upcoming_text_shadows"),
+      S("upcoming_transparency"),
+      S("upcoming_tooltips"),
       ...t?.upcoming_tooltips ? [P("upcoming_tooltip_delay", 0, 3e3, 50)] : [],
       H("upcoming_item_behavior", [{ value: "automatic", label: "Open media / trailer automatically" }, { value: "more-info", label: "Sensor more information" }, { value: "action", label: "Custom Home Assistant action" }, { value: "none", label: "No action" }]),
       ...t?.upcoming_item_behavior === "action" ? [me("upcoming_item_action")] : [
-        x("upcoming_trailers"),
-        x("upcoming_links"),
+        S("upcoming_trailers"),
+        S("upcoming_links"),
         $("upcoming_url")
       ]
     ];
@@ -48438,16 +48630,16 @@ const Co = [
       P("hours_to_show", 1, 8760),
       P("points_per_hour", 0.01, 60),
       P("update_interval", 1, 86400),
-      x("cache"),
+      S("cache"),
       P("height", 0, 1e3),
       P("line_width", 1, 20),
       P("bar_spacing", 0, 50),
-      x("smoothing"),
-      x("animate"),
-      x("logarithmic"),
+      S("smoothing"),
+      S("animate"),
+      S("logarithmic"),
       P("value_factor", -12, 12),
       P("decimals", 0, 12),
-      x("hour24"),
+      S("hour24"),
       P("font_size", 25, 300),
       P("font_size_header", 8, 48),
       H("align_header", [
@@ -48478,7 +48670,7 @@ const Co = [
         { value: "smooth", label: "Smooth gradient" },
         { value: "hard", label: "Hard color steps" }
       ]),
-      x("group"),
+      S("group"),
       H("mini_graph_show_state", [
         { value: "current", label: "Current state" },
         { value: "last", label: "Last graph value" },
@@ -48504,13 +48696,13 @@ const Co = [
         { value: "hover", label: "On hover" },
         { value: "hidden", label: "Hidden" }
       ]),
-      x("mini_graph_show_legend"),
-      x("mini_graph_show_top_labels"),
-      x("mini_graph_show_average"),
-      x("mini_graph_show_extrema"),
-      x("mini_graph_name_adaptive_color"),
-      x("mini_graph_icon_adaptive_color"),
-      x("mini_graph_loading_indicator"),
+      S("mini_graph_show_legend"),
+      S("mini_graph_show_top_labels"),
+      S("mini_graph_show_average"),
+      S("mini_graph_show_extrema"),
+      S("mini_graph_name_adaptive_color"),
+      S("mini_graph_icon_adaptive_color"),
+      S("mini_graph_loading_indicator"),
       me("tap_action"),
       me("hold_action"),
       me("double_tap_action")
@@ -48562,9 +48754,9 @@ const Co = [
       P("price_medium_threshold", -10, 10),
       P("price_high_threshold", -10, 10),
       P("price_critical_threshold", -10, 10),
-      x("show_grid_phases"),
-      x("show_battery_units"),
-      x("show_tariff_timeline"),
+      S("show_grid_phases"),
+      S("show_battery_units"),
+      S("show_tariff_timeline"),
       U("import_color"),
       U("export_color"),
       U("solar_color"),
@@ -48578,11 +48770,11 @@ const Co = [
       ...ee()
     ] : e.upstreamId === "card_room" ? [
       v(),
-      x("label_use_temperature"),
+      S("label_use_temperature"),
       v(["sensor", "climate"], "room_temperature_entity"),
-      x("label_use_brightness"),
+      S("label_use_brightness"),
       v(["light"], "room_light_entity"),
-      x("ulm_card_dynamic_color"),
+      S("ulm_card_dynamic_color"),
       ...ee(!0),
       $("secondary")
     ] : e.upstreamId === "card_scenes" ? [
@@ -48591,23 +48783,23 @@ const Co = [
         value: r,
         label: e.variantLabels?.[r] ?? r
       })))] : [],
-      x("scene_buttons_only"),
+      S("scene_buttons_only"),
       P("scenes_per_row", 1, 24),
       ...ee()
     ] : e.upstreamId === "custom_card_trash" ? [
       v(["sensor", "calendar"]),
-      x("hide_unknown_dates"),
-      x("show_today"),
+      S("hide_unknown_dates"),
+      S("show_today"),
       v(["sensor"], "today_entity"),
-      x("show_tomorrow"),
+      S("show_tomorrow"),
       v(["sensor"], "tomorrow_entity"),
       ...ee()
     ] : e.upstreamId === "custom_card_entity_carousel" ? [
       v(),
-      x("carousel_show_header"),
+      S("carousel_show_header"),
       ...ee(),
-      x("carousel_loop"),
-      x("carousel_show_labels"),
+      S("carousel_loop"),
+      S("carousel_show_labels"),
       P("carousel_initial_index", 0, 50),
       { name: "carousel_button_width", selector: { number: { min: 32, max: 160, step: 1, mode: "slider", unit_of_measurement: "px" } } },
       { name: "carousel_button_height", selector: { number: { min: 32, max: 160, step: 1, mode: "slider", unit_of_measurement: "px" } } },
@@ -48619,16 +48811,16 @@ const Co = [
         { value: "cube", label: "Cube" },
         { value: "flip", label: "Flip" }
       ]),
-      x("carousel_navigation"),
-      x("carousel_pagination"),
+      S("carousel_navigation"),
+      S("carousel_pagination"),
       H("carousel_pagination_type", [
         { value: "bullets", label: "Dots" },
         { value: "fraction", label: "Item count" },
         { value: "progressbar", label: "Progress bar" }
       ]),
-      x("carousel_scrollbar"),
-      x("carousel_grab_cursor"),
-      x("carousel_centered_slides"),
+      S("carousel_scrollbar"),
+      S("carousel_grab_cursor"),
+      S("carousel_centered_slides"),
       H("carousel_slides_per_view", [
         { value: "auto", label: "Automatic" },
         ...Array.from({ length: 11 }, (r, o) => ({
@@ -48640,7 +48832,7 @@ const Co = [
       P("carousel_coverflow_stretch", -200, 200),
       P("carousel_coverflow_depth", 0, 1e3),
       P("carousel_coverflow_modifier", 0, 5),
-      x("carousel_coverflow_slide_shadows")
+      S("carousel_coverflow_slide_shadows")
     ] : e.upstreamId === "custom_card_playstation" ? [
       v(["binary_sensor", "media_player", "remote", "sensor", "switch"]),
       H("console_platform", [
@@ -48649,8 +48841,8 @@ const Co = [
         { value: "playstation", label: "PlayStation" },
         { value: "nintendo", label: "Nintendo" }
       ]),
-      x("console_show_artwork"),
-      x("console_show_controls"),
+      S("console_show_artwork"),
+      S("console_show_controls"),
       v(["sensor"], "followers_entity"),
       v(["sensor"], "following_entity"),
       v(["sensor"], "friends_entity"),
@@ -48667,18 +48859,18 @@ const Co = [
       v(["input_boolean", "switch"]),
       v(["input_datetime"], "datetime_entity"),
       P("ulm_card_alarm_time_step", 1, 180),
-      x("ulm_card_alarm_time_collapse"),
-      x("ulm_card_alarm_time_horizontal"),
+      S("ulm_card_alarm_time_collapse"),
+      S("ulm_card_alarm_time_horizontal"),
       { name: "ulm_card_alarm_time_icon", selector: { icon: {} } },
       U("ulm_card_alarm_time_color"),
       ...ee()
     ] : e.upstreamId === "custom_card_media_player_sonos" ? [
       v(["media_player"]),
       ...ee(),
-      x("ulm_card_media_player_enable_art"),
-      x("use_media_info"),
-      x("ulm_card_media_player_more_info"),
-      x("ulm_card_media_player_power_button"),
+      S("ulm_card_media_player_enable_art"),
+      S("use_media_info"),
+      S("ulm_card_media_player_more_info"),
+      S("ulm_card_media_player_power_button"),
       v(["media_player"], "ulm_card_media_player_player_controls_entity"),
       { name: "ulm_card_media_player_enable_volume_adjust", selector: { number: { min: 0.01, max: 1, step: 0.01, mode: "box" } } },
       { name: "volume_controls", selector: { select: { multiple: !0, mode: "list", options: [
@@ -48694,9 +48886,9 @@ const Co = [
         { value: "repeat", label: "Repeat mode" },
         { value: "sources", label: "Sources and details" }
       ] } } },
-      x("collapsible_controls"),
-      x("ulm_card_media_player_idle_off"),
-      x("sonos_details_always_visible"),
+      S("collapsible_controls"),
+      S("ulm_card_media_player_idle_off"),
+      S("sonos_details_always_visible"),
       v(["switch"], "crossfade_entity"),
       v(["switch"], "night_sound_entity"),
       v(["switch"], "speech_enhancement_entity"),
@@ -48742,12 +48934,12 @@ const Co = [
       U("buy_sell_planned_sell_color"),
       $("buy_sell_possible_sell_label"),
       U("buy_sell_possible_sell_color"),
-      x("buy_sell_show_now"),
+      S("buy_sell_show_now"),
       $("buy_sell_now_label"),
       U("buy_sell_now_color"),
-      x("buy_sell_show_legend"),
-      x("buy_sell_show_grid"),
-      x("buy_sell_show_result"),
+      S("buy_sell_show_legend"),
+      S("buy_sell_show_grid"),
+      S("buy_sell_show_result"),
       P("buy_sell_trade_energy", 0.1, 1e3, 0.01),
       v(["input_number", "number", "sensor"], "buy_sell_trade_energy_entity"),
       P("buy_sell_trade_power", 0.1, 1e3, 0.01),
@@ -48762,8 +48954,8 @@ const Co = [
         selector: { entity: { domain: ["sensor"], multiple: !0 } }
       },
       $("panel_health_title"),
-      x("panel_show_summary"),
-      x("panel_show_gauges"),
+      S("panel_show_summary"),
+      S("panel_show_gauges"),
       P("panel_gauge_max", 1, 1e5),
       P("panel_warning_average_min", 0, 1e5),
       P("panel_low_output_percent", 1, 100),
@@ -48855,8 +49047,8 @@ const Co = [
         { value: "24h", label: "24-hour time" },
         { value: "12h", label: "12-hour time" }
       ]),
-      x("darkMode"),
-      x("showMoon"),
+      S("darkMode"),
+      S("showMoon"),
       v(["sensor"], "moon_entity"),
       v(["sensor"], "moon_altitude_entity"),
       v(["sensor"], "moon_azimuth_entity"),
@@ -48889,7 +49081,7 @@ const Co = [
       v(["sensor"], "ping_entity"),
       U("ulm_custom_card_speedtest_ping_color"),
       P("ulm_custom_card_speedtest_ping_max", 1, 1e5),
-      x("ulm_custom_card_speedtest_round"),
+      S("ulm_custom_card_speedtest_round"),
       ...ee()
     ] : e.upstreamId === "custom_card_nas_metrics" ? [
       v(["binary_sensor", "sensor", "switch"]),
@@ -48915,6 +49107,9 @@ const Co = [
       ...ee()
     ] : e.upstreamId === "custom_card_input_datetime" ? [
       v(["input_datetime"]),
+      P("datetime_step", 1, 720),
+      S("datetime_single_row"),
+      S("datetime_manual_entry"),
       ...ee()
     ] : e.upstreamId === "custom_card_tablet" ? [
       v(["binary_sensor", "sensor", "switch"]),
@@ -48944,7 +49139,7 @@ const Co = [
   ).values()].filter((i) => Vo(e, i.name)).filter((i) => !Ad(e, i.name)).filter((i) => !Vd.has(i.name)).map((i) => {
     const r = Dd[i.name];
     if (r) return H(i.name, r);
-    if ($d.has(i.name)) return x(i.name);
+    if ($d.has(i.name)) return S(i.name);
     if (Nd.has(i.name)) return P(i.name, -1e5, 1e5);
     if (Td.has(i.name))
       return {
@@ -48966,7 +49161,7 @@ const Co = [
       case "color":
         return U(i.name);
       case "boolean":
-        return x(i.name);
+        return S(i.name);
       case "number":
         return P(i.name, -1e5, 1e5);
       case "object":
@@ -49278,12 +49473,12 @@ const Co = [
     if (m && d.attributes.group_type === "zone") continue;
     const h = d.attributes.entity_id ?? d.attributes.entities, g = Array.isArray(h) ? h.filter((z) => typeof z == "string") : typeof h == "string" ? h.split(",").map((z) => z.trim()) : h && typeof h == "object" ? Object.keys(h) : [];
     if (g.some((z) => !z.startsWith("light."))) continue;
-    const y = new Set(g.map(n)), k = typeof c == "string" ? Object.values(e.areas ?? {}).find((z) => a(z.name) === a(c)) : void 0, S = (g.length && y.size === 1 ? n(g[0]) : void 0) ?? k?.area_id ?? (m && typeof c != "string" ? n(d.entity_id) : void 0);
+    const y = new Set(g.map(n)), k = typeof c == "string" ? Object.values(e.areas ?? {}).find((z) => a(z.name) === a(c)) : void 0, A = (g.length && y.size === 1 ? n(g[0]) : void 0) ?? k?.area_id ?? (m && typeof c != "string" ? n(d.entity_id) : void 0);
     if (g.length && (y.size > 1 || y.has(void 0)) || !g.length && !m) continue;
-    const f = (S ? e.areas?.[S]?.name : void 0) ?? (m && typeof c == "string" ? c : void 0), w = S ? `area:${S}` : f ? `group:${a(f)}` : void 0;
+    const f = (A ? e.areas?.[A]?.name : void 0) ?? (m && typeof c == "string" ? c : void 0), w = A ? `area:${A}` : f ? `group:${a(f)}` : void 0;
     if (!w) continue;
-    const A = r.get(w) ?? { area: S, name: f, scenes: [] };
-    A.scenes.push(d.entity_id), r.set(w, A);
+    const x = r.get(w) ?? { area: A, name: f, scenes: [] };
+    x.scenes.push(d.entity_id), r.set(w, x);
   }
   const o = t ? n(t) : void 0, s = [...r.values()].sort((d, c) => +!!(o && c.area === o) - +!!(o && d.area === o) || Math.min(7, c.scenes.length) - Math.min(7, d.scenes.length))[0];
   return s ? {
@@ -51937,8 +52132,8 @@ const De = wa(class extends za {
       ${o ? _`<details><summary>Visible dashboard tabs</summary>
         ${c.map(([g, y]) => _`<label class="checkbox-row"><input type="checkbox" .checked=${(t.tabs ?? c.map(([k]) => k)).includes(g)}
           @change=${(k) => {
-      const S = new Set(t.tabs ?? c.map(([f]) => f));
-      k.target.checked ? S.add(g) : S.delete(g), this.changed("tabs", c.map(([f]) => f).filter((f) => S.has(f)));
+      const A = new Set(t.tabs ?? c.map(([f]) => f));
+      k.target.checked ? A.add(g) : A.delete(g), this.changed("tabs", c.map(([f]) => f).filter((f) => A.has(f)));
     }}>${y}</label>`)}
       </details>` : p}
       ${m.length ? _`<details ?open=${a === "manual"}><summary>${a === "manual" ? "Overview entity mappings" : "Entity mappings (optional)"}</summary>
@@ -52030,7 +52225,7 @@ const Vi = class Vi extends st {
     }}><span class="detail-label">${t}</span><span class="detail-val">${a}</span></div>`;
   }
   render() {
-    const t = pe(this.config), a = t === "synology_dsm", n = t === "manual", i = this.getActiveDevice(), r = (R, ue) => a || !!ue || !!this.config.entities?.[R], o = (R, ue = 0) => n && R?.attributes.unit_of_measurement !== "%" ? void 0 : Go(R, ue), s = this.getEntity("cpu_usage", "sensor"), l = this.getEntity("ram_usage", "sensor"), d = this.getEntity("system_temperature", "sensor"), c = this.getEntity("uptime", "sensor"), m = this.getEntity("security_status", "binary_sensor"), h = this.getEntity("system_status", "sensor"), g = this.getEntity("model", "sensor"), y = this.getEntity("software_version", "sensor"), k = this.getEntity("memory_total_real", "sensor"), S = this.getEntity("memory_available_real", "sensor"), f = this.getEntity("memory_used", "sensor"), w = this.getEntity("network_rx"), A = this.getEntity("network_tx"), z = Ze(k), O = Ze(S), F = f || this.config.entities?.memory_used ? Ze(f) : z !== void 0 && O !== void 0 ? Math.max(0, z - O) : void 0, q = r("ram_usage", l) || ["memory_total_real", "memory_available_real", "memory_used"].some((R) => this.config.entities?.[R]), ae = n && !this.config.entities?.ram_usage && z !== void 0 && z > 0 && F !== void 0 ? Math.round(Math.max(0, Math.min(100, F / z * 100))) : o(l), N = z !== void 0 && F !== void 0 ? `${je(F)} / ${je(z)}` : a ? "Enable total/free memory sensors for capacity" : [
+    const t = pe(this.config), a = t === "synology_dsm", n = t === "manual", i = this.getActiveDevice(), r = (R, ue) => a || !!ue || !!this.config.entities?.[R], o = (R, ue = 0) => n && R?.attributes.unit_of_measurement !== "%" ? void 0 : Go(R, ue), s = this.getEntity("cpu_usage", "sensor"), l = this.getEntity("ram_usage", "sensor"), d = this.getEntity("system_temperature", "sensor"), c = this.getEntity("uptime", "sensor"), m = this.getEntity("security_status", "binary_sensor"), h = this.getEntity("system_status", "sensor"), g = this.getEntity("model", "sensor"), y = this.getEntity("software_version", "sensor"), k = this.getEntity("memory_total_real", "sensor"), A = this.getEntity("memory_available_real", "sensor"), f = this.getEntity("memory_used", "sensor"), w = this.getEntity("network_rx"), x = this.getEntity("network_tx"), z = Ze(k), O = Ze(A), F = f || this.config.entities?.memory_used ? Ze(f) : z !== void 0 && O !== void 0 ? Math.max(0, z - O) : void 0, q = r("ram_usage", l) || ["memory_total_real", "memory_available_real", "memory_used"].some((R) => this.config.entities?.[R]), ae = n && !this.config.entities?.ram_usage && z !== void 0 && z > 0 && F !== void 0 ? Math.round(Math.max(0, Math.min(100, F / z * 100))) : o(l), N = z !== void 0 && F !== void 0 ? `${je(F)} / ${je(z)}` : a ? "Enable total/free memory sensors for capacity" : [
       z !== void 0 ? `Total: ${je(z)}` : "",
       O !== void 0 ? `Free: ${je(O)}` : "",
       F !== void 0 ? `Used: ${je(F)}` : ""
@@ -52047,7 +52242,7 @@ const Vi = class Vi extends st {
       ${n && !Object.values(this.config.entities ?? {}).some(Boolean) ? this.renderNotice("Choose overview entities in the card editor. No NAS device or automatic entity matching is required in manual mode.") : p}
       <div class="rings-grid">
         ${r("cpu_usage", s) ? this.ring("CPU Load", o(s, 2), r("system_temperature", d) ? `System: ${Re(d)}` : "", s, 2) : p}
-        ${q ? this.ring("Memory", ae, N, l ?? f ?? k ?? S) : p}
+        ${q ? this.ring("Memory", ae, N, l ?? f ?? k ?? A) : p}
         ${Y ? this.ring("Volume Storage", Z, G.total !== void 0 ? `${je(G.used)} / ${je(G.total)}` : a ? "Enable every volume's total-size sensor" : "", te) : p}
       </div>
       ${this.config.show_system_info !== !1 ? _`<div class="divider"></div><div class="detail-grid">
@@ -52056,7 +52251,7 @@ const Vi = class Vi extends st {
         ${r("uptime", c) ? this.detail("System Uptime", Mr(c), c) : p}
         ${r("system_temperature", d) ? this.detail("System Temperature", Re(d), d) : p}
         ${r("network_rx", w) ? this.detail("Download", Er(w), w) : p}
-        ${r("network_tx", A) ? this.detail("Upload", Er(A), A) : p}
+        ${r("network_tx", x) ? this.detail("Upload", Er(x), x) : p}
         ${a ? this.detail("Security Advisor", M, m) : r("system_status", h) ? this.detail("System Status", Re(h), h) : p}
         ${j ? _`<div class="detail-item"><span class="detail-label">${a ? "DSM Management" : "NAS Management"}</span><a class="detail-val" href=${j} target="_blank" rel="noreferrer" style="color:var(--synology-accent)">${a ? "Open DSM" : "Open NAS"}</a></div>` : p}
       </div>` : p}
@@ -52087,22 +52282,22 @@ const Di = class Di extends st {
         <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(100, a.percent ?? 0)}%"></div></div>
       </div>` : p}
       <div class="item-list">${t.map((o, s) => {
-      const l = Ze(o.total), d = Ze(o.used), c = pe(this.config) === "manual" ? this.config.volumes?.[s] : void 0, m = c && o.usage?.attributes.unit_of_measurement !== "%" ? void 0 : Go(o.usage), h = o.usage || c?.usage_entity ? m : l !== void 0 && d !== void 0 && l > 0 ? Math.round(Math.min(100, d / l * 100)) : void 0, g = i || o.total || o.used || c?.total_entity || c?.used_entity, y = i || o.usage || c?.usage_entity || l !== void 0 && d !== void 0, k = o.usage ?? o.total ?? o.used ?? o.status, S = re(o.status) ? o.status.state : "Unavailable", f = ["normal", "healthy"].includes(S.toLowerCase()), w = c ? ["warning", "bad", "failed", "critical", "faulty", "degraded"].includes(S.toLowerCase()) : !f;
+      const l = Ze(o.total), d = Ze(o.used), c = pe(this.config) === "manual" ? this.config.volumes?.[s] : void 0, m = c && o.usage?.attributes.unit_of_measurement !== "%" ? void 0 : Go(o.usage), h = o.usage || c?.usage_entity ? m : l !== void 0 && d !== void 0 && l > 0 ? Math.round(Math.min(100, d / l * 100)) : void 0, g = i || o.total || o.used || c?.total_entity || c?.used_entity, y = i || o.usage || c?.usage_entity || l !== void 0 && d !== void 0, k = o.usage ?? o.total ?? o.used ?? o.status, A = re(o.status) ? o.status.state : "Unavailable", f = ["normal", "healthy"].includes(A.toLowerCase()), w = c ? ["warning", "bad", "failed", "critical", "faulty", "degraded"].includes(A.toLowerCase()) : !f;
       return _`<div class="list-row" style="flex-direction:column;align-items:stretch;gap:8px">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
             <button class="btn" ?disabled=${!k} @click=${() => k && this.openMoreInfo(k.entity_id)}>${gt(Ha, 16)} ${o.device.name_by_user || o.device.name}</button>
-            ${i || o.status || c?.status_entity ? _`<span class="badge ${re(o.status) ? f ? "badge-online" : w ? "badge-warning" : "badge-standby" : "badge-standby"}">${S}</span>` : p}
+            ${i || o.status || c?.status_entity ? _`<span class="badge ${re(o.status) ? f ? "badge-online" : w ? "badge-warning" : "badge-standby" : "badge-standby"}">${A}</span>` : p}
           </div>
           <div style="display:flex;justify-content:space-between;font-size:.75rem">${g ? _`<span>${je(d)} / ${je(l)}</span>` : p}${y ? _`<span>${h === void 0 ? "--" : `${h}%`}</span>` : p}</div>
           ${y ? _`<div class="progress-bar"><div class="progress-fill" style="width:${h ?? 0}%"></div></div>` : p}
           <div style="font-size:.72rem;color:var(--synology-subtext)">${l !== void 0 && d !== void 0 ? `${je(Math.max(0, l - d))} free` : ""}
             ${i || o.temperature || c?.temperature_entity ? _` • Average drive temperature: ${Re(o.temperature)}` : p}</div>
-          ${c && !Object.entries(c).some(([A, z]) => A.endsWith("_entity") && z) ? _`<span>Choose this volume's entities in the card editor.</span>` : p}
+          ${c && !Object.entries(c).some(([x, z]) => x.endsWith("_entity") && z) ? _`<span>Choose this volume's entities in the card editor.</span>` : p}
         </div>`;
     })}</div>
       ${n.length ? _`<div class="divider"></div><div class="section-title">Physical Drives</div>` : p}
       <div class="item-list">${n.map((o, s) => {
-      const { status: l, smart: d, temperature: c, badSectors: m, remainingLife: h } = o, g = pe(this.config) === "manual" ? this.config.drives?.[s] : void 0, y = [l, d].filter((A) => re(A)), k = y.length > 0 && y.every((A) => ["normal", "healthy", "good"].includes(A.state.toLowerCase())), S = [m, h].some((A) => re(A) && A.state === "on") || y.some((A) => pe(this.config) === "manual" ? ["warning", "bad", "failed", "critical", "faulty", "degraded"].includes(A.state.toLowerCase()) : !["normal", "healthy", "good"].includes(A.state.toLowerCase())), f = re(l || d), w = l ?? d ?? c;
+      const { status: l, smart: d, temperature: c, badSectors: m, remainingLife: h } = o, g = pe(this.config) === "manual" ? this.config.drives?.[s] : void 0, y = [l, d].filter((x) => re(x)), k = y.length > 0 && y.every((x) => ["normal", "healthy", "good"].includes(x.state.toLowerCase())), A = [m, h].some((x) => re(x) && x.state === "on") || y.some((x) => pe(this.config) === "manual" ? ["warning", "bad", "failed", "critical", "faulty", "degraded"].includes(x.state.toLowerCase()) : !["normal", "healthy", "good"].includes(x.state.toLowerCase())), f = re(l || d), w = l ?? d ?? c;
       return _`<div class="list-row" style="flex-direction:column;align-items:stretch;gap:10px">
           <div class="row-left" style="min-width:0">
             <div style="color:var(--synology-accent)">${gt(Ha, 20)}</div>
@@ -52113,14 +52308,14 @@ const Di = class Di extends st {
           </div>
           <div class="row-right" style="flex-wrap:wrap;justify-content:flex-start">
             ${i || c || g?.temperature_entity ? _`<button class="btn" ?disabled=${!c} @click=${() => c && this.openMoreInfo(c.entity_id)}>${Re(c)}</button>` : p}
-            ${i || l || d || g?.status_entity || g?.smart_entity ? _`<span class="badge ${f ? S ? "badge-warning" : k ? "badge-online" : "badge-standby" : "badge-standby"}">${S ? "Attention needed" : Re(l ?? d)}</span>` : p}
+            ${i || l || d || g?.status_entity || g?.smart_entity ? _`<span class="badge ${f ? A ? "badge-warning" : k ? "badge-online" : "badge-standby" : "badge-standby"}">${A ? "Attention needed" : Re(l ?? d)}</span>` : p}
             ${i || d || g?.smart_entity ? _`<button class="btn" ?disabled=${!d} @click=${() => d && this.openMoreInfo(d.entity_id)}>SMART: ${Re(d)}</button>` : p}
           </div>
           ${i || m || h || g?.bad_sectors_entity || g?.remaining_life_entity ? _`<div style="width:100%;font-size:.72rem;color:var(--synology-subtext)">
             ${i || m || g?.bad_sectors_entity ? _`Bad-sector threshold: ${re(m) ? m.state === "on" ? "Exceeded" : "Not exceeded" : "Unavailable"}` : p}
             ${i || h || g?.remaining_life_entity ? _` • Remaining-life threshold: ${re(h) ? h.state === "on" ? "Below threshold" : "Not below threshold" : "Unavailable"}` : p}
           </div>` : p}
-          ${g && !Object.entries(g).some(([A, z]) => A.endsWith("_entity") && z) ? _`<span>Choose this drive's entities in the card editor.</span>` : p}
+          ${g && !Object.entries(g).some(([x, z]) => x.endsWith("_entity") && z) ? _`<span>Choose this drive's entities in the card editor.</span>` : p}
         </div>`;
     })}</div>
       ${!t.length && !n.length ? this.renderNotice(pe(this.config) === "manual" ? "Add volumes or drives using entity pickers in the card editor." : `No ${i ? "DSM" : "QNAP"} volumes or drives found for the selected NAS. Enable its storage entities, then refresh discovery.`) : p}
@@ -52804,6 +52999,10 @@ const gu = fe`
   .media-platform { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-purple), .75); color: #fff; }
   .input-datetime-controls { display: grid; grid-template-columns: repeat(3, 1fr); align-items: center; gap: var(--mush-control-spacing, 12px); }
   .input-datetime-controls .ulm-control { width: 100%; height: var(--mush-control-height, 42px); border-radius: var(--mush-control-border-radius, 12px); }
+  .input-datetime-row { display: flex; align-items: center; gap: var(--mush-spacing, 12px); }
+  .input-datetime-row .custom-card-heading { flex: 1 1 auto; min-width: 0; }
+  .input-datetime-row .input-datetime-controls { flex: 0 1 260px; }
+  .input-datetime-controls .datetime-input { box-sizing: border-box; padding: 0 6px; text-align: center; font: inherit; font-size: 16px; font-weight: 700; color: inherit; background: var(--mush-control-bg, var(--secondary-background-color, rgba(128,128,128,.15))); border: 0; min-width: 0; }
   .input-datetime-controls .hold-control { font-size: 16px; font-weight: 700; }
   .custom-sonos, .custom-printer,
   .custom-nas-metrics, .custom-tablet { display: grid; gap: 10px; padding: 12px; }
@@ -53369,20 +53568,20 @@ const Xn = wa(ku), Et = (e, t) => {
       s[y + 1] ? s[y + 1].timestamp - g.timestamp : 1 / 0
     )
   })).sort((g, y) => g.price - y.price || g.timestamp - y.timestamp), d = /* @__PURE__ */ new Set(), c = (g, y) => {
-    let k = g, S = 0;
+    let k = g, A = 0;
     const f = [];
     for (let w = 0; w < l.length && k > 1e-9; w++) {
-      const A = l[y ? l.length - 1 - w : w];
-      if (d.has(A.timestamp)) continue;
-      const z = Math.min(k, n * A.duration / 36e5);
-      d.add(A.timestamp), f.push({ start: A.timestamp, end: A.timestamp + z / n * 36e5, energy: z }), S += z * A.price, k -= z;
+      const x = l[y ? l.length - 1 - w : w];
+      if (d.has(x.timestamp)) continue;
+      const z = Math.min(k, n * x.duration / 36e5);
+      d.add(x.timestamp), f.push({ start: x.timestamp, end: x.timestamp + z / n * 36e5, energy: z }), A += z * x.price, k -= z;
     }
     if (!(k > 1e-9))
       return {
-        slots: f.sort((w, A) => w.start - A.start),
+        slots: f.sort((w, x) => w.start - x.start),
         energy: g,
-        averagePrice: S / g,
-        amount: y ? S - r * g : -S
+        averagePrice: A / g,
+        amount: y ? A - r * g : -A
       };
   }, m = c(a / (i / 100), !1), h = c(a, !0);
   return !m || !h ? { error: "Not enough separate price slots to buy and sell the configured trade size. Reduce the trade size or supply more prices." } : { buy: m, sell: h, net: m.amount + h.amount };
@@ -53836,7 +54035,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
     <span class="battery-track"><i style=${`width:${Math.max(0, Math.min(100, t))}%`}></i></span>
   `);
 }, Zu = (e) => {
-  const t = E(e, "ulm_card_battery_attribute"), a = t ? D(e.entity, t) : e.entity?.state, n = B(a), i = Vt(e, "ulm_card_battery_battery_state_entity_id"), r = Vt(e, "ulm_card_battery_charger_type_entity_id"), o = i?.state.toLowerCase() === "charging", s = r?.state.toLowerCase(), l = s === "wireless" ? "-charging-wireless" : o || ["charging", "ac", "usb"].includes(s ?? "") ? "-charging" : "", d = B(e.config.battery_warning_threshold) ?? E(e, "ulm_card_battery_battery_level_warning") ?? 50, c = B(e.config.battery_low_threshold) ?? E(e, "ulm_card_battery_battery_level_danger") ?? 20, m = B(e.config.battery_critical_threshold) ?? 10, [h, g, y] = [m, c, d].map((w) => Math.max(0, Math.min(100, w))).sort((w, A) => w - A), k = n === void 0 || n <= h ? Se(
+  const t = E(e, "ulm_card_battery_attribute"), a = t ? D(e.entity, t) : e.entity?.state, n = B(a), i = Vt(e, "ulm_card_battery_battery_state_entity_id"), r = Vt(e, "ulm_card_battery_charger_type_entity_id"), o = i?.state.toLowerCase() === "charging", s = r?.state.toLowerCase(), l = s === "wireless" ? "-charging-wireless" : o || ["charging", "ac", "usb"].includes(s ?? "") ? "-charging" : "", d = B(e.config.battery_warning_threshold) ?? E(e, "ulm_card_battery_battery_level_warning") ?? 50, c = B(e.config.battery_low_threshold) ?? E(e, "ulm_card_battery_battery_level_danger") ?? 20, m = B(e.config.battery_critical_threshold) ?? 10, [h, g, y] = [m, c, d].map((w) => Math.max(0, Math.min(100, w))).sort((w, x) => w - x), k = n === void 0 || n <= h ? Se(
     e.config.battery_critical_color ?? E(e, "ulm_card_battery_color_battery_level_danger"),
     "var(--google-red, #f44336)"
   ) : n <= g ? Se(e.config.battery_low_color, "var(--google-orange, #ff9800)") : n <= y ? Se(
@@ -53845,8 +54044,8 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
   ) : Se(
     e.config.battery_healthy_color ?? E(e, "ulm_card_battery_color_battery_level_ok"),
     "var(--google-green, #43a047)"
-  ), S = E(e, "ulm_card_battery_charging_animation") === !0 && o, f = n === void 0 ? C(e.entity, e.hass) : `${Math.round(n)}%`;
-  return e.actionSurface(`ulm-row ulm-default-battery ${S ? "is-charging" : ""}`, _`
+  ), A = E(e, "ulm_card_battery_charging_animation") === !0 && o, f = n === void 0 ? C(e.entity, e.hass) : `${Math.round(n)}%`;
+  return e.actionSurface(`ulm-row ulm-default-battery ${A ? "is-charging" : ""}`, _`
     ${yn(e, Iu(n, l), k, !0)}
     <span class="value-first">${oe(e, ce(e.config, e.entity, e.hass), f)}</span>
   `);
@@ -54142,15 +54341,15 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
     </div>
     <div class="welcome-greeting">${oe(e, Bu(e.hass, (/* @__PURE__ */ new Date()).getHours()))}</div>
     ${l ? p : _`<div class="welcome-items" style=${`--scenes-per-row:${c}`}>${d.map((m, h) => {
-    const g = m.entity ? e.hass.states[m.entity] : void 0, y = zo(g) && !ts(m, g), k = m.icon_type === "entity-picture" ? D(g, "entity_picture") : void 0, S = m.name || m.label || (g ? ce({ entity: m.entity }, g, e.hass) : b(e.hass, "ui.renderer.item", { number: h + 1 }));
+    const g = m.entity ? e.hass.states[m.entity] : void 0, y = zo(g) && !ts(m, g), k = m.icon_type === "entity-picture" ? D(g, "entity_picture") : void 0, A = m.name || m.label || (g ? ce({ entity: m.entity }, g, e.hass) : b(e.hass, "ui.renderer.item", { number: h + 1 }));
     return _`
       <button class="scene-button ${y ? "is-off" : "is-active"}" style=${`--item-color:${Se(m.color, "rgb(var(--ulm-blue))")}`}
-        aria-label=${S} title=${S}
+        aria-label=${A} title=${A}
         @pointerdown=${(f) => f.stopPropagation()}
         @click=${(f) => {
       f.stopPropagation(), es(f, e, m);
     }}>
-        <i>${k ? _`<span class="scene-entity-picture" style=${Ae({ backgroundImage: Je(k) })}></span>` : _`<ha-icon .icon=${m.icon || g?.attributes.icon || "mdi:circle"}></ha-icon>`}</i><small>${S}</small>
+        <i>${k ? _`<span class="scene-entity-picture" style=${Ae({ backgroundImage: Je(k) })}></span>` : _`<ha-icon .icon=${m.icon || g?.attributes.icon || "mdi:circle"}></ha-icon>`}</i><small>${A}</small>
       </button>
     `;
   })}</div>`}
@@ -54158,15 +54357,15 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
 }, uc = (e) => {
   const t = ie(e, "washer_power_entity") ?? ie(e, "power_entity") ?? ie(e, "ulm_custom_card_washer_power"), a = ie(e, "ulm_custom_card_washer_machine_state") ?? e.entity, n = ie(e, "ulm_custom_card_washer_job_progress"), i = ie(e, "program_stage_entity") ?? ie(e, "ulm_custom_card_washer_job_state") ?? a, r = ie(e, "ulm_custom_card_washer_remote_control"), o = ie(e, "ulm_custom_card_washer_delayed_start"), s = ie(e, "ulm_custom_card_washer_delayed_starttime"), l = ie(e, "door_entity"), d = ie(e, "finished_entity"), c = ie(e, "program_select_entity"), m = Array.isArray(c?.attributes.options) ? c.attributes.options.map(String) : [];
   c && !m.includes(c.state) && m.unshift(c.state);
-  const h = ie(e, "power_switch_entity"), g = E(e, "ulm_custom_card_washer_machine_stop_state") ?? "stop", y = h ? h.state === "on" : t ? !["off", "unavailable", "unknown", "0"].includes(t.state.toLowerCase()) : a ? !["off", "unavailable", "unknown"].includes(a.state.toLowerCase()) : !0, k = !a || a.state === g || a.state === "off", S = ["true", "on", "enabled"].includes(r?.state.toLowerCase() ?? ""), f = o?.state === "on", w = Math.max(0, Math.min(100, B(n?.state) ?? 0)), A = E(
+  const h = ie(e, "power_switch_entity"), g = E(e, "ulm_custom_card_washer_machine_stop_state") ?? "stop", y = h ? h.state === "on" : t ? !["off", "unavailable", "unknown", "0"].includes(t.state.toLowerCase()) : a ? !["off", "unavailable", "unknown"].includes(a.state.toLowerCase()) : !0, k = !a || a.state === g || a.state === "off", A = ["true", "on", "enabled"].includes(r?.state.toLowerCase() ?? ""), f = o?.state === "on", w = Math.max(0, Math.min(100, B(n?.state) ?? 0)), x = E(
     e,
     "ulm_custom_card_washer_job_states"
-  ), z = Object.values(A ?? {
+  ), z = Object.values(x ?? {
     state1: { name: "weightSensing", icon: "mdi:scale" },
     state2: { name: "wash", icon: "mdi:waves" },
     state3: { name: "rinse", icon: "mdi:water" },
     state4: { name: "spin", icon: "mdi:fan" }
-  }).filter((M) => M.name && M.icon).slice(0, 5), O = z.findIndex((M) => M.name?.toLowerCase() === i?.state.toLowerCase()), F = y ? k ? S && f ? E(e, "ulm_custom_card_washer_label_configuring") ?? "configure" : E(e, "ulm_custom_card_washer_label_idle") ?? "idle" : E(e, "ulm_custom_card_washer_label_running") ?? "run" : E(e, "ulm_custom_card_washer_label_idle") ?? "idle", q = (M) => E(e, M) ?? { action: "none" }, ae = (M, j) => Ve(M, e, j, typeof j.entity == "string" ? j.entity : e.config.entity), N = s?.state.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/)?.slice(1).map(Number), G = (M, j) => {
+  }).filter((M) => M.name && M.icon).slice(0, 5), O = z.findIndex((M) => M.name?.toLowerCase() === i?.state.toLowerCase()), F = y ? k ? A && f ? E(e, "ulm_custom_card_washer_label_configuring") ?? "configure" : E(e, "ulm_custom_card_washer_label_idle") ?? "idle" : E(e, "ulm_custom_card_washer_label_running") ?? "run" : E(e, "ulm_custom_card_washer_label_idle") ?? "idle", q = (M) => E(e, M) ?? { action: "none" }, ae = (M, j) => Ve(M, e, j, typeof j.entity == "string" ? j.entity : e.config.entity), N = s?.state.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/)?.slice(1).map(Number), G = (M, j) => {
     if (M.stopPropagation(), !s || !N) return;
     const I = ((N[0] * 60 + N[1] + j) % 1440 + 1440) % 1440;
     e.service("input_datetime", "set_datetime", {
@@ -54211,7 +54410,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
         `)}
       </select>
     ` : p}
-    ${y && S || h ? _`
+    ${y && A || h ? _`
       <div class="washer-controls">
         ${h ? Me(
     u(e.hass, "Toggle power"),
@@ -54219,7 +54418,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
     (M) => Ve(M, e, { action: "toggle" }, h.entity_id),
     h.state === "unavailable"
   ) : p}
-        ${y && S ? _`${Me(
+        ${y && A ? _`${Me(
     k ? u(e.hass, "Start washer") : u(e.hass, "Pause washer"),
     k ? "mdi:play" : "mdi:pause",
     (M) => ae(M, te),
@@ -54239,7 +54438,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
   ) : p}` : p}
       </div>
     ` : p}
-    ${y && S && f && s ? _`
+    ${y && A && f && s ? _`
       <div class="washer-delay-controls">
         ${Me(u(e.hass, "Move delayed start 15 minutes earlier"), "mdi:arrow-down", (M) => G(M, -15))}
         <button class="washer-delay-time" aria-label="${u(e.hass, "Move delayed start 1 minute later")}"
@@ -54276,15 +54475,15 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
       minute: "2-digit",
       hour12: s
     }).format(M);
-  }, d = B(D(e.entity, "elevation")), c = B(D(e.entity, "azimuth")), m = E(e, "title"), h = Vt(e, "moon_entity") ?? e.hass.states["sensor.moon"] ?? Object.values(e.hass.states).find((Z) => String(D(Z, "device_class") ?? "") === "enum" && `${Z.entity_id} ${String(D(Z, "friendly_name") ?? "")}`.toLowerCase().includes("moon")), g = We(e, "moon_altitude_entity", "altitude"), y = We(e, "moon_azimuth_entity", "azimuth"), k = Vt(e, "moon_rising_entity") ?? We(e, "moon_rising_entity", "next_rising") ?? We(e, "moon_rising_entity", "moonrise"), S = Vt(e, "moon_setting_entity") ?? We(e, "moon_setting_entity", "next_setting") ?? We(e, "moon_setting_entity", "moonset"), f = We(e, "moon_next_full_moon_entity", "next_full_moon"), w = We(e, "moon_next_new_moon_entity", "next_new_moon"), A = We(e, "moon_above_horizon_entity", "is_moon_above_horizon"), z = [
+  }, d = B(D(e.entity, "elevation")), c = B(D(e.entity, "azimuth")), m = E(e, "title"), h = Vt(e, "moon_entity") ?? e.hass.states["sensor.moon"] ?? Object.values(e.hass.states).find((Z) => String(D(Z, "device_class") ?? "") === "enum" && `${Z.entity_id} ${String(D(Z, "friendly_name") ?? "")}`.toLowerCase().includes("moon")), g = We(e, "moon_altitude_entity", "altitude"), y = We(e, "moon_azimuth_entity", "azimuth"), k = Vt(e, "moon_rising_entity") ?? We(e, "moon_rising_entity", "next_rising") ?? We(e, "moon_rising_entity", "moonrise"), A = Vt(e, "moon_setting_entity") ?? We(e, "moon_setting_entity", "next_setting") ?? We(e, "moon_setting_entity", "moonset"), f = We(e, "moon_next_full_moon_entity", "next_full_moon"), w = We(e, "moon_next_new_moon_entity", "next_new_moon"), x = We(e, "moon_above_horizon_entity", "is_moon_above_horizon"), z = [
     h,
     g,
     y,
     k,
-    S,
+    A,
     f,
     w,
-    A
+    x
   ], O = E(e, "showMoon") !== !1 && z.some(Boolean), F = (Z, M = 2) => {
     if (!Z || ["unknown", "unavailable"].includes(Z.state)) return "—";
     const j = B(Z.state);
@@ -54295,13 +54494,13 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
     if (!Z || ["unknown", "unavailable"].includes(Z.state)) return "—";
     const M = new Date(Z.state);
     return Number.isNaN(M.getTime()) ? C(Z, e.hass) : new Intl.DateTimeFormat(o, { day: "numeric", month: "short", year: "numeric" }).format(M);
-  }, ae = h?.state ?? "unknown", N = B(g?.state), G = B(y?.state), te = A ? ["on", "true", "above_horizon"].includes(A.state.toLowerCase()) : (N ?? -1) >= 0;
+  }, ae = h?.state ?? "unknown", N = B(g?.state), G = B(y?.state), te = x ? ["on", "true", "above_horizon"].includes(x.state.toLowerCase()) : (N ?? -1) >= 0;
   return e.actionSurface(`custom-sun-card ${E(e, "darkMode") ? "is-dark" : ""}`, _`
     ${m ? _`<b class="sun-title">${m}</b>` : p}
     <div class="astronomy-times">
       <span><small>${u(e.hass, "Sunrise")}</small><b>${l(t)}</b></span>
       <span><small>${u(e.hass, "Moonrise")}</small><b>${l(k?.state)}</b></span>
-      <span><small>${u(e.hass, "Moonset")}</small><b>${l(S?.state)}</b></span>
+      <span><small>${u(e.hass, "Moonset")}</small><b>${l(A?.state)}</b></span>
       <span><small>${u(e.hass, "Sunset")}</small><b>${l(a)}</b></span>
     </div>
     <div class="sun-arc astronomy-arc">
@@ -54346,38 +54545,47 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
     ` : p}
   `);
 }, mc = (e) => {
-  const t = as(e.entity), a = !!t, n = (i) => {
-    if (!t) return;
-    const r = ((t.minutes + i) % 1440 + 1440) % 1440;
+  const t = as(e.entity), a = !!t, n = Math.max(1, Math.min(720, Math.round(B(e.config.datetime_step) ?? 15))), i = e.config.datetime_manual_entry !== !1, r = e.config.datetime_single_row === !0, o = (g) => {
+    const y = (g % 1440 + 1440) % 1440;
     e.service("input_datetime", "set_datetime", {
       entity_id: e.config.entity,
-      time: `${String(Math.floor(r / 60)).padStart(2, "0")}:${String(r % 60).padStart(2, "0")}:00`
+      time: `${String(Math.floor(y / 60)).padStart(2, "0")}:${String(y % 60).padStart(2, "0")}:00`
     });
-  };
-  return e.actionSurface("custom-input-datetime", _`
-    <div class="custom-card-heading">${be(e, "mdi:calendar-clock", "green")}${oe(e, C(e.entity, e.hass))}</div>
-    <div class="input-datetime-controls">
-      ${Me(u(e.hass, "15 minutes earlier"), "mdi:arrow-down", (i) => {
-    i.stopPropagation(), n(-15);
-  }, !a)}
-      ${Ku(
+  }, s = (g) => {
+    t && o(t.minutes + g);
+  }, l = (g) => {
+    g.stopPropagation();
+    const y = /^(\d{2}):(\d{2})/.exec(g.target.value);
+    y && o(Number(y[1]) * 60 + Number(y[2]));
+  }, d = (g) => g.stopPropagation(), c = i ? _`<input class="ulm-control datetime-input" type="time" aria-label=${t?.label ?? "Time"}
+        .value=${t?.label ?? ""} ?disabled=${!a} step=${n * 60}
+        @pointerdown=${d} @click=${d} @keydown=${d} @change=${l}>` : Ku(
     u(e.hass, "One minute later; hold for one minute earlier"),
     _`<b>${t?.label ?? C(e.entity, e.hass)}</b>`,
-    () => n(1),
-    () => n(-1),
+    () => s(1),
+    () => s(-1),
     !a
-  )}
-      ${Me(u(e.hass, "15 minutes later"), "mdi:arrow-up", (i) => {
-    i.stopPropagation(), n(15);
+  ), m = _`${be(e, "mdi:calendar-clock", "green")}${oe(e, C(e.entity, e.hass))}`, h = _`
+      ${Me(n === 15 ? u(e.hass, "15 minutes earlier") : `${n} minutes earlier`, "mdi:arrow-down", (g) => {
+    g.stopPropagation(), s(-n);
   }, !a)}
-    </div>
+      ${c}
+      ${Me(n === 15 ? u(e.hass, "15 minutes later") : `${n} minutes later`, "mdi:arrow-up", (g) => {
+    g.stopPropagation(), s(n);
+  }, !a)}`;
+  return e.actionSurface("custom-input-datetime", r ? _`<div class="input-datetime-row">
+        <div class="custom-card-heading">${m}</div>
+        <div class="input-datetime-controls">${h}</div>
+      </div>` : _`
+    <div class="custom-card-heading">${m}</div>
+    <div class="input-datetime-controls">${h}</div>
   `);
 }, Dr = (e) => {
   const t = e.entity?.state, a = !e.entity || t === "unavailable" || t === "unknown", n = E(e, "ulm_card_media_player_player_controls_entity") || e.config.entity, i = n ? e.hass.states[n] : void 0, r = i?.state, o = !n?.startsWith("media_player.") || !i || ["unavailable", "unknown"].includes(r ?? ""), s = e.config.collapsible_controls === !0 && (o || ["off", "standby"].includes(r ?? "") || e.config.ulm_card_media_player_idle_off === !0 && r === "idle"), l = (L) => L.stopPropagation(), d = D(i, "supported_features"), c = (L) => d === void 0 || (Number(d) & L) !== 0, m = e.config.volume_controls ?? ["volume_buttons"], h = e.config.media_controls ?? ["play_pause_stop"], g = (L, ne = {}) => {
     o || e.service("media_player", L, { entity_id: n, ...ne });
   }, y = (L, ne, we, Ea) => Me(L, ne, (Ma) => {
     l(Ma), g(we, Ea);
-  }, o), k = ["off", "standby"].includes(r ?? "") || o, S = e.config.ulm_card_media_player_power_button ?? h.includes("on_off"), f = !c(X.turnOn | X.turnOff), w = c(k ? X.turnOn : X.turnOff) ? k ? "turn_on" : "turn_off" : f && ["playing", "paused", "buffering"].includes(r ?? "") && c(X.stop) ? "media_stop" : f && ["idle", "on", "off", "standby"].includes(r ?? "") && c(X.play) ? "media_play" : void 0, A = w === "media_stop" ? u(e.hass, "Standby (stop playback)") : w === "media_play" ? u(e.hass, "Resume playback") : k ? u(e.hass, "Turn on") : u(e.hass, "Turn off"), z = S && w ? y(A, "mdi:power", w) : p, O = r === "playing", F = d === void 0 ? "media_play_pause" : O && c(X.pause) ? "media_pause" : !O && c(X.play) ? "media_play" : c(X.stop) ? "media_stop" : void 0, q = h.includes("play_pause_stop") && F ? y(
+  }, o), k = ["off", "standby"].includes(r ?? "") || o, A = e.config.ulm_card_media_player_power_button ?? h.includes("on_off"), f = !c(X.turnOn | X.turnOff), w = c(k ? X.turnOn : X.turnOff) ? k ? "turn_on" : "turn_off" : f && ["playing", "paused", "buffering"].includes(r ?? "") && c(X.stop) ? "media_stop" : f && ["idle", "on", "off", "standby"].includes(r ?? "") && c(X.play) ? "media_play" : void 0, x = w === "media_stop" ? u(e.hass, "Standby (stop playback)") : w === "media_play" ? u(e.hass, "Resume playback") : k ? u(e.hass, "Turn on") : u(e.hass, "Turn off"), z = A && w ? y(x, "mdi:power", w) : p, O = r === "playing", F = d === void 0 ? "media_play_pause" : O && c(X.pause) ? "media_pause" : !O && c(X.play) ? "media_play" : c(X.stop) ? "media_stop" : void 0, q = h.includes("play_pause_stop") && F ? y(
     F === "media_stop" ? u(e.hass, "Stop") : d === void 0 ? u(e.hass, "Play or pause") : O ? u(e.hass, "Pause") : u(e.hass, "Play"),
     F === "media_stop" ? "mdi:stop" : O ? "mdi:pause" : "mdi:play",
     F
@@ -54548,7 +54756,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
     const g = e.config[h];
     return g && typeof g == "object" && "max_value" in g ? B(g.max_value) : void 0;
   }, d = (h, g, y, k = 100) => {
-    const S = Math.max(0, Math.min(k, B(h?.state) ?? 0)), f = 2 * Math.PI * g, w = f * (1 - S / k);
+    const A = Math.max(0, Math.min(k, B(h?.state) ?? 0)), f = 2 * Math.PI * g, w = f * (1 - A / k);
     return K`<circle class="nas-metrics-ring-value" cx="70" cy="70" r=${g}
       fill="none" stroke=${y} stroke-width="6" stroke-linecap="round"
       stroke-dasharray=${f} stroke-dashoffset=${w}></circle>`;
@@ -54635,7 +54843,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
   const t = e.entity?.state ?? "unknown", a = Si(e.hass, e.config.entity, e.config), n = (N) => {
     const G = a[N];
     return G ? e.hass.states[G] : void 0;
-  }, i = $o(e.hass, e.config.entity, e.config), r = wd(i), o = n("followers_entity"), s = n("following_entity"), l = n("friends_entity"), d = n("primary_stat_entity"), c = n("secondary_stat_entity"), m = n("now_playing_entity"), h = n("gamerpic_entity"), g = n("artwork_entity"), y = n("console_power_entity"), k = D(h, "entity_picture") ?? D(e.entity, "entity_picture"), S = E(e, "console_show_artwork") === !1 ? void 0 : D(g, "entity_picture") ?? D(e.entity, "media_image_url") ?? D(e.entity, "entity_picture"), f = !!S, w = m && !["unknown", "unavailable", "none", ""].includes(m.state.toLowerCase()) ? C(m, e.hass) : String(D(e.entity, "media_title") ?? ""), A = ce(e.config, e.entity, e.hass), z = [
+  }, i = $o(e.hass, e.config.entity, e.config), r = wd(i), o = n("followers_entity"), s = n("following_entity"), l = n("friends_entity"), d = n("primary_stat_entity"), c = n("secondary_stat_entity"), m = n("now_playing_entity"), h = n("gamerpic_entity"), g = n("artwork_entity"), y = n("console_power_entity"), k = D(h, "entity_picture") ?? D(e.entity, "entity_picture"), A = E(e, "console_show_artwork") === !1 ? void 0 : D(g, "entity_picture") ?? D(e.entity, "media_image_url") ?? D(e.entity, "entity_picture"), f = !!A, w = m && !["unknown", "unavailable", "none", ""].includes(m.state.toLowerCase()) ? C(m, e.hass) : String(D(e.entity, "media_title") ?? ""), x = ce(e.config, e.entity, e.hass), z = [
     { entity: o, icon: "mdi:account-arrow-left", label: u(e.hass, "Followers") },
     { entity: s, icon: "mdi:account-arrow-right", label: u(e.hass, "Following") },
     { entity: l, icon: "mdi:account-multiple", label: u(e.hass, "Friends") }
@@ -54658,7 +54866,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
     }
   };
   return e.actionSurface(`custom-console-card platform-${i} state-${t} ${f ? "has-artwork" : ""}`, _`
-    ${f ? _`<div class="console-backdrop" style=${Ae({ backgroundImage: Je(S) })}></div>` : p}
+    ${f ? _`<div class="console-backdrop" style=${Ae({ backgroundImage: Je(A) })}></div>` : p}
     <div class="console-content">
       <div class="card-heading console-header">
         ${e.config.icon_type !== "none" ? _`
@@ -54667,7 +54875,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
             ${k && e.config.icon_type !== "icon" ? p : ja(e.hass, e.entity, e.config.icon, r.icon)}
           </span>
         ` : p}
-        ${oe(e, w || C(e.entity, e.hass), A)}
+        ${oe(e, w || C(e.entity, e.hass), x)}
         ${O.length ? _`<span class="console-top-stats">
           ${O.map(({ entity: N, icon: G }) => _`
             <span title=${String(D(N, "friendly_name") ?? "")}>
@@ -54738,7 +54946,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
     "Smart Matching": t.mode_solar_first_label ?? u(e.hass, "Solar first"),
     "Dynamic Smart Matching": t.mode_smart_saving_label ?? u(e.hass, "Smart saving"),
     "Dynamic Trading + Smart Matching": t.mode_smart_trading_label ?? u(e.hass, "Smart trading")
-  }, y = t.energy_auto_control_entity ? e.hass.states[t.energy_auto_control_entity]?.state === "on" : !1, k = `${g[h] ?? h} · ${y ? t.energy_auto_label ?? u(e.hass, "Auto") : t.energy_manual_label ?? u(e.hass, "Manual")}`, S = l > 20 ? `${t.energy_charge_label ?? u(e.hass, "Charging")} ${tt(l)}` : l < -20 ? `${t.energy_discharge_label ?? u(e.hass, "Discharging")} ${tt(l)}` : t.energy_idle_label ?? u(e.hass, "Idle"), f = i > 20 ? t.energy_grid_import_label ?? u(e.hass, "GRID · Import") : i < -20 ? t.energy_grid_export_label ?? u(e.hass, "GRID · Export") : t.energy_grid_label ?? u(e.hass, "GRID"), w = t.import_color ?? "#ff9f43", A = t.export_color ?? "#4cd98b", z = t.battery_color ?? "#3b82f6", O = t.solar_color ?? "#f5c542", F = t.home_color ?? "#3b82f6", q = i > 20 ? w : A, ae = (/* @__PURE__ */ new Date()).toLocaleTimeString(e.hass.language ?? "nl-NL", {
+  }, y = t.energy_auto_control_entity ? e.hass.states[t.energy_auto_control_entity]?.state === "on" : !1, k = `${g[h] ?? h} · ${y ? t.energy_auto_label ?? u(e.hass, "Auto") : t.energy_manual_label ?? u(e.hass, "Manual")}`, A = l > 20 ? `${t.energy_charge_label ?? u(e.hass, "Charging")} ${tt(l)}` : l < -20 ? `${t.energy_discharge_label ?? u(e.hass, "Discharging")} ${tt(l)}` : t.energy_idle_label ?? u(e.hass, "Idle"), f = i > 20 ? t.energy_grid_import_label ?? u(e.hass, "GRID · Import") : i < -20 ? t.energy_grid_export_label ?? u(e.hass, "GRID · Export") : t.energy_grid_label ?? u(e.hass, "GRID"), w = t.import_color ?? "#ff9f43", x = t.export_color ?? "#4cd98b", z = t.battery_color ?? "#3b82f6", O = t.solar_color ?? "#f5c542", F = t.home_color ?? "#3b82f6", q = i > 20 ? w : x, ae = (/* @__PURE__ */ new Date()).toLocaleTimeString(e.hass.language ?? "nl-NL", {
     hour: "2-digit",
     minute: "2-digit"
   }), N = (T, _e, V) => K`
@@ -54765,7 +54973,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
       ${G(80, 0, Math.min(d, 99.9) * 3.6, 1, z)}
       <text x="380" y="270" class="hems-muted hems-center">${u(e.hass, "▮ Battery")}</text>
       <text x="380" y="318" class="hems-battery-value hems-center">${Math.round(d)}%</text>
-      <text x="380" y="346" class="hems-muted hems-center">${S}</text>
+      <text x="380" y="346" class="hems-muted hems-center">${A}</text>
       <text x="380" y="125" class="hems-time hems-muted hems-center">${ae}</text>
 
       ${t.show_grid_phases !== !1 ? [250, 270, 290].map((T, _e) => K`
@@ -54775,7 +54983,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
     272,
     352,
     Math.abs(r[_e]) / (t.grid_phase_scale_max ?? 3e3),
-    r[_e] < 0 ? A : w
+    r[_e] < 0 ? x : w
   )}
       `) : p}
       <text x="180" y="185" class="hems-muted">${f}</text>
@@ -54856,7 +55064,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
   { kind: 2, fallback: "Planned sell" },
   { kind: 3, fallback: "Possible sell" }
 ], ns = (e, t, a) => rt(e, a, t), kc = (e) => {
-  const t = e.entity, a = Au(t), n = Math.max(1, B(e.config.buy_sell_graph_span) ?? 36), i = Date.now(), r = e.config.buy_sell_span_start !== "now" ? new Date(new Date(i).setHours(0, 0, 0, 0)).getTime() : i, o = r + n * 60 * 60 * 1e3, s = a.filter(({ timestamp: V }) => V >= r && V < o), l = B(e.config.buy_sell_min_value), d = B(e.config.buy_sell_max_value), c = xu(s, l, d), m = 58, h = 700, g = 22, y = 254, k = h - m, S = y - g, f = (V) => m + (V - r) / (o - r) * k, w = (V) => y - (V - c.minimum) / (c.maximum - c.minimum) * S, A = Math.max(0, Math.min(6, Math.floor(B(e.config.buy_sell_price_decimals) ?? 3))), z = (V) => {
+  const t = e.entity, a = Au(t), n = Math.max(1, B(e.config.buy_sell_graph_span) ?? 36), i = Date.now(), r = e.config.buy_sell_span_start !== "now" ? new Date(new Date(i).setHours(0, 0, 0, 0)).getTime() : i, o = r + n * 60 * 60 * 1e3, s = a.filter(({ timestamp: V }) => V >= r && V < o), l = B(e.config.buy_sell_min_value), d = B(e.config.buy_sell_max_value), c = xu(s, l, d), m = 58, h = 700, g = 22, y = 254, k = h - m, A = y - g, f = (V) => m + (V - r) / (o - r) * k, w = (V) => y - (V - c.minimum) / (c.maximum - c.minimum) * A, x = Math.max(0, Math.min(6, Math.floor(B(e.config.buy_sell_price_decimals) ?? 3))), z = (V) => {
     const Q = s[V + 1]?.timestamp, $e = Q ? Q - s[V].timestamp : 1800 * 1e3;
     return Math.max(60 * 1e3, Math.min($e, 360 * 60 * 1e3));
   }, O = Math.max(0, Math.min(6, Math.floor(B(e.config.buy_sell_axis_decimals) ?? 2))), F = Hn.map((V, Q) => Se(E(e, [
@@ -54902,7 +55110,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
         aria-label=${b(e.hass, "ui.renderer.energy_chart", { hours: n })}>
         <svg viewBox="0 0 720 314" preserveAspectRatio="none" aria-hidden="true">
           ${Array.from({ length: 5 }, (V, Q) => {
-    const $e = c.maximum - (c.maximum - c.minimum) * Q / 4, Ce = g + S * Q / 4;
+    const $e = c.maximum - (c.maximum - c.minimum) * Q / 4, Ce = g + A * Q / 4;
     return K`
               ${e.config.buy_sell_show_grid !== !1 ? K`
                 <line x1=${m} y1=${Ce} x2=${h} y2=${Ce} class="energy-chart-grid"></line>
@@ -54929,7 +55137,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
               <rect x=${Gt} y=${Pa} width=${kn} height=${L}
                 rx=${Math.max(0, Math.min(16, B(e.config.buy_sell_bar_radius) ?? 2))}
                 fill=${Ce} opacity="0.88">
-                <title>${`${Z[$e]}: ${Cr(V.price, A)} ${e.config.buy_sell_axis_label || "€/kWh"}`}</title>
+                <title>${`${Z[$e]}: ${Cr(V.price, x)} ${e.config.buy_sell_axis_label || "€/kWh"}`}</title>
               </rect>
             `;
   })}
@@ -54989,14 +55197,14 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
     e.hass.states,
     t,
     e.config.entity
-  ), n = Cu(a), i = Math.max(1, B(e.config.panel_gauge_max) ?? 350), r = [0, 1, 2, 3, 4, 5].map((k) => B(e.config[`panel_segment_${k}`]) ?? [0, 80, 150, 230, 300, i][k]), o = r.map((k, S) => Se(E(e, `panel_color_${S}`), [
+  ), n = Cu(a), i = Math.max(1, B(e.config.panel_gauge_max) ?? 350), r = [0, 1, 2, 3, 4, 5].map((k) => B(e.config[`panel_segment_${k}`]) ?? [0, 80, 150, 230, 300, i][k]), o = r.map((k, A) => Se(E(e, `panel_color_${A}`), [
     "#b0bec5",
     "#ffa726",
     "#d4e157",
     "#66bb6a",
     "#2e7d32",
     "#2e7d32"
-  ][S])), s = B(e.config.panel_warning_average_min) ?? 30, l = (B(e.config.panel_low_output_percent) ?? 60) / 100, d = n.averageOutput > s && !!n.weakest && n.weakest.value < n.averageOutput * l, c = n.activeCount < a.length, m = a.length === 0 ? u(e.hass, "No panel sensors are selected.") : d ? b(e.hass, "ui.renderer.weak_panel", { panel: n.weakest.id, percent: Math.round(l * 100) }) : c ? b(e.hass, "ui.renderer.inactive_panels", { count: a.length - n.activeCount }) : u(e.hass, "All panels are within the expected range of each other."), h = a.length === 0 ? "mdi:information-outline" : d || c ? "mdi:alert-circle-outline" : "mdi:check-circle-outline", g = d ? "warning" : c || a.length === 0 ? "muted" : "success", y = [
+  ][A])), s = B(e.config.panel_warning_average_min) ?? 30, l = (B(e.config.panel_low_output_percent) ?? 60) / 100, d = n.averageOutput > s && !!n.weakest && n.weakest.value < n.averageOutput * l, c = n.activeCount < a.length, m = a.length === 0 ? u(e.hass, "No panel sensors are selected.") : d ? b(e.hass, "ui.renderer.weak_panel", { panel: n.weakest.id, percent: Math.round(l * 100) }) : c ? b(e.hass, "ui.renderer.inactive_panels", { count: a.length - n.activeCount }) : u(e.hass, "All panels are within the expected range of each other."), h = a.length === 0 ? "mdi:information-outline" : d || c ? "mdi:alert-circle-outline" : "mdi:check-circle-outline", g = d ? "warning" : c || a.length === 0 ? "muted" : "success", y = [
     [u(e.hass, "Panels reporting"), `${n.activeCount} / ${a.length}`],
     [u(e.hass, "Combined output"), `${Math.round(n.totalOutput)} W`],
     [u(e.hass, "Average per panel"), `${Math.round(n.averageOutput)} W`],
@@ -55007,8 +55215,8 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
   return e.actionSurface("panel-health-card", _`
       ${ns(e, String(e.config.panel_health_title || u(e.hass, "Panel health")), u(e.hass, "Solar panel output"))}
       ${e.config.panel_show_summary !== !1 ? _`<div class="panel-health-summary">
-        ${y.map(([k, S]) => _`
-          <div class="panel-health-summary-row"><span>${k}</span><strong>${S}</strong></div>
+        ${y.map(([k, A]) => _`
+          <div class="panel-health-summary-row"><span>${k}</span><strong>${A}</strong></div>
         `)}
       </div>` : p}
       <div class=${`panel-health-status panel-health-status-${g}`} role="status">
@@ -55017,7 +55225,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
       ${a.length && e.config.panel_show_gauges !== !1 ? _`
         <div class="panel-health-gauges">
           ${a.map((k) => {
-    const S = Tu(k.value, i), f = $u(k.value, r, o), w = 2 * Math.PI * 37, A = w * S / 100, z = ce({
+    const A = Tu(k.value, i), f = $u(k.value, r, o), w = 2 * Math.PI * 37, x = w * A / 100, z = ce({
       ...e.config,
       entity: k.entity.entity_id
     }, k.entity, e.hass) || k.id;
@@ -55028,8 +55236,8 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
                 <svg viewBox="0 0 100 100" aria-hidden="true">
                   <circle cx="50" cy="46" r="37" class="panel-health-gauge-track"></circle>
                   <circle cx="50" cy="46" r="37" class="panel-health-gauge-value"
-                    style=${`--panel-gauge-color:${f};--panel-gauge-progress:${A};--panel-gauge-circumference:${w}`}
-                    stroke-dasharray=${`${A} ${w}`}></circle>
+                    style=${`--panel-gauge-color:${f};--panel-gauge-progress:${x};--panel-gauge-circumference:${w}`}
+                    stroke-dasharray=${`${x} ${w}`}></circle>
                   <text x="50" y="51" text-anchor="middle" class="panel-health-gauge-value-label">
                     ${Math.round(k.value)}
                   </text>
@@ -55047,8 +55255,8 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
   const t = ie(e, "ulm_card_flower_entity") ?? e.entity, a = t?.state === "problem", n = (r) => cn.find((o) => o.key === r), i = Do(e.config).flatMap((r) => {
     const o = n(r), s = D(t, r), l = typeof s == "object" && s !== null ? s : void 0, d = ie(e, Lo(r)), c = typeof l?.sensor == "string" ? l.sensor : typeof s == "string" && e.hass.states[s] ? s : void 0, m = d ?? (c ? e.hass.states[c] : void 0), h = String(D(t, "device_class") ?? ""), g = t?.entity_id.startsWith("sensor.") && (h === r || r === "moisture" && (!h || h === "humidity")), y = m ?? (g ? t : void 0), k = B(y?.state) ?? B(l?.current) ?? B(s);
     if (k === void 0) return [];
-    const S = B(l?.min) ?? B(D(y, "min")) ?? o.min, f = B(l?.max) ?? B(D(y, "max")) ?? o.max, w = Math.max(0, Math.min(100, (k - S) / Math.max(1, f - S) * 100)), A = y ? C(y, e.hass) : String(k);
-    return [{ key: r, definition: o, sourceEntity: y, value: k, percent: w, display: A }];
+    const A = B(l?.min) ?? B(D(y, "min")) ?? o.min, f = B(l?.max) ?? B(D(y, "max")) ?? o.max, w = Math.max(0, Math.min(100, (k - A) / Math.max(1, f - A) * 100)), x = y ? C(y, e.hass) : String(k);
+    return [{ key: r, definition: o, sourceEntity: y, value: k, percent: w, display: x }];
   });
   return e.actionSurface("custom-plant", _`
     <button class="flower-heading" aria-label="${u(e.hass, "Open plant details")}"
@@ -55068,14 +55276,14 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
   `);
 }, zc = (e) => {
   const t = E(e, "ulm_custom_card_speedtest_round") === !0, a = (n, i, r, o, s, l, d, c, m) => {
-    const h = ie(e, n) ?? ie(e, i), g = B(h?.state), y = Math.max(1, E(e, d) ?? c), k = Math.max(0, Math.min(100, (g ?? 0) / y * 100)), S = g === void 0 ? "—" : m && t ? String(Math.round(g)) : h.state, f = h?.attributes.unit_of_measurement, w = Se(E(e, s), l);
+    const h = ie(e, n) ?? ie(e, i), g = B(h?.state), y = Math.max(1, E(e, d) ?? c), k = Math.max(0, Math.min(100, (g ?? 0) / y * 100)), A = g === void 0 ? "—" : m && t ? String(Math.round(g)) : h.state, f = h?.attributes.unit_of_measurement, w = Se(E(e, s), l);
     return _`
       <div class="speedtest-metric" style=${`--speedtest-color:${w};--speedtest-value:${k}`}>
         <svg class="speedtest-ring" viewBox="0 0 120 100" aria-hidden="true">
           <path class="speedtest-track" pathLength="100" d="M14 83 A50 50 0 1 1 106 83"></path>
           <path class="speedtest-value" pathLength="100" d="M14 83 A50 50 0 1 1 106 83"></path>
         </svg>
-        <span class="speedtest-value-copy"><ha-icon .icon=${o}></ha-icon><b>${S}${f ? ` ${String(f)}` : ""}</b><small>${r}</small></span>
+        <span class="speedtest-value-copy"><ha-icon .icon=${o}></ha-icon><b>${A}${f ? ` ${String(f)}` : ""}</b><small>${r}</small></span>
       </div>`;
   };
   return e.actionSurface("custom-speedtest-gauges", _`
@@ -55461,7 +55669,7 @@ const Pc = (e, t, a = [], n = []) => {
   }))[0], h = i.filter((j) => /^sensor\.inverter_4/i.test(j)).sort((j, I) => j.localeCompare(I, void 0, { numeric: !0 })), g = (j, I = [], se = []) => i.find((Y) => {
     const R = t?.states[Y], ue = r(Y);
     return s(Y) && Y.startsWith("sensor.") && j.includes(String(R?.attributes.device_class ?? "")) && I.every((T) => ue.includes(T)) && se.every((T) => !ue.includes(T));
-  }), y = i.filter((j) => j.startsWith("media_player.") && r(j).includes("sonos")).sort((j, I) => yr(t, I) - yr(t, j))[0], k = e.upstreamId === "custom_card_trash" ? el(t, a, n) : void 0, S = e.upstreamId === "pi_hole_card" ? o(i.filter((j) => j.startsWith("switch.") && (/pi_hole/.test(t?.entities?.[j]?.platform || "") || /pi.?hole/.test(r(j)))))[0] ?? o(i.filter((j) => j.startsWith("sensor.") && /pi_hole/.test(t?.entities?.[j]?.platform || "")))[0] : e.upstreamId === "remote_card" ? o(i.filter((j) => j.startsWith("media_player.") && (t?.states[j]?.attributes.device_class === "tv" || /samsung|android|apple_tv|roku|webostv|bravia/.test(t?.entities?.[j]?.platform || ""))))[0] ?? l(["remote"], []) : e.upstreamId === "advanced_home_energy_management" ? l(["sensor"], ["hems", "house", "consumption"]) ?? l(["sensor"], ["house", "consumption"]) ?? m(["power"]) : e.upstreamId === "advanced_energy_buy_sell" ? l(["sensor"], ["hems", "price", "overview"]) ?? l(["sensor"], ["price", "overview"]) ?? l(["sensor"], ["hems", "price"]) : e.upstreamId === "advanced_energy_panel_health" ? h[0] : e.upstreamId === "mini_graph_card" ? rs(t, a, n) : e.upstreamId === "card_battery" ? d(["sensor"], ["battery", "level"], ["state", "charging"]) ?? m(["battery"], [], ["state", "charging"]) : e.upstreamId === "custom_card_pollen" ? l(["sensor"], ["pollen", "grass"]) : e.upstreamId === "custom_card_speedtest_gauges" ? l(["sensor"], ["speedtest", "download"]) ?? l(["sensor"], ["download"]) : e.upstreamId === "custom_card_tablet" ? l(["binary_sensor", "sensor", "switch"], ["tablet"]) : e.upstreamId === "custom_card_nas_metrics" ? l(["switch", "binary_sensor"], ["nas"]) ?? l(["switch", "binary_sensor"], ["status"]) : e.upstreamId === "custom_card_washer" ? l(["sensor"], ["operation", "state"]) ?? l(["sensor"], ["washer", "state"]) : e.upstreamId === "custom_card_sun" ? l(["sun"], []) : e.upstreamId === "custom_card_media_player_sonos" ? y : e.upstreamId === "custom_card_printer" ? l(["sensor", "binary_sensor"], ["printer"]) ?? l(["sensor", "binary_sensor"], ["online"]) : e.upstreamId === "card_room" ? l(["light"], []) : e.upstreamId === "custom_card_plant" ? l(["plant"], []) ?? l(["sensor"], ["soil", "humidity"]) : e.upstreamId === "custom_card_playstation" ? l(["binary_sensor", "media_player", "remote", "sensor", "switch"], ["xbox"]) ?? l(["binary_sensor", "media_player", "remote", "sensor", "switch"], ["playstation"]) ?? l(["binary_sensor", "media_player", "remote", "sensor", "switch"], ["nintendo"]) ?? l(["media_player", "remote"], []) : void 0, w = (e.upstreamId === "card_scenes" ? c(["light"], []) ?? c(["climate"], []) ?? c(["sensor"], []) : void 0) ?? S ?? Pc(e, t, a, n), A = e.upstreamId === "custom_card_entity_carousel" ? Kd(t, w) : void 0, z = e.upstreamId === "upcoming_media" ? o(i.filter((j) => j.startsWith("sensor.") && !_n(t?.states[j]).error))[0] : e.upstreamId === "custom_card_trash" ? k?.[0]?.entity : ["remote_card", "pi_hole_card"].includes(e.upstreamId) ? S : A ? A.entity : w, O = e.upstreamId === "advanced_energy_panel_health" ? h : void 0, F = e.upstreamId === "custom_card_plant" ? {
+  }), y = i.filter((j) => j.startsWith("media_player.") && r(j).includes("sonos")).sort((j, I) => yr(t, I) - yr(t, j))[0], k = e.upstreamId === "custom_card_trash" ? el(t, a, n) : void 0, A = e.upstreamId === "pi_hole_card" ? o(i.filter((j) => j.startsWith("switch.") && (/pi_hole/.test(t?.entities?.[j]?.platform || "") || /pi.?hole/.test(r(j)))))[0] ?? o(i.filter((j) => j.startsWith("sensor.") && /pi_hole/.test(t?.entities?.[j]?.platform || "")))[0] : e.upstreamId === "remote_card" ? o(i.filter((j) => j.startsWith("media_player.") && (t?.states[j]?.attributes.device_class === "tv" || /samsung|android|apple_tv|roku|webostv|bravia/.test(t?.entities?.[j]?.platform || ""))))[0] ?? l(["remote"], []) : e.upstreamId === "advanced_home_energy_management" ? l(["sensor"], ["hems", "house", "consumption"]) ?? l(["sensor"], ["house", "consumption"]) ?? m(["power"]) : e.upstreamId === "advanced_energy_buy_sell" ? l(["sensor"], ["hems", "price", "overview"]) ?? l(["sensor"], ["price", "overview"]) ?? l(["sensor"], ["hems", "price"]) : e.upstreamId === "advanced_energy_panel_health" ? h[0] : e.upstreamId === "mini_graph_card" ? rs(t, a, n) : e.upstreamId === "card_battery" ? d(["sensor"], ["battery", "level"], ["state", "charging"]) ?? m(["battery"], [], ["state", "charging"]) : e.upstreamId === "custom_card_pollen" ? l(["sensor"], ["pollen", "grass"]) : e.upstreamId === "custom_card_speedtest_gauges" ? l(["sensor"], ["speedtest", "download"]) ?? l(["sensor"], ["download"]) : e.upstreamId === "custom_card_tablet" ? l(["binary_sensor", "sensor", "switch"], ["tablet"]) : e.upstreamId === "custom_card_nas_metrics" ? l(["switch", "binary_sensor"], ["nas"]) ?? l(["switch", "binary_sensor"], ["status"]) : e.upstreamId === "custom_card_washer" ? l(["sensor"], ["operation", "state"]) ?? l(["sensor"], ["washer", "state"]) : e.upstreamId === "custom_card_sun" ? l(["sun"], []) : e.upstreamId === "custom_card_media_player_sonos" ? y : e.upstreamId === "custom_card_printer" ? l(["sensor", "binary_sensor"], ["printer"]) ?? l(["sensor", "binary_sensor"], ["online"]) : e.upstreamId === "card_room" ? l(["light"], []) : e.upstreamId === "custom_card_plant" ? l(["plant"], []) ?? l(["sensor"], ["soil", "humidity"]) : e.upstreamId === "custom_card_playstation" ? l(["binary_sensor", "media_player", "remote", "sensor", "switch"], ["xbox"]) ?? l(["binary_sensor", "media_player", "remote", "sensor", "switch"], ["playstation"]) ?? l(["binary_sensor", "media_player", "remote", "sensor", "switch"], ["nintendo"]) ?? l(["media_player", "remote"], []) : void 0, w = (e.upstreamId === "card_scenes" ? c(["light"], []) ?? c(["climate"], []) ?? c(["sensor"], []) : void 0) ?? A ?? Pc(e, t, a, n), x = e.upstreamId === "custom_card_entity_carousel" ? Kd(t, w) : void 0, z = e.upstreamId === "upcoming_media" ? o(i.filter((j) => j.startsWith("sensor.") && !_n(t?.states[j]).error))[0] : e.upstreamId === "custom_card_trash" ? k?.[0]?.entity : ["remote_card", "pi_hole_card"].includes(e.upstreamId) ? A : x ? x.entity : w, O = e.upstreamId === "advanced_energy_panel_health" ? h : void 0, F = e.upstreamId === "custom_card_plant" ? {
     moisture_entity: (z && t?.states[z]?.attributes.device_class === "moisture" ? z : void 0) ?? g(["moisture"], ["soil"]) ?? g(["moisture"]),
     temperature_entity: g(["temperature"], ["soil"]) ?? g(["temperature"], ["plant"]),
     humidity_entity: g(["humidity"], ["plant"]) ?? g(["humidity"], ["soil"]),
@@ -55645,8 +55853,8 @@ const Pc = (e, t, a = [], n = []) => {
       carousel_coverflow_depth: 400,
       carousel_coverflow_modifier: 1,
       carousel_coverflow_slide_shadows: !0,
-      name: A?.name,
-      carousel_items: A?.items ?? []
+      name: x?.name,
+      carousel_items: x?.items ?? []
     } : {}
   };
 };
@@ -56177,8 +56385,8 @@ const na = [
   }
   renderSeries(t, a, n, i, r, o, s) {
     const l = Number(this.config?.height ?? 150), d = (w) => {
-      const A = this.config?.logarithmic ? Math.log10(Math.max(w, Number.EPSILON)) : w, z = this.config?.logarithmic ? Math.log10(Math.max(n.min, Number.EPSILON)) : n.min, O = this.config?.logarithmic ? Math.log10(Math.max(n.max, Number.EPSILON)) : n.max;
-      return l - (A - z) / Math.max(Number.EPSILON, O - z) * l;
+      const x = this.config?.logarithmic ? Math.log10(Math.max(w, Number.EPSILON)) : w, z = this.config?.logarithmic ? Math.log10(Math.max(n.min, Number.EPSILON)) : n.min, O = this.config?.logarithmic ? Math.log10(Math.max(n.max, Number.EPSILON)) : n.max;
+      return l - (x - z) / Math.max(Number.EPSILON, O - z) * l;
     }, c = i === r, m = t.points.map((w) => ({
       x: c ? 250 : (w.time - i) / Math.max(1, r - i) * 500,
       y: d(w.value),
@@ -56186,7 +56394,7 @@ const na = [
       time: w.time
     })), h = this.series.indexOf(t), g = this.classFor(h), y = t.config.color ? t.color : `url(#mini-graph-${a})`;
     if (o.graph === "bar") {
-      const w = 500 / Math.max(1, Math.min(96, m.length)), A = Number(this.config?.bar_spacing ?? 4), z = Math.max(1, (w - A) / s), O = Math.max(0, Math.min(l, d(0))), F = m.slice(-96);
+      const w = 500 / Math.max(1, Math.min(96, m.length)), x = Number(this.config?.bar_spacing ?? 4), z = Math.max(1, (w - x) / s), O = Math.max(0, Math.min(l, d(0))), F = m.slice(-96);
       return this.plot.push({
         key: h,
         bar: !0,
@@ -56194,7 +56402,7 @@ const na = [
       }), K`
         <g class="series ${g}">
           ${F.map((q, ae) => {
-        const N = ae * w + a * z + A / 2, G = Math.min(q.y, O);
+        const N = ae * w + a * z + x / 2, G = Math.min(q.y, O);
         return K`<rect x=${N} y=${G} width=${z} height=${Math.abs(O - q.y)} rx="1" fill=${y}>
               <title>${this.tooltip(t, q.value, q.time)}</title>
             </rect>`;
@@ -56203,11 +56411,11 @@ const na = [
       `;
     }
     this.plot.push({ key: h, bar: !1, points: m });
-    const k = m.length === 1 ? [{ ...m[0], x: 0 }, { ...m[0], x: 500 }] : m, S = $c(k, t.config.smoothing ?? this.config?.smoothing ?? !0), f = m.length ? `${S} L ${k.at(-1).x} ${l} L ${k[0].x} ${l} Z` : "";
+    const k = m.length === 1 ? [{ ...m[0], x: 0 }, { ...m[0], x: 500 }] : m, A = $c(k, t.config.smoothing ?? this.config?.smoothing ?? !0), f = m.length ? `${A} L ${k.at(-1).x} ${l} L ${k[0].x} ${l} Z` : "";
     return K`
       <g class="series ${g}">
         ${o.fill && t.config.show_fill !== !1 ? K`<path class="fill ${o.fill === "fade" ? "fade" : ""}" d=${f} fill=${y}/>` : p}
-        ${t.config.show_line !== !1 && o.graph !== "scatter" ? K`<path class="line" d=${S} stroke=${y} stroke-width=${this.config?.line_width ?? 5}/>` : p}
+        ${t.config.show_line !== !1 && o.graph !== "scatter" ? K`<path class="line" d=${A} stroke=${y} stroke-width=${this.config?.line_width ?? 5}/>` : p}
         ${(o.points === !0 || o.graph === "scatter") && t.config.show_points !== !1 ? m.map((w) => K`
             <circle class="point" cx=${w.x} cy=${w.y} r=${Math.max(2, Number(this.config?.line_width ?? 5) / 1.5)}
               fill=${t.config.color ?? y}>
@@ -56333,11 +56541,11 @@ const na = [
     for (const c of s) {
       const h = (d.get(c.entity) ?? []).flatMap((g) => {
         if (!g || typeof g != "object") return [];
-        const y = g, k = y.state ?? y.s, S = y.attributes ?? y.a ?? {}, f = c.attribute ? c.attribute.split(".").reduce((z, O) => z && typeof z == "object" ? z[O] : void 0, S) : k, w = Na(f, this.config?.state_map ?? []), A = Nc(
+        const y = g, k = y.state ?? y.s, A = y.attributes ?? y.a ?? {}, f = c.attribute ? c.attribute.split(".").reduce((z, O) => z && typeof z == "object" ? z[O] : void 0, A) : k, w = Na(f, this.config?.state_map ?? []), x = Nc(
           y.last_updated ?? y.last_changed ?? y.lu ?? y.lc,
           n
         );
-        return w.value === void 0 || !Number.isFinite(A) ? [] : [{ time: A, value: w.value, label: w.label }];
+        return w.value === void 0 || !Number.isFinite(x) ? [] : [{ time: x, value: w.value, label: w.label }];
       });
       o[this.historyKey(c)] = h.length ? h : this.attributeHistory(c), this.writeCache(c, o[this.historyKey(c)]);
     }
@@ -56601,12 +56809,12 @@ function Hc(e, t) {
   const n = e.hass, i = e._config?.area;
   let r;
   if (t.use_light_color && n && typeof i == "string") {
-    const f = e._config?.exclude_entities, w = e._domainEntityIds?.(n.entities, i, ["light"], f) ?? Object.keys(n.states).filter((A) => {
-      const z = n.entities?.[A];
+    const f = e._config?.exclude_entities, w = e._domainEntityIds?.(n.entities, i, ["light"], f) ?? Object.keys(n.states).filter((x) => {
+      const z = n.entities?.[x];
       return (z?.area_id ?? (z?.device_id ? n.devices?.[z.device_id]?.area_id : void 0)) === i;
     });
-    for (const A of [...w].sort())
-      if (!(!A.startsWith("light.") || f?.includes(A)) && (r = Ei(n, n.states[A]), r))
+    for (const x of [...w].sort())
+      if (!(!x.startsWith("light.") || f?.includes(x)) && (r = Ei(n, n.states[x]), r))
         break;
   }
   e.toggleAttribute("data-light-accent", !!r), r ? e.style.setProperty("--addition-room-rgb", r.join(",")) : e.style.removeProperty("--addition-room-rgb");
@@ -56649,23 +56857,23 @@ function Hc(e, t) {
   const m = e._config;
   if (!m || !n || !e._computeSensorsDisplay || !e._groupedSensorEntityIds)
     throw new Error("This Home Assistant frontend cannot enhance Area sensor content. Disable sensor wrapping/icons or update Home Assistant.");
-  const h = String(m.area), g = m.sensor_classes ?? [], y = m.exclude_entities, k = e._groupedSensorEntityIds(n.entities, h, g, y), S = g.flatMap((f) => {
+  const h = String(m.area), g = m.sensor_classes ?? [], y = m.exclude_entities, k = e._groupedSensorEntityIds(n.entities, h, g, y), A = g.flatMap((f) => {
     const w = new Proxy(e, {
       get: (N, G) => G === "_config" ? { ...m, sensor_classes: [f] } : Reflect.get(N, G, N)
-    }), A = e._computeSensorsDisplay.call(w);
-    if (!A) return [];
+    }), x = e._computeSensorsDisplay.call(w);
+    if (!x) return [];
     const O = n.areas?.[h]?.[`${f}_entity_id`];
     let q = (typeof O == "string" ? [O] : k.get(f) ?? []).map((N) => n.states[N]).find((N) => N && !["unknown", "unavailable"].includes(N.state));
     if (!q && ["temperature", "humidity"].includes(f)) {
       const N = f === "temperature" ? ["climate"] : ["climate", "humidifier"];
       q = (e._domainEntityIds?.(n.entities, h, N, y) ?? []).map((te) => n.states[te]).find((te) => te?.attributes[`current_${f}`] != null);
     }
-    const ae = q?.entity_id.startsWith("sensor.") ? q : { entity_id: `sensor.area_${f}`, state: A, attributes: { device_class: f } };
-    return [{ sensorClass: f, value: A, stateObj: ae }];
+    const ae = q?.entity_id.startsWith("sensor.") ? q : { entity_id: `sensor.area_${f}`, state: x, attributes: { device_class: f } };
+    return [{ sensorClass: f, value: x, stateObj: ae }];
   });
-  c || (c = document.createElement("div"), c.slot = "secondary", c.className = "addition-sensors", l.append(c)), c.classList.toggle("wrap", !!t.sensor_wrap), Zr(_`${S.map(({ sensorClass: f, value: w, stateObj: A }) => _`
+  c || (c = document.createElement("div"), c.slot = "secondary", c.className = "addition-sensors", l.append(c)), c.classList.toggle("wrap", !!t.sensor_wrap), Zr(_`${A.map(({ sensorClass: f, value: w, stateObj: x }) => _`
     <span class="addition-sensor" title=${f.replaceAll("_", " ")}>
-      ${t.sensor_icons ? _`<ha-state-icon .hass=${n} .stateObj=${A}
+      ${t.sensor_icons ? _`<ha-state-icon .hass=${n} .stateObj=${x}
         ._config=${n.config} ._connection=${n.connection} ._entities=${n.entities}></ha-state-icon>` : ""}
       <span class="value">${w}</span>
     </span>`)}`, c);

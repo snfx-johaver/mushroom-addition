@@ -525,6 +525,9 @@ export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, P
   min_entity?: string;
   max_entity?: string;
   datetime_entity?: string;
+  datetime_step?: number;
+  datetime_single_row?: boolean;
+  datetime_manual_entry?: boolean;
   level_entity?: string;
   download_entity?: string;
   upload_entity?: string;

@@ -481,6 +481,10 @@ export const sharedStyles = css`
   .media-platform { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; background: rgba(var(--ulm-purple), .75); color: #fff; }
   .input-datetime-controls { display: grid; grid-template-columns: repeat(3, 1fr); align-items: center; gap: var(--mush-control-spacing, 12px); }
   .input-datetime-controls .ulm-control { width: 100%; height: var(--mush-control-height, 42px); border-radius: var(--mush-control-border-radius, 12px); }
+  .input-datetime-row { display: flex; align-items: center; gap: var(--mush-spacing, 12px); }
+  .input-datetime-row .custom-card-heading { flex: 1 1 auto; min-width: 0; }
+  .input-datetime-row .input-datetime-controls { flex: 0 1 260px; }
+  .input-datetime-controls .datetime-input { box-sizing: border-box; padding: 0 6px; text-align: center; font: inherit; font-size: 16px; font-weight: 700; color: inherit; background: var(--mush-control-bg, var(--secondary-background-color, rgba(128,128,128,.15))); border: 0; min-width: 0; }
   .input-datetime-controls .hold-control { font-size: 16px; font-weight: 700; }
   .custom-sonos, .custom-printer,
   .custom-nas-metrics, .custom-tablet { display: grid; gap: 10px; padding: 12px; }

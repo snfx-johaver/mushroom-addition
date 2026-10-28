@@ -1078,27 +1078,49 @@ const renderSunCard = (ctx: RenderContext): TemplateResult => {
 const renderInputDateTime = (ctx: RenderContext): TemplateResult => {
   const time = helperTime(ctx.entity);
   const available = Boolean(time);
-  const setMinutes = (delta: number) => {
-    if (!time) return;
-    const total = ((time.minutes + delta) % 1440 + 1440) % 1440;
+  const step = Math.max(1, Math.min(720, Math.round(numeric(ctx.config.datetime_step) ?? 15)));
+  const manual = ctx.config.datetime_manual_entry !== false;
+  const singleRow = ctx.config.datetime_single_row === true;
+  const setTotal = (minutes: number) => {
+    const total = ((minutes % 1440) + 1440) % 1440;
     ctx.service("input_datetime", "set_datetime", {
       entity_id: ctx.config.entity,
       time: `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}:00`,
     });
   };
-  return ctx.actionSurface("custom-input-datetime", html`
-    <div class="custom-card-heading">${iconBubble(ctx, "mdi:calendar-clock", "green")}${heading(ctx, stateLabel(ctx.entity, ctx.hass))}</div>
-    <div class="input-datetime-controls">
-      ${button(localizeText(ctx.hass, "15 minutes earlier"), "mdi:arrow-down", (event) => { event.stopPropagation(); setMinutes(-15); }, !available)}
-      ${holdButton(
-        localizeText(ctx.hass, "One minute later; hold for one minute earlier"),
-        html`<b>${time?.label ?? stateLabel(ctx.entity, ctx.hass)}</b>`,
-        () => setMinutes(1),
-        () => setMinutes(-1),
-        !available,
-      )}
-      ${button(localizeText(ctx.hass, "15 minutes later"), "mdi:arrow-up", (event) => { event.stopPropagation(); setMinutes(15); }, !available)}
-    </div>
+  const setMinutes = (delta: number) => {
+    if (time) setTotal(time.minutes + delta);
+  };
+  const typed = (event: Event) => {
+    event.stopPropagation();
+    const match = /^(\d{2}):(\d{2})/.exec((event.target as HTMLInputElement).value);
+    if (match) setTotal(Number(match[1]) * 60 + Number(match[2]));
+  };
+  const stop = (event: Event) => event.stopPropagation();
+  const middle = manual
+    ? html`<input class="ulm-control datetime-input" type="time" aria-label=${time?.label ?? "Time"}
+        .value=${time?.label ?? ""} ?disabled=${!available} step=${step * 60}
+        @pointerdown=${stop} @click=${stop} @keydown=${stop} @change=${typed}>`
+    : holdButton(
+      localizeText(ctx.hass, "One minute later; hold for one minute earlier"),
+      html`<b>${time?.label ?? stateLabel(ctx.entity, ctx.hass)}</b>`,
+      () => setMinutes(1),
+      () => setMinutes(-1),
+      !available,
+    );
+  const heading_ = html`${iconBubble(ctx, "mdi:calendar-clock", "green")}${heading(ctx, stateLabel(ctx.entity, ctx.hass))}`;
+  const controls = html`
+      ${button(step === 15 ? localizeText(ctx.hass, "15 minutes earlier") : `${step} minutes earlier`, "mdi:arrow-down", (event) => { event.stopPropagation(); setMinutes(-step); }, !available)}
+      ${middle}
+      ${button(step === 15 ? localizeText(ctx.hass, "15 minutes later") : `${step} minutes later`, "mdi:arrow-up", (event) => { event.stopPropagation(); setMinutes(step); }, !available)}`;
+  return ctx.actionSurface("custom-input-datetime", singleRow
+    ? html`<div class="input-datetime-row">
+        <div class="custom-card-heading">${heading_}</div>
+        <div class="input-datetime-controls">${controls}</div>
+      </div>`
+    : html`
+    <div class="custom-card-heading">${heading_}</div>
+    <div class="input-datetime-controls">${controls}</div>
   `);
 };
 

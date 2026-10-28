@@ -27,14 +27,14 @@ const codeLiterals = (text: string) =>
 
 describe("complete Slovenian localization", () => {
   it("adds precisely the dynamically missing inventory without overwriting installed entries", () => {
-    expect(Object.keys(slovenianLabels)).toHaveLength(767);
-    expect(Object.keys(slovenianHelpers)).toHaveLength(552);
+    expect(Object.keys(slovenianLabels)).toHaveLength(770);
+    expect(Object.keys(slovenianHelpers)).toHaveLength(555);
     expect(Object.keys(installedLabels)).toHaveLength(416);
     expect(Object.keys(installedHelpers)).toHaveLength(1);
     expect(fingerprint(installedLabels)).toBe("ebee4757b0ab64a9098bf59bc3cf12b2b3bac47dd6369023d0c0fd22e2f037b3");
     expect(fingerprint(installedHelpers)).toBe("694dcbae44eb83bd6f9060951294353ea4456818c5353c79d3fd684a4a476a09");
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1183);
-    expect(Object.keys(englishHelpers)).toHaveLength(553);
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1186);
+    expect(Object.keys(englishHelpers)).toHaveLength(556);
 
     for (const [english, installed, additions] of catalogs) {
       const expected = Object.keys(english).filter(key => !Object.hasOwn(installed, key)).sort();
@@ -51,7 +51,7 @@ describe("complete Slovenian localization", () => {
     expect(Object.keys(slovenianLabels).some(key => key.startsWith("ui.graph."))).toBe(false);
   });
 
-  it("covers all 1742 messages including the six separate native diagnostic templates", () => {
+  it("covers all 1748 messages including the six separate native diagnostic templates", () => {
     expect(SUPPORTED_LOCALES).toHaveLength(33);
     expect(normalizeLocale("sl-SI")).toBe("sl");
     const diagnostics = nativeDiagnosticCatalogs.sl;
@@ -68,7 +68,7 @@ describe("complete Slovenian localization", () => {
         expect(placeholders(translated[key]), key).toEqual(placeholders(source));
       }
     }
-    expect(count).toBe(1742);
+    expect(count).toBe(1748);
     for (const [key, value] of Object.entries(diagnostics)) {
       expect(value, key).not.toBe(nativeDiagnosticCatalogs.en[key]);
     }

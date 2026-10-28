@@ -160,6 +160,7 @@ describe("person and input custom-card certification", () => {
     const callService = vi.fn(async () => undefined);
     const card = await renderCard("custom_card_input_datetime", {
       entity: "input_datetime.quiet",
+      datetime_manual_entry: false,
     }, states, callService);
     const controls = [...card.shadowRoot.querySelectorAll<HTMLButtonElement>(".input-datetime-controls button")];
     controls[0].click();
@@ -180,6 +181,25 @@ describe("person and input custom-card certification", () => {
     }, { ...states, "input_datetime.quiet": { ...states["input_datetime.quiet"], state: "unavailable" } });
     expect([...unavailable.shadowRoot.querySelectorAll<HTMLButtonElement>(".input-datetime-controls button")]
       .every((control) => control.disabled)).toBe(true);
+  });
+
+  it("supports a custom step, single row and manual time entry", async () => {
+    const callService = vi.fn(async () => undefined);
+    const card = await renderCard("custom_card_input_datetime", {
+      entity: "input_datetime.quiet",
+      datetime_step: 5,
+      datetime_single_row: true,
+    }, states, callService);
+    expect(card.shadowRoot.querySelector(".input-datetime-row")).not.toBeNull();
+    const buttons = [...card.shadowRoot.querySelectorAll<HTMLButtonElement>(".input-datetime-controls button")];
+    buttons[1].click();
+    const input = card.shadowRoot.querySelector<HTMLInputElement>(".datetime-input")!;
+    input.value = "07:45";
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+    expect(callService.mock.calls).toEqual([
+      ["input_datetime", "set_datetime", { entity_id: "input_datetime.quiet", time: "22:35:00" }],
+      ["input_datetime", "set_datetime", { entity_id: "input_datetime.quiet", time: "07:45:00" }],
+    ]);
   });
 
 });

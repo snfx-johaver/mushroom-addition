@@ -939,6 +939,9 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
     : item.upstreamId === "custom_card_input_datetime"
       ? [
         entity(["input_datetime"]),
+        number("datetime_step", 1, 720),
+        toggle("datetime_single_row"),
+        toggle("datetime_manual_entry"),
         ...presentation(),
       ]
     : item.upstreamId === "custom_card_tablet"
