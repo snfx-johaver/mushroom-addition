@@ -9,7 +9,7 @@ const catalogs = [
     english: translationCatalogs.en,
     baseline: translationCatalogs["ko-KR"],
     additions: koreanLabels,
-    addedCount: 782,
+    addedCount: 783,
     installedCount: 416,
     installedHash: "e5c5d8917c6134af96b0aea8623440989c87931d97d1a4a444d831ecfa121747",
   },
@@ -58,9 +58,9 @@ describe("complete Korean card translations", () => {
     }
     expect(koreanLabels).not.toHaveProperty("entity");
     expect(koreanHelpers).not.toHaveProperty("entity");
-    expect(Object.keys(koreanLabels).length + Object.keys(koreanHelpers).length).toBe(1349);
+    expect(Object.keys(koreanLabels).length + Object.keys(koreanHelpers).length).toBe(1350);
     expect(Object.keys(translationCatalogs.en).length + Object.keys(englishHelpers).length + 6)
-      .toBe(1772);
+      .toBe(1773);
   });
 
   it("uses original Korean wording and retains numeric examples and technical units", () => {

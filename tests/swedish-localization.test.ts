@@ -9,7 +9,7 @@ const installedWithout = (catalog: Record<string, string>, additions: Record<str
 
 const catalogs = [
   [translationCatalogs.en, installedWithout(translationCatalogs.sv, swedishLabels), swedishLabels,
-    782, "c608541448090a85655fce7f7387f8c3043b2d43842ef9c937c58b5b03555684"],
+    783, "c608541448090a85655fce7f7387f8c3043b2d43842ef9c937c58b5b03555684"],
   [englishHelpers, installedWithout(helperCatalogs.sv, swedishHelpers), swedishHelpers,
     567, "3dfb4ae661a652789ac56e25e80ea848e1309478d5016e26f8e59c9fdac0a8b5"],
 ] as const;
@@ -21,7 +21,7 @@ const rawLiterals = (text: string) =>
 
 describe("complete Swedish card localization", () => {
   it("fills exactly the missing inventory without changing installed entries", () => {
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1198);
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1199);
     expect(Object.keys(englishHelpers)).toHaveLength(568);
     for (const [english, installed, additions, count, fingerprint] of catalogs) {
       expect(Object.keys(additions)).toHaveLength(count);

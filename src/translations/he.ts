@@ -312,6 +312,7 @@ export const hebrewLabels: Record<string, string> = {
   show_color_temp_control: "בקרת טמפרטורת צבע",
   show_color_control: "בקרת צבע",
   full_collapse_controls: "צמצום מלא של הבקרות",
+  lights_in_group: "אורות בקבוצה זו",
   show_extra_pollen: "חיישני אבקה נוספים",
   datetime_single_row: "שורה אחת",
   datetime_manual_entry: "הקלדת שעה ידנית",

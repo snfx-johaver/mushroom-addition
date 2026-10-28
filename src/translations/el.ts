@@ -313,6 +313,7 @@ export const greekLabels: Record<string, string> = {
   "show_color_temp_control": "Έλεγχος θερμοκρασίας χρώματος",
   "show_color_control": "Έλεγχος χρώματος",
   "full_collapse_controls": "Πλήρης σύμπτυξη ελέγχων",
+  "lights_in_group": "Φώτα σε αυτήν την ομάδα",
   "show_extra_pollen": "Πρόσθετοι αισθητήρες γύρης",
   "datetime_single_row": "Μία γραμμή",
   "datetime_manual_entry": "Μη αυτόματη εισαγωγή ώρας",

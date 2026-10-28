@@ -313,6 +313,7 @@ export const turkishLabels: Record<string, string> = {
   show_color_temp_control: "Renk sıcaklığı kontrolü",
   show_color_control: "Renk kontrolü",
   full_collapse_controls: "Kontrolleri tamamen daralt",
+  lights_in_group: "Bu gruptaki ışıklar",
   show_extra_pollen: "Ek polen sensörleri",
   datetime_single_row: "Tek satır",
   datetime_manual_entry: "Saati elle yaz",

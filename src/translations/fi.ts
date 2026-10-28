@@ -313,6 +313,7 @@ export const finnishLabels: Record<string, string> = {
   show_color_temp_control: "Värilämpötilan säätö",
   show_color_control: "Värin säätö",
   full_collapse_controls: "Täysi säätimien piilotus",
+  lights_in_group: "Tämän ryhmän valot",
   show_extra_pollen: "Lisäsiitepölyanturit",
   datetime_single_row: "Yksi rivi",
   datetime_manual_entry: "Kirjoita aika käsin",

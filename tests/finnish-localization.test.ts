@@ -29,7 +29,7 @@ const catalogs = [
     installed: installedLabels,
     additions: finnishLabels,
     expectedInstalledFingerprint: "6a9ec4ab1d0adf5bc061d5d375d4cdc995c9c5310dee98cf5e127938c2cb273f",
-    expectedAdditions: 782,
+    expectedAdditions: 783,
   },
   {
     name: "helpers",
@@ -82,9 +82,9 @@ describe("complete Finnish localization", () => {
       }
     }
 
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1198);
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1199);
     expect(Object.keys(englishHelpers)).toHaveLength(568);
-    expect(Object.keys(finnishLabels)).toHaveLength(782);
+    expect(Object.keys(finnishLabels)).toHaveLength(783);
     expect(Object.keys(finnishHelpers)).toHaveLength(567);
     expect(Object.keys(finnishLabels).filter((key) => key.startsWith("ui.graph."))).toEqual([]);
   });

@@ -312,6 +312,7 @@ export const catalanLabels: Record<string, string> = {
   show_color_temp_control: "Control de temperatura de color",
   show_color_control: "Control de color",
   full_collapse_controls: "Replegament complet dels controls",
+  lights_in_group: "Llums d'aquest grup",
   show_extra_pollen: "Sensors de pol·len addicionals",
   datetime_single_row: "Una sola fila",
   datetime_manual_entry: "Escriu l'hora manualment",

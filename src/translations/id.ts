@@ -258,6 +258,7 @@ export const indonesianLabels: Record<string, string> = {
   show_color_temp_control: "Kontrol suhu warna",
   show_color_control: "Kontrol warna",
   full_collapse_controls: "Ciutkan semua kontrol",
+  lights_in_group: "Lampu dalam grup ini",
   show_extra_pollen: "Sensor serbuk sari tambahan",
   datetime_single_row: "Satu baris",
   datetime_manual_entry: "Ketik waktu secara manual",

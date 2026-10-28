@@ -829,7 +829,7 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
   const showHue = showControls && ctx.config.show_color_control === true && hasMode("hs", "xy", "rgb", "rgbw", "rgbww");
   const rawBrightness = numeric(attr(entity, "brightness"));
   const brightness = on && rawBrightness !== undefined ? Math.max(1, Math.round(rawBrightness / 255 * 100)) : 0;
-  const controlButtons = ([[showBrightness, "brightness", "mdi:brightness-4", "Brightness"], [showTemp, "temp", "mdi:thermometer", "Color temperature"], [showHue, "hue", "mdi:palette", "Color"]] as const)
+  const controlButtons = ([[showBrightness, "brightness", "mdi:brightness-4", "Brightness"], [showTemp, "temp", "mdi:thermometer", "Color temperature control"], [showHue, "hue", "mdi:palette", "Color control"]] as const)
     .filter(([visible]) => visible).map(([, key, icon, label]) => [key, icon, label] as const);
   const controlCount = controlButtons.length;
   const stateText = on && dimmable && rawBrightness !== undefined ? `${brightness}%` : stateLabel(entity, ctx.hass);
@@ -905,7 +905,7 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
     ${showTemp ? html`
       <input class="mushroom-range light-slider light-gradient light-color-temp" type="range" min="${kelvinMin}" max="${kelvinMax}" step="50" .value=${String(kelvin)}
         style=${`--range-color:transparent;--range-progress:0%;--light-gradient:linear-gradient(to right,#ff9d3a,#ffe3b8,#ffffff,#cfe0ff,#9bbcff)`}
-        aria-label=${localizeText(ctx.hass, "Color temperature")} ?disabled=${unavailable}
+        aria-label=${localizeText(ctx.hass, "Color temperature control")} ?disabled=${unavailable}
         @pointerdown=${stop} @pointerup=${stop} @click=${stop} @keydown=${stop}
         @change=${(event: Event) => {
           stop(event);
@@ -914,7 +914,7 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
     ${showHue ? html`
       <input class="mushroom-range light-slider light-gradient light-color-hue" type="range" min="0" max="360" step="1" .value=${String(hue)}
         style=${`--range-color:transparent;--range-progress:0%;--light-gradient:linear-gradient(to right,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)`}
-        aria-label=${localizeText(ctx.hass, "Color")} ?disabled=${unavailable}
+        aria-label=${localizeText(ctx.hass, "Color control")} ?disabled=${unavailable}
         @pointerdown=${stop} @pointerup=${stop} @click=${stop} @keydown=${stop}
         @change=${(event: Event) => {
           stop(event);
@@ -925,7 +925,7 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
       <details class="light-pulldown" ?open=${ctx.config.light_members_expanded === true}
         @pointerdown=${stop} @pointerup=${stop} @click=${stop} @dblclick=${stop} @keydown=${stop}>
         <summary>
-          <span>${localizeText(ctx.hass, "Lights in this group")} (${members.filter((m) => m.state === "on").length}/${members.length})</span>
+          <span>${localize(ctx.hass, "lights_in_group")} (${members.filter((m) => m.state === "on").length}/${members.length})</span>
           <ha-icon icon="mdi:chevron-down"></ha-icon>
         </summary>
         <div class="light-members" style=${`--light-members-per-row:${perRow}`}>
@@ -2505,4 +2505,18 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
   if (/trash/.test(ctx.descriptor.upstreamId)) return renderScheduleCard(ctx);
   if (/printer/.test(ctx.descriptor.upstreamId)) return renderDeviceStatus(ctx);
   if (/plant|entity_overview/.test(ctx.descriptor.upstreamId)) {
-    return renderDetailCard(ctx, /plant/.test(ctx.descriptor.upstreamId) ? "mdi:flower" : "mdi:view-grid", "purple");
+    return renderDetailCard(ctx, /plant/.test(ctx.descriptor.upstreamId) ? "mdi:flower" : "mdi:view-grid", "purple");
+  }
+  switch (ctx.descriptor.family) {
+    case "scene": return renderScene(ctx);
+    case "battery": return renderBattery(ctx);
+    case "energy":
+    case "sensor": return renderMetric(ctx);
+    case "media": return renderSonos(ctx);
+    case "security": return renderSecurity(ctx);
+    case "navigation": return renderNavigation(ctx);
+    case "control": return renderControl(ctx);
+    case "alarm-time": return renderAlarmTime(ctx);
+    default: return renderGeneric(ctx);
+  }
+};

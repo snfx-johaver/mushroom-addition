@@ -11,7 +11,7 @@ import {
 } from "../src/translations/pt-BR";
 
 const catalogs = [
-  [translationCatalogs.en, translationCatalogs["pt-PT"], europeanPortugueseLabels, 782, 416],
+  [translationCatalogs.en, translationCatalogs["pt-PT"], europeanPortugueseLabels, 783, 416],
   [englishHelpers, helperCatalogs["pt-PT"], europeanPortugueseHelpers, 567, 1],
 ] as const;
 

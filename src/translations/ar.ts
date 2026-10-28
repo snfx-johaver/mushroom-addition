@@ -313,6 +313,7 @@ export const arabicLabels: Record<string, string> = {
   "show_color_temp_control": "التحكم في درجة حرارة اللون",
   "show_color_control": "التحكم في اللون",
   "full_collapse_controls": "الطي الكامل للعناصر",
+  "lights_in_group": "الأضواء في هذه المجموعة",
   "show_extra_pollen": "مستشعرات حبوب اللقاح الإضافية",
   "datetime_single_row": "صف واحد",
   "datetime_manual_entry": "كتابة الوقت يدويًا",

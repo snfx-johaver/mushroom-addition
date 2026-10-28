@@ -10,7 +10,7 @@ import {
 const labels = { ...translationCatalogs["zh-Hant"], ...traditionalChineseLabels };
 const helpers = { ...helperCatalogs["zh-Hant"], ...traditionalChineseHelpers };
 const catalogs = [
-  [translationCatalogs.en, translationCatalogs["zh-Hant"], traditionalChineseLabels, labels, 782],
+  [translationCatalogs.en, translationCatalogs["zh-Hant"], traditionalChineseLabels, labels, 783],
   [englishHelpers, helperCatalogs["zh-Hant"], traditionalChineseHelpers, helpers, 567],
 ] as const;
 const technicalTerms = new Set(["ui.renderer.CPU", "ui.renderer.RAM", "ui.renderer.Ping"]);
@@ -25,7 +25,7 @@ describe("complete Traditional Chinese localization", () => {
         expect(placeholders(merged[key]), key).toEqual(placeholders(source));
       }
     }
-    expect(Object.keys(labels)).toHaveLength(1198);
+    expect(Object.keys(labels)).toHaveLength(1199);
     expect(Object.keys(helpers)).toHaveLength(568);
   });
 

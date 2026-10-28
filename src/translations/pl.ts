@@ -312,6 +312,7 @@ export const polishLabels: Record<string, string> = {
   show_color_temp_control: "Sterowanie temperaturą barwy",
   show_color_control: "Sterowanie kolorem",
   full_collapse_controls: "Pełne zwijanie sterowania",
+  lights_in_group: "Światła w tej grupie",
   show_extra_pollen: "Dodatkowe czujniki pyłków",
   datetime_single_row: "Jeden wiersz",
   datetime_manual_entry: "Wpisz czas ręcznie",

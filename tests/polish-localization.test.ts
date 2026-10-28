@@ -4,7 +4,7 @@ import { placeholders } from "../src/translation-coverage";
 import { polishHelpers, polishLabels } from "../src/translations/pl";
 
 const catalogs = [
-  [translationCatalogs.en, translationCatalogs.pl, polishLabels, 782],
+  [translationCatalogs.en, translationCatalogs.pl, polishLabels, 783],
   [englishHelpers, helperCatalogs.pl, polishHelpers, 567],
 ] as const;
 

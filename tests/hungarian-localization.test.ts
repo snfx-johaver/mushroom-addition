@@ -8,7 +8,7 @@ const installedWithout = (catalog: Record<string, string>, additions: Record<str
   Object.fromEntries(Object.entries(catalog).filter(([key]) => !Object.hasOwn(additions, key)));
 const catalogs = [
   [translationCatalogs.en, installedWithout(translationCatalogs.hu, hungarianLabels), hungarianLabels,
-    782, "8199192c5ac6d30c24bc0852db6488c3de67f7bf44b695393199b77e5f2c4198"],
+    783, "8199192c5ac6d30c24bc0852db6488c3de67f7bf44b695393199b77e5f2c4198"],
   [englishHelpers, installedWithout(helperCatalogs.hu, hungarianHelpers), hungarianHelpers,
     567, "199816e1c2dff6288b9cf3ac69a67da7d074d9d00ce79356c7683840fb537f79"],
 ] as const;
@@ -19,7 +19,7 @@ const rawLiterals = (text: string) =>
 
 describe("complete Hungarian card localization", () => {
   it("fills exactly the missing inventory without changing installed entries", () => {
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1198);
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1199);
     expect(Object.keys(englishHelpers)).toHaveLength(568);
     for (const [english, installed, additions, count, fingerprint] of catalogs) {
       expect(Object.keys(additions)).toHaveLength(count);

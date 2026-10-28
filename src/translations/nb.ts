@@ -313,6 +313,7 @@ export const norwegianLabels: Record<string, string> = {
   show_color_temp_control: "Fargetemperaturkontroll",
   show_color_control: "Fargekontroll",
   full_collapse_controls: "Full skjuling av kontroller",
+  lights_in_group: "Lys i denne gruppen",
   show_extra_pollen: "Ekstra pollensensorer",
   datetime_single_row: "Enkelt rad",
   datetime_manual_entry: "Skriv inn tid manuelt",

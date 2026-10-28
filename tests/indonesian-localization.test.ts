@@ -22,7 +22,7 @@ describe("Indonesian label and helper catalogs", () => {
         expect(placeholders(merged[key]), key).toEqual(placeholders(original));
       }
     }
-    expect(Object.keys(indonesianLabels)).toHaveLength(782);
+    expect(Object.keys(indonesianLabels)).toHaveLength(783);
     expect(Object.keys(indonesianHelpers)).toHaveLength(567);
   });
 

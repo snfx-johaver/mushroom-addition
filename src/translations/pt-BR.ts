@@ -313,6 +313,7 @@ export const brazilianPortugueseLabels: Record<string, string> = {
   show_color_temp_control: "Controle de temperatura de cor",
   show_color_control: "Controle de cor",
   full_collapse_controls: "Recolher todos os controles",
+  lights_in_group: "Luzes neste grupo",
   show_extra_pollen: "Sensores de pólen adicionais",
   datetime_single_row: "Linha única",
   datetime_manual_entry: "Digitar o horário manualmente",

@@ -313,6 +313,7 @@ export const slovakLabels: Record<string, string> = {
   show_color_temp_control: "Ovládanie teploty farby",
   show_color_control: "Ovládanie farby",
   full_collapse_controls: "Úplné zbalenie ovládania",
+  lights_in_group: "Svetlá v tejto skupine",
   show_extra_pollen: "Ďalšie senzory peľu",
   datetime_single_row: "Jeden riadok",
   datetime_manual_entry: "Ručné zadanie času",

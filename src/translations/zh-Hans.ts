@@ -313,6 +313,7 @@ export const simplifiedChineseLabels: Record<string, string> = {
   show_color_temp_control: "色温控制",
   show_color_control: "颜色控制",
   full_collapse_controls: "完全折叠控件",
+  lights_in_group: "此组中的灯",
   show_extra_pollen: "附加花粉传感器",
   datetime_single_row: "单行",
   datetime_manual_entry: "手动输入时间",

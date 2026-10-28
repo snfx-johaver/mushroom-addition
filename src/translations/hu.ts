@@ -312,6 +312,7 @@ export const hungarianLabels: Record<string, string> = {
   show_color_temp_control: "Színhőmérséklet-szabályzó",
   show_color_control: "Színszabályzó",
   full_collapse_controls: "Teljes vezérlőelem-összecsukás",
+  lights_in_group: "Lámpák ebben a csoportban",
   show_extra_pollen: "További pollenszenzorok",
   datetime_single_row: "Egy sor",
   datetime_manual_entry: "Idő kézi megadása",

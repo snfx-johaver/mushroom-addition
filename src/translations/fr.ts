@@ -315,6 +315,7 @@ export const frenchLabels: Record<string, string> = {
   show_color_temp_control: "Contrôle de la température de couleur",
   show_color_control: "Contrôle de la couleur",
   full_collapse_controls: "Réduction complète des contrôles",
+  lights_in_group: "Lumières de ce groupe",
   show_extra_pollen: "Capteurs de pollen supplémentaires",
   datetime_single_row: "Une seule ligne",
   datetime_manual_entry: "Saisir l'heure manuellement",

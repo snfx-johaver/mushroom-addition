@@ -26,7 +26,7 @@ const codeLiterals = (value: string) =>
 
 describe("complete Ukrainian card localization", () => {
   it("adds exactly the missing inventory without changing installed translations", () => {
-    expect(Object.keys(ukrainianLabels)).toHaveLength(782);
+    expect(Object.keys(ukrainianLabels)).toHaveLength(783);
     expect(Object.keys(ukrainianHelpers)).toHaveLength(567);
     expect(Object.keys(installedLabels)).toHaveLength(416);
     expect(Object.keys(installedHelpers)).toHaveLength(1);
@@ -42,7 +42,7 @@ describe("complete Ukrainian card localization", () => {
         expect(merged[key], key).toBe(value);
       }
     }
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1198);
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1199);
     expect(Object.keys(englishHelpers)).toHaveLength(568);
   });
 

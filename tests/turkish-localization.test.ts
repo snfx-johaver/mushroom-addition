@@ -26,7 +26,7 @@ describe("complete Turkish label and helper supplement", () => {
   it("fills exactly the missing keys without duplicating shared graph translations", () => {
     expect(Object.keys(turkishLabels).sort()).toEqual(missingLabels.sort());
     expect(Object.keys(turkishHelpers).sort()).toEqual(missingHelpers.sort());
-    expect(Object.keys(turkishLabels)).toHaveLength(782);
+    expect(Object.keys(turkishLabels)).toHaveLength(783);
     expect(Object.keys(turkishHelpers)).toHaveLength(567);
     expect(Object.keys(turkishLabels).filter(key => key.startsWith("ui.graph."))).toEqual([]);
     expect(Object.keys(labels).sort()).toEqual(Object.keys(translationCatalogs.en).sort());

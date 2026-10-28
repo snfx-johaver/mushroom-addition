@@ -312,6 +312,7 @@ use_light_color|Користи боју светла
 show_color_temp_control|Контрола температуре боје
 show_color_control|Контрола боје
 full_collapse_controls|Потпуно скупљање контрола
+lights_in_group|Светла у овој групи
 show_extra_pollen|Додатни сензори полена
 datetime_single_row|Један ред
 datetime_manual_entry|Ручни унос времена

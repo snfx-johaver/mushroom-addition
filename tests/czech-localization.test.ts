@@ -9,7 +9,7 @@ const catalogs = [
     english: translationCatalogs.en,
     baseline: translationCatalogs.cs,
     additions: czechLabels,
-    addedCount: 782,
+    addedCount: 783,
     installedCount: 416,
     installedHash: "0225a82c42967afb2c922d09103c67665e22f92280eb5843939532792d466f33",
   },

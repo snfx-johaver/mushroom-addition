@@ -312,6 +312,7 @@ export const romanianLabels: Record<string, string> = {
   show_color_temp_control: "Control temperatură culoare",
   show_color_control: "Control culoare",
   full_collapse_controls: "Restrângere completă a controalelor",
+  lights_in_group: "Lumini din acest grup",
   show_extra_pollen: "Senzori de polen suplimentari",
   datetime_single_row: "Un singur rând",
   datetime_manual_entry: "Introdu ora manual",
