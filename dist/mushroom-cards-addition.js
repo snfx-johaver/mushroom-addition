@@ -45820,8 +45820,8 @@ let Qe = class extends ye {
       if (e.stopPropagation(), this.dragStartX === void 0) return;
       const t = e.clientX - this.dragStartX, a = e.clientY - (this.dragStartY ?? e.clientY), n = this.pointerItemIndex ?? this.selectedIndex, i = this.pointerStartedOnItem, r = this.pointerAxis === "horizontal", o = this.pointerAxis === "vertical" || Math.abs(a) > Math.abs(t) * 1.15, s = Math.max(1, e.timeStamp - (this.lastPointerTime ?? e.timeStamp)), l = Math.abs(e.clientX - (this.lastPointerX ?? e.clientX)) > 0 ? (e.clientX - (this.lastPointerX ?? e.clientX)) / s : this.horizontalVelocity;
       if (this.clearHold(), this.resetPointer(), r && (Math.abs(t) >= 10 || Math.abs(l) >= 0.16)) {
-        const c = t > 0 || t === 0 && l > 0 ? -1 : 1, p = Math.max(18, this.buttonWidth + this.coverflowStretch), h = Math.abs(l) >= 0.6 ? Math.round(Math.abs(l) * 2) : 0;
-        this.select(c, Math.max(1, Math.round(Math.abs(t) / p), h));
+        const c = t > 0 || t === 0 && l > 0 ? -1 : 1, p = Math.max(18, this.buttonWidth + this.coverflowStretch);
+        this.select(c, this.singleSlideEffect ? 1 : Math.max(1, Math.round(Math.abs(t) / p)));
         return;
       }
       if (this.holdFired) {

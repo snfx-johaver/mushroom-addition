@@ -554,8 +554,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     if (wasHorizontal && (Math.abs(delta) >= 10 || Math.abs(releaseVelocity) >= 0.16)) {
       const direction = delta > 0 || (delta === 0 && releaseVelocity > 0) ? -1 : 1;
       const slideStep = Math.max(18, this.buttonWidth + this.coverflowStretch);
-      const flick = Math.abs(releaseVelocity) >= 0.6 ? Math.round(Math.abs(releaseVelocity) * 2) : 0;
-      this.select(direction, Math.max(1, Math.round(Math.abs(delta) / slideStep), flick));
+      this.select(direction, this.singleSlideEffect ? 1 : Math.max(1, Math.round(Math.abs(delta) / slideStep)));
       return;
     }
     if (this.holdFired) {
