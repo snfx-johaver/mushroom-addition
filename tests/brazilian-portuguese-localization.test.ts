@@ -7,8 +7,8 @@ import {
 } from "../src/translations/pt-BR";
 
 const catalogs = [
-  [translationCatalogs.en, translationCatalogs["pt-BR"], brazilianPortugueseLabels, 781, 416],
-  [englishHelpers, helperCatalogs["pt-BR"], brazilianPortugueseHelpers, 566, 1],
+  [translationCatalogs.en, translationCatalogs["pt-BR"], brazilianPortugueseLabels, 782, 416],
+  [englishHelpers, helperCatalogs["pt-BR"], brazilianPortugueseHelpers, 567, 1],
 ] as const;
 
 describe("complete Brazilian Portuguese card translations", () => {

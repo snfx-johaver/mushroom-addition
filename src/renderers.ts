@@ -796,6 +796,17 @@ const renderWelcome = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
+// Area scene discovery scans every state, so run it once per config and keep the result until the config changes.
+const sceneItemCache = new WeakMap<object, AdditionItemConfig[]>();
+const cachedSceneItems = (ctx: RenderContext): AdditionItemConfig[] => {
+  if (ctx.config.carousel_items) return ctx.config.carousel_items;
+  const cached = sceneItemCache.get(ctx.config);
+  if (cached) return cached;
+  const found = areaSceneItems(ctx.hass, ctx.config.entity);
+  if (found.length) sceneItemCache.set(ctx.config, found);
+  return found;
+};
+
 const renderLight = (ctx: RenderContext): TemplateResult => {
   const entity = ctx.entity;
   const unavailable = !entity || ["unavailable", "unknown"].includes(entity.state);
@@ -811,7 +822,8 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
   const hs = attr(entity, "hs_color");
   const hue = Array.isArray(hs) ? Number(hs[0]) || 0 : 0;
   const saturation = Array.isArray(hs) ? Number(hs[1]) || 100 : 100;
-  const showControls = !(ctx.config.collapsible_controls === true && !on);
+  const fullCollapsed = ctx.config.full_collapse_controls === true && !on;
+  const showControls = !fullCollapsed && !(ctx.config.collapsible_controls === true && !on);
   const showBrightness = showControls && ctx.config.light_show_brightness !== false && dimmable;
   const showTemp = showControls && ctx.config.show_color_temp_control === true && hasMode("color_temp");
   const showHue = showControls && ctx.config.show_color_control === true && hasMode("hs", "xy", "rgb", "rgbw", "rgbww");
@@ -822,12 +834,12 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
   const controlCount = controlButtons.length;
   const stateText = on && dimmable && rawBrightness !== undefined ? `${brightness}%` : stateLabel(entity, ctx.hass);
   const stop = (event: Event) => event.stopPropagation();
-  const members = ctx.config.light_show_members === false ? [] : [...new Set(
+  const members = fullCollapsed || ctx.config.light_show_members === false ? [] : [...new Set(
     Array.isArray(attr(entity, "entity_id")) ? (attr(entity, "entity_id") as unknown[]).filter((id): id is string => typeof id === "string") : [],
   )].filter((id) => id.startsWith("light.")).flatMap((id) => ctx.hass.states[id] ?? []);
   const perRow = Math.max(1, Math.min(12, Math.floor(Number(ctx.config.light_members_per_row)) || 4));
-  const scenes = ctx.config.light_show_scenes === false ? [] :
-    (ctx.config.carousel_items ?? areaSceneItems(ctx.hass, ctx.config.entity)).map((item) => ({
+  const scenes = fullCollapsed || ctx.config.light_show_scenes === false ? [] :
+    cachedSceneItems(ctx).map((item) => ({
       ...item,
       tap_action: item.tap_action ?? (item.entity?.startsWith("scene.")
         ? { action: "perform-action", perform_action: "scene.turn_on", target: { entity_id: item.entity } }
@@ -2493,18 +2505,4 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
   if (/trash/.test(ctx.descriptor.upstreamId)) return renderScheduleCard(ctx);
   if (/printer/.test(ctx.descriptor.upstreamId)) return renderDeviceStatus(ctx);
   if (/plant|entity_overview/.test(ctx.descriptor.upstreamId)) {
-    return renderDetailCard(ctx, /plant/.test(ctx.descriptor.upstreamId) ? "mdi:flower" : "mdi:view-grid", "purple");
-  }
-  switch (ctx.descriptor.family) {
-    case "scene": return renderScene(ctx);
-    case "battery": return renderBattery(ctx);
-    case "energy":
-    case "sensor": return renderMetric(ctx);
-    case "media": return renderSonos(ctx);
-    case "security": return renderSecurity(ctx);
-    case "navigation": return renderNavigation(ctx);
-    case "control": return renderControl(ctx);
-    case "alarm-time": return renderAlarmTime(ctx);
-    default: return renderGeneric(ctx);
-  }
-};
+    return renderDetailCard(ctx, /plant/.test(ctx.descriptor.upstreamId) ? "mdi:flower" : "mdi:view-grid", "purple");

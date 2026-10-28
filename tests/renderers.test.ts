@@ -1055,6 +1055,10 @@ describe("family renderers", () => {
     await element.updateComplete;
     expect(element.shadowRoot!.querySelector(".light-color-temp")).toBeNull();
     expect(element.shadowRoot!.querySelector(".light-brightness")).toBeNull();
+    element.setConfig({ ...base, light_show_scenes: true, full_collapse_controls: true });
+    await element.updateComplete;
+    expect(element.shadowRoot!.querySelector("mushroom-addition-entity-carousel")).toBeNull();
+    expect(element.shadowRoot!.querySelector(".light-pulldown")).toBeNull();
     element.remove();
   });
 

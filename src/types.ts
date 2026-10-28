@@ -427,6 +427,7 @@ export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, P
   use_light_color?: boolean;
   show_color_temp_control?: boolean;
   show_color_control?: boolean;
+  full_collapse_controls?: boolean;
   light_members_expanded?: boolean;
   light_members_per_row?: number;
   show_extra_pollen?: boolean;

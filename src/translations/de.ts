@@ -306,6 +306,7 @@ export const germanLabels: Record<string, string> = {
   use_light_color: "Lichtfarbe verwenden",
   show_color_temp_control: "Farbtemperatur-Regler",
   show_color_control: "Farbregler",
+  full_collapse_controls: "Alle Steuerelemente einklappen",
   show_extra_pollen: "Zusätzliche Pollensensoren",
   datetime_single_row: "Einzelne Zeile",
   datetime_manual_entry: "Zeit manuell eingeben",

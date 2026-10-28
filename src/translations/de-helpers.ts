@@ -419,6 +419,7 @@ export const germanHelpers: Record<string, string> = {
   use_light_color: "Färbt Symbol und Regler in der aktuellen Farbe der Leuchte.",
   show_color_temp_control: "Zeigt einen Farbtemperatur-Regler, wenn die Leuchte ihn unterstützt.",
   show_color_control: "Zeigt einen Farbregler, wenn die Leuchte Farben unterstützt.",
+  full_collapse_controls: "Blendet alles aus, einschließlich Szenen und Leuchten der Gruppe, wenn die Leuchte aus ist.",
   show_extra_pollen: "Zeigt zusätzliche Pollensensoren unter den drei Haupttypen an. Beliebig viele hinzufügbar.",
   datetime_single_row: "Platziert Titel, Schaltflächen und Uhrzeit in einer Zeile.",
   datetime_manual_entry: "Macht die Uhrzeit zu einem Feld, in das man klicken und tippen kann.",

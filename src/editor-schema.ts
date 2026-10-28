@@ -799,6 +799,7 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
         toggle("show_color_temp_control"),
         toggle("show_color_control"),
         toggle("collapsible_controls"),
+        toggle("full_collapse_controls"),
         toggle("light_show_members"),
         ...(config?.light_show_members !== false ? [
           toggle("light_members_expanded"),

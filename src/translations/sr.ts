@@ -311,6 +311,7 @@ light_show_scenes|Прикажи сцене
 use_light_color|Користи боју светла
 show_color_temp_control|Контрола температуре боје
 show_color_control|Контрола боје
+full_collapse_controls|Потпуно скупљање контрола
 show_extra_pollen|Додатни сензори полена
 datetime_single_row|Један ред
 datetime_manual_entry|Ручни унос времена
@@ -1226,6 +1227,7 @@ light_show_scenes|Додаје падајући мени са каруселом
 use_light_color|Боји икону и клизаче тренутном бојом светла.
 show_color_temp_control|Приказује клизач температуре боје када га светло подржава.
 show_color_control|Приказује клизач боје када светло подржава боје.
+full_collapse_controls|Сакрива све, укључујући сцене и светла у групи, када је светло искључено.
 show_extra_pollen|Приказује додатне сензоре полена испод три главна типа. Додајте колико желите.
 datetime_single_row|Поставља наслов, дугмад и време у један ред.
 datetime_manual_entry|Претвара време у поље у које можете кликнути и куцати.

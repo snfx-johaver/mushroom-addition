@@ -3,7 +3,7 @@
 Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
-- Light Area Card: added Use light color, Color temperature control, Color control and Collapse controls when off, and fixed the scene carousel resetting mid-drag whenever Home Assistant refreshed the card.
+- Light Area Card: added Use light color, Color temperature control, Color control Collapse controls when off and Full collapse controls (also hides the scenes and group lights), and fixed the scene carousel resetting mid-drag whenever Home Assistant refreshed the card.
 
 - Added a Light Area Card: Mushroom light controls with a brightness slider plus a pulldown that lists every light in the selected light group as small on/off buttons (per-row setting, optional open by default) and a second, hideable pulldown with a coverflow scene carousel that auto-fills with the scenes of the light's area (add/remove scenes, button size, icon size, effect, coverflow spacing and depth).
 - Welcome: optional people row above the scene buttons (home on the left, away with their state on the right). People are picked once in the editor and new cards pre-select everyone in the household.
