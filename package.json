@@ -1,6 +1,6 @@
 {
   "name": "mushroom-addition",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "A little more fun(gus) for Home Assistant: Mushroom-style cards, useful extras, and click-not-YAML editors.",
   "type": "module",
   "main": "dist/mushroom-cards-addition.js",

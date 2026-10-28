@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+## 0.5.3 - 2026-10-28
+
 - Safely escape entity-provided image URLs in CSS backgrounds and remove the
   setup-specific navigation default from Home Energy Management.
 
