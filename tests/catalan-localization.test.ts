@@ -8,9 +8,9 @@ const installedWithout = (catalog: Record<string, string>, additions: Record<str
   Object.fromEntries(Object.entries(catalog).filter(([key]) => !Object.hasOwn(additions, key)));
 const catalogs = [
   [translationCatalogs.en, installedWithout(translationCatalogs.ca, catalanLabels), catalanLabels,
-    778, "a5b04537fa24d652007a15e49d4216dc7d4828da6374ec506eb30fe09298832b"],
+    781, "a5b04537fa24d652007a15e49d4216dc7d4828da6374ec506eb30fe09298832b"],
   [englishHelpers, installedWithout(helperCatalogs.ca, catalanHelpers), catalanHelpers,
-    563, "e6556fbb68dfebb0b868bac75ca7f0d611c2f9b5195365931a1bb8bd79c21b95"],
+    566, "e6556fbb68dfebb0b868bac75ca7f0d611c2f9b5195365931a1bb8bd79c21b95"],
 ] as const;
 const numericLiterals = (text: string) => (text.match(/-?\d+(?:\.\d+)?/g) ?? []).sort();
 const rawLiterals = (text: string) =>
@@ -19,8 +19,8 @@ const rawLiterals = (text: string) =>
 
 describe("complete Catalan card localization", () => {
   it("fills exactly the missing inventory while preserving installed entries", () => {
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1194);
-    expect(Object.keys(englishHelpers)).toHaveLength(564);
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1197);
+    expect(Object.keys(englishHelpers)).toHaveLength(567);
     for (const [english, installed, additions, count, fingerprint] of catalogs) {
       expect(Object.keys(additions)).toHaveLength(count);
       expect(Object.keys(additions).sort())

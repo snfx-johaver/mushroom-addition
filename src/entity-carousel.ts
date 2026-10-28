@@ -159,11 +159,15 @@ export class MushroomAdditionEntityCarousel extends LitElement {
   private tapItem?: AdditionItemConfig;
   private pointerItemIndex?: number;
   private pointerStartedOnItem = false;
+  private configSignature?: string;
   private resizeObserver?: ResizeObserver;
   private observedCarousel?: HTMLElement;
 
   protected willUpdate(changed: Map<PropertyKey, unknown>): void {
     if (changed.has("config")) {
+      const signature = JSON.stringify(this.config ?? null);
+      if (signature === this.configSignature) return;
+      this.configSignature = signature;
       this.clearTap();
       this.cancelPointer();
       const count = this.items.length;

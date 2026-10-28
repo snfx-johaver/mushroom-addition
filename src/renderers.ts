@@ -801,9 +801,19 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
   const unavailable = !entity || ["unavailable", "unknown"].includes(entity.state);
   const on = entity?.state === "on";
   const rgb = attr(entity, "rgb_color");
-  const color = on && Array.isArray(rgb) && rgb.length === 3 ? `rgb(${rgb.join(",")})` : on ? "rgb(var(--ulm-yellow))" : "rgb(var(--ulm-grey))";
+  const color = on && ctx.config.use_light_color !== false && Array.isArray(rgb) && rgb.length === 3 ? `rgb(${rgb.join(",")})` : on ? "rgb(var(--ulm-yellow))" : "rgb(var(--ulm-grey))";
   const modes = attr(entity, "supported_color_modes");
   const dimmable = Array.isArray(modes) ? modes.some((mode) => mode !== "onoff") : attr(entity, "brightness") !== undefined;
+  const hasMode = (...wanted: string[]) => Array.isArray(modes) && modes.some((mode) => wanted.includes(String(mode)));
+  const kelvinMin = numeric(attr(entity, "min_color_temp_kelvin")) ?? 2000;
+  const kelvinMax = numeric(attr(entity, "max_color_temp_kelvin")) ?? 6500;
+  const kelvin = numeric(attr(entity, "color_temp_kelvin")) ?? Math.round((kelvinMin + kelvinMax) / 2);
+  const hs = attr(entity, "hs_color");
+  const hue = Array.isArray(hs) ? Number(hs[0]) || 0 : 0;
+  const saturation = Array.isArray(hs) ? Number(hs[1]) || 100 : 100;
+  const showControls = !(ctx.config.collapsible_controls === true && !on);
+  const showTemp = showControls && ctx.config.show_color_temp_control === true && hasMode("color_temp");
+  const showHue = showControls && ctx.config.show_color_control === true && hasMode("hs", "xy", "rgb", "rgbw", "rgbww");
   const rawBrightness = numeric(attr(entity, "brightness"));
   const brightness = on && rawBrightness !== undefined ? Math.max(1, Math.round(rawBrightness / 255 * 100)) : 0;
   const stateText = on && dimmable && rawBrightness !== undefined ? `${brightness}%` : stateLabel(entity, ctx.hass);
@@ -848,7 +858,7 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
       ${sourceIconBubble(ctx, defaultIconFor(ctx.descriptor, entity), color, on)}
       ${heading(ctx, stateText)}
     </div>
-    ${ctx.config.light_show_brightness !== false && dimmable ? html`
+    ${showControls && ctx.config.light_show_brightness !== false && dimmable ? html`
       <input class="mushroom-range light-brightness" type="range" min="1" max="100" step="1" .value=${String(brightness)}
         style=${`--range-color:${color};--range-progress:${rangeProgress(brightness, 1, 100)}`}
         aria-label=${localizeText(ctx.hass, "Brightness")} ?disabled=${unavailable}
@@ -860,6 +870,24 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
             entity_id: entity?.entity_id,
             brightness_pct: Number((event.currentTarget as HTMLInputElement).value),
           });
+        }}>` : nothing}
+    ${showTemp ? html`
+      <input class="mushroom-range light-gradient light-color-temp" type="range" min="${kelvinMin}" max="${kelvinMax}" step="50" .value=${String(kelvin)}
+        style=${`--range-color:transparent;--range-progress:0%;--light-gradient:linear-gradient(to right,#ff9d3a,#ffe3b8,#ffffff,#cfe0ff,#9bbcff)`}
+        aria-label=${localizeText(ctx.hass, "Color temperature")} ?disabled=${unavailable}
+        @pointerdown=${stop} @pointerup=${stop} @click=${stop} @keydown=${stop}
+        @change=${(event: Event) => {
+          stop(event);
+          ctx.service("light", "turn_on", { entity_id: entity?.entity_id, color_temp_kelvin: Number((event.currentTarget as HTMLInputElement).value) });
+        }}>` : nothing}
+    ${showHue ? html`
+      <input class="mushroom-range light-gradient light-color-hue" type="range" min="0" max="360" step="1" .value=${String(hue)}
+        style=${`--range-color:transparent;--range-progress:0%;--light-gradient:linear-gradient(to right,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)`}
+        aria-label=${localizeText(ctx.hass, "Color")} ?disabled=${unavailable}
+        @pointerdown=${stop} @pointerup=${stop} @click=${stop} @keydown=${stop}
+        @change=${(event: Event) => {
+          stop(event);
+          ctx.service("light", "turn_on", { entity_id: entity?.entity_id, hs_color: [Number((event.currentTarget as HTMLInputElement).value), saturation] });
         }}>` : nothing}
     ${members.length ? html`
       <details class="light-pulldown" ?open=${ctx.config.light_members_expanded === true}

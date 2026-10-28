@@ -533,6 +533,7 @@ export const sharedStyles = css`
   .sonos-details-always-visible { padding-top: 4px; }
   .custom-light { display: grid; gap: 10px; padding: var(--mush-spacing, 12px); }
   .custom-light .light-brightness { width: 100%; }
+  .custom-light input.mushroom-range.light-gradient { width: 100%; background: var(--light-gradient); }
   .light-pulldown summary { display: flex; align-items: center; justify-content: space-between; cursor: pointer; list-style: none; padding: 2px 4px; color: var(--secondary-text-color); font-size: 12px; }
   .light-pulldown summary::-webkit-details-marker { display: none; }
   .light-pulldown summary ha-icon { --mdc-icon-size: 20px; transition: transform .2s ease; }

@@ -41,6 +41,15 @@ describe("Carousel entity defaults and gestures", () => {
     expect(option.getAttribute("aria-label")).toContain(name);
   });
 
+  it("keeps the selected slide when an equivalent config object is re-applied", async () => {
+    const items = [{ entity: entity.entity_id }, { entity: entity.entity_id, name: "Second" }];
+    const card = await create({ carousel_items: items });
+    (card as unknown as { selectedIndex: number }).selectedIndex = 1;
+    card.config = { type, carousel_items: items.map((item) => ({ ...item })) };
+    await card.updateComplete;
+    expect((card as unknown as { selectedIndex: number }).selectedIndex).toBe(1);
+  });
+
   it("uses native state icons unless explicitly overridden, including picture fallback", async () => {
     const card = await create();
     const icon = card.shadowRoot!.querySelector("ha-state-icon") as HTMLElement & { stateObj: unknown; hass: unknown; _config: unknown; _connection: unknown; _entities: unknown };
