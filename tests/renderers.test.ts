@@ -1025,6 +1025,39 @@ describe("family renderers", () => {
     element.remove();
   });
 
+  it("shows light color controls only when enabled and supported, and collapses them when off", async () => {
+    const callService = vi.fn(async () => undefined);
+    const element = document.createElement("mushroom-addition-custom-card-light") as HTMLElement & {
+      hass: HomeAssistant;
+      setConfig(config: AdditionConfig): void;
+      updateComplete: Promise<boolean>;
+    };
+    const make = (state: string) => ({
+      entity_id: "light.lamp", state,
+      attributes: { friendly_name: "Lamp", supported_color_modes: ["color_temp", "hs"], brightness: 128, color_temp_kelvin: 3000, min_color_temp_kelvin: 2000, max_color_temp_kelvin: 6500, hs_color: [120, 80] },
+      last_changed: "", last_updated: "", context: { id: "", parent_id: null, user_id: null },
+    });
+    element.hass = { ...hass, callService, states: { ...hass.states, "light.lamp": make("on") } } as HomeAssistant;
+    const base = { type: "custom:mushroom-addition-custom-card-light", entity: "light.lamp", light_show_scenes: false } as AdditionConfig;
+    element.setConfig(base);
+    document.body.append(element);
+    await element.updateComplete;
+    expect(element.shadowRoot!.querySelector(".light-color-temp")).toBeNull();
+    element.setConfig({ ...base, show_color_temp_control: true, show_color_control: true });
+    await element.updateComplete;
+    const temp = element.shadowRoot!.querySelector<HTMLInputElement>(".light-color-temp")!;
+    expect(element.shadowRoot!.querySelector(".light-color-hue")).not.toBeNull();
+    temp.value = "4000";
+    temp.dispatchEvent(new Event("change"));
+    expect(callService).toHaveBeenCalledWith("light", "turn_on", expect.objectContaining({ color_temp_kelvin: 4000 }));
+    element.hass = { ...hass, callService, states: { ...hass.states, "light.lamp": make("off") } } as HomeAssistant;
+    element.setConfig({ ...base, show_color_temp_control: true, collapsible_controls: true });
+    await element.updateComplete;
+    expect(element.shadowRoot!.querySelector(".light-color-temp")).toBeNull();
+    expect(element.shadowRoot!.querySelector(".light-brightness")).toBeNull();
+    element.remove();
+  });
+
   it("uses the selected console platform and toggles a discovered power entity", async () => {
     const callService = vi.fn(async () => undefined);
     const element = document.createElement("mushroom-addition-custom-card-game-console") as HTMLElement & {
