@@ -187,9 +187,9 @@ export const UPSTREAM_CATALOG: readonly CatalogItem[] = [
     family: "energy",
     tag: "mushroom-addition-mini-graph-card",
     name: "Graph Advanced",
-    description: "Mushroom-style recorder history card with line and bar charts, aggregation, thresholds, and dual axes.",
-    variants: ["line", "bar"],
-    variantLabels: { line: "Line graph", bar: "Bar graph" },
+    description: "Mushroom-style recorder history card with line, bar and circular charts, aggregation, thresholds, and dual axes.",
+    variants: ["line", "bar", "radial", "scatter", "pie", "donut"],
+    variantLabels: { line: "Line graph", bar: "Bar graph", radial: "Circular rings", scatter: "Scatter plot", pie: "Pie chart", donut: "Donut chart" },
     preferredDomains: ["sensor", "binary_sensor", "input_number"],
   },
 ] as const;

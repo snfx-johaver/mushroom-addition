@@ -6,7 +6,7 @@ import { variantForSource } from "./catalog";
 import { FLOWER_BARS, flowerBarsForConfig, flowerEntityConfigKey } from "./flower";
 import { REMOTE_KEYS } from "./remote-card";
 import { PIHOLE_METRICS, PIHOLE_SECTIONS } from "./pi-hole";
-import { STOCK_METRICS } from "./stock-data";
+import { STOCK_METRICS, STOCK_RANGES, stockUsesBackend } from "./stock-data";
 
 export interface EditorField {
   name: string;
@@ -286,15 +286,16 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
     ...(config?.stock_source === "stock_market_deluxe" ? [] : [entity(["sensor"])]),
     ...presentation(),
     select("stock_source", [{ value: "entity", label: "Home Assistant entities (any provider)" },
+      { value: "yahoo", label: "Yahoo Finance (Mushroom Addition Market Data backend)" },
       { value: "stock_market_deluxe", label: "Stock Market Deluxe integration" }]),
     text("stock_symbol"), text("stock_currency"),
     number("stock_shares", 0, 100000000, 0.001),
     number("stock_interval", 180, 86400),
-    select("stock_range", ["1D", "5D", "1M", "3M", "1Y"].map(value => ({ value, label: value }))),
+    select("stock_range", STOCK_RANGES.filter(range => range !== "5Y" || config?.stock_source !== "stock_market_deluxe")
+      .map(value => ({ value, label: value }))),
     toggle("stock_show_position"), toggle("stock_show_statistics"),
-    ...(config?.stock_source === "stock_market_deluxe"
-      ? [toggle("stock_show_volume"), toggle("stock_show_trends")]
-      : STOCK_METRICS.flatMap(([key]) => [
+    ...(stockUsesBackend(config) ? [toggle("stock_show_volume"), toggle("stock_show_trends")] : []),
+    ...(config?.stock_source === "stock_market_deluxe" ? [] : STOCK_METRICS.flatMap(([key]) => [
         entity(["sensor", "input_number"], `stock_${key}_entity`),
         text(`stock_${key}_attribute`),
       ])),
@@ -398,10 +399,14 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
     return [
       entity(["sensor", "binary_sensor", "input_number"]),
       ...presentation().filter((field) =>
-        field.name !== "layout" && field.name !== "multiline_secondary"),
+        field.name !== "layout" && field.name !== "multiline_secondary" && field.name !== "fill_container"),
       select("variant", [
         { value: "line", label: "Line graph" },
         { value: "bar", label: "Bar graph" },
+        { value: "radial", label: "Circular rings" },
+        { value: "scatter", label: "Scatter plot" },
+        { value: "pie", label: "Pie chart" },
+        { value: "donut", label: "Donut chart" },
       ]),
       select("aggregate_func", [
         { value: "avg", label: "Average" },
@@ -489,6 +494,7 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
         { value: "hidden", label: "Hidden" },
       ]),
       toggle("mini_graph_show_legend"),
+      toggle("mini_graph_show_top_labels"),
       toggle("mini_graph_show_average"),
       toggle("mini_graph_show_extrema"),
       toggle("mini_graph_name_adaptive_color"),

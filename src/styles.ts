@@ -106,6 +106,7 @@ export const sharedStyles = css`
   .card-heading > .ulm-copy { flex: 1; }
   .automatic-presentation { min-width: 0; }
   .upcoming-card, .remote-card, .pi-hole-card { padding: 12px; }
+  .stock-card > .card-heading { padding: 12px 12px 0; }
   .upcoming-card > .card-heading, .remote-card > .card-heading, .pi-hole-card > .card-heading { margin-bottom: 12px; }
   .upcoming-card > .automatic-presentation, .remote-card > .automatic-presentation { margin-bottom: 12px; }
   .ulm-name {
@@ -170,7 +171,7 @@ export const sharedStyles = css`
   @keyframes ulm-charge { from { transform: scale(.92); } to { transform: scale(1.06); } }
   .ulm-metric { padding: 0 12px 12px; }
   .metric-heading { padding-left: 0; padding-right: 0; }
-  .entity-carousel-presentation { padding: 12px; }
+  .entity-carousel-presentation { padding: 12px; min-height: 0; }
   .entity-carousel-presentation .ulm-icon > ha-state-icon { --mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667)); }
   .entity-carousel-presentation .ulm-copy { justify-content: center; }
   .metric-value { color: rgb(var(--ulm-blue)); font-size: 20px; font-weight: 650; }
@@ -635,8 +636,9 @@ export const sharedStyles = css`
   }
   .has-artwork .console-content { background: linear-gradient(90deg, rgba(0,0,0,.84), rgba(0,0,0,.24)); }
   .console-header {
-    min-width: 0;
+    min-width: 0; flex-wrap: wrap; align-items: center;
   }
+  .console-header > .ulm-copy { flex: 1 1 0; }
   .console-logo {
     display: grid; width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); place-items: center; border-radius: 50%;
     flex: 0 0 auto;
@@ -649,7 +651,7 @@ export const sharedStyles = css`
   }
   .has-artwork .console-header .ulm-label { color: rgba(255,255,255,.75); }
   .has-artwork .console-header .ulm-name { color: #fff; }
-  .console-top-stats { display: grid; justify-items: end; gap: 4px; margin-left: auto; }
+  .console-top-stats { display: flex; flex: 1 0 100%; flex-wrap: wrap; justify-content: flex-start; gap: 8px; margin: 0; }
   .console-top-stats > span {
     display: inline-flex; min-height: 24px; max-width: 100%; align-items: center; gap: 6px; padding: 0 8px;
     border-radius: var(--mush-chip-border-radius, 19px); background: var(--addition-neutral-background); color: var(--mush-card-primary-color, var(--primary-text-color));

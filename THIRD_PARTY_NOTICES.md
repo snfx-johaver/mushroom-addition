@@ -36,6 +36,12 @@ so standalone HACS/release downloads retain the required attribution.
 
 ## MIT-licensed portions
 
+The optional `custom_components/mushroom_addition_market/` backend is original
+MIT-licensed code. It uses [yfinance](https://github.com/ranaroussi/yfinance)
+(Apache-2.0) as an installed Python dependency, not bundled source. It is not
+affiliated with or endorsed by Yahoo. Yahoo's data terms apply; this feature
+is intended for personal use, not investment advice or data redistribution.
+
 Licensed under the MIT License:
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of

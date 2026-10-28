@@ -633,3 +633,59 @@ describe("Mini Graph graphical editor", () => {
     expect(aggregate?.selector).toMatchObject({ select: { mode: "dropdown" } });
   });
 });
+
+describe("Mini Graph hover, radial and top labels", () => {
+  afterEach(() => {
+    document.body.replaceChildren();
+    localStorage.clear();
+  });
+  const twoSeries: MiniGraphCardConfig = {
+    type: "custom:mushroom-addition-mini-graph-card",
+    entities: [{ entity: "sensor.temperature" }, { entity: "sensor.humidity" }],
+  };
+  it("dims other series and shows a tooltip with values while hovering the graph", async () => {
+    const card = await renderCard(twoSeries);
+    const graph = card.shadowRoot!.querySelector<HTMLElement>(".graph")!;
+    graph.getBoundingClientRect = () => ({ left: 0, top: 0, width: 500, height: 150, right: 500, bottom: 150, x: 0, y: 0, toJSON: () => ({}) });
+    graph.dispatchEvent(new MouseEvent("pointermove", { clientX: 500, clientY: 0 }));
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelectorAll(".series.dim")).toHaveLength(1);
+    expect(card.shadowRoot!.querySelector(".tooltip")?.textContent).toContain("Humidity");
+    expect(card.shadowRoot!.querySelectorAll(".dot")).toHaveLength(2);
+    graph.dispatchEvent(new MouseEvent("pointerleave"));
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelector(".tooltip")).toBeNull();
+    expect(card.shadowRoot!.querySelectorAll(".series.dim")).toHaveLength(0);
+  });
+  it("does not draw hover dots when points are hidden", async () => {
+    const card = await renderCard({ ...twoSeries, show: { points: false } });
+    const graph = card.shadowRoot!.querySelector<HTMLElement>(".graph")!;
+    graph.getBoundingClientRect = () => ({ left: 0, top: 0, width: 500, height: 150, right: 500, bottom: 150, x: 0, y: 0, toJSON: () => ({}) });
+    graph.dispatchEvent(new MouseEvent("pointermove", { clientX: 250, clientY: 10 }));
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelectorAll(".dot")).toHaveLength(0);
+    expect(card.shadowRoot!.querySelector(".tooltip")).not.toBeNull();
+  });
+  it("renders concentric radial rings with legend values and top labels", async () => {
+    const card = await renderCard({ ...twoSeries, show: { graph: "radial", top_labels: true } });
+    expect(card.shadowRoot!.querySelectorAll(".ring")).toHaveLength(2);
+    expect(card.shadowRoot!.querySelector(".ring .arc")?.getAttribute("stroke-dasharray")).toBe("22 100");
+    expect(card.shadowRoot!.querySelectorAll(".top-label")).toHaveLength(2);
+    expect(card.shadowRoot!.querySelector(".legend")?.textContent).toContain("Humidity: 50 %");
+  });
+  it("renders pie, donut and scatter chart types", async () => {
+    const pie = await renderCard({ ...twoSeries, show: { graph: "pie" } });
+    expect(pie.shadowRoot!.querySelectorAll(".slice")).toHaveLength(2);
+    expect(pie.shadowRoot!.querySelector(".pie-total")).toBeNull();
+    const donut = await renderCard({ ...twoSeries, show: { graph: "donut" } });
+    expect(donut.shadowRoot!.querySelectorAll(".slice")).toHaveLength(2);
+    expect(donut.shadowRoot!.querySelector(".pie-total")).not.toBeNull();
+    const scatter = await renderCard({ type: "custom:mushroom-addition-mini-graph-card", entities: ["sensor.temperature"], show: { graph: "scatter" } });
+    expect(scatter.shadowRoot!.querySelector("path.line")).toBeNull();
+  });
+  it("lets the primary series state be hidden and shows legend state for a single series", async () => {
+    const card = await renderCard({ type: "custom:mushroom-addition-mini-graph-card", entities: [{ entity: "sensor.temperature", show_state: false, show_legend_state: true }] });
+    expect(card.shadowRoot!.querySelector(".state.primary")).toBeNull();
+    expect(card.shadowRoot!.querySelector(".legend")?.textContent).toContain("22 °C");
+  });
+});

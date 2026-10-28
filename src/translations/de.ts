@@ -218,6 +218,7 @@ export const germanLabels: Record<string, string> = {
   mini_graph_show_labels: "Beschriftungen der Hauptachse",
   mini_graph_show_labels_secondary: "Beschriftungen der Zusatzachse",
   mini_graph_show_legend: "Legende anzeigen",
+  mini_graph_show_top_labels: "Obere Beschriftungen anzeigen",
   mini_graph_show_average: "Durchschnitt anzeigen",
   mini_graph_show_extrema: "Minimum und Maximum anzeigen",
   mini_graph_name_adaptive_color: "Namensfarbe anpassen",

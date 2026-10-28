@@ -4,8 +4,28 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+## 0.5.4 - 2026-10-28
+
+- Mini Graph Card: hovering the graph now highlights the nearest series, dims the
+  others and shows a tooltip with every series value; "points: on hover" now
+  shows dots under the cursor (previously nearly impossible to hover). Legend
+  and top-label entries also highlight/dim on hover.
+- Mini Graph Card: new circular rings chart type (APEX radial-bar style) and an
+  optional "top labels" row of large coloured values with captions.
+- Mini Graph Card: new scatter, pie and donut chart types in the chart type selector.
+- Mini Graph Card editor audit: primary "Show state" is honoured, "State in
+  legend" works for a single series, the chart type selector reflects YAML
+  config, and the ineffective "Fill container" option was removed.
+- Fix Mini Graph Card chart height so a narrower card no longer leaves a blank
+  bar under the graph with the lower label stranded at the bottom.
 - Safely escape entity-provided image URLs in CSS backgrounds and remove the
   setup-specific navigation default from Home Energy Management.
+- Add optional Yahoo market-data backend and Stock Card source selection for
+  actual historical prices, including a five-year chart, independent of HA
+  recorder retention. Retrieve available company fundamentals and expose
+  provider warnings rather than inventing missing values. Preserve arbitrary
+  sensor providers, explicit per-metric overrides and Stock Market Deluxe.
+  The backend requires separate installation and UI setup.
 
 ## 0.5.2 - 2026-10-24
 

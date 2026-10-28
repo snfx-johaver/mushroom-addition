@@ -186,6 +186,7 @@ export const germanHelpers: Record<string, string> = {
   mini_graph_show_labels: "Beschriftungen der primären Achse immer, bei Mauszeigerkontakt oder nie anzeigen.",
   mini_graph_show_labels_secondary: "Beschriftungen der sekundären Achse immer, bei Mauszeigerkontakt oder nie anzeigen.",
   mini_graph_show_legend: "Eine geordnete Legende anzeigen, wenn mehr als eine Datenreihe sichtbar ist.",
+  mini_graph_show_top_labels: "Zeigt den Wert jeder Datenreihe als große farbige Zahl mit Namen über dem Diagramm an.",
   mini_graph_show_average: "Durchschnitt der primären Datenreihe unter dem Diagramm anzeigen.",
   mini_graph_show_extrema: "Minimum und Maximum der primären Datenreihe unter dem Diagramm anzeigen.",
   mini_graph_name_adaptive_color: "Namensfarbe anhand der Schwellenwerte der primären Datenreihe anpassen.",

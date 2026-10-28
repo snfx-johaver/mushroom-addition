@@ -7,7 +7,7 @@ import { MushroomStockContent, parseStockSnapshot, stockOptions, stockSeries, st
 import type { AdditionConfig, HomeAssistant } from "../src/types";
 import type { MushroomAdditionEditor } from "../src/editor";
 import type { MushroomAdditionCard } from "../src/card";
-import { stockMetricValue, stockEntityQuote } from "../src/stock-data";
+import { stockMetricValue, stockEntityQuote, stockProviderQuote } from "../src/stock-data";
 
 const type = "custom:mushroom-addition-stock-card";
 const snapshot = {
@@ -227,5 +227,116 @@ describe("Stock Card", () => {
       config: { entities: Array<{ entity: string; attribute: string }> };
     };
     expect(graph.config.entities[0]).toMatchObject({ entity: "sensor.other", attribute: "close" });
+  });
+
+  it("requests five years of Yahoo market history and renders supplied fundamentals without recorder history", async () => {
+    const call = vi.fn().mockResolvedValue({ ...snapshot, symbol: "MSFT", market_open: null,
+      quote: { ...snapshot.quote, symbol: "MSFT", shortName: "Microsoft", marketCap: 3000000000000,
+        regularMarketOpen: 198, epsTrailingTwelveMonths: 8, beta: 1.1 },
+      warnings: ["Provider did not supply pre-market prices."] });
+    const e = await content({ stock_source: "yahoo", stock_symbol: "MSFT", stock_range: "5Y" }, makeHass(call));
+    expect(call).toHaveBeenCalledWith({
+      type: "mushroom_addition_market/data", symbol: "MSFT", range: "5Y", interval: 300,
+    });
+    expect(e.shadowRoot!.querySelector("svg polyline")).not.toBeNull();
+    expect(e.shadowRoot!.querySelector("svg circle title")?.textContent).toContain("$198.00");
+    expect(e.shadowRoot!.querySelector("mushroom-addition-mini-graph-card")).toBeNull();
+    expect(e.shadowRoot!.textContent).toContain("Microsoft");
+    expect(e.shadowRoot!.textContent).toContain("3T");
+    expect(e.shadowRoot!.textContent).toContain("Provider did not supply pre-market prices.");
+    expect(e.shadowRoot!.textContent).not.toContain("Market closed");
+    const stats = [...e.shadowRoot!.querySelectorAll("dl > div")].map(el => el.textContent);
+    expect(stats).toEqual(expect.arrayContaining(["Open198", "EPS8", "Beta1.1"]));
+    [...e.shadowRoot!.querySelectorAll("button")].find(b => b.textContent === "1M")!.click();
+    await settle(e);
+    expect(call.mock.calls.at(-1)![0]).toMatchObject({ range: "1M" });
+  });
+
+  it("infers Yahoo symbols from entities and exposes the backend and 5Y in the shared editor", () => {
+    const hass = makeHass();
+    hass.states["sensor.yahoo"] = { entity_id: "sensor.yahoo", state: "200", attributes: { symbol: "MSFT" } };
+    expect(stockOptions({ type, entity: "sensor.yahoo", stock_source: "yahoo" }, hass).symbol).toBe("MSFT");
+    expect(() => stockOptions({ type, stock_source: "yahoo" })).toThrow("symbol");
+    expect(() => stockOptions({ type, stock_source: "stock_market_deluxe", stock_range: "5Y" })).toThrow("five-year");
+    const item = CATALOG.find(item => item.upstreamId === "stock_card")!;
+    const schema = editorSchemaFor(item, { type, stock_source: "yahoo" });
+    expect(schema.find(f => f.name === "stock_range")?.selector).toMatchObject({
+      select: { options: expect.arrayContaining([{ value: "5Y", label: "5Y" }]) },
+    });
+    expect(schema.find(f => f.name === "stock_source")?.selector).toMatchObject({
+      select: { options: expect.arrayContaining([
+        { value: "yahoo", label: "Yahoo Finance (Mushroom Addition Market Data backend)" },
+      ]) },
+    });
+    expect(schema.map(f => f.name)).toEqual(expect.arrayContaining([
+      "stock_show_volume", "stock_show_trends", "stock_market_cap_entity", "stock_market_cap_attribute",
+    ]));
+  });
+
+  it("supplements missing Yahoo fields and honors explicit metric entities without overwriting provider values", () => {
+    const hass = makeHass();
+    hass.states["sensor.yahoo"] = { entity_id: "sensor.yahoo", state: "210", attributes: {
+      regularMarketChange: 4, marketCap: 1234, beta: 2,
+    } };
+    hass.states["sensor.custom_eps"] = { entity_id: "sensor.custom_eps", state: "7", attributes: {} };
+    const quote = stockProviderQuote({ type, entity: "sensor.yahoo", stock_eps_entity: "sensor.custom_eps" }, hass,
+      { regularMarketPrice: 200, regularMarketChange: null, marketCap: 5678, epsTrailingTwelveMonths: 8, beta: null });
+    expect(quote).toMatchObject({ regularMarketPrice: 200, regularMarketChange: 4,
+      marketCap: 5678, epsTrailingTwelveMonths: 7, beta: 2 });
+    hass.states["sensor.custom_eps"].state = "unavailable";
+    expect(stockProviderQuote({ type, stock_eps_entity: "sensor.custom_eps" }, hass,
+      { epsTrailingTwelveMonths: 8 }).epsTrailingTwelveMonths).toBe(8);
+  });
+
+  it("does not silently substitute recorder data when the Yahoo backend is missing", async () => {
+    const call = vi.fn().mockRejectedValue({ message: "Unknown command" });
+    const e = await content({ stock_source: "yahoo", stock_symbol: "MSFT", stock_range: "5Y" }, makeHass(call));
+    expect(e.shadowRoot!.querySelector('[role="alert"]')?.textContent).toContain("Mushroom Addition Market Data");
+    expect(e.shadowRoot!.textContent).toContain("Yahoo Finance sensor plugin alone does not provide history");
+    expect(e.shadowRoot!.querySelector("mushroom-addition-mini-graph-card")).toBeNull();
+    call.mockResolvedValue({ ...snapshot, symbol: "MSFT" });
+    e.shadowRoot!.querySelector("button")!.click(); await settle(e);
+    expect(e.shadowRoot!.querySelector('[role="alert"]')).toBeNull();
+  });
+
+  it("invalidates pending requests when switching backends with the same ticker", async () => {
+    let resolveOld!: (value: typeof snapshot) => void;
+    const call = vi.fn().mockImplementationOnce(() => new Promise(resolve => { resolveOld = resolve; }))
+      .mockResolvedValue({ ...snapshot, quote: { ...snapshot.quote, shortName: "Yahoo quote" } });
+    const e = await content({}, makeHass(call));
+    e.config = { type, stock_source: "yahoo", stock_symbol: "AAPL" }; await settle(e);
+    resolveOld(snapshot); await settle(e);
+    expect(call.mock.calls.at(-1)![0]).toMatchObject({ type: "mushroom_addition_market/data" });
+    expect(e.shadowRoot!.textContent).toContain("Yahoo quote");
+    expect(e.shadowRoot!.textContent).not.toContain("Apple");
+  });
+
+  it("persists Yahoo source, five-year range and metric overrides using the normal editor", async () => {
+    const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
+    editor.hass = makeHass(); editor.setConfig({ type }); document.body.append(editor); await editor.updateComplete;
+    const changed = vi.fn(); editor.addEventListener("config-changed", changed);
+    const settings = { stock_source: "yahoo", stock_symbol: "MSFT", stock_range: "5Y",
+      stock_market_cap_entity: "sensor.cap", stock_market_cap_attribute: "", stock_show_volume: true };
+    editor.shadowRoot!.querySelector("ha-form")!.dispatchEvent(new CustomEvent("value-changed", {
+      detail: { value: settings }, bubbles: true, composed: true,
+    }));
+    await editor.updateComplete;
+    expect(changed.mock.calls[0][0].detail.config).toMatchObject(settings);
+    expect([...editor.shadowRoot!.querySelectorAll(".section-header")].map(el => el.textContent?.trim()))
+      .toEqual(["Context", "Content", "Layout", "Interactions", "Features"]);
+  });
+
+  it("shows provider failures without telling users to reinstall an already responding backend", async () => {
+    const call = vi.fn().mockRejectedValue({ code: "market_data_unavailable", message: "Yahoo temporarily unavailable" });
+    const e = await content({ stock_source: "yahoo", stock_symbol: "MSFT" }, makeHass(call));
+    expect(e.shadowRoot!.querySelector('[role="alert"]')?.textContent).toContain("rate limited");
+    expect(e.shadowRoot!.textContent).not.toContain("Install the optional");
+  });
+
+  it("does not supplement a Yahoo quote with unrelated main-entity statistics", () => {
+    const hass = makeHass();
+    hass.states["sensor.aapl"] = { entity_id: "sensor.aapl", state: "200", attributes: { symbol: "AAPL", marketCap: 1234 } };
+    expect(stockProviderQuote({ type, entity: "sensor.aapl" }, hass,
+      { symbol: "MSFT", marketCap: null }).marketCap).toBeNull();
   });
 });

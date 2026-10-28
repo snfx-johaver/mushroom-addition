@@ -1,0 +1,12 @@
+{
+  "domain": "mushroom_addition_market",
+  "name": "Mushroom Addition Market Data",
+  "codeowners": ["@snfx-johaver"],
+  "config_flow": true,
+  "documentation": "https://github.com/snfx-johaver/mushroom-addition/blob/main/docs/STOCK.md",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/snfx-johaver/mushroom-addition/issues",
+  "requirements": ["yfinance==1.7.0"],
+  "version": "0.1.0"
+}

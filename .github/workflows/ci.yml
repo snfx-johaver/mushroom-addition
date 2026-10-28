@@ -36,6 +36,20 @@ jobs:
         with:
           category: plugin
 
+  market-backend:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Install backend test dependencies
+        run: >
+          python -c "import json, subprocess, sys;
+          requirements = json.load(open('custom_components/mushroom_addition_market/manifest.json'))['requirements'];
+          subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pytest==9.0.0', 'voluptuous==0.15.2', *requirements])"
+      - run: python -m pytest -q tests/test_market_backend.py
+
   secrets:
     runs-on: ubuntu-24.04
     steps:

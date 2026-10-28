@@ -111,7 +111,7 @@ export const populatedDefaultsFor = (
         bar_spacing: 4,
         color_thresholds_transition: "smooth",
         align_header: "default",
-        align_icon: "right",
+        align_icon: "left",
         align_state: "left",
         show: {
           name: true,

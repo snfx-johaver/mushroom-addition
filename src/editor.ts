@@ -61,7 +61,7 @@ const editorSections: Array<{ id: EditorSectionId; title: string; icon: string }
 const contentFields = new Set([
   "name", "secondary", "primary_info", "secondary_info", "icon", "icon_type", "icon_color",
   "show_icon", "show_name", "show_state", "unit", "icon_image",
-  "mini_graph_show_state", "mini_graph_name_adaptive_color", "mini_graph_icon_adaptive_color",
+  "mini_graph_show_state", "mini_graph_show_top_labels", "mini_graph_name_adaptive_color", "mini_graph_icon_adaptive_color",
 ]);
 const layoutFields = new Set([
   "layout", "fill_container", "variant", "features_position", "multiline_secondary", "height", "line_width",
@@ -277,6 +277,8 @@ export class MushroomAdditionEditor extends LitElement {
             ? "hidden"
             : "hover",
         mini_graph_show_legend: miniGraphShow?.legend ?? true,
+        mini_graph_show_top_labels: miniGraphShow?.top_labels ?? false,
+        variant: miniGraphShow?.graph === false ? "line" : miniGraphShow?.graph ?? "line",
         mini_graph_show_average: miniGraphShow?.average ?? false,
         mini_graph_show_extrema: miniGraphShow?.extrema ?? false,
         mini_graph_name_adaptive_color: miniGraphShow?.name_adaptive_color ?? false,
@@ -611,6 +613,7 @@ export class MushroomAdditionEditor extends LitElement {
       const show = { ...(this.config.show as MiniGraphShowConfig | undefined) };
       const showMappings: Record<string, keyof MiniGraphShowConfig> = {
         mini_graph_show_legend: "legend",
+        mini_graph_show_top_labels: "top_labels",
         mini_graph_show_average: "average",
         mini_graph_show_extrema: "extrema",
         mini_graph_name_adaptive_color: "name_adaptive_color",
@@ -650,7 +653,7 @@ export class MushroomAdditionEditor extends LitElement {
         });
         delete next[formKey];
       }
-      if (value.variant === "line" || value.variant === "bar") {
+      if (value.variant === "line" || value.variant === "bar" || value.variant === "radial" || value.variant === "scatter" || value.variant === "pie" || value.variant === "donut") {
         show.graph = value.variant;
       }
       next.show = show;
@@ -1110,7 +1113,8 @@ export class MushroomAdditionEditor extends LitElement {
                   .hass=${this.hass}
                   .selector=${{ boolean: {} }}
                   .value=${entry[field] ?? (
-                    ["show_graph", "show_line", "show_fill", "show_points", "show_legend"].includes(field)
+                    ["show_graph", "show_line", "show_fill", "show_points", "show_legend"].includes(field) ||
+                    (field === "show_state" && index === 0)
                   )}
                   @value-changed=${(event: CustomEvent) =>
                     this.updateMiniGraphEntity(index, field, event.detail.value)}

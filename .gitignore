@@ -1,4 +1,7 @@
 node_modules/
+.market-venv/
+__pycache__/
+.pytest_cache/
 coverage/
 .playwright-mcp/
 .tmp-reference-catalog/

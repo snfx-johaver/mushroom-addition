@@ -32,7 +32,7 @@ All picker entries use the prefix **Mushroom Addition:** before the card name.
 | Flower | `custom_card_plant` | custom-card | `custom:mushroom-addition-custom-card-plant` | sensor | default | `custom_card_plant` |
 | Speedtest | `custom_card_speedtest_gauges` | custom-card | `custom:mushroom-addition-custom-card-speedtest-gauges` | energy | default | `custom_card_speedtest_gauges` |
 | Pollen | `custom_card_pollen` | custom-card | `custom:mushroom-addition-custom-card-pollen` | weather | default | `custom_card_pollen` |
-| Graph Advanced | `mini_graph_card` | custom-card | `custom:mushroom-addition-mini-graph-card` | energy | line, bar | `mini_graph_card` |
+| Graph Advanced | `mini_graph_card` | custom-card | `custom:mushroom-addition-mini-graph-card` | energy | line, bar, radial, scatter, pie, donut | `mini_graph_card` |
 | Stock Card | `stock_card` | custom-card | `custom:mushroom-addition-stock-card` | sensor | default | `stock_card` |
 | Pi-hole | `pi_hole_card` | custom-card | `custom:mushroom-addition-pi-hole-card` | sensor | default | `pi_hole_card` |
 | Upcoming Media | `upcoming_media` | custom-card | `custom:mushroom-addition-upcoming-media-card` | media | default | `upcoming_media` |

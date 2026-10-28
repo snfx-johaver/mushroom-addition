@@ -52,7 +52,8 @@ export interface MiniGraphShowConfig {
   name?: boolean;
   icon?: boolean;
   state?: boolean | "last";
-  graph?: "line" | "bar" | false;
+  graph?: "line" | "bar" | "radial" | "scatter" | "pie" | "donut" | false;
+  top_labels?: boolean;
   fill?: boolean | "fade";
   points?: boolean | "hover";
   legend?: boolean;
@@ -121,6 +122,20 @@ interface GraphSeries {
   name: string;
 }
 
+interface PlotSeries {
+  key: number;
+  bar: boolean;
+  points: Array<{ x: number; y: number; value: number; time: number }>;
+}
+
+interface HoverRow {
+  key: number;
+  fx: number;
+  fy: number;
+  value: number;
+  time: number;
+}
+
 interface Bounds {
   min: number;
   max: number;
@@ -154,6 +169,7 @@ const normalizeShow = (show?: MiniGraphShowConfig): Required<MiniGraphShowConfig
   icon: show?.icon ?? true,
   state: show?.state ?? true,
   graph: show?.graph ?? "line",
+  top_labels: show?.top_labels ?? false,
   fill: show?.fill ?? true,
   points: show?.points ?? "hover",
   legend: show?.legend ?? true,
@@ -189,7 +205,7 @@ export const normalizeMiniGraphConfig = (config: MiniGraphCardConfig): MiniGraph
     font_size: config.font_size ?? 100,
     font_size_header: config.font_size_header ?? 14,
     align_header: config.align_header ?? "default",
-    align_icon: config.align_icon ?? "right",
+    align_icon: config.align_icon ?? "left",
     align_state: config.align_state ?? "left",
     smoothing: config.smoothing ?? true,
     state_map: config.state_map ?? [],
@@ -442,14 +458,34 @@ export class MushroomMiniGraphCard extends LitElement {
     .unit { font-size: .48em; }
     .indicator { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; }
     .graph { position: relative; min-width: 0; }
-    svg.chart { display: block; width: 100%; overflow: visible; }
+    svg.chart { display: block; width: 100%; height: 100%; overflow: visible; }
     .series { transition: opacity .15s ease; }
     .line { fill: none; stroke-linecap: round; stroke-linejoin: round; }
     .fill { opacity: .16; }
     .fill.fade { opacity: .24; }
     .point { opacity: 1; transition: opacity .15s ease; }
-    ha-card.points-hover .point { opacity: 0; }
-    ha-card.points-hover .point:hover { opacity: 1; }
+    .series.dim, .ring.dim, .legend-item.dim, .top-label.dim { opacity: .22 !important; }
+    .graph { touch-action: pan-y; }
+    .crosshair { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--divider-color, rgba(127,127,127,.5)); pointer-events: none; }
+    .dot { position: absolute; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; border: 2px solid var(--card-background-color, #fff); box-sizing: border-box; pointer-events: none; }
+    .dot.active { width: 14px; height: 14px; margin: -7px 0 0 -7px; }
+    .tooltip { position: absolute; top: 0; z-index: 2; min-width: 120px; padding: 6px 10px; border-radius: 8px; pointer-events: none; background: var(--card-background-color, #fff); color: var(--primary-text-color); box-shadow: 0 2px 10px rgba(0,0,0,.25); font-size: 12px; line-height: 16px; white-space: nowrap; }
+    .tooltip .time { color: var(--secondary-text-color); }
+    .tooltip .row { display: flex; align-items: center; gap: 6px; opacity: .6; }
+    .tooltip .row.active { opacity: 1; font-weight: 600; }
+    .radial { display: flex; justify-content: center; }
+    .radial svg { height: 100%; width: auto; aspect-ratio: 1; max-width: 100%; }
+    .slice { stroke: var(--card-background-color, #fff); stroke-width: 1.5; transition: opacity .15s ease; }
+    .pie-total { fill: var(--primary-text-color); font-size: 22px; font-weight: 600; }
+    .ring { transition: opacity .15s ease; cursor: default; }
+    .ring .track { fill: none; stroke: var(--divider-color, rgba(127,127,127,.25)); opacity: .5; }
+    .ring .arc { fill: none; stroke-linecap: round; transition: stroke-dasharray .4s ease; }
+    .top-labels { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+    .top-label { display: flex; flex-direction: column; min-width: 0; transition: opacity .15s ease; }
+    .top-value { font-size: calc(var(--mini-graph-font-size, 100) * .01 * 28px); font-weight: 500; line-height: 1.1; font-variant-numeric: tabular-nums; }
+    .top-value small { font-size: .5em; margin-left: 2px; }
+    .top-caption { color: var(--secondary-text-color); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .legend-item { transition: opacity .15s ease; }
     .labels {
       position: absolute;
       inset: 3px 4px 3px 4px;
@@ -480,6 +516,9 @@ export class MushroomMiniGraphCard extends LitElement {
   @state() private series: GraphSeries[] = [];
   @state() private loading = false;
   @state() private error?: string;
+  @state() private hover?: { fx: number; bar: boolean; rows: HoverRow[] };
+  @state() private active?: number;
+  private plot: PlotSeries[] = [];
   private requestKey?: string;
   private lastEntityStateSignature?: string;
   private historyGeneration = 0;
@@ -560,7 +599,6 @@ export class MushroomMiniGraphCard extends LitElement {
     ) : DEFAULT_COLORS[0];
     const classes = [
       this.config.group ? "group" : "",
-      show.points === "hover" ? "points-hover" : "",
       show.labels === "hover" || show.labels_secondary === "hover" ? "labels-hover" : "",
     ].filter(Boolean).join(" ");
     return html`
@@ -572,6 +610,7 @@ export class MushroomMiniGraphCard extends LitElement {
           style=${`--mini-graph-font-size:${this.config.font_size ?? 100}`}>
           ${this.renderHeader(primary, adaptive, show)}
           ${this.renderStates(primary, adaptive, show)}
+          ${this.renderTopLabels(show)}
           ${this.loading && show.loading_indicator
             ? html`<div class="loading"><ha-spinner size="small"></ha-spinner></div>`
             : this.error
@@ -634,7 +673,7 @@ export class MushroomMiniGraphCard extends LitElement {
     adaptive: string,
     show: Required<MiniGraphShowConfig>,
   ): TemplateResult | typeof nothing {
-    if (!show.state || !primary) return nothing;
+    if (!show.state || !primary || primary.config.show_state === false) return nothing;
     const displayed = show.state === "last" ? primary.points.at(-1)?.value : primary.state;
     const state = Number(displayed);
     const mapped = this.stateLabel(state, primary.points.at(-1)?.label);
@@ -701,6 +740,9 @@ export class MushroomMiniGraphCard extends LitElement {
 
   private renderGraph(show: Required<MiniGraphShowConfig>): TemplateResult | typeof nothing {
     if (!show.graph || !this.series.some((entry) => entry.config.show_graph !== false)) return nothing;
+    this.plot = [];
+    if (show.graph === "radial") return this.renderRadial();
+    if (show.graph === "pie" || show.graph === "donut") return this.renderPie(show.graph === "donut");
     const visible = this.series.filter((entry) => entry.config.show_graph !== false && entry.points.length);
     const primary = visible.filter((entry) => entry.config.y_axis !== "secondary");
     const secondary = visible.filter((entry) => entry.config.y_axis === "secondary");
@@ -724,7 +766,8 @@ export class MushroomMiniGraphCard extends LitElement {
     const minTime = Math.min(...allTimes);
     const maxTime = Math.max(...allTimes);
     return html`
-      <div class="graph" style=${`height:${this.config?.height ?? 150}px`}>
+      <div class="graph" style=${`height:${this.config?.height ?? 150}px`}
+        @pointermove=${this.graphMove} @pointerleave=${this.graphLeave}>
         ${show.labels && primary.length ? html`
           <div class="labels">
             <span>${this.stateLabel(primaryBounds.max)}</span>
@@ -750,6 +793,156 @@ export class MushroomMiniGraphCard extends LitElement {
             visible.length,
           ))}
         </svg>
+        ${this.renderHover(show)}
+      </div>
+    `;
+  }
+
+  private readonly graphMove = (event: PointerEvent): void => {
+    const target = event.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    if (!rect.width || !this.plot.length) return;
+    const height = Number(this.config?.height ?? 150);
+    const fx = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+    const svgX = fx * 500;
+    const svgY = Math.max(0, Math.min(1, (event.clientY - rect.top) / Math.max(1, rect.height))) * height;
+    const rows: HoverRow[] = [];
+    let best: { key: number; distance: number } | undefined;
+    for (const plotted of this.plot) {
+      let nearest = plotted.points[0];
+      for (const point of plotted.points) {
+        if (Math.abs(point.x - svgX) < Math.abs(nearest.x - svgX)) nearest = point;
+      }
+      if (!nearest) continue;
+      rows.push({ key: plotted.key, fx: nearest.x / 500, fy: nearest.y / height, value: nearest.value, time: nearest.time });
+      const distance = Math.abs(nearest.y - svgY);
+      if (!best || distance < best.distance) best = { key: plotted.key, distance };
+    }
+    this.hover = { fx: rows[0]?.fx ?? fx, bar: this.plot[0].bar, rows };
+    this.active = best?.key;
+  };
+
+  private readonly graphLeave = (): void => {
+    this.hover = undefined;
+    this.active = undefined;
+  };
+
+  private renderHover(show: Required<MiniGraphShowConfig>): TemplateResult | typeof nothing {
+    const hover = this.hover;
+    if (!hover?.rows.length) return nothing;
+    const left = hover.fx * 100;
+    return html`
+      ${hover.bar ? nothing : html`<div class="crosshair" style=${`left:${left}%`}></div>`}
+      ${hover.bar || !show.points ? nothing : hover.rows.flatMap((row) => {
+        const series = this.series[row.key];
+        if (!series || series.config.show_points === false) return [];
+        return [html`<span class="dot ${this.active === row.key ? "active" : ""}"
+          style=${`left:${row.fx * 100}%;top:${row.fy * 100}%;background:${this.seriesColor(series)}`}></span>`];
+      })}
+      <div class="tooltip" style=${`left:${left}%;transform:translateX(${left > 55 ? "calc(-100% - 10px)" : "10px"})`}>
+        <div class="time">${new Date(hover.rows[0].time).toLocaleString(this.hass?.language, {
+          hour12: !(this.config?.hour24 ?? false),
+        })}</div>
+        ${hover.rows.map((row) => {
+          const series = this.series[row.key];
+          return series ? html`
+            <div class="row ${this.active === row.key ? "active" : ""}">
+              <span class="indicator" style=${`background:${this.seriesColor(series)}`}></span>
+              <span>${series.name}: ${this.stateLabel(row.value)}${series.unit ? ` ${series.unit}` : ""}</span>
+            </div>` : nothing;
+        })}
+      </div>
+    `;
+  }
+
+  private seriesColor(series: GraphSeries): string {
+    if (series.config.color) return series.color;
+    return colorForValue(Number(series.state), interpolateThresholds(this.config?.color_thresholds ?? []), series.color);
+  }
+
+  private classFor(key: number): string {
+    return this.active === undefined ? "" : this.active === key ? "active" : "dim";
+  }
+
+  private renderRadial(): TemplateResult | typeof nothing {
+    const rings = this.series
+      .map((entry, key) => ({ entry, key }))
+      .filter(({ entry }) => entry.config.show_graph !== false && Number.isFinite(Number(entry.state)));
+    if (!rings.length) return nothing;
+    const lower = Number.isFinite(Number(this.config?.lower_bound)) && this.config?.lower_bound !== undefined
+      ? Number(this.config.lower_bound) : 0;
+    const upperRaw = Number(this.config?.upper_bound);
+    const upper = this.config?.upper_bound !== undefined && Number.isFinite(upperRaw) && upperRaw > lower ? upperRaw : 100;
+    const stroke = Math.max(6, Math.min(18, Math.floor(70 / rings.length)));
+    const step = stroke + 5;
+    return html`
+      <div class="graph radial" style=${`height:${this.config?.height ?? 150}px`} @pointerleave=${this.graphLeave}>
+        <svg viewBox="0 0 200 200" @click=${(event: Event) => event.stopPropagation()}>
+          ${rings.flatMap(({ entry, key }, index) => {
+            const radius = 100 - stroke / 2 - 2 - index * step;
+            if (radius < 6) return [];
+            const percent = Math.max(0, Math.min(100, ((Number(entry.state) - lower) / (upper - lower)) * 100));
+            const color = this.seriesColor(entry);
+            return [svg`
+              <g class="ring ${this.classFor(key)}" @pointerenter=${() => { this.active = key; }}>
+                <circle class="track" cx="100" cy="100" r=${radius} stroke-width=${stroke}/>
+                ${percent > 0 ? svg`<circle class="arc" cx="100" cy="100" r=${radius} stroke-width=${stroke}
+                  pathLength="100" stroke-dasharray=${`${percent} 100`} stroke=${color}
+                  transform="rotate(-90 100 100)"/>` : nothing}
+                <title>${entry.name}: ${this.stateLabel(Number(entry.state))}${entry.unit ? ` ${entry.unit}` : ""}</title>
+              </g>`];
+          })}
+        </svg>
+      </div>
+    `;
+  }
+
+  private renderPie(donut: boolean): TemplateResult | typeof nothing {
+    const slices = this.series
+      .map((entry, key) => ({ entry, key, value: Math.max(0, Number(entry.state)) }))
+      .filter(({ entry, value }) => entry.config.show_graph !== false && Number.isFinite(value) && value > 0);
+    const total = slices.reduce((sum, slice) => sum + slice.value, 0);
+    if (!total) return nothing;
+    const outer = 96;
+    const inner = donut ? 58 : 0;
+    const point = (angle: number, radius: number): string =>
+      `${100 + radius * Math.cos(angle)} ${100 + radius * Math.sin(angle)}`;
+    let start = -Math.PI / 2;
+    const unit = this.series[0]?.unit ?? "";
+    return html`
+      <div class="graph radial" style=${`height:${this.config?.height ?? 150}px`} @pointerleave=${this.graphLeave}>
+        <svg viewBox="0 0 200 200" @click=${(event: Event) => event.stopPropagation()}>
+          ${slices.map(({ entry, key, value }) => {
+            const sweep = Math.min(value / total, 0.99999) * Math.PI * 2;
+            const end = start + sweep;
+            const large = sweep > Math.PI ? 1 : 0;
+            const d = donut
+              ? `M ${point(start, outer)} A ${outer} ${outer} 0 ${large} 1 ${point(end, outer)} L ${point(end, inner)} A ${inner} ${inner} 0 ${large} 0 ${point(start, inner)} Z`
+              : `M 100 100 L ${point(start, outer)} A ${outer} ${outer} 0 ${large} 1 ${point(end, outer)} Z`;
+            start = end;
+            return svg`
+              <path class="slice ring ${this.classFor(key)}" d=${d} fill=${this.seriesColor(entry)}
+                @pointerenter=${() => { this.active = key; }}>
+                <title>${entry.name}: ${this.stateLabel(value)}${entry.unit ? ` ${entry.unit}` : ""} (${Math.round((value / total) * 100)}%)</title>
+              </path>`;
+          })}
+          ${donut ? svg`<text class="pie-total" x="100" y="106" text-anchor="middle">${this.stateLabel(
+            Math.round(total * 100) / 100)}${unit ? ` ${unit}` : ""}</text>` : nothing}
+        </svg>
+      </div>
+    `;
+  }
+
+  private renderTopLabels(show: Required<MiniGraphShowConfig>): TemplateResult | typeof nothing {
+    if (!show.top_labels || !this.series.length) return nothing;
+    return html`
+      <div class="top-labels">
+        ${this.series.map((entry, key) => html`
+          <div class="top-label ${this.classFor(key)}" style=${`color:${this.seriesColor(entry)}`}
+            @pointerenter=${() => { this.active = key; }} @pointerleave=${this.graphLeave}>
+            <span class="top-value">${this.stateLabel(Number(entry.state), entry.points.at(-1)?.label)}${entry.unit ? html`<small>${entry.unit}</small>` : nothing}</span>
+            <span class="top-caption">${entry.name}</span>
+          </div>`)}
       </div>
     `;
   }
@@ -796,15 +989,23 @@ export class MushroomMiniGraphCard extends LitElement {
       value: point.value,
       time: point.time,
     }));
+    const key = this.series.indexOf(series);
+    const dim = this.classFor(key);
     const color = series.config.color ? series.color : `url(#mini-graph-${index})`;
     if (show.graph === "bar") {
       const slot = 500 / Math.max(1, Math.min(96, plotted.length));
       const spacing = Number(this.config?.bar_spacing ?? 4);
       const width = Math.max(1, (slot - spacing) / seriesCount);
       const baseline = Math.max(0, Math.min(height, scaleValue(0)));
+      const bars = plotted.slice(-96);
+      this.plot.push({
+        key,
+        bar: true,
+        points: bars.map((point, pointIndex) => ({ ...point, x: pointIndex * slot + slot / 2 })),
+      });
       return svg`
-        <g class="series">
-          ${plotted.slice(-96).map((point, pointIndex) => {
+        <g class="series ${dim}">
+          ${bars.map((point, pointIndex) => {
             const x = pointIndex * slot + index * width + spacing / 2;
             const y = Math.min(point.y, baseline);
             return svg`<rect x=${x} y=${y} width=${width} height=${Math.abs(baseline - point.y)} rx="1" fill=${color}>
@@ -814,6 +1015,7 @@ export class MushroomMiniGraphCard extends LitElement {
         </g>
       `;
     }
+    this.plot.push({ key, bar: false, points: plotted });
     const linePoints = plotted.length === 1
       ? [{ ...plotted[0], x: 0 }, { ...plotted[0], x: 500 }]
       : plotted;
@@ -822,14 +1024,14 @@ export class MushroomMiniGraphCard extends LitElement {
       ? `${path} L ${linePoints.at(-1)!.x} ${height} L ${linePoints[0].x} ${height} Z`
       : "";
     return svg`
-      <g class="series">
+      <g class="series ${dim}">
         ${show.fill && series.config.show_fill !== false
           ? svg`<path class="fill ${show.fill === "fade" ? "fade" : ""}" d=${fillPath} fill=${color}/>`
           : nothing}
-        ${series.config.show_line !== false
+        ${series.config.show_line !== false && show.graph !== "scatter"
           ? svg`<path class="line" d=${path} stroke=${color} stroke-width=${this.config?.line_width ?? 5}/>`
           : nothing}
-        ${show.points && series.config.show_points !== false
+        ${(show.points === true || show.graph === "scatter") && series.config.show_points !== false
           ? plotted.map((point) => svg`
             <circle class="point" cx=${point.x} cy=${point.y} r=${Math.max(2, Number(this.config?.line_width ?? 5) / 1.5)}
               fill=${series.config.color ?? color}>
@@ -841,16 +1043,22 @@ export class MushroomMiniGraphCard extends LitElement {
   }
 
   private renderLegend(show: Required<MiniGraphShowConfig>): TemplateResult | typeof nothing {
-    const visible = this.series.filter((entry) => entry.config.show_legend !== false);
-    if (!show.legend || visible.length < 2) return nothing;
+    const visible = this.series
+      .map((entry, key) => ({ entry, key }))
+      .filter(({ entry }) => entry.config.show_legend !== false);
+    const radial = show.graph === "radial" || show.graph === "pie" || show.graph === "donut";
+    if (!show.legend || !visible.length) return nothing;
+    if (visible.length < 2 && !radial && !visible.some(({ entry }) => entry.config.show_legend_state)) return nothing;
     return html`
-      <div class="legend">
-        ${visible.map((entry) => html`
-          <span class="legend-item">
-            <span class="indicator" style=${`background:${entry.color}`}></span>
-            <span>${entry.name}${entry.config.show_legend_state
-              ? ` (${this.stateLabel(Number(entry.state))}${entry.unit ? ` ${entry.unit}` : ""})`
-              : ""}</span>
+      <div class="legend" @pointerleave=${this.graphLeave}>
+        ${visible.map(({ entry, key }) => html`
+          <span class="legend-item ${this.classFor(key)}" @pointerenter=${() => { this.active = key; }}>
+            <span class="indicator" style=${`background:${this.seriesColor(entry)}`}></span>
+            <span>${entry.name}${radial
+              ? `: ${this.stateLabel(Number(entry.state))}${entry.unit ? ` ${entry.unit}` : ""}`
+              : entry.config.show_legend_state
+                ? ` (${this.stateLabel(Number(entry.state))}${entry.unit ? ` ${entry.unit}` : ""})`
+                : ""}</span>
           </span>
         `)}
       </div>

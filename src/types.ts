@@ -264,12 +264,12 @@ export interface PiHoleConfig {
 }
 
 export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, PiHoleConfig {
-  stock_source?: "entity" | "stock_market_deluxe";
+  stock_source?: "entity" | "yahoo" | "stock_market_deluxe";
   stock_currency?: string;
   stock_symbol?: string;
   stock_shares?: number;
   stock_interval?: number;
-  stock_range?: "1D" | "5D" | "1M" | "3M" | "1Y";
+  stock_range?: "1D" | "5D" | "1M" | "3M" | "1Y" | "5Y";
   stock_show_position?: boolean;
   stock_show_statistics?: boolean;
   stock_show_volume?: boolean;

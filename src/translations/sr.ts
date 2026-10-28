@@ -223,6 +223,7 @@ mini_graph_show_points|Тачке података
 mini_graph_show_labels|Ознаке главне осе
 mini_graph_show_labels_secondary|Ознаке секундарне осе
 mini_graph_show_legend|Прикажи легенду
+mini_graph_show_top_labels|Прикажи горње ознаке
 mini_graph_show_average|Прикажи просек
 mini_graph_show_extrema|Прикажи минимум и максимум
 mini_graph_name_adaptive_color|Прилагоди боју назива
@@ -959,6 +960,7 @@ mini_graph_show_points|Приказује све тачке, тачке при �
 mini_graph_show_labels|Ознаке главне осе су увек видљиве, приказују се при преласку миша или се не приказују.
 mini_graph_show_labels_secondary|Ознаке секундарне осе су увек видљиве, приказују се при преласку миша или се не приказују.
 mini_graph_show_legend|Приказује поређану легенду када је видљиво више низова.
+mini_graph_show_top_labels|Приказује вредност сваког низа великим обојеним бројем са називом изнад графика.
 mini_graph_show_average|Приказује просек главног низа испод графика.
 mini_graph_show_extrema|Приказује минимум и максимум главног низа испод графика.
 mini_graph_name_adaptive_color|Боји назив картице према праговима главног низа.

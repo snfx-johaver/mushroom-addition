@@ -1,0 +1,14 @@
+{
+  "title": "Mushroom Addition Market Data",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Enable Yahoo market data",
+        "description": "Retrieve stock history and company statistics from Yahoo Finance. Symbols selected in your Stock Cards are sent to Yahoo. No account or API key is required. This optional backend does not replace your existing price sensors."
+      }
+    },
+    "abort": {
+      "already_configured": "Market data is already configured."
+    }
+  }
+}

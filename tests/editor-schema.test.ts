@@ -190,7 +190,7 @@ describe("family editor schemas", () => {
       const flattened = flattenSchema(schema);
       const miniGraph = item.upstreamId === "mini_graph_card";
       const expectedForCard = miniGraph
-        ? expected.filter((name) => name !== "layout" && name !== "multiline_secondary")
+        ? expected.filter((name) => name !== "layout" && name !== "multiline_secondary" && name !== "fill_container")
         : expected;
       expect(flattened.map((field) => field.name)).toEqual(expect.arrayContaining(expectedForCard));
       if (miniGraph) {
@@ -225,7 +225,7 @@ describe("family editor schemas", () => {
         "name",
         ...(hasConfigurableIcon ? ["icon"] : []),
         ...(!miniGraph ? ["layout", "multiline_secondary"] : []),
-        "fill_container",
+        ...(!miniGraph ? ["fill_container"] : []),
         "",
       ];
       expect(schema.slice(presentationStart, presentationStart + presentationOrder.length)

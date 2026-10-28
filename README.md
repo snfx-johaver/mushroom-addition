@@ -42,7 +42,9 @@ Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all 32.
 
 ## Install with HACS
 
-Mushroom Addition is a **Dashboard** plugin, not a backend integration.
+Mushroom Addition installs through HACS as a **Dashboard** plugin.
+An optional, separately installed market-data backend is available for Stock
+Card users who want Yahoo historical prices; other cards do not need it.
 It requires **Home Assistant 2026.10.2 or newer** and a supported modern browser.
 
 **Now in the default HACS store.** No custom repository needed.
@@ -119,13 +121,22 @@ including configured price attributes. Chart ranges represent elapsed time,
 not trading sessions, and cannot show data older than recorder retention.
 The card does not fetch external APIs, store API keys, or install a provider.
 
+For actual market history, select **Yahoo Finance (Mushroom Addition Market
+Data backend)** in Context after installing the optional backend. This retrieves
+prices from Yahoo, including **5Y**, rather than relying on recorder retention.
+It also retrieves available company statistics such as opening price, market
+cap, EPS, P/E and beta, plus trading volume and SMA/EMA overlays.
+Your existing Yahoo Finance sensor plugin can remain installed, but does not
+provide this history endpoint by itself. See **[Stock setup](docs/STOCK.md)** for
+backend installation, metric overrides and provider limitations.
+
 The optional **Stock Market Deluxe integration** source supports its quote
 and historical-price WebSocket API, including volume and SMA/EMA chart overlays.
 For that source only, separately install and configure
 [Stock Market Deluxe](https://github.com/codemonkey2k5/stock-market-deluxe-card).
 Its Python integration handles Yahoo requests, caching, rate limits and stock
-sensors. Mushroom Addition remains frontend-only and does not bundle or rename
-that integration. This is a new Mushroom-style frontend, not a copy of its UI.
+sensors. The Dashboard bundle does not bundle or rename that integration.
+This is a new Mushroom-style frontend, not a copy of its UI.
 Holdings and display preferences are saved in the dashboard configuration.
 
 ### NAS dashboard cards and migration
@@ -167,6 +178,8 @@ npm run validate
 
 Validation covers linting, types, catalog consistency, translations, tests and
 the production build. The bundle is `dist/mushroom-cards-addition.js`.
+The optional Python backend has a separate CI test job; its local test command
+and dependencies are documented in [Stock setup](docs/STOCK.md).
 
 Include tests for behavior changes. Update `src/catalog.ts` and run
 `npm run docs:catalog` when changing the catalog. Use synthetic entities and

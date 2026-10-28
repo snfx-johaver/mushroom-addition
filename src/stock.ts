@@ -2,11 +2,11 @@ import { LitElement, css, html, nothing, svg, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import type { AdditionConfig, HomeAssistant } from "./types";
 import { localizeText } from "./localize";
-import { stockEntityQuote, stockMetricSource, stockMetricValue } from "./stock-data";
+import { STOCK_RANGES, stockEntityQuote, stockMetricSource, stockMetricValue, stockProviderQuote,
+  stockUsesBackend, type StockRange } from "./stock-data";
 import type { MushroomMiniGraphCard, MiniGraphCardConfig } from "./mini-graph";
 
-export const STOCK_RANGES = ["1D", "5D", "1M", "3M", "1Y"] as const;
-type StockRange = typeof STOCK_RANGES[number];
+export { STOCK_RANGES } from "./stock-data";
 type Quote = Record<string, unknown> & {
   symbol?: string; shortName?: string; longName?: string; currency?: string;
   regularMarketPrice?: number; regularMarketChange?: number; regularMarketChangePercent?: number;
@@ -20,6 +20,7 @@ export interface StockSnapshot {
   market_open?: boolean;
   rate_limited?: boolean;
   beta?: number | null;
+  warnings?: string[];
 }
 
 const finite = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
@@ -56,18 +57,22 @@ export function parseStockSnapshot(value: unknown): StockSnapshot {
     symbol: value.symbol, quote, chart,
     interval: "interval" in value && finite(value.interval) ? value.interval : undefined,
     quote_age: "quote_age" in value && finite(value.quote_age) ? value.quote_age : undefined,
-    market_open: "market_open" in value && value.market_open === true,
+    market_open: "market_open" in value && typeof value.market_open === "boolean" ? value.market_open : undefined,
     rate_limited: "rate_limited" in value && value.rate_limited === true,
     beta: "beta" in value && finite(value.beta) ? value.beta : undefined,
+    warnings: "warnings" in value && Array.isArray(value.warnings)
+      ? value.warnings.filter((warning): warning is string => typeof warning === "string") : undefined,
   };
 }
 
-export function stockOptions(config: AdditionConfig) {
-  if (config.stock_source !== undefined && !["entity", "stock_market_deluxe"].includes(config.stock_source)) {
+export function stockOptions(config: AdditionConfig, hass?: HomeAssistant) {
+  if (config.stock_source !== undefined && !["entity", "yahoo", "stock_market_deluxe"].includes(config.stock_source)) {
     throw new Error("Select a supported stock data source.");
   }
-  const symbol = (config.stock_symbol ?? "AAPL").trim().toUpperCase();
-  if (config.stock_source === "stock_market_deluxe" && !/^[A-Z0-9^][A-Z0-9.^=-]{0,14}$/.test(symbol)) {
+  const entitySymbol = stockMetricSource(config, hass, "price").entity?.attributes.symbol;
+  const symbol = (config.stock_symbol?.trim() || (typeof entitySymbol === "string" ? entitySymbol : "") ||
+    (config.stock_source === "yahoo" ? "" : "AAPL")).toUpperCase();
+  if (stockUsesBackend(config) && !/^[A-Z0-9^][A-Z0-9.^=-]{0,14}$/.test(symbol)) {
     throw new Error("Enter a valid stock symbol (up to 15 characters).");
   }
   const shares = config.stock_shares ?? 0;
@@ -76,6 +81,9 @@ export function stockOptions(config: AdditionConfig) {
   if (!finite(interval) || interval < 180 || interval > 86400) throw new Error("Refresh interval must be between 180 and 86400 seconds.");
   const range = config.stock_range ?? "1D";
   if (!STOCK_RANGES.includes(range)) throw new Error("Select a supported stock chart range.");
+  if (config.stock_source === "stock_market_deluxe" && range === "5Y") {
+    throw new Error("Select Yahoo Finance for five-year market history, or select a shorter Stock Market Deluxe range.");
+  }
   return { symbol, shares, interval: Math.round(interval), range };
 }
 
@@ -131,18 +139,19 @@ export class MushroomStockContent extends LitElement {
   protected willUpdate(changes: PropertyValues) {
     if (!this.config || !this.hass) return;
     try {
-      const options = stockOptions(this.config);
+      const options = stockOptions(this.config, this.hass);
       if (changes.has("config")) {
         const previous = changes.get("config") as AdditionConfig | undefined;
         if (previous?.stock_range !== this.config.stock_range) this.range = options.range;
       }
-      if (this.config.stock_source !== "stock_market_deluxe") {
+      if (!stockUsesBackend(this.config)) {
         if (this.requestKey) { this.generation++; this.clearTimer(); this.requestKey = undefined; }
         this.loading = false;
         this.error = undefined;
         return;
       }
-      const key = JSON.stringify([options.symbol, options.interval, this.range ?? options.range]);
+      if (this.config.stock_source === "stock_market_deluxe" && this.range === "5Y") this.range = options.range;
+      const key = JSON.stringify([this.config.stock_source, options.symbol, options.interval, this.range ?? options.range]);
       const previousHass = changes.get("hass") as HomeAssistant | undefined;
       const connectionChanged = changes.has("hass") && (
         previousHass?.connection !== this.hass.connection || previousHass?.callWS !== this.hass.callWS);
@@ -162,15 +171,15 @@ export class MushroomStockContent extends LitElement {
   }
   private async load() {
     if (!this.isConnected || !this.hass || !this.config ||
-      this.config.stock_source !== "stock_market_deluxe" || !visible()) return;
+      !stockUsesBackend(this.config) || !visible()) return;
     this.clearTimer();
     const generation = ++this.generation;
     this.loading = true;
     this.error = undefined;
     let interval = 600;
     try {
-      const options = stockOptions(this.config);
-      const message = { type: "stock_market_deluxe_card/data", symbol: options.symbol,
+      const options = stockOptions(this.config, this.hass);
+      const message = { type: this.config.stock_source === "yahoo" ? "mushroom_addition_market/data" : "stock_market_deluxe_card/data", symbol: options.symbol,
         range: this.range ?? options.range, interval: options.interval };
       const response: unknown = this.hass.callWS
         ? await this.hass.callWS(message)
@@ -187,8 +196,14 @@ export class MushroomStockContent extends LitElement {
       if (generation !== this.generation || !this.isConnected) return;
       const message = error instanceof Error ? error.message :
         error && typeof error === "object" && "message" in error ? String(error.message) : String(error);
-      this.error = `${localizeText(this.hass, "Stock data unavailable")}: ${message}. ${localizeText(this.hass,
-        "Install and set up the Stock Market Deluxe integration in Settings > Devices & services.")}`;
+      const missingBackend = /unknown command/i.test(message) || (error && typeof error === "object" &&
+        "code" in error && ["unknown_command", "not_loaded"].includes(String(error.code)));
+      const guidance = this.config.stock_source === "yahoo"
+        ? missingBackend
+          ? "Install the optional Mushroom Addition Market Data backend and add it in Settings > Devices & services. The Yahoo Finance sensor plugin alone does not provide history."
+          : "Check the stock symbol, internet connection and Home Assistant logs. Yahoo may be temporarily unavailable or rate limited."
+        : "Install and set up the Stock Market Deluxe integration in Settings > Devices & services.";
+      this.error = `${localizeText(this.hass, "Stock data unavailable")}: ${message}. ${localizeText(this.hass, guidance)}`;
     } finally {
       if (generation === this.generation && this.isConnected) {
         this.loading = false;
@@ -199,6 +214,11 @@ export class MushroomStockContent extends LitElement {
   private currentSnapshot(): StockSnapshot | undefined {
     if (this.config?.stock_source === "stock_market_deluxe") return this.data;
     if (!this.config) return undefined;
+    if (this.config.stock_source === "yahoo") {
+      if (!this.data) return undefined;
+      const quote = stockProviderQuote(this.config, this.hass, this.data.quote ?? {});
+      return { ...this.data, quote, beta: finite(quote.beta) ? quote.beta : undefined };
+    }
     const quote = stockEntityQuote(this.config, this.hass);
     return { symbol: String(quote.symbol), quote, beta: stockMetricValue(this.config, this.hass, "beta") };
   }
@@ -207,7 +227,7 @@ export class MushroomStockContent extends LitElement {
     if (!slot || !this.config || !this.hass) return;
     const { id, attribute } = stockMetricSource(this.config, this.hass, "price");
     if (!id) return;
-    const hours = { "1D": 24, "5D": 120, "1M": 720, "3M": 2160, "1Y": 8760 }[this.range ?? this.config.stock_range ?? "1D"];
+    const hours = { "1D": 24, "5D": 120, "1M": 720, "3M": 2160, "1Y": 8760, "5Y": 43830 }[this.range ?? this.config.stock_range ?? "1D"];
     const config: MiniGraphCardConfig = {
       type: "custom:mushroom-addition-mini-graph-card",
       entities: [{ entity: id, ...(attribute ? { attribute } : {}) }],
@@ -245,6 +265,7 @@ export class MushroomStockContent extends LitElement {
     const line = (values: number[]) => values.map((p, i) => `${x(i)},${y(p)}`).join(" ");
     const maxVolume = Math.max(1, ...points.map(p => p.volume));
     const date = (time: number) => new Date(time * 1000).toLocaleString(this.hass?.language);
+    const currency = this.config?.stock_currency || this.data?.quote?.currency;
     return html`
       <svg viewBox="0 0 500 180" role="img" aria-label=${localizeText(this.hass, "Stock price history")}>
         ${this.config?.stock_show_volume !== false ? points.map((p, i) => svg`
@@ -254,14 +275,19 @@ export class MushroomStockContent extends LitElement {
         ${this.config?.stock_show_trends !== false ? svg`
           <polyline points=${line(trends.sma)} fill="none" stroke="var(--info-color, #039be5)" vector-effect="non-scaling-stroke"></polyline>
           <polyline points=${line(trends.ema)} fill="none" stroke="var(--warning-color, #ffa600)" vector-effect="non-scaling-stroke"></polyline>` : nothing}
+        ${points.map((point, i) => svg`<circle cx=${x(i)} cy=${y(point.price)} r="5" fill="transparent">
+          <title>${date(point.time)}: ${this.format(point.price, currency)}</title>
+        </circle>`)}
       </svg>
+      <div class="axis"><span>${localizeText(this.hass, "Low")}: ${this.format(low, currency)}</span>
+        <span>${localizeText(this.hass, "High")}: ${this.format(high, currency)}</span></div>
       <div class="axis"><span>${date(points[0].time)}</span><span>${date(points.at(-1)!.time)}</span></div>
       ${this.config?.stock_show_trends !== false ? html`<div class="legend">SMA 20 / EMA 20</div>` : nothing}`;
   }
   protected render() {
     const snapshot = this.currentSnapshot();
     const quote = snapshot?.quote;
-    const entityMode = this.config?.stock_source !== "stock_market_deluxe";
+    const entityMode = !stockUsesBackend(this.config);
     const hasPrice = finite(quote?.regularMarketPrice);
     const currency = this.config?.stock_currency || quote?.currency;
     const shares = this.config?.stock_shares ?? 0;
@@ -276,15 +302,19 @@ export class MushroomStockContent extends LitElement {
         "Select an available stock price entity, or map its price attribute, in the visual editor.")}</p>` : nothing}
       ${quote && hasPrice && !(entityMode && this.error) ? html`
         <div class="quote"><div><strong>${quote.longName || quote.shortName || snapshot!.symbol}</strong>
-          <div class="muted">${snapshot!.symbol}${!entityMode ? html` - ${localizeText(this.hass, snapshot!.market_open ? "Market open" : "Market closed")}` : nothing}</div></div>
+          <div class="muted">${snapshot!.symbol}${!entityMode && snapshot!.market_open !== undefined
+            ? html` - ${localizeText(this.hass, snapshot!.market_open ? "Market open" : "Market closed")}` : nothing}</div></div>
           <div><strong class="price">${this.format(quote.regularMarketPrice, currency)}</strong>
           <div class=${!finite(change) ? "muted" : change < 0 ? "negative" : "positive"}>
             ${this.format(change)} (${this.format(quote.regularMarketChangePercent)}%)</div></div></div>
         ${snapshot!.rate_limited ? html`<p role="status">${localizeText(this.hass, "Rate limited: showing cached stock data.")}</p>` : nothing}
         ${finite(snapshot!.quote_age) ? html`<p class="muted">${localizeText(this.hass, "Updated")} ${Math.floor(snapshot!.quote_age! / 60)} min</p>` : nothing}
+        ${snapshot!.warnings?.map(warning => html`<p role="status">${localizeText(this.hass, warning)}</p>`)}
         <div class="ranges" role="group" aria-label=${localizeText(this.hass, "Chart range")}>
-          ${STOCK_RANGES.map(range => html`<button aria-pressed=${range === (this.range ?? this.config?.stock_range ?? "1D")}
+          ${STOCK_RANGES.filter(range => range !== "5Y" || this.config?.stock_source !== "stock_market_deluxe").map(range => html`<button aria-pressed=${range === (this.range ?? this.config?.stock_range ?? "1D")}
             @click=${() => { this.range = range; }}>${range}</button>`)}</div>
+        ${this.config?.stock_source === "yahoo" ? html`<p class="muted">${localizeText(this.hass, "Yahoo Finance market history")}</p>`
+          : entityMode ? html`<p class="muted">${localizeText(this.hass, "Home Assistant recorder history (limited by retention)")}</p>` : nothing}
         ${entityMode ? html`<div class="entity-chart"></div>` : this.chart()}
         ${this.config?.stock_show_position !== false ? html`<div class="position">
           <span>${localizeText(this.hass, "Shares owned")}: ${this.format(shares)}</span>
