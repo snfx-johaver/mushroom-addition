@@ -11,8 +11,8 @@ import {
 } from "../src/translations/pt-BR";
 
 const catalogs = [
-  [translationCatalogs.en, translationCatalogs["pt-PT"], europeanPortugueseLabels, 771, 416],
-  [englishHelpers, helperCatalogs["pt-PT"], europeanPortugueseHelpers, 556, 1],
+  [translationCatalogs.en, translationCatalogs["pt-PT"], europeanPortugueseLabels, 773, 416],
+  [englishHelpers, helperCatalogs["pt-PT"], europeanPortugueseHelpers, 558, 1],
 ] as const;
 
 describe("complete European Portuguese card translations", () => {

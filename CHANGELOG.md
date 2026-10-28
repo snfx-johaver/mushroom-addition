@@ -3,6 +3,7 @@
 Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
+- Welcome: optional people row above the scene buttons (home on the left, away with their state on the right). People are picked once in the editor and new cards pre-select everyone in the household.
 - Pollen: optional 'Additional pollen sensors' list (off by default) adds Trash-style rows below the three main types; add, reorder or remove any number of sensors from the editor.
 - Input Datetime card: added step size, single-row layout and manual time entry (click the time to type it).
 - Added a **Card shadow** toggle to the Layout section of every card editor (off by default); the soft shadow around the card border is now opt-in.

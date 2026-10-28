@@ -357,6 +357,16 @@ export const sharedStyles = css`
   .welcome-weather:hover:not(:disabled) { background: var(--addition-neutral-background); }
   .welcome-weather:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
   .welcome-greeting { font-size: 23px; line-height: 1.08; }
+  .welcome-people { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0 2px; }
+  .welcome-people-group { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
+  .welcome-people-group.is-away { justify-content: flex-end; }
+  .people-chip { display: inline-flex; align-items: center; gap: 6px; height: 36px; min-width: 36px; padding: 0; border: 0; border-radius: 18px; color: inherit; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; background: rgba(var(--rgb-state-person-home, 67, 160, 71), .4); }
+  .people-chip.people-not-home { background: rgba(var(--rgb-state-person-not-home, 244, 67, 54), .4); }
+  .people-chip.people-unknown { background: rgba(var(--rgb-state-person-unknown, 158, 158, 158), .4); }
+  .people-chip.people-zone { background: rgba(var(--rgb-state-person-zone, 33, 150, 243), .4); }
+  .people-avatar { display: grid; place-items: center; width: 36px; height: 36px; flex: none; border-radius: 50%; background-size: cover; background-position: center; }
+  .people-state { padding-right: 12px; white-space: nowrap; }
+  .people-chip:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
   .welcome-items { display: flex; gap: 8px; overflow-x: auto; padding: 4px 4px 10px; margin: -4px -4px -10px; }
   .welcome-items > button { display: flex; min-width: 52px; flex: 1; flex-direction: column; align-items: center; gap: 6px; border: 0; border-radius: 25px; background: var(--addition-raised-background); color: inherit; box-shadow: var(--addition-raised-shadow); }
   .welcome-items i { display: grid; width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); place-items: center; border-radius: 50%; background: rgba(var(--tone), .18); color: rgb(var(--tone)); font-style: normal; }

@@ -732,6 +732,9 @@ const renderWelcome = (ctx: RenderContext): TemplateResult => {
   const collapsed = collapse?.state === "on";
   const items = (ctx.config.scene_items ?? []).filter((item) => item.entity || item.navigation_path || item.nav_path || item.tap_action);
   const welcomePerRow = Math.max(1, Math.min(24, Math.floor(Number(ctx.config.scenes_per_row)) || 5));
+  const people = ctx.config.show_people === true
+    ? [...new Set(ctx.config.people_entities ?? [])].flatMap((id) => ctx.hass.states[id] ?? [])
+    : [];
   return ctx.actionSurface("custom-welcome", html`
     <div class="welcome-toolbar">
       <button aria-label="${localizeText(ctx.hass, "Toggle welcome navigation")}" ?disabled=${!collapse}
@@ -755,6 +758,23 @@ const renderWelcome = (ctx: RenderContext): TemplateResult => {
       </button>
     </div>
     <div class="welcome-greeting">${heading(ctx, timeGreeting(ctx.hass, new Date().getHours()))}</div>
+    ${people.length ? html`<div class="welcome-people">
+      ${[people.filter((p) => p.state === "home"), people.filter((p) => p.state !== "home")].map((group, side) => html`
+        <div class="welcome-people-group ${side ? "is-away" : "is-home"}">${group.map((person) => {
+          const picture = attr(person, "entity_picture");
+          const kind = person.state === "home" ? "home" : person.state === "not_home" ? "not-home" : person.state === "unknown" ? "unknown" : "zone";
+          const name = displayName({ type: "", entity: person.entity_id }, person, ctx.hass);
+          return html`<button class="people-chip people-${kind}" title=${name}
+            aria-label=${`${name}: ${stateLabel(person, ctx.hass)}`}
+            @pointerdown=${(event: Event) => event.stopPropagation()}
+            @click=${(event: Event) => runControlAction(event, ctx, { action: "more-info" }, person.entity_id)}>
+            ${typeof picture === "string" && picture
+              ? html`<span class="people-avatar" style=${styleMap({ backgroundImage: cssUrl(picture) })}></span>`
+              : html`<span class="people-avatar"><ha-icon .icon=${String(person.attributes.icon || "mdi:account")}></ha-icon></span>`}
+            ${side ? html`<span class="people-state">${stateLabel(person, ctx.hass)}</span>` : nothing}
+          </button>`;
+        })}</div>`)}
+    </div>` : nothing}
     ${collapsed ? nothing : html`<div class="welcome-items" style=${`--scenes-per-row:${welcomePerRow}`}>${items.map((item, index) => {
       const entity = item.entity ? ctx.hass.states[item.entity] : undefined;
       const off = hasOnOffState(entity) && !sceneItemActive(item, entity);

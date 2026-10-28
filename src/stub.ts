@@ -399,6 +399,8 @@ export const createStubConfig = (
       ? {
         ulm_card_welcome_collapse: findEntity(["input_boolean"], ["welcome"]),
         ulm_weather: findEntity(["weather"], []),
+        show_people: true,
+        people_entities: Object.keys(hass?.states ?? {}).filter((id) => id.startsWith("person.")),
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_pollen"

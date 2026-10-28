@@ -14,7 +14,7 @@ const catalogs = [
     current: translationCatalogs.ar,
     additions: arabicLabels,
     installedCount: 416,
-    addedCount: 771,
+    addedCount: 773,
     installedHash: "7a8bc099665048efc9d82d38c3fb086502ccd9a6e99915e84181426c3bb8c639",
   },
   {
@@ -22,7 +22,7 @@ const catalogs = [
     current: helperCatalogs.ar,
     additions: arabicHelpers,
     installedCount: 1,
-    addedCount: 556,
+    addedCount: 558,
     installedHash: "95e2ab070f7e44547b785e0280ea648d06cc51aaf36171ce8e44515cfd339335",
   },
 ] as const;
@@ -57,15 +57,15 @@ describe("complete original Arabic localization", () => {
     expect(helperCatalogs.ar.entity).toBe("كيان Home Assistant الذي تعرضه هذه البطاقة وتتحكم فيه.");
   });
 
-  it("keeps shared graph labels and the six diagnostics separate for a strict total of 1750", () => {
+  it("keeps shared graph labels and the six diagnostics separate for a strict total of 1754", () => {
     expect(Object.keys(arabicLabels).filter(key => key.startsWith("ui.graph."))).toEqual([]);
     expect(Object.keys(nativeDiagnosticCatalogs.ar).sort()).toEqual(Object.keys(nativeDiagnosticCatalogs.en).sort());
     expect(Object.keys(nativeDiagnosticCatalogs.ar)).toHaveLength(6);
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1187);
-    expect(Object.keys(englishHelpers)).toHaveLength(557);
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1189);
+    expect(Object.keys(englishHelpers)).toHaveLength(559);
     expect(Object.keys(translationCatalogs.en).length + Object.keys(englishHelpers).length +
-      Object.keys(nativeDiagnosticCatalogs.en).length).toBe(1750);
-    expect(Object.keys(arabicLabels).length + Object.keys(arabicHelpers).length).toBe(1327);
+      Object.keys(nativeDiagnosticCatalogs.en).length).toBe(1754);
+    expect(Object.keys(arabicLabels).length + Object.keys(arabicHelpers).length).toBe(1331);
     expect(localeDirection("ar")).toBe("rtl");
   });
 

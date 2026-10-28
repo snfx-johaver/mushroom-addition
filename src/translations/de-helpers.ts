@@ -409,6 +409,8 @@ export const germanHelpers: Record<string, string> = {
   washer_power_entity: "Sensor für die aktuelle Leistungsaufnahme der Waschmaschine oder des Trockners.",
   program_select_entity: "Auswahl-Entität für das Programm-Dropdown über den Schaltflächen.",
   datetime_step: "Minuten, die mit den Auf- und Ab-Tasten addiert oder abgezogen werden.",
+  show_people: "Zeigt über den Szenen-Schaltflächen, wer zuhause (links) und wer unterwegs ist (rechts).",
+  people_entities: "Anzuzeigende Personen. Neue Karten starten mit allen Haushaltsmitgliedern; Personen können hinzugefügt oder entfernt werden.",
   show_extra_pollen: "Zeigt zusätzliche Pollensensoren unter den drei Haupttypen an. Beliebig viele hinzufügbar.",
   datetime_single_row: "Platziert Titel, Schaltflächen und Uhrzeit in einer Zeile.",
   datetime_manual_entry: "Macht die Uhrzeit zu einem Feld, in das man klicken und tippen kann.",

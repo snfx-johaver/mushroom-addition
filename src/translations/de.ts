@@ -296,6 +296,8 @@ export const germanLabels: Record<string, string> = {
   washer_power_entity: "Leistungssensor",
   program_select_entity: "Programmauswahl",
   datetime_step: "Schrittweite (Minuten)",
+  show_people: "Personen anzeigen",
+  people_entities: "Personen",
   show_extra_pollen: "Zusätzliche Pollensensoren",
   datetime_single_row: "Einzelne Zeile",
   datetime_manual_entry: "Zeit manuell eingeben",

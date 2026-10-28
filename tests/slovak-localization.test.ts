@@ -26,14 +26,14 @@ const codeLiterals = (text: string) =>
 
 describe("complete Slovak card localization", () => {
   it("adds exactly the missing keys and preserves the installed Slovak baseline", () => {
-    expect(Object.keys(slovakLabels)).toHaveLength(771);
-    expect(Object.keys(slovakHelpers)).toHaveLength(556);
+    expect(Object.keys(slovakLabels)).toHaveLength(773);
+    expect(Object.keys(slovakHelpers)).toHaveLength(558);
     expect(Object.keys(installedLabels)).toHaveLength(416);
     expect(Object.keys(installedHelpers)).toHaveLength(1);
     expect(fingerprint(installedLabels)).toBe("0fc6ddf546401198b58523b69141d2ed81dbbe17f27c37a154c8cc07e57fb829");
     expect(fingerprint(installedHelpers)).toBe("629db3db6c3f84e2d3e2343980c0d2e998353010bde88f1577e1ea642f016f28");
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1187);
-    expect(Object.keys(englishHelpers)).toHaveLength(557);
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1189);
+    expect(Object.keys(englishHelpers)).toHaveLength(559);
 
     for (const [english, installed, additions] of catalogs) {
       expect(Object.keys(additions).sort()).toEqual(

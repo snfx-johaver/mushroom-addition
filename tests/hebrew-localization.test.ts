@@ -32,8 +32,8 @@ describe("complete original Hebrew localization", () => {
   it("adds exactly the missing labels and helpers without replacing shared translations", () => {
     expect(Object.keys(hebrewLabels).sort()).toEqual(missing(translationCatalogs.en, baselineLabels));
     expect(Object.keys(hebrewHelpers).sort()).toEqual(missing(englishHelpers, baselineHelpers));
-    expect(Object.keys(hebrewLabels)).toHaveLength(771);
-    expect(Object.keys(hebrewHelpers)).toHaveLength(556);
+    expect(Object.keys(hebrewLabels)).toHaveLength(773);
+    expect(Object.keys(hebrewHelpers)).toHaveLength(558);
     expect(Object.keys(baselineLabels)).toHaveLength(416);
     expect(Object.keys(baselineHelpers)).toHaveLength(1);
     expect(Object.keys(labels).sort()).toEqual(Object.keys(translationCatalogs.en).sort());
@@ -60,12 +60,12 @@ describe("complete original Hebrew localization", () => {
     for (const [key, text] of Object.entries(baselineHelpers)) expect(helpers[key], key).toBe(text);
   });
 
-  it("covers the strict 1750 entries, including the six existing native diagnostics", () => {
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1187);
-    expect(Object.keys(englishHelpers)).toHaveLength(557);
+  it("covers the strict 1754 entries, including the six existing native diagnostics", () => {
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1189);
+    expect(Object.keys(englishHelpers)).toHaveLength(559);
     expect(Object.keys(nativeDiagnosticCatalogs.en)).toHaveLength(6);
     expect(Object.keys(nativeDiagnosticCatalogs.he).sort()).toEqual(Object.keys(nativeDiagnosticCatalogs.en).sort());
-    expect(Object.keys(labels).length + Object.keys(helpers).length + Object.keys(nativeDiagnosticCatalogs.he).length).toBe(1750);
+    expect(Object.keys(labels).length + Object.keys(helpers).length + Object.keys(nativeDiagnosticCatalogs.he).length).toBe(1754);
     for (const [english, hebrew] of [
       [translationCatalogs.en, labels],
       [englishHelpers, helpers],

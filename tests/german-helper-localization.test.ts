@@ -11,7 +11,7 @@ describe("German helper catalog", () => {
     expect(Object.keys(germanHelpers).sort()).toEqual(
       Object.keys(englishHelpers).filter((key) => !translatedHelpers.de?.[key]).sort(),
     );
-    expect(Object.keys(germanHelpers)).toHaveLength(556);
+    expect(Object.keys(germanHelpers)).toHaveLength(558);
     expect(Object.keys(helpers).sort()).toEqual(Object.keys(englishHelpers).sort());
     for (const [key, original] of Object.entries(englishHelpers)) {
       expect(helpers[key]?.trim(), key).toBeTruthy();

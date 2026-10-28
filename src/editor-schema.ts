@@ -794,6 +794,8 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
     : item.upstreamId === "custom_card_welcome"
       ? [
         entity(["person"]),
+        toggle("show_people"),
+        ...(config?.show_people === true ? [{ name: "people_entities", selector: { entity: { domain: ["person"], multiple: true } } }] : []),
         entity(["input_boolean"], "ulm_card_welcome_collapse"),
         entity(["weather"], "ulm_weather"),
         select("welcome_weather_icon_type", [
