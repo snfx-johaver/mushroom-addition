@@ -4,6 +4,7 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+<<<<<<< HEAD
 ## 0.5.4 - 2026-10-28
 
 - Mini Graph Card: hovering the graph now highlights the nearest series, dims the
@@ -18,6 +19,10 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
   config, and the ineffective "Fill container" option was removed.
 - Fix Mini Graph Card chart height so a narrower card no longer leaves a blank
   bar under the graph with the lower label stranded at the bottom.
+=======
+## 0.5.3 - 2026-10-28
+
+>>>>>>> origin/main
 - Safely escape entity-provided image URLs in CSS backgrounds and remove the
   setup-specific navigation default from Home Energy Management.
 - Add optional Yahoo market-data backend and Stock Card source selection for
