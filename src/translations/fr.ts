@@ -301,6 +301,8 @@ export const frenchLabels: Record<string, string> = {
   machine_state_entity: "État de la machine",
   program_stage_entity: "Étape du programme en cours",
   washer_power_entity: "Capteur de puissance",
+  program_select_entity: "Sélection du programme",
+  power_switch_entity: "Bouton d'alimentation",
   grid_power_entity: "Puissance du réseau",
   grid_phase_1_entity: "Phase L1 du réseau",
   grid_phase_2_entity: "Phase L2 du réseau",
@@ -1166,6 +1168,8 @@ export const frenchHelpers: Record<string, string> = {
   machine_state_entity: "Entité contenant l’état de fonctionnement, de pause, de veille ou d’arrêt du lave-linge ou du sèche-linge.",
   program_stage_entity: "Entité contenant l’étape active du programme du lave-linge ou du sèche-linge.",
   washer_power_entity: "Capteur utilisé pour afficher la consommation électrique actuelle du lave-linge ou du sèche-linge.",
+  program_select_entity: "Entité de sélection utilisée pour la liste déroulante des programmes au-dessus des boutons.",
+  power_switch_entity: "Interrupteur utilisé par le bouton d'alimentation à côté des boutons pause et arrêt.",
   grid_power_entity: "Capteur de puissance signée du réseau. Les valeurs positives et négatives sont affichées avec une flèche de direction.",
   ...Object.fromEntries([1, 2, 3].flatMap(number => [
     [`grid_phase_${number}_entity`, `Capteur de puissance facultatif de la phase L${number} du réseau.`],

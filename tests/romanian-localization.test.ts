@@ -3,8 +3,8 @@ import { englishHelpers, helperCatalogs, translationCatalogs } from "../src/loca
 import { placeholders } from "../src/translation-coverage";
 import { romanianHelpers, romanianLabels } from "../src/translations/ro";
 
-const labelSupplementSize = 764;
-const helperSupplementSize = 549;
+const labelSupplementSize = 766;
+const helperSupplementSize = 551;
 
 const catalogs = [
   [translationCatalogs.en, translationCatalogs.ro, romanianLabels],

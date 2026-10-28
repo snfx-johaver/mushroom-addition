@@ -298,6 +298,8 @@ ulm_custom_card_washer_stop_action|Радња заустављања
 machine_state_entity|Ентитет стања машине
 program_stage_entity|Ентитет тренутне фазе програма
 washer_power_entity|Сензор снаге машине за прање
+program_select_entity|Избор програма
+power_switch_entity|Дугме за напајање
 grid_power_entity|Снага електричне мреже
 grid_phase_1_entity|Фаза мреже L1
 grid_phase_2_entity|Фаза мреже L2
@@ -1196,6 +1198,8 @@ ulm_custom_card_washer_stop_action|Радња Home Assistant-а коју пок�
 machine_state_entity|Ентитет стања рада, паузе, мировања или заустављености машине за прање или сушење.
 program_stage_entity|Ентитет активне фазе програма машине за прање или сушење.
 washer_power_entity|Сензор тренутне потрошње снаге машине за прање или сушење.
+program_select_entity|Ентитет избора за падајућу листу програма изнад дугмади.
+power_switch_entity|Прекидач који користи дугме за напајање поред дугмади за паузу и стоп.
 grid_power_entity|Сензор снаге мреже са знаком. Позитивне и негативне вредности приказују се стрелицом смера.
 grid_phase_1_entity|Опциони сензор снаге фазе мреже L1.
 grid_phase_2_entity|Опциони сензор снаге фазе мреже L2.

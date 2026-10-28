@@ -22,8 +22,8 @@ describe("Indonesian label and helper catalogs", () => {
         expect(placeholders(merged[key]), key).toEqual(placeholders(original));
       }
     }
-    expect(Object.keys(indonesianLabels)).toHaveLength(764);
-    expect(Object.keys(indonesianHelpers)).toHaveLength(549);
+    expect(Object.keys(indonesianLabels)).toHaveLength(766);
+    expect(Object.keys(indonesianHelpers)).toHaveLength(551);
   });
 
   it("preserves the Indonesian entries already installed in the base catalogs", () => {

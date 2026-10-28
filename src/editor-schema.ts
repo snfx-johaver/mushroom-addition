@@ -845,6 +845,8 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
         entity(["sensor", "switch", "binary_sensor"]),
         entity(["sensor", "select"], "program_stage_entity"),
         entity(["sensor", "switch"], "washer_power_entity"),
+        entity(["select", "input_select"], "program_select_entity"),
+        entity(["switch", "input_boolean"], "power_switch_entity"),
         entity(["sensor", "binary_sensor"], "door_entity"),
         entity(["sensor", "binary_sensor"], "finished_entity"),
         entity(["sensor", "binary_sensor"], "ulm_custom_card_washer_remote_control"),

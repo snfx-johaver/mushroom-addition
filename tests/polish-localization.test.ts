@@ -4,8 +4,8 @@ import { placeholders } from "../src/translation-coverage";
 import { polishHelpers, polishLabels } from "../src/translations/pl";
 
 const catalogs = [
-  [translationCatalogs.en, translationCatalogs.pl, polishLabels, 764],
-  [englishHelpers, helperCatalogs.pl, polishHelpers, 549],
+  [translationCatalogs.en, translationCatalogs.pl, polishLabels, 766],
+  [englishHelpers, helperCatalogs.pl, polishHelpers, 551],
 ] as const;
 
 describe("complete Polish card localization", () => {

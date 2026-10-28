@@ -293,6 +293,8 @@ export const germanLabels: Record<string, string> = {
   machine_state_entity: "Maschinenzustand",
   program_stage_entity: "Aktuelle Programmphase",
   washer_power_entity: "Leistungssensor",
+  program_select_entity: "Programmauswahl",
+  power_switch_entity: "Ein/Aus-Schaltfläche",
   grid_power_entity: "Netzleistung",
   grid_phase_1_entity: "Netzphase L1",
   grid_phase_2_entity: "Netzphase L2",

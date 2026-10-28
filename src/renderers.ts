@@ -788,8 +788,16 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
   const delayedTime = entityFromConfig(ctx, "ulm_custom_card_washer_delayed_starttime");
   const door = entityFromConfig(ctx, "door_entity");
   const finished = entityFromConfig(ctx, "finished_entity");
+  const programSelect = entityFromConfig(ctx, "program_select_entity");
+  const programOptions = Array.isArray(programSelect?.attributes.options)
+    ? (programSelect.attributes.options as unknown[]).map(String)
+    : [];
+  if (programSelect && !programOptions.includes(programSelect.state)) programOptions.unshift(programSelect.state);
+  const powerSwitch = entityFromConfig(ctx, "power_switch_entity");
   const stopState = configured<string>(ctx, "ulm_custom_card_washer_machine_stop_state") ?? "stop";
-  const powered = power
+  const powered = powerSwitch
+    ? powerSwitch.state === "on"
+    : power
     ? !["off", "unavailable", "unknown", "0"].includes(power.state.toLowerCase())
     : machine
       ? !["off", "unavailable", "unknown"].includes(machine.state.toLowerCase())
@@ -856,9 +864,32 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
         <b>${Math.round(percent)}%</b>
       </div>
     ` : nothing}
-    ${powered && remoteEnabled ? html`
+    ${programSelect ? html`
+      <select class="washer-program" aria-label=${localizeText(ctx.hass, "Program selection")}
+        ?disabled=${!powered || ["unavailable", "unknown"].includes(programSelect.state)}
+        @pointerdown=${(event: Event) => event.stopPropagation()}
+        @click=${(event: Event) => event.stopPropagation()}
+        @change=${(event: Event) => {
+          event.stopPropagation();
+          ctx.service(programSelect.entity_id.split(".")[0], "select_option", {
+            entity_id: programSelect.entity_id,
+            option: (event.target as HTMLSelectElement).value,
+          });
+        }}>
+        ${programOptions.map((option) => html`
+          <option value=${option} ?selected=${option === programSelect.state}>${option}</option>
+        `)}
+      </select>
+    ` : nothing}
+    ${(powered && remoteEnabled) || powerSwitch ? html`
       <div class="washer-controls">
-        ${button(
+        ${powerSwitch ? button(
+          localizeText(ctx.hass, "Toggle power"),
+          "mdi:power",
+          (event) => runControlAction(event, ctx, { action: "toggle" }, powerSwitch.entity_id),
+          powerSwitch.state === "unavailable",
+        ) : nothing}
+        ${powered && remoteEnabled ? html`${button(
           stopped ? localizeText(ctx.hass, "Start washer") : localizeText(ctx.hass, "Pause washer"),
           stopped ? "mdi:play" : "mdi:pause",
           (event) => runWasherAction(event, primaryAction),
@@ -875,7 +906,7 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
           "mdi:alarm",
           (event) => runControlAction(event, ctx, { action: "toggle" }, delayed.entity_id),
           !stopped,
-        ) : nothing}
+        ) : nothing}` : nothing}
       </div>
     ` : nothing}
     ${powered && remoteEnabled && delayedEnabled && delayedTime ? html`

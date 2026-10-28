@@ -364,7 +364,9 @@ export const sharedStyles = css`
   .washer-stages span { display: grid; height: 42px; place-items: center; color: rgb(var(--addition-disabled-rgb)); }
   .washer-stages span.is-active { color: var(--primary-text-color); }
   .washer-stages span.is-active ha-icon { padding: 9px; border-radius: 50%; background: var(--card-background-color); }
-  .washer-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--mush-control-spacing, 12px); }
+  .washer-controls { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--mush-control-spacing, 12px); }
+  .washer-program { width: 100%; height: var(--mush-control-height, 42px); padding: 0 12px; border: 0; border-radius: var(--mush-control-border-radius, 12px); background: var(--addition-neutral-background); color: var(--primary-text-color); font: inherit; font-size: 14px; }
+  .washer-program:disabled { opacity: .5; }
   .washer-controls .ulm-control { width: 100%; height: var(--mush-control-height, 42px); border-radius: var(--mush-control-border-radius, 12px); }
   .washer-remote { color: var(--secondary-text-color); font-size: 11px; text-align: center; }
   .custom-sun-card { display: grid; min-height: 210px; gap: var(--mush-spacing, 12px); padding: var(--mush-spacing, 12px); }

@@ -406,6 +406,8 @@ export const germanHelpers: Record<string, string> = {
   machine_state_entity: "Entität mit dem Zustand der Waschmaschine oder des Trockners: läuft, pausiert, Leerlauf oder gestoppt.",
   program_stage_entity: "Entität mit dem aktiven Programmabschnitt der Waschmaschine oder des Trockners.",
   washer_power_entity: "Sensor für die aktuelle Leistungsaufnahme der Waschmaschine oder des Trockners.",
+  program_select_entity: "Auswahl-Entität für das Programm-Dropdown über den Schaltflächen.",
+  power_switch_entity: "Schalter für die Ein/Aus-Schaltfläche neben Pause und Stopp.",
   grid_power_entity: "Vorzeichenbehafteter Netzleistungssensor. Positive und negative Werte werden mit einem Richtungspfeil angezeigt.",
   grid_phase_1_entity: "Optionaler Leistungssensor für Netzphase L1.",
   grid_phase_2_entity: "Optionaler Leistungssensor für Netzphase L2.",

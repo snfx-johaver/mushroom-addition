@@ -315,6 +315,10 @@ export const createStubConfig = (
         washer_power_entity: findEntity(["sensor", "switch"], ["wasmachine", "power"]) ??
           findEntity(["sensor", "switch"], ["washer", "power"]) ??
           findEntity(["sensor", "switch"], ["power"]),
+        program_select_entity: findEntity(["select", "input_select"], ["washer", "program"]) ??
+          findEntity(["select", "input_select"], ["program"]),
+        power_switch_entity: findEntity(["switch", "input_boolean"], ["washer", "power"]) ??
+          findEntity(["switch", "input_boolean"], ["wasmachine"]),
         door_entity: findEntity(["sensor", "binary_sensor"], ["washer", "door"]) ??
           findEntity(["sensor", "binary_sensor"], ["door"]),
         finished_entity: findEntity(["sensor", "binary_sensor"], ["washer", "finished"]) ??

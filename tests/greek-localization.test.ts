@@ -21,11 +21,11 @@ describe("complete Greek label and helper catalog", () => {
   it("covers exactly the inventory missing from the installed Greek catalogs", () => {
     expect(Object.keys(greekLabels).sort()).toEqual(missing(translationCatalogs.en, baselineLabels));
     expect(Object.keys(greekHelpers).sort()).toEqual(missing(englishHelpers, baselineHelpers));
-    expect(Object.keys(greekLabels)).toHaveLength(764);
-    expect(Object.keys(greekHelpers)).toHaveLength(549);
+    expect(Object.keys(greekLabels)).toHaveLength(766);
+    expect(Object.keys(greekHelpers)).toHaveLength(551);
     expect(Object.keys(baselineLabels)).toHaveLength(416);
     expect(Object.keys(baselineHelpers)).toHaveLength(1);
-    expect(Object.keys(translationCatalogs.en).length + Object.keys(englishHelpers).length).toBe(1736 - 6);
+    expect(Object.keys(translationCatalogs.en).length + Object.keys(englishHelpers).length).toBe(1740 - 6);
   });
 
   it("fills every English key with non-empty text and identical placeholders", () => {

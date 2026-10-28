@@ -491,6 +491,8 @@ export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, P
   power_entity?: string;
   program_stage_entity?: string;
   washer_power_entity?: string;
+  program_select_entity?: string;
+  power_switch_entity?: string;
   door_entity?: string;
   finished_entity?: string;
   secondary_entity?: string;

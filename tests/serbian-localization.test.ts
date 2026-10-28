@@ -69,8 +69,8 @@ const catalogs = [
 
 describe("complete Serbian card localization", () => {
   it("adds exactly the missing labels and helpers without changing the installed baseline", () => {
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1180);
-    expect(Object.keys(englishHelpers)).toHaveLength(550);
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1182);
+    expect(Object.keys(englishHelpers)).toHaveLength(552);
 
     for (const { locale, labels, helpers, installedLabels, installedHelpers } of catalogs) {
       const labelsBeforeAdditions = installedWithout(installedLabels, labels);
@@ -79,8 +79,8 @@ describe("complete Serbian card localization", () => {
       expect(Object.keys(helpersBeforeAdditions)).toHaveLength(1);
       expect(fingerprint(labelsBeforeAdditions)).toBe(fingerprints[locale].labels);
       expect(fingerprint(helpersBeforeAdditions)).toBe(fingerprints[locale].helpers);
-      expect(Object.keys(labels)).toHaveLength(764);
-      expect(Object.keys(helpers)).toHaveLength(549);
+      expect(Object.keys(labels)).toHaveLength(766);
+      expect(Object.keys(helpers)).toHaveLength(551);
       expect(Object.keys(labels).sort()).toEqual(
         Object.keys(translationCatalogs.en).filter((key) => !Object.hasOwn(labelsBeforeAdditions, key)).sort(),
       );
