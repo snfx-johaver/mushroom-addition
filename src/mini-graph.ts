@@ -422,12 +422,13 @@ const historyRowsByEntity = (
 
 export class MushroomMiniGraphCard extends LitElement {
   public static styles = css`
-    :host { display: block; min-width: 0; }
+    :host { display: block; min-width: 0; height: 100%; }
     ha-card {
       position: relative;
       display: block;
       overflow: hidden;
       box-sizing: border-box;
+      height: 100%;
       border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, #e0e0e0));
       border-radius: var(--mush-card-primary-border-radius, 14px);
       background: var(--ha-card-background, var(--card-background-color, #fff));
@@ -436,7 +437,9 @@ export class MushroomMiniGraphCard extends LitElement {
       cursor: pointer;
     }
     ha-card.group { border: 0; border-radius: 0; box-shadow: none; background: transparent; }
-    .content { display: grid; gap: var(--mush-spacing, 12px); padding: var(--mush-spacing, 12px); }
+    .content { display: flex; flex-direction: column; box-sizing: border-box; min-height: 100%; gap: var(--mush-spacing, 12px); padding: var(--mush-spacing, 12px); }
+    .content > * { flex: 0 0 auto; min-width: 0; }
+    .content > .graph { flex: 1 1 auto; min-height: 60px; }
     .header { display: flex; align-items: center; gap: var(--mush-spacing, 12px); min-width: 0; }
     .header[data-align="left"] { justify-content: flex-start; }
     .header[data-align="right"] { justify-content: flex-end; }
@@ -559,6 +562,14 @@ export class MushroomMiniGraphCard extends LitElement {
     this.requestKey = undefined;
     this.lastEntityStateSignature = this.entityStateSignature();
     void this.loadHistory();
+  }
+
+  public getGridOptions(): { columns: number; rows: number; min_columns: number; min_rows: number } {
+    return { columns: 12, rows: this.getCardSize(), min_columns: 3, min_rows: 2 };
+  }
+
+  private graphStyle(): string {
+    return `flex-basis:${this.config?.height ?? 150}px;height:${this.config?.height ?? 150}px`;
   }
 
   public getCardSize(): number {
@@ -766,7 +777,7 @@ export class MushroomMiniGraphCard extends LitElement {
     const minTime = Math.min(...allTimes);
     const maxTime = Math.max(...allTimes);
     return html`
-      <div class="graph" style=${`height:${this.config?.height ?? 150}px`}
+      <div class="graph" style=${this.graphStyle()}
         @pointermove=${this.graphMove} @pointerleave=${this.graphLeave}>
         ${show.labels && primary.length ? html`
           <div class="labels">
@@ -876,7 +887,7 @@ export class MushroomMiniGraphCard extends LitElement {
     const stroke = Math.max(6, Math.min(18, Math.floor(70 / rings.length)));
     const step = stroke + 5;
     return html`
-      <div class="graph radial" style=${`height:${this.config?.height ?? 150}px`} @pointerleave=${this.graphLeave}>
+      <div class="graph radial" style=${this.graphStyle()} @pointerleave=${this.graphLeave}>
         <svg viewBox="0 0 200 200" @click=${(event: Event) => event.stopPropagation()}>
           ${rings.flatMap(({ entry, key }, index) => {
             const radius = 100 - stroke / 2 - 2 - index * step;
@@ -910,7 +921,7 @@ export class MushroomMiniGraphCard extends LitElement {
     let start = -Math.PI / 2;
     const unit = this.series[0]?.unit ?? "";
     return html`
-      <div class="graph radial" style=${`height:${this.config?.height ?? 150}px`} @pointerleave=${this.graphLeave}>
+      <div class="graph radial" style=${this.graphStyle()} @pointerleave=${this.graphLeave}>
         <svg viewBox="0 0 200 200" @click=${(event: Event) => event.stopPropagation()}>
           ${slices.map(({ entry, key, value }) => {
             const sweep = Math.min(value / total, 0.99999) * Math.PI * 2;

@@ -55801,6 +55801,12 @@ const na = [
     }
     this.restartInterval(), this.requestKey = void 0, this.lastEntityStateSignature = this.entityStateSignature(), this.loadHistory();
   }
+  getGridOptions() {
+    return { columns: 12, rows: this.getCardSize(), min_columns: 3, min_rows: 2 };
+  }
+  graphStyle() {
+    return `flex-basis:${this.config?.height ?? 150}px;height:${this.config?.height ?? 150}px`;
+  }
   getCardSize() {
     return Math.max(1, Math.ceil((Number(this.config?.height ?? 150) + 110) / 50));
   }
@@ -55935,7 +55941,7 @@ const na = [
       Number(this.config?.min_bound_range_secondary ?? 0)
     ), d = a.flatMap((h) => h.points.map((g) => g.time)), c = Math.min(...d), m = Math.max(...d);
     return _`
-      <div class="graph" style=${`height:${this.config?.height ?? 150}px`}
+      <div class="graph" style=${this.graphStyle()}
         @pointermove=${this.graphMove} @pointerleave=${this.graphLeave}>
         ${t.labels && n.length ? _`
           <div class="labels">
@@ -56003,7 +56009,7 @@ const na = [
     if (!t.length) return p;
     const a = Number.isFinite(Number(this.config?.lower_bound)) && this.config?.lower_bound !== void 0 ? Number(this.config.lower_bound) : 0, n = Number(this.config?.upper_bound), i = this.config?.upper_bound !== void 0 && Number.isFinite(n) && n > a ? n : 100, r = Math.max(6, Math.min(18, Math.floor(70 / t.length))), o = r + 5;
     return _`
-      <div class="graph radial" style=${`height:${this.config?.height ?? 150}px`} @pointerleave=${this.graphLeave}>
+      <div class="graph radial" style=${this.graphStyle()} @pointerleave=${this.graphLeave}>
         <svg viewBox="0 0 200 200" @click=${(s) => s.stopPropagation()}>
           ${t.flatMap(({ entry: s, key: l }, d) => {
       const c = 100 - r / 2 - 2 - d * o;
@@ -56031,7 +56037,7 @@ const na = [
     let s = -Math.PI / 2;
     const l = this.series[0]?.unit ?? "";
     return _`
-      <div class="graph radial" style=${`height:${this.config?.height ?? 150}px`} @pointerleave=${this.graphLeave}>
+      <div class="graph radial" style=${this.graphStyle()} @pointerleave=${this.graphLeave}>
         <svg viewBox="0 0 200 200" @click=${(d) => d.stopPropagation()}>
           ${a.map(({ entry: d, key: c, value: m }) => {
       const h = Math.min(m / n, 0.99999) * Math.PI * 2, g = s + h, y = h > Math.PI ? 1 : 0, k = t ? `M ${o(s, i)} A ${i} ${i} 0 ${y} 1 ${o(g, i)} L ${o(g, r)} A ${r} ${r} 0 ${y} 0 ${o(s, r)} Z` : `M 100 100 L ${o(s, i)} A ${i} ${i} 0 ${y} 1 ${o(g, i)} Z`;
@@ -56317,12 +56323,13 @@ const na = [
   }
 };
 Hi.styles = fe`
-    :host { display: block; min-width: 0; }
+    :host { display: block; min-width: 0; height: 100%; }
     ha-card {
       position: relative;
       display: block;
       overflow: hidden;
       box-sizing: border-box;
+      height: 100%;
       border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, #e0e0e0));
       border-radius: var(--mush-card-primary-border-radius, 14px);
       background: var(--ha-card-background, var(--card-background-color, #fff));
@@ -56331,7 +56338,9 @@ Hi.styles = fe`
       cursor: pointer;
     }
     ha-card.group { border: 0; border-radius: 0; box-shadow: none; background: transparent; }
-    .content { display: grid; gap: var(--mush-spacing, 12px); padding: var(--mush-spacing, 12px); }
+    .content { display: flex; flex-direction: column; box-sizing: border-box; min-height: 100%; gap: var(--mush-spacing, 12px); padding: var(--mush-spacing, 12px); }
+    .content > * { flex: 0 0 auto; min-width: 0; }
+    .content > .graph { flex: 1 1 auto; min-height: 60px; }
     .header { display: flex; align-items: center; gap: var(--mush-spacing, 12px); min-width: 0; }
     .header[data-align="left"] { justify-content: flex-start; }
     .header[data-align="right"] { justify-content: flex-end; }
