@@ -45820,7 +45820,8 @@ let Qe = class extends ye {
       if (e.stopPropagation(), this.dragStartX === void 0) return;
       const t = e.clientX - this.dragStartX, a = e.clientY - (this.dragStartY ?? e.clientY), n = this.pointerItemIndex ?? this.selectedIndex, i = this.pointerStartedOnItem, r = this.pointerAxis === "horizontal", o = this.pointerAxis === "vertical" || Math.abs(a) > Math.abs(t) * 1.15, s = Math.max(1, e.timeStamp - (this.lastPointerTime ?? e.timeStamp)), l = Math.abs(e.clientX - (this.lastPointerX ?? e.clientX)) > 0 ? (e.clientX - (this.lastPointerX ?? e.clientX)) / s : this.horizontalVelocity;
       if (this.clearHold(), this.resetPointer(), r && (Math.abs(t) >= 10 || Math.abs(l) >= 0.16)) {
-        this.select(t > 0 || l > 0 ? -1 : 1);
+        const c = t > 0 || t === 0 && l > 0 ? -1 : 1, p = Math.max(18, this.buttonWidth + this.coverflowStretch), h = Math.abs(l) >= 0.6 ? Math.round(Math.abs(l) * 2) : 0;
+        this.select(c, Math.max(1, Math.round(Math.abs(t) / p), h));
         return;
       }
       if (this.holdFired) {
@@ -46045,12 +46046,12 @@ let Qe = class extends ye {
   disconnectedCallback() {
     this.cancelPointer(), this.clearTap(), this.resizeObserver?.disconnect(), this.resizeObserver = void 0, this.observedCarousel = void 0, super.disconnectedCallback();
   }
-  select(e) {
+  select(e, t = 1) {
     this.clearTap();
-    const t = this.items.length;
-    if (!t) return;
-    const a = this.selectedIndex + e;
-    this.selectedIndex = this.config?.carousel_loop === !1 ? Math.min(t - 1, Math.max(0, a)) : (a + t) % t;
+    const a = this.items.length;
+    if (!a) return;
+    const n = this.selectedIndex + e * t;
+    this.selectedIndex = this.config?.carousel_loop === !1 ? Math.min(a - 1, Math.max(0, n)) : (n % a + a) % a;
   }
   selectIndex(e) {
     this.clearTap(), this.selectedIndex = Math.min(this.items.length - 1, Math.max(0, e));

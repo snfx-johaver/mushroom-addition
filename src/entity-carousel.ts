@@ -460,14 +460,14 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     super.disconnectedCallback();
   }
 
-  private select(direction: -1 | 1): void {
+  private select(direction: -1 | 1, steps = 1): void {
     this.clearTap();
     const count = this.items.length;
     if (!count) return;
-    const next = this.selectedIndex + direction;
+    const next = this.selectedIndex + direction * steps;
     this.selectedIndex = this.config?.carousel_loop === false
       ? Math.min(count - 1, Math.max(0, next))
-      : (next + count) % count;
+      : ((next % count) + count) % count;
   }
 
   private selectIndex(index: number): void {
@@ -552,7 +552,10 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     this.clearHold();
     this.resetPointer();
     if (wasHorizontal && (Math.abs(delta) >= 10 || Math.abs(releaseVelocity) >= 0.16)) {
-      this.select(delta > 0 || releaseVelocity > 0 ? -1 : 1);
+      const direction = delta > 0 || (delta === 0 && releaseVelocity > 0) ? -1 : 1;
+      const slideStep = Math.max(18, this.buttonWidth + this.coverflowStretch);
+      const flick = Math.abs(releaseVelocity) >= 0.6 ? Math.round(Math.abs(releaseVelocity) * 2) : 0;
+      this.select(direction, Math.max(1, Math.round(Math.abs(delta) / slideStep), flick));
       return;
     }
     if (this.holdFired) {
