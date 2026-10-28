@@ -961,6 +961,38 @@ describe("family renderers", () => {
     element.remove();
   });
 
+  it("lists every light of the group in a pulldown and toggles members individually", async () => {
+    const callService = vi.fn(async () => undefined);
+    const element = document.createElement("mushroom-addition-custom-card-light") as HTMLElement & {
+      hass: HomeAssistant;
+      setConfig(config: AdditionConfig): void;
+      updateComplete: Promise<boolean>;
+    };
+    const light = (id: string, state: string, extra = {}) => ({
+      entity_id: id, state, attributes: { friendly_name: id.split(".")[1], ...extra },
+      last_changed: "", last_updated: "", context: { id: "", parent_id: null, user_id: null },
+    });
+    element.hass = {
+      ...hass,
+      callService,
+      states: {
+        ...hass.states,
+        "light.office": light("light.office", "on", { entity_id: ["light.desk", "light.ceiling"], brightness: 128, supported_color_modes: ["brightness"] }),
+        "light.desk": light("light.desk", "on"),
+        "light.ceiling": light("light.ceiling", "off"),
+      },
+    } as HomeAssistant;
+    element.setConfig({ type: "custom:mushroom-addition-custom-card-light", entity: "light.office", light_members_per_row: 2 });
+    document.body.append(element);
+    await element.updateComplete;
+    const members = element.shadowRoot!.querySelectorAll<HTMLButtonElement>(".light-member");
+    expect(members).toHaveLength(2);
+    expect(element.shadowRoot!.querySelector(".light-brightness")).not.toBeNull();
+    members[1].click();
+    expect(callService).toHaveBeenCalledWith("light", "toggle", { entity_id: "light.ceiling" });
+    element.remove();
+  });
+
   it("uses the selected console platform and toggles a discovered power entity", async () => {
     const callService = vi.fn(async () => undefined);
     const element = document.createElement("mushroom-addition-custom-card-game-console") as HTMLElement & {

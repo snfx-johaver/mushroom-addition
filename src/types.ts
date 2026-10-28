@@ -421,6 +421,10 @@ export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, P
   waste_streams?: WasteStreamConfig[];
   show_people?: boolean;
   people_entities?: string[];
+  light_show_brightness?: boolean;
+  light_show_members?: boolean;
+  light_members_expanded?: boolean;
+  light_members_per_row?: number;
   show_extra_pollen?: boolean;
   pollen_extra?: WasteStreamConfig[];
   hide_unknown_dates?: boolean;

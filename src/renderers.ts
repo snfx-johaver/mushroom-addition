@@ -795,6 +795,68 @@ const renderWelcome = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
+const renderLight = (ctx: RenderContext): TemplateResult => {
+  const entity = ctx.entity;
+  const unavailable = !entity || ["unavailable", "unknown"].includes(entity.state);
+  const on = entity?.state === "on";
+  const rgb = attr(entity, "rgb_color");
+  const color = on && Array.isArray(rgb) && rgb.length === 3 ? `rgb(${rgb.join(",")})` : on ? "rgb(var(--ulm-yellow))" : "rgb(var(--ulm-grey))";
+  const modes = attr(entity, "supported_color_modes");
+  const dimmable = Array.isArray(modes) ? modes.some((mode) => mode !== "onoff") : attr(entity, "brightness") !== undefined;
+  const rawBrightness = numeric(attr(entity, "brightness"));
+  const brightness = on && rawBrightness !== undefined ? Math.max(1, Math.round(rawBrightness / 255 * 100)) : 0;
+  const stateText = on && dimmable && rawBrightness !== undefined ? `${brightness}%` : stateLabel(entity, ctx.hass);
+  const stop = (event: Event) => event.stopPropagation();
+  const members = ctx.config.light_show_members === false ? [] : [...new Set(
+    Array.isArray(attr(entity, "entity_id")) ? (attr(entity, "entity_id") as unknown[]).filter((id): id is string => typeof id === "string") : [],
+  )].filter((id) => id.startsWith("light.")).flatMap((id) => ctx.hass.states[id] ?? []);
+  const perRow = Math.max(1, Math.min(12, Math.floor(Number(ctx.config.light_members_per_row)) || 4));
+  return ctx.actionSurface("custom-light", html`
+    <div class="card-heading">
+      ${sourceIconBubble(ctx, defaultIconFor(ctx.descriptor, entity), color, on)}
+      ${heading(ctx, stateText)}
+    </div>
+    ${ctx.config.light_show_brightness !== false && dimmable ? html`
+      <input class="mushroom-range light-brightness" type="range" min="1" max="100" step="1" .value=${String(brightness)}
+        style=${`--range-color:${color};--range-progress:${rangeProgress(brightness, 1, 100)}`}
+        aria-label=${localizeText(ctx.hass, "Brightness")} ?disabled=${unavailable}
+        @pointerdown=${stop} @pointerup=${stop} @click=${stop} @keydown=${stop}
+        @input=${updateRangeProgress}
+        @change=${(event: Event) => {
+          stop(event);
+          ctx.service("light", "turn_on", {
+            entity_id: entity?.entity_id,
+            brightness_pct: Number((event.currentTarget as HTMLInputElement).value),
+          });
+        }}>` : nothing}
+    ${members.length ? html`
+      <details class="light-pulldown" ?open=${ctx.config.light_members_expanded === true}
+        @pointerdown=${stop} @pointerup=${stop} @click=${stop} @dblclick=${stop} @keydown=${stop}>
+        <summary>
+          <span>${localizeText(ctx.hass, "Lights in this group")} (${members.filter((m) => m.state === "on").length}/${members.length})</span>
+          <ha-icon icon="mdi:chevron-down"></ha-icon>
+        </summary>
+        <div class="light-members" style=${`--light-members-per-row:${perRow}`}>
+          ${members.map((member) => {
+            const memberOn = member.state === "on";
+            const memberRgb = attr(member, "rgb_color");
+            const memberColor = memberOn && Array.isArray(memberRgb) && memberRgb.length === 3
+              ? `rgb(${memberRgb.join(",")})` : "rgb(var(--ulm-yellow))";
+            const name = displayName({ type: "", entity: member.entity_id }, member, ctx.hass);
+            return html`
+              <button class="scene-button light-member ${memberOn ? "is-active" : "is-off"}"
+                style=${`--item-color:${memberColor}`} aria-label=${name} title=${name} aria-pressed=${memberOn}
+                ?disabled=${["unavailable", "unknown"].includes(member.state)}
+                @pointerdown=${stop}
+                @click=${(event: Event) => { stop(event); ctx.service("light", "toggle", { entity_id: member.entity_id }); }}>
+                <i><ha-icon .icon=${String(member.attributes.icon || "mdi:lightbulb")}></ha-icon></i><small>${name}</small>
+              </button>`;
+          })}
+        </div>
+      </details>` : nothing}
+  `);
+};
+
 const renderWasher = (ctx: RenderContext): TemplateResult => {
   const power = entityFromConfig(ctx, "washer_power_entity") ??
     entityFromConfig(ctx, "power_entity") ??
@@ -2329,6 +2391,7 @@ export const renderByFamily = (ctx: RenderContext): TemplateResult => {
     case "custom_card_tablet": return renderTablet(ctx);
     case "custom_card_playstation": return renderConsoleCard(ctx);
     case "custom_card_entity_carousel": return renderEntityCarousel(ctx);
+    case "custom_card_light": return renderLight(ctx);
     case "advanced_home_energy_management": return renderAdvancedHomeEnergyManagement(ctx);
     case "advanced_energy_buy_sell": return renderEnergyBuySell(ctx);
     case "advanced_energy_panel_health": return renderPanelHealth(ctx);

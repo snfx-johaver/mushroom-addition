@@ -179,6 +179,10 @@ export const createStubConfig = (
                                       : descriptor.upstreamId === "custom_card_printer"
                                         ? findEntity(["sensor", "binary_sensor"], ["printer"]) ??
                                           findEntity(["sensor", "binary_sensor"], ["online"])
+                              : descriptor.upstreamId === "custom_card_light"
+                                ? available.find((id) => id.startsWith("light.") && isHealthy(id) &&
+                                    Array.isArray(hass?.states[id]?.attributes.entity_id)) ??
+                                  findHealthyEntity(["light"], []) ?? findEntity(["light"], [])
                               : descriptor.upstreamId === "card_room"
                                 ? findEntity(["light"], [])
                                 : descriptor.upstreamId === "custom_card_plant"

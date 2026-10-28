@@ -41,6 +41,7 @@ export const defaultIconFor = (item: CatalogItem, entity?: HassEntity): string =
   if (entity?.attributes.icon) return entity.attributes.icon;
   if (item.upstreamId === "custom_card_trash") return "mdi:trash-can-outline";
   if (item.upstreamId === "custom_card_entity_carousel") return "mdi:view-carousel";
+  if (item.upstreamId === "custom_card_light") return "mdi:lightbulb";
   if (item.upstreamId === "custom_card_sun") return "mdi:weather-sunny";
   if (item.upstreamId === "custom_card_speedtest_gauges") return "mdi:speedometer";
   if (item.upstreamId === "advanced_home_energy_management") return "mdi:home-lightning-bolt-outline";
@@ -272,6 +273,13 @@ export const populatedDefaultsFor = (
                     ulm_card_flower_name: "No name set",
                     ulm_custom_card_plant_correct: "Correto",
                     ulm_custom_card_plant_problem: "Problema",
+                  }
+            : item.upstreamId === "custom_card_light"
+                  ? {
+                    light_show_brightness: true,
+                    light_show_members: true,
+                    light_members_expanded: false,
+                    light_members_per_row: 4,
                   }
             : item.upstreamId === "custom_card_entity_carousel"
                   ? {

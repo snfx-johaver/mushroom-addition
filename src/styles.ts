@@ -531,6 +531,16 @@ export const sharedStyles = css`
   .sonos-details summary ha-icon { --mdc-icon-size: 20px; transition: transform .2s ease; }
   .sonos-details[open] summary ha-icon { transform: rotate(180deg); }
   .sonos-details-always-visible { padding-top: 4px; }
+  .custom-light { display: grid; gap: 10px; padding: var(--mush-spacing, 12px); }
+  .custom-light .light-brightness { width: 100%; }
+  .light-pulldown summary { display: flex; align-items: center; justify-content: space-between; cursor: pointer; list-style: none; padding: 2px 4px; color: var(--secondary-text-color); font-size: 12px; }
+  .light-pulldown summary::-webkit-details-marker { display: none; }
+  .light-pulldown summary ha-icon { --mdc-icon-size: 20px; transition: transform .2s ease; }
+  .light-pulldown[open] summary ha-icon { transform: rotate(180deg); }
+  .light-members { display: grid; grid-template-columns: repeat(var(--light-members-per-row, 4), minmax(44px, 1fr)); gap: 6px; padding-top: 8px; }
+  .light-members .scene-button.light-member { min-height: calc(var(--mush-icon-size, 36px) * .8 + 36px); padding: 6px 3px; gap: 4px; border-radius: 18px; }
+  .light-members .scene-button.light-member i { width: calc(var(--mush-icon-size, 36px) * .8); height: calc(var(--mush-icon-size, 36px) * .8); }
+  .light-members .scene-button.light-member small { font-size: 11px; line-height: 14px; display: -webkit-box; width: 100%; overflow: hidden; overflow-wrap: anywhere; -webkit-box-orient: vertical; -webkit-line-clamp: 2; color: var(--secondary-text-color); }
   .sonos-switches { display: flex; flex-wrap: wrap; gap: 8px; padding: 4px 0 10px; }
   .sonos-switches button {
     box-shadow: var(--addition-raised-shadow);

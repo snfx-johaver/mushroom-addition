@@ -791,6 +791,17 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
         color("panel_color_5"),
         ...presentation(),
       ]
+    : item.upstreamId === "custom_card_light"
+      ? [
+        entity(["light"]),
+        toggle("light_show_brightness"),
+        toggle("light_show_members"),
+        ...(config?.light_show_members !== false ? [
+          toggle("light_members_expanded"),
+          number("light_members_per_row", 1, 12),
+        ] : []),
+        ...presentation(),
+      ]
     : item.upstreamId === "custom_card_welcome"
       ? [
         entity(["person"]),

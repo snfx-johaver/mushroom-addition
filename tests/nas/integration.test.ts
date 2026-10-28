@@ -17,7 +17,7 @@ const registrations = [
 
 describe("integrated NAS registration and configuration continuation", () => {
   it("adds four distinct picker entries without replacing the original NAS card", () => {
-    expect(CATALOG).toHaveLength(32);
+    expect(CATALOG).toHaveLength(33);
     expect(CATALOG.find((item) => item.upstreamId === "custom_card_nas_metrics")?.name).toBe("NAS");
     for (const item of NAS_CATALOG) {
       const entries = window.customCards!.filter((entry) => entry.type === item.tag);

@@ -118,6 +118,7 @@ const makeItem = (
     custom_card_tablet: "Tablet",
     custom_card_plant: "Flower",
     custom_card_pollen: "Pollen",
+    custom_card_light: "Light",
     custom_card_sun: "Astronomy",
     custom_card_entity_carousel: "Carousel Slider",
     custom_card_media_player_sonos: "Media Player Advanced",
@@ -130,6 +131,7 @@ const makeItem = (
     custom_card_tablet: "Mushroom-style tablet status and maintenance card.",
     custom_card_plant: "Mushroom-style plant health card.",
     custom_card_pollen: "Mushroom-style pollen level card.",
+    custom_card_light: "Mushroom-style light card with brightness control and a pulldown to toggle every light in a light group.",
     custom_card_sun: "Mushroom-style Sun and Moon position, phase, timing, and ephemeris card.",
     custom_card_entity_carousel: "Dependency-free swipeable entity and action carousel with cover-flow navigation.",
     custom_card_media_player_sonos: "Advanced media player with artwork, playback, volume, power or standby controls, shortcuts and optional Sonos sound settings.",
@@ -262,6 +264,7 @@ export const NATIVE_CATALOG: readonly CatalogItem[] = [
     preferredDomains: [],
   },
   makeItem("custom_card_entity_carousel", "src/entity-carousel.ts"),
+  makeItem("custom_card_light", "src/light-card.ts"),
   {
     upstreamId: "advanced_home_energy_management",
     sourcePath: "src/energy-management.ts",

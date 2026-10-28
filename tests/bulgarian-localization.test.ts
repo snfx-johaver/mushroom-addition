@@ -27,14 +27,14 @@ const codeLiterals = (text: string) =>
 
 describe("complete Bulgarian card localization", () => {
   it("adds exactly the missing labels and helpers without changing installed translations", () => {
-    expect(Object.keys(bulgarianLabels)).toHaveLength(773);
-    expect(Object.keys(bulgarianHelpers)).toHaveLength(558);
+    expect(Object.keys(bulgarianLabels)).toHaveLength(777);
+    expect(Object.keys(bulgarianHelpers)).toHaveLength(562);
     expect(Object.keys(installedLabels)).toHaveLength(416);
     expect(Object.keys(installedHelpers)).toHaveLength(1);
     expect(fingerprint(installedLabels)).toBe("2f454396a39f8f335195c5fa4523c94b2d579368a49fde8104a638e5b93a29d0");
     expect(fingerprint(installedHelpers)).toBe("ebabe16006dd0d892b4e4dca06b0fe7191e32bd27a50c95e4caeaedeb2bd4286");
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1189);
-    expect(Object.keys(englishHelpers)).toHaveLength(559);
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1193);
+    expect(Object.keys(englishHelpers)).toHaveLength(563);
     expect(Object.keys(bulgarianLabels).some(key => key.startsWith("ui.graph."))).toBe(false);
 
     for (const [english, installed, additions] of catalogs) {
