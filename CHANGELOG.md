@@ -5,7 +5,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 ## Unreleased
 
 - Scenes Card: new "Scenes per row" setting wraps scene buttons onto additional rows (all scenes are now shown).
-
+- Scenes and Welcome cards: grey off state; Welcome also supports scenes per row.
+- Washer-Dryer Card: program selection dropdown and power button, configurable from the editor.
+- All cards, including the graph cards, now support dashboard Layout size overrides and scale to fill their grid cell.
 ## 0.5.4 - 2026-10-28
 
 - Mini Graph Card: hovering the graph now highlights the nearest series, dims the

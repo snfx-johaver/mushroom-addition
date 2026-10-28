@@ -44,6 +44,10 @@ export class MushroomAdditionCard extends LitElement {
     return { type: "custom:mushroom-addition-card-battery", show_icon: true, show_state: true };
   }
 
+  public getGridOptions(): { columns: number; rows: "auto"; min_columns: number; min_rows: number } {
+    return { columns: 12, rows: "auto", min_columns: 3, min_rows: 1 };
+  }
+
   public getCardSize(): number {
     if (this.descriptor?.upstreamId === "pi_hole_card") return 8;
     if (this.descriptor?.upstreamId === "remote_card") return 8;

@@ -52259,6 +52259,7 @@ const du = fe`
     --addition-raised-shadow: 0 2px 7px rgba(0,0,0,.12);
     container-type: inline-size;
     display: block;
+    height: 100%;
     min-width: 0;
   }
   :host([dark]) {
@@ -52270,6 +52271,7 @@ const du = fe`
   }
   .mushroom-addition-card {
     display: block;
+    height: 100%;
     overflow: hidden;
     box-sizing: border-box;
     border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, #e0e0e0));
@@ -52279,6 +52281,7 @@ const du = fe`
   }
   .mushroom-addition-card:has(.fill-container), .fill-container { height: 100%; }
   .fill-container { min-height: 100%; }
+  .mushroom-addition-card > .action-surface { min-height: 100%; }
   .action-surface {
     box-sizing: border-box;
     color: var(--primary-text-color);
@@ -55225,6 +55228,9 @@ const Li = class Li extends ye {
   }
   static getStubConfig() {
     return { type: "custom:mushroom-addition-card-battery", show_icon: !0, show_state: !0 };
+  }
+  getGridOptions() {
+    return { columns: 12, rows: "auto", min_columns: 3, min_rows: 1 };
   }
   getCardSize() {
     if (this.descriptor?.upstreamId === "pi_hole_card" || this.descriptor?.upstreamId === "remote_card") return 8;

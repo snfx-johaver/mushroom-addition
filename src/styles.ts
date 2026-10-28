@@ -20,6 +20,7 @@ export const sharedStyles = css`
     --addition-raised-shadow: 0 2px 7px rgba(0,0,0,.12);
     container-type: inline-size;
     display: block;
+    height: 100%;
     min-width: 0;
   }
   :host([dark]) {
@@ -31,6 +32,7 @@ export const sharedStyles = css`
   }
   .mushroom-addition-card {
     display: block;
+    height: 100%;
     overflow: hidden;
     box-sizing: border-box;
     border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, #e0e0e0));
@@ -40,6 +42,7 @@ export const sharedStyles = css`
   }
   .mushroom-addition-card:has(.fill-container), .fill-container { height: 100%; }
   .fill-container { min-height: 100%; }
+  .mushroom-addition-card > .action-surface { min-height: 100%; }
   .action-surface {
     box-sizing: border-box;
     color: var(--primary-text-color);
