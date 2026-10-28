@@ -811,6 +811,7 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
           })),
         ]),
         action("welcome_weather_tap_action"),
+        number("scenes_per_row", 1, 24),
         ...Array.from({ length: 5 }, (_, index) => index + 1).flatMap((index) => [
           text(`nav_${index}`),
           { name: `icon_${index}`, selector: { icon: {} } },

@@ -699,6 +699,12 @@ const renderAlarmTimeCard = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
+const isCurrentPath = (nav: string): boolean => {
+  const current = globalThis.location?.pathname ?? "";
+  const target = nav.split(/[?#]/)[0];
+  return Boolean(target) && (current === target || current.replace(/\/+$/, "") === target.replace(/\/+$/, ""));
+};
+
 const renderWelcome = (ctx: RenderContext): TemplateResult => {
   const collapse = entityFromConfig(ctx, "ulm_card_welcome_collapse");
   const weather = entityFromConfig(ctx, "ulm_weather");
@@ -732,7 +738,8 @@ const renderWelcome = (ctx: RenderContext): TemplateResult => {
     icon: configured<string>(ctx, `icon_${index}`) || "mdi:circle",
     name: configured<string>(ctx, `name_${index}`) || localize(ctx.hass, "ui.renderer.item", { number: index }),
     color: configured<string>(ctx, `color_${index}`) || "blue",
-  })).filter((item) => item.nav);
+  })).filter((item) => item.nav).map((item) => ({ ...item, active: isCurrentPath(item.nav!) }));
+  const welcomePerRow = Math.max(1, Math.min(24, Math.floor(Number(ctx.config.scenes_per_row)) || 5));
   return ctx.actionSurface("custom-welcome", html`
     <div class="welcome-toolbar">
       <button aria-label="${localizeText(ctx.hass, "Toggle welcome navigation")}" ?disabled=${!collapse}
@@ -756,8 +763,8 @@ const renderWelcome = (ctx: RenderContext): TemplateResult => {
       </button>
     </div>
     <div class="welcome-greeting">${heading(ctx, timeGreeting(ctx.hass, new Date().getHours()))}</div>
-    ${collapsed ? nothing : html`<div class="welcome-items">${items.map((item) => html`
-      <button class="tone-${item.color}" aria-label=${item.name} title=${item.name}
+    ${collapsed ? nothing : html`<div class="welcome-items" style=${`--scenes-per-row:${welcomePerRow}`}>${items.map((item) => html`
+      <button class="tone-${item.color} ${item.active ? "is-active" : ""}" aria-label=${item.name} title=${item.name}
         @pointerdown=${(event: Event) => event.stopPropagation()}
         @click=${(event: Event) => runControlAction(event, ctx, { action: "navigate", navigation_path: item.nav })}>
         <i><ha-icon .icon=${item.icon}></ha-icon></i><small>${item.name}</small>
