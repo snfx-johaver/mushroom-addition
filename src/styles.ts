@@ -483,7 +483,7 @@ export const sharedStyles = css`
   .input-datetime-controls .ulm-control { width: 100%; height: var(--mush-control-height, 42px); border-radius: var(--mush-control-border-radius, 12px); }
   .input-datetime-row { display: flex; align-items: center; gap: var(--mush-spacing, 12px); }
   .input-datetime-row .custom-card-heading { flex: 1 1 auto; min-width: 0; }
-  .input-datetime-row .input-datetime-controls { flex: 0 1 260px; }
+  .input-datetime-row .input-datetime-controls { flex: 0 1 290px; grid-template-columns: 0.8fr 1.9fr 0.8fr; }
   .input-datetime-controls .datetime-input { box-sizing: border-box; padding: 0 6px; text-align: center; font: inherit; font-size: 16px; font-weight: 700; color: inherit; background: var(--mush-control-bg, var(--secondary-background-color, rgba(128,128,128,.15))); border: 0; min-width: 0; }
   .input-datetime-controls .hold-control { font-size: 16px; font-weight: 700; }
   .custom-sonos, .custom-printer,
