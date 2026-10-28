@@ -2,6 +2,7 @@
 export const finnishLabels: Record<string, string> = {
   icon_type: "Kuvakkeen tyyppi",
   fill_container: "Täytä alue",
+  card_shadow: "Kortin varjo",
   multiline_secondary: "Salli toissijaisen tiedon näyttäminen usealla rivillä",
   primary_info: "Ensisijaiset tiedot",
   secondary_info: "Toissijaiset tiedot",
@@ -899,6 +900,7 @@ export const finnishHelpers: Record<string, string> = {
   layout: "Asettelu",
   multiline_secondary: "Kortti voi kasvaa tekstin vaatiman korkeuden verran, eikä se aina mukaudu ruudukkojärjestelmään.",
   fill_container: "Venyttää kortin täyttämään käytettävissä olevan koontinäytön ruutusolun.",
+  card_shadow: "Lisää pehmeän varjon kortin reunan ympärille. Oletuksena pois.",
   primary_info: "Valitse kortissa näytettävä ensisijainen teksti.",
   secondary_info: "Valitse ensisijaisen tiedon alla näytettävä lisäteksti.",
   tap_action: "Mitä kortin napauttamisesta seuraa.",

@@ -2,6 +2,7 @@
 export const turkishLabels: Record<string, string> = {
   icon_type: "Simge türü",
   fill_container: "Alanı tamamen doldur",
+  card_shadow: "Kart gölgesi",
   multiline_secondary: "İkincil bilgilerin birden çok satırda gösterilmesine izin ver",
   primary_info: "Birincil bilgi",
   secondary_info: "İkincil bilgi",
@@ -899,6 +900,7 @@ export const turkishHelpers: Record<string, string> = {
   layout: "Kart içeriğinin yatay mı dikey mi düzenleneceğini seçin.",
   multiline_secondary: "Metne sığmak için kartı uzatabilir; bu durumda ızgara düzeniyle hizası korunmayabilir.",
   fill_container: "Kartın, panodaki kullanılabilir ızgara hücresini tamamen doldurmasını sağlar.",
+  card_shadow: "Kart kenarlığının etrafına yumuşak bir gölge ekler. Varsayılan olarak kapalı.",
   primary_info: "Kartta gösterilecek ana metni seçin.",
   secondary_info: "Birincil bilginin altında gösterilecek ek metni seçin.",
   tap_action: "Karta dokunulduğunda yapılacak işlem.",

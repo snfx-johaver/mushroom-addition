@@ -158,6 +158,7 @@ const presentation = (room = false): EditorField[] => [
   }),
   presentationField(toggle("multiline_secondary")),
   presentationField(toggle("fill_container")),
+  presentationField(toggle("card_shadow")),
   presentationGrid([
     select("primary_info", [
       { value: "name", label: "Name" },

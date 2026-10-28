@@ -1,6 +1,7 @@
 export const koreanLabels: Record<string, string> = {
   icon_type: "아이콘 타입",
   fill_container: "콘테이너 채우기",
+  card_shadow: "카드 그림자",
   multiline_secondary: "보조 정보를 여러 줄로 표시",
   primary_info: "기본 정보",
   secondary_info: "보조 정보",
@@ -898,6 +899,7 @@ export const koreanHelpers: Record<string, string> = {
   layout: "카드 내용을 가로 또는 세로로 배치할지 선택합니다.",
   multiline_secondary: "텍스트를 모두 표시하기 위해 카드 높이가 커질 수 있으며, 격자 배치와 항상 정렬되지는 않습니다.",
   fill_container: "대시보드 격자 셀의 사용 가능한 공간을 채우도록 카드를 늘립니다.",
+  card_shadow: "카드 테두리 주위에 부드러운 그림자를 추가합니다. 기본적으로 꺼져 있습니다.",
   primary_info: "카드에 표시할 주요 텍스트를 선택합니다.",
   secondary_info: "주요 정보 아래에 표시할 보조 텍스트를 선택합니다.",
   tap_action: "카드를 탭했을 때 실행할 동작입니다.",

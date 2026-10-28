@@ -432,10 +432,11 @@ export class MushroomMiniGraphCard extends LitElement {
       border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, #e0e0e0));
       border-radius: var(--mush-card-primary-border-radius, 14px);
       background: var(--ha-card-background, var(--card-background-color, #fff));
-      box-shadow: var(--ha-card-box-shadow, 0 2px 8px rgba(0,0,0,.08));
+      box-shadow: none;
       color: var(--primary-text-color);
       cursor: pointer;
     }
+    ha-card.card-shadow { box-shadow: var(--ha-card-box-shadow, 0 2px 8px rgba(0,0,0,.08)); }
     ha-card.group { border: 0; border-radius: 0; box-shadow: none; background: transparent; }
     .content { display: flex; flex-direction: column; box-sizing: border-box; min-height: 100%; gap: var(--mush-spacing, 12px); padding: var(--mush-spacing, 12px); }
     .content > * { flex: 0 0 auto; min-width: 0; }
@@ -610,6 +611,7 @@ export class MushroomMiniGraphCard extends LitElement {
     ) : DEFAULT_COLORS[0];
     const classes = [
       this.config.group ? "group" : "",
+      this.config.card_shadow ? "card-shadow" : "",
       show.labels === "hover" || show.labels_secondary === "hover" ? "labels-hover" : "",
     ].filter(Boolean).join(" ");
     return html`

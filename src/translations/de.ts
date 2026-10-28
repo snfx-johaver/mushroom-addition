@@ -1,5 +1,6 @@
 export const germanLabels: Record<string, string> = {
   fill_container: "Container ausfüllen",
+  card_shadow: "Kartenschatten",
   multiline_secondary: "Mehrzeilige Zusatzinformation erlauben",
   primary_info: "Hauptinformation",
   secondary_info: "Zusatzinformation",

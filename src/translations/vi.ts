@@ -2,6 +2,7 @@
 export const vietnameseLabels: Record<string, string> = {
   icon_type: "Kiểu biểu tượng",
   fill_container: "Lấp đầy vùng chứa",
+  card_shadow: "Bóng thẻ",
   multiline_secondary: "Cho phép thông tin phụ hiển thị trên nhiều dòng",
   primary_info: "Thông tin chính",
   secondary_info: "Thông tin phụ",
@@ -912,6 +913,7 @@ export const vietnameseHelpers: Record<string, string> = {
   layout: "Chọn bố cục nội dung thẻ theo chiều ngang hay chiều dọc.",
   multiline_secondary: "Thẻ có thể cao hơn để vừa văn bản và không phải lúc nào cũng thẳng hàng với hệ thống lưới.",
   fill_container: "Kéo giãn thẻ để lấp đầy ô lưới bảng điều khiển hiện có.",
+  card_shadow: "Thêm bóng mềm quanh viền thẻ. Mặc định tắt.",
   primary_info: "Chọn văn bản chính hiển thị trên thẻ.",
   secondary_info: "Chọn văn bản phụ hiển thị bên dưới thông tin chính.",
   tap_action: "Điều gì xảy ra khi chạm vào thẻ.",

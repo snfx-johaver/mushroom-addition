@@ -2,6 +2,7 @@
 export const dutchLabels: Record<string, string> = {
   icon_type: "Soort pictogram",
   fill_container: "Beschikbare ruimte vullen",
+  card_shadow: "Kaartschaduw",
   multiline_secondary: "Secundaire informatie over meerdere regels toestaan",
   primary_info: "Primaire informatie",
   secondary_info: "Secundaire informatie",
@@ -563,6 +564,7 @@ export const dutchHelpers: Record<string, string> = {
   layout: "Kies of de kaartinhoud horizontaal of verticaal wordt gerangschikt.",
   multiline_secondary: "De kaart mag hoger worden om de tekst te laten passen en sluit daardoor niet altijd aan op het rastersysteem.",
   fill_container: "Laat de kaart uitrekken om de beschikbare rastercel van het dashboard te vullen.",
+  card_shadow: "Voegt een zachte schaduw toe rond de rand van de kaart. Standaard uit.",
   primary_info: "Kies de hoofdtekst die de kaart toont.",
   secondary_info: "Kies de aanvullende tekst onder de primaire informatie.",
   tap_action: "Wat er gebeurt wanneer je op de kaart tikt.",

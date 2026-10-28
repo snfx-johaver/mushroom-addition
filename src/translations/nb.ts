@@ -2,6 +2,7 @@
 export const norwegianLabels: Record<string, string> = {
   icon_type: "Ikontype",
   fill_container: "Fyll beholderen",
+  card_shadow: "Kortskygge",
   multiline_secondary: "Tillat sekundærinformasjon over flere linjer",
   primary_info: "Primærinformasjon",
   secondary_info: "Sekundærinformasjon",
@@ -899,6 +900,7 @@ export const norwegianHelpers: Record<string, string> = {
   layout: "Velg om kortinnholdet ordnes horisontalt eller vertikalt.",
   multiline_secondary: "Kortet kan bli høyere for å få plass til teksten og vil ikke alltid passe til rutenettsystemet.",
   fill_container: "Strekker kortet slik at det fyller den tilgjengelige ruten i kontrollpanelet.",
+  card_shadow: "Legger til en myk skygge rundt kortkanten. Av som standard.",
   primary_info: "Velg hovedteksten som kortet viser.",
   secondary_info: "Velg støtteteksten som vises under primærinformasjonen.",
   tap_action: "Hva som skjer når kortet trykkes på.",

@@ -64,7 +64,7 @@ const contentFields = new Set([
   "mini_graph_show_state", "mini_graph_show_top_labels", "mini_graph_name_adaptive_color", "mini_graph_icon_adaptive_color",
 ]);
 const layoutFields = new Set([
-  "layout", "fill_container", "variant", "features_position", "multiline_secondary", "height", "line_width",
+  "layout", "fill_container", "card_shadow", "variant", "features_position", "multiline_secondary", "height", "line_width",
   "bar_spacing", "font_size", "font_size_header", "align_header", "align_icon", "align_state",
   "group", "mini_graph_show_fill", "mini_graph_show_points", "mini_graph_show_labels",
   "mini_graph_show_labels_secondary", "carousel_visible_items", "carousel_initial_index",

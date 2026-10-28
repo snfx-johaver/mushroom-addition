@@ -1,6 +1,7 @@
 export const czechLabels: Record<string, string> = {
   icon_type: "Typ ikony",
   fill_container: "Vyplnit kontejner",
+  card_shadow: "Stín karty",
   multiline_secondary: "Povolit víceřádkové vedlejší informace",
   primary_info: "Hlavní informace",
   secondary_info: "Vedlejší informace",
@@ -898,6 +899,7 @@ export const czechHelpers: Record<string, string> = {
   layout: "Vyberte vodorovné nebo svislé uspořádání obsahu karty.",
   multiline_secondary: "Karta může být vyšší, aby se text vešel, a nemusí vždy lícovat s mřížkou.",
   fill_container: "Roztáhne kartu tak, aby vyplnila dostupnou buňku mřížky přehledu.",
+  card_shadow: "Přidá jemný stín kolem okraje karty. Ve výchozím stavu vypnuto.",
   primary_info: "Vyberte hlavní text zobrazený kartou.",
   secondary_info: "Vyberte doplňkový text zobrazený pod hlavními informacemi.",
   tap_action: "Co se stane při klepnutí na kartu.",

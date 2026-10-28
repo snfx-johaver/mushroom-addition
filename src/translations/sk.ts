@@ -2,6 +2,7 @@
 export const slovakLabels: Record<string, string> = {
   icon_type: "Typ ikony",
   fill_container: "Vyplniť kontajner",
+  card_shadow: "Tieň karty",
   multiline_secondary: "Povoliť viacriadkové vedľajšie informácie",
   primary_info: "Hlavné informácie",
   secondary_info: "Vedľajšie informácie",
@@ -899,6 +900,7 @@ export const slovakHelpers: Record<string, string> = {
   layout: "Vyberte vodorovné alebo zvislé usporiadanie obsahu karty.",
   multiline_secondary: "Karta môže byť vyššia, aby sa text zmestil, a nemusí vždy lícovať so systémom mriežky.",
   fill_container: "Roztiahne kartu tak, aby vyplnila dostupnú bunku mriežky prehľadu.",
+  card_shadow: "Pridá jemný tieň okolo okraja karty. Predvolene vypnuté.",
   primary_info: "Vyberte hlavný text zobrazovaný kartou.",
   secondary_info: "Vyberte doplnkový text pod hlavnými informáciami.",
   tap_action: "Čo sa stane pri ťuknutí na kartu.",

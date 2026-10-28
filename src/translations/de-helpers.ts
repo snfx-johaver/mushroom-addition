@@ -129,6 +129,7 @@ export const germanHelpers: Record<string, string> = {
   layout: "Horizontale oder vertikale Anordnung des Karteninhalts auswählen.",
   multiline_secondary: "Die Karte darf für den Text höher werden und ist dann nicht immer am Raster ausgerichtet.",
   fill_container: "Karte auf die Größe der verfügbaren Dashboard-Rasterzelle ausdehnen.",
+  card_shadow: "Fügt einen weichen Schatten um den Kartenrand hinzu. Standardmäßig aus.",
   primary_info: "Haupttext der Karte auswählen.",
   secondary_info: "Zusatztext unter der Hauptinformation auswählen.",
   tap_action: "Aktion beim Tippen auf die Karte.",

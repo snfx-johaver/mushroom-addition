@@ -1,6 +1,7 @@
 export const swedishLabels: Record<string, string> = {
   icon_type: "Ikontyp",
   fill_container: "Fyll behållaren",
+  card_shadow: "Kortskugga",
   multiline_secondary: "Tillåt sekundär information på flera rader",
   primary_info: "Primär information",
   secondary_info: "Sekundär information",
@@ -901,6 +902,7 @@ export const swedishHelpers: Record<string, string> = {
   layout: "Välj om kortets innehåll ordnas vågrätt eller lodrätt.",
   multiline_secondary: "Kortet kan bli högre för att rymma texten och passar då inte alltid in i rutnätet.",
   fill_container: "Sträcker ut kortet så att det fyller den tillgängliga rutnätscellen på instrumentpanelen.",
+  card_shadow: "Lägger till en mjuk skugga runt kortets kant. Av som standard.",
   primary_info: "Välj kortets huvudtext.",
   secondary_info: "Välj den kompletterande texten under primärinformationen.",
   tap_action: "Vad som händer när du trycker på kortet.",

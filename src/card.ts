@@ -191,7 +191,7 @@ export class MushroomAdditionCard extends LitElement {
         @pointercancel=${this.pointerUp} @keydown=${this.keydown}>
         ${content}
       </div>`;
-    return html`<ha-card class="mushroom-addition-card">${surface}</ha-card>`;
+    return html`<ha-card class="mushroom-addition-card${this.config?.card_shadow ? " card-shadow" : ""}">${surface}</ha-card>`;
   };
 
   private readonly keydown = (event: KeyboardEvent): void => {

@@ -4,8 +4,8 @@ import { placeholders } from "../src/translation-coverage";
 import { russianHelpers, russianLabels } from "../src/translations/ru";
 
 const catalogs = [
-  { english: translationCatalogs.en, baseline: translationCatalogs.ru, additions: russianLabels, installed: 416, added: 766 },
-  { english: englishHelpers, baseline: helperCatalogs.ru, additions: russianHelpers, installed: 1, added: 551 },
+  { english: translationCatalogs.en, baseline: translationCatalogs.ru, additions: russianLabels, installed: 416, added: 767 },
+  { english: englishHelpers, baseline: helperCatalogs.ru, additions: russianHelpers, installed: 1, added: 552 },
 ];
 
 describe("complete Russian card localization", () => {

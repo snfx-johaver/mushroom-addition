@@ -2,6 +2,7 @@
 export const arabicLabels: Record<string, string> = {
   "icon_type": "نوع الأيقونة",
   "fill_container": "ملء الحاوية",
+  "card_shadow": "ظل البطاقة",
   "multiline_secondary": "السماح بتعدد أسطر المعلومات الفرعية",
   "primary_info": "المعلومات الأساسية",
   "secondary_info": "المعلومات الفرعية",
@@ -899,6 +900,7 @@ export const arabicHelpers: Record<string, string> = {
   "layout": "اختر ترتيب محتوى البطاقة أفقيًا أو عموديًا.",
   "multiline_secondary": "قد يزيد ارتفاع البطاقة ليتسع للنص، ولن تتوافق دائمًا مع نظام الشبكة.",
   "fill_container": "يمدّد البطاقة لملء خلية شبكة لوحة التحكم المتاحة.",
+  "card_shadow": "يضيف ظلًا ناعمًا حول حدود البطاقة. معطل افتراضيًا.",
   "primary_info": "اختر النص الأساسي الذي تعرضه البطاقة.",
   "secondary_info": "اختر النص الداعم الظاهر أسفل المعلومات الأساسية.",
   "tap_action": "ما يحدث عند النقر على البطاقة.",

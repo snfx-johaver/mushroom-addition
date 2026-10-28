@@ -4,6 +4,7 @@ import { runtimeEnglishLabels } from "./runtime";
 export const frenchLabels: Record<string, string> = {
   icon_type: "Type d’icône",
   fill_container: "Remplir l’espace disponible",
+  card_shadow: "Ombre de la carte",
   multiline_secondary: "Autoriser les informations secondaires sur plusieurs lignes",
   primary_info: "Information principale",
   secondary_info: "Information secondaire",
@@ -900,6 +901,7 @@ export const frenchHelpers: Record<string, string> = {
   layout: "Choisir une disposition horizontale ou verticale du contenu de la carte.",
   multiline_secondary: "La carte peut être plus haute pour accueillir le texte et ne sera pas toujours alignée sur la grille.",
   fill_container: "Étire la carte pour remplir la cellule de grille disponible du tableau de bord.",
+  card_shadow: "Ajoute une ombre douce autour de la bordure de la carte. Désactivé par défaut.",
   primary_info: "Choisir le texte principal affiché par la carte.",
   secondary_info: "Choisir le texte d’accompagnement affiché sous l’information principale.",
   tap_action: "Ce qui se passe lorsque la carte est touchée.",

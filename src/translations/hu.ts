@@ -1,6 +1,7 @@
 export const hungarianLabels: Record<string, string> = {
   icon_type: "Ikon típusa",
   fill_container: "Tároló kitöltése",
+  card_shadow: "Kártyaárnyék",
   multiline_secondary: "Többsoros másodlagos információ engedélyezése",
   primary_info: "Elsődleges információ",
   secondary_info: "Másodlagos információ",
@@ -900,6 +901,7 @@ export const hungarianHelpers: Record<string, string> = {
   layout: "A kártyatartalom vízszintes vagy függőleges elrendezése.",
   multiline_secondary: "A kártya megnőhet, hogy elférjen a szöveg, és emiatt nem feltétlenül igazodik a rácshoz.",
   fill_container: "A kártyát az irányítópult rendelkezésre álló rácscellájának kitöltéséhez nyújtja.",
+  card_shadow: "Lágy árnyékot ad a kártya széle köré. Alapértelmezetten ki van kapcsolva.",
   primary_info: "Válaszd ki a kártya fő szövegét.",
   secondary_info: "Válaszd ki az elsődleges információ alatti kiegészítő szöveget.",
   tap_action: "Mi történjen a kártyára koppintáskor.",

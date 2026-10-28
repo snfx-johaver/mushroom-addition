@@ -2,6 +2,7 @@
 export const slovenianLabels: Record<string, string> = {
   icon_type: "Vrsta ikone",
   fill_container: "Zapolnitev prostora",
+  card_shadow: "Senca kartice",
   multiline_secondary: "Dovoli večvrstično sekundarno informacijo",
   primary_info: "Primarna informacija",
   secondary_info: "Sekundarna informacija",
@@ -899,6 +900,7 @@ export const slovenianHelpers: Record<string, string> = {
   layout: "Izberite vodoravno ali navpično razporeditev vsebine kartice.",
   multiline_secondary: "Kartica je lahko višja, da se besedilo prilega, zato ne bo vedno poravnana z mrežo.",
   fill_container: "Raztegne kartico, da zapolni razpoložljivo celico mreže na nadzorni plošči.",
+  card_shadow: "Doda mehko senco okoli roba kartice. Privzeto izklopljeno.",
   primary_info: "Izberite glavno besedilo, ki ga prikazuje kartica.",
   secondary_info: "Izberite dopolnilno besedilo pod primarno informacijo.",
   tap_action: "Kaj se zgodi ob dotiku kartice.",

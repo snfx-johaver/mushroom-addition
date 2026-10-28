@@ -396,7 +396,7 @@ const { is: ys, defineProperty: bs, getOwnPropertyDescriptor: vs, getOwnProperty
   return a;
 } }, si = (e, t) => !ys(e, t), Wi = { attribute: !0, type: String, converter: Oa, reflect: !1, useDefault: !1, hasChanged: si };
 Symbol.metadata ??= /* @__PURE__ */ Symbol("metadata"), rn.litPropertyMetadata ??= /* @__PURE__ */ new WeakMap();
-let St = class extends HTMLElement {
+let At = class extends HTMLElement {
   static addInitializer(t) {
     this._$Ei(), (this.l ??= []).push(t);
   }
@@ -577,14 +577,14 @@ let St = class extends HTMLElement {
   firstUpdated(t) {
   }
 };
-St.elementStyles = [], St.shadowRootOptions = { mode: "open" }, St[ra("elementProperties")] = /* @__PURE__ */ new Map(), St[ra("finalized")] = /* @__PURE__ */ new Map(), js?.({ ReactiveElement: St }), (rn.reactiveElementVersions ??= []).push("2.1.2");
+At.elementStyles = [], At.shadowRootOptions = { mode: "open" }, At[ra("elementProperties")] = /* @__PURE__ */ new Map(), At[ra("finalized")] = /* @__PURE__ */ new Map(), js?.({ ReactiveElement: At }), (rn.reactiveElementVersions ??= []).push("2.1.2");
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
 const li = globalThis, Gi = (e) => e, qa = li.trustedTypes, Zi = qa ? qa.createPolicy("lit-html", { createHTML: (e) => e }) : void 0, Ur = "$lit$", it = `lit$${Math.random().toFixed(9).slice(2)}$`, Fr = "?" + it, Ss = `<${Fr}>`, ht = document, ca = () => ht.createComment(""), ma = (e) => e === null || typeof e != "object" && typeof e != "function", _i = Array.isArray, As = (e) => _i(e) || typeof e?.[Symbol.iterator] == "function", fn = `[ 	
-\f\r]`, Gt = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, Yi = /-->/g, Ji = />/g, _t = RegExp(`>|${fn}(?:([^\\s"'>=/]+)(${fn}*=${fn}*(?:[^ 	
+\f\r]`, Zt = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, Yi = /-->/g, Ji = />/g, _t = RegExp(`>|${fn}(?:([^\\s"'>=/]+)(${fn}*=${fn}*(?:[^ 	
 \f\r"'\`<>=]|("|')|))|$)`, "g"), Qi = /'/g, Xi = /"/g, Kr = /^(?:script|style|textarea|title)$/i, Wr = (e) => (t, ...a) => ({ _$litType$: e, strings: t, values: a }), _ = Wr(1), K = Wr(2), Ne = /* @__PURE__ */ Symbol.for("lit-noChange"), p = /* @__PURE__ */ Symbol.for("lit-nothing"), er = /* @__PURE__ */ new WeakMap(), mt = ht.createTreeWalker(ht, 129);
 function Gr(e, t) {
   if (!_i(e) || !e.hasOwnProperty("raw")) throw Error("invalid template strings array");
@@ -592,13 +592,13 @@ function Gr(e, t) {
 }
 const xs = (e, t) => {
   const a = e.length - 1, n = [];
-  let i, r = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", o = Gt;
+  let i, r = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", o = Zt;
   for (let s = 0; s < a; s++) {
     const l = e[s];
     let d, c, m = -1, h = 0;
-    for (; h < l.length && (o.lastIndex = h, c = o.exec(l), c !== null); ) h = o.lastIndex, o === Gt ? c[1] === "!--" ? o = Yi : c[1] !== void 0 ? o = Ji : c[2] !== void 0 ? (Kr.test(c[2]) && (i = RegExp("</" + c[2], "g")), o = _t) : c[3] !== void 0 && (o = _t) : o === _t ? c[0] === ">" ? (o = i ?? Gt, m = -1) : c[1] === void 0 ? m = -2 : (m = o.lastIndex - c[2].length, d = c[1], o = c[3] === void 0 ? _t : c[3] === '"' ? Xi : Qi) : o === Xi || o === Qi ? o = _t : o === Yi || o === Ji ? o = Gt : (o = _t, i = void 0);
+    for (; h < l.length && (o.lastIndex = h, c = o.exec(l), c !== null); ) h = o.lastIndex, o === Zt ? c[1] === "!--" ? o = Yi : c[1] !== void 0 ? o = Ji : c[2] !== void 0 ? (Kr.test(c[2]) && (i = RegExp("</" + c[2], "g")), o = _t) : c[3] !== void 0 && (o = _t) : o === _t ? c[0] === ">" ? (o = i ?? Zt, m = -1) : c[1] === void 0 ? m = -2 : (m = o.lastIndex - c[2].length, d = c[1], o = c[3] === void 0 ? _t : c[3] === '"' ? Xi : Qi) : o === Xi || o === Qi ? o = _t : o === Yi || o === Ji ? o = Zt : (o = _t, i = void 0);
     const g = o === _t && e[s + 1].startsWith("/>") ? " " : "";
-    r += o === Gt ? l + Ss : m >= 0 ? (n.push(d), l.slice(0, m) + Ur + l.slice(m) + it + g) : l + it + (m === -2 ? s : g);
+    r += o === Zt ? l + Ss : m >= 0 ? (n.push(d), l.slice(0, m) + Ur + l.slice(m) + it + g) : l + it + (m === -2 ? s : g);
   }
   return [Gr(e, r + (e[a] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), n];
 };
@@ -639,11 +639,11 @@ class pa {
     return n.innerHTML = t, n;
   }
 }
-function Dt(e, t, a = e, n) {
+function Lt(e, t, a = e, n) {
   if (t === Ne) return t;
   let i = n !== void 0 ? a._$Co?.[n] : a._$Cl;
   const r = ma(t) ? void 0 : t._$litDirective$;
-  return i?.constructor !== r && (i?._$AO?.(!1), r === void 0 ? i = void 0 : (i = new r(e), i._$AT(e, a, n)), n !== void 0 ? (a._$Co ??= [])[n] = i : a._$Cl = i), i !== void 0 && (t = Dt(e, i._$AS(e, t.values), i, n)), t;
+  return i?.constructor !== r && (i?._$AO?.(!1), r === void 0 ? i = void 0 : (i = new r(e), i._$AT(e, a, n)), n !== void 0 ? (a._$Co ??= [])[n] = i : a._$Cl = i), i !== void 0 && (t = Lt(e, i._$AS(e, t.values), i, n)), t;
 }
 class Ps {
   constructor(t, a) {
@@ -662,7 +662,7 @@ class Ps {
     for (; l !== void 0; ) {
       if (o === l.index) {
         let d;
-        l.type === 2 ? d = new Ot(r, r.nextSibling, this, t) : l.type === 1 ? d = new l.ctor(r, l.name, l.strings, this, t) : l.type === 6 && (d = new Ts(r, this, t)), this._$AV.push(d), l = n[++s];
+        l.type === 2 ? d = new qt(r, r.nextSibling, this, t) : l.type === 1 ? d = new l.ctor(r, l.name, l.strings, this, t) : l.type === 6 && (d = new Ts(r, this, t)), this._$AV.push(d), l = n[++s];
       }
       o !== l?.index && (r = mt.nextNode(), o++);
     }
@@ -673,7 +673,7 @@ class Ps {
     for (const n of this._$AV) n !== void 0 && (n.strings !== void 0 ? (n._$AI(t, n, a), a += n.strings.length - 2) : n._$AI(t[a])), a++;
   }
 }
-class Ot {
+class qt {
   get _$AU() {
     return this._$AM?._$AU ?? this._$Cv;
   }
@@ -692,7 +692,7 @@ class Ot {
     return this._$AB;
   }
   _$AI(t, a = this) {
-    t = Dt(this, t, a), ma(t) ? t === p || t == null || t === "" ? (this._$AH !== p && this._$AR(), this._$AH = p) : t !== this._$AH && t !== Ne && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : As(t) ? this.k(t) : this._(t);
+    t = Lt(this, t, a), ma(t) ? t === p || t == null || t === "" ? (this._$AH !== p && this._$AR(), this._$AH = p) : t !== this._$AH && t !== Ne && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : As(t) ? this.k(t) : this._(t);
   }
   O(t) {
     return this._$AA.parentNode.insertBefore(t, this._$AB);
@@ -719,7 +719,7 @@ class Ot {
     _i(this._$AH) || (this._$AH = [], this._$AR());
     const a = this._$AH;
     let n, i = 0;
-    for (const r of t) i === a.length ? a.push(n = new Ot(this.O(ca()), this.O(ca()), this, this.options)) : n = a[i], n._$AI(r), i++;
+    for (const r of t) i === a.length ? a.push(n = new qt(this.O(ca()), this.O(ca()), this, this.options)) : n = a[i], n._$AI(r), i++;
     i < a.length && (this._$AR(n && n._$AB.nextSibling, i), a.length = i);
   }
   _$AR(t = this._$AA.nextSibling, a) {
@@ -745,11 +745,11 @@ class on {
   _$AI(t, a = this, n, i) {
     const r = this.strings;
     let o = !1;
-    if (r === void 0) t = Dt(this, t, a, 0), o = !ma(t) || t !== this._$AH && t !== Ne, o && (this._$AH = t);
+    if (r === void 0) t = Lt(this, t, a, 0), o = !ma(t) || t !== this._$AH && t !== Ne, o && (this._$AH = t);
     else {
       const s = t;
       let l, d;
-      for (t = r[0], l = 0; l < r.length - 1; l++) d = Dt(this, s[n + l], a, l), d === Ne && (d = this._$AH[l]), o ||= !ma(d) || d !== this._$AH[l], d === p ? t = p : t !== p && (t += (d ?? "") + r[l + 1]), this._$AH[l] = d;
+      for (t = r[0], l = 0; l < r.length - 1; l++) d = Lt(this, s[n + l], a, l), d === Ne && (d = this._$AH[l]), o ||= !ma(d) || d !== this._$AH[l], d === p ? t = p : t !== p && (t += (d ?? "") + r[l + 1]), this._$AH[l] = d;
     }
     o && !i && this.j(t);
   }
@@ -778,7 +778,7 @@ class Cs extends on {
     super(t, a, n, i, r), this.type = 5;
   }
   _$AI(t, a = this) {
-    if ((t = Dt(this, t, a, 0) ?? p) === Ne) return;
+    if ((t = Lt(this, t, a, 0) ?? p) === Ne) return;
     const n = this._$AH, i = t === p && n !== p || t.capture !== n.capture || t.once !== n.once || t.passive !== n.passive, r = t !== p && (n === p || i);
     i && this.element.removeEventListener(this.name, this, n), r && this.element.addEventListener(this.name, this, t), this._$AH = t;
   }
@@ -794,17 +794,17 @@ class Ts {
     return this._$AM._$AU;
   }
   _$AI(t) {
-    Dt(this, t);
+    Lt(this, t);
   }
 }
-const $s = { I: Ot }, Ns = li.litHtmlPolyfillSupport;
-Ns?.(pa, Ot), (li.litHtmlVersions ??= []).push("3.3.3");
+const $s = { I: qt }, Ns = li.litHtmlPolyfillSupport;
+Ns?.(pa, qt), (li.litHtmlVersions ??= []).push("3.3.3");
 const Zr = (e, t, a) => {
   const n = a?.renderBefore ?? t;
   let i = n._$litPart$;
   if (i === void 0) {
     const r = a?.renderBefore ?? null;
-    n._$litPart$ = i = new Ot(t.insertBefore(ca(), r), r, void 0, a ?? {});
+    n._$litPart$ = i = new qt(t.insertBefore(ca(), r), r, void 0, a ?? {});
   }
   return i._$AI(e), i;
 };
@@ -814,7 +814,7 @@ const Zr = (e, t, a) => {
  * SPDX-License-Identifier: BSD-3-Clause
  */
 const di = globalThis;
-let ye = class extends St {
+let ye = class extends At {
   constructor() {
     super(...arguments), this.renderOptions = { host: this }, this._$Do = void 0;
   }
@@ -845,7 +845,7 @@ Vs?.({ LitElement: ye });
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const qt = (e) => (t, a) => {
+const Ut = (e) => (t, a) => {
   a !== void 0 ? a.addInitializer(() => {
     customElements.define(e, t);
   }) : customElements.define(e, t);
@@ -917,7 +917,7 @@ let za = class {
  * Copyright 2020 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const { I: Hs } = $s, tr = (e) => e, Yr = (e) => e.strings === void 0, ar = () => document.createComment(""), Zt = (e, t, a) => {
+const { I: Hs } = $s, tr = (e) => e, Yr = (e) => e.strings === void 0, ar = () => document.createComment(""), Yt = (e, t, a) => {
   const n = e._$AA.parentNode, i = t === void 0 ? e._$AB : t._$AA;
   if (a === void 0) {
     const r = n.insertBefore(ar(), i), o = n.insertBefore(ar(), i);
@@ -973,19 +973,19 @@ const nr = (e, t, a) => {
     else if (i[h] === null) h--;
     else if (s[m] === o[g]) l[g] = dt(i[m], r[g]), m++, g++;
     else if (s[h] === o[y]) l[y] = dt(i[h], r[y]), h--, y--;
-    else if (s[m] === o[y]) l[y] = dt(i[m], r[y]), Zt(e, l[y + 1], i[m]), m++, y--;
-    else if (s[h] === o[g]) l[g] = dt(i[h], r[g]), Zt(e, i[m], i[h]), h--, g++;
+    else if (s[m] === o[y]) l[y] = dt(i[m], r[y]), Yt(e, l[y + 1], i[m]), m++, y--;
+    else if (s[h] === o[g]) l[g] = dt(i[h], r[g]), Yt(e, i[m], i[h]), h--, g++;
     else if (d === void 0 && (d = nr(o, g, y), c = nr(s, m, h)), d.has(s[m])) if (d.has(s[h])) {
       const k = c.get(o[g]), S = k !== void 0 ? i[k] : null;
       if (S === null) {
-        const f = Zt(e, i[m]);
+        const f = Yt(e, i[m]);
         dt(f, r[g]), l[g] = f;
-      } else l[g] = dt(S, r[g]), Zt(e, i[m], S), i[k] = null;
+      } else l[g] = dt(S, r[g]), Yt(e, i[m], S), i[k] = null;
       g++;
     } else wn(i[h]), h--;
     else wn(i[m]), m++;
     for (; g <= y; ) {
-      const k = Zt(e, l[y + 1]);
+      const k = Yt(e, l[y + 1]);
       dt(k, r[g]), l[g++] = k;
     }
     for (; m <= h; ) {
@@ -995,7 +995,7 @@ const nr = (e, t, a) => {
     return this.ut = o, ui(e, l), Ne;
   }
 });
-var At = "M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z", Jr = "M21.81 10.25C21.75 10.21 21.25 9.82 20.17 9.82C19.89 9.82 19.61 9.85 19.33 9.9C19.12 8.5 17.95 7.79 17.9 7.76L17.61 7.59L17.43 7.86C17.19 8.22 17 8.63 16.92 9.05C16.72 9.85 16.84 10.61 17.25 11.26C16.76 11.54 15.96 11.61 15.79 11.61H2.62C2.28 11.61 2 11.89 2 12.24C2 13.39 2.18 14.54 2.58 15.62C3.03 16.81 3.71 17.69 4.58 18.23C5.56 18.83 7.17 19.17 9 19.17C9.79 19.17 10.61 19.1 11.42 18.95C12.54 18.75 13.62 18.36 14.61 17.79C15.43 17.32 16.16 16.72 16.78 16C17.83 14.83 18.45 13.5 18.9 12.35H19.09C20.23 12.35 20.94 11.89 21.33 11.5C21.59 11.26 21.78 10.97 21.92 10.63L22 10.39L21.81 10.25M3.85 11.24H5.61C5.69 11.24 5.77 11.17 5.77 11.08V9.5C5.77 9.42 5.7 9.34 5.61 9.34H3.85C3.76 9.34 3.69 9.41 3.69 9.5V11.08C3.7 11.17 3.76 11.24 3.85 11.24M6.28 11.24H8.04C8.12 11.24 8.2 11.17 8.2 11.08V9.5C8.2 9.42 8.13 9.34 8.04 9.34H6.28C6.19 9.34 6.12 9.41 6.12 9.5V11.08C6.13 11.17 6.19 11.24 6.28 11.24M8.75 11.24H10.5C10.6 11.24 10.67 11.17 10.67 11.08V9.5C10.67 9.42 10.61 9.34 10.5 9.34H8.75C8.67 9.34 8.6 9.41 8.6 9.5V11.08C8.6 11.17 8.66 11.24 8.75 11.24M11.19 11.24H12.96C13.04 11.24 13.11 11.17 13.11 11.08V9.5C13.11 9.42 13.05 9.34 12.96 9.34H11.19C11.11 9.34 11.04 9.41 11.04 9.5V11.08C11.04 11.17 11.11 11.24 11.19 11.24M6.28 9H8.04C8.12 9 8.2 8.91 8.2 8.82V7.25C8.2 7.16 8.13 7.09 8.04 7.09H6.28C6.19 7.09 6.12 7.15 6.12 7.25V8.82C6.13 8.91 6.19 9 6.28 9M8.75 9H10.5C10.6 9 10.67 8.91 10.67 8.82V7.25C10.67 7.16 10.61 7.09 10.5 7.09H8.75C8.67 7.09 8.6 7.15 8.6 7.25V8.82C8.6 8.91 8.66 9 8.75 9M11.19 9H12.96C13.04 9 13.11 8.91 13.11 8.82V7.25C13.11 7.16 13.04 7.09 12.96 7.09H11.19C11.11 7.09 11.04 7.15 11.04 7.25V8.82C11.04 8.91 11.11 9 11.19 9M11.19 6.72H12.96C13.04 6.72 13.11 6.65 13.11 6.56V5C13.11 4.9 13.04 4.83 12.96 4.83H11.19C11.11 4.83 11.04 4.89 11.04 5V6.56C11.04 6.64 11.11 6.72 11.19 6.72M13.65 11.24H15.41C15.5 11.24 15.57 11.17 15.57 11.08V9.5C15.57 9.42 15.5 9.34 15.41 9.34H13.65C13.57 9.34 13.5 9.41 13.5 9.5V11.08C13.5 11.17 13.57 11.24 13.65 11.24", ea = "M21 11H3V9H21V11M21 13H3V15H21V13Z", Ha = "M6,2H18A2,2 0 0,1 20,4V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V4A2,2 0 0,1 6,2M12,4A6,6 0 0,0 6,10C6,13.31 8.69,16 12.1,16L11.22,13.77C10.95,13.29 11.11,12.68 11.59,12.4L12.45,11.9C12.93,11.63 13.54,11.79 13.82,12.27L15.74,14.69C17.12,13.59 18,11.9 18,10A6,6 0 0,0 12,4M12,9A1,1 0 0,1 13,10A1,1 0 0,1 12,11A1,1 0 0,1 11,10A1,1 0 0,1 12,9M7,18A1,1 0 0,0 6,19A1,1 0 0,0 7,20A1,1 0 0,0 8,19A1,1 0 0,0 7,18M12.09,13.27L14.58,19.58L17.17,18.08L12.95,12.77L12.09,13.27Z", Qr = "M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z", Rs = "M16.56,5.44L15.11,6.89C16.84,7.94 18,9.83 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12C6,9.83 7.16,7.94 8.88,6.88L7.44,5.44C5.36,6.88 4,9.28 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,9.28 18.64,6.88 16.56,5.44M13,3H11V13H13", Os = "M12,4C14.1,4 16.1,4.8 17.6,6.3C20.7,9.4 20.7,14.5 17.6,17.6C15.8,19.5 13.3,20.2 10.9,19.9L11.4,17.9C13.1,18.1 14.9,17.5 16.2,16.2C18.5,13.9 18.5,10.1 16.2,7.7C15.1,6.6 13.5,6 12,6V10.6L7,5.6L12,0.6V4M6.3,17.6C3.7,15 3.3,11 5.1,7.9L6.6,9.4C5.5,11.6 5.9,14.4 7.8,16.2C8.3,16.7 8.9,17.1 9.6,17.4L9,19.4C8,19 7.1,18.4 6.3,17.6Z", ci = "M4,1H20A1,1 0 0,1 21,2V6A1,1 0 0,1 20,7H4A1,1 0 0,1 3,6V2A1,1 0 0,1 4,1M4,9H20A1,1 0 0,1 21,10V14A1,1 0 0,1 20,15H4A1,1 0 0,1 3,14V10A1,1 0 0,1 4,9M4,17H20A1,1 0 0,1 21,18V22A1,1 0 0,1 20,23H4A1,1 0 0,1 3,22V18A1,1 0 0,1 4,17M9,5H10V3H9V5M9,13H10V11H9V13M9,21H10V19H9V21M5,3V5H7V3H5M5,11V13H7V11H5M5,19V21H7V19H5Z", qs = "M3,11H11V3H3M3,21H11V13H3M13,21H21V13H13M13,3V11H21V3", Us = "M9,5V9H21V5M9,19H21V15H9M9,14H21V10H9M4,9H8V5H4M4,19H8V15H4M4,14H8V10H4V14Z";
+var xt = "M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z", Jr = "M21.81 10.25C21.75 10.21 21.25 9.82 20.17 9.82C19.89 9.82 19.61 9.85 19.33 9.9C19.12 8.5 17.95 7.79 17.9 7.76L17.61 7.59L17.43 7.86C17.19 8.22 17 8.63 16.92 9.05C16.72 9.85 16.84 10.61 17.25 11.26C16.76 11.54 15.96 11.61 15.79 11.61H2.62C2.28 11.61 2 11.89 2 12.24C2 13.39 2.18 14.54 2.58 15.62C3.03 16.81 3.71 17.69 4.58 18.23C5.56 18.83 7.17 19.17 9 19.17C9.79 19.17 10.61 19.1 11.42 18.95C12.54 18.75 13.62 18.36 14.61 17.79C15.43 17.32 16.16 16.72 16.78 16C17.83 14.83 18.45 13.5 18.9 12.35H19.09C20.23 12.35 20.94 11.89 21.33 11.5C21.59 11.26 21.78 10.97 21.92 10.63L22 10.39L21.81 10.25M3.85 11.24H5.61C5.69 11.24 5.77 11.17 5.77 11.08V9.5C5.77 9.42 5.7 9.34 5.61 9.34H3.85C3.76 9.34 3.69 9.41 3.69 9.5V11.08C3.7 11.17 3.76 11.24 3.85 11.24M6.28 11.24H8.04C8.12 11.24 8.2 11.17 8.2 11.08V9.5C8.2 9.42 8.13 9.34 8.04 9.34H6.28C6.19 9.34 6.12 9.41 6.12 9.5V11.08C6.13 11.17 6.19 11.24 6.28 11.24M8.75 11.24H10.5C10.6 11.24 10.67 11.17 10.67 11.08V9.5C10.67 9.42 10.61 9.34 10.5 9.34H8.75C8.67 9.34 8.6 9.41 8.6 9.5V11.08C8.6 11.17 8.66 11.24 8.75 11.24M11.19 11.24H12.96C13.04 11.24 13.11 11.17 13.11 11.08V9.5C13.11 9.42 13.05 9.34 12.96 9.34H11.19C11.11 9.34 11.04 9.41 11.04 9.5V11.08C11.04 11.17 11.11 11.24 11.19 11.24M6.28 9H8.04C8.12 9 8.2 8.91 8.2 8.82V7.25C8.2 7.16 8.13 7.09 8.04 7.09H6.28C6.19 7.09 6.12 7.15 6.12 7.25V8.82C6.13 8.91 6.19 9 6.28 9M8.75 9H10.5C10.6 9 10.67 8.91 10.67 8.82V7.25C10.67 7.16 10.61 7.09 10.5 7.09H8.75C8.67 7.09 8.6 7.15 8.6 7.25V8.82C8.6 8.91 8.66 9 8.75 9M11.19 9H12.96C13.04 9 13.11 8.91 13.11 8.82V7.25C13.11 7.16 13.04 7.09 12.96 7.09H11.19C11.11 7.09 11.04 7.15 11.04 7.25V8.82C11.04 8.91 11.11 9 11.19 9M11.19 6.72H12.96C13.04 6.72 13.11 6.65 13.11 6.56V5C13.11 4.9 13.04 4.83 12.96 4.83H11.19C11.11 4.83 11.04 4.89 11.04 5V6.56C11.04 6.64 11.11 6.72 11.19 6.72M13.65 11.24H15.41C15.5 11.24 15.57 11.17 15.57 11.08V9.5C15.57 9.42 15.5 9.34 15.41 9.34H13.65C13.57 9.34 13.5 9.41 13.5 9.5V11.08C13.5 11.17 13.57 11.24 13.65 11.24", ea = "M21 11H3V9H21V11M21 13H3V15H21V13Z", Ha = "M6,2H18A2,2 0 0,1 20,4V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V4A2,2 0 0,1 6,2M12,4A6,6 0 0,0 6,10C6,13.31 8.69,16 12.1,16L11.22,13.77C10.95,13.29 11.11,12.68 11.59,12.4L12.45,11.9C12.93,11.63 13.54,11.79 13.82,12.27L15.74,14.69C17.12,13.59 18,11.9 18,10A6,6 0 0,0 12,4M12,9A1,1 0 0,1 13,10A1,1 0 0,1 12,11A1,1 0 0,1 11,10A1,1 0 0,1 12,9M7,18A1,1 0 0,0 6,19A1,1 0 0,0 7,20A1,1 0 0,0 8,19A1,1 0 0,0 7,18M12.09,13.27L14.58,19.58L17.17,18.08L12.95,12.77L12.09,13.27Z", Qr = "M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z", Rs = "M16.56,5.44L15.11,6.89C16.84,7.94 18,9.83 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12C6,9.83 7.16,7.94 8.88,6.88L7.44,5.44C5.36,6.88 4,9.28 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,9.28 18.64,6.88 16.56,5.44M13,3H11V13H13", Os = "M12,4C14.1,4 16.1,4.8 17.6,6.3C20.7,9.4 20.7,14.5 17.6,17.6C15.8,19.5 13.3,20.2 10.9,19.9L11.4,17.9C13.1,18.1 14.9,17.5 16.2,16.2C18.5,13.9 18.5,10.1 16.2,7.7C15.1,6.6 13.5,6 12,6V10.6L7,5.6L12,0.6V4M6.3,17.6C3.7,15 3.3,11 5.1,7.9L6.6,9.4C5.5,11.6 5.9,14.4 7.8,16.2C8.3,16.7 8.9,17.1 9.6,17.4L9,19.4C8,19 7.1,18.4 6.3,17.6Z", ci = "M4,1H20A1,1 0 0,1 21,2V6A1,1 0 0,1 20,7H4A1,1 0 0,1 3,6V2A1,1 0 0,1 4,1M4,9H20A1,1 0 0,1 21,10V14A1,1 0 0,1 20,15H4A1,1 0 0,1 3,14V10A1,1 0 0,1 4,9M4,17H20A1,1 0 0,1 21,18V22A1,1 0 0,1 20,23H4A1,1 0 0,1 3,22V18A1,1 0 0,1 4,17M9,5H10V3H9V5M9,13H10V11H9V13M9,21H10V19H9V21M5,3V5H7V3H5M5,11V13H7V11H5M5,19V21H7V19H5Z", qs = "M3,11H11V3H3M3,21H11V13H3M13,21H21V13H13M13,3V11H21V3", Us = "M9,5V9H21V5M9,19H21V15H9M9,14H21V10H9M4,9H8V5H4M4,19H8V15H4M4,14H8V10H4V14Z";
 const Fs = [
   {
     upstreamId: "nas_server",
@@ -1066,11 +1066,11 @@ function lo(e) {
 function pe(e) {
   return e.nas_source ?? "synology_dsm";
 }
-function Lt(e) {
+function Ht(e) {
   return e.container_source ?? (e.portainer_endpoint ? "portainer" : e.containers?.length ? "manual" : e.type.includes("docker") ? "portainer" : "disabled");
 }
-function Mt(e) {
-  return !e.type.includes("docker") && pe(e) !== "manual" || (e.type.includes("docker") || e.type.includes("dashboard")) && Lt(e) === "portainer";
+function Ct(e) {
+  return !e.type.includes("docker") && pe(e) !== "manual" || (e.type.includes("docker") || e.type.includes("dashboard")) && Ht(e) === "portainer";
 }
 const Ks = [
   "battery",
@@ -1268,12 +1268,12 @@ const Ks = [
     variantLabels: { "welcome-pills": "Welcome scene pills", "scene-grid": "Scene button grid" },
     name: "Scenes"
   }
-], Ht = /* @__PURE__ */ new Map();
+], Bt = /* @__PURE__ */ new Map();
 for (const e of uo)
-  for (const t of Object.keys(e.sources)) Ht.set(t, e);
+  for (const t of Object.keys(e.sources)) Bt.set(t, e);
 const co = new Set(uo.map((e) => e.canonical)), sn = [
-  ..._o.filter((e) => !Ht.has(e.upstreamId) || co.has(e.upstreamId)).map((e) => {
-    const t = Ht.get(e.upstreamId);
+  ..._o.filter((e) => !Bt.has(e.upstreamId) || co.has(e.upstreamId)).map((e) => {
+    const t = Bt.get(e.upstreamId);
     return t ? {
       ...e,
       name: t.name ?? e.name,
@@ -1285,8 +1285,8 @@ const co = new Set(uo.map((e) => e.canonical)), sn = [
   }),
   ...Js.map((e) => ({ ...e, sourceIds: [e.upstreamId] })),
   ...Fs.map((e) => ({ ...e, sourceIds: [e.upstreamId] }))
-], Qs = _o.filter((e) => Ht.has(e.upstreamId) && !co.has(e.upstreamId)).map((e) => {
-  const t = Ht.get(e.upstreamId), a = sn.find((n) => n.upstreamId === t.canonical);
+], Qs = _o.filter((e) => Bt.has(e.upstreamId) && !co.has(e.upstreamId)).map((e) => {
+  const t = Bt.get(e.upstreamId), a = sn.find((n) => n.upstreamId === t.canonical);
   return {
     upstreamId: e.upstreamId,
     tag: e.tag,
@@ -1305,7 +1305,7 @@ const co = new Set(uo.map((e) => e.canonical)), sn = [
 ], ga = sn, pi = (e) => ga.find((t) => t.tag === e) ?? ga.find((t) => t.tag === so.find((a) => a.tag === e)?.targetTag) ?? (() => {
   const t = mi.find((a) => a.tag === e);
   return t ? sn.find((a) => a.tag === t.targetTag) : void 0;
-})(), rr = (e) => Ht.get(e)?.sources[e], Ua = [
+})(), rr = (e) => Bt.get(e)?.sources[e], Ua = [
   { preset: "residual", label: "Residual waste", icon: "mdi:trash-can", color: "#43a047", legacyKey: "ulm_card_datum_rest", enabledByDefault: !0 },
   { preset: "paper", label: "Paper", icon: "mdi:newspaper-variant", color: "#1e88e5", legacyKey: "ulm_card_datum_papier", enabledByDefault: !0 },
   { preset: "packaging", label: "Packaging / PMD", icon: "mdi:recycle", color: "#f9a825", legacyKey: "ulm_card_datum_pmd", enabledByDefault: !0 },
@@ -2143,6 +2143,7 @@ const co = new Set(uo.map((e) => e.canonical)), sn = [
 ), kl = {
   icon_type: "Soort pictogram",
   fill_container: "Beschikbare ruimte vullen",
+  card_shadow: "Kaartschaduw",
   multiline_secondary: "Secundaire informatie over meerdere regels toestaan",
   primary_info: "Primaire informatie",
   secondary_info: "Secundaire informatie",
@@ -2702,6 +2703,7 @@ const co = new Set(uo.map((e) => e.canonical)), sn = [
   layout: "Kies of de kaartinhoud horizontaal of verticaal wordt gerangschikt.",
   multiline_secondary: "De kaart mag hoger worden om de tekst te laten passen en sluit daardoor niet altijd aan op het rastersysteem.",
   fill_container: "Laat de kaart uitrekken om de beschikbare rastercel van het dashboard te vullen.",
+  card_shadow: "Voegt een zachte schaduw toe rond de rand van de kaart. Standaard uit.",
   primary_info: "Kies de hoofdtekst die de kaart toont.",
   secondary_info: "Kies de aanvullende tekst onder de primaire informatie.",
   tap_action: "Wat er gebeurt wanneer je op de kaart tikt.",
@@ -3877,6 +3879,7 @@ const or = [
   })
 ), Cl = {
   fill_container: "Container ausfüllen",
+  card_shadow: "Kartenschatten",
   multiline_secondary: "Mehrzeilige Zusatzinformation erlauben",
   primary_info: "Hauptinformation",
   secondary_info: "Zusatzinformation",
@@ -4480,6 +4483,7 @@ const or = [
   layout: "Horizontale oder vertikale Anordnung des Karteninhalts auswählen.",
   multiline_secondary: "Die Karte darf für den Text höher werden und ist dann nicht immer am Raster ausgerichtet.",
   fill_container: "Karte auf die Größe der verfügbaren Dashboard-Rasterzelle ausdehnen.",
+  card_shadow: "Fügt einen weichen Schatten um den Kartenrand hinzu. Standardmäßig aus.",
   primary_info: "Haupttext der Karte auswählen.",
   secondary_info: "Zusatztext unter der Hauptinformation auswählen.",
   tap_action: "Aktion beim Tippen auf die Karte.",
@@ -4890,6 +4894,7 @@ const or = [
 }, $l = {
   icon_type: "Tipo de icono",
   fill_container: "Rellenar el contenedor",
+  card_shadow: "Sombra de la tarjeta",
   multiline_secondary: "Permitir información secundaria en varias líneas",
   primary_info: "Información principal",
   secondary_info: "Información secundaria",
@@ -5785,6 +5790,7 @@ const or = [
   layout: "Elegir si el contenido de la tarjeta se dispone horizontal o verticalmente.",
   multiline_secondary: "La tarjeta puede aumentar su altura para acomodar el texto y no siempre se alineará con el sistema de cuadrícula.",
   fill_container: "Hace que la tarjeta se estire para llenar la celda disponible de la cuadrícula del panel.",
+  card_shadow: "Añade una sombra suave alrededor del borde de la tarjeta. Desactivado por defecto.",
   primary_info: "Elegir el texto principal que muestra la tarjeta.",
   secondary_info: "Elegir el texto de apoyo mostrado debajo de la información principal.",
   tap_action: "Qué ocurre al pulsar la tarjeta.",
@@ -6269,6 +6275,7 @@ const or = [
 ), ln = {
   icon_type: "Type d’icône",
   fill_container: "Remplir l’espace disponible",
+  card_shadow: "Ombre de la carte",
   multiline_secondary: "Autoriser les informations secondaires sur plusieurs lignes",
   primary_info: "Information principale",
   secondary_info: "Information secondaire",
@@ -7157,6 +7164,7 @@ const Ll = {
   layout: "Choisir une disposition horizontale ou verticale du contenu de la carte.",
   multiline_secondary: "La carte peut être plus haute pour accueillir le texte et ne sera pas toujours alignée sur la grille.",
   fill_container: "Étire la carte pour remplir la cellule de grille disponible du tableau de bord.",
+  card_shadow: "Ajoute une ombre douce autour de la bordure de la carte. Désactivé par défaut.",
   primary_info: "Choisir le texte principal affiché par la carte.",
   secondary_info: "Choisir le texte d’accompagnement affiché sous l’information principale.",
   tap_action: "Ce qui se passe lorsque la carte est touchée.",
@@ -7608,6 +7616,7 @@ const Ll = {
 ), Il = {
   icon_type: "图标类型",
   fill_container: "填满容器",
+  card_shadow: "卡片阴影",
   multiline_secondary: "允许次要信息换行",
   primary_info: "主要信息",
   secondary_info: "次要信息",
@@ -8503,6 +8512,7 @@ const Ll = {
   layout: "选择卡片内容横向或纵向排列。",
   multiline_secondary: "卡片可能为容纳文字而增高，不一定与网格系统对齐。",
   fill_container: "使卡片伸展并填满仪表盘中可用的网格单元。",
+  card_shadow: "在卡片边框周围添加柔和阴影。默认关闭。",
   primary_info: "选择卡片显示的主要文字。",
   secondary_info: "选择主要信息下方显示的辅助文字。",
   tap_action: "点按卡片时执行的操作。",
@@ -8927,6 +8937,7 @@ const Ll = {
 }, Ol = {
   icon_type: "Tipo di icona",
   fill_container: "Riempi il contenitore",
+  card_shadow: "Ombra della scheda",
   multiline_secondary: "Consenti informazioni secondarie su più righe",
   primary_info: "Informazioni principali",
   secondary_info: "Informazioni secondarie",
@@ -9822,6 +9833,7 @@ const Ll = {
   layout: "Scegli se disporre il contenuto della scheda orizzontalmente o verticalmente.",
   multiline_secondary: "La scheda può diventare più alta per contenere il testo e non sarà sempre allineata al sistema a griglia.",
   fill_container: "Estende la scheda per riempire la cella disponibile nella griglia del dashboard.",
+  card_shadow: "Aggiunge un'ombra morbida attorno al bordo della scheda. Disattivato per impostazione predefinita.",
   primary_info: "Scegli il testo principale mostrato dalla scheda.",
   secondary_info: "Scegli il testo di supporto mostrato sotto le informazioni principali.",
   tap_action: "Azione eseguita quando si tocca la scheda.",
@@ -10246,6 +10258,7 @@ const Ll = {
 }, Ul = {
   icon_type: "圖示類型",
   fill_container: "填滿容器",
+  card_shadow: "卡片陰影",
   multiline_secondary: "允許次要資訊換行",
   primary_info: "主要資訊",
   secondary_info: "次要資訊",
@@ -11141,6 +11154,7 @@ const Ll = {
   layout: "選擇卡片內容橫向或縱向排列。",
   multiline_secondary: "卡片可能為容納文字而增高，不一定與網格系統對齊。",
   fill_container: "使卡片伸展並填滿儀表板中可用的網格單元。",
+  card_shadow: "在卡片邊框周圍加入柔和陰影。預設關閉。",
   primary_info: "選擇卡片顯示的主要文字。",
   secondary_info: "選擇主要資訊下方顯示的輔助文字。",
   tap_action: "點按卡片時執行的操作。",
@@ -11565,6 +11579,7 @@ const Ll = {
 }, Kl = {
   icon_type: "Tipo de ícone",
   fill_container: "Preencher o contêiner",
+  card_shadow: "Sombra do cartão",
   multiline_secondary: "Permitir informações secundárias em várias linhas",
   primary_info: "Informação principal",
   secondary_info: "Informação secundária",
@@ -12460,6 +12475,7 @@ const Ll = {
   layout: "Escolha se o conteúdo do cartão é disposto horizontal ou verticalmente.",
   multiline_secondary: "O cartão pode ficar mais alto para acomodar o texto e nem sempre se alinhará ao sistema de grade.",
   fill_container: "Faz o cartão se estender para preencher a célula disponível na grade do painel.",
+  card_shadow: "Adiciona uma sombra suave ao redor da borda do cartão. Desativado por padrão.",
   primary_info: "Escolha o texto principal exibido pelo cartão.",
   secondary_info: "Escolha o texto de apoio exibido abaixo da informação principal.",
   tap_action: "O que acontece ao tocar no cartão.",
@@ -12884,6 +12900,7 @@ const Ll = {
 }, Gl = {
   icon_type: "Typ ikony",
   fill_container: "Wypełnij kontener",
+  card_shadow: "Cień karty",
   multiline_secondary: "Zezwalaj na wielowierszowe informacje dodatkowe",
   primary_info: "Informacje główne",
   secondary_info: "Informacje dodatkowe",
@@ -13779,6 +13796,7 @@ const Ll = {
   layout: "Wybierz poziome lub pionowe rozmieszczenie treści karty.",
   multiline_secondary: "Karta może być wyższa, aby zmieścić tekst, i nie zawsze będzie wyrównana do siatki.",
   fill_container: "Rozciąga kartę, aby wypełniła dostępną komórkę siatki pulpitu.",
+  card_shadow: "Dodaje delikatny cień wokół krawędzi karty. Domyślnie wyłączone.",
   primary_info: "Wybierz główny tekst wyświetlany przez kartę.",
   secondary_info: "Wybierz tekst pomocniczy pod informacjami głównymi.",
   tap_action: "Co się stanie po dotknięciu karty.",
@@ -14203,6 +14221,7 @@ const Ll = {
 }, Yl = {
   icon_type: "Тип значка",
   fill_container: "Заполнять контейнер",
+  card_shadow: "Тень карточки",
   multiline_secondary: "Разрешить многострочную дополнительную информацию",
   primary_info: "Основная информация",
   secondary_info: "Дополнительная информация",
@@ -15098,6 +15117,7 @@ const Ll = {
   layout: "Выберите горизонтальное или вертикальное расположение содержимого карточки.",
   multiline_secondary: "Карточка может стать выше для размещения текста и не всегда будет выравниваться по сетке.",
   fill_container: "Растягивает карточку до заполнения доступной ячейки сетки панели.",
+  card_shadow: "Добавляет мягкую тень вокруг границы карточки. По умолчанию выключено.",
   primary_info: "Выберите основной текст карточки.",
   secondary_info: "Выберите поясняющий текст под основной информацией.",
   tap_action: "Что происходит при нажатии на карточку.",
@@ -15522,6 +15542,7 @@ const Ll = {
 }, Ql = {
   icon_type: "Tipo de ícone",
   fill_container: "Preencher o contentor",
+  card_shadow: "Sombra do cartão",
   multiline_secondary: "Permitir informações secundárias em várias linhas",
   primary_info: "Informação principal",
   secondary_info: "Informação secundária",
@@ -16417,6 +16438,7 @@ const Ll = {
   layout: "Escolha se o conteúdo do cartão é disposto horizontal ou verticalmente.",
   multiline_secondary: "O cartão pode ficar mais alto para acomodar o texto e nem sempre se alinhará ao sistema de grelha.",
   fill_container: "Expande o cartão para preencher a célula disponível na grelha do painel.",
+  card_shadow: "Adiciona uma sombra suave à volta da borda do cartão. Desativado por predefinição.",
   primary_info: "Escolha o texto principal exibido pelo cartão.",
   secondary_info: "Escolha o texto de apoio exibido abaixo da informação principal.",
   tap_action: "O que acontece ao tocar no cartão.",
@@ -16841,6 +16863,7 @@ const Ll = {
 }, e_ = {
   icon_type: "Тип піктограми",
   fill_container: "Заповнювати контейнер",
+  card_shadow: "Тінь картки",
   multiline_secondary: "Дозволити багаторядкову додаткову інформацію",
   primary_info: "Основна інформація",
   secondary_info: "Додаткова інформація",
@@ -17736,6 +17759,7 @@ const Ll = {
   layout: "Виберіть горизонтальне або вертикальне розташування вмісту картки.",
   multiline_secondary: "Картка може стати вищою для вміщення тексту й не завжди вирівнюватиметься за сіткою.",
   fill_container: "Розтягує картку на всю доступну комірку сітки панелі.",
+  card_shadow: "Додає м'яку тінь навколо межі картки. За замовчуванням вимкнено.",
   primary_info: "Виберіть основний текст картки.",
   secondary_info: "Виберіть допоміжний текст під основною інформацією.",
   tap_action: "Що відбувається під час натискання картки.",
@@ -18160,6 +18184,7 @@ const Ll = {
 }, a_ = {
   icon_type: "Typ ikony",
   fill_container: "Vyplnit kontejner",
+  card_shadow: "Stín karty",
   multiline_secondary: "Povolit víceřádkové vedlejší informace",
   primary_info: "Hlavní informace",
   secondary_info: "Vedlejší informace",
@@ -19055,6 +19080,7 @@ const Ll = {
   layout: "Vyberte vodorovné nebo svislé uspořádání obsahu karty.",
   multiline_secondary: "Karta může být vyšší, aby se text vešel, a nemusí vždy lícovat s mřížkou.",
   fill_container: "Roztáhne kartu tak, aby vyplnila dostupnou buňku mřížky přehledu.",
+  card_shadow: "Přidá jemný stín kolem okraje karty. Ve výchozím stavu vypnuto.",
   primary_info: "Vyberte hlavní text zobrazený kartou.",
   secondary_info: "Vyberte doplňkový text zobrazený pod hlavními informacemi.",
   tap_action: "Co se stane při klepnutí na kartu.",
@@ -19479,6 +19505,7 @@ const Ll = {
 }, i_ = {
   icon_type: "Typ ikony",
   fill_container: "Vyplniť kontajner",
+  card_shadow: "Tieň karty",
   multiline_secondary: "Povoliť viacriadkové vedľajšie informácie",
   primary_info: "Hlavné informácie",
   secondary_info: "Vedľajšie informácie",
@@ -20374,6 +20401,7 @@ const Ll = {
   layout: "Vyberte vodorovné alebo zvislé usporiadanie obsahu karty.",
   multiline_secondary: "Karta môže byť vyššia, aby sa text zmestil, a nemusí vždy lícovať so systémom mriežky.",
   fill_container: "Roztiahne kartu tak, aby vyplnila dostupnú bunku mriežky prehľadu.",
+  card_shadow: "Pridá jemný tieň okolo okraja karty. Predvolene vypnuté.",
   primary_info: "Vyberte hlavný text zobrazovaný kartou.",
   secondary_info: "Vyberte doplnkový text pod hlavnými informáciami.",
   tap_action: "Čo sa stane pri ťuknutí na kartu.",
@@ -20842,6 +20870,7 @@ const Ll = {
 ), l_ = {
   icon_type: "Ikontype",
   fill_container: "Fyld beholderen",
+  card_shadow: "Kortskygge",
   multiline_secondary: "Tillad sekundære oplysninger på flere linjer",
   primary_info: "Primære oplysninger",
   secondary_info: "Sekundære oplysninger",
@@ -21737,6 +21766,7 @@ const Ll = {
   layout: "Vælg, om kortindholdet placeres vandret eller lodret.",
   multiline_secondary: "Kortet kan blive højere for at rumme teksten og vil ikke altid flugte med gittersystemet.",
   fill_container: "Får kortet til at strække sig og fylde den tilgængelige gittercelle i dashboardet.",
+  card_shadow: "Tilføjer en blød skygge omkring kortets kant. Fra som standard.",
   primary_info: "Vælg hovedteksten, som kortet viser.",
   secondary_info: "Vælg den supplerende tekst under de primære oplysninger.",
   tap_action: "Hvad der sker, når du trykker på kortet.",
@@ -22161,6 +22191,7 @@ const Ll = {
 }, d_ = {
   icon_type: "Ikontype",
   fill_container: "Fyll beholderen",
+  card_shadow: "Kortskygge",
   multiline_secondary: "Tillat sekundærinformasjon over flere linjer",
   primary_info: "Primærinformasjon",
   secondary_info: "Sekundærinformasjon",
@@ -23056,6 +23087,7 @@ const Ll = {
   layout: "Velg om kortinnholdet ordnes horisontalt eller vertikalt.",
   multiline_secondary: "Kortet kan bli høyere for å få plass til teksten og vil ikke alltid passe til rutenettsystemet.",
   fill_container: "Strekker kortet slik at det fyller den tilgjengelige ruten i kontrollpanelet.",
+  card_shadow: "Legger til en myk skygge rundt kortkanten. Av som standard.",
   primary_info: "Velg hovedteksten som kortet viser.",
   secondary_info: "Velg støtteteksten som vises under primærinformasjonen.",
   tap_action: "Hva som skjer når kortet trykkes på.",
@@ -23480,6 +23512,7 @@ const Ll = {
 }, c_ = {
   icon_type: "Tipul pictogramei",
   fill_container: "Umplere container",
+  card_shadow: "Umbra cardului",
   multiline_secondary: "Permite informații secundare pe mai multe rânduri",
   primary_info: "Informație principală",
   secondary_info: "Informație secundară",
@@ -24375,6 +24408,7 @@ const Ll = {
   layout: "Alege aranjarea orizontală sau verticală a conținutului cardului.",
   multiline_secondary: "Cardul poate deveni mai înalt pentru a încăpea textul și nu se va alinia întotdeauna la grila sistemului.",
   fill_container: "Extinde cardul pentru a umple celula disponibilă din grila tabloului de bord.",
+  card_shadow: "Adaugă o umbră discretă în jurul marginii cardului. Dezactivat implicit.",
   primary_info: "Alege textul principal afișat de card.",
   secondary_info: "Alege textul suplimentar afișat sub informația principală.",
   tap_action: "Ce se întâmplă la atingerea cardului.",
@@ -24799,6 +24833,7 @@ const Ll = {
 }, p_ = {
   icon_type: "Kuvakkeen tyyppi",
   fill_container: "Täytä alue",
+  card_shadow: "Kortin varjo",
   multiline_secondary: "Salli toissijaisen tiedon näyttäminen usealla rivillä",
   primary_info: "Ensisijaiset tiedot",
   secondary_info: "Toissijaiset tiedot",
@@ -25694,6 +25729,7 @@ const Ll = {
   layout: "Asettelu",
   multiline_secondary: "Kortti voi kasvaa tekstin vaatiman korkeuden verran, eikä se aina mukaudu ruudukkojärjestelmään.",
   fill_container: "Venyttää kortin täyttämään käytettävissä olevan koontinäytön ruutusolun.",
+  card_shadow: "Lisää pehmeän varjon kortin reunan ympärille. Oletuksena pois.",
   primary_info: "Valitse kortissa näytettävä ensisijainen teksti.",
   secondary_info: "Valitse ensisijaisen tiedon alla näytettävä lisäteksti.",
   tap_action: "Mitä kortin napauttamisesta seuraa.",
@@ -26118,6 +26154,7 @@ const Ll = {
 }, h_ = {
   icon_type: "Simge türü",
   fill_container: "Alanı tamamen doldur",
+  card_shadow: "Kart gölgesi",
   multiline_secondary: "İkincil bilgilerin birden çok satırda gösterilmesine izin ver",
   primary_info: "Birincil bilgi",
   secondary_info: "İkincil bilgi",
@@ -27013,6 +27050,7 @@ const Ll = {
   layout: "Kart içeriğinin yatay mı dikey mi düzenleneceğini seçin.",
   multiline_secondary: "Metne sığmak için kartı uzatabilir; bu durumda ızgara düzeniyle hizası korunmayabilir.",
   fill_container: "Kartın, panodaki kullanılabilir ızgara hücresini tamamen doldurmasını sağlar.",
+  card_shadow: "Kart kenarlığının etrafına yumuşak bir gölge ekler. Varsayılan olarak kapalı.",
   primary_info: "Kartta gösterilecek ana metni seçin.",
   secondary_info: "Birincil bilginin altında gösterilecek ek metni seçin.",
   tap_action: "Karta dokunulduğunda yapılacak işlem.",
@@ -27437,6 +27475,7 @@ const Ll = {
 }, b_ = {
   icon_type: "Tipe ikon",
   fill_container: "Isi kontainer",
+  card_shadow: "Bayangan kartu",
   multiline_secondary: "Izinkan informasi sekunder lebih dari satu baris",
   primary_info: "Informasi primer",
   secondary_info: "Informasi sekunder",
@@ -28332,6 +28371,7 @@ const Ll = {
   layout: "Pilih tata letak konten kartu: horizontal atau vertikal.",
   multiline_secondary: "Kartu dapat menjadi lebih tinggi agar teks muat dan mungkin tidak sejajar dengan sistem kisi.",
   fill_container: "Rentangkan kartu untuk memenuhi sel kisi dasbor yang tersedia.",
+  card_shadow: "Menambahkan bayangan lembut di sekitar tepi kartu. Nonaktif secara default.",
   primary_info: "Pilih informasi primer yang ditampilkan kartu.",
   secondary_info: "Pilih teks pendukung di bawah informasi utama.",
   tap_action: "Tindakan saat kartu diketuk.",
@@ -28756,6 +28796,7 @@ const Ll = {
 }, k_ = {
   icon_type: "Тип на иконата",
   fill_container: "Запълване на контейнера",
+  card_shadow: "Сянка на картата",
   multiline_secondary: "Разрешаване на няколко реда за допълнителната информация",
   primary_info: "Основна информация",
   secondary_info: "Допълнителна информация",
@@ -29651,6 +29692,7 @@ const Ll = {
   layout: "Изберете дали съдържанието на картата да е подредено хоризонтално или вертикално.",
   multiline_secondary: "Картата може да стане по-висока, за да побере текста, и невинаги ще се подравнява с мрежата.",
   fill_container: "Разтяга картата, за да запълни наличната клетка в мрежата на таблото.",
+  card_shadow: "Добавя мека сянка около рамката на картата. По подразбиране е изключено.",
   primary_info: "Изберете основния текст, показван от картата.",
   secondary_info: "Изберете пояснителния текст под основната информация.",
   tap_action: "Какво се случва при докосване на картата.",
@@ -30075,6 +30117,7 @@ const Ll = {
 }, w_ = {
   icon_type: "아이콘 타입",
   fill_container: "콘테이너 채우기",
+  card_shadow: "카드 그림자",
   multiline_secondary: "보조 정보를 여러 줄로 표시",
   primary_info: "기본 정보",
   secondary_info: "보조 정보",
@@ -30970,6 +31013,7 @@ const Ll = {
   layout: "카드 내용을 가로 또는 세로로 배치할지 선택합니다.",
   multiline_secondary: "텍스트를 모두 표시하기 위해 카드 높이가 커질 수 있으며, 격자 배치와 항상 정렬되지는 않습니다.",
   fill_container: "대시보드 격자 셀의 사용 가능한 공간을 채우도록 카드를 늘립니다.",
+  card_shadow: "카드 테두리 주위에 부드러운 그림자를 추가합니다. 기본적으로 꺼져 있습니다.",
   primary_info: "카드에 표시할 주요 텍스트를 선택합니다.",
   secondary_info: "주요 정보 아래에 표시할 보조 텍스트를 선택합니다.",
   tap_action: "카드를 탭했을 때 실행할 동작입니다.",
@@ -31394,6 +31438,7 @@ const Ll = {
 }, j_ = {
   icon_type: "Τύπος εικονιδίου",
   fill_container: "Πλήρωση διαθέσιμου χώρου",
+  card_shadow: "Σκιά κάρτας",
   multiline_secondary: "Δευτερεύουσες πληροφορίες σε πολλές γραμμές",
   primary_info: "Πρωτεύουσες πληροφορίες",
   secondary_info: "Δευτερεύουσες πληροφορίες",
@@ -32289,6 +32334,7 @@ const Ll = {
   layout: "Επιλέξτε αν το περιεχόμενο της κάρτας διατάσσεται οριζόντια ή κάθετα.",
   multiline_secondary: "Η κάρτα μπορεί να είναι ψηλότερη για να χωρέσει το κείμενο και δεν θα ευθυγραμμίζεται πάντα με το σύστημα πλέγματος.",
   fill_container: "Κάνει την κάρτα να επεκτείνεται ώστε να γεμίζει το διαθέσιμο κελί του πλέγματος του πίνακα ελέγχου.",
+  card_shadow: "Προσθέτει απαλή σκιά γύρω από το περίγραμμα της κάρτας. Απενεργοποιημένο από προεπιλογή.",
   primary_info: "Επιλέξτε το κύριο κείμενο που εμφανίζεται στην κάρτα.",
   secondary_info: "Επιλέξτε το κείμενο υποστήριξης που εμφανίζεται κάτω από τις πρωτεύουσες πληροφορίες.",
   tap_action: "Τι συμβαίνει όταν πατηθεί η κάρτα.",
@@ -32713,6 +32759,7 @@ const Ll = {
 }, A_ = {
   icon_type: "Kiểu biểu tượng",
   fill_container: "Lấp đầy vùng chứa",
+  card_shadow: "Bóng thẻ",
   multiline_secondary: "Cho phép thông tin phụ hiển thị trên nhiều dòng",
   primary_info: "Thông tin chính",
   secondary_info: "Thông tin phụ",
@@ -33621,6 +33668,7 @@ const Ll = {
   layout: "Chọn bố cục nội dung thẻ theo chiều ngang hay chiều dọc.",
   multiline_secondary: "Thẻ có thể cao hơn để vừa văn bản và không phải lúc nào cũng thẳng hàng với hệ thống lưới.",
   fill_container: "Kéo giãn thẻ để lấp đầy ô lưới bảng điều khiển hiện có.",
+  card_shadow: "Thêm bóng mềm quanh viền thẻ. Mặc định tắt.",
   primary_info: "Chọn văn bản chính hiển thị trên thẻ.",
   secondary_info: "Chọn văn bản phụ hiển thị bên dưới thông tin chính.",
   tap_action: "Điều gì xảy ra khi chạm vào thẻ.",
@@ -34032,6 +34080,7 @@ const Ll = {
 }, P_ = {
   icon_type: "Ikontyp",
   fill_container: "Fyll behållaren",
+  card_shadow: "Kortskugga",
   multiline_secondary: "Tillåt sekundär information på flera rader",
   primary_info: "Primär information",
   secondary_info: "Sekundär information",
@@ -34927,6 +34976,7 @@ const Ll = {
   layout: "Välj om kortets innehåll ordnas vågrätt eller lodrätt.",
   multiline_secondary: "Kortet kan bli högre för att rymma texten och passar då inte alltid in i rutnätet.",
   fill_container: "Sträcker ut kortet så att det fyller den tillgängliga rutnätscellen på instrumentpanelen.",
+  card_shadow: "Lägger till en mjuk skugga runt kortets kant. Av som standard.",
   primary_info: "Välj kortets huvudtext.",
   secondary_info: "Välj den kompletterande texten under primärinformationen.",
   tap_action: "Vad som händer när du trycker på kortet.",
@@ -35351,6 +35401,7 @@ const Ll = {
 }, M_ = `
 icon_type|Тип иконе
 fill_container|Попуни контејнер
+card_shadow|Сенка картице
 multiline_secondary|Прикажи додатне информације у више редова
 primary_info|Главне информације
 secondary_info|Додатне информације
@@ -36250,6 +36301,7 @@ icon_type|Изаберите икону, слику ентитета ако је
 layout|Изаберите водоравни или усправни распоред садржаја картице.
 multiline_secondary|Картица може бити виша да стане текст и неће увек бити поравната са системом мреже.
 fill_container|Развлачи картицу да попуни доступно поље мреже контролне табле.
+card_shadow|Додаје меку сенку око ивице картице. Подразумевано искључено.
 primary_info|Изаберите главни текст картице.
 secondary_info|Изаберите пратећи текст испод главних информација.
 tap_action|Шта се дешава при додиру картице.
@@ -36736,6 +36788,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
 }, $_ = (e) => [...e].map((t) => T_[t] ?? t).join(""), yo = (e) => Object.fromEntries(Object.entries(e).map(([t, a]) => [t, $_(a)])), N_ = yo(go), V_ = yo(ho), D_ = {
   icon_type: "סוג צלמית",
   fill_container: "מילוי גבולות המכל",
+  card_shadow: "צל כרטיס",
   multiline_secondary: "אפשר מידע משני בכמה שורות",
   primary_info: "מידע ראשי",
   secondary_info: "מידע משני",
@@ -37631,6 +37684,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   layout: "בחר אם תוכן הכרטיס מסודר במאוזן או במאונך.",
   multiline_secondary: "ייתכן שהכרטיס יהיה גבוה יותר כדי להכיל את הטקסט, ולא תמיד ייושר לרשת.",
   fill_container: "מותח את הכרטיס למילוי התא הזמין ברשת לוח הבקרה.",
+  card_shadow: "מוסיף צל רך סביב מסגרת הכרטיס. כבוי כברירת מחדל.",
   primary_info: "בחר את הטקסט הראשי המוצג בכרטיס.",
   secondary_info: "בחר את הטקסט המשלים המוצג מתחת למידע הראשי.",
   tap_action: "מה קורה בלחיצה על הכרטיס.",
@@ -38055,6 +38109,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
 }, H_ = {
   icon_type: "نوع الأيقونة",
   fill_container: "ملء الحاوية",
+  card_shadow: "ظل البطاقة",
   multiline_secondary: "السماح بتعدد أسطر المعلومات الفرعية",
   primary_info: "المعلومات الأساسية",
   secondary_info: "المعلومات الفرعية",
@@ -38950,6 +39005,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   layout: "اختر ترتيب محتوى البطاقة أفقيًا أو عموديًا.",
   multiline_secondary: "قد يزيد ارتفاع البطاقة ليتسع للنص، ولن تتوافق دائمًا مع نظام الشبكة.",
   fill_container: "يمدّد البطاقة لملء خلية شبكة لوحة التحكم المتاحة.",
+  card_shadow: "يضيف ظلًا ناعمًا حول حدود البطاقة. معطل افتراضيًا.",
   primary_info: "اختر النص الأساسي الذي تعرضه البطاقة.",
   secondary_info: "اختر النص الداعم الظاهر أسفل المعلومات الأساسية.",
   tap_action: "ما يحدث عند النقر على البطاقة.",
@@ -39374,6 +39430,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
 }, I_ = {
   icon_type: "Vrsta ikone",
   fill_container: "Zapolnitev prostora",
+  card_shadow: "Senca kartice",
   multiline_secondary: "Dovoli večvrstično sekundarno informacijo",
   primary_info: "Primarna informacija",
   secondary_info: "Sekundarna informacija",
@@ -40269,6 +40326,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   layout: "Izberite vodoravno ali navpično razporeditev vsebine kartice.",
   multiline_secondary: "Kartica je lahko višja, da se besedilo prilega, zato ne bo vedno poravnana z mrežo.",
   fill_container: "Raztegne kartico, da zapolni razpoložljivo celico mreže na nadzorni plošči.",
+  card_shadow: "Doda mehko senco okoli roba kartice. Privzeto izklopljeno.",
   primary_info: "Izberite glavno besedilo, ki ga prikazuje kartica.",
   secondary_info: "Izberite dopolnilno besedilo pod primarno informacijo.",
   tap_action: "Kaj se zgodi ob dotiku kartice.",
@@ -40693,6 +40751,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
 }, O_ = {
   icon_type: "Tipus d'icona",
   fill_container: "Omple el contenidor",
+  card_shadow: "Ombra de la targeta",
   multiline_secondary: "Permet informació secundària en diverses línies",
   primary_info: "Informació principal",
   secondary_info: "Informació secundària",
@@ -41588,6 +41647,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   layout: "Tria si el contingut de la targeta s'organitza horitzontalment o verticalment.",
   multiline_secondary: "La targeta pot créixer per encabir el text i pot deixar d'alinear-se amb la quadrícula.",
   fill_container: "Estira la targeta per omplir la cel·la disponible de la quadrícula del tauler.",
+  card_shadow: "Afegeix una ombra suau al voltant de la vora de la targeta. Desactivat per defecte.",
   primary_info: "Tria el text principal de la targeta.",
   secondary_info: "Tria el text de suport sota la informació principal.",
   tap_action: "Què passa quan prems la targeta.",
@@ -42012,6 +42072,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
 }, U_ = {
   icon_type: "Ikon típusa",
   fill_container: "Tároló kitöltése",
+  card_shadow: "Kártyaárnyék",
   multiline_secondary: "Többsoros másodlagos információ engedélyezése",
   primary_info: "Elsődleges információ",
   secondary_info: "Másodlagos információ",
@@ -42907,6 +42968,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   layout: "A kártyatartalom vízszintes vagy függőleges elrendezése.",
   multiline_secondary: "A kártya megnőhet, hogy elférjen a szöveg, és emiatt nem feltétlenül igazodik a rácshoz.",
   fill_container: "A kártyát az irányítópult rendelkezésre álló rácscellájának kitöltéséhez nyújtja.",
+  card_shadow: "Lágy árnyékot ad a kártya széle köré. Alapértelmezetten ki van kapcsolva.",
   primary_info: "Válaszd ki a kártya fő szövegét.",
   secondary_info: "Válaszd ki az elsődleges információ alatti kiegészítő szöveget.",
   tap_action: "Mi történjen a kártyára koppintáskor.",
@@ -43328,7 +43390,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   custom_card_pollen_grass_icon: "Nem kötelező ikon a fűfélékhez; üresen az entitás ikonját vagy az eredeti alapikont használja.",
   custom_card_pollen_weed_name: "Nem kötelező címke a gyomnövényekhez; üresen az entitás közérthető nevét vagy a lefordított alapértéket használja.",
   custom_card_pollen_weed_icon: "Nem kötelező ikon a gyomnövényekhez; üresen az entitás ikonját vagy az eredeti alapikont használja."
-}, bi = ["1D", "5D", "1M", "3M", "1Y", "5Y"], oa = (e) => e?.stock_source === "yahoo" || e?.stock_source === "stock_market_deluxe", Ut = [
+}, bi = ["1D", "5D", "1M", "3M", "1Y", "5Y"], oa = (e) => e?.stock_source === "yahoo" || e?.stock_source === "stock_market_deluxe", Ft = [
   ["price", "Price", "regularMarketPrice"],
   ["change", "Daily price change", "regularMarketChange"],
   ["percent", "Daily change (%)", "regularMarketChangePercent"],
@@ -43346,7 +43408,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   ["after_hours", "After hours", "postMarketPrice"],
   ["pre_market", "Pre-market", "preMarketPrice"]
 ], On = (e) => {
-  for (const [t, a] of Ut) {
+  for (const [t, a] of Ft) {
     if (e === `stock_${t}_entity`) return `${a} entity (optional override)`;
     if (e === `stock_${t}_attribute`) return `${a} attribute (empty uses entity state)`;
   }
@@ -43362,12 +43424,12 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   stock_show_volume: "Show trading volume supplied with market history by the selected backend.",
   stock_show_trends: "Show 20-sample simple and exponential moving averages on provider-supplied history."
 }[e];
-function Ft(e, t, a) {
-  const n = e[`stock_${a}_entity`], i = typeof n == "string" && n ? n : e.entity, r = i ? t?.states[i] : void 0, o = e[`stock_${a}_attribute`], s = Ut.find((d) => d[0] === a)[2], l = typeof o == "string" ? o.trim() : a === "price" || n ? "" : s;
+function Kt(e, t, a) {
+  const n = e[`stock_${a}_entity`], i = typeof n == "string" && n ? n : e.entity, r = i ? t?.states[i] : void 0, o = e[`stock_${a}_attribute`], s = Ft.find((d) => d[0] === a)[2], l = typeof o == "string" ? o.trim() : a === "price" || n ? "" : s;
   return { entity: r, id: i, attribute: l };
 }
 function bo(e, t, a) {
-  const { entity: n, attribute: i } = Ft(e, t, a);
+  const { entity: n, attribute: i } = Kt(e, t, a);
   if (!n || ["unavailable", "unknown"].includes(n.state)) return;
   const r = i ? n.attributes[i] : n.state;
   if (r == null || typeof r != "string" && typeof r != "number" || typeof r == "string" && !r.trim()) return;
@@ -43375,17 +43437,17 @@ function bo(e, t, a) {
   return Number.isFinite(o) ? o : void 0;
 }
 function vo(e, t) {
-  const a = (e.entity ? t?.states[e.entity] : void 0) || Ft(e, t, "price").entity, n = {
+  const a = (e.entity ? t?.states[e.entity] : void 0) || Kt(e, t, "price").entity, n = {
     symbol: e.stock_symbol || a?.attributes.symbol || a?.entity_id || "",
     shortName: a?.attributes.friendly_name || e.stock_symbol || "",
     currency: e.stock_currency || a?.attributes.currency || (/^[A-Z]{3}$/.test(String(a?.attributes.unit_of_measurement ?? "")) ? a?.attributes.unit_of_measurement : void 0)
   };
-  for (const [i, , r] of Ut) n[r] = bo(e, t, i);
+  for (const [i, , r] of Ft) n[r] = bo(e, t, i);
   return n;
 }
 function W_(e, t, a) {
-  const n = { ...a }, i = vo(e, t), r = Ft(e, t, "price").entity?.attributes.symbol, o = !r || !a.symbol || String(r).toUpperCase() === String(a.symbol).toUpperCase();
-  for (const [s, , l] of Ut) {
+  const n = { ...a }, i = vo(e, t), r = Kt(e, t, "price").entity?.attributes.symbol, o = !r || !a.symbol || String(r).toUpperCase() === String(a.symbol).toUpperCase();
+  for (const [s, , l] of Ft) {
     const d = i[l];
     typeof d == "number" && Number.isFinite(d) && (e[`stock_${s}_entity`] || o && (typeof n[l] != "number" || !Number.isFinite(n[l]))) && (n[l] = d);
   }
@@ -43524,6 +43586,7 @@ const vi = [
     layout: "Content layout",
     icon_type: "Icon type",
     fill_container: "Fill container",
+    card_shadow: "Card shadow",
     multiline_secondary: "Allow multiline secondary information",
     primary_info: "Primary information",
     secondary_info: "Secondary information",
@@ -44140,7 +44203,7 @@ const vi = [
     show_forecast: "Voorspelling tonen",
     show_controls: "Bediening tonen"
   }
-}, Ct = Object.fromEntries(
+}, Tt = Object.fromEntries(
   vi.map((e) => [e, {
     ...G_[e],
     ...e === "en" ? Object.fromEntries(Object.entries(ha.en).filter(([t]) => t.startsWith("ui."))) : ha[e],
@@ -44195,17 +44258,17 @@ const vi = [
 );
 for (const e of vi) {
   if (e === "en") continue;
-  const t = Ct[e], a = new Map(
-    Object.keys(t).map((n) => [Ct.en[n], t[n]])
+  const t = Tt[e], a = new Map(
+    Object.keys(t).map((n) => [Tt.en[n], t[n]])
   );
-  for (const [n, i] of Object.entries(Ct.en)) {
+  for (const [n, i] of Object.entries(Tt.en)) {
     const r = a.get(i);
     !t[n] && r && (t[n] = r);
   }
 }
 const b = (e, t, a = {}) => {
   const n = ki(e?.language);
-  return (Ct[n]?.[t] ?? Ct.en[t] ?? t.replace(/^ulm_(?:custom_)?card_/, "").replace(/^(?:custom_)?card_/, "").replace(/^ulm_/, "").replaceAll("_", " ").replace(/\b\w/g, (r) => r.toUpperCase())).replace(/\{(\w+)\}/g, (r, o) => Object.hasOwn(a, o) ? String(a[o]) : r);
+  return (Tt[n]?.[t] ?? Tt.en[t] ?? t.replace(/^ulm_(?:custom_)?card_/, "").replace(/^(?:custom_)?card_/, "").replace(/^ulm_/, "").replaceAll("_", " ").replace(/\b\w/g, (r) => r.toUpperCase())).replace(/\{(\w+)\}/g, (r, o) => Object.hasOwn(a, o) ? String(a[o]) : r);
 }, ko = {
   pihole_show_header: "Show the shared Mushroom heading above the Pi-hole sections.",
   pihole_collapsed_sections: "Sections initially folded away; tap their heading to expand them.",
@@ -44338,6 +44401,7 @@ const b = (e, t, a = {}) => {
   layout: "Choose whether the card content is arranged horizontally or vertically.",
   multiline_secondary: "The card may be taller to fit the text and will not always align with the grid system.",
   fill_container: "Makes the card stretch to fill the available dashboard grid cell.",
+  card_shadow: "Adds a soft shadow around the card border. Off by default.",
   primary_info: "Choose the main text displayed by the card.",
   secondary_info: "Choose the supporting text displayed below the primary information.",
   tap_action: "What happens when the card is tapped.",
@@ -44809,7 +44873,7 @@ const b = (e, t, a = {}) => {
   return Z_[ki(t?.language)]?.[i] ?? ko[i];
 }, J_ = new Map(
   [
-    ...Object.entries(Ct.en),
+    ...Object.entries(Tt.en),
     ...Object.entries(ha.en),
     ...Object.entries(mo.en)
   ].map(([e, t]) => [t, e])
@@ -44875,6 +44939,7 @@ const b = (e, t, a = {}) => {
     icon_type: a.icon_type ?? (t.use_entity_picture ? "entity-picture" : t.show_icon === !1 ? "none" : /custom-card-(game-console|playstation)$/.test(n) ? "entity-picture" : "icon"),
     layout: a.layout ?? "default",
     fill_container: a.fill_container ?? !1,
+    card_shadow: a.card_shadow ?? !1,
     primary_info: a.primary_info,
     secondary_info: a.secondary_info,
     tap_action: a.tap_action ?? y,
@@ -44883,8 +44948,8 @@ const b = (e, t, a = {}) => {
     hold_action: a.hold_action ?? (String(a.type).includes("water-heater") && a.entity ? { action: "more-info" } : void 0),
     double_tap_action: a.double_tap_action ?? k
   };
-}, Yt = (e, t) => Object.entries(e).find(([a, n]) => t.test(a) && n !== void 0)?.[1], X_ = (e) => {
-  const t = Yt(e, /_name$/), a = pi(e.type.replace(/^custom:/, "")), n = hi(a).map((l) => e[l]).find((l) => typeof l == "string" && l), i = Yt(e, /_color$/), r = Yt(e, /_enable_(controls|buttons)$/), o = Yt(e, /_enable_slider$/), s = Yt(e, /_enable_horizontal$/);
+}, Jt = (e, t) => Object.entries(e).find(([a, n]) => t.test(a) && n !== void 0)?.[1], X_ = (e) => {
+  const t = Jt(e, /_name$/), a = pi(e.type.replace(/^custom:/, "")), n = hi(a).map((l) => e[l]).find((l) => typeof l == "string" && l), i = Jt(e, /_color$/), r = Jt(e, /_enable_(controls|buttons)$/), o = Jt(e, /_enable_slider$/), s = Jt(e, /_enable_horizontal$/);
   return {
     ...e,
     name: e.name ?? (typeof t == "string" ? t : void 0),
@@ -45007,7 +45072,7 @@ var id = Object.defineProperty, rd = Object.getOwnPropertyDescriptor, vt = (e, t
     (o = e[r]) && (i = (n ? o(t, a, i) : o(i)) || i);
   return n && i && id(t, a, i), i;
 };
-const Tt = (e, t) => {
+const $t = (e, t) => {
   const a = e?.[`carousel_${t}`];
   if (typeof a == "boolean") return a;
   const n = e?.parameters?.[t];
@@ -45098,7 +45163,7 @@ let Qe = class extends ye {
     const e = this.items;
     if (!e.length)
       return _`<div class="carousel"><span class="label">${u(this.hass, "Add carousel items in the card editor")}</span></div>`;
-    const t = this.visibleCount, a = e[this.selectedIndex], n = this.entityFor(a), i = Tt(this.config, "navigation"), r = this.config?.carousel_loop !== !1;
+    const t = this.visibleCount, a = e[this.selectedIndex], n = this.entityFor(a), i = $t(this.config, "navigation"), r = this.config?.carousel_loop !== !1;
     return _`
       <div class="viewport ${i ? "has-navigation" : ""}"
         style=${`--carousel-button-width:${this.buttonWidth}px;--carousel-button-height:${this.buttonHeight}px;--carousel-stage-height:${this.buttonHeight + 12}px;--carousel-icon-size:${this.iconSize}px;--carousel-picture-size:${Math.min(this.iconSize * 34 / 28, this.maxIconSize)}px`}
@@ -45134,8 +45199,8 @@ let Qe = class extends ye {
       </div>
       <div @pointerdown=${this.stopControlEvent} @click=${this.stopControlEvent}
         @dblclick=${this.stopControlEvent} @keydown=${this.stopControlEvent} @keyup=${this.stopControlEvent}>
-        ${Tt(this.config, "pagination") ? this.renderPagination() : p}
-        ${Tt(this.config, "scrollbar") ? _`
+        ${$t(this.config, "pagination") ? this.renderPagination() : p}
+        ${$t(this.config, "scrollbar") ? _`
           <input class="scrollbar" type="range" min="0" max=${e.length - 1} step="1"
             .value=${String(this.selectedIndex)} ?disabled=${e.length < 2}
             aria-label="${u(this.hass, "Carousel position")}" aria-valuetext=${this.itemName(a, n)}
@@ -45450,7 +45515,7 @@ vt([
   W()
 ], Qe.prototype, "dragging", 2);
 Qe = vt([
-  qt("mushroom-addition-entity-carousel")
+  Ut("mushroom-addition-entity-carousel")
 ], Qe);
 const sd = {
   red: "244, 67, 54",
@@ -45596,7 +45661,7 @@ const ud = {
     a = [...a.filter(i), ...a.filter((r) => !i(r))];
   }
   return a.slice(0, ke(t.upcoming_max_items, 5, 1, 50));
-}, Jt = (e, t = !1) => {
+}, Qt = (e, t = !1) => {
   if (!(typeof e != "string" || !e.trim()))
     try {
       const a = new URL(e, window.location.href);
@@ -45686,7 +45751,7 @@ let Oe = class extends ye {
     </div>`;
   }
   renderItem(e, t) {
-    const a = this.config, n = pr(a.upcoming_title_text || t.title_default || "$title", e, a, this.hass), i = a.upcoming_image_style === "fanart", r = Jt(i ? e.fanart || e.poster : e.poster || e.fanart, !0), o = Te(e.summary || e.overview), s = [1, 2, 3, 4].map((l) => pr(
+    const a = this.config, n = pr(a.upcoming_title_text || t.title_default || "$title", e, a, this.hass), i = a.upcoming_image_style === "fanart", r = Qt(i ? e.fanart || e.poster : e.poster || e.fanart, !0), o = Te(e.summary || e.overview), s = [1, 2, 3, 4].map((l) => pr(
       Te(a[`upcoming_line${l}_text`] || t[`line${l}_default`] || (l === 1 ? "$episode" : l === 2 ? "$release" : l === 3 ? "$rating $runtime" : "")),
       e,
       a,
@@ -45724,11 +45789,11 @@ let Oe = class extends ye {
       }
       if (!t.upcoming_item_behavior || t.upcoming_item_behavior === "automatic") {
         const a = t.upcoming_url?.replace(/\$([a-z][a-z0-9_]*)/gi, (r, o) => encodeURIComponent(Te(e[o])));
-        if (a && !Jt(a)) {
+        if (a && !Qt(a)) {
           this.actionError = b(this.hass, "message.invalid_media_url");
           return;
         }
-        const n = t.upcoming_trailers !== !1 ? Jt(e.trailer) : void 0, i = Jt(a) || n || (t.upcoming_links !== !1 ? Jt(e.deep_link) : void 0);
+        const n = t.upcoming_trailers !== !1 ? Qt(e.trailer) : void 0, i = Qt(a) || n || (t.upcoming_links !== !1 ? Qt(e.deep_link) : void 0);
         if (i) {
           const r = new URL(i), o = ["youtube.com", "www.youtube.com", "m.youtube.com", "youtube-nocookie.com", "www.youtube-nocookie.com"].includes(r.hostname) ? r.searchParams.get("v") || r.pathname.split("/").at(-1) : r.hostname === "youtu.be" ? r.pathname.slice(1) : void 0;
           if (!a && n === i && o && /^[\w-]{11}$/.test(o)) {
@@ -45810,7 +45875,7 @@ lt([
   W()
 ], Oe.prototype, "actionError", 2);
 Oe = lt([
-  qt("mushroom-addition-upcoming-media")
+  Ut("mushroom-addition-upcoming-media")
 ], Oe);
 const X = {
   pause: 1,
@@ -45941,7 +46006,7 @@ const Ca = {
   playback: "Playback",
   keypad: "Number pad",
   shortcuts: "Custom buttons"
-}, $t = {
+}, Nt = {
   remote_transport: "auto",
   remote_preset: "auto",
   remote_sections: ["power", "navigation", "source", "volume", "playback", "shortcuts"],
@@ -45994,7 +46059,7 @@ const Ca = {
   const i = Ka[a];
   return i ? n === "samsung" ? i[2] : n === "android_tv" ? i[3] : a : a;
 };
-let Bt = class extends ye {
+let It = class extends ye {
   constructor() {
     super(...arguments), this.stop = (e) => {
       e.stopPropagation();
@@ -46048,7 +46113,7 @@ let Bt = class extends ye {
   }
   render() {
     if (!this.config) return p;
-    const e = this.config, t = e.remote_sections ?? $t.remote_sections;
+    const e = this.config, t = e.remote_sections ?? Nt.remote_sections;
     return _`<div class="remote" style=${Ae({
       "--accent": pt(e.remote_accent_color, "var(--primary-color)"),
       "--button-size": e.remote_button_size === void 0 ? "var(--mush-control-height, 42px)" : `${ke(e.remote_button_size, 42, 32, 64)}px`,
@@ -46061,9 +46126,9 @@ let Bt = class extends ye {
   }
   renderSection(e) {
     const t = this.config;
-    if (e === "power") return _`<div class="row">${(t.remote_power_controls ?? $t.remote_power_controls).map((a) => this.button(a))}</div>`;
+    if (e === "power") return _`<div class="row">${(t.remote_power_controls ?? Nt.remote_power_controls).map((a) => this.button(a))}</div>`;
     if (e === "channels") return _`<div class="row">${["channel_down", "info", "channel_up"].map((a) => this.button(a))}</div>`;
-    if (e === "playback") return _`<div class="row">${(t.remote_playback_controls ?? $t.remote_playback_controls).map((a) => this.button(a))}</div>`;
+    if (e === "playback") return _`<div class="row">${(t.remote_playback_controls ?? Nt.remote_playback_controls).map((a) => this.button(a))}</div>`;
     if (e === "keypad") return _`<div class="keypad">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((a) => this.button(String(a)))}</div>`;
     if (e === "shortcuts") return _`<div class="row">${(t.remote_buttons ?? []).map((a) => _`
       <button class="shortcut" style=${Ae({ "--accent": a.color ? pt(a.color, "inherit") : void 0 })}
@@ -46182,7 +46247,7 @@ let Bt = class extends ye {
     this.tapTimer !== void 0 && window.clearTimeout(this.tapTimer), this.tapTimer = void 0, this.firstTap = void 0;
   }
 };
-Bt.styles = fe`
+It.styles = fe`
     ${ji}
     :host { display: block; width: 100%; min-width: 0; color: var(--primary-text-color); }
     .remote { display: grid; gap: var(--mush-control-spacing, 12px); }
@@ -46213,16 +46278,16 @@ Bt.styles = fe`
   `;
 dn([
   de({ attribute: !1 })
-], Bt.prototype, "hass", 2);
+], It.prototype, "hass", 2);
 dn([
   de({ attribute: !1 })
-], Bt.prototype, "config", 2);
+], It.prototype, "config", 2);
 dn([
   W()
-], Bt.prototype, "error", 2);
-Bt = dn([
-  qt("mushroom-addition-remote")
-], Bt);
+], It.prototype, "error", 2);
+It = dn([
+  Ut("mushroom-addition-remote")
+], It);
 var hd = Object.defineProperty, yd = Object.getOwnPropertyDescriptor, Sa = (e, t, a, n) => {
   for (var i = n > 1 ? void 0 : n ? yd(t, a) : t, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (i = (n ? o(t, a, i) : o(i)) || i);
@@ -46239,7 +46304,7 @@ const ya = {
   cpu: { name: "CPU usage", icon: "mdi:cpu-64-bit", keys: ["cpu_use", "cpu_usage", "cpu_percent"], unit: "%" },
   memory: { name: "Memory usage", icon: "mdi:memory", keys: ["memory_use", "memory_usage", "memory_percent"], unit: "%" },
   temperature: { name: "Temperature", icon: "mdi:thermometer", keys: ["cpu_temperature", "temperature"] }
-}, Et = {
+}, Mt = {
   statistics: "Statistics",
   blocking: "Blocking switches",
   pause: "Pause blocking",
@@ -46261,7 +46326,7 @@ const ya = {
   pihole_chart_height: 120,
   pihole_chart_metrics: ["cpu", "memory"],
   pihole_show_header: !0
-}, xt = (e) => !!e && !["unknown", "unavailable"].includes(e.state), Mo = (e, t) => {
+}, Pt = (e) => !!e && !["unknown", "unavailable"].includes(e.state), Mo = (e, t) => {
   if (!e) return [];
   const a = t.pihole_device_ids?.length ? t.pihole_device_ids : t.entity && e.entities?.[t.entity]?.device_id ? [e.entities[t.entity].device_id] : [], n = /* @__PURE__ */ new Set([t.entity, ...t.pihole_entity_order ?? [], ...Object.values(t.pihole_metric_entities ?? {}).flat()]), i = new Set(t.pihole_hidden_entities ?? []), r = t.pihole_entity_order ?? [];
   return Object.values(e.states).filter((o) => !i.has(o.entity_id) && (n.has(o.entity_id) || a.includes(e.entities?.[o.entity_id]?.device_id || ""))).sort((o, s) => {
@@ -46278,7 +46343,7 @@ const ya = {
     return [i, s];
   }));
 }, bd = (e) => {
-  if (!xt(e) || !e.state.trim()) return;
+  if (!Pt(e) || !e.state.trim()) return;
   const t = Number(e.state);
   return Number.isFinite(t) && t >= 0 ? t : void 0;
 }, vd = (e, t, a) => {
@@ -46336,7 +46401,7 @@ let yt = class extends ye {
     return this.pool.filter((e) => e.entity_id.startsWith("switch."));
   }
   get targets() {
-    return this.switches.filter((e) => xt(e) && (this.target === "all" || this.target === e.entity_id));
+    return this.switches.filter((e) => Pt(e) && (this.target === "all" || this.target === e.entity_id));
   }
   render() {
     if (!this.config) return p;
@@ -46350,7 +46415,7 @@ let yt = class extends ye {
       ${a.map((i) => {
       const r = this.renderSection(i, n);
       return r === p ? p : _`<details .open=${!(e.pihole_collapsed_sections ?? Be.pihole_collapsed_sections).includes(i)}>
-          <summary>${u(this.hass, Et[i])}</summary>${r}
+          <summary>${u(this.hass, Mt[i])}</summary>${r}
         </details>`;
     })}
     </div>`;
@@ -46369,12 +46434,12 @@ let yt = class extends ye {
       </button>`;
     })}</div>`;
     if (e === "blocking") return this.switches.length ? _`<div class="list">${this.switches.map((i) => _`
-      <button class="entity ${i.state === "on" ? "active" : ""}" ?disabled=${!xt(i)} aria-label=${b(this.hass, "ui.toggle", { name: i.attributes.friendly_name || i.entity_id })}
+      <button class="entity ${i.state === "on" ? "active" : ""}" ?disabled=${!Pt(i)} aria-label=${b(this.hass, "ui.toggle", { name: i.attributes.friendly_name || i.entity_id })}
         @click=${() => {
       this.call("switch", i.state === "on" ? "turn_off" : "turn_on", { entity_id: i.entity_id });
     }}>
         <ha-icon .icon=${i.state === "on" ? "mdi:shield-check" : "mdi:shield-off-outline"}></ha-icon>
-        <span class="name">${i.attributes.friendly_name || i.entity_id}</span><span class="state">${b(this.hass, xt(i) ? i.state === "on" ? "ui.blocking" : "ui.paused" : "ui.unavailable")}</span>
+        <span class="name">${i.attributes.friendly_name || i.entity_id}</span><span class="state">${b(this.hass, Pt(i) ? i.state === "on" ? "ui.blocking" : "ui.paused" : "ui.unavailable")}</span>
       </button>`)}</div>` : p;
     if (e === "pause") {
       if (!this.switches.length) return p;
@@ -46384,7 +46449,7 @@ let yt = class extends ye {
         this.target = o.target.value;
       }}>
           <option value="all">${b(this.hass, "message.all_switches")}</option>
-          ${this.switches.map((o) => _`<option value=${o.entity_id} ?disabled=${!xt(o)}>${o.attributes.friendly_name || o.entity_id}</option>`)}
+          ${this.switches.map((o) => _`<option value=${o.entity_id} ?disabled=${!Pt(o)}>${o.attributes.friendly_name || o.entity_id}</option>`)}
         </select>
         ${r ? p : _`<div class="message">${b(this.hass, "message.pause_backend")}</div>`}
         <div class="durations">${(a.pihole_pause_durations ?? Be.pihole_pause_durations).map((o) => {
@@ -46397,7 +46462,7 @@ let yt = class extends ye {
     }
     const n = this.pool.filter((i) => e === "controls" ? i.entity_id.startsWith("button.") : e === "versions" ? i.entity_id.startsWith("update.") : e === "sensors" ? /^(sensor|binary_sensor)\./.test(i.entity_id) && !Object.values(t).flat().some((r) => r.entity_id === i.entity_id) : !1);
     return ["controls", "sensors", "versions"].includes(e) ? n.length ? _`<div class="list">${n.map((i) => _`
-      <button class="entity" ?disabled=${i.entity_id.startsWith("button.") ? i.state === "unavailable" : !xt(i)} @click=${() => this.entityAction(i)}>
+      <button class="entity" ?disabled=${i.entity_id.startsWith("button.") ? i.state === "unavailable" : !Pt(i)} @click=${() => this.entityAction(i)}>
         <ha-icon .icon=${i.attributes.icon || (e === "controls" ? "mdi:tools" : e === "versions" ? "mdi:update" : "mdi:information-outline")}></ha-icon>
         <span class="name">${i.attributes.friendly_name || i.entity_id}</span>
         <span class="state">${e === "controls" ? b(this.hass, "ui.run") : e === "versions" ? String(i.attributes.installed_version || i.state) : `${i.state}${i.attributes.unit_of_measurement || ""}`}</span>
@@ -46516,7 +46581,7 @@ Sa([
   W()
 ], yt.prototype, "error", 2);
 yt = Sa([
-  qt("mushroom-addition-pi-hole")
+  Ut("mushroom-addition-pi-hole")
 ], yt);
 const Co = [
   { configKey: "followers_entity", domains: ["sensor"], terms: ["follower", "followers"] },
@@ -48057,7 +48122,7 @@ const Co = [
       } : {}
     }
   }
-}), Qt = (e) => ({ ...e, presentation: !0 }), Cd = (e) => ({
+}), jt = (e) => ({ ...e, presentation: !0 }), Cd = (e) => ({
   type: "grid",
   name: "",
   schema: e,
@@ -48079,17 +48144,17 @@ const Co = [
   "ulm_card_input_number_name",
   "ulm_custom_card_metrics_entitites_name"
 ]), Dd = {}, ee = (e = !1) => [
-  Qt({
+  jt({
     name: "name",
     selector: { entity_name: {} },
     context: { entity: "entity" }
   }),
-  Qt({
+  jt({
     name: "icon",
     selector: { icon: {} },
     context: { icon_entity: "entity" }
   }),
-  Qt({
+  jt({
     name: "layout",
     selector: {
       select: {
@@ -48106,8 +48171,9 @@ const Co = [
       }
     }
   }),
-  Qt(x("multiline_secondary")),
-  Qt(x("fill_container")),
+  jt(x("multiline_secondary")),
+  jt(x("fill_container")),
+  jt(x("card_shadow")),
   Cd([
     H("primary_info", [
       { value: "name", label: "Name" },
@@ -48223,7 +48289,7 @@ const Co = [
     x("stock_show_position"),
     x("stock_show_statistics"),
     ...oa(t) ? [x("stock_show_volume"), x("stock_show_trends")] : [],
-    ...t?.stock_source === "stock_market_deluxe" ? [] : Ut.flatMap(([r]) => [
+    ...t?.stock_source === "stock_market_deluxe" ? [] : Ft.flatMap(([r]) => [
       v(["sensor", "input_number"], `stock_${r}_entity`),
       $(`stock_${r}_attribute`)
     ]),
@@ -48237,7 +48303,7 @@ const Co = [
     { name: "pihole_device_ids", selector: { device: { multiple: !0 } } },
     x("pihole_show_header"),
     { name: "pihole_metrics", selector: { select: { multiple: !0, mode: "dropdown", options: Object.entries(ya).map(([r, o]) => ({ value: r, label: o.name })) } } },
-    { name: "pihole_collapsed_sections", selector: { select: { multiple: !0, mode: "dropdown", options: Object.entries(Et).map(([r, o]) => ({ value: r, label: o })) } } },
+    { name: "pihole_collapsed_sections", selector: { select: { multiple: !0, mode: "dropdown", options: Object.entries(Mt).map(([r, o]) => ({ value: r, label: o })) } } },
     { name: "pihole_hidden_entities", selector: { entity: { multiple: !0 } } },
     { name: "pihole_pause_durations", selector: { select: { multiple: !0, custom_value: !0, mode: "dropdown", options: [{ value: "30", label: "30 seconds" }, { value: "60", label: "1 minute" }, { value: "300", label: "5 minutes" }, { value: "900", label: "15 minutes" }, { value: "3600", label: "1 hour" }] } } },
     H("pihole_pause_service", [{ value: "auto", label: "Automatic (integration and service availability)" }, { value: "pi_hole.disable", label: "Pi-hole v5 / Home Assistant core" }, { value: "pi_hole_v6.disable", label: "Pi-hole v6" }, { value: "custom", label: "Custom Home Assistant action" }]),
@@ -48968,7 +49034,7 @@ const Co = [
     stock_show_statistics: !0,
     stock_show_volume: !0,
     stock_show_trends: !0
-  } : e.upstreamId === "pi_hole_card" ? Be : e.upstreamId === "remote_card" ? $t : e.upstreamId === "upcoming_media" ? ud : e.upstreamId === "mini_graph_card" ? {
+  } : e.upstreamId === "pi_hole_card" ? Be : e.upstreamId === "remote_card" ? Nt : e.upstreamId === "upcoming_media" ? ud : e.upstreamId === "mini_graph_card" ? {
     variant: "line",
     hours_to_show: 24,
     points_per_hour: 0.5,
@@ -49396,6 +49462,7 @@ const zr = [
 ]), Jd = /* @__PURE__ */ new Set([
   "layout",
   "fill_container",
+  "card_shadow",
   "variant",
   "features_position",
   "multiline_secondary",
@@ -49582,9 +49649,9 @@ let bt = class extends ye {
     }
     const o = Oo(e, this.hass, this.config.entity), s = this.config.show, l = {
       ...o,
-      ...e.upstreamId === "stock_card" && this.config.stock_source !== "stock_market_deluxe" ? Object.fromEntries(Ut.map(([m]) => [
+      ...e.upstreamId === "stock_card" && this.config.stock_source !== "stock_market_deluxe" ? Object.fromEntries(Ft.map(([m]) => [
         `stock_${m}_attribute`,
-        Ft(this.config, this.hass, m).attribute
+        Kt(this.config, this.hass, m).attribute
       ])) : {},
       ...this.config,
       ...e.upstreamId === "pi_hole_card" ? {
@@ -49610,9 +49677,9 @@ let bt = class extends ye {
         mini_graph_loading_indicator: s?.loading_indicator ?? !0
       } : {},
       ...e.upstreamId === "custom_card_entity_carousel" ? {
-        carousel_navigation: Tt(this.config, "navigation"),
-        carousel_pagination: Tt(this.config, "pagination"),
-        carousel_scrollbar: Tt(this.config, "scrollbar"),
+        carousel_navigation: $t(this.config, "navigation"),
+        carousel_pagination: $t(this.config, "pagination"),
+        carousel_scrollbar: $t(this.config, "scrollbar"),
         carousel_pagination_type: this.config.carousel_pagination_type ?? (this.config.parameters?.pagination && typeof this.config.parameters.pagination == "object" ? this.config.parameters.pagination.type : void 0) ?? "bullets",
         carousel_effect: this.config.carousel_effect ?? this.config.parameters?.effect ?? "coverflow",
         carousel_grab_cursor: this.config.carousel_grab_cursor ?? this.config.parameters?.grabCursor ?? !0,
@@ -49679,14 +49746,14 @@ let bt = class extends ye {
       <ha-sortable handle-selector=".handle" @item-moved=${(i) => {
       i.stopPropagation(), this.movePiHoleSection(i.detail.oldIndex, i.detail.newIndex);
     }}><div class="compact-controls">${La(e, (i) => i, (i, r) => _`<div class="compact-control">
-        <span class="handle" role="button" tabindex="0" aria-label=${b(this.hass, "editor.reorder", { name: u(this.hass, Et[i]) })} @keydown=${(o) => {
+        <span class="handle" role="button" tabindex="0" aria-label=${b(this.hass, "editor.reorder", { name: u(this.hass, Mt[i]) })} @keydown=${(o) => {
       o.altKey && ["ArrowUp", "ArrowDown"].includes(o.key) && (o.preventDefault(), this.movePiHoleSection(r, r + (o.key === "ArrowUp" ? -1 : 1)));
     }}><ha-svg-icon .path=${ea}></ha-svg-icon></span>
-        <span class="row-label">${u(this.hass, Et[i])}</span>
-        <ha-icon-button .path=${At} .label=${b(this.hass, "editor.remove", { name: u(this.hass, Et[i]) })} @click=${() => this.saveRemote({ pihole_sections: e.filter((o, s) => s !== r) })}></ha-icon-button>
+        <span class="row-label">${u(this.hass, Mt[i])}</span>
+        <ha-icon-button .path=${xt} .label=${b(this.hass, "editor.remove", { name: u(this.hass, Mt[i]) })} @click=${() => this.saveRemote({ pihole_sections: e.filter((o, s) => s !== r) })}></ha-icon-button>
       </div>`)}</div></ha-sortable>
       <ha-selector aria-label=${b(this.hass, "editor.add_section", { name: "Pi-hole" })} .hass=${this.hass} .value=${""}
-        .selector=${{ select: { mode: "dropdown", options: Object.entries(Et).filter(([i]) => !e.includes(i)).map(([i, r]) => ({ value: i, label: u(this.hass, r) })) } }}
+        .selector=${{ select: { mode: "dropdown", options: Object.entries(Mt).filter(([i]) => !e.includes(i)).map(([i, r]) => ({ value: i, label: u(this.hass, r) })) } }}
         @value-changed=${(i) => {
       i.stopPropagation(), i.detail.value && !e.includes(i.detail.value) && this.saveRemote({ pihole_sections: [...e, i.detail.value] });
     }}></ha-selector>
@@ -49717,7 +49784,7 @@ let bt = class extends ye {
     }}><div class="compact-controls">${La(n, (i) => i, (i) => _`<div class="compact-control">
           <span class="handle"><ha-svg-icon .path=${ea}></ha-svg-icon></span>
           <span class="row-label">${this.hass?.states[i]?.attributes.friendly_name || i}</span>
-          <ha-icon-button .path=${At} .label=${b(this.hass, "editor.restore_order")} @click=${() => this.saveRemote({ pihole_entity_order: n.filter((r) => r !== i) })}></ha-icon-button>
+          <ha-icon-button .path=${xt} .label=${b(this.hass, "editor.restore_order")} @click=${() => this.saveRemote({ pihole_entity_order: n.filter((r) => r !== i) })}></ha-icon-button>
         </div>`)}</div></ha-sortable>
       </div></details>
     </section>`;
@@ -49727,7 +49794,7 @@ let bt = class extends ye {
     t < 0 || t >= a.length || e < 0 || e >= a.length || e === t || (a.splice(t, 0, a.splice(e, 1)[0]), this.saveRemote({ pihole_sections: a }));
   }
   renderRemoteEditor() {
-    const e = this.config?.remote_sections ?? $t.remote_sections, t = this.config?.remote_buttons ?? [], a = this.remoteEditing === void 0 ? void 0 : t[this.remoteEditing], n = un(this.hass, this.config).media?.attributes.source_list, i = Array.isArray(n) ? n.filter((o) => typeof o == "string") : [], r = Object.entries(this.config?.remote_commands ?? {});
+    const e = this.config?.remote_sections ?? Nt.remote_sections, t = this.config?.remote_buttons ?? [], a = this.remoteEditing === void 0 ? void 0 : t[this.remoteEditing], n = un(this.hass, this.config).media?.attributes.source_list, i = Array.isArray(n) ? n.filter((o) => typeof o == "string") : [], r = Object.entries(this.config?.remote_commands ?? {});
     return _`<section class="item-editor remote-features">
       <h3>${b(this.hass, "editor.remote_sections")}</h3><p>${b(this.hass, "editor.remote_sections_help")}</p>
       <ha-sortable handle-selector=".handle" @item-moved=${(o) => {
@@ -49739,7 +49806,7 @@ let bt = class extends ye {
       l.altKey && ["ArrowUp", "ArrowDown"].includes(l.key) && (l.preventDefault(), this.moveRemoteSection(s, s + (l.key === "ArrowUp" ? -1 : 1)));
     }}><ha-svg-icon .path=${ea}></ha-svg-icon></span>
           <span class="row-label">${u(this.hass, Ca[o])}</span>
-          <ha-icon-button .path=${At} .label=${b(this.hass, "editor.remove", { name: u(this.hass, Ca[o]) })} @click=${() => this.saveRemote({ remote_sections: e.filter((l, d) => d !== s) })}></ha-icon-button>
+          <ha-icon-button .path=${xt} .label=${b(this.hass, "editor.remove", { name: u(this.hass, Ca[o]) })} @click=${() => this.saveRemote({ remote_sections: e.filter((l, d) => d !== s) })}></ha-icon-button>
         </div>`)}
       </div></ha-sortable>
       <ha-selector aria-label=${b(this.hass, "editor.add_remote_section")} .hass=${this.hass} .value=${""}
@@ -49773,7 +49840,7 @@ let bt = class extends ye {
           <ha-icon-button .path=${Qr} .label=${b(this.hass, "editor.edit_button")} @click=${() => {
       this.remoteEditing = s;
     }}></ha-icon-button>
-          <ha-icon-button .path=${At} .label=${b(this.hass, "editor.remove_button")} @click=${() => {
+          <ha-icon-button .path=${xt} .label=${b(this.hass, "editor.remove_button")} @click=${() => {
       this.remoteEditing = void 0, this.saveRemote({ remote_buttons: t.filter((l, d) => d !== s) });
     }}></ha-icon-button>
         </div>`)}
@@ -49790,7 +49857,7 @@ let bt = class extends ye {
         <ha-selector .hass=${this.hass} .selector=${{ text: {} }} .value=${s} @value-changed=${(l) => {
       l.stopPropagation(), this.saveRemote({ remote_commands: { ...this.config?.remote_commands, [o]: l.detail.value } });
     }}></ha-selector>
-        <ha-icon-button .path=${At} .label=${b(this.hass, "editor.restore_command")} @click=${() => {
+        <ha-icon-button .path=${xt} .label=${b(this.hass, "editor.restore_command")} @click=${() => {
       const l = { ...this.config?.remote_commands };
       delete l[o], this.saveRemote({ remote_commands: l });
     }}></ha-icon-button>
@@ -49806,7 +49873,7 @@ let bt = class extends ye {
     this.config && (this.config = { ...this.config, ...e }, ze(this, "config-changed", { config: this.config }));
   }
   moveRemoteSection(e, t) {
-    const a = [...this.config?.remote_sections ?? $t.remote_sections];
+    const a = [...this.config?.remote_sections ?? Nt.remote_sections];
     t < 0 || t >= a.length || e < 0 || e >= a.length || e === t || (a.splice(t, 0, a.splice(e, 1)[0]), this.saveRemote({ remote_sections: a }));
   }
   moveRemoteButton(e, t) {
@@ -50669,7 +50736,7 @@ Aa([
   W()
 ], bt.prototype, "piHoleMapping", 2);
 bt = Aa([
-  qt("mushroom-addition-editor")
+  Ut("mushroom-addition-editor")
 ], bt);
 const eu = fe`
   :host {
@@ -51163,7 +51230,7 @@ function Ra(e, t, a, n) {
   });
   return e.dispatchEvent(i), i;
 }
-const jt = /* @__PURE__ */ new WeakMap(), Wo = /* @__PURE__ */ new WeakMap();
+const St = /* @__PURE__ */ new WeakMap(), Wo = /* @__PURE__ */ new WeakMap();
 function Za(e) {
   const t = e.connection ?? e.callWS;
   return t ? Wo.get(t) : void 0;
@@ -51203,8 +51270,8 @@ function xa(e, t) {
 async function Gn(e, t = !1) {
   if (!e.callWS) return { devices: e.devices ?? {}, entities: e.entities ?? {} };
   const a = e.connection ?? e.callWS;
-  t && jt.delete(a);
-  let n = jt.get(a);
+  t && St.delete(a);
+  let n = St.get(a);
   return n || (n = Promise.all([
     e.callWS({ type: "config/device_registry/list" }),
     e.callWS({ type: "config/entity_registry/list" })
@@ -51213,9 +51280,9 @@ async function Gn(e, t = !1) {
       devices: Object.fromEntries(i.map((s) => [s.id, s])),
       entities: Object.fromEntries(r.map((s) => [s.entity_id, s]))
     };
-    return jt.get(a) === n && Wo.set(a, o), o;
-  }), jt.set(a, n), n.catch(() => {
-    jt.get(a) === n && jt.delete(a);
+    return St.get(a) === n && Wo.set(a, o), o;
+  }), St.set(a, n), n.catch(() => {
+    St.get(a) === n && St.delete(a);
   })), n;
 }
 function Ya(e, t, a) {
@@ -51254,7 +51321,7 @@ function pn(e, t, a, n, i, r = "synology_dsm") {
   const l = o.find((d) => d.entity_id.endsWith(`_${n}`));
   return l ? e.states[l.entity_id] : void 0;
 }
-function Kt(e, t) {
+function Wt(e, t) {
   const a = Qa(t, pe(e));
   return e.server ? a.find((n) => n.id === e.server) : a.length === 1 ? a[0] : void 0;
 }
@@ -51309,7 +51376,7 @@ function ru(e, t, a, n, i) {
   if (r) return e?.states[r];
   const o = pe(t);
   if (o === "manual" || ["model", "software_version"].includes(n) || o === "qnap" && n === "security_status" || o === "synology_dsm" && n === "system_status") return;
-  const s = Kt(t, a)?.id;
+  const s = Wt(t, a)?.id;
   if (o === "qnap" && ["network_rx", "network_tx"].includes(n)) {
     const l = gn(a, s, "network"), c = (t.network_interface ? l.find((m) => m.id === t.network_interface) : l.length === 1 ? l[0] : void 0)?.entities[n];
     return c ? e?.states[c] : void 0;
@@ -51369,7 +51436,7 @@ function Zo(e) {
 }
 function Yo(e, t) {
   if (pe(e) !== "synology_dsm") return [];
-  const a = Kt(e, t);
+  const a = Wt(e, t);
   return a ? Object.values(t.devices).filter(
     (n) => n.id !== a.id && (Ja(n, "synology_dsm") || xa(t, n.id).some((i) => i.platform === "synology_dsm")) && Ya(n, a.id, t.devices)
   ) : [];
@@ -51383,7 +51450,7 @@ function Ci(e, t, a) {
     total: e?.states[i.total_entity ?? ""],
     used: e?.states[i.used_entity ?? ""],
     temperature: e?.states[i.temperature_entity ?? ""]
-  })) : n === "qnap" ? gn(a, Kt(t, a)?.id, "volumes").map((i) => ({
+  })) : n === "qnap" ? gn(a, Wt(t, a)?.id, "volumes").map((i) => ({
     device: { id: i.id, name: i.id },
     usage: e?.states[i.entities.volume_percentage_used ?? ""],
     total: e?.states[i.entities.volume_size_total ?? ""],
@@ -51418,7 +51485,7 @@ function ou(e, t, a) {
       badSectors: e?.states[i.bad_sectors_entity ?? ""],
       remainingLife: e?.states[i.remaining_life_entity ?? ""]
     };
-  }) : n === "qnap" ? gn(a, Kt(t, a)?.id, "drives").map((i) => {
+  }) : n === "qnap" ? gn(a, Wt(t, a)?.id, "drives").map((i) => {
     const r = e?.states[i.entities.drive_smart_status ?? ""], o = e?.states[i.entities.drive_temp ?? ""], s = r?.attributes.Model ?? o?.attributes.Model;
     return { id: i.id, name: i.id, model: typeof s == "string" ? s : void 0, smart: r, temperature: o };
   }) : Yo(t, a).filter(
@@ -51473,13 +51540,13 @@ const ua = class ua extends ye {
   shouldUpdate(t) {
     if (t.size !== 1 || !t.has("hass")) return !0;
     const a = t.get("hass");
-    if (!a || !this.hass || (a.connection ?? a.callWS) !== (this.hass.connection ?? this.hass.callWS) || Mt(this.config) && !this.hass.callWS && (a.devices !== this.hass.devices || a.entities !== this.hass.entities)) return !0;
-    const n = Mt(this.config) ? Za(this.hass) : void 0;
+    if (!a || !this.hass || (a.connection ?? a.callWS) !== (this.hass.connection ?? this.hass.callWS) || Ct(this.config) && !this.hass.callWS && (a.devices !== this.hass.devices || a.entities !== this.hass.entities)) return !0;
+    const n = Ct(this.config) ? Za(this.hass) : void 0;
     return n && n !== this.registries ? !0 : (this.updateWatchedEntities(), this.watchedEntities.some((i) => this.renderedStates.get(i) !== this.hass.states[i]));
   }
   updateWatchedEntities() {
     if (this.watchedConfig !== this.config || this.watchedRegistries !== this.registries) {
-      const t = this.getActiveDevice()?.id, n = this.config.type.includes("docker") || this.config.type.includes("dashboard") ? Lt(this.config) : "disabled", i = n === "portainer" ? this.config.portainer_endpoint : void 0, r = new Set(Object.values(this.config.entities ?? {}));
+      const t = this.getActiveDevice()?.id, n = this.config.type.includes("docker") || this.config.type.includes("dashboard") ? Ht(this.config) : "disabled", i = n === "portainer" ? this.config.portainer_endpoint : void 0, r = new Set(Object.values(this.config.entities ?? {}));
       if (pe(this.config) === "manual")
         for (const o of [...this.config.volumes ?? [], ...this.config.drives ?? []])
           for (const [s, l] of Object.entries(o))
@@ -51500,7 +51567,7 @@ const ua = class ua extends ye {
   }
   willUpdate(t) {
     if (super.willUpdate(t), this.toggleAttribute("embedded", !!this.config.embedded), (t.has("hass") || t.has("config")) && this.hass) {
-      if (!Mt(this.config)) {
+      if (!Ct(this.config)) {
         this.requestVersion++, this.registryKey = void 0, this.registryError = "";
         return;
       }
@@ -51590,7 +51657,7 @@ const ua = class ua extends ye {
     return { columns: "full", rows: "auto", min_columns: 3 };
   }
   getActiveDevice() {
-    return Kt(this.config, this.registries);
+    return Wt(this.config, this.registries);
   }
   getEntity(t, a) {
     return ru(this.hass, this.config, this.registries, t, a);
@@ -51687,7 +51754,7 @@ const De = wa(class extends za {
   }
   willUpdate(t) {
     if ((t.has("hass") || t.has("_config")) && this.hass && this._config) {
-      if (!Mt(this._config)) {
+      if (!Ct(this._config)) {
         this.requestVersion++, this.registryKey = void 0, this.loading = !1, this.error = "";
         return;
       }
@@ -51721,7 +51788,7 @@ const De = wa(class extends za {
     if (t.size !== 1 || !t.has("hass")) return !0;
     const a = t.get("hass");
     if (!a || !this.hass || (a.connection ?? a.callWS) !== (this.hass.connection ?? this.hass.callWS)) return !0;
-    if (!this._config || !Mt(this._config)) return !1;
+    if (!this._config || !Ct(this._config)) return !1;
     if (!this.hass.callWS) return a.devices !== this.hass.devices || a.entities !== this.hass.entities;
     const n = Za(this.hass);
     return !!n && n !== this.registries;
@@ -51810,7 +51877,7 @@ const De = wa(class extends za {
   }
   render() {
     if (!this._config) return _``;
-    const t = this._config, a = pe(t), n = Qa(this.registries, a), i = a === "synology_dsm" ? "Synology NAS" : "QNAP NAS", r = nu(this.registries), o = t.type.includes("dashboard"), s = t.type.includes("docker"), l = Lt(t), d = (o || s) && l !== "disabled", c = Object.entries(lu).filter(([g]) => l !== "disabled" || g !== "docker"), m = o || t.type.includes("server") ? Object.entries(su).filter(([g]) => a === "synology_dsm" ? !["system_status", "memory_used"].includes(g) : g !== "security_status") : [], h = a === "qnap" ? gn(this.registries, Kt(t, this.registries)?.id, "network") : [];
+    const t = this._config, a = pe(t), n = Qa(this.registries, a), i = a === "synology_dsm" ? "Synology NAS" : "QNAP NAS", r = nu(this.registries), o = t.type.includes("dashboard"), s = t.type.includes("docker"), l = Ht(t), d = (o || s) && l !== "disabled", c = Object.entries(lu).filter(([g]) => l !== "disabled" || g !== "docker"), m = o || t.type.includes("server") ? Object.entries(su).filter(([g]) => a === "synology_dsm" ? !["system_status", "memory_used"].includes(g) : g !== "security_status") : [], h = a === "qnap" ? gn(this.registries, Wt(t, this.registries)?.id, "network") : [];
     return _`<div class="card-config">
       ${this.error ? _`<div role="alert">${this.error}</div>` : p}
       ${s ? p : _`<label>NAS system<select aria-label="NAS system" .value=${De(a)}
@@ -51880,7 +51947,7 @@ const De = wa(class extends za {
           .label=${y} .value=${t.entities?.[g] || ""} .includeDomains=${[g === "security_status" ? "binary_sensor" : "sensor"]} .allowCustomEntity=${!0}
           @value-changed=${(k) => this.mappingChanged(g, k.detail.value || "")}></ha-entity-picker></label>`)}
       </details>` : p}
-      ${Mt(t) ? _`<button ?disabled=${this.loading} @click=${() => this.load(!0)}>${this.loading ? "Loading device discovery..." : "Refresh entity discovery"}</button>` : p}
+      ${Ct(t) ? _`<button ?disabled=${this.loading} @click=${() => this.load(!0)}>${this.loading ? "Loading device discovery..." : "Refresh entity discovery"}</button>` : p}
     </div>`;
   }
 };
@@ -51902,14 +51969,14 @@ tn.properties = {
     fieldset { min-width:0;border:1px solid var(--divider-color);border-radius:6px;padding:12px;display:flex;flex-direction:column;gap:10px; }
     a { color:var(--primary-color,#0086d6); }
   `;
-let It = tn;
-class _u extends It {
+let Rt = tn;
+class _u extends Rt {
 }
-class du extends It {
+class du extends Rt {
 }
-class uu extends It {
+class uu extends Rt {
 }
-class cu extends It {
+class cu extends Rt {
 }
 function Ta(e, t) {
   if (!customElements.get(e))
@@ -52096,7 +52163,7 @@ const an = class an extends st {
     });
   }
   getContainers() {
-    const t = Lt(this.config);
+    const t = Ht(this.config);
     if (t === "disabled") return [];
     if (t === "manual") return this.sortContainers(this.getManualContainers());
     const a = this.config.portainer_endpoint ? this.registries.devices[this.config.portainer_endpoint] : void 0;
@@ -52163,7 +52230,7 @@ const an = class an extends st {
     </div>`;
   }
   render() {
-    const t = this.getContainers(), a = Lt(this.config), n = t.filter((s) => s.isRunning).length, i = t.filter((s) => s.isStopped).length, r = t.filter((s) => !s.available).length, o = t.filter(
+    const t = this.getContainers(), a = Ht(this.config), n = t.filter((s) => s.isRunning).length, i = t.filter((s) => s.isStopped).length, r = t.filter((s) => !s.available).length, o = t.filter(
       (s) => this._filter === "all" || (this._filter === "running" ? s.isRunning : s.isStopped)
     );
     return _`<ha-card>
@@ -52233,7 +52300,7 @@ const pu = [
     super(), this._activeTab = "overview";
   }
   render() {
-    const t = this.getActiveDevice(), a = pu.filter((r) => (Lt(this.config) !== "disabled" || r.key !== "docker") && (!this.config.tabs || this.config.tabs.includes(r.key))), n = a.some((r) => r.key === this._activeTab) ? this._activeTab : a[0]?.key, i = (r) => ({ ...this.config, title: void 0, type: `custom:mushroom-addition-nas-${r}-card`, embedded: !0 });
+    const t = this.getActiveDevice(), a = pu.filter((r) => (Ht(this.config) !== "disabled" || r.key !== "docker") && (!this.config.tabs || this.config.tabs.includes(r.key))), n = a.some((r) => r.key === this._activeTab) ? this._activeTab : a[0]?.key, i = (r) => ({ ...this.config, title: void 0, type: `custom:mushroom-addition-nas-${r}-card`, embedded: !0 });
     return _`<ha-card style="gap:12px">
       ${this.renderHeader(`${this.config.title || this.config.name || t?.name_by_user || t?.name || (pe(this.config) === "synology_dsm" ? "Synology NAS" : pe(this.config) === "qnap" ? "QNAP NAS" : "NAS")} Dashboard`, "Unified NAS Control Center", ci)}
       ${this.renderErrors()}
@@ -52294,8 +52361,9 @@ const gu = fe`
     border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, #e0e0e0));
     border-radius: var(--mush-card-primary-border-radius, 14px);
     background: var(--ha-card-background, var(--card-background-color, #fff));
-    box-shadow: var(--ha-card-box-shadow, 0 2px 8px rgba(0,0,0,.08));
+    box-shadow: none;
   }
+  .mushroom-addition-card.card-shadow { box-shadow: var(--ha-card-box-shadow, 0 2px 8px rgba(0,0,0,.08)); }
   .mushroom-addition-card:has(.fill-container), .fill-container { height: 100%; }
   .fill-container { min-height: 100%; }
   .mushroom-addition-card > .action-surface { min-height: 100%; }
@@ -53226,12 +53294,12 @@ class ku extends vu {
     this.listen(!0);
   }
 }
-const Xn = wa(ku), Pt = (e, t) => {
+const Xn = wa(ku), Et = (e, t) => {
   if (!t) return;
   const a = Number.parseFloat(e.states[t]?.state ?? "");
   return Number.isFinite(a) ? a : void 0;
 }, fu = (e, t, a = "") => t ? e.states[t]?.attributes.unit_of_measurement ?? a : a, ut = (e, t) => {
-  const a = Pt(e, t);
+  const a = Et(e, t);
   if (a === void 0) return;
   const n = fu(e, t).toLowerCase();
   return n === "mw" ? a * 1e6 : n === "kw" ? a * 1e3 : a;
@@ -53390,7 +53458,7 @@ function Du(e) {
 function $r(e, t) {
   if (e.stock_source !== void 0 && !["entity", "yahoo", "stock_market_deluxe"].includes(e.stock_source))
     throw new Error("Select a supported stock data source.");
-  const a = Ft(e, t, "price").entity?.attributes.symbol, n = (e.stock_symbol?.trim() || (typeof a == "string" ? a : "") || (e.stock_source === "yahoo" ? "" : "AAPL")).toUpperCase();
+  const a = Kt(e, t, "price").entity?.attributes.symbol, n = (e.stock_symbol?.trim() || (typeof a == "string" ? a : "") || (e.stock_source === "yahoo" ? "" : "AAPL")).toUpperCase();
   if (oa(e) && !/^[A-Z0-9^][A-Z0-9.^=-]{0,14}$/.test(n))
     throw new Error("Enter a valid stock symbol (up to 15 characters).");
   const i = e.stock_shares ?? 0;
@@ -53489,7 +53557,7 @@ let Xe = class extends ye {
   updated() {
     const e = this.shadowRoot?.querySelector(".entity-chart");
     if (!e || !this.config || !this.hass) return;
-    const { id: t, attribute: a } = Ft(this.config, this.hass, "price");
+    const { id: t, attribute: a } = Kt(this.config, this.hass, "price");
     if (!t) return;
     const n = { "1D": 24, "5D": 120, "1M": 720, "3M": 2160, "1Y": 8760, "5Y": 43830 }[this.range ?? this.config.stock_range ?? "1D"], i = {
       type: "custom:mushroom-addition-mini-graph-card",
@@ -53628,7 +53696,7 @@ kt([
   W()
 ], Xe.prototype, "range", 2);
 Xe = kt([
-  qt("mushroom-addition-stock")
+  Ut("mushroom-addition-stock")
 ], Xe);
 const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_morning" : t < 18 ? "ui.greeting_afternoon" : "ui.greeting_evening"), B = (e) => {
   const t = Number(e);
@@ -53640,7 +53708,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
         style=${`--source-color:${a}`}>
         ${ja(e.hass, e.entity, e.config.icon || (e.descriptor.upstreamId === "card_battery" ? e.entity?.attributes.icon || t : void 0), t)}
       </span>`;
-}, Nt = (e, t) => {
+}, Vt = (e, t) => {
   const a = E(e, t);
   return a ? e.hass.states[a] : void 0;
 }, Iu = (e, t) => {
@@ -53768,7 +53836,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
     <span class="battery-track"><i style=${`width:${Math.max(0, Math.min(100, t))}%`}></i></span>
   `);
 }, Zu = (e) => {
-  const t = E(e, "ulm_card_battery_attribute"), a = t ? D(e.entity, t) : e.entity?.state, n = B(a), i = Nt(e, "ulm_card_battery_battery_state_entity_id"), r = Nt(e, "ulm_card_battery_charger_type_entity_id"), o = i?.state.toLowerCase() === "charging", s = r?.state.toLowerCase(), l = s === "wireless" ? "-charging-wireless" : o || ["charging", "ac", "usb"].includes(s ?? "") ? "-charging" : "", d = B(e.config.battery_warning_threshold) ?? E(e, "ulm_card_battery_battery_level_warning") ?? 50, c = B(e.config.battery_low_threshold) ?? E(e, "ulm_card_battery_battery_level_danger") ?? 20, m = B(e.config.battery_critical_threshold) ?? 10, [h, g, y] = [m, c, d].map((w) => Math.max(0, Math.min(100, w))).sort((w, A) => w - A), k = n === void 0 || n <= h ? Se(
+  const t = E(e, "ulm_card_battery_attribute"), a = t ? D(e.entity, t) : e.entity?.state, n = B(a), i = Vt(e, "ulm_card_battery_battery_state_entity_id"), r = Vt(e, "ulm_card_battery_charger_type_entity_id"), o = i?.state.toLowerCase() === "charging", s = r?.state.toLowerCase(), l = s === "wireless" ? "-charging-wireless" : o || ["charging", "ac", "usb"].includes(s ?? "") ? "-charging" : "", d = B(e.config.battery_warning_threshold) ?? E(e, "ulm_card_battery_battery_level_warning") ?? 50, c = B(e.config.battery_low_threshold) ?? E(e, "ulm_card_battery_battery_level_danger") ?? 20, m = B(e.config.battery_critical_threshold) ?? 10, [h, g, y] = [m, c, d].map((w) => Math.max(0, Math.min(100, w))).sort((w, A) => w - A), k = n === void 0 || n <= h ? Se(
     e.config.battery_critical_color ?? E(e, "ulm_card_battery_color_battery_level_danger"),
     "var(--google-red, #f44336)"
   ) : n <= g ? Se(e.config.battery_low_color, "var(--google-orange, #ff9800)") : n <= y ? Se(
@@ -54188,7 +54256,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
       </div>
     ` : p}
   `);
-}, We = (e, t, a) => Nt(e, t) ?? Object.values(e.hass.states).find((n) => String(D(n, "metric") ?? "").toLowerCase() === a && ["moon", "sky"].includes(String(D(n, "body") ?? "").toLowerCase())), Nr = (e, t, a) => {
+}, We = (e, t, a) => Vt(e, t) ?? Object.values(e.hass.states).find((n) => String(D(n, "metric") ?? "").toLowerCase() === a && ["moon", "sky"].includes(String(D(n, "body") ?? "").toLowerCase())), Nr = (e, t, a) => {
   const n = e === void 0 ? 180 : (e % 360 + 360) % 360, i = Math.max(-90, Math.min(90, t ?? 0)), r = n / 360 * 100, o = 62 / 90 * 100, s = i >= 0 ? o - i / 90 * (o - 4) : o + Math.abs(i) / 90 * (96 - o);
   return `--${a}-x:${r.toFixed(2)}%;--${a}-y:${s.toFixed(2)}%`;
 }, Vr = (e) => ({
@@ -54208,7 +54276,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
       minute: "2-digit",
       hour12: s
     }).format(M);
-  }, d = B(D(e.entity, "elevation")), c = B(D(e.entity, "azimuth")), m = E(e, "title"), h = Nt(e, "moon_entity") ?? e.hass.states["sensor.moon"] ?? Object.values(e.hass.states).find((Z) => String(D(Z, "device_class") ?? "") === "enum" && `${Z.entity_id} ${String(D(Z, "friendly_name") ?? "")}`.toLowerCase().includes("moon")), g = We(e, "moon_altitude_entity", "altitude"), y = We(e, "moon_azimuth_entity", "azimuth"), k = Nt(e, "moon_rising_entity") ?? We(e, "moon_rising_entity", "next_rising") ?? We(e, "moon_rising_entity", "moonrise"), S = Nt(e, "moon_setting_entity") ?? We(e, "moon_setting_entity", "next_setting") ?? We(e, "moon_setting_entity", "moonset"), f = We(e, "moon_next_full_moon_entity", "next_full_moon"), w = We(e, "moon_next_new_moon_entity", "next_new_moon"), A = We(e, "moon_above_horizon_entity", "is_moon_above_horizon"), z = [
+  }, d = B(D(e.entity, "elevation")), c = B(D(e.entity, "azimuth")), m = E(e, "title"), h = Vt(e, "moon_entity") ?? e.hass.states["sensor.moon"] ?? Object.values(e.hass.states).find((Z) => String(D(Z, "device_class") ?? "") === "enum" && `${Z.entity_id} ${String(D(Z, "friendly_name") ?? "")}`.toLowerCase().includes("moon")), g = We(e, "moon_altitude_entity", "altitude"), y = We(e, "moon_azimuth_entity", "azimuth"), k = Vt(e, "moon_rising_entity") ?? We(e, "moon_rising_entity", "next_rising") ?? We(e, "moon_rising_entity", "moonrise"), S = Vt(e, "moon_setting_entity") ?? We(e, "moon_setting_entity", "next_setting") ?? We(e, "moon_setting_entity", "moonset"), f = We(e, "moon_next_full_moon_entity", "next_full_moon"), w = We(e, "moon_next_new_moon_entity", "next_new_moon"), A = We(e, "moon_above_horizon_entity", "is_moon_above_horizon"), z = [
     h,
     g,
     y,
@@ -54328,7 +54396,7 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
   }), wt = xo.flatMap((L) => {
     const ne = Ce[L.configKey], we = ne ? e.hass.states[ne] : void 0;
     return we ? [{ control: L, entity: we }] : [];
-  }), Wt = (e.config.shortcuts?.buttons ?? []).filter((L) => typeof L.id == "string" && L.id.trim().length > 0), vn = Math.min(8, Math.max(1, Math.round(e.config.shortcuts?.columns ?? 4))), kn = E(e, "sonos_details_always_visible") === !0, Pa = _`
+  }), Gt = (e.config.shortcuts?.buttons ?? []).filter((L) => typeof L.id == "string" && L.id.trim().length > 0), vn = Math.min(8, Math.max(1, Math.round(e.config.shortcuts?.columns ?? 4))), kn = E(e, "sonos_details_always_visible") === !0, Pa = _`
     ${Ke.length ? _`<div class="sonos-switches">
       ${Ke.map(({ control: L, entity: ne }) => _`
         <button class=${ne.state === "on" ? "is-active" : ""} aria-pressed=${ne.state === "on"}
@@ -54431,11 +54499,11 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
             ${Pa}
           </details>`}
     ` : p}
-    ${!s && Wt.length ? _`
+    ${!s && Gt.length ? _`
       <div class="sonos-shortcuts" style=${`--sonos-shortcut-columns:${vn}`}
         @pointerdown=${l} @pointerup=${l} @pointercancel=${l}
         @click=${l} @dblclick=${l} @keydown=${l} @keyup=${l}>
-        ${Wt.map((L, ne) => _`
+        ${Gt.map((L, ne) => _`
           <button
             aria-label=${L.name || b(e.hass, "ui.renderer.shortcut", { number: ne + 1 })}
             title=${L.name || L.id || ""}
@@ -54660,11 +54728,11 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
     t.grid_phase_1_entity,
     t.grid_phase_2_entity,
     t.grid_phase_3_entity
-  ].map((T) => ut(e.hass, T) ?? 0), o = ut(e.hass, t.solar_power_entity) ?? 0, s = Pt(e.hass, t.solar_forecast_entity) ?? 0, l = ut(e.hass, t.battery_power_entity) ?? 0, d = Math.max(0, Math.min(
+  ].map((T) => ut(e.hass, T) ?? 0), o = ut(e.hass, t.solar_power_entity) ?? 0, s = Et(e.hass, t.solar_forecast_entity) ?? 0, l = ut(e.hass, t.battery_power_entity) ?? 0, d = Math.max(0, Math.min(
     100,
-    Pt(e.hass, t.battery_level_entity) ?? 0
+    Et(e.hass, t.battery_level_entity) ?? 0
   )), c = ut(e.hass, t.ev_charger_power_entity) ?? 0, m = [1, 2, 3].map((T) => ({
-    level: Pt(e.hass, E(e, `battery_${T}_level_entity`)) ?? 0,
+    level: Et(e.hass, E(e, `battery_${T}_level_entity`)) ?? 0,
     power: ut(e.hass, E(e, `battery_${T}_power_entity`)) ?? 0
   })), h = t.energy_mode_entity ? e.hass.states[t.energy_mode_entity]?.state ?? "-" : "-", g = {
     "Smart Matching": t.mode_solar_first_label ?? u(e.hass, "Solar first"),
@@ -54680,8 +54748,8 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
     return Ke ? K`<path d=${Ke} stroke=${$e} class="hems-bar"></path>` : p;
   }, te = t.electricity_price_entity ? e.hass.states[t.electricity_price_entity] : void 0, Z = ju(
     te,
-    Pt(e.hass, t.tariff_markup_entity) ?? 0,
-    Pt(e.hass, t.tariff_vat_entity) ?? 0
+    Et(e.hass, t.tariff_markup_entity) ?? 0,
+    Et(e.hass, t.tariff_vat_entity) ?? 0
   ), M = /* @__PURE__ */ new Date();
   M.setHours(0, 0, 0, 0);
   const j = M.getTime(), I = 864e5, se = Date.now(), Y = Z.find((T) => se >= T.start && se < T.end), R = (T) => T < 0 ? t.price_negative_color ?? "#0288d1" : T < (t.price_low_threshold ?? 0.18) ? t.price_low_color ?? "#2e7d32" : T < (t.price_medium_threshold ?? 0.26) ? t.price_medium_color ?? "#9ccc65" : T < (t.price_high_threshold ?? 0.34) ? t.price_high_color ?? "#fdd835" : T < (t.price_critical_threshold ?? 0.42) ? t.import_color ?? "#fb8c00" : t.price_critical_color ?? "#e53935", ue = (T) => new Date(T).toLocaleTimeString(e.hass.language ?? "nl-NL", {
@@ -54856,9 +54924,9 @@ const D = (e, t) => e?.attributes[t], Bu = (e, t) => b(e, t < 12 ? "ui.greeting_
             `;
   })}
           ${s.map((V, Q) => {
-    const $e = V.kind, Ce = F[$e], Ke = w(V.price), wt = w(Math.max(c.minimum, Math.min(0, c.maximum))), Wt = f(V.timestamp), vn = f(Math.min(o, V.timestamp + z(Q))), kn = Math.max(1, (vn - Wt) * 0.88), Pa = Math.min(Ke, wt), L = Math.max(1, Math.abs(Ke - wt));
+    const $e = V.kind, Ce = F[$e], Ke = w(V.price), wt = w(Math.max(c.minimum, Math.min(0, c.maximum))), Gt = f(V.timestamp), vn = f(Math.min(o, V.timestamp + z(Q))), kn = Math.max(1, (vn - Gt) * 0.88), Pa = Math.min(Ke, wt), L = Math.max(1, Math.abs(Ke - wt));
     return K`
-              <rect x=${Wt} y=${Pa} width=${kn} height=${L}
+              <rect x=${Gt} y=${Pa} width=${kn} height=${L}
                 rx=${Math.max(0, Math.min(16, B(e.config.buy_sell_bar_radius) ?? 2))}
                 fill=${Ce} opacity="0.88">
                 <title>${`${Z[$e]}: ${Cr(V.price, A)} ${e.config.buy_sell_axis_label || "€/kWh"}`}</title>
@@ -55208,7 +55276,7 @@ const Li = class Li extends ye {
         @pointercancel=${this.pointerUp} @keydown=${this.keydown}>
         ${a}
       </div>`;
-      return _`<ha-card class="mushroom-addition-card">${m}</ha-card>`;
+      return _`<ha-card class="mushroom-addition-card${this.config?.card_shadow ? " card-shadow" : ""}">${m}</ha-card>`;
     }, this.keydown = (t) => {
       t.target === t.currentTarget && (t.key === "Enter" || t.key === " ") && (t.preventDefault(), this.runAction("tap_action"));
     }, this.pointerDown = () => {
@@ -55339,13 +55407,13 @@ const Li = class Li extends ye {
   }
 };
 Li.styles = gu;
-let Rt = Li;
+let Ot = Li;
 is([
   de({ attribute: !1 })
-], Rt.prototype, "hass");
+], Ot.prototype, "hass");
 is([
   de({ attribute: !1 })
-], Rt.prototype, "config");
+], Ot.prototype, "config");
 const Pc = (e, t, a = [], n = []) => {
   const i = [...a, ...n, ...Object.keys(t?.states ?? {})], r = [...new Set(i)].filter((s) => t?.states?.[s] !== void 0), o = r.filter((s) => !["unavailable", "unknown"].includes(t?.states?.[s]?.state.toLowerCase() ?? ""));
   for (const s of e.preferredDomains ?? []) {
@@ -55853,6 +55921,7 @@ const na = [
       a.color
     ) : na[0], i = [
       this.config.group ? "group" : "",
+      this.config.card_shadow ? "card-shadow" : "",
       t.labels === "hover" || t.labels_secondary === "hover" ? "labels-hover" : ""
     ].filter(Boolean).join(" ");
     return _`
@@ -56356,10 +56425,11 @@ Hi.styles = fe`
       border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, #e0e0e0));
       border-radius: var(--mush-card-primary-border-radius, 14px);
       background: var(--ha-card-background, var(--card-background-color, #fff));
-      box-shadow: var(--ha-card-box-shadow, 0 2px 8px rgba(0,0,0,.08));
+      box-shadow: none;
       color: var(--primary-text-color);
       cursor: pointer;
     }
+    ha-card.card-shadow { box-shadow: var(--ha-card-box-shadow, 0 2px 8px rgba(0,0,0,.08)); }
     ha-card.group { border: 0; border-radius: 0; box-shadow: none; background: transparent; }
     .content { display: flex; flex-direction: column; box-sizing: border-box; min-height: 100%; gap: var(--mush-spacing, 12px); padding: var(--mush-spacing, 12px); }
     .content > * { flex: 0 0 auto; min-width: 0; }
@@ -56518,7 +56588,7 @@ const Ir = ["helpers", "unavailable", "timeout", "initialize", "schema", "templa
   "Native condition editor timed out.": ["timeout", "hui-conditions-editor"],
   "This frontend does not provide the native conditions editor.": ["unavailable", "hui-conditions-editor"],
   "This Home Assistant frontend cannot extend the Area editor Content schema.": ["schema"]
-}, Vt = (e, t) => {
+}, Dt = (e, t) => {
   const a = Lc[ki(e?.language)], n = "Template error: ";
   if (t.startsWith(n))
     return a.template.replace("{error}", () => t.slice(n.length));
@@ -56770,7 +56840,7 @@ const Bi = class Bi extends ye {
   applyPresentation(t) {
   }
   render() {
-    return this.error ? _`<ha-alert alert-type="error">${this.config?.area ? Vt(this.hass, this.error) : u(this.hass, "Select an area in the native Area editor.")}
+    return this.error ? _`<ha-alert alert-type="error">${this.config?.area ? Dt(this.hass, this.error) : u(this.hass, "Select an area in the native Area editor.")}
       <button @click=${() => {
       this.card = void 0, this.load();
     }}>${u(this.hass, "Retry native Area card")}</button></ha-alert>` : this.card ? _`<div class=${this.loadingControls ? "loading" : "native"}>${this.card}</div>
@@ -56860,7 +56930,7 @@ const Ii = class Ii extends ye {
   conditional(t, a) {
     if (!t.control) return _`<ha-alert alert-type="error">${u(this.hass, "Conditional control needs a nested button.")}</ha-alert>`;
     const n = this.conditionalErrors.get(a);
-    if (n) return _`<ha-alert alert-type="error">${Vt(this.hass, n)}</ha-alert>`;
+    if (n) return _`<ha-alert alert-type="error">${Dt(this.hass, n)}</ha-alert>`;
     if (!this.conditionals.has(a)) {
       this.conditionals.set(a, null);
       const r = this.configRevision, o = window.loadCardHelpers;
@@ -56927,7 +56997,7 @@ const Ii = class Ii extends ye {
     }), i;
   }
   render() {
-    return this.toggleAttribute("named", this.config?.controls?.some(en) ?? !1), this.error ? _`<ha-alert alert-type="error">${Vt(this.hass, this.error)}<button @click=${() => {
+    return this.toggleAttribute("named", this.config?.controls?.some(en) ?? !1), this.error ? _`<ha-alert alert-type="error">${Dt(this.hass, this.error)}<button @click=${() => {
       this.load();
     }}>${u(this.hass, "Retry")}</button></ha-alert>` : !this.config || !this.hass || !this.ready ? p : this.config.controls === void 0 ? this.group(void 0, "automatic") : _`${this.config.controls.map((t, a) => {
       const n = typeof t == "object" && t.type === "template" ? this.template(t, a) : t;
@@ -56943,7 +57013,7 @@ const Ii = class Ii extends ye {
         hold_action: n.hold_action,
         double_tap_action: n.double_tap_action
       }, d = n.icon_color, c = d && !["default", "state"].includes(d) ? /^(#|rgb|hsl|var\(|color\()/.test(d) ? d : `var(--${d}-color, ${d})` : s ? this.color ?? "var(--state-active-color, var(--primary-color))" : "var(--state-icon-color)", m = Object.entries(n).find(([, y]) => typeof y == "string" && y.startsWith("Template error:"));
-      if (m) return _`<ha-alert alert-type="error">${Vt(this.hass, String(m[1]))}</ha-alert>`;
+      if (m) return _`<ha-alert alert-type="error">${Dt(this.hass, String(m[1]))}</ha-alert>`;
       const h = n.use_entity_picture && typeof r?.attributes.entity_picture == "string" ? r.attributes.entity_picture : void 0, g = this.label(n);
       return _`<button class="entity" ?disabled=${o} aria-label=${String((n.name ?? r?.attributes.friendly_name ?? i) || b(this.hass, "ui.area.area_action"))}
         aria-pressed=${!!s} style=${`--control-icon-color:${c}`}
@@ -57173,7 +57243,7 @@ const Ri = class Ri extends ye {
     }}>${this.selected.depth ? b(this.hass, "ui.area.back_conditional") : u(this.hass, "← Back to buttons")}</button>
       <h4>${r}</h4>
       ${a === "conditional" ? _`
-        ${this.conditionsError ? _`<ha-alert alert-type="error">${Vt(this.hass, this.conditionsError)}<button @click=${() => {
+        ${this.conditionsError ? _`<ha-alert alert-type="error">${Dt(this.hass, this.conditionsError)}<button @click=${() => {
       this.ensureConditions();
     }}>${u(this.hass, "Retry")}</button></ha-alert>` : p}
         <hui-conditions-editor .hass=${this.hass} .conditions=${t.conditions ?? []}
@@ -57237,7 +57307,7 @@ const Ri = class Ri extends ye {
     t._computeLabelCallback = (l) => a[l.name] ? u(this.hass, a[l.name]) : o?.(l) ?? l.name, t._computeHelperCallback = (l) => n[l.name] ? u(this.hass, n[l.name]) : s?.(l);
   }
   render() {
-    return this.config ? _`${this.error ? _`<ha-alert alert-type="error">${Vt(this.hass, this.error)}<button @click=${() => {
+    return this.config ? _`${this.error ? _`<ha-alert alert-type="error">${Dt(this.hass, this.error)}<button @click=${() => {
       this.load();
     }}>${u(this.hass, "Retry")}</button></ha-alert>` : this.editor ?? _`${b(this.hass, "ui.area.loading_editor")}`}
       <h3>${u(this.hass, "Advanced area controls")}</h3>
@@ -57261,7 +57331,7 @@ const Ri = class Ri extends ye {
               <ha-icon-button class="edit-icon" aria-label="${u(this.hass, "Edit button")}" .label=${u(this.hass, "Edit button")} .path=${Qr} @click=${() => {
         this.selected = { feature: a, index: i, depth: 0 }, o.type === "conditional" && this.ensureConditions();
       }}></ha-icon-button>
-              <ha-icon-button class="remove-icon" aria-label="${u(this.hass, "Remove control")}" .label=${u(this.hass, "Remove control")} .path=${At} @click=${() => {
+              <ha-icon-button class="remove-icon" aria-label="${u(this.hass, "Remove control")}" .label=${u(this.hass, "Remove control")} .path=${xt} @click=${() => {
         this.selected = void 0, this.controls(a, t.controls.filter((d, c) => c !== i));
       }}></ha-icon-button>
             </div>`;
@@ -57425,7 +57495,7 @@ for (const e of ga)
       continue;
     }
     const t = e;
-    class a extends Rt {
+    class a extends Ot {
       constructor() {
         super(...arguments), this.descriptor = t;
       }
@@ -57440,7 +57510,7 @@ for (const e of mi) {
   const t = sn.find((r) => r.upstreamId === e.targetId);
   if (!t) throw new Error(`Missing alias target ${e.targetId}.`);
   const a = t, n = e.variant;
-  class i extends Rt {
+  class i extends Ot {
     constructor() {
       super(...arguments), this.descriptor = a;
     }

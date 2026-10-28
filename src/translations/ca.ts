@@ -1,6 +1,7 @@
 export const catalanLabels: Record<string, string> = {
   icon_type: "Tipus d'icona",
   fill_container: "Omple el contenidor",
+  card_shadow: "Ombra de la targeta",
   multiline_secondary: "Permet informació secundària en diverses línies",
   primary_info: "Informació principal",
   secondary_info: "Informació secundària",
@@ -900,6 +901,7 @@ export const catalanHelpers: Record<string, string> = {
   layout: "Tria si el contingut de la targeta s'organitza horitzontalment o verticalment.",
   multiline_secondary: "La targeta pot créixer per encabir el text i pot deixar d'alinear-se amb la quadrícula.",
   fill_container: "Estira la targeta per omplir la cel·la disponible de la quadrícula del tauler.",
+  card_shadow: "Afegeix una ombra suau al voltant de la vora de la targeta. Desactivat per defecte.",
   primary_info: "Tria el text principal de la targeta.",
   secondary_info: "Tria el text de suport sota la informació principal.",
   tap_action: "Què passa quan prems la targeta.",

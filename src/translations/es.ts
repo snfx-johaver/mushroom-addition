@@ -2,6 +2,7 @@
 export const spanishLabels: Record<string, string> = {
   icon_type: "Tipo de icono",
   fill_container: "Rellenar el contenedor",
+  card_shadow: "Sombra de la tarjeta",
   multiline_secondary: "Permitir información secundaria en varias líneas",
   primary_info: "Información principal",
   secondary_info: "Información secundaria",
@@ -899,6 +900,7 @@ export const spanishHelpers: Record<string, string> = {
   layout: "Elegir si el contenido de la tarjeta se dispone horizontal o verticalmente.",
   multiline_secondary: "La tarjeta puede aumentar su altura para acomodar el texto y no siempre se alineará con el sistema de cuadrícula.",
   fill_container: "Hace que la tarjeta se estire para llenar la celda disponible de la cuadrícula del panel.",
+  card_shadow: "Añade una sombra suave alrededor del borde de la tarjeta. Desactivado por defecto.",
   primary_info: "Elegir el texto principal que muestra la tarjeta.",
   secondary_info: "Elegir el texto de apoyo mostrado debajo de la información principal.",
   tap_action: "Qué ocurre al pulsar la tarjeta.",

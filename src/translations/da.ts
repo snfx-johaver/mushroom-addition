@@ -2,6 +2,7 @@
 export const danishLabels: Record<string, string> = {
   icon_type: "Ikontype",
   fill_container: "Fyld beholderen",
+  card_shadow: "Kortskygge",
   multiline_secondary: "Tillad sekundære oplysninger på flere linjer",
   primary_info: "Primære oplysninger",
   secondary_info: "Sekundære oplysninger",
@@ -899,6 +900,7 @@ export const danishHelpers: Record<string, string> = {
   layout: "Vælg, om kortindholdet placeres vandret eller lodret.",
   multiline_secondary: "Kortet kan blive højere for at rumme teksten og vil ikke altid flugte med gittersystemet.",
   fill_container: "Får kortet til at strække sig og fylde den tilgængelige gittercelle i dashboardet.",
+  card_shadow: "Tilføjer en blød skygge omkring kortets kant. Fra som standard.",
   primary_info: "Vælg hovedteksten, som kortet viser.",
   secondary_info: "Vælg den supplerende tekst under de primære oplysninger.",
   tap_action: "Hvad der sker, når du trykker på kortet.",

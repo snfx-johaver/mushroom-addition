@@ -140,6 +140,7 @@ export const normalizeConfig = (config: AdditionConfig): AdditionConfig => {
     ),
     layout: upstream.layout ?? "default",
     fill_container: upstream.fill_container ?? false,
+    card_shadow: upstream.card_shadow ?? false,
     primary_info: upstream.primary_info,
     secondary_info: upstream.secondary_info,
     tap_action: upstream.tap_action ?? defaultAction,

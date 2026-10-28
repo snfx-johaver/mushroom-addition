@@ -1,6 +1,7 @@
 export const hebrewLabels: Record<string, string> = {
   icon_type: "סוג צלמית",
   fill_container: "מילוי גבולות המכל",
+  card_shadow: "צל כרטיס",
   multiline_secondary: "אפשר מידע משני בכמה שורות",
   primary_info: "מידע ראשי",
   secondary_info: "מידע משני",
@@ -898,6 +899,7 @@ export const hebrewHelpers: Record<string, string> = {
   layout: "בחר אם תוכן הכרטיס מסודר במאוזן או במאונך.",
   multiline_secondary: "ייתכן שהכרטיס יהיה גבוה יותר כדי להכיל את הטקסט, ולא תמיד ייושר לרשת.",
   fill_container: "מותח את הכרטיס למילוי התא הזמין ברשת לוח הבקרה.",
+  card_shadow: "מוסיף צל רך סביב מסגרת הכרטיס. כבוי כברירת מחדל.",
   primary_info: "בחר את הטקסט הראשי המוצג בכרטיס.",
   secondary_info: "בחר את הטקסט המשלים המוצג מתחת למידע הראשי.",
   tap_action: "מה קורה בלחיצה על הכרטיס.",

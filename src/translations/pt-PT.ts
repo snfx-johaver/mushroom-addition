@@ -2,6 +2,7 @@
 export const europeanPortugueseLabels: Record<string, string> = {
   "icon_type": "Tipo de ícone",
   "fill_container": "Preencher o contentor",
+  "card_shadow": "Sombra do cartão",
   "multiline_secondary": "Permitir informações secundárias em várias linhas",
   "primary_info": "Informação principal",
   "secondary_info": "Informação secundária",
@@ -899,6 +900,7 @@ export const europeanPortugueseHelpers: Record<string, string> = {
   "layout": "Escolha se o conteúdo do cartão é disposto horizontal ou verticalmente.",
   "multiline_secondary": "O cartão pode ficar mais alto para acomodar o texto e nem sempre se alinhará ao sistema de grelha.",
   "fill_container": "Expande o cartão para preencher a célula disponível na grelha do painel.",
+  "card_shadow": "Adiciona uma sombra suave à volta da borda do cartão. Desativado por predefinição.",
   "primary_info": "Escolha o texto principal exibido pelo cartão.",
   "secondary_info": "Escolha o texto de apoio exibido abaixo da informação principal.",
   "tap_action": "O que acontece ao tocar no cartão.",

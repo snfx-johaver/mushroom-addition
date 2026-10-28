@@ -38,8 +38,9 @@ export const sharedStyles = css`
     border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color, #e0e0e0));
     border-radius: var(--mush-card-primary-border-radius, 14px);
     background: var(--ha-card-background, var(--card-background-color, #fff));
-    box-shadow: var(--ha-card-box-shadow, 0 2px 8px rgba(0,0,0,.08));
+    box-shadow: none;
   }
+  .mushroom-addition-card.card-shadow { box-shadow: var(--ha-card-box-shadow, 0 2px 8px rgba(0,0,0,.08)); }
   .mushroom-addition-card:has(.fill-container), .fill-container { height: 100%; }
   .fill-container { min-height: 100%; }
   .mushroom-addition-card > .action-surface { min-height: 100%; }

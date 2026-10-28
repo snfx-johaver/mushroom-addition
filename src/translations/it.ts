@@ -2,6 +2,7 @@
 export const italianLabels: Record<string, string> = {
   icon_type: "Tipo di icona",
   fill_container: "Riempi il contenitore",
+  card_shadow: "Ombra della scheda",
   multiline_secondary: "Consenti informazioni secondarie su più righe",
   primary_info: "Informazioni principali",
   secondary_info: "Informazioni secondarie",
@@ -899,6 +900,7 @@ export const italianHelpers: Record<string, string> = {
   layout: "Scegli se disporre il contenuto della scheda orizzontalmente o verticalmente.",
   multiline_secondary: "La scheda può diventare più alta per contenere il testo e non sarà sempre allineata al sistema a griglia.",
   fill_container: "Estende la scheda per riempire la cella disponibile nella griglia del dashboard.",
+  card_shadow: "Aggiunge un'ombra morbida attorno al bordo della scheda. Disattivato per impostazione predefinita.",
   primary_info: "Scegli il testo principale mostrato dalla scheda.",
   secondary_info: "Scegli il testo di supporto mostrato sotto le informazioni principali.",
   tap_action: "Azione eseguita quando si tocca la scheda.",

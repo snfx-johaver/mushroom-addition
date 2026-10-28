@@ -564,6 +564,7 @@ export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, P
   layout?: "default" | "horizontal" | "vertical";
   multiline_secondary?: boolean;
   fill_container?: boolean;
+  card_shadow?: boolean;
   primary_info?: "name" | "state" | "last-changed" | "last-updated" | "none";
   secondary_info?: "default" | "name" | "state" | "last-changed" | "last-updated" | "none" | "custom" | "composed";
   navigation_path?: string;

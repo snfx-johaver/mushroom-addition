@@ -26,8 +26,8 @@ const codeLiterals = (value: string) =>
 
 describe("complete Ukrainian card localization", () => {
   it("adds exactly the missing inventory without changing installed translations", () => {
-    expect(Object.keys(ukrainianLabels)).toHaveLength(766);
-    expect(Object.keys(ukrainianHelpers)).toHaveLength(551);
+    expect(Object.keys(ukrainianLabels)).toHaveLength(767);
+    expect(Object.keys(ukrainianHelpers)).toHaveLength(552);
     expect(Object.keys(installedLabels)).toHaveLength(416);
     expect(Object.keys(installedHelpers)).toHaveLength(1);
     expect(fingerprint(installedLabels)).toBe("ce93a320bab4ca775946ac2988ea94d9c5f24efe6a9ba71fadea53c270345279");
@@ -42,8 +42,8 @@ describe("complete Ukrainian card localization", () => {
         expect(merged[key], key).toBe(value);
       }
     }
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1182);
-    expect(Object.keys(englishHelpers)).toHaveLength(552);
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1183);
+    expect(Object.keys(englishHelpers)).toHaveLength(553);
   });
 
   it("provides nonblank Ukrainian values and preserves every placeholder", () => {

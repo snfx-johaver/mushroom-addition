@@ -3,6 +3,7 @@
 Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
+- Added a **Card shadow** toggle to the Layout section of every card editor (off by default); the soft shadow around the card border is now opt-in.
 
 - Scenes Card: new "Scenes per row" setting wraps scene buttons onto additional rows (all scenes are now shown).
 - Scenes and Welcome cards: grey off state; Welcome also supports scenes per row.

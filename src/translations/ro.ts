@@ -1,6 +1,7 @@
 export const romanianLabels: Record<string, string> = {
   icon_type: "Tipul pictogramei",
   fill_container: "Umplere container",
+  card_shadow: "Umbra cardului",
   multiline_secondary: "Permite informații secundare pe mai multe rânduri",
   primary_info: "Informație principală",
   secondary_info: "Informație secundară",
@@ -898,6 +899,7 @@ export const romanianHelpers: Record<string, string> = {
   layout: "Alege aranjarea orizontală sau verticală a conținutului cardului.",
   multiline_secondary: "Cardul poate deveni mai înalt pentru a încăpea textul și nu se va alinia întotdeauna la grila sistemului.",
   fill_container: "Extinde cardul pentru a umple celula disponibilă din grila tabloului de bord.",
+  card_shadow: "Adaugă o umbră discretă în jurul marginii cardului. Dezactivat implicit.",
   primary_info: "Alege textul principal afișat de card.",
   secondary_info: "Alege textul suplimentar afișat sub informația principală.",
   tap_action: "Ce se întâmplă la atingerea cardului.",

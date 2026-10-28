@@ -1,6 +1,7 @@
 export const indonesianLabels: Record<string, string> = {
   icon_type: "Tipe ikon",
   fill_container: "Isi kontainer",
+  card_shadow: "Bayangan kartu",
   multiline_secondary: "Izinkan informasi sekunder lebih dari satu baris",
   primary_info: "Informasi primer",
   secondary_info: "Informasi sekunder",
@@ -898,6 +899,7 @@ export const indonesianHelpers: Record<string, string> = {
   layout: "Pilih tata letak konten kartu: horizontal atau vertikal.",
   multiline_secondary: "Kartu dapat menjadi lebih tinggi agar teks muat dan mungkin tidak sejajar dengan sistem kisi.",
   fill_container: "Rentangkan kartu untuk memenuhi sel kisi dasbor yang tersedia.",
+  card_shadow: "Menambahkan bayangan lembut di sekitar tepi kartu. Nonaktif secara default.",
   primary_info: "Pilih informasi primer yang ditampilkan kartu.",
   secondary_info: "Pilih teks pendukung di bawah informasi utama.",
   tap_action: "Tindakan saat kartu diketuk.",

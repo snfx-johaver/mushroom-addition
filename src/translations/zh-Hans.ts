@@ -2,6 +2,7 @@
 export const simplifiedChineseLabels: Record<string, string> = {
   icon_type: "图标类型",
   fill_container: "填满容器",
+  card_shadow: "卡片阴影",
   multiline_secondary: "允许次要信息换行",
   primary_info: "主要信息",
   secondary_info: "次要信息",
@@ -899,6 +900,7 @@ export const simplifiedChineseHelpers: Record<string, string> = {
   layout: "选择卡片内容横向或纵向排列。",
   multiline_secondary: "卡片可能为容纳文字而增高，不一定与网格系统对齐。",
   fill_container: "使卡片伸展并填满仪表盘中可用的网格单元。",
+  card_shadow: "在卡片边框周围添加柔和阴影。默认关闭。",
   primary_info: "选择卡片显示的主要文字。",
   secondary_info: "选择主要信息下方显示的辅助文字。",
   tap_action: "点按卡片时执行的操作。",

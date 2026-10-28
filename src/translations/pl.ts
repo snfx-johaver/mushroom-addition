@@ -1,6 +1,7 @@
 export const polishLabels: Record<string, string> = {
   icon_type: "Typ ikony",
   fill_container: "Wypełnij kontener",
+  card_shadow: "Cień karty",
   multiline_secondary: "Zezwalaj na wielowierszowe informacje dodatkowe",
   primary_info: "Informacje główne",
   secondary_info: "Informacje dodatkowe",
@@ -898,6 +899,7 @@ export const polishHelpers: Record<string, string> = {
   layout: "Wybierz poziome lub pionowe rozmieszczenie treści karty.",
   multiline_secondary: "Karta może być wyższa, aby zmieścić tekst, i nie zawsze będzie wyrównana do siatki.",
   fill_container: "Rozciąga kartę, aby wypełniła dostępną komórkę siatki pulpitu.",
+  card_shadow: "Dodaje delikatny cień wokół krawędzi karty. Domyślnie wyłączone.",
   primary_info: "Wybierz główny tekst wyświetlany przez kartę.",
   secondary_info: "Wybierz tekst pomocniczy pod informacjami głównymi.",
   tap_action: "Co się stanie po dotknięciu karty.",

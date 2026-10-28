@@ -226,6 +226,7 @@ describe("family editor schemas", () => {
         ...(hasConfigurableIcon ? ["icon"] : []),
         ...(!miniGraph ? ["layout", "multiline_secondary"] : []),
         ...(!miniGraph ? ["fill_container"] : []),
+        "card_shadow",
         "",
       ];
       expect(schema.slice(presentationStart, presentationStart + presentationOrder.length)
