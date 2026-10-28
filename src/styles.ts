@@ -534,6 +534,20 @@ export const sharedStyles = css`
   .custom-light { display: grid; gap: 10px; padding: var(--mush-spacing, 12px); }
   .custom-light .light-brightness { width: 100%; }
   .custom-light input.mushroom-range.light-gradient { width: 100%; background: var(--light-gradient); }
+  .custom-light .light-controls { display: flex; align-items: center; gap: 8px; }
+  .custom-light .light-control-buttons { display: flex; gap: 8px; flex: none; }
+  .custom-light .light-control-button { appearance: none; border: 0; padding: 0; width: 42px; height: 42px; border-radius: var(--mush-control-border-radius, 12px); display: grid; place-items: center; cursor: pointer; color: var(--primary-text-color); background: var(--addition-track-background, rgba(var(--rgb-secondary-text-color, 114, 114, 114), .2)); }
+  .custom-light .light-control-button:focus-visible { outline: 2px solid var(--primary-color); }
+  .custom-light .light-controls .light-slider { flex: 1 1 auto; width: auto; min-width: 0; }
+  .custom-light .light-controls:not([data-control]) .light-slider ~ .light-slider { display: none; }
+  .custom-light .light-controls[data-control] .light-slider { display: none; }
+  .custom-light .light-controls[data-control="brightness"] .light-brightness,
+  .custom-light .light-controls[data-control="temp"] .light-color-temp,
+  .custom-light .light-controls[data-control="hue"] .light-color-hue { display: block; }
+  .custom-light .light-controls:not([data-control]) .light-control-button:first-child,
+  .custom-light .light-controls[data-control="brightness"] .light-control-button[data-ctl="brightness"],
+  .custom-light .light-controls[data-control="temp"] .light-control-button[data-ctl="temp"],
+  .custom-light .light-controls[data-control="hue"] .light-control-button[data-ctl="hue"] { background: rgba(var(--rgb-primary-color, 3, 169, 244), .25); color: var(--primary-color); }
   .light-pulldown summary { display: flex; align-items: center; justify-content: space-between; cursor: pointer; list-style: none; padding: 2px 4px; color: var(--secondary-text-color); font-size: 12px; }
   .light-pulldown summary::-webkit-details-marker { display: none; }
   .light-pulldown summary ha-icon { --mdc-icon-size: 20px; transition: transform .2s ease; }

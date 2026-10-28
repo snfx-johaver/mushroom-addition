@@ -812,10 +812,14 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
   const hue = Array.isArray(hs) ? Number(hs[0]) || 0 : 0;
   const saturation = Array.isArray(hs) ? Number(hs[1]) || 100 : 100;
   const showControls = !(ctx.config.collapsible_controls === true && !on);
+  const showBrightness = showControls && ctx.config.light_show_brightness !== false && dimmable;
   const showTemp = showControls && ctx.config.show_color_temp_control === true && hasMode("color_temp");
   const showHue = showControls && ctx.config.show_color_control === true && hasMode("hs", "xy", "rgb", "rgbw", "rgbww");
   const rawBrightness = numeric(attr(entity, "brightness"));
   const brightness = on && rawBrightness !== undefined ? Math.max(1, Math.round(rawBrightness / 255 * 100)) : 0;
+  const controlButtons = ([[showBrightness, "brightness", "mdi:brightness-4", "Brightness"], [showTemp, "temp", "mdi:thermometer", "Color temperature"], [showHue, "hue", "mdi:palette", "Color"]] as const)
+    .filter(([visible]) => visible).map(([, key, icon, label]) => [key, icon, label] as const);
+  const controlCount = controlButtons.length;
   const stateText = on && dimmable && rawBrightness !== undefined ? `${brightness}%` : stateLabel(entity, ctx.hass);
   const stop = (event: Event) => event.stopPropagation();
   const members = ctx.config.light_show_members === false ? [] : [...new Set(
@@ -858,8 +862,23 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
       ${sourceIconBubble(ctx, defaultIconFor(ctx.descriptor, entity), color, on)}
       ${heading(ctx, stateText)}
     </div>
-    ${showControls && ctx.config.light_show_brightness !== false && dimmable ? html`
-      <input class="mushroom-range light-brightness" type="range" min="1" max="100" step="1" .value=${String(brightness)}
+    ${controlCount ? html`
+      <div class="light-controls">
+        ${controlCount > 1 ? html`
+          <div class="light-control-buttons">
+            ${controlButtons.map(([key, icon, label]) => html`
+              <button class="light-control-button" data-ctl=${key} aria-label=${localizeText(ctx.hass, label)} title=${localizeText(ctx.hass, label)}
+                @pointerdown=${stop} @pointerup=${stop}
+                @click=${(event: Event) => {
+                  stop(event);
+                  const button = event.currentTarget as HTMLElement;
+                  button.closest<HTMLElement>(".light-controls")?.setAttribute("data-control", key);
+                }}>
+                <ha-icon .icon=${icon}></ha-icon>
+              </button>`)}
+          </div>` : nothing}
+    ${showBrightness ? html`
+      <input class="mushroom-range light-slider light-brightness" type="range" min="1" max="100" step="1" .value=${String(brightness)}
         style=${`--range-color:${color};--range-progress:${rangeProgress(brightness, 1, 100)}`}
         aria-label=${localizeText(ctx.hass, "Brightness")} ?disabled=${unavailable}
         @pointerdown=${stop} @pointerup=${stop} @click=${stop} @keydown=${stop}
@@ -872,7 +891,7 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
           });
         }}>` : nothing}
     ${showTemp ? html`
-      <input class="mushroom-range light-gradient light-color-temp" type="range" min="${kelvinMin}" max="${kelvinMax}" step="50" .value=${String(kelvin)}
+      <input class="mushroom-range light-slider light-gradient light-color-temp" type="range" min="${kelvinMin}" max="${kelvinMax}" step="50" .value=${String(kelvin)}
         style=${`--range-color:transparent;--range-progress:0%;--light-gradient:linear-gradient(to right,#ff9d3a,#ffe3b8,#ffffff,#cfe0ff,#9bbcff)`}
         aria-label=${localizeText(ctx.hass, "Color temperature")} ?disabled=${unavailable}
         @pointerdown=${stop} @pointerup=${stop} @click=${stop} @keydown=${stop}
@@ -881,7 +900,7 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
           ctx.service("light", "turn_on", { entity_id: entity?.entity_id, color_temp_kelvin: Number((event.currentTarget as HTMLInputElement).value) });
         }}>` : nothing}
     ${showHue ? html`
-      <input class="mushroom-range light-gradient light-color-hue" type="range" min="0" max="360" step="1" .value=${String(hue)}
+      <input class="mushroom-range light-slider light-gradient light-color-hue" type="range" min="0" max="360" step="1" .value=${String(hue)}
         style=${`--range-color:transparent;--range-progress:0%;--light-gradient:linear-gradient(to right,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)`}
         aria-label=${localizeText(ctx.hass, "Color")} ?disabled=${unavailable}
         @pointerdown=${stop} @pointerup=${stop} @click=${stop} @keydown=${stop}
@@ -889,6 +908,7 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
           stop(event);
           ctx.service("light", "turn_on", { entity_id: entity?.entity_id, hs_color: [Number((event.currentTarget as HTMLInputElement).value), saturation] });
         }}>` : nothing}
+      </div>` : nothing}
     ${members.length ? html`
       <details class="light-pulldown" ?open=${ctx.config.light_members_expanded === true}
         @pointerdown=${stop} @pointerup=${stop} @click=${stop} @dblclick=${stop} @keydown=${stop}>
