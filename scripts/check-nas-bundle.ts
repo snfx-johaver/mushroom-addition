@@ -29,11 +29,11 @@ for (const key of [
   Object.defineProperty(globalThis, key, { configurable: true, value: key === "window" ? browser : browser[key] });
 }
 const { CATALOG } = await import(bundleUrl.href);
-assert.equal(CATALOG.length, 31);
-assert.equal(window.customCards!.length, 31);
+assert.equal(CATALOG.length, 32);
+assert.equal(window.customCards!.length, 32);
 const originals = new Map(window.customCards!.map(({ type }) => [type, customElements.get(type)]));
 await import(bundleUrl.href);
-assert.equal(window.customCards!.length, 31);
+assert.equal(window.customCards!.length, 32);
 for (const [tag, constructor] of originals) assert.equal(customElements.get(tag), constructor);
 
 let registrations = 0;
@@ -125,4 +125,4 @@ for (const prefix of ["mushroom-addition-nas", "synology", "snfx"]) {
 
 document.body.replaceChildren();
 await browser.happyDOM.close();
-console.log(`NAS bundle verified: 31 picker entries, ${registrations} card/editor/stub configurations, idempotent registration, Synology/QNAP/storage/Portainer controls, 3 embedded dashboards, single script and license banner.`);
+console.log(`NAS bundle verified: 32 picker entries, ${registrations} card/editor/stub configurations, idempotent registration, Synology/QNAP/storage/Portainer controls, 3 embedded dashboards, single script and license banner.`);
