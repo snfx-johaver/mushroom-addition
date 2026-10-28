@@ -109,38 +109,40 @@ const iconBubble = (ctx: RenderContext, fallback: string, tone = "blue", extraCl
     ? html`<span class="ulm-icon entity-picture ${extraClass}" style=${styleMap({ backgroundImage: cssUrl(picture) })}></span>`
     : html`<span class="ulm-icon tone-${tone} ${extraClass}">${renderEntityIcon(ctx.hass, ctx.entity, ctx.config.icon, fallback)}</span>`;
 };
-const selectedSecondary = (ctx: RenderContext, recommended?: string): string | undefined => {
+const relativeTime = (ctx: RenderContext, timestamp: string): TemplateResult =>
+  html`<ha-relative-time .hass=${ctx.hass} .datetime=${timestamp}>${new Date(timestamp).toLocaleString(ctx.hass.language)}</ha-relative-time>`;
+const selectedSecondary = (ctx: RenderContext, recommended?: string | TemplateResult): string | TemplateResult | undefined => {
   switch (ctx.config.secondary_info) {
     case "none": return undefined;
     case "name": return displayName(ctx.config, ctx.entity, ctx.hass);
     case "state": return stateLabel(ctx.entity, ctx.hass);
     case "last-changed": return ctx.entity?.last_changed
-      ? new Date(ctx.entity.last_changed).toLocaleString(ctx.hass.language)
+      ? relativeTime(ctx, ctx.entity.last_changed)
       : localizeText(ctx.hass, "Last changed unavailable");
     case "last-updated": return ctx.entity?.last_updated
-      ? new Date(ctx.entity.last_updated).toLocaleString(ctx.hass.language)
+      ? relativeTime(ctx, ctx.entity.last_updated)
       : localizeText(ctx.hass, "Last updated unavailable");
     default: return ctx.config.secondary || recommended;
   }
 };
-const selectedPrimary = (ctx: RenderContext, recommended?: string): string => {
+const selectedPrimary = (ctx: RenderContext, recommended?: string): string | TemplateResult => {
   switch (ctx.config.primary_info) {
     case "none": return "";
     case "state": return stateLabel(ctx.entity, ctx.hass);
     case "last-changed": return ctx.entity?.last_changed
-      ? new Date(ctx.entity.last_changed).toLocaleString(ctx.hass.language)
+      ? relativeTime(ctx, ctx.entity.last_changed)
       : localizeText(ctx.hass, "Last changed unavailable");
     case "last-updated": return ctx.entity?.last_updated
-      ? new Date(ctx.entity.last_updated).toLocaleString(ctx.hass.language)
+      ? relativeTime(ctx, ctx.entity.last_updated)
       : localizeText(ctx.hass, "Last updated unavailable");
     default: return displayName(ctx.config, ctx.entity, ctx.hass) || recommended || "";
   }
 };
 const presentationValues = (
   ctx: RenderContext,
-  recommendedSecondary?: string,
+  recommendedSecondary?: string | TemplateResult,
   recommendedPrimary?: string,
-): { primary?: string; secondary?: string } => {
+): { primary?: string | TemplateResult; secondary?: string | TemplateResult } => {
   ctx.presentation.rendered = true;
   const configuredName = displayName(ctx.config, ctx.entity, ctx.hass);
   const hasMushroomName = ctx.config.name !== undefined && typeof ctx.config.name !== "string";
@@ -155,7 +157,7 @@ const presentationValues = (
       : selectedSecondary(ctx, recommendedSecondary),
   };
 };
-const heading = (ctx: RenderContext, recommendedSecondary?: string, recommendedPrimary?: string) => html`
+const heading = (ctx: RenderContext, recommendedSecondary?: string | TemplateResult, recommendedPrimary?: string) => html`
   ${(() => {
     const information = presentationValues(ctx, recommendedSecondary, recommendedPrimary);
     return html`

@@ -477,6 +477,12 @@ export class MushroomMiniGraphCard extends LitElement {
     .tooltip .time { color: var(--secondary-text-color); }
     .tooltip .row { display: flex; align-items: center; gap: 6px; opacity: .6; }
     .tooltip .row.active { opacity: 1; font-weight: 600; }
+    .content.compact { position: relative; }
+    .content.compact > * { position: relative; z-index: 1; }
+    .content.compact > .graph:not(.radial) { position: absolute; inset: 0; z-index: 0; flex: none; min-height: 0; height: auto !important; opacity: .4; pointer-events: none; }
+    .content.compact > .graph:not(.radial) .labels { display: none; }
+    .content.compact.has-radial { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+    .content.compact.has-radial > .graph.radial { flex: 0 0 auto; height: 100% !important; min-height: 0; margin-left: auto; }
     .radial { display: flex; justify-content: center; }
     .radial svg { height: 100%; width: auto; aspect-ratio: 1; max-width: 100%; }
     .slice { stroke: var(--card-background-color, #fff); stroke-width: 1.5; transition: opacity .15s ease; }
@@ -519,6 +525,10 @@ export class MushroomMiniGraphCard extends LitElement {
   @state() private config?: MiniGraphCardConfig;
   @state() private series: GraphSeries[] = [];
   @state() private loading = false;
+  @state() private compact = false;
+  private resizeObserver?: ResizeObserver;
+  private lastLoad = 0;
+  private refreshTimer?: number;
   @state() private error?: string;
   @state() private hover?: { fx: number; bar: boolean; rows: HoverRow[] };
   @state() private active?: number;
@@ -595,16 +605,38 @@ export class MushroomMiniGraphCard extends LitElement {
       signature !== this.lastEntityStateSignature;
     this.lastEntityStateSignature = signature;
     if (relevantStateChanged && this.config?.update_interval) return;
+    if (relevantStateChanged) {
+      const wait = 15_000 - (Date.now() - this.lastLoad);
+      if (wait > 0) {
+        if (!this.refreshTimer) {
+          this.refreshTimer = window.setTimeout(() => {
+            this.refreshTimer = undefined;
+            void this.loadHistory(true);
+          }, wait);
+        }
+        return;
+      }
+    }
     void this.loadHistory(relevantStateChanged);
   }
 
   public connectedCallback(): void {
     super.connectedCallback();
     this.restartInterval();
+    if (typeof ResizeObserver !== "undefined") {
+      this.resizeObserver = new ResizeObserver(() => {
+        const height = this.clientHeight;
+        if (height > 0 && !this.compact && height < 150) this.compact = true;
+        else if (this.compact && height >= 150) this.compact = false;
+      });
+      this.resizeObserver.observe(this);
+    }
   }
 
   public disconnectedCallback(): void {
     if (this.interval) window.clearInterval(this.interval);
+    if (this.refreshTimer) window.clearTimeout(this.refreshTimer);
+    this.resizeObserver?.disconnect();
     super.disconnectedCallback();
   }
 
@@ -628,7 +660,7 @@ export class MushroomMiniGraphCard extends LitElement {
         @click=${this.tap} @dblclick=${this.doubleTap}
         @pointerdown=${this.pointerDown} @pointerup=${this.pointerUp}
         @pointercancel=${this.pointerUp} @keydown=${this.keydown}>
-        <div class="content ${this.config.animate ? "animate" : ""}"
+        <div class="content ${this.config.animate ? "animate" : ""} ${this.compact ? "compact" : ""} ${["radial", "pie", "donut"].includes(String(show.graph)) ? "has-radial" : ""}"
           style=${`--mini-graph-font-size:${this.config.font_size ?? 100}`}>
           ${this.renderHeader(primary, adaptive, show)}
           ${this.renderStates(primary, adaptive, show)}
@@ -1166,7 +1198,8 @@ export class MushroomMiniGraphCard extends LitElement {
     if (!forceRefresh && currentKey === this.requestKey) return;
     this.requestKey = currentKey;
     const generation = ++this.historyGeneration;
-    this.loading = true;
+    this.lastLoad = Date.now();
+    this.loading = !this.series.length;
     this.error = undefined;
     try {
       const end = Date.now();

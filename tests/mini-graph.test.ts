@@ -505,9 +505,15 @@ describe("Mini Graph configuration and history processing", () => {
       state: "23",
       last_updated: "2026-10-20T00:01:00.000Z",
     };
-    card.hass = changedHass;
-    await card.updateComplete;
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    vi.useFakeTimers();
+    try {
+      card.hass = changedHass;
+      await card.updateComplete;
+      expect(send).toHaveBeenCalledTimes(1);
+      await vi.advanceTimersByTimeAsync(15_000);
+    } finally {
+      vi.useRealTimers();
+    }
     await card.updateComplete;
 
     expect(send).toHaveBeenCalledTimes(2);

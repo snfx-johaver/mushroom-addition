@@ -223,8 +223,8 @@ describe("Room status indicators", () => {
       const ha = home();
       ha.states["light.room"] = { ...ha.states["light.room"], last_changed: "2026-10-20T10:00:00Z",
         attributes: { count: 0, enabled: false, invalid: Infinity, list: ["x"], object: {}, empty: " ", missing: null } };
-      expect(roomSecondary(config({ secondary_info: "last-changed", label_use_brightness: true }), ha))
-        .toBe(new Date("2026-10-20T10:00:00Z").toLocaleString());
+      const changed = roomSecondary(config({ secondary_info: "last-changed", label_use_brightness: true }), ha) as { values: unknown[] };
+      expect(changed.values).toContain("2026-10-20T10:00:00Z");
       expect(roomSecondary(config({ secondary_info: "last-updated" }), ha)).toBe("Last updated unavailable");
       expect(roomSecondary(config({ secondary_info: "composed",
         room_secondary_parts: ["count", "enabled", "invalid", "list", "object", "empty", "missing"]

@@ -4,6 +4,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Cards showing last changed/updated now display relative time (for example 4 hours ago) like Home Assistant, instead of a full date.
+- Graph Advanced: compact layout for small card sizes (graph becomes a background sparkline, radial graphs sit beside the header), no spinner flashing on live refreshes, and state-triggered history refreshes are throttled to every 15 seconds.
+
 - Graph Advanced card: the graph now shrinks to fit small card sizes instead of being cut off, and the default grid height is derived from the graph type and visible content.
 
 ## 0.6.0 - 2026-10-29

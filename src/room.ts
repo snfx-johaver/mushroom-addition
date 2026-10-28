@@ -1,4 +1,5 @@
 import type { AdditionConfig, AdditionItemConfig, HassEntity, HomeAssistant, RoomStatusKind } from "./types";
+import { html, type TemplateResult } from "lit";
 import { displayName, stateLabel } from "./helpers";
 import { localizeText } from "./localize";
 
@@ -36,7 +37,7 @@ export const roomLightEntity = (config: AdditionConfig, hass: HomeAssistant): Ha
 };
 
 // Resolve Room's own secondary information before passing it to the shared heading.
-export const roomSecondary = (config: AdditionConfig, hass: HomeAssistant): string | undefined => {
+export const roomSecondary = (config: AdditionConfig, hass: HomeAssistant): string | TemplateResult | undefined => {
   const primary = config.entity ? hass.states[config.entity] : undefined;
   const mode = config.secondary_info;
   if (mode === "none") return undefined;
@@ -62,7 +63,8 @@ export const roomSecondary = (config: AdditionConfig, hass: HomeAssistant): stri
   if (mode === "name") return displayName(config, primary, hass);
   if (mode === "last-changed" || mode === "last-updated") {
     const timestamp = mode === "last-changed" ? primary?.last_changed : primary?.last_updated;
-    return timestamp ? new Date(timestamp).toLocaleString(hass.language)
+    return timestamp
+      ? html`<ha-relative-time .hass=${hass} .datetime=${timestamp}>${new Date(timestamp).toLocaleString(hass.language)}</ha-relative-time>`
       : localizeText(hass, mode === "last-changed" ? "Last changed unavailable" : "Last updated unavailable");
   }
   if (mode !== "state" && config.secondary) return config.secondary;
