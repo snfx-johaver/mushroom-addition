@@ -18,7 +18,7 @@ import type {
   PiHoleSection,
 } from "./types";
 import { CATALOG, getCatalogItem, LEGACY_ALIASES } from "./catalog";
-import { clearCardIcon, fireEvent, migrateRoomLightConfig } from "./helpers";
+import { clearCardIcon, fireEvent, migrateRoomLightConfig, migrateWelcomeItems } from "./helpers";
 import { carouselControlEnabled } from "./entity-carousel";
 import { REMOTE_DEFAULTS, REMOTE_KEYS, REMOTE_SECTIONS, resolveRemoteEntities } from "./remote-card";
 import { PIHOLE_DEFAULTS, PIHOLE_METRICS, PIHOLE_SECTIONS, piHoleMetricEntities } from "./pi-hole";
@@ -187,7 +187,7 @@ export class MushroomAdditionEditor extends LitElement {
     const tag = config.type.replace(/^custom:/, "");
     const alias = LEGACY_ALIASES.find((item) => item.tag === tag);
     this.config = {
-      ...migrateRoomLightConfig(config),
+      ...migrateWelcomeItems(migrateRoomLightConfig(config)),
       ...(tag === "mushroom-addition-upcoming-media-card" && config.upcoming_data_attribute === "friendly_name"
         ? { upcoming_data_attribute: "data" } : {}),
       variant: config.variant ?? alias?.variant,
@@ -343,6 +343,8 @@ export class MushroomAdditionEditor extends LitElement {
           localizeText(this.hass, "Scene buttons"),
           ["scene"],
         )
+        : item.upstreamId === "custom_card_welcome"
+          ? this.renderItemEditor("scene_items", localizeText(this.hass, "Scene buttons"))
         : item.upstreamId === "card_room"
           ? html`${this.renderItemEditor("room_sensors", localize(this.hass, "room_buttons"))}${this.renderRoomStatusEditor()}`
           : nothing;
@@ -353,6 +355,7 @@ export class MushroomAdditionEditor extends LitElement {
       item.upstreamId === "custom_card_media_player_sonos" ||
       item.upstreamId === "custom_card_entity_carousel" ||
       item.family === "scene" ||
+      item.upstreamId === "custom_card_welcome" ||
       item.upstreamId === "card_room";
     return html`
       <div class="editor-sections">

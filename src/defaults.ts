@@ -259,11 +259,13 @@ export const populatedDefaultsFor = (
               welcome_weather_secondary_info: "date",
               welcome_weather_date_format: "month_day",
               welcome_weather_tap_action: { action: "more-info" },
-              nav_1: "house", icon_1: "mdi:home", name_1: "House", color_1: "blue",
-              nav_2: "lights", icon_2: "mdi:lightbulb", name_2: "Lights", color_2: "yellow",
-              nav_3: "security", icon_3: "mdi:shield", name_3: "Secure", color_3: "green",
-              nav_4: "climate", icon_4: "mdi:radiator", name_4: "Climate", color_4: "purple",
-              nav_5: "network", icon_5: "mdi:flask", name_5: "Lab", color_5: "red",
+              scene_items: [
+                { entity: "", navigation_path: "house", icon: "mdi:home", name: "House", color: "blue" },
+                { entity: "", navigation_path: "lights", icon: "mdi:lightbulb", name: "Lights", color: "yellow" },
+                { entity: "", navigation_path: "security", icon: "mdi:shield", name: "Secure", color: "green" },
+                { entity: "", navigation_path: "climate", icon: "mdi:radiator", name: "Climate", color: "purple" },
+                { entity: "", navigation_path: "network", icon: "mdi:flask", name: "Lab", color: "red" },
+              ],
             }
             : item.upstreamId === "custom_card_plant"
                   ? {

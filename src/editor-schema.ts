@@ -812,15 +812,6 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
         ]),
         action("welcome_weather_tap_action"),
         number("scenes_per_row", 1, 24),
-        ...Array.from({ length: 5 }, (_, index) => index + 1).flatMap((index) => [
-          text(`nav_${index}`),
-          { name: `icon_${index}`, selector: { icon: {} } },
-          text(`name_${index}`),
-          select(`color_${index}`, ["blue", "red", "green", "yellow", "pink", "purple"].map((value) => ({
-            value,
-            label: value[0].toUpperCase() + value.slice(1),
-          }))),
-        ]),
         ...presentation(),
       ]
     : item.upstreamId === "custom_card_plant"

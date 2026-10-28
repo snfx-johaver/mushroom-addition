@@ -215,8 +215,8 @@ export const sharedStyles = css`
   .scene-entity-picture { display: block; width: 100%; height: 100%; border-radius: inherit; background-position: center; background-size: cover; }
   .scene-button ha-icon { --mdc-icon-size: 22px; color: var(--item-color); }
   .scene-button.is-active { background: var(--addition-raised-background); }
-  .scene-button:not(.is-active) i { background: rgba(var(--ulm-grey), .18); }
-  .scene-button:not(.is-active) ha-icon { color: rgb(var(--ulm-grey)); }
+  .scene-button.is-off i { background: rgba(var(--ulm-grey), .18); }
+  .scene-button.is-off ha-icon { color: rgb(var(--ulm-grey)); }
   .welcome-toolbar { display: grid; grid-template-columns: 42px 1fr 42px; align-items: center; gap: 10px; padding: 4px; margin-bottom: 8px; }
   .scene-button:hover:not(:disabled), .welcome-items > button:hover:not(:disabled) {
     background: color-mix(in srgb, var(--primary-text-color) 13%, transparent);
@@ -360,7 +360,9 @@ export const sharedStyles = css`
   .welcome-items > button { display: flex; min-width: 52px; flex: 1; flex-direction: column; align-items: center; gap: 6px; border: 0; border-radius: 25px; background: var(--addition-raised-background); color: inherit; box-shadow: var(--addition-raised-shadow); }
   .welcome-items i { display: grid; width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); place-items: center; border-radius: 50%; background: rgba(var(--tone), .18); color: rgb(var(--tone)); font-style: normal; }
   .custom-welcome .welcome-items { display: grid; grid-template-columns: repeat(var(--scenes-per-row, 5), minmax(52px, 1fr)); }
-  .welcome-items > button:not(.is-active) i { background: rgba(var(--ulm-grey), .18); color: rgb(var(--ulm-grey)); }
+  .welcome-items > button.scene-button i { background: color-mix(in srgb, var(--item-color) 18%, transparent); color: var(--item-color); }
+  .welcome-items > button.scene-button.is-off i { background: rgba(var(--ulm-grey), .18); color: rgb(var(--ulm-grey)); }
+  .welcome-items > button.scene-button.is-off ha-icon { color: rgb(var(--ulm-grey)); }
   .welcome-items i > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667)); }
   .washer-heading .washer-power { font-size: 12px; font-weight: 700; }
   .washer-stages { display: grid; grid-template-columns: repeat(var(--washer-stage-count, 4), 1fr); border-radius: 22px; background: var(--addition-neutral-background); }

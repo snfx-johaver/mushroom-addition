@@ -4,7 +4,7 @@ import type { ActionConfig, AdditionConfig, AdditionItemConfig, CatalogItem, Has
 import { controlActions } from "./control-actions";
 import { localize, localizeText } from "./localize";
 import { ROOM_STATUS_KINDS, ROOM_STATUS_LIMIT, roomEntityIcon, roomEntityUnavailable, roomItemDefaultsFor, roomLightEntity, roomLightRgb, roomSecondary, roomStatusActive, roomStatusIcon, roomStatusKind } from "./room";
-import { activeStates, cssUrl, displayName, fireEvent, stateLabel } from "./helpers";
+import { activeStates, cssUrl, displayName, fireEvent, hasOnOffState, stateLabel } from "./helpers";
 import { wasteStreamsForConfig } from "./waste-streams";
 import { defaultIconFor } from "./defaults";
 import { renderEntityIcon } from "./entity-icon";
@@ -373,6 +373,13 @@ const runItemAction = (event: Event, ctx: RenderContext, item: AdditionItemConfi
   else ctx.service("homeassistant", "toggle", { entity_id: item.entity, ...(item.service_data ?? {}) });
 };
 
+const sceneItemActive = (item: AdditionItemConfig, entity?: HassEntity): boolean =>
+  item.active_state
+    ? entity?.state === item.active_state
+    : item.state
+      ? entity?.state === item.state
+      : activeStates.has(entity?.state ?? "");
+
 const renderScene = (ctx: RenderContext): TemplateResult => {
   const sceneItems: AdditionItemConfig[] = (
     ctx.config.scene_items?.length
@@ -390,11 +397,7 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
   return ctx.actionSurface(`ulm-scenes ${sourceGrid ? "source-scene-grid" : "scene-pills"} ${ctx.descriptor.upstreamId === "card_scenes" ? "ulm-source-scenes" : ""} ${buttonsOnly ? "scene-buttons-only" : ""}`, html`
     ${collapsed ? nothing : html`<div class="scene-grid" style=${`--scenes-per-row:${perRow}`}>${visibleItems.map((item) => {
       const entity = ctx.hass.states[item.entity];
-      const active = item.active_state
-        ? entity?.state === item.active_state
-        : item.state
-          ? entity?.state === item.state
-          : activeStates.has(entity?.state ?? "");
+      const off = hasOnOffState(entity) && !sceneItemActive(item, entity);
       const color = configuredColor(item.color, "rgb(var(--ulm-purple))");
       const entityPicture = item.icon_type === "entity-picture"
         ? attr(entity, "entity_picture")
@@ -413,7 +416,7 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
         } else {
           runItemAction(event, ctx, item);
         }
-      }} style=${`--item-color:${color}`} class="scene-button ${active ? "is-active" : ""}">
+      }} style=${`--item-color:${color}`} class="scene-button ${off ? "is-off" : "is-active"}">
         <i>${entityPicture
           ? html`<span class="scene-entity-picture" style=${styleMap({ backgroundImage: cssUrl(entityPicture) })}></span>`
           : html`<ha-icon .icon=${item.icon || entity?.attributes.icon || "mdi:palette"}></ha-icon>`
@@ -699,12 +702,6 @@ const renderAlarmTimeCard = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const isCurrentPath = (nav: string): boolean => {
-  const current = globalThis.location?.pathname ?? "";
-  const target = nav.split(/[?#]/)[0];
-  return Boolean(target) && (current === target || current.replace(/\/+$/, "") === target.replace(/\/+$/, ""));
-};
-
 const renderWelcome = (ctx: RenderContext): TemplateResult => {
   const collapse = entityFromConfig(ctx, "ulm_card_welcome_collapse");
   const weather = entityFromConfig(ctx, "ulm_weather");
@@ -733,12 +730,7 @@ const renderWelcome = (ctx: RenderContext): TemplateResult => {
   const weatherSecondary = weatherInfo(ctx.config.welcome_weather_secondary_info ?? "date");
   const weatherAction = ctx.config.welcome_weather_tap_action ?? { action: "more-info" };
   const collapsed = collapse?.state === "on";
-  const items = Array.from({ length: 5 }, (_, index) => index + 1).map((index) => ({
-    nav: configured<string>(ctx, `nav_${index}`),
-    icon: configured<string>(ctx, `icon_${index}`) || "mdi:circle",
-    name: configured<string>(ctx, `name_${index}`) || localize(ctx.hass, "ui.renderer.item", { number: index }),
-    color: configured<string>(ctx, `color_${index}`) || "blue",
-  })).filter((item) => item.nav).map((item) => ({ ...item, active: isCurrentPath(item.nav!) }));
+  const items = (ctx.config.scene_items ?? []).filter((item) => item.entity || item.navigation_path || item.nav_path || item.tap_action);
   const welcomePerRow = Math.max(1, Math.min(24, Math.floor(Number(ctx.config.scenes_per_row)) || 5));
   return ctx.actionSurface("custom-welcome", html`
     <div class="welcome-toolbar">
@@ -763,13 +755,23 @@ const renderWelcome = (ctx: RenderContext): TemplateResult => {
       </button>
     </div>
     <div class="welcome-greeting">${heading(ctx, timeGreeting(ctx.hass, new Date().getHours()))}</div>
-    ${collapsed ? nothing : html`<div class="welcome-items" style=${`--scenes-per-row:${welcomePerRow}`}>${items.map((item) => html`
-      <button class="tone-${item.color} ${item.active ? "is-active" : ""}" aria-label=${item.name} title=${item.name}
+    ${collapsed ? nothing : html`<div class="welcome-items" style=${`--scenes-per-row:${welcomePerRow}`}>${items.map((item, index) => {
+      const entity = item.entity ? ctx.hass.states[item.entity] : undefined;
+      const off = hasOnOffState(entity) && !sceneItemActive(item, entity);
+      const entityPicture = item.icon_type === "entity-picture" ? attr(entity, "entity_picture") : undefined;
+      const name = item.name || item.label || (entity ? displayName({ type: "", entity: item.entity }, entity, ctx.hass)
+        : localize(ctx.hass, "ui.renderer.item", { number: index + 1 }));
+      return html`
+      <button class="scene-button ${off ? "is-off" : "is-active"}" style=${`--item-color:${configuredColor(item.color, "rgb(var(--ulm-blue))")}`}
+        aria-label=${name} title=${name}
         @pointerdown=${(event: Event) => event.stopPropagation()}
-        @click=${(event: Event) => runControlAction(event, ctx, { action: "navigate", navigation_path: item.nav })}>
-        <i><ha-icon .icon=${item.icon}></ha-icon></i><small>${item.name}</small>
+        @click=${(event: Event) => { event.stopPropagation(); runItemAction(event, ctx, item); }}>
+        <i>${entityPicture
+          ? html`<span class="scene-entity-picture" style=${styleMap({ backgroundImage: cssUrl(entityPicture) })}></span>`
+          : html`<ha-icon .icon=${item.icon || entity?.attributes.icon || "mdi:circle"}></ha-icon>`}</i><small>${name}</small>
       </button>
-    `)}</div>`}
+    `;
+    })}</div>`}
   `);
 };
 

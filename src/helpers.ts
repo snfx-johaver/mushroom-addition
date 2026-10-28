@@ -201,8 +201,40 @@ export const migrateRoomLightConfig = (config: AdditionConfig): AdditionConfig =
   return migrated;
 };
 
+export const migrateWelcomeItems = (config: AdditionConfig): AdditionConfig => {
+  if (!String(config.type).includes("welcome")) return config;
+  const record = config as unknown as Record<string, unknown>;
+  const slots = Array.from({ length: 5 }, (_, index) => index + 1);
+  if (!slots.some((slot) => record[`nav_${slot}`] !== undefined)) return config;
+  const migrated = { ...record };
+  if (!config.scene_items?.length) {
+    const text = (value: unknown): string | undefined => typeof value === "string" && value ? value : undefined;
+    migrated.scene_items = slots.filter((slot) => text(record[`nav_${slot}`])).map((slot) => ({
+      entity: "",
+      navigation_path: text(record[`nav_${slot}`]),
+      icon: text(record[`icon_${slot}`]),
+      name: text(record[`name_${slot}`]),
+      color: text(record[`color_${slot}`]) ?? "blue",
+    }));
+  }
+  for (const slot of slots) {
+    for (const prefix of ["nav", "icon", "name", "color"]) delete migrated[`${prefix}_${slot}`];
+  }
+  return migrated as unknown as AdditionConfig;
+};
+
+const activeStateEntityDomains = new Set([
+  "automation", "binary_sensor", "climate", "cover", "fan", "humidifier", "input_boolean", "light",
+  "lock", "media_player", "remote", "siren", "switch", "vacuum", "valve", "water_heater",
+]);
+
+export const hasOnOffState = (entity?: HassEntity): boolean => {
+  if (!entity) return false;
+  return activeStateEntityDomains.has(entity.entity_id.split(".", 1)[0]) || ["on", "off"].includes(entity.state);
+};
+
 export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {
-  const wasteMigrated = migrateWasteStreamConfig(migrateRoomLightConfig(config));
+  const wasteMigrated = migrateWasteStreamConfig(migrateRoomLightConfig(migrateWelcomeItems(config)));
   const legacy = wasteMigrated.primary_entity ||
     legacyEntityKeys.map((key) => wasteMigrated[key]).find((value): value is string => typeof value === "string");
   const entityId = (value: unknown): string | undefined => {
