@@ -365,7 +365,7 @@ export const sharedStyles = css`
   .people-chip.people-unknown { --people-rgb: var(--rgb-state-person-unknown, 158, 158, 158); background: rgba(var(--people-rgb), .4); }
   .people-chip.people-zone { --people-rgb: var(--rgb-state-person-zone, 33, 150, 243); background: rgba(var(--people-rgb), .4); }
   .people-avatar { display: grid; place-items: center; width: 28px; height: 28px; flex: none; border-radius: 50%; background-size: cover; background-position: center; }
-  .people-state { padding-right: 8px; white-space: nowrap; }
+  .people-state { font-size: 11px; padding-right: 8px; white-space: nowrap; }
   .people-chip:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
   .welcome-items { display: flex; gap: 8px; overflow-x: auto; padding: 4px 4px 10px; margin: -4px -4px -10px; }
   .welcome-items > button { display: flex; min-width: 52px; flex: 1; flex-direction: column; align-items: center; gap: 6px; border: 0; border-radius: 25px; background: var(--addition-raised-background); color: inherit; box-shadow: var(--addition-raised-shadow); }
