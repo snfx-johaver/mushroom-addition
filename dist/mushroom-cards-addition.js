@@ -58812,7 +58812,7 @@ Ui.styles = je`
     :host { --ha-card-border-radius: var(--mush-card-border-radius, 12px); }
   `;
 let ri = Ui;
-const Xc = "0.5.4";
+const Xc = "0.6.0";
 for (const e of ha)
   if (!customElements.get(e.tag)) {
     if (e.upstreamId === "area_card_advanced") {

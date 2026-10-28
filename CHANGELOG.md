@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+## 0.6.0 - 2026-10-29
+
 - Light Area Card: scene lookup is cached per config (runs once), and all light card labels are translated.
 - Light Area Card: added Use light color, Color temperature control, Color control Collapse controls when off and Full collapse controls (also hides the scenes and group lights), and fixed the scene carousel resetting mid-drag whenever Home Assistant refreshed the card.
 
