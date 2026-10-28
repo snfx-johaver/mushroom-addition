@@ -993,6 +993,38 @@ describe("family renderers", () => {
     element.remove();
   });
 
+  it("auto-fills a hideable scene carousel with the scenes of the light area", async () => {
+    const element = document.createElement("mushroom-addition-custom-card-light") as HTMLElement & {
+      hass: HomeAssistant;
+      setConfig(config: AdditionConfig): void;
+      updateComplete: Promise<boolean>;
+    };
+    const entityState = (id: string, state: string, attributes = {}) => ({
+      entity_id: id, state, attributes,
+      last_changed: "", last_updated: "", context: { id: "", parent_id: null, user_id: null },
+    });
+    element.hass = {
+      ...hass,
+      states: {
+        ...hass.states,
+        "light.office": entityState("light.office", "on", { friendly_name: "Office", entity_id: ["light.desk"] }),
+        "light.desk": entityState("light.desk", "on", { friendly_name: "desk" }),
+        "scene.office_bright": entityState("scene.office_bright", "unknown", { friendly_name: "Office Bright" }),
+        "scene.kitchen_dim": entityState("scene.kitchen_dim", "unknown", { friendly_name: "Kitchen Dim" }),
+      },
+    } as HomeAssistant;
+    element.setConfig({ type: "custom:mushroom-addition-custom-card-light", entity: "light.office" });
+    document.body.append(element);
+    await element.updateComplete;
+    const carousel = element.shadowRoot!.querySelector("mushroom-addition-entity-carousel") as HTMLElement & { config: AdditionConfig };
+    expect(carousel.config.carousel_items?.map((item) => item.entity)).toEqual(["scene.office_bright"]);
+    expect(carousel.config.carousel_items?.[0].name).toBe("Bright");
+    element.setConfig({ type: "custom:mushroom-addition-custom-card-light", entity: "light.office", light_show_scenes: false });
+    await element.updateComplete;
+    expect(element.shadowRoot!.querySelector("mushroom-addition-entity-carousel")).toBeNull();
+    element.remove();
+  });
+
   it("uses the selected console platform and toggles a discovered power entity", async () => {
     const callService = vi.fn(async () => undefined);
     const element = document.createElement("mushroom-addition-custom-card-game-console") as HTMLElement & {

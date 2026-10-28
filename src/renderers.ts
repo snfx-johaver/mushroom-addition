@@ -34,6 +34,7 @@ import { energyPriceBounds, energyPriceSlots, energyTradeResult, formatEnergyPri
 import type { EnergyTradeSelection } from "./energy-buy-sell";
 import { inverterPanelEntities, panelGaugeColor, panelGaugePercent, summarizePanels } from "./panel-health";
 import "./entity-carousel";
+import { areaSceneItems } from "./light-area";
 import { readUpcomingData, upcomingItems } from "./upcoming-media";
 import "./remote-card";
 import "./pi-hole";
@@ -811,6 +812,37 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
     Array.isArray(attr(entity, "entity_id")) ? (attr(entity, "entity_id") as unknown[]).filter((id): id is string => typeof id === "string") : [],
   )].filter((id) => id.startsWith("light.")).flatMap((id) => ctx.hass.states[id] ?? []);
   const perRow = Math.max(1, Math.min(12, Math.floor(Number(ctx.config.light_members_per_row)) || 4));
+  const scenes = ctx.config.light_show_scenes === false ? [] :
+    (ctx.config.carousel_items ?? areaSceneItems(ctx.hass, ctx.config.entity)).map((item) => ({
+      ...item,
+      tap_action: item.tap_action ?? (item.entity?.startsWith("scene.")
+        ? { action: "perform-action", perform_action: "scene.turn_on", target: { entity_id: item.entity } }
+        : undefined),
+    }));
+  const carouselConfig: AdditionConfig = {
+    ...ctx.config,
+    carousel_items: scenes,
+    carousel_loop: true,
+    carousel_show_header: false,
+    carousel_show_labels: true,
+    carousel_visible_items: 16,
+    carousel_initial_index: 0,
+    carousel_effect: ctx.config.carousel_effect ?? "coverflow",
+    carousel_grab_cursor: true,
+    carousel_centered_slides: true,
+    carousel_slides_per_view: "auto",
+    carousel_coverflow_rotate: 0,
+    carousel_coverflow_stretch: ctx.config.carousel_coverflow_stretch ?? 44,
+    carousel_coverflow_depth: ctx.config.carousel_coverflow_depth ?? 400,
+    carousel_coverflow_modifier: 1,
+    carousel_coverflow_slide_shadows: true,
+    carousel_navigation: false,
+    carousel_pagination: false,
+    carousel_scrollbar: false,
+    carousel_button_width: ctx.config.carousel_button_width ?? 82,
+    carousel_button_height: ctx.config.carousel_button_height ?? 62,
+    carousel_icon_size: ctx.config.carousel_icon_size ?? 28,
+  };
   return ctx.actionSurface("custom-light", html`
     <div class="card-heading">
       ${sourceIconBubble(ctx, defaultIconFor(ctx.descriptor, entity), color, on)}
@@ -853,6 +885,15 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
               </button>`;
           })}
         </div>
+      </details>` : nothing}
+    ${scenes.length ? html`
+      <details class="light-pulldown light-scenes"
+        @pointerdown=${stop} @pointerup=${stop} @click=${stop} @dblclick=${stop} @keydown=${stop}>
+        <summary>
+          <span>${localizeText(ctx.hass, "Scenes")} (${scenes.length})</span>
+          <ha-icon icon="mdi:chevron-down"></ha-icon>
+        </summary>
+        <mushroom-addition-entity-carousel .hass=${ctx.hass} .config=${carouselConfig}></mushroom-addition-entity-carousel>
       </details>` : nothing}
   `);
 };

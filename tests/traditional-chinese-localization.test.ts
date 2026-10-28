@@ -10,8 +10,8 @@ import {
 const labels = { ...translationCatalogs["zh-Hant"], ...traditionalChineseLabels };
 const helpers = { ...helperCatalogs["zh-Hant"], ...traditionalChineseHelpers };
 const catalogs = [
-  [translationCatalogs.en, translationCatalogs["zh-Hant"], traditionalChineseLabels, labels, 777],
-  [englishHelpers, helperCatalogs["zh-Hant"], traditionalChineseHelpers, helpers, 562],
+  [translationCatalogs.en, translationCatalogs["zh-Hant"], traditionalChineseLabels, labels, 778],
+  [englishHelpers, helperCatalogs["zh-Hant"], traditionalChineseHelpers, helpers, 563],
 ] as const;
 const technicalTerms = new Set(["ui.renderer.CPU", "ui.renderer.RAM", "ui.renderer.Ping"]);
 
@@ -25,8 +25,8 @@ describe("complete Traditional Chinese localization", () => {
         expect(placeholders(merged[key]), key).toEqual(placeholders(source));
       }
     }
-    expect(Object.keys(labels)).toHaveLength(1193);
-    expect(Object.keys(helpers)).toHaveLength(563);
+    expect(Object.keys(labels)).toHaveLength(1194);
+    expect(Object.keys(helpers)).toHaveLength(564);
   });
 
   it("adds only missing keys and preserves the entire installed baseline before and after wiring", () => {

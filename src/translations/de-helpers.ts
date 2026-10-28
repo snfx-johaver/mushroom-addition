@@ -415,6 +415,7 @@ export const germanHelpers: Record<string, string> = {
   light_show_members: "Fügt ein Ausklappmenü mit jeder Leuchte der gewählten Lichtgruppe hinzu, jeweils mit eigener Ein/Aus-Taste.",
   light_members_expanded: "Öffnet das Ausklappmenü automatisch statt es eingeklappt zu lassen.",
   light_members_per_row: "Anzahl der Leuchten-Schaltflächen pro Zeile im Menü.",
+  light_show_scenes: "Fügt ein Ausklappmenü mit einem Szenen-Karussell aus dem Bereich der Leuchte hinzu. Wird automatisch gefüllt; Szenen können hinzugefügt oder entfernt werden.",
   show_extra_pollen: "Zeigt zusätzliche Pollensensoren unter den drei Haupttypen an. Beliebig viele hinzufügbar.",
   datetime_single_row: "Platziert Titel, Schaltflächen und Uhrzeit in einer Zeile.",
   datetime_manual_entry: "Macht die Uhrzeit zu einem Feld, in das man klicken und tippen kann.",

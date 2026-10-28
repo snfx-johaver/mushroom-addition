@@ -20,6 +20,7 @@ import type {
 import { CATALOG, getCatalogItem, LEGACY_ALIASES } from "./catalog";
 import { clearCardIcon, fireEvent, migrateRoomLightConfig, migrateWelcomeItems } from "./helpers";
 import { carouselControlEnabled } from "./entity-carousel";
+import { areaSceneItems } from "./light-area";
 import { REMOTE_DEFAULTS, REMOTE_KEYS, REMOTE_SECTIONS, resolveRemoteEntities } from "./remote-card";
 import { PIHOLE_DEFAULTS, PIHOLE_METRICS, PIHOLE_SECTIONS, piHoleMetricEntities } from "./pi-hole";
 import { SONOS_CONTROLS } from "./sonos-controls";
@@ -285,6 +286,14 @@ export class MushroomAdditionEditor extends LitElement {
         mini_graph_icon_adaptive_color: miniGraphShow?.icon_adaptive_color ?? false,
         mini_graph_loading_indicator: miniGraphShow?.loading_indicator ?? true,
       } : {}),
+      ...(item.upstreamId === "custom_card_light" ? {
+        carousel_effect: this.config.carousel_effect ?? "coverflow",
+        carousel_button_width: this.config.carousel_button_width ?? 82,
+        carousel_button_height: this.config.carousel_button_height ?? 62,
+        carousel_icon_size: this.config.carousel_icon_size ?? 28,
+        carousel_coverflow_stretch: this.config.carousel_coverflow_stretch ?? 44,
+        carousel_coverflow_depth: this.config.carousel_coverflow_depth ?? 400,
+      } : {}),
       ...(item.upstreamId === "custom_card_entity_carousel" ? {
         carousel_navigation: carouselControlEnabled(this.config, "navigation"),
         carousel_pagination: carouselControlEnabled(this.config, "pagination"),
@@ -339,6 +348,8 @@ export class MushroomAdditionEditor extends LitElement {
         ? this.renderSonosShortcutEditor()
       : item.upstreamId === "custom_card_entity_carousel"
         ? this.renderCarouselItemEditor()
+      : item.upstreamId === "custom_card_light"
+        ? (this.config.light_show_scenes === false ? nothing : this.renderCarouselItemEditor())
       : item.family === "scene"
         ? this.renderItemEditor(
           "scene_items",
@@ -356,6 +367,7 @@ export class MushroomAdditionEditor extends LitElement {
       item.upstreamId === "custom_card_trash" ||
       item.upstreamId === "custom_card_media_player_sonos" ||
       item.upstreamId === "custom_card_entity_carousel" ||
+      item.upstreamId === "custom_card_light" ||
       item.family === "scene" ||
       item.upstreamId === "custom_card_welcome" ||
       item.upstreamId === "card_room";
@@ -1524,12 +1536,18 @@ export class MushroomAdditionEditor extends LitElement {
     `;
   }
 
+  private get carouselItems(): AdditionItemConfig[] {
+    if (this.config?.carousel_items) return this.config.carousel_items;
+    return this.config?.type.endsWith("-custom-card-light") && this.hass
+      ? areaSceneItems(this.hass, this.config.entity) : [];
+  }
+
   private renderCarouselItemEditor() {
     if (!this.config) return nothing;
-    const items = this.config.carousel_items ?? [];
+    const items = this.carouselItems;
     return html`
       <section class="item-editor carousel-item-editor">
-        <h3>${localizeText(this.hass, "Carousel items")}</h3>
+        <h3>${localizeText(this.hass, this.config.type.endsWith("-custom-card-light") ? "Scenes" : "Carousel items")}</h3>
         <p>${localizeText(this.hass, "Add entity-aware icon buttons. Swipe or scroll to move through them; tap the centered item to run its action.")}</p>
         ${items.map((item, index) => html`
           <div class="item-row carousel-item-row" data-carousel-index=${index}>
@@ -1743,7 +1761,7 @@ export class MushroomAdditionEditor extends LitElement {
     value: unknown,
   ): void {
     if (!this.config) return;
-    const items = [...(this.config.carousel_items ?? [])];
+    const items = [...this.carouselItems];
     const item = { ...items[index] };
     if (!value || (field.endsWith("_action") && (value as ActionConfig).action === "default")) {
       delete item[field];
@@ -1757,7 +1775,7 @@ export class MushroomAdditionEditor extends LitElement {
   private readonly addCarouselItem = (): void => {
     if (!this.config) return;
     this.updateCarouselItems([
-      ...(this.config.carousel_items ?? []),
+      ...this.carouselItems,
       {
         entity: "",
         color: "primary",
@@ -1768,13 +1786,13 @@ export class MushroomAdditionEditor extends LitElement {
   private removeCarouselItem(index: number): void {
     if (!this.config) return;
     this.updateCarouselItems(
-      (this.config.carousel_items ?? []).filter((_, itemIndex) => itemIndex !== index),
+      this.carouselItems.filter((_, itemIndex) => itemIndex !== index),
     );
   }
 
   private moveCarouselItem(index: number, direction: -1 | 1): void {
     if (!this.config) return;
-    const items = [...(this.config.carousel_items ?? [])];
+    const items = [...this.carouselItems];
     const target = index + direction;
     if (target < 0 || target >= items.length) return;
     [items[index], items[target]] = [items[target], items[index]];

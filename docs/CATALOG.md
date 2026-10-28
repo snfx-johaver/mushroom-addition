@@ -40,7 +40,7 @@ All picker entries use the prefix **Mushroom Addition:** before the card name.
 | Area Advanced | `area_card_advanced` | custom-card | `custom:mushroom-addition-area-card-advanced` | presence | default | `area_card_advanced` |
 | Area Advanced - Mushroom | `area_card_mushroom` | custom-card | `custom:mushroom-addition-area-card-mushroom` | presence | default | `area_card_mushroom` |
 | Carousel Slider | `custom_card_entity_carousel` | custom-card | `custom:mushroom-addition-custom-card-entity-carousel` | sensor | default | `custom_card_entity_carousel` |
-| Light | `custom_card_light` | custom-card | `custom:mushroom-addition-custom-card-light` | light | default | `custom_card_light` |
+| Light Area Card | `custom_card_light` | custom-card | `custom:mushroom-addition-custom-card-light` | light | default | `custom_card_light` |
 | Energy - Home Energy Management | `advanced_home_energy_management` | custom-card | `custom:mushroom-addition-advanced-home-energy-management` | energy | default | `advanced_home_energy_management` |
 | Energy - Buy and Sell | `advanced_energy_buy_sell` | custom-card | `custom:mushroom-addition-advanced-energy-buy-and-sell` | energy | default | `advanced_energy_buy_sell` |
 | Energy - Solar Panel Health | `advanced_energy_panel_health` | custom-card | `custom:mushroom-addition-advanced-energy-panel-health` | energy | default | `advanced_energy_panel_health` |

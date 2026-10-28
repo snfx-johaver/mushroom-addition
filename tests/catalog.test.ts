@@ -77,7 +77,7 @@ describe("catalog coverage", () => {
       "Battery", "Room", "Scenes", "Trash", "Alarm Time", "Welcome", "Washer-Dryer",
       "Astronomy", "Input Datetime", "Media Player Advanced", "Printer", "NAS", "Tablet",
       "Game Console", "Flower", "Speedtest", "Pollen", "Graph Advanced", "Stock Card", "Pi-hole",
-      "Upcoming Media", "Remote", "Area Advanced", "Carousel Slider", "Light",
+      "Upcoming Media", "Remote", "Area Advanced", "Carousel Slider", "Light Area Card",
       "Energy - Home Energy Management", "Energy - Buy and Sell", "Energy - Solar Panel Health",
       "NAS - Server Overview", "NAS - Storage and Disks", "NAS - Docker Containers", "NAS - Unified Dashboard",
     ]);

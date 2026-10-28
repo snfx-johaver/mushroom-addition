@@ -278,6 +278,7 @@ export const populatedDefaultsFor = (
                   ? {
                     light_show_brightness: true,
                     light_show_members: true,
+                    light_show_scenes: true,
                     light_members_expanded: false,
                     light_members_per_row: 4,
                   }

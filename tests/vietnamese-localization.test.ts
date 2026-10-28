@@ -39,14 +39,14 @@ const acceptedUnchangedTerms = new Set([
 
 describe("complete Vietnamese card localization", () => {
   it("adds exactly the missing inventory before and after catalog wiring", () => {
-    expect(Object.keys(translationCatalogs.en)).toHaveLength(1193);
-    expect(Object.keys(englishHelpers)).toHaveLength(563);
+    expect(Object.keys(translationCatalogs.en)).toHaveLength(1194);
+    expect(Object.keys(englishHelpers)).toHaveLength(564);
     expect(Object.keys(nativeDiagnosticCatalogs.en)).toHaveLength(6);
-    expect(Object.keys(translationCatalogs.en).length + Object.keys(englishHelpers).length + 6).toBe(1762);
+    expect(Object.keys(translationCatalogs.en).length + Object.keys(englishHelpers).length + 6).toBe(1764);
     expect(Object.keys(installedLabels)).toHaveLength(416);
     expect(Object.keys(installedHelpers)).toHaveLength(1);
-    expect(Object.keys(vietnameseLabels)).toHaveLength(777);
-    expect(Object.keys(vietnameseHelpers)).toHaveLength(562);
+    expect(Object.keys(vietnameseLabels)).toHaveLength(778);
+    expect(Object.keys(vietnameseHelpers)).toHaveLength(563);
     expect(fingerprint(installedLabels)).toBe("6db737bf3546397e8f1712f3758dd9ed0bfdb2b0835e560a9b9e1ae58bdda8d3");
     expect(fingerprint(installedHelpers)).toBe("e9b991363034f3894e5bd1a4d6add7697ff4797a7a2be84518b9ce784730523e");
 

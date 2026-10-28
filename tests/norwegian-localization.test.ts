@@ -25,9 +25,9 @@ const codeLiterals = (text: string) =>
 
 describe("complete Norwegian Bokmål localization", () => {
   it("adds exactly the missing entries without changing installed translations", () => {
-    expect(Object.keys(norwegianLabels)).toHaveLength(777);
-    expect(Object.keys(norwegianHelpers)).toHaveLength(562);
-    expect(Object.keys(norwegianLabels).length + Object.keys(norwegianHelpers).length).toBe(1339);
+    expect(Object.keys(norwegianLabels)).toHaveLength(778);
+    expect(Object.keys(norwegianHelpers)).toHaveLength(563);
+    expect(Object.keys(norwegianLabels).length + Object.keys(norwegianHelpers).length).toBe(1341);
     expect(fingerprint(installedLabels)).toBe("2a13437b8ee6c4f72765e4b82d4126c764511a0977cc9ccbaa431322dcc7de27");
     expect(fingerprint(installedHelpers)).toBe("10e37dd9959cfa6d9fffa5d2135993b5b5df12d9d92443d43ffe1538eab359b4");
 

@@ -302,6 +302,7 @@ export const germanLabels: Record<string, string> = {
   light_show_members: "Lichter der Gruppe anzeigen",
   light_members_expanded: "Ausklappmenü standardmäßig offen",
   light_members_per_row: "Lichter pro Zeile",
+  light_show_scenes: "Szenen anzeigen",
   show_extra_pollen: "Zusätzliche Pollensensoren",
   datetime_single_row: "Einzelne Zeile",
   datetime_manual_entry: "Zeit manuell eingeben",

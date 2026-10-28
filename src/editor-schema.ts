@@ -800,6 +800,21 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
           toggle("light_members_expanded"),
           number("light_members_per_row", 1, 12),
         ] : []),
+        toggle("light_show_scenes"),
+        ...(config?.light_show_scenes !== false ? [
+          { name: "carousel_button_width", selector: { number: { min: 32, max: 160, step: 1, mode: "slider", unit_of_measurement: "px" } } },
+          { name: "carousel_button_height", selector: { number: { min: 32, max: 160, step: 1, mode: "slider", unit_of_measurement: "px" } } },
+          { name: "carousel_icon_size", selector: { number: { min: 12, max: 96, step: 1, mode: "slider", unit_of_measurement: "px" } } },
+          select("carousel_effect", [
+            { value: "coverflow", label: "Coverflow" },
+            { value: "slide", label: "Slide" },
+            { value: "fade", label: "Fade" },
+            { value: "cube", label: "Cube" },
+            { value: "flip", label: "Flip" },
+          ]),
+          number("carousel_coverflow_stretch", -200, 200),
+          number("carousel_coverflow_depth", 0, 1000),
+        ] : []),
         ...presentation(),
       ]
     : item.upstreamId === "custom_card_welcome"

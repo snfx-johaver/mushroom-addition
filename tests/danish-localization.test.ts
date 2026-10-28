@@ -23,9 +23,9 @@ const codeLiterals = (text: string) =>
 
 describe("complete Danish card localization", () => {
   it("adds exactly the missing keys without changing the installed Danish translations", () => {
-    expect(Object.keys(danishLabels)).toHaveLength(777);
-    expect(Object.keys(danishHelpers)).toHaveLength(562);
-    expect(Object.keys(danishLabels).length + Object.keys(danishHelpers).length).toBe(1339);
+    expect(Object.keys(danishLabels)).toHaveLength(778);
+    expect(Object.keys(danishHelpers)).toHaveLength(563);
+    expect(Object.keys(danishLabels).length + Object.keys(danishHelpers).length).toBe(1341);
     expect(fingerprint(installedLabels)).toBe("b4db9acd56bb41445dacbcecda095fc7f0b8457d36aec0594429205f52560b8a");
     expect(fingerprint(installedHelpers)).toBe("b826d6369013861027950108f3a688aa378273b557f720cb21d09b8e5e9cb12a");
 
