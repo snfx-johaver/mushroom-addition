@@ -4,7 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
-<<<<<<< HEAD
+- Scenes Card: new "Scenes per row" setting wraps scene buttons onto additional rows (all scenes are now shown).
+
 ## 0.5.4 - 2026-10-28
 
 - Mini Graph Card: hovering the graph now highlights the nearest series, dims the
@@ -19,18 +20,17 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
   config, and the ineffective "Fill container" option was removed.
 - Fix Mini Graph Card chart height so a narrower card no longer leaves a blank
   bar under the graph with the lower label stranded at the bottom.
-=======
-## 0.5.3 - 2026-10-28
-
->>>>>>> origin/main
-- Safely escape entity-provided image URLs in CSS backgrounds and remove the
-  setup-specific navigation default from Home Energy Management.
 - Add optional Yahoo market-data backend and Stock Card source selection for
   actual historical prices, including a five-year chart, independent of HA
   recorder retention. Retrieve available company fundamentals and expose
   provider warnings rather than inventing missing values. Preserve arbitrary
   sensor providers, explicit per-metric overrides and Stock Market Deluxe.
   The backend requires separate installation and UI setup.
+
+## 0.5.3 - 2026-10-28
+
+- Safely escape entity-provided image URLs in CSS backgrounds and remove the
+  setup-specific navigation default from Home Energy Management.
 
 ## 0.5.2 - 2026-10-24
 

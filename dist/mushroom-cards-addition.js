@@ -2293,6 +2293,7 @@ const co = new Set(uo.map((e) => e.canonical)), sn = [
   carousel_coverflow_modifier: "Coverflowintensiteit",
   carousel_coverflow_slide_shadows: "Diaschaduwen tonen",
   scene_buttons_only: "Alleen scèneknoppen tonen",
+  scenes_per_row: "Scènes per rij",
   hours_to_show: "Aantal uren geschiedenis",
   points_per_hour: "Punten per uur",
   aggregate_func: "Standaardaggregatie",
@@ -2878,6 +2879,7 @@ const co = new Set(uo.map((e) => e.canonical)), sn = [
   carousel_coverflow_modifier: "Vermenigvuldigt de coverflowrotatie, afstand, diepte en schaduwsterkte.",
   carousel_coverflow_slide_shadows: "Voegt richtingsafhankelijke schaduwen toe aan dia's buiten de geselecteerde positie.",
   scene_buttons_only: "Verbergt kaartnaam, primaire entiteitsinformatie en aanvullende inhoud, zodat alleen scèneknoppen overblijven.",
+  scenes_per_row: "Maximaal aantal scèneknoppen op één rij. Extra scènes gaan door op de volgende rij.",
   console_show_artwork: "Gebruikt de geselecteerde spelafbeelding als kaartachtergrond, indien beschikbaar.",
   console_show_controls: "Toont een aan-uitbediening wanneer een compatibele afstandsbediening, mediaspeler of schakelaar is ingesteld.",
   ...Object.fromEntries(["followers_entity", "following_entity", "friends_entity"].map((e) => [
@@ -4054,6 +4056,7 @@ const or = [
   carousel_coverflow_modifier: "Coverflow-Stärke",
   carousel_coverflow_slide_shadows: "Folienschatten anzeigen",
   scene_buttons_only: "Nur Szenenschaltflächen anzeigen",
+  scenes_per_row: "Szenen pro Zeile",
   hours_to_show: "Verlaufsstunden",
   points_per_hour: "Datenpunkte pro Stunde",
   aggregate_func: "Standardaggregation",
@@ -4648,6 +4651,7 @@ const or = [
   carousel_coverflow_modifier: "Drehung, Abstand, Tiefe und Schattenstärke des Coverflows multiplizieren.",
   carousel_coverflow_slide_shadows: "Gerichtete Schatten auf Folien hinzufügen, die nicht an der ausgewählten Position liegen.",
   scene_buttons_only: "Kartenname, primäre Entitätsinformationen und Zusatzinhalte ausblenden, sodass nur Szenenschaltflächen bleiben.",
+  scenes_per_row: "Maximale Anzahl an Szenenschaltflächen in einer Zeile. Weitere Szenen werden in der nächsten Zeile fortgesetzt.",
   console_show_artwork: "Verfügbares Bildmaterial des ausgewählten Spiels als Kartenhintergrund verwenden.",
   console_show_controls: "Eine Ein-/Aus-Steuerung anzeigen, wenn eine kompatible Fernbedienung, ein Mediaplayer oder Schalter konfiguriert ist.",
   followers_entity: "Wird, sofern verfügbar, automatisch am Konsolenkontogerät erkannt.",
@@ -5064,6 +5068,7 @@ const or = [
   carousel_coverflow_modifier: "Intensidad de Coverflow",
   carousel_coverflow_slide_shadows: "Mostrar sombras de diapositivas",
   scene_buttons_only: "Mostrar solo botones de escenas",
+  scenes_per_row: "Escenas por fila",
   hours_to_show: "Horas de historial",
   points_per_hour: "Puntos por hora",
   aggregate_func: "Agregación predeterminada",
@@ -5947,6 +5952,7 @@ const or = [
   carousel_coverflow_modifier: "Multiplica la rotación, el espaciado, la profundidad y la intensidad de sombra de Coverflow.",
   carousel_coverflow_slide_shadows: "Añade sombras direccionales a las diapositivas alejadas de la posición seleccionada.",
   scene_buttons_only: "Oculta el nombre de la tarjeta, la información de la entidad principal y el contenido de apoyo para dejar solo los botones de escenas.",
+  scenes_per_row: "Número máximo de botones de escena en una fila. Las escenas adicionales continúan en la fila siguiente.",
   console_show_artwork: "Utiliza la ilustración del juego seleccionado como fondo de la tarjeta cuando está disponible.",
   console_show_controls: "Muestra un control de encendido cuando se configura un mando, reproductor multimedia o interruptor compatible.",
   followers_entity: "Se descubre automáticamente del dispositivo de la cuenta de la consola cuando está disponible.",
@@ -6437,6 +6443,7 @@ const or = [
   carousel_coverflow_modifier: "Intensité Coverflow",
   carousel_coverflow_slide_shadows: "Afficher les ombres des diapositives",
   scene_buttons_only: "Afficher uniquement les boutons de scène",
+  scenes_per_row: "Scènes par ligne",
   hours_to_show: "Heures d’historique",
   points_per_hour: "Points par heure",
   aggregate_func: "Agrégation par défaut",
@@ -7315,6 +7322,7 @@ const $l = {
   carousel_coverflow_modifier: "Multiplie la rotation, l’espacement, la profondeur et l’intensité des ombres Coverflow.",
   carousel_coverflow_slide_shadows: "Ajoute des ombres directionnelles aux diapositives éloignées de la position sélectionnée.",
   scene_buttons_only: "Masque le nom de la carte, les informations de l’entité principale et le contenu complémentaire pour ne conserver que les boutons de scène.",
+  scenes_per_row: "Nombre maximal de boutons de scène sur une ligne. Les scènes supplémentaires passent à la ligne suivante.",
   console_show_artwork: "Utilise l’illustration du jeu sélectionné comme fond de carte lorsqu’elle est disponible.",
   console_show_controls: "Affiche une commande d’alimentation lorsqu’une télécommande, un lecteur multimédia ou un interrupteur compatible est configuré.",
   ...Object.fromEntries(["followers_entity", "following_entity", "friends_entity"].map((e) => [e, "Découvert automatiquement sur l’appareil du compte de console lorsque disponible."])),
@@ -7770,6 +7778,7 @@ const $l = {
   carousel_coverflow_modifier: "Coverflow 强度",
   carousel_coverflow_slide_shadows: "显示幻灯片阴影",
   scene_buttons_only: "仅显示场景按钮",
+  scenes_per_row: "每行场景数",
   hours_to_show: "历史小时数",
   points_per_hour: "每小时数据点数",
   aggregate_func: "默认聚合方式",
@@ -8653,6 +8662,7 @@ const $l = {
   carousel_coverflow_modifier: "对封面流旋转、间距、深度和阴影强度应用倍数。",
   carousel_coverflow_slide_shadows: "为偏离选中位置的幻灯片添加方向性阴影。",
   scene_buttons_only: "隐藏卡片名称、主实体信息和辅助内容，仅保留场景按钮。",
+  scenes_per_row: "每行最多显示的场景按钮数量。超出的场景会显示在下一行。",
   console_show_artwork: "所选游戏封面可用时将其作为卡片背景。",
   console_show_controls: "配置兼容的遥控器、媒体播放器或开关时显示电源控制。",
   followers_entity: "可用时从主机账户设备自动发现。",
@@ -9083,6 +9093,7 @@ const $l = {
   carousel_coverflow_modifier: "Intensità Coverflow",
   carousel_coverflow_slide_shadows: "Mostra ombre delle diapositive",
   scene_buttons_only: "Mostra solo i pulsanti della scena",
+  scenes_per_row: "Scene per riga",
   hours_to_show: "Ore di cronologia",
   points_per_hour: "Punti per ora",
   aggregate_func: "Aggregazione predefinita",
@@ -9966,6 +9977,7 @@ const $l = {
   carousel_coverflow_modifier: "Moltiplica rotazione, spaziatura, profondità e intensità delle ombre Coverflow.",
   carousel_coverflow_slide_shadows: "Aggiunge ombre direzionali alle diapositive lontane dalla posizione selezionata.",
   scene_buttons_only: "Nasconde il nome della scheda, le informazioni dell'entità principale e il contenuto di supporto, lasciando solo i pulsanti della scena.",
+  scenes_per_row: "Numero massimo di pulsanti scena in una riga. Le scene aggiuntive continuano nella riga successiva.",
   console_show_artwork: "Usa come sfondo della scheda la copertina del gioco selezionato, se disponibile.",
   console_show_controls: "Mostra un controllo di alimentazione se è configurato un telecomando, lettore multimediale o interruttore compatibile.",
   followers_entity: "Rilevata automaticamente dal dispositivo dell'account della console, se disponibile.",
@@ -10396,6 +10408,7 @@ const $l = {
   carousel_coverflow_modifier: "Coverflow 強度",
   carousel_coverflow_slide_shadows: "顯示投影片陰影",
   scene_buttons_only: "僅顯示場景按鈕",
+  scenes_per_row: "每列場景數",
   hours_to_show: "歷史小時數",
   points_per_hour: "每小時資料點數",
   aggregate_func: "預設聚合方式",
@@ -11279,6 +11292,7 @@ const $l = {
   carousel_coverflow_modifier: "對封面流旋轉、間距、深度和陰影強度應用倍數。",
   carousel_coverflow_slide_shadows: "為偏離選中位置的投影片新增方向性陰影。",
   scene_buttons_only: "隱藏卡片名稱、主實體資訊和輔助內容，僅保留場景按鈕。",
+  scenes_per_row: "每列最多顯示的場景按鈕數量。超出的場景會顯示在下一列。",
   console_show_artwork: "所選遊戲封面可用時將其作為卡片背景。",
   console_show_controls: "設定相容的遙控器、媒體播放器或開關時顯示電源控制。",
   followers_entity: "可用時從主機帳戶裝置自動發現。",
@@ -11709,6 +11723,7 @@ const $l = {
   carousel_coverflow_modifier: "Intensidade do Coverflow",
   carousel_coverflow_slide_shadows: "Mostrar sombras dos slides",
   scene_buttons_only: "Mostrar apenas botões de cenas",
+  scenes_per_row: "Cenas por linha",
   hours_to_show: "Horas de histórico",
   points_per_hour: "Pontos por hora",
   aggregate_func: "Agregação padrão",
@@ -12592,6 +12607,7 @@ const $l = {
   carousel_coverflow_modifier: "Multiplica a rotação, o espaçamento, a profundidade e a intensidade das sombras do coverflow.",
   carousel_coverflow_slide_shadows: "Adiciona sombras direcionais aos slides afastados da posição selecionada.",
   scene_buttons_only: "Oculta o nome do cartão, as informações da entidade principal e o conteúdo de apoio para manter apenas os botões de cenas.",
+  scenes_per_row: "Número máximo de botões de cena em uma linha. As cenas adicionais continuam na linha seguinte.",
   console_show_artwork: "Usa a capa selecionada do jogo como fundo do cartão quando disponível.",
   console_show_controls: "Mostra um controle de energia quando um controle remoto, reprodutor de mídia ou interruptor compatível está configurado.",
   followers_entity: "Descoberto automaticamente no dispositivo da conta do console quando disponível.",
@@ -13022,6 +13038,7 @@ const $l = {
   carousel_coverflow_modifier: "Intensywność Coverflow",
   carousel_coverflow_slide_shadows: "Pokaż cienie slajdów",
   scene_buttons_only: "Pokaż tylko przyciski scen",
+  scenes_per_row: "Scen w wierszu",
   hours_to_show: "Godziny historii",
   points_per_hour: "Punkty na godzinę",
   aggregate_func: "Domyślna agregacja",
@@ -13905,6 +13922,7 @@ const $l = {
   carousel_coverflow_modifier: "Mnoży obrót, odstępy, głębię i siłę cienia coverflow.",
   carousel_coverflow_slide_shadows: "Dodaje kierunkowe cienie slajdom oddalonym od wybranej pozycji.",
   scene_buttons_only: "Ukrywa nazwę karty, informacje głównej encji i treść pomocniczą, pozostawiając tylko przyciski scen.",
+  scenes_per_row: "Maksymalna liczba przycisków scen w jednym wierszu. Dodatkowe sceny są wyświetlane w następnym wierszu.",
   console_show_artwork: "Używa wybranej grafiki gry jako tła karty, gdy jest dostępna.",
   console_show_controls: "Pokazuje sterowanie zasilaniem, gdy skonfigurowano zgodny pilot, odtwarzacz lub przełącznik.",
   followers_entity: "Automatycznie wykrywane z urządzenia konta konsoli, gdy jest dostępne.",
@@ -14335,6 +14353,7 @@ const $l = {
   carousel_coverflow_modifier: "Интенсивность Coverflow",
   carousel_coverflow_slide_shadows: "Показывать тени слайдов",
   scene_buttons_only: "Показывать только кнопки сцен",
+  scenes_per_row: "Сцен в строке",
   hours_to_show: "Часы истории",
   points_per_hour: "Точек в час",
   aggregate_func: "Агрегация по умолчанию",
@@ -15218,6 +15237,7 @@ const $l = {
   carousel_coverflow_modifier: "Умножает поворот, расстояние, глубину и интенсивность теней Coverflow.",
   carousel_coverflow_slide_shadows: "Добавляет направленные тени слайдам вне выбранной позиции.",
   scene_buttons_only: "Скрывает имя карточки, информацию об основной сущности и дополнительное содержимое, оставляя только кнопки сцен.",
+  scenes_per_row: "Максимальное число кнопок сцен в одной строке. Дополнительные сцены переносятся на следующую строку.",
   console_show_artwork: "Использует выбранную обложку игры как фон карточки, если она доступна.",
   console_show_controls: "Показывает управление питанием, если настроен совместимый пульт, медиаплеер или переключатель.",
   followers_entity: "Автоматически обнаруживается на устройстве учётной записи консоли при наличии.",
@@ -15648,6 +15668,7 @@ const $l = {
   carousel_coverflow_modifier: "Intensidade do Coverflow",
   carousel_coverflow_slide_shadows: "Mostrar sombras dos slides",
   scene_buttons_only: "Mostrar apenas botões de cenas",
+  scenes_per_row: "Cenas por linha",
   hours_to_show: "Horas de histórico",
   points_per_hour: "Pontos por hora",
   aggregate_func: "Agregação predefinida",
@@ -16531,6 +16552,7 @@ const $l = {
   carousel_coverflow_modifier: "Multiplica a rotação, o espaçamento, a profundidade e a intensidade das sombras do coverflow.",
   carousel_coverflow_slide_shadows: "Adiciona sombras direcionais aos slides afastados da posição selecionada.",
   scene_buttons_only: "Oculta o nome do cartão, as informações da entidade principal e o conteúdo de apoio para manter apenas os botões de cenas.",
+  scenes_per_row: "Número máximo de botões de cena numa linha. As cenas adicionais continuam na linha seguinte.",
   console_show_artwork: "Usa a capa selecionada do jogo como fundo do cartão quando disponível.",
   console_show_controls: "Mostra um controlo de energia quando um controlo remoto, leitor de multimédia ou interruptor compatível está configurado.",
   followers_entity: "Descoberto automaticamente no dispositivo da conta da consola quando disponível.",
@@ -16961,6 +16983,7 @@ const $l = {
   carousel_coverflow_modifier: "Інтенсивність Coverflow",
   carousel_coverflow_slide_shadows: "Показувати тіні слайдів",
   scene_buttons_only: "Показувати лише кнопки сцен",
+  scenes_per_row: "Сцен у рядку",
   hours_to_show: "Години історії",
   points_per_hour: "Точок на годину",
   aggregate_func: "Типова агрегація",
@@ -17844,6 +17867,7 @@ const $l = {
   carousel_coverflow_modifier: "Множить обертання, відстань, глибину та силу тіней coverflow.",
   carousel_coverflow_slide_shadows: "Додає спрямовані тіні до слайдів, віддалених від вибраної позиції.",
   scene_buttons_only: "Приховує назву картки, інформацію основної сутності та допоміжний вміст, залишаючи лише кнопки сцен.",
+  scenes_per_row: "Максимальна кількість кнопок сцен в одному рядку. Додаткові сцени переносяться в наступний рядок.",
   console_show_artwork: "Використовує вибрану обкладинку гри як тло картки за наявності.",
   console_show_controls: "Показує керування живленням, якщо налаштовано сумісний пульт, медіапрогравач або перемикач.",
   followers_entity: "Автоматично виявляється на пристрої облікового запису консолі за наявності.",
@@ -18274,6 +18298,7 @@ const $l = {
   carousel_coverflow_modifier: "Intenzita Coverflow",
   carousel_coverflow_slide_shadows: "Zobrazit stíny snímků",
   scene_buttons_only: "Zobrazit pouze tlačítka scén",
+  scenes_per_row: "Scén na řádek",
   hours_to_show: "Počet hodin historie",
   points_per_hour: "Bodů za hodinu",
   aggregate_func: "Výchozí agregace",
@@ -19157,6 +19182,7 @@ const $l = {
   carousel_coverflow_modifier: "Násobí natočení, rozestup, hloubku a sílu stínů Coverflow.",
   carousel_coverflow_slide_shadows: "Přidá směrové stíny snímkům vzdáleným od vybrané pozice.",
   scene_buttons_only: "Skryje název karty, informace hlavní entity a doplňkový obsah tak, aby zůstala jen tlačítka scén.",
+  scenes_per_row: "Maximální počet tlačítek scén v jednom řádku. Další scény pokračují na dalším řádku.",
   console_show_artwork: "Použije vybraný obrázek hry jako pozadí karty, je-li dostupný.",
   console_show_controls: "Zobrazí ovládání napájení, je-li nastaven kompatibilní ovladač, přehrávač médií nebo přepínač.",
   followers_entity: "Automaticky vyhledáno ze zařízení účtu konzole, je-li dostupné.",
@@ -19587,6 +19613,7 @@ const $l = {
   carousel_coverflow_modifier: "Intenzita Coverflow",
   carousel_coverflow_slide_shadows: "Zobraziť tiene snímok",
   scene_buttons_only: "Zobraziť iba tlačidlá scén",
+  scenes_per_row: "Scén v riadku",
   hours_to_show: "Hodiny histórie",
   points_per_hour: "Počet bodov za hodinu",
   aggregate_func: "Predvolená agregácia",
@@ -20470,6 +20497,7 @@ const $l = {
   carousel_coverflow_modifier: "Násobí otočenie, rozstupy, hĺbku a silu tieňa coverflow.",
   carousel_coverflow_slide_shadows: "Pridáva smerové tiene snímkam vzdialeným od vybranej polohy.",
   scene_buttons_only: "Skryje názov karty, informácie hlavnej entity a doplnkový obsah, aby zostali iba tlačidlá scén.",
+  scenes_per_row: "Maximálny počet tlačidiel scén v jednom riadku. Ďalšie scény pokračujú v ďalšom riadku.",
   console_show_artwork: "Používa obrázok vybranej hry ako pozadie karty, ak je dostupný.",
   console_show_controls: "Zobrazuje ovládanie napájania, ak je nastavený kompatibilný ovládač, prehrávač médií alebo prepínač.",
   followers_entity: "Automaticky sa vyhľadá v zariadení účtu konzoly, ak je dostupná.",
@@ -20944,6 +20972,7 @@ const $l = {
   carousel_coverflow_modifier: "Coverflow-intensitet",
   carousel_coverflow_slide_shadows: "Vis diasskygger",
   scene_buttons_only: "Vis kun sceneknapper",
+  scenes_per_row: "Scener pr. række",
   hours_to_show: "Historiktimer",
   points_per_hour: "Punkter pr. time",
   aggregate_func: "Standardaggregering",
@@ -21827,6 +21856,7 @@ const $l = {
   carousel_coverflow_modifier: "Ganger coverflow-rotation, afstand, dybde og skyggestyrke.",
   carousel_coverflow_slide_shadows: "Tilføjer retningsbestemte skygger til dias væk fra den valgte position.",
   scene_buttons_only: "Skjuler kortnavn, primære entitetsoplysninger og supplerende indhold, så kun sceneknapper er tilbage.",
+  scenes_per_row: "Maksimalt antal sceneknapper i én række. Yderligere scener fortsætter på næste række.",
   console_show_artwork: "Bruger den valgte spilillustration som kortbaggrund, når tilgængelig.",
   console_show_controls: "Viser tænd/sluk-betjening, når en kompatibel fjernbetjening, medieafspiller eller kontakt er angivet.",
   followers_entity: "Registreres automatisk fra konsolkontoens enhed, når tilgængelig.",
@@ -22257,6 +22287,7 @@ const $l = {
   carousel_coverflow_modifier: "Coverflow-intensitet",
   carousel_coverflow_slide_shadows: "Vis lysbildeskygger",
   scene_buttons_only: "Vis bare sceneknapper",
+  scenes_per_row: "Scener per rad",
   hours_to_show: "Timer med historikk",
   points_per_hour: "Punkter per time",
   aggregate_func: "Standard aggregering",
@@ -23140,6 +23171,7 @@ const $l = {
   carousel_coverflow_modifier: "Multipliserer coverflow-rotasjon, avstand, dybde og skyggestyrke.",
   carousel_coverflow_slide_shadows: "Legger retningsbestemte skygger på lysbilder utenfor valgt posisjon.",
   scene_buttons_only: "Skjuler kortnavnet, hovedentitetens informasjon og støttende innhold slik at bare sceneknapper gjenstår.",
+  scenes_per_row: "Maksimalt antall sceneknapper på én rad. Ytterligere scener fortsetter på neste rad.",
   console_show_artwork: "Bruker valgt spillbilde som kortbakgrunn når tilgjengelig.",
   console_show_controls: "Viser en av/på-kontroll når en kompatibel fjernkontroll, mediespiller eller bryter er konfigurert.",
   followers_entity: "Oppdages automatisk fra konsollkontoens enhet når tilgjengelig.",
@@ -23570,6 +23602,7 @@ const $l = {
   carousel_coverflow_modifier: "Intensitatea efectului Coverflow",
   carousel_coverflow_slide_shadows: "Afișează umbrele diapozitivelor",
   scene_buttons_only: "Afișează numai butoanele scenelor",
+  scenes_per_row: "Scene pe rând",
   hours_to_show: "Ore de istoric",
   points_per_hour: "Puncte pe oră",
   aggregate_func: "Agregare implicită",
@@ -24453,6 +24486,7 @@ const $l = {
   carousel_coverflow_modifier: "Înmulțește rotația, spațierea, adâncimea și intensitatea umbrelor Coverflow.",
   carousel_coverflow_slide_shadows: "Adaugă umbre direcționale diapozitivelor îndepărtate de poziția selectată.",
   scene_buttons_only: "Ascunde numele cardului, informațiile entității principale și conținutul suplimentar pentru a păstra numai butoanele scenelor.",
+  scenes_per_row: "Numărul maxim de butoane de scenă pe un rând. Scenele suplimentare continuă pe rândul următor.",
   console_show_artwork: "Folosește imaginea jocului selectat ca fundal al cardului, dacă este disponibilă.",
   console_show_controls: "Afișează o comandă de alimentare dacă este configurată o telecomandă, un player media sau un comutator compatibil.",
   followers_entity: "Detectată automat de pe dispozitivul contului consolei, dacă este disponibilă.",
@@ -24883,6 +24917,7 @@ const $l = {
   carousel_coverflow_modifier: "Coverflow-tehosteen voimakkuus",
   carousel_coverflow_slide_shadows: "Näytä diojen varjot",
   scene_buttons_only: "Näytä vain skenepainikkeet",
+  scenes_per_row: "Skenejä per rivi",
   hours_to_show: "Historian tuntimäärä",
   points_per_hour: "Pisteitä tunnissa",
   aggregate_func: "Oletusarvoinen koontitapa",
@@ -25766,6 +25801,7 @@ const $l = {
   carousel_coverflow_modifier: "Kertoo Coverflow-kierron, välistyksen, syvyyden ja varjon voimakkuuden.",
   carousel_coverflow_slide_shadows: "Lisää suunnatut varjot valitusta sijainnista poispäin oleviin dioihin.",
   scene_buttons_only: "Piilottaa kortin nimen, ensisijaisen entiteettitiedon ja lisäsisällön, jolloin vain skenepainikkeet jäävät näkyviin.",
+  scenes_per_row: "Skenepainikkeiden enimmäismäärä yhdellä rivillä. Lisäskenet jatkuvat seuraavalle riville.",
   console_show_artwork: "Käyttää valittua pelikuvaa kortin taustana, kun kuva on saatavilla.",
   console_show_controls: "Näyttää virtapainikkeen, kun yhteensopiva etäohjain, mediasoitin tai kytkin on määritetty.",
   followers_entity: "Tunnistetaan automaattisesti konsolitilin laitteesta, jos saatavilla.",
@@ -26196,6 +26232,7 @@ const $l = {
   carousel_coverflow_modifier: "Kapak akışı yoğunluğu",
   carousel_coverflow_slide_shadows: "Slayt gölgelerini göster",
   scene_buttons_only: "Yalnızca sahne düğmelerini göster",
+  scenes_per_row: "Satır başına sahne",
   hours_to_show: "Geçmiş saatleri",
   points_per_hour: "Saat başına nokta",
   aggregate_func: "Varsayılan birleştirme",
@@ -27079,6 +27116,7 @@ const $l = {
   carousel_coverflow_modifier: "Kapak akışı dönüşünü, aralığını, derinliğini ve gölge gücünü çarpar.",
   carousel_coverflow_slide_shadows: "Seçili konumdan uzak slaytlara yönlü gölgeler ekler.",
   scene_buttons_only: "Kart adını, birincil varlık bilgilerini ve ek içeriği gizleyerek yalnızca sahne düğmelerini bırakır.",
+  scenes_per_row: "Tek satırdaki en fazla sahne düğmesi sayısı. Ek sahneler sonraki satırda devam eder.",
   console_show_artwork: "Varsa seçili oyun görselini kart arka planında kullanır.",
   console_show_controls: "Uyumlu uzaktan kumanda, medya oynatıcı veya anahtar yapılandırılmışsa güç denetimini gösterir.",
   followers_entity: "Varsa konsol hesabı cihazından otomatik bulunur.",
@@ -27509,6 +27547,7 @@ const $l = {
   carousel_coverflow_modifier: "Intensitas Coverflow",
   carousel_coverflow_slide_shadows: "Tampilkan bayangan slide",
   scene_buttons_only: "Hanya tampilkan tombol adegan",
+  scenes_per_row: "Adegan per baris",
   hours_to_show: "Rentang riwayat (jam)",
   points_per_hour: "Titik per jam",
   aggregate_func: "Agregasi default",
@@ -28379,6 +28418,7 @@ const $l = {
   carousel_coverflow_modifier: "Pengali rotasi, jarak, kedalaman, dan kekuatan bayangan Coverflow.",
   carousel_coverflow_slide_shadows: "Tambahkan bayangan arah pada slide yang jauh dari posisi terpilih.",
   scene_buttons_only: "Sembunyikan nama kartu, informasi entitas utama, dan konten pendukung agar hanya tombol adegan yang terlihat.",
+  scenes_per_row: "Jumlah maksimum tombol adegan dalam satu baris. Adegan tambahan dilanjutkan di baris berikutnya.",
   console_show_artwork: "Gunakan ilustrasi permainan terpilih sebagai latar kartu jika tersedia.",
   console_show_controls: "Tampilkan kontrol daya jika remote, pemutar media, atau sakelar yang kompatibel dikonfigurasi.",
   followers_entity: "Ditemukan otomatis dari perangkat akun konsol jika tersedia.",
@@ -28822,6 +28862,7 @@ const $l = {
   carousel_coverflow_modifier: "Интензивност на Coverflow",
   carousel_coverflow_slide_shadows: "Показване на сенките на слайдовете",
   scene_buttons_only: "Показване само на бутоните за сцени",
+  scenes_per_row: "Сцени на ред",
   hours_to_show: "Часове история",
   points_per_hour: "Точки на час",
   aggregate_func: "Агрегиране по подразбиране",
@@ -29705,6 +29746,7 @@ const $l = {
   carousel_coverflow_modifier: "Умножава завъртането, разстоянието, дълбочината и силата на сенките в Coverflow.",
   carousel_coverflow_slide_shadows: "Добавя насочени сенки към слайдовете извън избраната позиция.",
   scene_buttons_only: "Скрива името на картата, основната информация за обекта и пояснителното съдържание, така че да останат само бутоните за сцени.",
+  scenes_per_row: "Максимален брой бутони за сцени в един ред. Допълнителните сцени продължават на следващия ред.",
   console_show_artwork: "Използва изображението на избраната игра като фон на картата, когато е налично.",
   console_show_controls: "Показва контрол за захранването, когато е зададено съвместимо дистанционно, медиен плейър или превключвател.",
   followers_entity: "Открива се автоматично от устройството на профила в конзолата, когато е налично.",
@@ -30135,6 +30177,7 @@ const $l = {
   carousel_coverflow_modifier: "Coverflow 효과 강도",
   carousel_coverflow_slide_shadows: "슬라이드 그림자 표시",
   scene_buttons_only: "장면 버튼만 표시",
+  scenes_per_row: "행당 장면 수",
   hours_to_show: "기록 시간",
   points_per_hour: "시간당 데이터 점 수",
   aggregate_func: "기본 집계 방식",
@@ -31018,6 +31061,7 @@ const $l = {
   carousel_coverflow_modifier: "Coverflow 회전, 간격, 깊이 및 그림자 강도에 곱할 값입니다.",
   carousel_coverflow_slide_shadows: "선택 위치에서 벗어난 슬라이드에 방향 그림자를 적용합니다.",
   scene_buttons_only: "카드 이름, 기본 엔티티 정보 및 보조 콘텐츠를 숨기고 장면 버튼만 표시합니다.",
+  scenes_per_row: "한 행에 표시할 장면 버튼의 최대 개수입니다. 초과한 장면은 다음 행에 표시됩니다.",
   console_show_artwork: "사용할 수 있는 경우 선택한 게임 아트워크를 카드 배경으로 사용합니다.",
   console_show_controls: "호환되는 리모컨, 미디어 플레이어 또는 스위치가 설정되어 있으면 전원 제어를 표시합니다.",
   followers_entity: "사용할 수 있으면 콘솔 계정 기기에서 자동으로 검색합니다.",
@@ -31448,6 +31492,7 @@ const $l = {
   carousel_coverflow_modifier: "Ένταση Coverflow",
   carousel_coverflow_slide_shadows: "Εμφάνιση σκιών διαφανειών",
   scene_buttons_only: "Εμφάνιση μόνο των κουμπιών σκηνών",
+  scenes_per_row: "Σκηνές ανά γραμμή",
   hours_to_show: "Ώρες ιστορικού",
   points_per_hour: "Σημεία ανά ώρα",
   aggregate_func: "Προεπιλεγμένη συνάθροιση",
@@ -32331,6 +32376,7 @@ const $l = {
   carousel_coverflow_modifier: "Πολλαπλασιάζει την περιστροφή, την απόσταση, το βάθος και την ένταση της σκιάς του coverflow.",
   carousel_coverflow_slide_shadows: "Προσθέτει κατευθυντικές σκιές στις διαφάνειες που βρίσκονται μακριά από την επιλεγμένη θέση.",
   scene_buttons_only: "Αποκρύπτει το όνομα της κάρτας, τις πληροφορίες της κύριας οντότητας και το περιεχόμενο υποστήριξης, ώστε να παραμένουν μόνο τα κουμπιά σκηνών.",
+  scenes_per_row: "Μέγιστος αριθμός κουμπιών σκηνών σε μία γραμμή. Οι επιπλέον σκηνές συνεχίζονται στην επόμενη γραμμή.",
   console_show_artwork: "Χρησιμοποιεί το εξώφυλλο του επιλεγμένου παιχνιδιού ως φόντο της κάρτας όταν είναι διαθέσιμο.",
   console_show_controls: "Εμφανίζει χειριστήριο τροφοδοσίας όταν έχει ρυθμιστεί συμβατό τηλεχειριστήριο, πρόγραμμα αναπαραγωγής πολυμέσων ή διακόπτης.",
   followers_entity: "Εντοπίζεται αυτόματα από τη συσκευή λογαριασμού της κονσόλας, όταν είναι διαθέσιμη.",
@@ -32761,6 +32807,7 @@ const $l = {
   carousel_coverflow_modifier: "Cường độ Coverflow",
   carousel_coverflow_slide_shadows: "Hiển thị bóng trang chiếu",
   scene_buttons_only: "Chỉ hiển thị các nút cảnh",
+  scenes_per_row: "Số cảnh mỗi hàng",
   hours_to_show: "Số giờ lịch sử",
   points_per_hour: "Số điểm mỗi giờ",
   aggregate_func: "Hàm tổng hợp mặc định",
@@ -33644,6 +33691,7 @@ const $l = {
   carousel_coverflow_modifier: "Nhân độ xoay, khoảng cách, độ sâu và cường độ bóng của Coverflow.",
   carousel_coverflow_slide_shadows: "Thêm bóng có hướng cho trang chiếu cách xa vị trí được chọn.",
   scene_buttons_only: "Ẩn tên thẻ, thông tin thực thể chính và nội dung phụ để chỉ còn nút cảnh.",
+  scenes_per_row: "Số nút cảnh tối đa trên một hàng. Các cảnh bổ sung sẽ xuống hàng tiếp theo.",
   console_show_artwork: "Dùng ảnh trò chơi đã chọn làm nền thẻ nếu có.",
   console_show_controls: "Hiển thị điều khiển nguồn khi đã cấu hình remote, media player hoặc switch tương thích.",
   followers_entity: "Tự tìm từ thiết bị tài khoản máy chơi game nếu có.",
@@ -34074,6 +34122,7 @@ const $l = {
   carousel_coverflow_modifier: "Coverflow-intensitet",
   carousel_coverflow_slide_shadows: "Visa objektskuggor",
   scene_buttons_only: "Visa endast scenknappar",
+  scenes_per_row: "Scener per rad",
   hours_to_show: "Historiktimmar",
   points_per_hour: "Punkter per timme",
   aggregate_func: "Standardaggregering",
@@ -34957,6 +35006,7 @@ const $l = {
   carousel_coverflow_modifier: "Multiplicerar Coverflow-rotation, avstånd, djup och skuggstyrka.",
   carousel_coverflow_slide_shadows: "Lägger till riktade skuggor på objekt utanför den valda positionen.",
   scene_buttons_only: "Döljer kortnamn, information om huvudentiteten och kompletterande innehåll så att endast scenknappar återstår.",
+  scenes_per_row: "Maximalt antal scenknappar på en rad. Ytterligare scener fortsätter på nästa rad.",
   console_show_artwork: "Använder valt spelomslag som kortbakgrund när det är tillgängligt.",
   console_show_controls: "Visar en strömkontroll när en kompatibel fjärrkontroll, mediespelare eller omkopplare har valts.",
   followers_entity: $n,
@@ -35387,6 +35437,7 @@ carousel_coverflow_depth|Дубина Coverflow-а
 carousel_coverflow_modifier|Интензитет Coverflow-а
 carousel_coverflow_slide_shadows|Прикажи сенке слајдова
 scene_buttons_only|Прикажи само дугмад сцена
+scenes_per_row|Сцена по реду
 hours_to_show|Сати историје
 points_per_hour|Тачака по сату
 aggregate_func|Подразумевана агрегација
@@ -36274,6 +36325,7 @@ carousel_coverflow_depth|Удаљеност на којој се суседни 
 carousel_coverflow_modifier|Множи ротацију, размак, дубину и јачину сенке Coverflow-а.
 carousel_coverflow_slide_shadows|Додаје усмерене сенке слајдовима удаљеним од изабраног положаја.
 scene_buttons_only|Сакрива назив картице, главне информације ентитета и пратећи садржај, тако да остају само дугмад сцена.
+scenes_per_row|Максималан број дугмади сцена у једном реду. Додатне сцене настављају у следећем реду.
 console_show_artwork|Користи слику изабране игре као позадину картице када је доступна.
 console_show_controls|Приказује контролу напајања када је подешен компатибилан даљински управљач, медијски плејер или прекидач.
 followers_entity|Аутоматски се открива са уређаја налога конзоле ако је доступан.
@@ -36766,6 +36818,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   carousel_coverflow_modifier: "עוצמת אפקט מניפת העטיפות",
   carousel_coverflow_slide_shadows: "הצג צללי שקופיות",
   scene_buttons_only: "הצג לחצני סצנות בלבד",
+  scenes_per_row: "סצנות בשורה",
   hours_to_show: "שעות היסטוריה",
   points_per_hour: "נקודות לשעה",
   aggregate_func: "צבירה כברירת מחדל",
@@ -37649,6 +37702,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   carousel_coverflow_modifier: "מכפיל את הסיבוב, הריווח, העומק ועוצמת הצל במניפת העטיפות.",
   carousel_coverflow_slide_shadows: "מוסיף צללים כיווניים לשקופיות המרוחקות מהמיקום הנבחר.",
   scene_buttons_only: "מסתיר את שם הכרטיס, מידע הישות הראשית והתוכן המשלים, כך שרק לחצני הסצנות נשארים.",
+  scenes_per_row: "מספר מרבי של לחצני סצנות בשורה אחת. סצנות נוספות ממשיכות בשורה הבאה.",
   console_show_artwork: "משתמש בתמונת המשחק שנבחרה כרקע הכרטיס, אם היא זמינה.",
   console_show_controls: "מציג פקד הפעלה כשמוגדרים שלט, נגן מדיה או מתג תואמים.",
   followers_entity: "מתגלה אוטומטית ממכשיר חשבון הקונסולה, אם זמין.",
@@ -38079,6 +38133,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   carousel_coverflow_modifier: "شدة تأثير تتابع الأغلفة",
   carousel_coverflow_slide_shadows: "إظهار ظلال الشرائح",
   scene_buttons_only: "إظهار أزرار المشاهد فقط",
+  scenes_per_row: "عدد المشاهد في الصف",
   hours_to_show: "ساعات السجل",
   points_per_hour: "النقاط في الساعة",
   aggregate_func: "التجميع الافتراضي",
@@ -38962,6 +39017,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   carousel_coverflow_modifier: "يضاعف الدوران والتباعد والعمق وشدة الظلال في تأثير تتابع الأغلفة.",
   carousel_coverflow_slide_shadows: "يضيف ظلالًا اتجاهية للشرائح البعيدة عن الموضع المحدد.",
   scene_buttons_only: "يُخفي اسم البطاقة ومعلومات الكيان الأساسي والمحتوى الداعم، فلا تبقى إلا أزرار المشاهد.",
+  scenes_per_row: "الحد الأقصى لعدد أزرار المشاهد في الصف الواحد. تنتقل المشاهد الإضافية إلى الصف التالي.",
   console_show_artwork: "يستخدم صورة اللعبة المحددة كخلفية للبطاقة عند توفرها.",
   console_show_controls: "يُظهر عنصر تحكم في التشغيل عند ضبط كيان تحكم عن بُعد أو مشغّل وسائط أو مفتاح متوافق.",
   followers_entity: "يُكتشف تلقائيًا من الجهاز المرتبط بحساب منصة الألعاب عند توفره.",
@@ -39392,6 +39448,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   carousel_coverflow_modifier: "Intenzivnost učinka Coverflow",
   carousel_coverflow_slide_shadows: "Prikaži sence diapozitivov",
   scene_buttons_only: "Prikaži samo gumbe prizorov",
+  scenes_per_row: "Prizorov na vrstico",
   hours_to_show: "Število ur zgodovine",
   points_per_hour: "Točke na uro",
   aggregate_func: "Privzeto združevanje",
@@ -40275,6 +40332,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   carousel_coverflow_modifier: "Pomnoži zasuk, razmik, globino in jakost senc učinka Coverflow.",
   carousel_coverflow_slide_shadows: "Doda usmerjene sence diapozitivom, oddaljenim od izbranega položaja.",
   scene_buttons_only: "Skrije naziv kartice, informacije primarne entitete in dopolnilno vsebino, tako da ostanejo samo gumbi prizorov.",
+  scenes_per_row: "Največje število gumbov prizorov v eni vrstici. Dodatni prizori se nadaljujejo v naslednji vrstici.",
   console_show_artwork: "Uporabi izbrano sliko igre za ozadje kartice, kadar je na voljo.",
   console_show_controls: "Prikaže nadzor napajanja, ko je nastavljen združljiv daljinski upravljalnik, predvajalnik medijev ali stikalo.",
   followers_entity: "Samodejno odkrito iz naprave računa konzole, kadar je na voljo.",
@@ -40705,6 +40763,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   carousel_coverflow_modifier: "Intensitat de Coverflow",
   carousel_coverflow_slide_shadows: "Mostra les ombres dels elements",
   scene_buttons_only: "Mostra només els botons d'escena",
+  scenes_per_row: "Escenes per fila",
   hours_to_show: "Hores d'historial",
   points_per_hour: "Punts per hora",
   aggregate_func: "Agregació per defecte",
@@ -41588,6 +41647,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   carousel_coverflow_modifier: "Multiplica la rotació, la separació, la profunditat i la intensitat de les ombres de Coverflow.",
   carousel_coverflow_slide_shadows: "Afegeix ombres direccionals als elements allunyats de la posició seleccionada.",
   scene_buttons_only: "Amaga el nom de la targeta, la informació de l'entitat principal i el contingut de suport per deixar només els botons d'escena.",
+  scenes_per_row: "Nombre màxim de botons d'escena en una fila. Les escenes addicionals continuen a la fila següent.",
   console_show_artwork: "Utilitza la imatge del joc seleccionat com a fons de la targeta quan estigui disponible.",
   console_show_controls: "Mostra un control d'encesa quan es configura un comandament, reproductor multimèdia o interruptor compatible.",
   followers_entity: "Es detecta automàticament al dispositiu del compte de la consola quan està disponible.",
@@ -42018,6 +42078,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   carousel_coverflow_modifier: "Coverflow erőssége",
   carousel_coverflow_slide_shadows: "Elemárnyékok megjelenítése",
   scene_buttons_only: "Csak jelenetgombok megjelenítése",
+  scenes_per_row: "Jelenetek soronként",
   hours_to_show: "Előzmények óráinak száma",
   points_per_hour: "Óránkénti pontok száma",
   aggregate_func: "Alapértelmezett összesítés",
@@ -42901,6 +42962,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   carousel_coverflow_modifier: "A Coverflow elfordulásának, térközének, mélységének és árnyékerősségének szorzója.",
   carousel_coverflow_slide_shadows: "Irányfüggő árnyékot ad a kiválasztott helytől távolabbi elemeknek.",
   scene_buttons_only: "Elrejti a kártya nevét, az elsődleges entitás adatait és a kiegészítő tartalmat, hogy csak a jelenetgombok maradjanak.",
+  scenes_per_row: "Egy sorban megjelenő jelenetgombok legnagyobb száma. A további jelenetek a következő sorban folytatódnak.",
   console_show_artwork: "Ha elérhető, a kiválasztott játék képét használja kártyaháttérként.",
   console_show_controls: "Tápellátás-vezérlőt jelenít meg, ha kompatibilis távirányító, médialejátszó vagy kapcsoló van beállítva.",
   followers_entity: "Ha elérhető, automatikusan felismeri a konzolfiók eszközén.",
@@ -43540,6 +43602,7 @@ const vi = [
     carousel_coverflow_modifier: "Coverflow intensity",
     carousel_coverflow_slide_shadows: "Show slide shadows",
     scene_buttons_only: "Show scene buttons only",
+    scenes_per_row: "Scenes per row",
     hours_to_show: "History hours",
     points_per_hour: "Points per hour",
     aggregate_func: "Default aggregation",
@@ -44326,6 +44389,7 @@ const b = (e, t, a = {}) => {
   carousel_coverflow_modifier: "Multiplies coverflow rotation, spacing, depth, and shadow strength.",
   carousel_coverflow_slide_shadows: "Adds directional shadows to slides that are away from the selected position.",
   scene_buttons_only: "Hides the card name, primary entity information, and supporting content so only scene buttons remain.",
+  scenes_per_row: "Maximum number of scene buttons in one row. Additional scenes continue on the next row.",
   console_show_artwork: "Uses the selected game artwork as the card background when available.",
   console_show_controls: "Shows a power control when a compatible remote, media player, or switch is configured.",
   followers_entity: "Automatically discovered from the console account device when available.",
@@ -48295,6 +48359,7 @@ const Eo = [
         label: e.variantLabels?.[r] ?? r
       })))] : [],
       A("scene_buttons_only"),
+      E("scenes_per_row", 1, 24),
       ...ee()
     ] : e.upstreamId === "custom_card_trash" ? [
       v(["sensor", "calendar"]),
@@ -52223,6 +52288,7 @@ const du = fe`
   .sparkline.is-filled polyline { stroke: var(--sparkline-color, rgb(var(--ulm-red))); }
   .sparkline.is-filled polygon { fill: color-mix(in srgb, var(--sparkline-fill-color, rgb(var(--ulm-red))) 18%, transparent); }
   .metric-extremes { display: flex; justify-content: space-between; color: var(--secondary-text-color); font-size: 11px; }
+  .ulm-scenes .scene-grid { display: grid; grid-template-columns: repeat(var(--scenes-per-row, 6), minmax(52px, 1fr)); }
   .ulm-scenes { padding: 12px; }
   .scene-grid { display: flex; min-width: 0; gap: 8px; overflow-x: auto; padding: 4px 4px 10px; margin: -4px -4px -10px; }
   .scene-button { display: flex; min-width: 52px; flex: 1; flex-direction: column; align-items: center; gap: 6px; border: 0; border-radius: 25px; background: var(--addition-raised-background); color: var(--primary-text-color); box-shadow: var(--addition-raised-shadow); }
@@ -53585,26 +53651,26 @@ const D = (e, t) => e?.attributes[t], Nu = (e, t) => b(e, t < 12 ? "ui.greeting_
     ...a.service_data ?? {}
   }) : r === "script" ? t.service("script", o || "turn_on", { entity_id: a.entity, ...a.service_data ?? {} }) : t.service("homeassistant", "toggle", { entity_id: a.entity, ...a.service_data ?? {} });
 }, Gu = (e) => {
-  const t = (e.config.scene_items?.length ? e.config.scene_items : (e.config.entities?.length ? e.config.entities : e.config.entity ? [e.config.entity] : []).map((s) => ({ entity: s }))).filter((s) => s.entity), a = e.config.scene_buttons_only === !0;
+  const t = (e.config.scene_items?.length ? e.config.scene_items : (e.config.entities?.length ? e.config.entities : e.config.entity ? [e.config.entity] : []).map((l) => ({ entity: l }))).filter((l) => l.entity), a = e.config.scene_buttons_only === !0;
   a && (e.presentation.rendered = !0);
-  const n = e.descriptor.upstreamId === "card_scenes" && e.config.variant === "scene-grid", i = t.slice(0, n ? 5 : 6), r = e.config.collapse_entity ? e.hass.states[e.config.collapse_entity] : void 0, o = !a && (e.config.collapsed === !0 || r?.state === "on");
+  const n = e.descriptor.upstreamId === "card_scenes" && e.config.variant === "scene-grid", i = t, r = Math.max(1, Math.min(24, Math.floor(Number(e.config.scenes_per_row)) || (n ? 5 : 6))), o = e.config.collapse_entity ? e.hass.states[e.config.collapse_entity] : void 0, s = !a && (e.config.collapsed === !0 || o?.state === "on");
   return e.actionSurface(`ulm-scenes ${n ? "source-scene-grid" : "scene-pills"} ${e.descriptor.upstreamId === "card_scenes" ? "ulm-source-scenes" : ""} ${a ? "scene-buttons-only" : ""}`, _`
-    ${o ? m : _`<div class="scene-grid">${i.map((s) => {
-    const l = e.hass.states[s.entity], d = s.active_state ? l?.state === s.active_state : s.state ? l?.state === s.state : Ie.has(l?.state ?? ""), c = Pe(s.color, "rgb(var(--ulm-purple))"), p = s.icon_type === "entity-picture" ? D(l, "entity_picture") : void 0, h = s.name || s.label || pe({ entity: s.entity }, l, e.hass);
+    ${s ? m : _`<div class="scene-grid" style=${`--scenes-per-row:${r}`}>${i.map((l) => {
+    const d = e.hass.states[l.entity], c = l.active_state ? d?.state === l.active_state : l.state ? d?.state === l.state : Ie.has(d?.state ?? ""), p = Pe(l.color, "rgb(var(--ulm-purple))"), h = l.icon_type === "entity-picture" ? D(d, "entity_picture") : void 0, g = l.name || l.label || pe({ entity: l.entity }, d, e.hass);
     return _`
-      <button aria-label=${h} title=${h} @pointerdown=${(g) => g.stopPropagation()} @click=${(g) => {
-      if (g.stopPropagation(), n && !s.tap_action) {
-        const y = s.entity.split(".", 1)[0];
+      <button aria-label=${g} title=${g} @pointerdown=${(y) => y.stopPropagation()} @click=${(y) => {
+      if (y.stopPropagation(), n && !l.tap_action) {
+        const k = l.entity.split(".", 1)[0];
         e.service(
-          y === "automation" ? "automation" : "homeassistant",
-          y === "automation" ? "trigger" : "turn_on",
-          { entity_id: s.entity }
+          k === "automation" ? "automation" : "homeassistant",
+          k === "automation" ? "trigger" : "turn_on",
+          { entity_id: l.entity }
         );
       } else
-        Wu(g, e, s);
-    }} style=${`--item-color:${c}`} class="scene-button ${d ? "is-active" : ""}">
-        <i>${p ? _`<span class="scene-entity-picture" style=${Ee({ backgroundImage: ot(p) })}></span>` : _`<ha-icon .icon=${s.icon || l?.attributes.icon || "mdi:palette"}></ha-icon>`}</i>
-        <span>${h}</span>
+        Wu(y, e, l);
+    }} style=${`--item-color:${p}`} class="scene-button ${c ? "is-active" : ""}">
+        <i>${h ? _`<span class="scene-entity-picture" style=${Ee({ backgroundImage: ot(h) })}></span>` : _`<ha-icon .icon=${l.icon || d?.attributes.icon || "mdi:palette"}></ha-icon>`}</i>
+        <span>${g}</span>
       </button>`;
   })}</div>`}
   `);

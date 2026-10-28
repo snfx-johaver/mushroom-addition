@@ -587,6 +587,7 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
           label: item.variantLabels?.[variant] ?? variant,
         })))] : []),
         toggle("scene_buttons_only"),
+        number("scenes_per_row", 1, 24),
         ...presentation(),
       ]
   : item.upstreamId === "custom_card_trash"

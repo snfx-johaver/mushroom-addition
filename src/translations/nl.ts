@@ -152,6 +152,7 @@ export const dutchLabels: Record<string, string> = {
   carousel_coverflow_modifier: "Coverflowintensiteit",
   carousel_coverflow_slide_shadows: "Diaschaduwen tonen",
   scene_buttons_only: "Alleen scèneknoppen tonen",
+  scenes_per_row: "Scènes per rij",
   hours_to_show: "Aantal uren geschiedenis",
   points_per_hour: "Punten per uur",
   aggregate_func: "Standaardaggregatie",
@@ -728,6 +729,7 @@ export const dutchHelpers: Record<string, string> = {
   carousel_coverflow_modifier: "Vermenigvuldigt de coverflowrotatie, afstand, diepte en schaduwsterkte.",
   carousel_coverflow_slide_shadows: "Voegt richtingsafhankelijke schaduwen toe aan dia's buiten de geselecteerde positie.",
   scene_buttons_only: "Verbergt kaartnaam, primaire entiteitsinformatie en aanvullende inhoud, zodat alleen scèneknoppen overblijven.",
+  scenes_per_row: "Maximaal aantal scèneknoppen op één rij. Extra scènes gaan door op de volgende rij.",
   console_show_artwork: "Gebruikt de geselecteerde spelafbeelding als kaartachtergrond, indien beschikbaar.",
   console_show_controls: "Toont een aan-uitbediening wanneer een compatibele afstandsbediening, mediaspeler of schakelaar is ingesteld.",
   ...Object.fromEntries(["followers_entity", "following_entity", "friends_entity"].map(key => [

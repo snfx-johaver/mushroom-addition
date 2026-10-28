@@ -187,6 +187,7 @@ carousel_coverflow_depth|Дубина Coverflow-а
 carousel_coverflow_modifier|Интензитет Coverflow-а
 carousel_coverflow_slide_shadows|Прикажи сенке слајдова
 scene_buttons_only|Прикажи само дугмад сцена
+scenes_per_row|Сцена по реду
 hours_to_show|Сати историје
 points_per_hour|Тачака по сату
 aggregate_func|Подразумевана агрегација
@@ -1080,6 +1081,7 @@ carousel_coverflow_depth|Удаљеност на којој се суседни 
 carousel_coverflow_modifier|Множи ротацију, размак, дубину и јачину сенке Coverflow-а.
 carousel_coverflow_slide_shadows|Додаје усмерене сенке слајдовима удаљеним од изабраног положаја.
 scene_buttons_only|Сакрива назив картице, главне информације ентитета и пратећи садржај, тако да остају само дугмад сцена.
+scenes_per_row|Максималан број дугмади сцена у једном реду. Додатне сцене настављају у следећем реду.
 console_show_artwork|Користи слику изабране игре као позадину картице када је доступна.
 console_show_controls|Приказује контролу напајања када је подешен компатибилан даљински управљач, медијски плејер или прекидач.
 followers_entity|Аутоматски се открива са уређаја налога конзоле ако је доступан.

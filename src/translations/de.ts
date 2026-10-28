@@ -183,6 +183,7 @@ export const germanLabels: Record<string, string> = {
   carousel_coverflow_modifier: "Coverflow-Stärke",
   carousel_coverflow_slide_shadows: "Folienschatten anzeigen",
   scene_buttons_only: "Nur Szenenschaltflächen anzeigen",
+  scenes_per_row: "Szenen pro Zeile",
   hours_to_show: "Verlaufsstunden",
   points_per_hour: "Datenpunkte pro Stunde",
   aggregate_func: "Standardaggregation",

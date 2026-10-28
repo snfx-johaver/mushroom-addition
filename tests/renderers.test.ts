@@ -676,6 +676,15 @@ describe("family renderers", () => {
     expect(markup).not.toContain("--color-deep-purple");
   });
 
+  it("wraps scene buttons into rows of scenes_per_row", async () => {
+    const scene_items = Array.from({ length: 12 }, (_, i) => ({ entity: `scene.s${i}` }));
+    const markup = await render("mushroom-addition-card-scenes", {
+      type: "custom:mushroom-addition-card-scenes", scene_buttons_only: true, scenes_per_row: 4, scene_items,
+    });
+    expect(markup).toContain("--scenes-per-row:4");
+    expect((markup.match(/class="scene-button/g) ?? []).length).toBe(12);
+  });
+
   it("preserves complete scene names for accessible labels and tooltips", async () => {
     const name = "Evening relaxation lighting across the entire downstairs area";
     const markup = await render("mushroom-addition-card-scenes", {

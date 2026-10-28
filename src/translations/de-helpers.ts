@@ -306,6 +306,7 @@ export const germanHelpers: Record<string, string> = {
   carousel_coverflow_modifier: "Drehung, Abstand, Tiefe und Schattenstärke des Coverflows multiplizieren.",
   carousel_coverflow_slide_shadows: "Gerichtete Schatten auf Folien hinzufügen, die nicht an der ausgewählten Position liegen.",
   scene_buttons_only: "Kartenname, primäre Entitätsinformationen und Zusatzinhalte ausblenden, sodass nur Szenenschaltflächen bleiben.",
+  scenes_per_row: "Maximale Anzahl an Szenenschaltflächen in einer Zeile. Weitere Szenen werden in der nächsten Zeile fortgesetzt.",
   console_show_artwork: "Verfügbares Bildmaterial des ausgewählten Spiels als Kartenhintergrund verwenden.",
   console_show_controls: "Eine Ein-/Aus-Steuerung anzeigen, wenn eine kompatible Fernbedienung, ein Mediaplayer oder Schalter konfiguriert ist.",
   followers_entity: "Wird, sofern verfügbar, automatisch am Konsolenkontogerät erkannt.",

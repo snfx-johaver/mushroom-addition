@@ -383,11 +383,12 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
   const buttonsOnly = ctx.config.scene_buttons_only === true;
   if (buttonsOnly) ctx.presentation.rendered = true;
   const sourceGrid = ctx.descriptor.upstreamId === "card_scenes" && ctx.config.variant === "scene-grid";
-  const visibleItems = sceneItems.slice(0, sourceGrid ? 5 : 6);
+  const visibleItems = sceneItems;
+  const perRow = Math.max(1, Math.min(24, Math.floor(Number(ctx.config.scenes_per_row)) || (sourceGrid ? 5 : 6)));
   const collapseEntity = ctx.config.collapse_entity ? ctx.hass.states[ctx.config.collapse_entity] : undefined;
   const collapsed = !buttonsOnly && (ctx.config.collapsed === true || collapseEntity?.state === "on");
   return ctx.actionSurface(`ulm-scenes ${sourceGrid ? "source-scene-grid" : "scene-pills"} ${ctx.descriptor.upstreamId === "card_scenes" ? "ulm-source-scenes" : ""} ${buttonsOnly ? "scene-buttons-only" : ""}`, html`
-    ${collapsed ? nothing : html`<div class="scene-grid">${visibleItems.map((item) => {
+    ${collapsed ? nothing : html`<div class="scene-grid" style=${`--scenes-per-row:${perRow}`}>${visibleItems.map((item) => {
       const entity = ctx.hass.states[item.entity];
       const active = item.active_state
         ? entity?.state === item.active_state

@@ -180,6 +180,7 @@ export const sharedStyles = css`
   .sparkline.is-filled polyline { stroke: var(--sparkline-color, rgb(var(--ulm-red))); }
   .sparkline.is-filled polygon { fill: color-mix(in srgb, var(--sparkline-fill-color, rgb(var(--ulm-red))) 18%, transparent); }
   .metric-extremes { display: flex; justify-content: space-between; color: var(--secondary-text-color); font-size: 11px; }
+  .ulm-scenes .scene-grid { display: grid; grid-template-columns: repeat(var(--scenes-per-row, 6), minmax(52px, 1fr)); }
   .ulm-scenes { padding: 12px; }
   .scene-grid { display: flex; min-width: 0; gap: 8px; overflow-x: auto; padding: 4px 4px 10px; margin: -4px -4px -10px; }
   .scene-button { display: flex; min-width: 52px; flex: 1; flex-direction: column; align-items: center; gap: 6px; border: 0; border-radius: 25px; background: var(--addition-raised-background); color: var(--primary-text-color); box-shadow: var(--addition-raised-shadow); }

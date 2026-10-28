@@ -190,6 +190,7 @@ export const frenchLabels: Record<string, string> = {
   carousel_coverflow_modifier: "Intensité Coverflow",
   carousel_coverflow_slide_shadows: "Afficher les ombres des diapositives",
   scene_buttons_only: "Afficher uniquement les boutons de scène",
+  scenes_per_row: "Scènes par ligne",
   hours_to_show: "Heures d’historique",
   points_per_hour: "Points par heure",
   aggregate_func: "Agrégation par défaut",
@@ -1066,6 +1067,7 @@ export const frenchHelpers: Record<string, string> = {
   carousel_coverflow_modifier: "Multiplie la rotation, l’espacement, la profondeur et l’intensité des ombres Coverflow.",
   carousel_coverflow_slide_shadows: "Ajoute des ombres directionnelles aux diapositives éloignées de la position sélectionnée.",
   scene_buttons_only: "Masque le nom de la carte, les informations de l’entité principale et le contenu complémentaire pour ne conserver que les boutons de scène.",
+  scenes_per_row: "Nombre maximal de boutons de scène sur une ligne. Les scènes supplémentaires passent à la ligne suivante.",
   console_show_artwork: "Utilise l’illustration du jeu sélectionné comme fond de carte lorsqu’elle est disponible.",
   console_show_controls: "Affiche une commande d’alimentation lorsqu’une télécommande, un lecteur multimédia ou un interrupteur compatible est configuré.",
   ...Object.fromEntries(["followers_entity", "following_entity", "friends_entity"].map(key =>

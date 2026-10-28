@@ -280,6 +280,7 @@ export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, P
   entities?: string[];
   scene_items?: AdditionItemConfig[];
   scene_buttons_only?: boolean;
+  scenes_per_row?: number;
   room_sensors?: AdditionItemConfig[];
   room_status?: RoomStatusConfig[];
   room_light_entity?: string;
