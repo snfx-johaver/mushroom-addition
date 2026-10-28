@@ -230,7 +230,9 @@ const activeStateEntityDomains = new Set([
 
 export const hasOnOffState = (entity?: HassEntity): boolean => {
   if (!entity) return false;
-  return activeStateEntityDomains.has(entity.entity_id.split(".", 1)[0]) || ["on", "off"].includes(entity.state);
+  const domain = entity.entity_id.split(".", 1)[0];
+  if (["script", "scene", "button"].includes(domain)) return false;
+  return activeStateEntityDomains.has(domain) || ["on", "off"].includes(entity.state);
 };
 
 export const migrateLegacyConfig = (config: AdditionConfig): AdditionConfig => {

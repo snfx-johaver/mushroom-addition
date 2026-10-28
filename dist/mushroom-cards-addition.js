@@ -44940,7 +44940,11 @@ const b = (e, t, a = {}) => {
   "vacuum",
   "valve",
   "water_heater"
-]), zo = (e) => e ? td.has(e.entity_id.split(".", 1)[0]) || ["on", "off"].includes(e.state) : !1, ad = (e) => {
+]), zo = (e) => {
+  if (!e) return !1;
+  const t = e.entity_id.split(".", 1)[0];
+  return ["script", "scene", "button"].includes(t) ? !1 : td.has(t) || ["on", "off"].includes(e.state);
+}, ad = (e) => {
   const t = tl(fo(wo(e))), a = t.primary_entity || ed.map((r) => t[r]).find((r) => typeof r == "string"), n = (r) => {
     if (typeof r == "string") return r;
     if (r && typeof r == "object" && "entity_id" in r && typeof r.entity_id == "string")
