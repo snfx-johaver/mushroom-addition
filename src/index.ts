@@ -100,7 +100,7 @@ for (const item of CATALOG) {
     type: item.tag,
     name: `Mushroom Addition: ${item.name}`,
     description: item.description,
-    preview: true,
+    preview: false,
     documentationURL: "https://github.com/snfx-johaver/mushroom-addition",
   });
 }

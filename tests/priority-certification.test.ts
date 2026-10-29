@@ -212,7 +212,8 @@ describe("priority local certification", () => {
         getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
       };
       const config = constructor.getStubConfig(hass(), Object.keys(baseStates), []);
-      expect(window.customCards?.some((registration) => registration.type === item.tag && registration.preview)).toBe(true);
+      expect(window.customCards?.some((registration) =>
+        registration.type === item.tag && registration.preview === false)).toBe(true);
       expect(config).toMatchObject({
         type: `custom:${item.tag}`,
         entity: expectedEntity,

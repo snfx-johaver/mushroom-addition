@@ -25,7 +25,9 @@ of duplicate picker entries. ${UPSTREAM_VARIANTS.length} popup templates and
 ${SOURCE_ONLY_HELPERS.length} implementation helpers are inventoried but are not
 public registrations.
 
-All picker entries use the prefix **Mushroom Addition:** before the card name.
+All picker entries use the prefix **Mushroom Addition:** before the card name
+and disable picker previews so Home Assistant can browse the full catalog
+without instantiating every custom card.
 
 | Card name | Public ID | Category | Addition type | Family | UI variants | Covered source IDs |
 |---|---|---|---|---|---|---|
