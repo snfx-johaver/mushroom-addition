@@ -313,7 +313,7 @@ export const italianLabels: Record<string, string> = {
   show_color_temp_control: "Controllo temperatura colore",
   show_color_control: "Controllo colore",
   full_collapse_controls: "Comprimi tutti i controlli",
-  lights_in_group: "Luci in questo gruppo",
+  lights_in_group: "Luci",
   show_extra_pollen: "Sensori di polline aggiuntivi",
   datetime_single_row: "Riga singola",
   datetime_manual_entry: "Digita l'ora manualmente",

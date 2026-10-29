@@ -312,7 +312,7 @@ export const koreanLabels: Record<string, string> = {
   show_color_temp_control: "색온도 조절",
   show_color_control: "색상 조절",
   full_collapse_controls: "컨트롤 완전 접기",
-  lights_in_group: "이 그룹의 조명",
+  lights_in_group: "조명",
   show_extra_pollen: "추가 꽃가루 센서",
   datetime_single_row: "한 줄",
   datetime_manual_entry: "시간 직접 입력",

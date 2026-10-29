@@ -313,7 +313,7 @@ export const vietnameseLabels: Record<string, string> = {
   show_color_temp_control: "Điều khiển nhiệt độ màu",
   show_color_control: "Điều khiển màu",
   full_collapse_controls: "Thu gọn toàn bộ điều khiển",
-  lights_in_group: "Đèn trong nhóm này",
+  lights_in_group: "Đèn",
   show_extra_pollen: "Cảm biến phấn hoa bổ sung",
   datetime_single_row: "Một hàng",
   datetime_manual_entry: "Nhập giờ thủ công",

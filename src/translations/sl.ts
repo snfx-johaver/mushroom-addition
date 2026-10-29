@@ -313,7 +313,7 @@ export const slovenianLabels: Record<string, string> = {
   show_color_temp_control: "Nadzor barvne temperature",
   show_color_control: "Nadzor barve",
   full_collapse_controls: "Popolno strnjevanje kontrolnikov",
-  lights_in_group: "Luči v tej skupini",
+  lights_in_group: "Luči",
   show_extra_pollen: "Dodatni senzorji cvetnega prahu",
   datetime_single_row: "Ena vrstica",
   datetime_manual_entry: "Ročni vnos časa",

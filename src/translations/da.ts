@@ -313,7 +313,7 @@ export const danishLabels: Record<string, string> = {
   show_color_temp_control: "Farvetemperaturstyring",
   show_color_control: "Farvestyring",
   full_collapse_controls: "Fuld skjulning af kontroller",
-  lights_in_group: "Lys i denne gruppe",
+  lights_in_group: "Lys",
   show_extra_pollen: "Ekstra pollensensorer",
   datetime_single_row: "Enkelt række",
   datetime_manual_entry: "Skriv tid manuelt",

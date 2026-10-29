@@ -313,7 +313,7 @@ export const ukrainianLabels: Record<string, string> = {
   show_color_temp_control: "Керування температурою кольору",
   show_color_control: "Керування кольором",
   full_collapse_controls: "Повне згортання елементів керування",
-  lights_in_group: "Лампи в цій групі",
+  lights_in_group: "Лампи",
   show_extra_pollen: "Додаткові датчики пилку",
   datetime_single_row: "Один рядок",
   datetime_manual_entry: "Ввести час вручну",

@@ -313,7 +313,7 @@ export const russianLabels: Record<string, string> = {
   show_color_temp_control: "Регулировка цветовой температуры",
   show_color_control: "Регулировка цвета",
   full_collapse_controls: "Полностью скрывать элементы управления",
-  lights_in_group: "Лампы в этой группе",
+  lights_in_group: "Лампы",
   show_extra_pollen: "Дополнительные датчики пыльцы",
   datetime_single_row: "Одна строка",
   datetime_manual_entry: "Ввод времени вручную",

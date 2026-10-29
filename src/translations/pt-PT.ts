@@ -313,7 +313,7 @@ export const europeanPortugueseLabels: Record<string, string> = {
   "show_color_temp_control": "Controlo de temperatura de cor",
   "show_color_control": "Controlo de cor",
   "full_collapse_controls": "Recolher todos os controlos",
-  "lights_in_group": "Luzes neste grupo",
+  "lights_in_group": "Luzes",
   "show_extra_pollen": "Sensores de pólen adicionais",
   "datetime_single_row": "Linha única",
   "datetime_manual_entry": "Escrever a hora manualmente",

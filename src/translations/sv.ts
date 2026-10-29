@@ -312,7 +312,7 @@ export const swedishLabels: Record<string, string> = {
   show_color_temp_control: "Färgtemperaturreglage",
   show_color_control: "Färgreglage",
   full_collapse_controls: "Fullständig komprimering av kontroller",
-  lights_in_group: "Lampor i den här gruppen",
+  lights_in_group: "Lampor",
   show_extra_pollen: "Extra pollensensorer",
   datetime_single_row: "Enkel rad",
   datetime_manual_entry: "Skriv tid manuellt",

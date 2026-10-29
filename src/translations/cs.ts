@@ -312,7 +312,7 @@ export const czechLabels: Record<string, string> = {
   show_color_temp_control: "Ovládání teploty barvy",
   show_color_control: "Ovládání barvy",
   full_collapse_controls: "Úplné sbalení ovládání",
-  lights_in_group: "Světla v této skupině",
+  lights_in_group: "Světla",
   show_extra_pollen: "Další senzory pylu",
   datetime_single_row: "Jeden řádek",
   datetime_manual_entry: "Ruční zadání času",

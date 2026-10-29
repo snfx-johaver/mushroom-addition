@@ -277,7 +277,7 @@ export const dutchLabels: Record<string, string> = {
   show_color_temp_control: "Kleurtemperatuurregeling",
   show_color_control: "Kleurregeling",
   full_collapse_controls: "Alle bediening inklappen",
-  lights_in_group: "Lampen in deze groep",
+  lights_in_group: "Lampen",
   show_extra_pollen: "Extra pollensensoren",
   datetime_single_row: "Eén rij",
   datetime_manual_entry: "Tijd handmatig typen",

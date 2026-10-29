@@ -313,7 +313,7 @@ export const bulgarianLabels: Record<string, string> = {
   show_color_temp_control: "Контрол на цветната температура",
   show_color_control: "Контрол на цвета",
   full_collapse_controls: "Пълно свиване на контролите",
-  lights_in_group: "Лампи в тази група",
+  lights_in_group: "Лампи",
   show_extra_pollen: "Допълнителни сензори за прашец",
   datetime_single_row: "Един ред",
   datetime_manual_entry: "Ръчно въвеждане на часа",
