@@ -1,3 +1,4 @@
+import { openEditorSections } from "./editor-helpers";
 import { afterEach, describe, expect, it } from "vitest";
 import "../src/editor";
 import type { MushroomAdditionEditor } from "../src/editor";
@@ -12,12 +13,13 @@ const makeHass = (): HomeAssistant => ({
   callService: async () => undefined,
 });
 
-async function createEditor(config: AdditionConfig, hass = makeHass()) {
+async function createEditor(config: AdditionConfig, hass = makeHass(), open = true) {
   const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
   editor.hass = hass;
   editor.setConfig(config);
   document.body.append(editor);
   await editor.updateComplete;
+  if (open) await openEditorSections(editor);
   return editor;
 }
 
@@ -30,6 +32,50 @@ const flatten = (schema: EditorField[]): EditorField[] =>
 afterEach(() => document.body.replaceChildren());
 
 describe("editor schema caching", () => {
+  it("only mounts controls for open sections and releases them when collapsed", async () => {
+    const config: AdditionConfig = {
+      type: "custom:mushroom-addition-custom-card-light",
+      carousel_items: Array.from({ length: 15 }, (_, i) => ({ entity: `scene.example_${i}` })),
+    };
+    const editor = await createEditor(config, makeHass(), false);
+    const changes: AdditionConfig[] = [];
+    editor.addEventListener("config-changed", event => changes.push((event as CustomEvent<{ config: AdditionConfig }>).detail.config));
+    expect(forms(editor)).toHaveLength(0);
+    expect(editor.shadowRoot!.querySelectorAll("ha-selector")).toHaveLength(0);
+    const panel = [...editor.shadowRoot!.querySelectorAll("ha-expansion-panel")]
+      .find(element => element.textContent?.includes("Features"))!;
+    const expand = async (expanded: boolean) => {
+      panel.dispatchEvent(new CustomEvent("expanded-will-change", { detail: { expanded } }));
+      await editor.updateComplete;
+    };
+    await expand(true);
+    expect(editor.shadowRoot!.querySelectorAll(".carousel-item-row")).toHaveLength(15);
+    expect(forms(editor)).toHaveLength(1);
+    const form = forms(editor)[0];
+    form.dispatchEvent(new CustomEvent("expanded-will-change", { bubbles: true, detail: { expanded: false } }));
+    await editor.updateComplete;
+    expect(forms(editor)).toHaveLength(1);
+    await expand(false);
+    for (let i = 0; i < 5; i++) {
+      editor.hass = { ...makeHass() };
+      await editor.updateComplete;
+      expect(forms(editor)).toHaveLength(0);
+      expect(editor.shadowRoot!.querySelectorAll("ha-selector")).toHaveLength(0);
+    }
+    await expand(true);
+    expect(editor.shadowRoot!.querySelectorAll(".carousel-item-row")).toHaveLength(15);
+    expect(forms(editor)[0].hass).toBe(editor.hass);
+    expect(changes).toHaveLength(0);
+    forms(editor)[0].dispatchEvent(new CustomEvent("value-changed", {
+      bubbles: true, composed: true, detail: { value: { ...config, light_show_members: false } },
+    }));
+    await editor.updateComplete;
+    await expand(false);
+    await expand(true);
+    expect(changes.at(-1)).toMatchObject({ carousel_items: config.carousel_items, light_show_members: false });
+    expect(editor.shadowRoot!.querySelectorAll(".carousel-item-row")).toHaveLength(15);
+  });
+
   it("retains schema references during unrelated HA updates while forwarding fresh hass", async () => {
     const editor = await createEditor({ type: "custom:mushroom-addition-card-battery" });
     const original = forms(editor).map(form => form.schema);

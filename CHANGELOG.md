@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Card editors now create controls only for expanded sections and release them when collapsed, avoiding hidden scene selectors and forms processing every Home Assistant state update.
+
 - Astronomy card: reuse a single Moon-sensor discovery index per Home Assistant state snapshot, including missing sensors, rather than repeatedly scanning all entities for each displayed metric. Reuse the time formatter within each render.
 - Fixed relative-time labels breaking subsequent card updates after Home Assistant replaced their text. Light Area controls now expand normally when a light turns on; the same fix applies to room cards and primary/secondary last-changed/updated labels.
 - Cards showing last changed/updated now display relative time (for example 4 hours ago) like Home Assistant, instead of a full date.

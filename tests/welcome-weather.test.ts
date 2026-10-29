@@ -1,3 +1,4 @@
+import { openEditorSections } from "./editor-helpers";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import "../src/index";
 import { CATALOG } from "../src/catalog";
@@ -115,7 +116,7 @@ describe("Welcome weather toolbar", () => {
     for (const field of fields) expect(schema.some(item => item.name === field), field).toBe(true);
     const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
     editor.hass = hass; editor.setConfig(config);
-    document.body.append(editor); await editor.updateComplete;
+    document.body.append(editor); await openEditorSections(editor);
     const forms = [...editor.shadowRoot!.querySelectorAll<HTMLElement & {
       schema: EditorField[]; data: AdditionConfig; computeLabel: (schema: { name: string }) => string;
     }>("ha-form")];

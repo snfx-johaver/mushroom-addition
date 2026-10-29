@@ -1,3 +1,4 @@
+import { openEditorSections } from "./editor-helpers";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import "../src/index";
 import { CATALOG } from "../src/catalog";
@@ -50,7 +51,7 @@ describe("Stock Card", () => {
 
   it("uses the standard editor sections and persists all stock settings through config-changed", async () => {
     const e = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
-    e.hass = makeHass(); e.setConfig({ type }); document.body.append(e); await e.updateComplete;
+    e.hass = makeHass(); e.setConfig({ type }); document.body.append(e); await openEditorSections(e);
     expect([...e.shadowRoot!.querySelectorAll(".section-header")].map(el => el.textContent?.trim()))
       .toEqual(["Context", "Content", "Layout", "Interactions", "Features"]);
     const changes = vi.fn(); e.addEventListener("config-changed", changes);
@@ -59,7 +60,7 @@ describe("Stock Card", () => {
     e.shadowRoot!.querySelector("ha-form")!.dispatchEvent(new CustomEvent("value-changed", {
       detail: { value: settings }, bubbles: true, composed: true,
     }));
-    await e.updateComplete;
+    await openEditorSections(e);
     expect(changes.mock.calls[0][0].detail.config).toMatchObject({ type, ...settings });
   });
 
@@ -203,7 +204,7 @@ describe("Stock Card", () => {
     const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
     editor.hass = makeHass();
     editor.setConfig({ type, stock_change_attribute: "", stock_volume_entity: "sensor.volume" });
-    document.body.append(editor); await editor.updateComplete;
+    document.body.append(editor); await openEditorSections(editor);
     const form = editor.shadowRoot!.querySelector("ha-form") as HTMLElement & { data: AdditionConfig };
     expect(form.data.stock_change_attribute).toBe("");
     expect(form.data.stock_volume_attribute).toBe("");
@@ -313,14 +314,14 @@ describe("Stock Card", () => {
 
   it("persists Yahoo source, five-year range and metric overrides using the normal editor", async () => {
     const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
-    editor.hass = makeHass(); editor.setConfig({ type }); document.body.append(editor); await editor.updateComplete;
+    editor.hass = makeHass(); editor.setConfig({ type }); document.body.append(editor); await openEditorSections(editor);
     const changed = vi.fn(); editor.addEventListener("config-changed", changed);
     const settings = { stock_source: "yahoo", stock_symbol: "MSFT", stock_range: "5Y",
       stock_market_cap_entity: "sensor.cap", stock_market_cap_attribute: "", stock_show_volume: true };
     editor.shadowRoot!.querySelector("ha-form")!.dispatchEvent(new CustomEvent("value-changed", {
       detail: { value: settings }, bubbles: true, composed: true,
     }));
-    await editor.updateComplete;
+    await openEditorSections(editor);
     expect(changed.mock.calls[0][0].detail.config).toMatchObject(settings);
     expect([...editor.shadowRoot!.querySelectorAll(".section-header")].map(el => el.textContent?.trim()))
       .toEqual(["Context", "Content", "Layout", "Interactions", "Features"]);

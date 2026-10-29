@@ -1,3 +1,4 @@
+import { openEditorSections } from "./editor-helpers";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import "../src/index";
 import { MushroomRemote, remoteCommand, resolveRemoteEntities } from "../src/remote-card";
@@ -135,13 +136,13 @@ describe("Remote Card", () => {
   it("provides compact graphical section ordering and custom button configuration", async () => {
     const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
     editor.hass = makeHass(); editor.setConfig({ type, entity: "media_player.tv", remote_sections: ["power", "navigation"] });
-    document.body.append(editor); await editor.updateComplete;
+    document.body.append(editor); await openEditorSections(editor);
     const changed = vi.fn(); editor.addEventListener("config-changed", changed);
     editor.shadowRoot!.querySelector("ha-sortable")!.dispatchEvent(new CustomEvent("item-moved", { detail: { oldIndex: 0, newIndex: 1 }, bubbles: true }));
     expect(changed.mock.calls.at(-1)![0].detail.config.remote_sections).toEqual(["navigation", "power"]);
-    await editor.updateComplete;
+    await openEditorSections(editor);
     const add = [...editor.shadowRoot!.querySelectorAll("button")].find(button => button.textContent === "Add custom button")!;
-    add.click(); await editor.updateComplete;
+    add.click(); await openEditorSections(editor);
     expect(changed.mock.calls.at(-1)![0].detail.config.remote_buttons).toHaveLength(1);
     expect(changed.mock.calls.at(-1)![0].detail.config.remote_sections).toContain("shortcuts");
     expect(editor.shadowRoot!.querySelector(".remote-detail ha-form")).not.toBeNull();

@@ -182,6 +182,7 @@ export class MushroomAdditionEditor extends LitElement {
   @state() private config?: AdditionConfig;
   @state() private remoteEditing?: number;
   @state() private piHoleMapping: PiHoleMetric = "queries";
+  @state() private expandedSections = new Set<EditorSectionId>();
   private preparedEditorSchema?: PreparedEditorSchema;
 
   public setConfig(config: AdditionConfig): void {
@@ -334,7 +335,8 @@ export class MushroomAdditionEditor extends LitElement {
         ? "horizontal"
         : this.config.layout ?? populatedDefaults.layout,
     };
-    const customFeatures = item.upstreamId === "mini_graph_card"
+    const customFeatures = !this.expandedSections.has("features") ? nothing
+      : item.upstreamId === "mini_graph_card"
       ? this.renderMiniGraphEditors()
       : item.upstreamId === "remote_card"
       ? this.renderRemoteEditor()
@@ -378,14 +380,14 @@ export class MushroomAdditionEditor extends LitElement {
           preparedSchema.localized[section.id],
           formData,
           section.id === "features" && hasCustomFeatures ? customFeatures
-            : section.id === "content" && item.upstreamId === "custom_card_entity_carousel" ? html`
+            : section.id === "content" && this.expandedSections.has("content") && item.upstreamId === "custom_card_entity_carousel" ? html`
               <button @click=${() => {
                 const next = clearCardIcon(this.config!);
                 this.config = next;
                 fireEvent(this, "config-changed", { config: next });
               }}>${localizeText(this.hass, "Use entity icon")}</button>
             `
-            : section.id === "content" && item.upstreamId === "card_room" ? this.renderRoomSecondaryEditor() : nothing,
+            : section.id === "content" && this.expandedSections.has("content") && item.upstreamId === "card_room" ? this.renderRoomSecondaryEditor() : nothing,
           section.id === "features" && hasCustomFeatures ||
             section.id === "content" && item.upstreamId === "card_room" && this.config?.secondary_info === "composed",
         ))}
@@ -394,7 +396,7 @@ export class MushroomAdditionEditor extends LitElement {
   }
 
   private renderEditorSection(
-    section: { id: string; title: string; icon: string },
+    section: { id: EditorSectionId; title: string; icon: string },
     schema: EditorField[],
     formData: AdditionConfig,
     customContent: TemplateResult | typeof nothing,
@@ -402,12 +404,20 @@ export class MushroomAdditionEditor extends LitElement {
   ): TemplateResult | typeof nothing {
     if (!schema.length && !hasCustomContent) return nothing;
     return html`
-      <ha-expansion-panel class="editor-section" outlined .expanded=${section.id === "primary"}>
+      <ha-expansion-panel class="editor-section" outlined
+        .expanded=${this.expandedSections.has(section.id)}
+        @expanded-will-change=${(event: CustomEvent<{ expanded: boolean }>) => {
+          if (event.target !== event.currentTarget) return;
+          const expanded = new Set(this.expandedSections);
+          if (event.detail.expanded) expanded.add(section.id);
+          else expanded.delete(section.id);
+          this.expandedSections = expanded;
+        }}>
         <span slot="header" class="section-header">
           <ha-icon .icon=${section.icon}></ha-icon>
           <span>${localizeText(this.hass, section.title)}</span>
         </span>
-        <div class="section-body">
+        ${this.expandedSections.has(section.id) ? html`<div class="section-body">
           ${schema.length ? html`
             <ha-form
               .hass=${this.hass}
@@ -419,7 +429,7 @@ export class MushroomAdditionEditor extends LitElement {
             ></ha-form>
           ` : nothing}
           ${customContent}
-        </div>
+        </div>` : nothing}
       </ha-expansion-panel>
     `;
   }

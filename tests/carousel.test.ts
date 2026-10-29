@@ -1,3 +1,4 @@
+import { openEditorSections } from "./editor-helpers";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import "../src/index";
 import { MushroomAdditionEntityCarousel } from "../src/entity-carousel";
@@ -103,7 +104,7 @@ describe("Carousel entity defaults and gestures", () => {
       editor.hass = hass;
       editor.setConfig({ type, carousel_items: items, carousel_navigation: true, parameters: { effect: "cube" } });
       document.body.append(editor);
-      await editor.updateComplete;
+      await openEditorSections(editor);
       const layout = [...editor.shadowRoot!.querySelectorAll(".editor-section")]
         .find(section => section.querySelector(".section-header")?.textContent?.trim() === "Layout")!;
       const form = layout.querySelector<HTMLElement & { data: AdditionConfig; schema: { name: string; selector?: unknown }[] }>("ha-form")!;
@@ -211,7 +212,7 @@ describe("Carousel entity defaults and gestures", () => {
       expect(card.shadowRoot!.querySelectorAll(".navigation")).toHaveLength(2);
       expect(card.shadowRoot!.querySelector(".pagination output")?.textContent).toBe("1 / 4");
       const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
-      editor.hass = hass; editor.setConfig(config); document.body.append(editor); await editor.updateComplete;
+      editor.hass = hass; editor.setConfig(config); document.body.append(editor); await openEditorSections(editor);
       const form = editor.shadowRoot!.querySelector<HTMLElement & { data: AdditionConfig }>("ha-form")!;
       expect(form.data).toMatchObject({ carousel_effect: "cube", carousel_navigation: true, carousel_pagination: true,
         carousel_pagination_type: "fraction", carousel_scrollbar: true });
@@ -368,7 +369,7 @@ describe("Carousel entity defaults and gestures", () => {
     editor.hass = hass;
     editor.setConfig({ type, icon: "mdi:star", carousel_items: [{ entity: entity.entity_id, icon: "mdi:star", tap_action: { action: "toggle" } }] });
     document.body.append(editor);
-    await editor.updateComplete;
+    await openEditorSections(editor);
     const changes: CustomEvent[] = [];
     editor.addEventListener("config-changed", e => changes.push(e as CustomEvent));
     const row = editor.shadowRoot!.querySelector(".carousel-item-row")!;
@@ -386,7 +387,7 @@ describe("Carousel entity defaults and gestures", () => {
     const clearHeader = [...editor.shadowRoot!.querySelectorAll("button")].find(b => b.textContent === "Use entity icon")!;
     clearHeader.click();
     expect(changes.at(-1)!.detail.config).not.toHaveProperty("icon");
-    await editor.updateComplete;
+    await openEditorSections(editor);
     const forms = [...editor.shadowRoot!.querySelectorAll("ha-form")] as (HTMLElement & { data: AdditionConfig })[];
     expect(forms.every(f => !f.data.icon)).toBe(true);
   });

@@ -1,3 +1,4 @@
+import { openEditorSections } from "./editor-helpers";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -157,7 +158,7 @@ describe("final pollen and lights certification", () => {
       editor.hass = hass();
       editor.setConfig({ type: `custom:${item.tag}` });
       document.body.append(editor);
-      await editor.updateComplete;
+      await openEditorSections(editor);
       const form = editor.shadowRoot.querySelector<HTMLElement & { data: AdditionConfig }>("ha-form")!;
       const changed = vi.fn();
       editor.addEventListener("config-changed", changed);

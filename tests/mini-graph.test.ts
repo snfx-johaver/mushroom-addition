@@ -1,3 +1,4 @@
+import { openEditorSections } from "./editor-helpers";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   aggregateHistory,
@@ -676,7 +677,7 @@ describe("Mini Graph graphical editor", () => {
       ],
     });
     document.body.append(editor);
-    await editor.updateComplete;
+    await openEditorSections(editor);
     expect(editor.shadowRoot?.querySelectorAll(".mini-graph-entity-row")).toHaveLength(2);
     expect(editor.shadowRoot?.querySelectorAll(".mini-graph-threshold-row")).toHaveLength(2);
     expect(editor.shadowRoot?.querySelectorAll(".mini-graph-state-row")).toHaveLength(2);

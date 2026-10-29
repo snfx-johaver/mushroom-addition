@@ -1,3 +1,4 @@
+import { openEditorSections } from "./editor-helpers";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -261,7 +262,7 @@ describe("priority local certification", () => {
     editor.hass = hass();
     editor.setConfig(config as AdditionConfig);
     document.body.append(editor);
-    await editor.updateComplete;
+    await openEditorSections(editor);
     const forms = [...editor.shadowRoot.querySelectorAll<HTMLElement & {
       schema: Array<{ name: string }>;
       data: AdditionConfig;

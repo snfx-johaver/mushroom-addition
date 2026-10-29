@@ -1,3 +1,4 @@
+import { openEditorSections } from "./editor-helpers";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import "../src/index";
 import { CATALOG } from "../src/catalog";
@@ -47,7 +48,7 @@ describe("Upcoming Media", () => {
     editor.hass = hass;
     editor.setConfig({ type, entity: entity.entity_id, upcoming_data_attribute: "friendly_name" });
     document.body.append(editor);
-    await editor.updateComplete;
+    await openEditorSections(editor);
     const form = editor.shadowRoot!.querySelector("ha-form") as HTMLElement & { data: AdditionConfig };
     expect(form.data.upcoming_data_attribute).toBe("data");
   });
@@ -144,7 +145,7 @@ describe("Upcoming Media", () => {
     const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
     editor.hass = makeHass();
     editor.setConfig({ type, entity: "sensor.upcoming", upcoming_item_behavior: "action", upcoming_filter_attribute: "title", upcoming_collapse_mode: "matching", upcoming_tooltips: true });
-    document.body.append(editor); await editor.updateComplete;
+    document.body.append(editor); await openEditorSections(editor);
     const forms = [...editor.shadowRoot!.querySelectorAll("ha-form")] as Array<HTMLElement & { schema: { name: string; schema?: { name: string }[] }[]; data: AdditionConfig }>;
     const names = forms.flatMap(form => form.schema.flatMap(field => field.schema ?? [field])).map(field => field.name);
     expect(names).toEqual(expect.arrayContaining(["upcoming_item_action", "upcoming_filter_value", "upcoming_group_value", "upcoming_tooltip_delay", "upcoming_title_text"]));

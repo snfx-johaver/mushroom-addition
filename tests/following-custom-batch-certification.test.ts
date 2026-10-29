@@ -1,3 +1,4 @@
+import { openEditorSections } from "./editor-helpers";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -350,7 +351,7 @@ describe("following custom batch certification", () => {
       editor.hass = { states, language: "en-GB", callService: vi.fn() };
       editor.setConfig(config);
       document.body.append(editor);
-      await editor.updateComplete;
+      await openEditorSections(editor);
       const forms = [...editor.shadowRoot.querySelectorAll<HTMLElement & {
         schema: Array<{ name: string }>;
         data: AdditionConfig;

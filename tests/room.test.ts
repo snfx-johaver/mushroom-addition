@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { openEditorSections } from "./editor-helpers";
 import "../src/index";
 import { CATALOG } from "../src/catalog";
 import { additionalEditorSchemaFor, editorSchemaFor, type EditorField } from "../src/editor-schema";
@@ -39,6 +40,7 @@ const mount = async (tag: string, config: Partial<AdditionConfig> = {}, home = h
   element.setConfig({ type, entity: "sensor.temperature", ...config });
   document.body.append(element);
   await element.updateComplete;
+  if (tag === "mushroom-addition-editor") await openEditorSections(element);
   return element;
 };
 const render = (config: Partial<AdditionConfig> = {}, home = hass()) => mount(descriptor.tag, config, home);

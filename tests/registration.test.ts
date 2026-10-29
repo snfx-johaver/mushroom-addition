@@ -1,3 +1,4 @@
+import { openEditorSections } from "./editor-helpers";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CATALOG, LEGACY_ALIASES } from "../src/catalog";
 import "../src/index";
@@ -58,7 +59,7 @@ describe("Home Assistant registration", () => {
       editor.hass = { states: {}, callService: async () => undefined };
       editor.setConfig({ type: `custom:${item.tag}`, entity: `${item.preferredDomains?.[0] ?? "sensor"}.example` });
       document.body.append(editor);
-      await editor.updateComplete;
+      await openEditorSections(editor);
       const panels = [...editor.shadowRoot?.querySelectorAll("ha-expansion-panel") ?? []];
       const headers = panels.map((panel) => panel.querySelector("[slot=header]")?.textContent?.trim());
       expect(headers).toEqual([...headers].sort((left, right) =>
@@ -82,7 +83,7 @@ describe("Home Assistant registration", () => {
       editor.hass = { states: {}, callService: async () => undefined };
       editor.setConfig({ type: `custom:${item.tag}`, entity: "sensor.example", layout: "default" });
       document.body.append(editor);
-      await editor.updateComplete;
+      await openEditorSections(editor);
       const forms = [
         ...editor.shadowRoot?.querySelectorAll<HTMLElement & {
           data?: AdditionConfig;
@@ -135,7 +136,7 @@ describe("Home Assistant registration", () => {
       editor.hass = { states: {}, callService: async () => undefined };
       editor.setConfig({ type, entity: "media_player.example" });
       document.body.append(editor);
-      await editor.updateComplete;
+      await openEditorSections(editor);
       const features = [...editor.shadowRoot?.querySelectorAll("ha-expansion-panel") ?? []]
         .find((panel) => panel.querySelector("[slot=header]")?.textContent?.includes("Features"));
       const names = [...features?.querySelectorAll<HTMLElement & { schema?: Array<{ name: string; schema?: Array<{ name: string }> }> }>("ha-form") ?? []]
@@ -168,7 +169,7 @@ describe("Home Assistant registration", () => {
       });
 
       document.body.append(editor);
-      await editor.updateComplete;
+      await openEditorSections(editor);
       expect(editor.shadowRoot?.textContent).toContain("Add button");
       expect(editor.shadowRoot?.textContent).toContain(itemKey === "scene_items" ? "Scene buttons" : "Room sensor buttons");
       if (itemKey === "scene_items") expect(editor.shadowRoot?.textContent).toContain("Custom name");
@@ -234,7 +235,7 @@ describe("Home Assistant registration", () => {
       ],
     });
     document.body.append(editor);
-    await editor.updateComplete;
+    await openEditorSections(editor);
     const rows = editor.shadowRoot?.querySelectorAll(".waste-stream-row") ?? [];
     expect(rows).toHaveLength(2);
     expect(editor.shadowRoot?.textContent).toContain("Collection date entity");
@@ -271,7 +272,7 @@ describe("Home Assistant registration", () => {
       waste_streams: [],
     });
     document.body.append(editor);
-    await editor.updateComplete;
+    await openEditorSections(editor);
     const changed = vi.fn();
     editor.addEventListener("config-changed", changed);
     editor.shadowRoot?.querySelector("ha-form")?.dispatchEvent(new CustomEvent("value-changed", {

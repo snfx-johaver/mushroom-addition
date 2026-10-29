@@ -1,3 +1,4 @@
+import { openEditorSections } from "./editor-helpers";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import "../src/index";
 import { MushroomPiHole, piHoleDuration, piHoleEntities, piHoleMetricEntities, piHoleMetricValue } from "../src/pi-hole";
@@ -118,7 +119,7 @@ describe("Pi-hole Card", () => {
   it("exposes graphical section ordering, mapping and pause options without YAML", async () => {
     const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
     editor.hass = makeHass(); editor.setConfig({ type, entity: "switch.one", pihole_pause_service: "custom", pihole_sections: ["statistics", "blocking"] });
-    document.body.append(editor); await editor.updateComplete;
+    document.body.append(editor); await openEditorSections(editor);
     const changed = vi.fn(); editor.addEventListener("config-changed", changed);
     editor.shadowRoot!.querySelector("ha-sortable")!.dispatchEvent(new CustomEvent("item-moved", { detail: { oldIndex: 0, newIndex: 1 }, bubbles: true }));
     expect(changed.mock.calls.at(-1)![0].detail.config.pihole_sections).toEqual(["blocking", "statistics"]);

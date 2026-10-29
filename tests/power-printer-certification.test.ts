@@ -1,3 +1,4 @@
+import { openEditorSections } from "./editor-helpers";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -294,7 +295,7 @@ describe("power and printer custom batch certification", () => {
       editor.hass = { states, entities: sonosRegistry, callService: vi.fn(async () => undefined) };
       editor.setConfig({ type: `custom:${descriptor.tag}`, entity: Object.keys(states)[0] });
       document.body.append(editor);
-      await editor.updateComplete;
+      await openEditorSections(editor);
       const form = editor.shadowRoot.querySelector<HTMLElement & { data: AdditionConfig }>("ha-form")!;
       const changed = vi.fn();
       editor.addEventListener("config-changed", changed);
@@ -321,7 +322,7 @@ describe("power and printer custom batch certification", () => {
     editor.hass = { states, entities: sonosRegistry, callService: vi.fn(async () => undefined) };
     editor.setConfig({ type: `custom:${descriptor.tag}`, entity: "media_player.office_sonos" });
     document.body.append(editor);
-    await editor.updateComplete;
+    await openEditorSections(editor);
     const form = editor.shadowRoot.querySelector<HTMLElement & { data: AdditionConfig }>("ha-form")!;
     const changed = vi.fn();
     editor.addEventListener("config-changed", changed);
@@ -358,7 +359,7 @@ describe("power and printer custom batch certification", () => {
       },
     });
     document.body.append(editor);
-    await editor.updateComplete;
+    await openEditorSections(editor);
     const shortcutEditor = editor.shadowRoot.querySelector(".sonos-shortcut-editor")!;
     const row = shortcutEditor.querySelector(".sonos-shortcut-row")!;
     const selectors = [...row.querySelectorAll<HTMLElement & { value: unknown }>("ha-selector")];

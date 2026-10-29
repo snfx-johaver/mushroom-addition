@@ -1,3 +1,4 @@
+import { openEditorSections } from "./editor-helpers";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import "../src/index";
 import {
@@ -206,7 +207,7 @@ describe("localized card rendering", () => {
     editor.hass = makeHass("zh-Hant");
     editor.setConfig({ type: "custom:mushroom-addition-remote-card", entity: "media_player.TV", name: "Original Name" });
     document.body.append(editor);
-    await editor.updateComplete;
+    await openEditorSections(editor);
     expect(editor.shadowRoot!.textContent).toContain("情境");
     const forms = [...editor.shadowRoot!.querySelectorAll("ha-form")] as (HTMLElement & {
       schema: EditorField[]; computeHelper: (field: { name: string }) => string;
@@ -232,7 +233,7 @@ describe("localized card rendering", () => {
       remote_buttons: [{ type: "command", name: "My Home", command: "KEY_HOME_CUSTOM" }],
     });
     document.body.append(editor);
-    await editor.updateComplete;
+    await openEditorSections(editor);
     const root = editor.shadowRoot!;
     expect(root.textContent).toContain("Fernbedienungsabschnitte");
     expect(root.textContent).toContain("Ein-/Aus- und Funktionstasten");
@@ -246,7 +247,7 @@ describe("localized card rendering", () => {
     const edit = [...root.querySelectorAll("ha-icon-button")].find(button =>
       (button as HTMLElement & { label: string }).label === "Eigene Taste bearbeiten")!;
     edit.dispatchEvent(new MouseEvent("click"));
-    await editor.updateComplete;
+    await openEditorSections(editor);
     const detail = root.querySelector(".remote-detail ha-form") as NativeForm;
     expect(detail.computeLabel({ name: "command" })).toBe("Befehlscode");
     const select = detail.schema[0].selector!.select as { options: { value: string; label: string }[] };
@@ -273,7 +274,7 @@ describe("localized card rendering", () => {
       pihole_sections: ["statistics"], pihole_metric_entities: { queries: ["sensor.custom"] },
     });
     document.body.append(editor);
-    await editor.updateComplete;
+    await openEditorSections(editor);
     const root = editor.shadowRoot!;
     expect(root.textContent).toContain("感測器對應與實體順序");
     expect(root.textContent).toContain("目前對應：Original sensor name");

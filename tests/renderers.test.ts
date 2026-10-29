@@ -1,3 +1,4 @@
+import { openEditorSections } from "./editor-helpers";
 import { describe, expect, it, vi } from "vitest";
 import { CATALOG } from "../src/catalog";
 import { editorSchemaFor } from "../src/editor-schema";
@@ -1331,7 +1332,7 @@ describe("family renderers", () => {
       carousel_items: [{ entity: "light.kitchen", name: "Lights" }],
     });
     document.body.append(editor);
-    await editor.updateComplete;
+    await openEditorSections(editor);
     expect(editor.shadowRoot?.querySelectorAll(".carousel-item-row")).toHaveLength(1);
     expect(editor.shadowRoot?.textContent).toContain("Add carousel item");
     const form = editor.shadowRoot?.querySelector("ha-form") as HTMLElement & {

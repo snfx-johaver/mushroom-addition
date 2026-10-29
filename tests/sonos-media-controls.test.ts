@@ -1,3 +1,4 @@
+import { openEditorSections } from "./editor-helpers";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import "../src/index";
 import { CATALOG } from "../src/catalog";
@@ -447,7 +448,7 @@ describe("Sonos Mushroom-compatible media controls", () => {
     editor.hass = { states: { [entityId]: player() }, callService: vi.fn() };
     editor.setConfig({ type, entity: entityId, shortcuts: { buttons: [{ id: "playlist" }] } });
     document.body.append(editor);
-    await editor.updateComplete;
+    await openEditorSections(editor);
     const changed = vi.fn();
     editor.addEventListener("config-changed", changed);
     const form = [...editor.shadowRoot.querySelectorAll("ha-form")]
@@ -477,7 +478,7 @@ describe("Sonos Mushroom-compatible media controls", () => {
     editor.hass = { states: { [entityId]: player() }, callService: vi.fn() };
     editor.setConfig({ type, entity: entityId, media_controls: ["on_off", "play_pause_stop"] });
     document.body.append(editor);
-    await editor.updateComplete;
+    await openEditorSections(editor);
     const form = [...editor.shadowRoot.querySelectorAll<HTMLElement & { data: AdditionConfig }>("ha-form")]
       .find(form => form.data.ulm_card_media_player_power_button === true)!;
     expect(form.data.media_controls).toEqual(["play_pause_stop"]);
