@@ -4,6 +4,10 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+## 0.6.1 - 2026-10-29
+
+Speed improvement.
+
 - Forecasts: only subscribe for actual weather entities. Failed subscriptions use bounded exponential backoff instead of retrying on every state update; disconnects, configuration changes and replacement connections release subscriptions and pending retries.
 - Area Advanced cards: forward state updates to the native Area card only when area members, explicitly referenced entities or area sensor overrides change. Registry, presentation and layout changes still refresh normally; dynamic controls and unknown features retain unrestricted updates.
 
@@ -14,7 +18,7 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 - Astronomy card: reuse a single Moon-sensor discovery index per Home Assistant state snapshot, including missing sensors, rather than repeatedly scanning all entities for each displayed metric. Reuse the time formatter within each render.
 - Fixed relative-time labels breaking subsequent card updates after Home Assistant replaced their text. Light Area controls now expand normally when a light turns on; the same fix applies to room cards and primary/secondary last-changed/updated labels.
 - Cards showing last changed/updated now display relative time (for example 4 hours ago) like Home Assistant, instead of a full date.
-- Graph Advanced: compact layout for small card sizes (graph becomes a background sparkline, radial graphs sit beside the header), no spinner flashing on live refreshes, and state-triggered history refreshes are throttled to every 15 seconds.
+- Graph Advanced: compact layout for small card sizes (graph becomes a background sparkline, radial graphs sit beside the header), no spinner flashing on live refreshes, and current values update without refetching unchanged Recorder history. Equivalent history requests are coalesced.
 
 - Graph Advanced card: the graph now shrinks to fit small card sizes instead of being cut off, and the default grid height is derived from the graph type and visible content.
 

@@ -58921,7 +58921,7 @@ Gi.styles = je`
     :host { --ha-card-border-radius: var(--mush-card-border-radius, 12px); }
   `;
 let _i = Gi;
-const rm = "0.6.0";
+const rm = "0.6.1";
 for (const e of ga)
   if (!customElements.get(e.tag)) {
     if (e.upstreamId === "area_card_advanced") {
