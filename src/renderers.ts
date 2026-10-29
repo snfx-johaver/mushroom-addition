@@ -1109,14 +1109,36 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
+const astronomyIndexes = new WeakMap<HomeAssistant["states"], {
+  phase?: HassEntity;
+  metrics: Map<string, HassEntity>;
+}>();
+
+const astronomyIndex = (states: HomeAssistant["states"]) => {
+  const cached = astronomyIndexes.get(states);
+  if (cached) return cached;
+  const index: { phase?: HassEntity; metrics: Map<string, HassEntity> } = { metrics: new Map() };
+  for (const entity of Object.values(states)) {
+    if (!index.phase && entity.attributes.device_class === "enum" &&
+      `${entity.entity_id} ${String(entity.attributes.friendly_name ?? "")}`.toLowerCase().includes("moon")) {
+      index.phase = entity;
+    }
+    const body = String(entity.attributes.body ?? "").toLowerCase();
+    const metric = String(entity.attributes.metric ?? "").toLowerCase();
+    if ((body === "moon" || body === "sky") && metric && !index.metrics.has(metric)) {
+      index.metrics.set(metric, entity);
+    }
+  }
+  astronomyIndexes.set(states, index);
+  return index;
+};
+
 const astronomyMetricEntity = (
   ctx: RenderContext,
   configKey: string,
   metric: string,
 ): HassEntity | undefined => configuredEntity(ctx, configKey) ??
-  Object.values(ctx.hass.states).find((entity) =>
-    String(attr(entity, "metric") ?? "").toLowerCase() === metric &&
-    ["moon", "sky"].includes(String(attr(entity, "body") ?? "").toLowerCase()));
+  astronomyIndex(ctx.hass.states).metrics.get(metric);
 
 const orbitPositionStyle = (
   azimuth: number | undefined,
@@ -1152,22 +1174,17 @@ const renderSunCard = (ctx: RenderContext): TemplateResult => {
   const dusk = attr(ctx.entity, "next_dusk") ?? setting;
   const locale = configured<string>(ctx, "language") || ctx.hass.language || "en";
   const hour12 = configured<string>(ctx, "timeFormat") === "12h";
+  const timeFormatter = new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit", hour12 });
   const format = (value: unknown) => {
     const date = new Date(String(value ?? ""));
-    return Number.isNaN(date.getTime()) ? "—" : new Intl.DateTimeFormat(locale, {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12,
-    }).format(date);
+    return Number.isNaN(date.getTime()) ? "—" : timeFormatter.format(date);
   };
   const elevation = numeric(attr(ctx.entity, "elevation"));
   const azimuth = numeric(attr(ctx.entity, "azimuth"));
   const title = configured<string>(ctx, "title");
   const moonPhase = configuredEntity(ctx, "moon_entity") ??
     ctx.hass.states["sensor.moon"] ??
-    Object.values(ctx.hass.states).find((entity) =>
-      String(attr(entity, "device_class") ?? "") === "enum" &&
-      `${entity.entity_id} ${String(attr(entity, "friendly_name") ?? "")}`.toLowerCase().includes("moon"));
+    astronomyIndex(ctx.hass.states).phase;
   const moonAltitude = astronomyMetricEntity(ctx, "moon_altitude_entity", "altitude");
   const moonAzimuth = astronomyMetricEntity(ctx, "moon_azimuth_entity", "azimuth");
   const moonRising = configuredEntity(ctx, "moon_rising_entity") ??
