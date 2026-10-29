@@ -67,14 +67,19 @@ export const createStubConfig = (
   if (descriptor.family === "nas-dashboard") return { type: `custom:${descriptor.tag}` };
   const available = [...new Set([...entities, ...entitiesFallback, ...Object.keys(hass?.states ?? {})])]
     .filter((entityId) => hass?.states?.[entityId] !== undefined);
+  const entityTexts = new Map<string, string>();
   const entityText = (entityId: string): string => {
+    const cached = entityTexts.get(entityId);
+    if (cached !== undefined) return cached;
     const state = hass?.states[entityId];
-    return [
+    const text = [
       entityId,
       state?.attributes.friendly_name,
       state?.attributes.device_class,
       state?.attributes.unit_of_measurement,
     ].filter(Boolean).join(" ").toLowerCase();
+    entityTexts.set(entityId, text);
+    return text;
   };
   const orderedMatches = (matches: string[]): string[] => [
     ...matches.filter((entityId) =>
@@ -84,15 +89,24 @@ export const createStubConfig = (
   ];
   const isHealthy = (entityId: string): boolean =>
     !["unavailable", "unknown"].includes(hass?.states[entityId]?.state.toLowerCase() ?? "");
+  const preferredMatch = (matches: (entityId: string) => boolean): string | undefined => {
+    let fallback: string | undefined;
+    for (const entityId of available) {
+      if (!matches(entityId)) continue;
+      if (isHealthy(entityId)) return entityId;
+      fallback ??= entityId;
+    }
+    return fallback;
+  };
   const findEntity = (domains: string[], terms: string[]): string | undefined =>
-    orderedMatches(available.filter((entityId) =>
+    preferredMatch((entityId) =>
       domains.some((domain) => entityId.startsWith(`${domain}.`)) &&
-      terms.every((term) => entityText(entityId).includes(term))))[0];
+      terms.every((term) => entityText(entityId).includes(term)));
   const findEntityExcluding = (domains: string[], terms: string[], excludedTerms: string[]): string | undefined =>
-    orderedMatches(available.filter((entityId) =>
+    preferredMatch((entityId) =>
       domains.some((domain) => entityId.startsWith(`${domain}.`)) &&
       terms.every((term) => entityText(entityId).includes(term)) &&
-      excludedTerms.every((term) => !entityText(entityId).includes(term))))[0];
+      excludedTerms.every((term) => !entityText(entityId).includes(term)));
   const findHealthyEntity = (domains: string[], terms: string[], excludedTerms: string[] = []): string | undefined =>
     available.find((entityId) =>
       isHealthy(entityId) &&
@@ -104,17 +118,16 @@ export const createStubConfig = (
     terms: string[] = [],
     excludedTerms: string[] = [],
   ): string | undefined =>
-    orderedMatches(available.filter((entityId) => {
+    preferredMatch((entityId) => {
       const state = hass?.states[entityId];
-      const text = entityText(entityId);
       return entityId.startsWith("sensor.") &&
         deviceClasses.includes(String(state?.attributes.device_class ?? "")) &&
-        terms.every((term) => text.includes(term)) &&
-        excludedTerms.every((term) => !text.includes(term));
-    }))[0];
-  const discoveredPanelEntities = available
+        terms.every((term) => entityText(entityId).includes(term)) &&
+        excludedTerms.every((term) => !entityText(entityId).includes(term));
+    });
+  const discoveredPanelEntities = descriptor.upstreamId === "advanced_energy_panel_health" ? available
     .filter((entityId) => /^sensor\.inverter_4/i.test(entityId))
-    .sort((left, right) => left.localeCompare(right, undefined, { numeric: true }));
+    .sort((left, right) => left.localeCompare(right, undefined, { numeric: true })) : [];
   const findHealthyEntityByDeviceClass = (
     deviceClasses: string[],
     terms: string[] = [],
@@ -129,9 +142,18 @@ export const createStubConfig = (
         terms.every((term) => text.includes(term)) &&
         excludedTerms.every((term) => !text.includes(term));
     });
-  const sonosPlayer = available
-    .filter((entityId) => entityId.startsWith("media_player.") && entityText(entityId).includes("sonos"))
-    .sort((left, right) => sonosControlCount(hass, right) - sonosControlCount(hass, left))[0];
+  let sonosPlayer: string | undefined;
+  if (descriptor.upstreamId === "custom_card_media_player_sonos") {
+    let bestCount = -1;
+    for (const entityId of available) {
+      if (!entityId.startsWith("media_player.") || !entityText(entityId).includes("sonos")) continue;
+      const count = sonosControlCount(hass, entityId);
+      if (count > bestCount) {
+        sonosPlayer = entityId;
+        bestCount = count;
+      }
+    }
+  }
   const wasteExamples = descriptor.upstreamId === "custom_card_trash"
     ? wasteStreamExamples(hass, entities, entitiesFallback) : undefined;
   const semanticPrimary =

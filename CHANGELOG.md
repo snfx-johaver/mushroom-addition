@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Card picker: only rank Sonos players for Sonos defaults, scoring each candidate once rather than repeating discovery while preparing every card. Only discover solar-panel examples for the panel card, reuse entity search text within each stub, and stop searches at the first healthy match.
+
 - Card editors now create controls only for expanded sections and release them when collapsed, avoiding hidden scene selectors and forms processing every Home Assistant state update.
 
 - Astronomy card: reuse a single Moon-sensor discovery index per Home Assistant state snapshot, including missing sensors, rather than repeatedly scanning all entities for each displayed metric. Reuse the time formatter within each render.
