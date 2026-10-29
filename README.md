@@ -75,6 +75,12 @@ For manual installation, download `mushroom-cards-addition.js` from the
 put it in `config/www/community/mushroom-addition/`, and register
 `/local/community/mushroom-addition/mushroom-cards-addition.js` as a module.
 
+For an unreleased hotfix, use a separate directory outside HACS-managed
+`www/community/` and replace the existing resource entry with its `/local/`
+URL; do not load both copies. HACS redownloads can overwrite files in its
+managed directory with the published release. Return to the HACS resource
+after installing a release that includes the hotfix.
+
 ## Using the cards
 
 Choose your entities and configure the card in the visual editor. Layout,

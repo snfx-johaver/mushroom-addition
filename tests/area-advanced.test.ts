@@ -201,6 +201,128 @@ describe("native Area card delegation", () => {
     ]);
     expect(config.features![3].type).toBe("area-controls");
   });
+  it("does not forward unrelated updates or repeatedly discover 10,800 registry entries", async () => {
+    const scan = vi.fn();
+    const entities = new Proxy({
+      ...Object.fromEntries(Array.from({ length: 10_800 }, (_, index) =>
+        [`sensor.other_${index}`, { area_id: "other" }])),
+      "light.test": { device_id: "lamp" },
+    }, { ownKeys: target => { scan(); return Reflect.ownKeys(target); } });
+    const initial: HomeAssistant = { ...hass, entities, devices: { lamp: { area_id: "office" } } };
+    const card = document.createElement(AREA_TAG) as MushroomAreaAdvancedCard;
+    card.hass = initial;
+    card.setConfig({ ...base, features: [{ type: "area-controls" }] });
+    document.body.append(card);
+    await settle(card);
+    const native = card.shadowRoot!.querySelector("hui-area-card") as NativeArea;
+    scan.mockClear();
+    for (let index = 0; index < 30; index++) {
+      card.hass = { ...initial, states: { ...initial.states,
+        "sensor.other_0": { entity_id: "sensor.other_0", state: String(index), attributes: {} },
+      } };
+      await settle(card);
+    }
+    expect(native.hass).toBe(initial);
+    expect(scan.mock.calls.length).toBeLessThanOrEqual(1);
+    const changed: HomeAssistant = { ...card.hass!, states: { ...card.hass!.states,
+      "light.test": { ...initial.states["light.test"], state: "off" },
+    } };
+    card.hass = changed;
+    await settle(card);
+    expect(native.hass).toBe(changed);
+    const removed = { ...changed, states: { ...changed.states } };
+    delete removed.states["light.test"];
+    card.hass = removed;
+    await settle(card);
+    expect(native.hass).toBe(removed);
+  });
+  it("tracks explicit out-of-area controls, area sensor overrides and newly available states", async () => {
+    const initial: HomeAssistant = {
+      ...hass, devices: {}, entities: { "sensor.not_yet_loaded": { area_id: "office" } },
+      areas: { office: { ...hass.areas!.office, temperature_entity_id: "sensor.external_temperature" } },
+    };
+    const card = document.createElement(AREA_TAG) as MushroomAreaAdvancedCard;
+    card.hass = initial;
+    card.setConfig({ ...base, features: [{ type: "area-controls", controls: ["switch.remote", { entity_id: "sensor.external" }] }] });
+    document.body.append(card);
+    await settle(card);
+    const native = card.shadowRoot!.querySelector("hui-area-card") as NativeArea;
+    for (const id of ["sensor.external", "switch.remote", "sensor.external_temperature", "sensor.not_yet_loaded"]) {
+      const next: HomeAssistant = { ...card.hass!, states: { ...card.hass!.states,
+        [id]: { entity_id: id, state: "42", attributes: {} },
+      } };
+      card.hass = next;
+      await settle(card);
+      expect(native.hass, id).toBe(next);
+    }
+  });
+  it("refreshes membership and presentation on registry, device, area, locale, service and layout changes", async () => {
+    let current: HomeAssistant = { ...hass, entities: {}, devices: {} };
+    const card = document.createElement(AREA_TAG) as MushroomAreaAdvancedCard;
+    card.hass = current;
+    card.setConfig(base);
+    document.body.append(card);
+    await settle(card);
+    const native = card.shadowRoot!.querySelector("hui-area-card") as NativeArea;
+    for (const patch of [
+      { entities: { "sensor.test": { area_id: "office" } } },
+      { entities: { "sensor.test": { device_id: "device" } }, devices: { device: { area_id: "office" } } },
+      { areas: { office: { area_id: "office", name: "Renamed" } } },
+      { language: "nl" },
+      { themes: { darkMode: true } },
+      { services: { light: {} } },
+    ]) {
+      current = { ...current, ...patch };
+      card.hass = current;
+      await settle(card);
+      expect(native.hass).toBe(current);
+    }
+    card.hass = { ...current, states: { ...current.states } };
+    card.layout = "grid";
+    await settle(card);
+    expect(native.layout).toBe("grid");
+    const next = { ...card.hass!, states: { ...current.states,
+      "sensor.test": { ...current.states["sensor.test"], state: "43" },
+    } };
+    card.hass = next;
+    await settle(card);
+    expect(native.hass).toBe(next);
+    card.setConfig({ ...base, area: "other" });
+    await settle(card);
+    const moved = { ...next, states: { ...next.states,
+      "sensor.test": { ...next.states["sensor.test"], state: "44" },
+    } };
+    card.hass = moved;
+    await settle(card);
+    expect(native.hass).toBe(next);
+  });
+  it("keeps unrestricted updates for incomplete registries, templates, conditions and unknown features", async () => {
+    for (const features of [
+      [{ type: "future-feature" }],
+      [{ type: "area-controls", controls: [{ type: "template" as const, content: "{{ states('sensor.test') }}" }] }],
+      [{ type: "area-controls", controls: [{ type: "conditional" as const, control: { entity_id: "light.test" } }] }],
+    ]) {
+      const card = document.createElement(AREA_TAG) as MushroomAreaAdvancedCard;
+      card.hass = { ...hass, entities: {}, devices: {} };
+      card.setConfig({ ...base, features });
+      document.body.append(card);
+      await settle(card);
+      const native = card.shadowRoot!.querySelector("hui-area-card") as NativeArea;
+      const next = { ...card.hass, states: { ...card.hass.states } };
+      card.hass = next;
+      await settle(card);
+      expect(native.hass).toBe(next);
+      card.remove();
+    }
+    const card = document.createElement(AREA_TAG) as MushroomAreaAdvancedCard;
+    card.hass = hass;
+    card.setConfig(base);
+    document.body.append(card);
+    await settle(card);
+    card.hass = { ...hass, states: { ...hass.states } };
+    await settle(card);
+    expect((card.shadowRoot!.querySelector("hui-area-card") as NativeArea).hass).toBe(card.hass);
+  });
   it("places alert and sensor options inside native Content, preserving native edits", async () => {
     const editor = document.createElement(`${AREA_TAG}-editor`) as MushroomAreaAdvancedEditor;
     const config = { ...base, alert_color: "red", sensor_wrap: true, sensor_icons: true };

@@ -19,6 +19,9 @@ export class MushroomAdditionCard extends LitElement {
   private forecastSubscriptionKey?: string;
   private unsubscribeForecast?: () => void;
   private forecastGeneration = 0;
+  private forecastConnection?: HomeAssistant["connection"];
+  private forecastRetryTimer?: number;
+  private forecastRetryAttempts = 0;
   private energyBuySellTimer?: number;
   private welcomeTimer?: number;
   private forecast: WeatherForecast[] = [];
@@ -103,6 +106,7 @@ export class MushroomAdditionCard extends LitElement {
     super.connectedCallback();
     this.scheduleEnergyBuySellRefresh();
     this.scheduleWelcomeRefresh();
+    void this.subscribeForecast();
   }
 
   private scheduleWelcomeRefresh(): void {
@@ -132,7 +136,7 @@ export class MushroomAdditionCard extends LitElement {
   }
 
   private forecastKey(config = this.config): string | undefined {
-    if (this.descriptor?.family !== "weather" || !config?.show_forecast || !config.entity) return undefined;
+    if (this.descriptor?.family !== "weather" || !config?.show_forecast || !config.entity?.startsWith("weather.")) return undefined;
     return `${config.entity}:daily`;
   }
 
@@ -142,19 +146,27 @@ export class MushroomAdditionCard extends LitElement {
     this.unsubscribeForecast = undefined;
     this.forecastSubscriptionKey = undefined;
     this.forecast = [];
+    window.clearTimeout(this.forecastRetryTimer);
+    this.forecastRetryTimer = undefined;
+    this.forecastRetryAttempts = 0;
   }
 
   private async subscribeForecast(): Promise<void> {
+    if (this.forecastConnection !== this.hass?.connection) {
+      this.stopForecastSubscription();
+      this.forecastConnection = this.hass?.connection;
+    }
     const key = this.forecastKey();
     if (
       !key ||
+      !this.isConnected ||
       !this.config?.entity ||
       !this.hass?.connection?.subscribeMessage ||
+      this.forecastRetryTimer !== undefined ||
       this.forecastSubscriptionKey === key
     ) return;
-    this.stopForecastSubscription();
     this.forecastSubscriptionKey = key;
-    const generation = this.forecastGeneration;
+    const generation = ++this.forecastGeneration;
     try {
       const unsubscribe = await this.hass.connection.subscribeMessage<{ forecast?: WeatherForecast[] }>((message) => {
         if (generation !== this.forecastGeneration || key !== this.forecastSubscriptionKey) return;
@@ -166,9 +178,18 @@ export class MushroomAdditionCard extends LitElement {
         forecast_type: "daily",
       });
       if (generation !== this.forecastGeneration || key !== this.forecastSubscriptionKey) unsubscribe();
-      else this.unsubscribeForecast = unsubscribe;
+      else {
+        this.unsubscribeForecast = unsubscribe;
+        this.forecastRetryAttempts = 0;
+      }
     } catch (error) {
-      if (generation === this.forecastGeneration) this.forecastSubscriptionKey = undefined;
+      if (generation !== this.forecastGeneration) return;
+      this.forecastSubscriptionKey = undefined;
+      const delay = Math.min(300_000, 30_000 * 2 ** Math.min(this.forecastRetryAttempts++, 4));
+      this.forecastRetryTimer = window.setTimeout(() => {
+        this.forecastRetryTimer = undefined;
+        void this.subscribeForecast();
+      }, delay);
       console.warn("Mushroom Addition: unable to load weather forecast", error);
     }
   }

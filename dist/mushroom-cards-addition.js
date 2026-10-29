@@ -56615,7 +56615,7 @@ var qc = Object.defineProperty, hs = (e, t, a, n) => {
 };
 const Oi = class Oi extends ye {
   constructor() {
-    super(...arguments), this.holdFired = !1, this.forecastGeneration = 0, this.forecast = [], this.actionSurface = (t, a, n = "") => {
+    super(...arguments), this.holdFired = !1, this.forecastGeneration = 0, this.forecastRetryAttempts = 0, this.forecast = [], this.actionSurface = (t, a, n = "") => {
       const i = this.descriptor ? Ci.get(this.descriptor.upstreamId) : void 0, r = this.descriptor?.sourcePath.startsWith("src/") ?? !1;
       if (!i && !r)
         throw new Error(`Missing explicit parity renderer mapping for ${this.descriptor?.upstreamId}`);
@@ -56706,7 +56706,7 @@ const Oi = class Oi extends ye {
     this.clearGestures(), this.stopForecastSubscription(), this.stopEnergyBuySellRefresh(), this.stopWelcomeRefresh(), super.disconnectedCallback();
   }
   connectedCallback() {
-    super.connectedCallback(), this.scheduleEnergyBuySellRefresh(), this.scheduleWelcomeRefresh();
+    super.connectedCallback(), this.scheduleEnergyBuySellRefresh(), this.scheduleWelcomeRefresh(), this.subscribeForecast();
   }
   scheduleWelcomeRefresh() {
     this.stopWelcomeRefresh(), !(this.descriptor?.upstreamId !== "custom_card_welcome" || !this.isConnected) && (this.welcomeTimer = window.setInterval(() => this.requestUpdate(), 6e4));
@@ -56723,17 +56723,18 @@ const Oi = class Oi extends ye {
     this.energyBuySellTimer !== void 0 && window.clearInterval(this.energyBuySellTimer), this.energyBuySellTimer = void 0;
   }
   forecastKey(t = this.config) {
-    if (!(this.descriptor?.family !== "weather" || !t?.show_forecast || !t.entity))
+    if (!(this.descriptor?.family !== "weather" || !t?.show_forecast || !t.entity?.startsWith("weather.")))
       return `${t.entity}:daily`;
   }
   stopForecastSubscription() {
-    this.forecastGeneration += 1, this.unsubscribeForecast?.(), this.unsubscribeForecast = void 0, this.forecastSubscriptionKey = void 0, this.forecast = [];
+    this.forecastGeneration += 1, this.unsubscribeForecast?.(), this.unsubscribeForecast = void 0, this.forecastSubscriptionKey = void 0, this.forecast = [], window.clearTimeout(this.forecastRetryTimer), this.forecastRetryTimer = void 0, this.forecastRetryAttempts = 0;
   }
   async subscribeForecast() {
+    this.forecastConnection !== this.hass?.connection && (this.stopForecastSubscription(), this.forecastConnection = this.hass?.connection);
     const t = this.forecastKey();
-    if (!t || !this.config?.entity || !this.hass?.connection?.subscribeMessage || this.forecastSubscriptionKey === t) return;
-    this.stopForecastSubscription(), this.forecastSubscriptionKey = t;
-    const a = this.forecastGeneration;
+    if (!t || !this.isConnected || !this.config?.entity || !this.hass?.connection?.subscribeMessage || this.forecastRetryTimer !== void 0 || this.forecastSubscriptionKey === t) return;
+    this.forecastSubscriptionKey = t;
+    const a = ++this.forecastGeneration;
     try {
       const n = await this.hass.connection.subscribeMessage((i) => {
         a !== this.forecastGeneration || t !== this.forecastSubscriptionKey || (this.forecast = i.forecast ?? [], this.requestUpdate());
@@ -56742,9 +56743,14 @@ const Oi = class Oi extends ye {
         entity_id: this.config.entity,
         forecast_type: "daily"
       });
-      a !== this.forecastGeneration || t !== this.forecastSubscriptionKey ? n() : this.unsubscribeForecast = n;
+      a !== this.forecastGeneration || t !== this.forecastSubscriptionKey ? n() : (this.unsubscribeForecast = n, this.forecastRetryAttempts = 0);
     } catch (n) {
-      a === this.forecastGeneration && (this.forecastSubscriptionKey = void 0), console.warn("Mushroom Addition: unable to load weather forecast", n);
+      if (a !== this.forecastGeneration) return;
+      this.forecastSubscriptionKey = void 0;
+      const i = Math.min(3e5, 3e4 * 2 ** Math.min(this.forecastRetryAttempts++, 4));
+      this.forecastRetryTimer = window.setTimeout(() => {
+        this.forecastRetryTimer = void 0, this.subscribeForecast();
+      }, i), console.warn("Mushroom Addition: unable to load weather forecast", n);
     }
   }
   clearGestures() {
@@ -58192,7 +58198,10 @@ const Fi = class Fi extends ye {
     return { type: `custom:${wa}`, ...Object.keys(t?.areas ?? {})[0] ? { area: Object.keys(t.areas)[0] } : {} };
   }
   setConfig(t) {
-    this.config = t, this.load();
+    this.config = t, this.areaEntityIds = void 0, this.syncedConfig = void 0, this.load();
+  }
+  connectedCallback() {
+    super.connectedCallback(), this.syncedConfig = void 0, this.requestUpdate();
   }
   getCardSize() {
     const t = this.card?.getCardSize?.() ?? 3;
@@ -58232,14 +58241,38 @@ const Fi = class Fi extends ye {
       t === this.revision && (this.error = String(n instanceof Error ? n.message : n));
     }
   }
+  relevantHassChanged(t) {
+    const a = this.hass, n = this.config;
+    if (!t || !a || !n || !a.entities || !a.devices || !a.areas) return !0;
+    if (Object.keys(t).length !== Object.keys(a).length || Object.entries(a).some(([i, r]) => i !== "states" && r !== Reflect.get(t, i)))
+      return this.areaEntityIds = void 0, !0;
+    if (n.features?.some((i) => i.type !== "area-controls" || i.controls?.some((r) => typeof r == "object" && (r.type === "template" || r.type === "conditional")))) return !0;
+    if (!this.areaEntityIds) {
+      const i = /* @__PURE__ */ new Set();
+      for (const [s, l] of Object.entries(a.entities))
+        (l.area_id ?? (l.device_id ? a.devices[l.device_id]?.area_id : void 0)) === n.area && i.add(s);
+      const r = n.area ? a.areas[n.area] : void 0;
+      for (const [s, l] of Object.entries(r ?? {}))
+        s.endsWith("_entity_id") && typeof l == "string" && i.add(l);
+      const o = (s) => {
+        typeof s == "string" && /^[a-z_]+\.[a-z0-9_]+$/.test(s) ? i.add(s) : Array.isArray(s) ? s.forEach(o) : s && typeof s == "object" && Object.values(s).forEach(o);
+      };
+      o(n), this.areaEntityIds = i;
+    }
+    for (const i of this.areaEntityIds)
+      if (t.states[i] !== a.states[i]) return !0;
+    return !1;
+  }
   sync() {
     if (this.card) {
-      this.card.hass = this.hass, this.card.layout = this.layout, Kn(this.config) ? this.card.style.setProperty("--feature-height", "64px") : this.card.style.removeProperty("--feature-height");
-      const t = this.card, a = this.config;
-      Promise.resolve(t.updateComplete).then(async () => {
-        t !== this.card || a !== this.config || !this.isConnected || (em(t, a ?? {}), await this.applyPresentation(t));
-      }).catch((n) => {
-        t === this.card && a === this.config && (this.error = n instanceof Error ? n.message : String(n));
+      const t = this.relevantHassChanged(this.card.hass);
+      if (!t && this.card.layout === this.layout && this.syncedConfig === this.config && this.syncedCard === this.card) return;
+      t && (this.card.hass = this.hass), this.card.layout = this.layout, this.syncedConfig = this.config, this.syncedCard = this.card, Kn(this.config) ? this.card.style.setProperty("--feature-height", "64px") : this.card.style.removeProperty("--feature-height");
+      const a = this.card, n = this.config;
+      Promise.resolve(a.updateComplete).then(async () => {
+        a !== this.card || n !== this.config || !this.isConnected || (em(a, n ?? {}), await this.applyPresentation(a));
+      }).catch((i) => {
+        a === this.card && n === this.config && (this.error = i instanceof Error ? i.message : String(i));
       });
     }
   }

@@ -146,6 +146,9 @@ export class MushroomAreaAdvancedCard extends LitElement {
   @state() private loadingControls = false;
   private config?: AreaAdvancedConfig;
   private revision = 0;
+  private areaEntityIds?: Set<string>;
+  private syncedConfig?: AreaAdvancedConfig;
+  private syncedCard?: NativeElement;
   public static async getConfigElement() {
     return document.createElement(`${AREA_TAG}-editor`);
   }
@@ -155,7 +158,14 @@ export class MushroomAreaAdvancedCard extends LitElement {
   }
   public setConfig(config: AreaAdvancedConfig) {
     this.config = config;
+    this.areaEntityIds = undefined;
+    this.syncedConfig = undefined;
     void this.load();
+  }
+  public connectedCallback() {
+    super.connectedCallback();
+    this.syncedConfig = undefined;
+    this.requestUpdate();
   }
   public getCardSize() {
     const size = this.card?.getCardSize?.() ?? 3;
@@ -200,9 +210,51 @@ export class MushroomAreaAdvancedCard extends LitElement {
       if (revision === this.revision) this.error = String(error instanceof Error ? error.message : error);
     }
   }
+  private relevantHassChanged(previous?: HomeAssistant): boolean {
+    const next = this.hass;
+    const config = this.config;
+    if (!previous || !next || !config || !next.entities || !next.devices || !next.areas) return true;
+    if (Object.keys(previous).length !== Object.keys(next).length ||
+      Object.entries(next).some(([key, value]) => key !== "states" && value !== Reflect.get(previous, key))) {
+      this.areaEntityIds = undefined;
+      return true;
+    }
+    // Unknown features and dynamic controls may depend on entities outside the area.
+    if (config.features?.some(feature => feature.type !== "area-controls" ||
+      feature.controls?.some(control => typeof control === "object" &&
+        (control.type === "template" || control.type === "conditional")))) return true;
+    if (!this.areaEntityIds) {
+      const ids = new Set<string>();
+      for (const [id, entity] of Object.entries(next.entities)) {
+        const area = entity.area_id ?? (entity.device_id ? next.devices[entity.device_id]?.area_id : undefined);
+        if (area === config.area) ids.add(id);
+      }
+      const area = config.area ? next.areas[config.area] : undefined;
+      for (const [key, value] of Object.entries(area ?? {})) {
+        if (key.endsWith("_entity_id") && typeof value === "string") ids.add(value);
+      }
+      const addExplicitEntities = (value: unknown): void => {
+        if (typeof value === "string" && /^[a-z_]+\.[a-z0-9_]+$/.test(value)) ids.add(value);
+        else if (Array.isArray(value)) value.forEach(addExplicitEntities);
+        else if (value && typeof value === "object") Object.values(value).forEach(addExplicitEntities);
+      };
+      addExplicitEntities(config);
+      this.areaEntityIds = ids;
+    }
+    for (const id of this.areaEntityIds) {
+      if (previous.states[id] !== next.states[id]) return true;
+    }
+    return false;
+  }
   private sync() {
     if (this.card) {
-      this.card.hass = this.hass; this.card.layout = this.layout;
+      const refreshHass = this.relevantHassChanged(this.card.hass);
+      if (!refreshHass && this.card.layout === this.layout &&
+        this.syncedConfig === this.config && this.syncedCard === this.card) return;
+      if (refreshHass) this.card.hass = this.hass;
+      this.card.layout = this.layout;
+      this.syncedConfig = this.config;
+      this.syncedCard = this.card;
       if (namedFeatures(this.config)) this.card.style.setProperty("--feature-height", "64px");
       else this.card.style.removeProperty("--feature-height");
       const card = this.card;

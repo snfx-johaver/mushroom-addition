@@ -4,6 +4,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Forecasts: only subscribe for actual weather entities. Failed subscriptions use bounded exponential backoff instead of retrying on every state update; disconnects, configuration changes and replacement connections release subscriptions and pending retries.
+- Area Advanced cards: forward state updates to the native Area card only when area members, explicitly referenced entities or area sensor overrides change. Registry, presentation and layout changes still refresh normally; dynamic controls and unknown features retain unrestricted updates.
+
 - Card picker: only rank Sonos players for Sonos defaults, scoring each candidate once rather than repeating discovery while preparing every card. Only discover solar-panel examples for the panel card, reuse entity search text within each stub, and stop searches at the first healthy match.
 
 - Card editors now create controls only for expanded sections and release them when collapsed, avoiding hidden scene selectors and forms processing every Home Assistant state update.
