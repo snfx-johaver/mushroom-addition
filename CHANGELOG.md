@@ -4,6 +4,7 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Fixed relative-time labels breaking subsequent card updates after Home Assistant replaced their text. Light Area controls now expand normally when a light turns on; the same fix applies to room cards and primary/secondary last-changed/updated labels.
 - Cards showing last changed/updated now display relative time (for example 4 hours ago) like Home Assistant, instead of a full date.
 - Graph Advanced: compact layout for small card sizes (graph becomes a background sparkline, radial graphs sit beside the header), no spinner flashing on live refreshes, and state-triggered history refreshes are throttled to every 15 seconds.
 

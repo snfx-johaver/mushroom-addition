@@ -50438,7 +50438,7 @@ const qo = [
   if (n === "name") return ue(e, a, t);
   if (n === "last-changed" || n === "last-updated") {
     const s = n === "last-changed" ? a?.last_changed : a?.last_updated;
-    return s ? _`<ha-relative-time .hass=${t} .datetime=${s}>${new Date(s).toLocaleString(t.language)}</ha-relative-time>` : u(t, n === "last-changed" ? "Last changed unavailable" : "Last updated unavailable");
+    return s ? _`<ha-relative-time .hass=${t} .datetime=${s}></ha-relative-time>` : u(t, n === "last-changed" ? "Last changed unavailable" : "Last updated unavailable");
   }
   if (n !== "state" && e.secondary) return e.secondary;
   const i = e.label_use_temperature !== !1 ? Er(t, e.room_temperature_entity ? t.states[e.room_temperature_entity] : a) : void 0, r = e.label_use_brightness === !0 ? Mr(es(e, t)) : void 0, o = [...new Set([i, r].filter((s) => !!s))];
@@ -54919,7 +54919,7 @@ const T = (e, t) => e?.attributes[t], Yu = (e, t) => b(e, t < 12 ? "ui.greeting_
   if (e.config.icon_type === "none") return c;
   const i = e.config.icon_type === "entity-picture" ? T(e.entity, "entity_picture") : void 0;
   return i ? _`<span class="ulm-icon entity-picture ${n}" style=${ze({ backgroundImage: Oe(i) })}></span>` : _`<span class="ulm-icon tone-${a} ${n}">${Sa(e.hass, e.entity, e.config.icon, t)}</span>`;
-}, rn = (e, t) => _`<ha-relative-time .hass=${e.hass} .datetime=${t}>${new Date(t).toLocaleString(e.hass.language)}</ha-relative-time>`, Qu = (e, t) => {
+}, rn = (e, t) => _`<ha-relative-time .hass=${e.hass} .datetime=${t}></ha-relative-time>`, Qu = (e, t) => {
   switch (e.config.secondary_info) {
     case "none":
       return;

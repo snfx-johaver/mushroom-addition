@@ -64,7 +64,7 @@ export const roomSecondary = (config: AdditionConfig, hass: HomeAssistant): stri
   if (mode === "last-changed" || mode === "last-updated") {
     const timestamp = mode === "last-changed" ? primary?.last_changed : primary?.last_updated;
     return timestamp
-      ? html`<ha-relative-time .hass=${hass} .datetime=${timestamp}>${new Date(timestamp).toLocaleString(hass.language)}</ha-relative-time>`
+      ? html`<ha-relative-time .hass=${hass} .datetime=${timestamp}></ha-relative-time>`
       : localizeText(hass, mode === "last-changed" ? "Last changed unavailable" : "Last updated unavailable");
   }
   if (mode !== "state" && config.secondary) return config.secondary;

@@ -110,7 +110,7 @@ const iconBubble = (ctx: RenderContext, fallback: string, tone = "blue", extraCl
     : html`<span class="ulm-icon tone-${tone} ${extraClass}">${renderEntityIcon(ctx.hass, ctx.entity, ctx.config.icon, fallback)}</span>`;
 };
 const relativeTime = (ctx: RenderContext, timestamp: string): TemplateResult =>
-  html`<ha-relative-time .hass=${ctx.hass} .datetime=${timestamp}>${new Date(timestamp).toLocaleString(ctx.hass.language)}</ha-relative-time>`;
+  html`<ha-relative-time .hass=${ctx.hass} .datetime=${timestamp}></ha-relative-time>`;
 const selectedSecondary = (ctx: RenderContext, recommended?: string | TemplateResult): string | TemplateResult | undefined => {
   switch (ctx.config.secondary_info) {
     case "none": return undefined;
