@@ -22,7 +22,9 @@ describe("Home Assistant registration", () => {
     for (const item of CATALOG) expect(registered.has(item.tag)).toBe(true);
     for (const alias of LEGACY_ALIASES) expect(registered.has(alias.tag)).toBe(false);
     for (const item of CATALOG) {
-      expect(window.customCards?.find(card => card.type === item.tag)?.name).toBe(`Mushroom Addition: ${item.name}`);
+      const registration = window.customCards?.find(card => card.type === item.tag);
+      expect(registration?.name).toBe(`Mushroom Addition: ${item.name}`);
+      expect(registration?.preview).toBe(false);
     }
   });
 

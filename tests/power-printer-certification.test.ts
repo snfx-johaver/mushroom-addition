@@ -244,7 +244,7 @@ describe("power and printer custom batch certification", () => {
       const config = constructor.getStubConfig(hass, Object.keys(states), []);
       expect(config).toMatchObject({ type: `custom:${descriptor.tag}`, entity });
       expect(window.customCards?.some((registration) =>
-        registration.type === descriptor.tag && registration.preview)).toBe(true);
+        registration.type === descriptor.tag && registration.preview === false)).toBe(true);
     }
 
     const sonos = customElements.get(item("custom_card_media_player_sonos").tag) as typeof HTMLElement & {

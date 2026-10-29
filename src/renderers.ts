@@ -798,15 +798,9 @@ const renderWelcome = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-// Area scene discovery scans every state, so run it once per config and keep the result until the config changes.
-const sceneItemCache = new WeakMap<object, AdditionItemConfig[]>();
 const cachedSceneItems = (ctx: RenderContext): AdditionItemConfig[] => {
   if (ctx.config.carousel_items) return ctx.config.carousel_items;
-  const cached = sceneItemCache.get(ctx.config);
-  if (cached) return cached;
-  const found = areaSceneItems(ctx.hass, ctx.config.entity);
-  if (found.length) sceneItemCache.set(ctx.config, found);
-  return found;
+  return areaSceneItems(ctx.hass, ctx.config.entity);
 };
 
 const renderLight = (ctx: RenderContext): TemplateResult => {
