@@ -312,7 +312,7 @@ const aggregateValues = (values: number[], aggregate: MiniGraphAggregate): numbe
 
 export const aggregateHistory = (
   points: GraphPoint[],
-  config: Pick<MiniGraphCardConfig, "hours_to_show" | "points_per_hour" | "group_by">,
+  config: Pick<MiniGraphCardConfig, "hours_to_show" | "points_per_hour" | "group_by" | "show">,
   aggregate: MiniGraphAggregate,
   now = Date.now(),
 ): GraphPoint[] => {
@@ -321,19 +321,19 @@ export const aggregateHistory = (
   const perHour = Math.max(0.01, Number(config.points_per_hour ?? 0.5));
   const start = now - hours * 3_600_000;
   const interval = 3_600_000 / perHour;
-  const buckets = new Map<string, GraphPoint[]>();
+  const buckets = new Map<number, GraphPoint[]>();
   for (const point of points) {
     if (point.time < start || point.time > now || !Number.isFinite(point.value)) continue;
     const date = new Date(point.time);
     const key = config.group_by === "date"
-      ? `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+      ? new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
       : config.group_by === "hour"
-        ? `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}-${date.getHours()}`
-        : String(Math.floor((point.time - start) / interval));
+        ? new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours()).getTime()
+        : start + Math.floor((point.time - start) / interval) * interval;
     buckets.set(key, [...(buckets.get(key) ?? []), point]);
   }
-  return [...buckets.values()].map((bucket) => ({
-    time: bucket.at(-1)!.time,
+  return [...buckets.entries()].map(([time, bucket]) => ({
+    time: config.show?.graph === "bar" ? time : bucket.at(-1)!.time,
     value: aggregateValues(bucket.map((point) => point.value), aggregate),
     label: bucket.at(-1)?.label,
   })).sort((left, right) => left.time - right.time);
@@ -491,7 +491,7 @@ export class MushroomMiniGraphCard extends LitElement {
     .unit { font-size: .48em; }
     .indicator { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; }
     .graph { position: relative; min-width: 0; }
-    svg.chart { display: block; width: 100%; height: 100%; overflow: visible; }
+    svg.chart { display: block; width: 100%; height: 100%; overflow: hidden; }
     .series { transition: opacity .15s ease; }
     .line { fill: none; stroke-linecap: round; stroke-linejoin: round; }
     .fill { opacity: .16; }
@@ -846,6 +846,7 @@ export class MushroomMiniGraphCard extends LitElement {
     const allTimes = visible.flatMap((entry) => entry.points.map((point) => point.time));
     const minTime = Math.min(...allTimes);
     const maxTime = Math.max(...allTimes);
+    const barTimes = show.graph === "bar" ? [...new Set(allTimes)].sort((a, b) => a - b).slice(-96) : [];
     return html`
       <div class="graph" style=${this.graphStyle()}
         @pointermove=${this.graphMove} @pointerleave=${this.graphLeave}>
@@ -872,6 +873,7 @@ export class MushroomMiniGraphCard extends LitElement {
             maxTime,
             show,
             visible.length,
+            barTimes,
           ))}
         </svg>
         ${this.renderHover(show)}
@@ -1055,6 +1057,7 @@ export class MushroomMiniGraphCard extends LitElement {
     maxTime: number,
     show: Required<MiniGraphShowConfig>,
     seriesCount: number,
+    barTimes: number[],
   ): TemplateResult {
     const height = Number(this.config?.height ?? 150);
     const scaleValue = (value: number): number => {
@@ -1074,22 +1077,24 @@ export class MushroomMiniGraphCard extends LitElement {
     const dim = this.classFor(key);
     const color = series.config.color ? series.color : `url(#mini-graph-${index})`;
     if (show.graph === "bar") {
-      const slot = 500 / Math.max(1, Math.min(96, plotted.length));
-      const spacing = Number(this.config?.bar_spacing ?? 4);
-      const width = Math.max(1, (slot - spacing) / seriesCount);
+      const slot = 500 / Math.max(1, barTimes.length);
+      const spacing = Math.max(0, Math.min(slot * .8, Number(this.config?.bar_spacing ?? 4)));
+      const width = (slot - spacing) / seriesCount;
       const baseline = Math.max(0, Math.min(height, scaleValue(0)));
-      const bars = plotted.slice(-96);
+      const slots = new Map(barTimes.map((time, slotIndex) => [time, slotIndex]));
+      const bars = plotted.filter(point => slots.has(point.time));
       this.plot.push({
         key,
         bar: true,
-        points: bars.map((point, pointIndex) => ({ ...point, x: pointIndex * slot + slot / 2 })),
+        points: bars.map(point => ({ ...point, x: slots.get(point.time)! * slot + spacing / 2 + (index + .5) * width })),
       });
       return svg`
         <g class="series ${dim}">
-          ${bars.map((point, pointIndex) => {
-            const x = pointIndex * slot + index * width + spacing / 2;
-            const y = Math.min(point.y, baseline);
-            return svg`<rect x=${x} y=${y} width=${width} height=${Math.abs(baseline - point.y)} rx="1" fill=${color}>
+          ${bars.map(point => {
+            const x = slots.get(point.time)! * slot + index * width + spacing / 2;
+            const boundedY = Math.max(0, Math.min(height, point.y));
+            const y = Math.min(boundedY, baseline);
+            return svg`<rect x=${x} y=${y} width=${width} height=${Math.abs(baseline - boundedY)} rx="1" fill=${color}>
               <title>${this.tooltip(series, point.value, point.time)}</title>
             </rect>`;
           })}

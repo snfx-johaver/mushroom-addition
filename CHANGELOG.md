@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Mini Graph clips plots to their viewport, bounds bar geometry, and aligns grouped bars by timestamp without overlapping narrow time slots.
+
 - Shared card editors retain lazy content through Home Assistant's pre-collapse measurement instead of unmounting it when a collapse is first requested.
 
 - Light Area: controls wrap the slider onto a full-width second row when the card is too narrow for the buttons and a usable slider.

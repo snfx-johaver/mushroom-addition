@@ -348,10 +348,66 @@ describe("Mini Graph configuration and history processing", () => {
       show: { state: "last", labels: true },
       cache: false,
     });
+
     expect(card.shadowRoot?.textContent).toContain("Open");
     expect(card.shadowRoot?.querySelector("path.line")).not.toBeNull();
   });
 
+    it("keeps bars within hard bounds and aligns sparse series to shared time slots", async () => {
+      vi.spyOn(Date, "now").mockReturnValue(now + 1800000);
+      const card = await renderCard({
+        type: "custom:mushroom-addition-mini-graph-card",
+        entities: ["sensor.temperature", "sensor.humidity"],
+        hours_to_show: 4,
+        points_per_hour: 1,
+        lower_bound: 19,
+        upper_bound: 21,
+        height: 200,
+        show: { graph: "bar" },
+        cache: false,
+      }, makeHass(vi.fn(async () => ({
+        ...history,
+        "sensor.humidity": history["sensor.humidity"].slice(1).map(point => ({
+          ...point, last_updated: new Date(Date.parse(point.last_updated) - 60000).toISOString(),
+        })),
+      }))));
+      const groups = [...card.shadowRoot!.querySelectorAll("g.series")];
+      const bars = groups.map(group => [...group.querySelectorAll("rect")]);
+      for (const rect of bars.flat()) {
+        const y = Number(rect.getAttribute("y"));
+        const height = Number(rect.getAttribute("height"));
+        expect(y).toBeGreaterThanOrEqual(0);
+        expect(y + height).toBeLessThanOrEqual(200);
+        expect(Number(rect.getAttribute("x")) + Number(rect.getAttribute("width"))).toBeLessThanOrEqual(500);
+      }
+      const first = bars[0].at(-1)!;
+      const second = bars[1].at(-1)!;
+      expect(Number(second.getAttribute("x")) - Number(first.getAttribute("x")))
+        .toBeCloseTo(Number(first.getAttribute("width")));
+    });
+
+    it("fits dense multi-series bars inside their slots without a minimum-width overlap", async () => {
+      vi.spyOn(Date, "now").mockReturnValue(now);
+      const samples = Array.from({ length: 96 }, (_, i) => ({
+        state: "2", last_updated: new Date(now - (95 - i) * 3600000).toISOString(),
+      }));
+      const card = await renderCard({
+        type: "custom:mushroom-addition-mini-graph-card",
+        entities: Array.from({ length: 6 }, () => "sensor.temperature"),
+        hours_to_show: 96,
+        points_per_hour: 1,
+        bar_spacing: 4,
+        show: { graph: "bar" },
+        cache: false,
+      }, makeHass(vi.fn(async () => ({ "sensor.temperature": samples }))));
+      const rects = [...card.shadowRoot!.querySelectorAll("g.series rect")];
+      expect(rects.length).toBeGreaterThan(0);
+      expect(Number(rects[0].getAttribute("width"))).toBeLessThan(1);
+      for (const rect of rects) {
+        expect(Number(rect.getAttribute("width"))).toBeGreaterThan(0);
+        expect(Number(rect.getAttribute("x")) + Number(rect.getAttribute("width"))).toBeLessThanOrEqual(500);
+      }
+    });
   it("requests Home Assistant recorder history with all selected entities", async () => {
     const send = vi.fn(async () => history);
     await renderCard({
