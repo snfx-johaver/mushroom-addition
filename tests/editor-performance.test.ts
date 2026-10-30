@@ -47,6 +47,8 @@ describe("editor schema caching", () => {
     const expand = async (expanded: boolean) => {
       panel.dispatchEvent(new CustomEvent("expanded-will-change", { detail: { expanded } }));
       await editor.updateComplete;
+      panel.dispatchEvent(new CustomEvent("expanded-changed", { detail: { expanded } }));
+      await editor.updateComplete;
     };
     await expand(true);
     expect(editor.shadowRoot!.querySelectorAll(".carousel-item-row")).toHaveLength(15);

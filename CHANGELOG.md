@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Shared card editors retain lazy content through Home Assistant's pre-collapse measurement instead of unmounting it when a collapse is first requested.
+
 - Light Area: controls wrap the slider onto a full-width second row when the card is too narrow for the buttons and a usable slider.
 - Editors: let Home Assistant own the native expansion state while measuring content, so Layout, Features and other lazy sections open reliably on the first click without mounting hidden controls.
 

@@ -431,6 +431,8 @@ export class MushroomAdditionEditor extends LitElement {
 
   private sectionExpanded(event: CustomEvent<{ expanded: boolean }>, section: EditorSectionId): void {
     if (event.target !== event.currentTarget || this.expandedSections.has(section) === event.detail.expanded) return;
+    // Keep content mounted until HA has measured the collapse's starting height.
+    if (event.type === "expanded-will-change" && !event.detail.expanded) return;
     const expanded = new Set(this.expandedSections);
     if (event.detail.expanded) expanded.add(section);
     else expanded.delete(section);

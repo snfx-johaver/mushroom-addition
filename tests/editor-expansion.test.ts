@@ -4,16 +4,19 @@ import { afterEach, describe, expect, it } from "vitest";
 import "../src/editor";
 import type { MushroomAdditionEditor } from "../src/editor";
 import type { HomeAssistant } from "../src/types";
+import { CATALOG } from "../src/catalog";
 
 class NativeExpansionPanel extends LitElement {
   @property({ type: Boolean }) expanded = false;
   expandedDuringPreparation?: boolean;
+  contentDuringMeasurement = false;
   async toggle(editor: MushroomAdditionEditor) {
     const expanded = !this.expanded;
     this.dispatchEvent(new CustomEvent("expanded-will-change", { detail: { expanded } }));
     await editor.updateComplete;
     await this.updateComplete;
     this.expandedDuringPreparation = this.expanded;
+    this.contentDuringMeasurement = this.querySelector(".section-body") !== null;
     this.expanded = expanded;
     this.dispatchEvent(new CustomEvent("expanded-changed", { detail: { expanded } }));
     await this.updateComplete;
@@ -26,6 +29,24 @@ customElements.define("ha-expansion-panel", NativeExpansionPanel);
 afterEach(() => document.body.replaceChildren());
 
 describe("native expansion lifecycle", () => {
+  it.each(CATALOG.map(item => [item.name, item.tag]))("preserves collapse measurements for %s", async (_, tag) => {
+    const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
+    editor.hass = { states: {}, callService: async () => undefined };
+    editor.setConfig({ type: `custom:${tag}` });
+    document.body.append(editor);
+    await editor.updateComplete;
+    for (const panel of editor.shadowRoot!.querySelectorAll<NativeExpansionPanel>("ha-expansion-panel")) {
+      for (let cycle = 0; cycle < 3; cycle++) {
+        await panel.toggle(editor);
+        expect(panel.expanded).toBe(true);
+        expect(panel.contentDuringMeasurement).toBe(true);
+        await panel.toggle(editor);
+        expect(panel.contentDuringMeasurement).toBe(true);
+        expect(panel.expanded).toBe(false);
+        expect(panel.querySelector(".section-body")).toBeNull();
+      }
+    }
+  });
   it("mounts each section on the first opening without prematurely changing the panel's native state", async () => {
     const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
     const hass: HomeAssistant = { states: {}, callService: async () => undefined };
@@ -55,6 +76,7 @@ describe("native expansion lifecycle", () => {
       }
       await panel.toggle(editor);
       expect(panel.expandedDuringPreparation).toBe(true);
+      expect(panel.contentDuringMeasurement).toBe(true);
       expect(panel.expanded).toBe(false);
       expect(panel.querySelector(".section-body")).toBeNull();
       await panel.toggle(editor);

@@ -50845,7 +50845,7 @@ let st = class extends ye {
     `;
   }
   sectionExpanded(e, t) {
-    if (e.target !== e.currentTarget || this.expandedSections.has(t) === e.detail.expanded) return;
+    if (e.target !== e.currentTarget || this.expandedSections.has(t) === e.detail.expanded || e.type === "expanded-will-change" && !e.detail.expanded) return;
     const a = new Set(this.expandedSections);
     e.detail.expanded ? a.add(t) : a.delete(t), this.expandedSections = a;
   }
