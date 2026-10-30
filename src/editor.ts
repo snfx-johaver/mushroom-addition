@@ -403,16 +403,11 @@ export class MushroomAdditionEditor extends LitElement {
     hasCustomContent: boolean,
   ): TemplateResult | typeof nothing {
     if (!schema.length && !hasCustomContent) return nothing;
+    // Let HA own expanded while it measures the lazily mounted content for its animation.
     return html`
       <ha-expansion-panel class="editor-section" outlined
-        .expanded=${this.expandedSections.has(section.id)}
-        @expanded-will-change=${(event: CustomEvent<{ expanded: boolean }>) => {
-          if (event.target !== event.currentTarget) return;
-          const expanded = new Set(this.expandedSections);
-          if (event.detail.expanded) expanded.add(section.id);
-          else expanded.delete(section.id);
-          this.expandedSections = expanded;
-        }}>
+        @expanded-will-change=${(event: CustomEvent<{ expanded: boolean }>) => this.sectionExpanded(event, section.id)}
+        @expanded-changed=${(event: CustomEvent<{ expanded: boolean }>) => this.sectionExpanded(event, section.id)}>
         <span slot="header" class="section-header">
           <ha-icon .icon=${section.icon}></ha-icon>
           <span>${localizeText(this.hass, section.title)}</span>
@@ -432,6 +427,14 @@ export class MushroomAdditionEditor extends LitElement {
         </div>` : nothing}
       </ha-expansion-panel>
     `;
+  }
+
+  private sectionExpanded(event: CustomEvent<{ expanded: boolean }>, section: EditorSectionId): void {
+    if (event.target !== event.currentTarget || this.expandedSections.has(section) === event.detail.expanded) return;
+    const expanded = new Set(this.expandedSections);
+    if (event.detail.expanded) expanded.add(section);
+    else expanded.delete(section);
+    this.expandedSections = expanded;
   }
 
   private readonly computeLabel = (schema: { name: string }): string =>

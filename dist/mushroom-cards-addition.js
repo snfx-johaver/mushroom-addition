@@ -50822,12 +50822,8 @@ let st = class extends ye {
   renderEditorSection(e, t, a, n, i) {
     return !t.length && !i ? m : _`
       <ha-expansion-panel class="editor-section" outlined
-        .expanded=${this.expandedSections.has(e.id)}
-        @expanded-will-change=${(r) => {
-      if (r.target !== r.currentTarget) return;
-      const o = new Set(this.expandedSections);
-      r.detail.expanded ? o.add(e.id) : o.delete(e.id), this.expandedSections = o;
-    }}>
+        @expanded-will-change=${(r) => this.sectionExpanded(r, e.id)}
+        @expanded-changed=${(r) => this.sectionExpanded(r, e.id)}>
         <span slot="header" class="section-header">
           <ha-icon .icon=${e.icon}></ha-icon>
           <span>${c(this.hass, e.title)}</span>
@@ -50847,6 +50843,11 @@ let st = class extends ye {
         </div>` : m}
       </ha-expansion-panel>
     `;
+  }
+  sectionExpanded(e, t) {
+    if (e.target !== e.currentTarget || this.expandedSections.has(t) === e.detail.expanded) return;
+    const a = new Set(this.expandedSections);
+    e.detail.expanded ? a.add(t) : a.delete(t), this.expandedSections = a;
   }
   renderPiHoleEditor() {
     const e = this.config?.pihole_sections ?? Ie.pihole_sections, t = this.piHoleMapping, a = Jn(this.hass, this.config)[t], n = this.config?.pihole_entity_order ?? [];
@@ -54013,14 +54014,14 @@ const Pu = je`
   .sonos-details summary ha-icon { --mdc-icon-size: 20px; transition: transform .2s ease; }
   .sonos-details[open] summary ha-icon { transform: rotate(180deg); }
   .sonos-details-always-visible { padding-top: 4px; }
-  .custom-light { display: grid; gap: 10px; padding: var(--mush-spacing, 12px); }
+  .custom-light { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; padding: var(--mush-spacing, 12px); }
   .custom-light .light-brightness { width: 100%; }
   .custom-light input.mushroom-range.light-gradient { width: 100%; background: var(--light-gradient); }
-  .custom-light .light-controls { display: flex; align-items: center; gap: 8px; }
-  .custom-light .light-control-buttons { display: flex; gap: 8px; flex: none; }
+  .custom-light .light-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
+  .custom-light .light-control-buttons { display: flex; flex-wrap: wrap; gap: 8px; flex: 0 1 auto; min-width: 0; }
   .custom-light .light-control-button { appearance: none; border: 0; padding: 0; width: 42px; height: 42px; border-radius: var(--mush-control-border-radius, 12px); display: grid; place-items: center; cursor: pointer; color: var(--primary-text-color); background: var(--addition-track-background, rgba(var(--rgb-secondary-text-color, 114, 114, 114), .2)); }
   .custom-light .light-control-button:focus-visible { outline: 2px solid var(--primary-color); }
-  .custom-light .light-controls .light-slider { flex: 1 1 auto; width: auto; min-width: 0; }
+  .custom-light .light-controls .light-slider { flex: 1 1 140px; width: auto; min-width: 0; max-width: 100%; }
   .custom-light .light-controls:not([data-control]) .light-slider ~ .light-slider { display: none; }
   .custom-light .light-controls[data-control] .light-slider { display: none; }
   .custom-light .light-controls[data-control="brightness"] .light-brightness,
