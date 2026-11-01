@@ -220,6 +220,18 @@ export const NATIVE_CATALOG: readonly CatalogItem[] = [
     preferredDomains: ["sensor"],
   },
   {
+    upstreamId: "energy_log",
+    sourcePath: "src/energy-cards/energy-log.ts",
+    kind: "card",
+    category: "custom-card",
+    family: "energy",
+    tag: "mushroom-addition-energy-log",
+    editorTag: "mushroom-addition-energy-log-features",
+    name: "Energy Log",
+    description: "Entity-backed event timeline with configurable sources, category filters, date grouping, and a visual editor.",
+    preferredDomains: ["sensor", "event", "text"],
+  },
+  {
     upstreamId: "stock_card",
     sourcePath: "src/stock.ts",
     kind: "card",

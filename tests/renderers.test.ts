@@ -281,7 +281,7 @@ describe("family renderers", () => {
   });
 
   it("honors Mushroom name and information fields in every card renderer", async () => {
-    for (const item of CATALOG.filter((entry) => entry.kind === "card" && entry.family !== "nas-dashboard" && !["area_card_advanced", "area_card_mushroom"].includes(entry.upstreamId))) {
+    for (const item of CATALOG.filter((entry) => entry.kind === "card" && entry.family !== "nas-dashboard" && !["area_card_advanced", "area_card_mushroom", "energy_log"].includes(entry.upstreamId))) {
       const entity = entityFor(item);
       const element = document.createElement(item.tag) as HTMLElement & {
         hass: HomeAssistant;
@@ -314,7 +314,7 @@ describe("family renderers", () => {
   });
 
   it("uses a configured Name as the default primary information in every card", async () => {
-    for (const item of CATALOG.filter((entry) => entry.kind === "card" && entry.family !== "nas-dashboard" && !["area_card_advanced", "area_card_mushroom"].includes(entry.upstreamId))) {
+    for (const item of CATALOG.filter((entry) => entry.kind === "card" && entry.family !== "nas-dashboard" && !["area_card_advanced", "area_card_mushroom", "energy_log"].includes(entry.upstreamId))) {
       const entity = entityFor(item);
       const element = document.createElement(item.tag) as HTMLElement & {
         hass: HomeAssistant;
@@ -384,7 +384,7 @@ describe("family renderers", () => {
   });
 
   it("makes Icon type affect every card renderer", async () => {
-    for (const item of CATALOG.filter((entry) => entry.kind === "card" && entry.family !== "nas-dashboard" && !["area_card_advanced", "area_card_mushroom"].includes(entry.upstreamId))) {
+    for (const item of CATALOG.filter((entry) => entry.kind === "card" && entry.family !== "nas-dashboard" && !["area_card_advanced", "area_card_mushroom", "energy_log"].includes(entry.upstreamId))) {
       const entity = entityFor(item);
       const base = {
         type: `custom:${item.tag}`,

@@ -5,7 +5,7 @@
 
 Your dashboard called. It wants fewer YAML headaches and a little more fun(gus).
 
-**32 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
+**33 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
 Energy, media, rooms, batteries, graphs, remotes and more.
 Pick a card, pick your entities, enjoy your dashboard.
 YAML is still welcome; it just isn't compulsory.
@@ -36,7 +36,13 @@ Click a screenshot for a closer look.
 | [![Room controls, energy flows and history graphs on a real Home Assistant dashboard](https://community-assets.home-assistant.io/original/4X/0/2/6/026ac451af58e280b008f4a834bb261bd43225c5.png)](https://community-assets.home-assistant.io/original/4X/0/2/6/026ac451af58e280b008f4a834bb261bd43225c5.png) | [![Storage, Docker containers and unified layouts from the earlier NAS dashboard](https://community-assets.home-assistant.io/original/4X/c/7/0/c70fa96613cef06f8915c2639d8a013a15f30eb8.png)](https://community-assets.home-assistant.io/original/4X/c/7/0/c70fa96613cef06f8915c2639d8a013a15f30eb8.png) |
 | See how your rooms and energy are doing, with history a glance away. | Storage, drive health and containers together, without jumping between pages. |
 
-These are real setups, not mockups; some cards are only partially configured.
+**Energy Log preview (original synthetic mockup; no live Home Assistant data):**
+
+![Energy Log card preview with synthetic sample entries](docs/assets/energy-log-example.svg)
+
+The linked dashboard screenshots are real setups, not mockups; some cards are
+only partially configured. The Energy Log image above is a synthetic
+illustration with placeholder entities and invented sample values.
 The NAS image is from the earlier dashboard whose layouts are now included.
 Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all cards.
 
@@ -173,9 +179,9 @@ examples and resource paths.
 [Report a bug](https://github.com/snfx-johaver/mushroom-addition/issues).
 Please keep household screenshots and personal information out of reports.
 
-## Smart Saving and Energy Entityworkflow
+## Energy cards
 
-Both cards are included in the existing bundle and picker; do not install a
+These cards are included in the existing bundle and picker; do not install a
 second energy-card resource. They use the same Context, Content, Layout,
 Interactions and lazily mounted Features editor sections as other cards.
 Name and Primary/Secondary information use the shared Mushroom presentation.
@@ -231,6 +237,15 @@ relations:
 Replace the synthetic example IDs with your own entities. The source `title`
 and Smart Saving `subtitle` are accepted as Name and secondary text fallbacks;
 the shared editor does not expose duplicate title fields.
+
+### Energy Log
+
+Energy Log presents timestamped entries from configured Home Assistant entity
+attributes or JSON states. Its visual editor maps source fields, manages
+category filters, and configures sorting, time zone, clock format, source
+disclosures, the empty state, and footer. It only displays existing entity
+data: it does not record events, create sensors, poll services, or control
+devices. See the [synthetic configuration and data example](docs/ENERGY_LOG.md).
 
 ## Development
 

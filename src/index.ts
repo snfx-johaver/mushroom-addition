@@ -1,7 +1,9 @@
 import "./editor";
 import "./nas";
 import "./energy-cards/card";
+import "./energy-cards/energy-log-editor";
 import "./energy-cards/workflow-editor";
+import { MushroomEnergyLogCard } from "./energy-cards/energy-log";
 import { MushroomWorkflowCard } from "./energy-cards/workflow";
 import { CATALOG, LEGACY_ALIASES, PUBLIC_CATALOG } from "./catalog";
 import { MushroomAdditionCard } from "./card";
@@ -14,6 +16,10 @@ import { version as VERSION } from "../package.json";
 
 for (const item of CATALOG) {
   if (!customElements.get(item.tag)) {
+    if (item.upstreamId === "energy_log") {
+      customElements.define(item.tag, MushroomEnergyLogCard);
+      continue;
+    }
     if (item.upstreamId === "energy_entityworkflow") {
       customElements.define(item.tag, MushroomWorkflowCard);
       continue;
@@ -122,6 +128,7 @@ export { CATALOG } from "./catalog";
 export type { AdditionConfig } from "./types";
 export type { SmartSavingConfig } from "./energy-cards/types";
 export type { WorkflowConfig } from "./energy-cards/workflow-config";
+export type { EnergyLogConfig, EnergyLogCategory, EnergyLogSource, EnergyLogEntry } from "./energy-cards/energy-log-config";
 export type {
   CardConfig as NasCardConfig, NasSource, ManualVolumeConfig,
   ManualDriveConfig, ManualContainerConfig,

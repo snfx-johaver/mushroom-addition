@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="510" viewBox="0 0 720 510" role="img" aria-labelledby="title description">
+  <title id="title">Energy Log synthetic example</title>
+  <desc id="description">A Mushroom-style timeline card with two invented sample entries from placeholder entities.</desc>
+  <rect width="720" height="510" fill="#f1f3f6"/>
+  <rect x="18" y="16" width="684" height="478" rx="18" fill="#fff" stroke="#dce1e7"/>
+  <circle cx="48" cy="48" r="13" fill="#e1f3ef"/>
+  <path d="M47 40l-4 9h5l-1 7 6-10h-5l2-6z" fill="#168879"/>
+  <text x="73" y="47" fill="#25313c" font-family="Arial, sans-serif" font-size="16" font-weight="700">Energy Log</text>
+  <text x="73" y="65" fill="#647386" font-family="Arial, sans-serif" font-size="12">Synthetic activity from placeholder entities</text>
+  <g font-family="Arial, sans-serif" font-size="11">
+    <rect x="38" y="82" width="42" height="25" rx="13" fill="#dff2ed"/><text x="51" y="98" fill="#267b6f">All</text>
+    <rect x="86" y="82" width="78" height="25" rx="13" fill="#f2eafb"/><text x="98" y="98" fill="#7953a8">Planning</text>
+    <rect x="170" y="82" width="100" height="25" rx="13" fill="#e5f3f0"/><text x="182" y="98" fill="#167e72">Measurement</text>
+    <rect x="276" y="82" width="90" height="25" rx="13" fill="#f4eee3"/><text x="288" y="98" fill="#9a702c">Availability</text>
+  </g>
+  <text x="38" y="132" fill="#657386" font-family="Arial, sans-serif" font-size="11" font-weight="700" letter-spacing=".5">15 APRIL 2026 · NEWEST FIRST · EUROPE/AMSTERDAM</text>
+  <line x1="52" y1="151" x2="52" y2="423" stroke="#d7dde4"/>
+  <circle cx="52" cy="164" r="4" fill="#7953a8"/>
+  <text x="69" y="168" fill="#738092" font-family="Arial, sans-serif" font-size="11">12:15</text>
+  <rect x="109" y="154" width="77" height="19" rx="5" fill="#f2eafb"/>
+  <text x="117" y="168" fill="#7953a8" font-family="Arial, sans-serif" font-size="10" font-weight="700">Planning</text>
+  <text x="69" y="193" fill="#26323c" font-family="Arial, sans-serif" font-size="13" font-weight="700">Sample schedule prepared</text>
+  <text x="69" y="214" fill="#26323c" font-family="Arial, sans-serif" font-size="12" font-weight="700">3 sample intervals</text>
+  <text x="69" y="236" fill="#647386" font-family="Arial, sans-serif" font-size="12">Example payload from an existing placeholder entity.</text>
+  <text x="69" y="258" fill="#168879" font-family="Arial, sans-serif" font-size="11">› Source</text>
+  <text x="112" y="258" fill="#647386" font-family="Arial, sans-serif" font-size="10">sensor.example_schedule</text>
+  <circle cx="52" cy="291" r="4" fill="#168879"/>
+  <text x="69" y="295" fill="#738092" font-family="Arial, sans-serif" font-size="11">10:25</text>
+  <rect x="109" y="281" width="93" height="19" rx="5" fill="#e5f3f0"/>
+  <text x="117" y="295" fill="#167e72" font-family="Arial, sans-serif" font-size="10" font-weight="700">Measurement</text>
+  <text x="69" y="320" fill="#26323c" font-family="Arial, sans-serif" font-size="13" font-weight="700">Sample reading received</text>
+  <text x="69" y="341" fill="#26323c" font-family="Arial, sans-serif" font-size="12" font-weight="700">12.4 example units</text>
+  <text x="69" y="363" fill="#647386" font-family="Arial, sans-serif" font-size="12">Synthetic measurement text for this illustration.</text>
+  <text x="69" y="385" fill="#168879" font-family="Arial, sans-serif" font-size="11">› Source</text>
+  <text x="112" y="385" fill="#647386" font-family="Arial, sans-serif" font-size="10">sensor.example_reading</text>
+  <line x1="38" y1="420" x2="682" y2="420" stroke="#dce1e7"/>
+  <text x="38" y="443" fill="#647386" font-family="Arial, sans-serif" font-size="11">Synthetic preview only. Entries are mapped from existing entity data;</text>
+  <text x="38" y="460" fill="#647386" font-family="Arial, sans-serif" font-size="11">the card does not record, poll, or control anything.</text>
+</svg>
