@@ -123,6 +123,13 @@ always use the original option value.
 The configured current program stage also displays its live state (such as
 Running or Ready) in the status row, independently of the primary power entity
 and Mushroom heading settings.
+Features also offers three optional custom entity buttons for extra appliance
+functions. Each has an entity, optional name/icon, and tap-action override.
+Switches, input booleans, lights and fans toggle by default; buttons/input buttons
+use their press service; other domains open more-info. Missing or unavailable
+entities disable their button. These custom selections are never auto-discovered.
+For example, select the appliance's Child lock switch to toggle it and see its
+live On/Off state directly on the button.
 
 ### Stock Card
 

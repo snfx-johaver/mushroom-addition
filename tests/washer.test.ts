@@ -124,6 +124,60 @@ describe("Washer-Dryer entity setup", () => {
 });
 
 describe("Washer-Dryer program labels", () => {
+  it("exposes three empty custom slots and only shows details for configured slots", () => {
+    const descriptor = CATALOG.find(item => item.upstreamId === "custom_card_washer")!;
+    const flatten = (fields: EditorField[]): EditorField[] =>
+      fields.flatMap(field => [field, ...flatten(field.schema ?? [])]);
+    const fields = flatten(editorSchemaFor(descriptor, { type }));
+    expect(fields.filter(field => /^washer_button_[123]_entity$/.test(field.name))).toHaveLength(3);
+    expect(fields.some(field => field.name === "washer_button_1_action")).toBe(false);
+    const configured = flatten(editorSchemaFor(descriptor, { type, washer_button_2_entity: "switch.extra" }));
+    expect(configured.some(field => field.name === "washer_button_2_action")).toBe(true);
+    expect(configured.some(field => field.name === "washer_button_1_action")).toBe(false);
+  });
+
+  it("renders optional custom buttons with safe domain defaults, overrides and disabled missing states", async () => {
+    const hass = makeHass();
+    hass.states["button.extra"] = { entity_id: "button.extra", state: "2026-11-01", attributes: { friendly_name: "Extra function" } };
+    const card = document.createElement(type.replace("custom:", "")) as MushroomAdditionCard;
+    card.hass = hass;
+    card.setConfig({ type, entity: "switch.dishwasher_power",
+      washer_button_1_entity: "switch.dishwasher_power", washer_button_1_name: "Intensive zone",
+      washer_button_2_entity: "button.extra",
+      washer_button_3_entity: "sensor.dishwasher_program_progress",
+    });
+    document.body.append(card);
+    await card.updateComplete;
+    const actions = vi.fn();
+    card.addEventListener("hass-action", actions);
+    const buttons = [...card.shadowRoot!.querySelectorAll<HTMLButtonElement>(".washer-extra-button")];
+    expect(buttons).toHaveLength(3);
+    expect(buttons[0].textContent).toContain("Intensive zone");
+    expect(buttons[0].querySelector("small")?.textContent).toBe("on");
+    buttons.forEach(button => button.click());
+    const configs = actions.mock.calls.map(([event]) => (event as CustomEvent).detail.config);
+    expect(configs[0]).toMatchObject({ entity: "switch.dishwasher_power", tap_action: { action: "toggle" } });
+    expect(configs[1]).toMatchObject({ entity: "button.extra", tap_action: {
+      action: "perform-action", perform_action: "button.press", target: { entity_id: "button.extra" },
+    } });
+    expect(configs[2]).toMatchObject({ entity: "sensor.dishwasher_program_progress", tap_action: { action: "more-info" } });
+    expect(hass.callService).not.toHaveBeenCalled();
+    card.setConfig({ type, washer_button_1_entity: "switch.dishwasher_power",
+      washer_button_1_action: { action: "more-info" },
+      washer_button_2_entity: "switch.missing",
+      washer_button_3_entity: "button.extra", washer_button_3_action: { action: "none" },
+    });
+    await card.updateComplete;
+    const updated = [...card.shadowRoot!.querySelectorAll<HTMLButtonElement>(".washer-extra-button")];
+    expect(updated[1].disabled).toBe(true);
+    expect(updated[2].disabled).toBe(true);
+    updated[0].click();
+    expect((actions.mock.calls.at(-1)![0] as CustomEvent).detail.config.tap_action.action).toBe("more-info");
+    card.setConfig({ type });
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelector(".washer-extra-controls")).toBeNull();
+  });
+
   it("shows the actual operation state independently of power/heading and updates it live", async () => {
     const hass = makeHass();
     hass.formatEntityState = entity => entity.state === "run" ? "Running"

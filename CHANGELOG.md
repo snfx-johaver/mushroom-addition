@@ -4,6 +4,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Washer-Dryer offers three optional custom entity buttons with visual name,
+  icon and action overrides and responsive wrapping.
+
 - Washer-Dryer displays its live program state independently of the power-switch
   heading and uses the operation state to distinguish running from ready/idle.
 

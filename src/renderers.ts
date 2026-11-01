@@ -1027,6 +1027,28 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
     ? actionFor("ulm_custom_card_washer_start_action")
     : actionFor("ulm_custom_card_washer_pause_action");
   const stopAction = actionFor("ulm_custom_card_washer_stop_action");
+  const extraButtons = [1, 2, 3].flatMap(slot => {
+    const id = configured<string>(ctx, `washer_button_${slot}_entity`);
+    if (!id) return [];
+    const entity = ctx.hass.states[id];
+    const domain = id.split(".")[0];
+    const name = configured<string>(ctx, `washer_button_${slot}_name`) ||
+      displayName({ type: "", entity: id }, entity, ctx.hass);
+    const defaultAction: ActionConfig = ["switch", "input_boolean", "light", "fan"].includes(domain)
+      ? { action: "toggle" }
+      : ["button", "input_button"].includes(domain)
+        ? { action: "perform-action", perform_action: `${domain}.press`, target: { entity_id: id } }
+        : { action: "more-info" };
+    const action = configured<ActionConfig>(ctx, `washer_button_${slot}_action`) ?? defaultAction;
+    const unavailable = !entity || ["unknown", "unavailable"].includes(entity.state);
+    return [html`<button class="ulm-control washer-extra-button" type="button"
+      aria-label=${`${name}: ${stateLabel(entity, ctx.hass)}`} title=${`${name}: ${stateLabel(entity, ctx.hass)}`}
+      ?disabled=${unavailable || action.action === "none"}
+      ${controlActions({ type: ctx.config.type, entity: id, tap_action: action })}>
+      ${renderEntityIcon(ctx.hass, entity, configured<string>(ctx, `washer_button_${slot}_icon`), domain === "switch" ? "mdi:toggle-switch" : "mdi:gesture-tap-button")}
+      <span class="washer-extra-copy"><span>${name}</span><small>${stateLabel(entity, ctx.hass)}</small></span>
+    </button>`];
+  });
   return ctx.actionSurface("custom-washer", html`
     <div class="custom-card-heading washer-heading">
       ${iconBubble(ctx, "mdi:washing-machine", powered ? "blue" : "grey")}
@@ -1093,6 +1115,7 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
         ) : nothing}` : nothing}
       </div>
     ` : nothing}
+    ${extraButtons.length ? html`<div class="washer-extra-controls">${extraButtons}</div>` : nothing}
     ${powered && remoteEnabled && delayedEnabled && delayedTime ? html`
       <div class="washer-delay-controls">
         ${button(localizeText(ctx.hass, "Move delayed start 15 minutes earlier"), "mdi:arrow-down", (event) => setDelayedMinutes(event, -15))}

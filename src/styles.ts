@@ -384,6 +384,11 @@ export const sharedStyles = css`
   .washer-program { width: 100%; height: var(--mush-control-height, 42px); padding: 0 12px; border: 0; border-radius: var(--mush-control-border-radius, 12px); background: var(--addition-neutral-background); color: var(--primary-text-color); font: inherit; font-size: 14px; }
   .washer-program:disabled { opacity: .5; }
   .washer-controls .ulm-control { width: 100%; height: var(--mush-control-height, 42px); border-radius: var(--mush-control-border-radius, 12px); }
+  .washer-extra-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 110px), 1fr)); gap: var(--mush-control-spacing, 12px); min-width: 0; }
+  .washer-extra-button { min-width: 0; width: 100%; min-height: var(--mush-control-height, 42px); padding: 8px; gap: 6px; }
+  .washer-extra-button span { min-width: 0; overflow-wrap: anywhere; }
+  .washer-extra-copy { display: flex; flex-direction: column; text-align: left; }
+  .washer-extra-copy small { color: var(--secondary-text-color); font-size: 11px; }
   .washer-remote { color: var(--secondary-text-color); font-size: 11px; text-align: center; }
   .custom-sun-card { display: grid; min-height: 210px; gap: var(--mush-spacing, 12px); padding: var(--mush-spacing, 12px); }
   .astronomy-times { display: grid; min-width: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--mush-spacing, 12px); }

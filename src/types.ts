@@ -520,6 +520,18 @@ export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, P
   power_entity?: string;
   program_stage_entity?: string;
   washer_power_entity?: string;
+  washer_button_1_entity?: string;
+  washer_button_1_name?: string;
+  washer_button_1_icon?: string;
+  washer_button_1_action?: ActionConfig;
+  washer_button_2_entity?: string;
+  washer_button_2_name?: string;
+  washer_button_2_icon?: string;
+  washer_button_2_action?: ActionConfig;
+  washer_button_3_entity?: string;
+  washer_button_3_name?: string;
+  washer_button_3_icon?: string;
+  washer_button_3_action?: ActionConfig;
   program_select_entity?: string;
   power_switch_entity?: string;
   door_entity?: string;

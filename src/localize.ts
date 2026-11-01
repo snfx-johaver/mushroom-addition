@@ -699,6 +699,11 @@ export const localize = (
   key: string,
   values: Record<string, string | number> = {},
 ): string => {
+  const washerButton = key.match(/^washer_button_([123])_(entity|name|icon|action)$/);
+  if (washerButton) {
+    const field = washerButton[2] === "action" ? "tap_action" : washerButton[2];
+    return `${localizeText(hass, "Custom button")} ${washerButton[1]}: ${localize(hass, field)}`;
+  }
   const language = normalizeLocale(hass?.language);
   const message = energyEditorLabels[language]?.[key] ?? translationCatalogs[language]?.[key] ?? translationCatalogs.en[key] ??
     key
@@ -1305,6 +1310,11 @@ export const helperCatalogs: Record<string, Record<string, string>> = {
 };
 
 export const editorHelper = (key: string, hass?: HomeAssistant): string | undefined => {
+  if (/^washer_button_[123]_/.test(key)) {
+    if (key.endsWith("_entity")) return localizeText(hass, "Optional extra appliance function, such as Child lock. Switches toggle, buttons press, and other entities open more-info. Not auto-discovered.");
+    if (key.endsWith("_action")) return localizeText(hass, "Override the default entity action for this button.");
+    return editorHelper(key.endsWith("_icon") ? "icon" : "name", hass);
+  }
   const energyHelp = energyEditorHelpers[normalizeLocale(hass?.language)]?.[key];
   if (energyHelp) return energyHelp;
   const stockHelp = stockEditorHelper(key);

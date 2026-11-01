@@ -887,6 +887,14 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
         entity(["switch", "input_boolean"], "power_switch_entity"),
         entity(["sensor", "binary_sensor"], "door_entity"),
         entity(["sensor", "binary_sensor"], "finished_entity"),
+        ...[1, 2, 3].flatMap(slot => [
+          entity(undefined, `washer_button_${slot}_entity`),
+          ...(config?.[`washer_button_${slot}_entity`] ? [
+            text(`washer_button_${slot}_name`),
+            { name: `washer_button_${slot}_icon`, selector: { icon: {} } },
+            action(`washer_button_${slot}_action`),
+          ] : []),
+        ]),
         entity(["sensor", "binary_sensor"], "ulm_custom_card_washer_remote_control"),
         entity(["sensor"], "ulm_custom_card_washer_job_progress"),
         entity(["input_boolean"], "ulm_custom_card_washer_delayed_start"),
