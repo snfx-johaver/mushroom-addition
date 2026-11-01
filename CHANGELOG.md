@@ -4,6 +4,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Washer-Dryer power is blue while On; program controls use cached supported
+  same-device defaults, with explicit feedback when Pause is unsupported.
+
 - Washer-Dryer groups power and progress in the heading with small icons instead
   of a separate percentage row.
 

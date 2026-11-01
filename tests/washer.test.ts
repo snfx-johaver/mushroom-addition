@@ -3,7 +3,7 @@ import "../src/index";
 import { CATALOG } from "../src/catalog";
 import { createStubConfig } from "../src/stub";
 import { editorSchemaFor, type EditorField } from "../src/editor-schema";
-import { discoverWasherEntities, washerProgramLabel } from "../src/washer";
+import { discoverWasherEntities, washerDefaultActions, washerProgramLabel } from "../src/washer";
 import type { MushroomAdditionCard } from "../src/card";
 import type { MushroomAdditionEditor } from "../src/editor";
 import type { AdditionConfig, HomeAssistant } from "../src/types";
@@ -124,6 +124,55 @@ describe("Washer-Dryer entity setup", () => {
 });
 
 describe("Washer-Dryer program labels", () => {
+  it("caches supported program actions without inventing pause or rejecting unknown button timestamps", () => {
+    const hass = makeHass();
+    hass.entities!["switch.dishwasher_power"].platform = "home_connect";
+    hass.entities!["button.dishwasher_stop_program"] = { device_id: "dishwasher", translation_key: "stop_program" };
+    hass.services = { button: { press: {} }, home_connect: { start_selected_program: {} } };
+    const actions = washerDefaultActions(hass, "switch.dishwasher_power");
+    expect(actions).toEqual({
+      start: { action: "perform-action", perform_action: "home_connect.start_selected_program", data: { device_id: "dishwasher" } },
+      stop: { action: "perform-action", perform_action: "button.press", target: { entity_id: "button.dishwasher_stop_program" } },
+    });
+    expect(washerDefaultActions({ ...hass, states: { ...hass.states } }, "switch.dishwasher_power")).toBe(actions);
+    expect(washerDefaultActions({ ...hass, entities: undefined }, "switch.dishwasher_power")).toEqual({});
+  });
+
+  it("enables supported Stop, explains unsupported Pause and colors power from live state", async () => {
+    const hass = makeHass();
+    hass.entities!["switch.dishwasher_power"].platform = "home_connect";
+    hass.entities!["button.dishwasher_stop_program"] = { device_id: "dishwasher", translation_key: "stop_program" };
+    hass.states["button.dishwasher_stop_program"] = { entity_id: "button.dishwasher_stop_program", state: "unknown", attributes: {} };
+    hass.services = { button: { press: {} }, home_connect: { start_selected_program: {} } };
+    const card = document.createElement(type.replace("custom:", "")) as MushroomAdditionCard;
+    card.hass = hass;
+    card.setConfig({ type, entity: "switch.dishwasher_power",
+      program_stage_entity: "sensor.dishwasher_operation_state",
+      power_switch_entity: "switch.dishwasher_power",
+      ulm_custom_card_washer_remote_control: "binary_sensor.dishwasher_remote_control",
+      ulm_custom_card_washer_stop_action: { action: "none" },
+    });
+    document.body.append(card);
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelector(".washer-power-button")?.classList.contains("is-on")).toBe(true);
+    expect(card.shadowRoot!.querySelector<HTMLButtonElement>('[aria-label="Pause washer"]')?.disabled).toBe(true);
+    expect(card.shadowRoot!.querySelector(".washer-control-notice")?.textContent).toContain("Pause is not supported");
+    const stop = card.shadowRoot!.querySelector<HTMLButtonElement>('[aria-label="Stop washer"]')!;
+    expect(stop.disabled).toBe(false);
+    const actions = vi.fn();
+    card.addEventListener("hass-action", actions);
+    stop.click();
+    expect((actions.mock.calls[0][0] as CustomEvent).detail.config.tap_action).toEqual({
+      action: "perform-action", perform_action: "button.press", target: { entity_id: "button.dishwasher_stop_program" },
+    });
+    expect(hass.callService).not.toHaveBeenCalled();
+    card.hass = { ...hass, states: { ...hass.states,
+      "switch.dishwasher_power": { ...hass.states["switch.dishwasher_power"], state: "off" },
+    } };
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelector(".washer-power-button")?.classList.contains("is-on")).toBe(false);
+  });
+
   it("exposes three empty custom slots and only shows details for configured slots", () => {
     const descriptor = CATALOG.find(item => item.upstreamId === "custom_card_washer")!;
     const flatten = (fields: EditorField[]): EditorField[] =>

@@ -1,4 +1,37 @@
-import type { HassEntity, HomeAssistant } from "./types";
+import type { ActionConfig, HassEntity, HomeAssistant } from "./types";
+
+type ApplianceActions = Partial<Record<"start" | "pause" | "stop", ActionConfig>>;
+const actionCache = new WeakMap<object, WeakMap<object, Map<string, ApplianceActions>>>();
+
+export const washerDefaultActions = (hass: HomeAssistant, primary?: string): ApplianceActions => {
+  const registry = hass.entities;
+  const services = hass.services;
+  const device = primary && registry?.[primary]?.device_id;
+  if (!registry || !services || !device) return {};
+  let byServices = actionCache.get(registry);
+  if (!byServices) actionCache.set(registry, byServices = new WeakMap());
+  let byDevice = byServices.get(services);
+  if (!byDevice) byServices.set(services, byDevice = new Map());
+  const cached = byDevice.get(device);
+  if (cached) return cached;
+  const result: ApplianceActions = {};
+  const siblings = Object.entries(registry).filter(([, entry]) => entry.device_id === device);
+  for (const kind of ["start", "pause", "stop"] as const) {
+    const matches = siblings.filter(([id, entry]) => id.startsWith("button.") &&
+      (entry.translation_key === `${kind}_program` || id.endsWith(`_${kind}_program`)));
+    if (matches.length === 1 && services.button?.press) {
+      result[kind] = { action: "perform-action", perform_action: "button.press",
+        target: { entity_id: matches[0][0] } };
+    }
+  }
+  if (!result.start && siblings.some(([, entry]) => entry.platform === "home_connect") &&
+    services.home_connect?.start_selected_program) {
+    result.start = { action: "perform-action", perform_action: "home_connect.start_selected_program",
+      data: { device_id: device } };
+  }
+  byDevice.set(device, result);
+  return result;
+};
 
 const washerFields = [
   { key: "program_stage_entity", domains: ["sensor", "select"], pattern: /program_stage|job_state|operation_state|machine_state|current_phase|program_phase/ },

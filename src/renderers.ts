@@ -6,7 +6,7 @@ import { localize, localizeText } from "./localize";
 import { ROOM_STATUS_KINDS, ROOM_STATUS_LIMIT, roomEntityIcon, roomEntityUnavailable, roomItemDefaultsFor, roomLightEntity, roomLightRgb, roomSecondary, roomStatusActive, roomStatusIcon, roomStatusKind } from "./room";
 import { activeStates, cssUrl, displayName, fireEvent, hasOnOffState, stateLabel } from "./helpers";
 import { wasteStreamsForConfig } from "./waste-streams";
-import { washerProgramLabel } from "./washer";
+import { washerDefaultActions, washerProgramLabel } from "./washer";
 import { defaultIconFor } from "./defaults";
 import { renderEntityIcon } from "./entity-icon";
 import { resolveColor } from "./colors";
@@ -1009,8 +1009,11 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
       : remoteEnabled && delayedEnabled
         ? configured<string>(ctx, "ulm_custom_card_washer_label_configuring") ?? "configure"
         : configured<string>(ctx, "ulm_custom_card_washer_label_idle") ?? "idle";
-  const actionFor = (key: string): ActionConfig =>
-    configured<ActionConfig>(ctx, key) ?? { action: "none" };
+  const defaults = washerDefaultActions(ctx.hass, ctx.config.entity);
+  const actionFor = (key: string, kind: "start" | "pause" | "stop"): ActionConfig => {
+    const action = configured<ActionConfig>(ctx, key);
+    return action && action.action !== "none" ? action : defaults[kind] ?? { action: "none" };
+  };
   const runWasherAction = (event: Event, action: ActionConfig): void =>
     runControlAction(event, ctx, action, typeof action.entity === "string" ? action.entity : ctx.config.entity);
   const timeValue = delayedTime?.state.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/)?.slice(1).map(Number);
@@ -1023,10 +1026,17 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
       time: `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}:00`,
     });
   };
-  const primaryAction = stopped
-    ? actionFor("ulm_custom_card_washer_start_action")
-    : actionFor("ulm_custom_card_washer_pause_action");
-  const stopAction = actionFor("ulm_custom_card_washer_stop_action");
+  const resume = stopped || ["pause", "paused"].includes(machine?.state.toLowerCase() ?? "");
+  const primaryAction = resume
+    ? actionFor("ulm_custom_card_washer_start_action", "start")
+    : actionFor("ulm_custom_card_washer_pause_action", "pause");
+  const stopAction = actionFor("ulm_custom_card_washer_stop_action", "stop");
+  const unavailableAction = (action: ActionConfig): boolean => {
+    if (action.action === "none") return true;
+    const target = action.target?.entity_id;
+    return typeof target === "string" &&
+      (!ctx.hass.states[target] || ctx.hass.states[target].state === "unavailable");
+  };
   const extraButtons = [1, 2, 3].flatMap(slot => {
     const id = configured<string>(ctx, `washer_button_${slot}_entity`);
     if (!id) return [];
@@ -1090,23 +1100,24 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
     ` : nothing}
     ${(powered && remoteEnabled) || powerSwitch ? html`
       <div class="washer-controls">
-        ${powerSwitch ? button(
-          localizeText(ctx.hass, "Toggle power"),
-          "mdi:power",
-          (event) => runControlAction(event, ctx, { action: "toggle" }, powerSwitch.entity_id),
-          powerSwitch.state === "unavailable",
-        ) : nothing}
+        ${powerSwitch ? html`<button class="ulm-control washer-power-button ${powerSwitch.state === "on" ? "is-on" : ""}"
+          type="button" aria-label=${localizeText(ctx.hass, "Toggle power")} aria-pressed=${powerSwitch.state === "on"}
+          ?disabled=${["unknown", "unavailable"].includes(powerSwitch.state)}
+          @pointerdown=${(event: Event) => event.stopPropagation()}
+          @click=${(event: Event) => runControlAction(event, ctx, { action: "toggle" }, powerSwitch.entity_id)}>
+          <ha-icon icon="mdi:power"></ha-icon>
+        </button>` : nothing}
         ${powered && remoteEnabled ? html`${button(
-          stopped ? localizeText(ctx.hass, "Start washer") : localizeText(ctx.hass, "Pause washer"),
-          stopped ? "mdi:play" : "mdi:pause",
+          resume ? localizeText(ctx.hass, "Start washer") : localizeText(ctx.hass, "Pause washer"),
+          resume ? "mdi:play" : "mdi:pause",
           (event) => runWasherAction(event, primaryAction),
-          primaryAction.action === "none",
+          unavailableAction(primaryAction),
         )}
         ${button(
           localizeText(ctx.hass, "Stop washer"),
           "mdi:stop",
           (event) => runWasherAction(event, stopAction),
-          stopped || stopAction.action === "none",
+          stopped || unavailableAction(stopAction),
         )}
         ${delayed ? button(
           delayedEnabled ? localizeText(ctx.hass, "Disable delayed start") : localizeText(ctx.hass, "Enable delayed start"),
@@ -1116,6 +1127,7 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
         ) : nothing}` : nothing}
       </div>
     ` : nothing}
+    ${powered && remoteEnabled && !resume && primaryAction.action === "none" ? html`<p class="washer-control-notice">${localizeText(ctx.hass, "Pause is not supported by this appliance. Configure a pause action if your integration provides one.")}</p>` : nothing}
     ${extraButtons.length ? html`<div class="washer-extra-controls">${extraButtons}</div>` : nothing}
     ${powered && remoteEnabled && delayedEnabled && delayedTime ? html`
       <div class="washer-delay-controls">

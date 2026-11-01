@@ -133,6 +133,13 @@ use their press service; other domains open more-info. Missing or unavailable
 entities disable their button. These custom selections are never auto-discovered.
 For example, select the appliance's Child lock switch to toggle it and see its
 live On/Off state directly on the button.
+Power is blue while On. Start/Stop/Pause use explicit configured actions when
+provided; otherwise supported same-device program buttons are used. Home Connect
+also supports Start selected program. Default control mappings are cached by
+registry/device/service snapshot, not scanned on each state update. Legacy
+`action: none` placeholders use these supported defaults. An unsupported Pause
+remains disabled with an explanation; the card never substitutes power-off for
+pause or stop.
 
 ### Stock Card
 
