@@ -2,8 +2,9 @@ import { html, render } from "lit";
 import type { HassEntity, HomeAssistant } from "./types";
 import { roomLightRgb } from "./room";
 
-export const AREA_CONTENT_KEYS = ["alert_color", "sensor_wrap", "sensor_icons", "use_light_color", "light_entity"] as const;
+export const AREA_CONTENT_KEYS = ["alert_color", "sensor_wrap", "sensor_icons", "use_light_color", "light_entity", "camera_privacy_entity"] as const;
 export interface AreaContentOptions {
+  camera_privacy_entity?: string;
   alert_color?: string;
   sensor_wrap?: boolean;
   sensor_icons?: boolean;

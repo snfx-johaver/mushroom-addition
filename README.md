@@ -83,6 +83,13 @@ after installing a release that includes the hotfix.
 
 ## Using the cards
 
+Area Advanced and Area Mushroom expose **Camera privacy entity** under Content.
+Select a switch, input boolean or binary sensor: the camera is shown only while
+that entity is `off`. Privacy `on`, unknown, unavailable or missing uses the
+compact room view with its controls instead of mounting a camera. Clearing the
+selector restores the configured camera behavior. This is a dashboard display
+guard; it does not change the camera's own recording or privacy settings.
+
 Choose your entities and configure the card in the visual editor. Layout,
 colors, information and actions are available where supported. Picker previews
 prefer compatible entities already in your Home Assistant instance.

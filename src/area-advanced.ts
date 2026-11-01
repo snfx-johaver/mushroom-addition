@@ -150,6 +150,15 @@ export class MushroomAreaAdvancedCard extends LitElement {
   private areaEntityIds?: Set<string>;
   private syncedConfig?: AreaAdvancedConfig;
   private syncedCard?: NativeElement;
+  private syncedPrivacy?: boolean;
+  private cameraPrivate(): boolean {
+    const entity = this.config?.camera_privacy_entity;
+    return Boolean(entity && this.hass?.states[entity]?.state !== "off");
+  }
+  private runtimeConfig(editor = false): AreaAdvancedConfig {
+    const config = nativeAreaConfig(this.config!, editor);
+    return this.cameraPrivate() ? { ...config, display_type: "compact" } : config;
+  }
   public static async getConfigElement() {
     return document.createElement(`${AREA_TAG}-editor`);
   }
@@ -187,24 +196,26 @@ export class MushroomAreaAdvancedCard extends LitElement {
       this.error = "Select an area in the native Area editor.";
       return;
     }
-    const config = nativeAreaConfig(this.config);
+    const config = this.runtimeConfig();
     try {
       const needsControls = config.features?.some((feature) => feature.type === `custom:${AREA_FEATURE_TAG}`)
         && !customElements.get("hui-area-controls-card-feature");
-      if (this.card) this.card.setConfig(needsControls ? nativeAreaConfig(this.config, true) : config);
+      if (this.card) this.card.setConfig(needsControls ? this.runtimeConfig(true) : config);
       else {
-        const card = await createNative(needsControls ? nativeAreaConfig(this.config, true) : config);
+        const card = await createNative(needsControls ? this.runtimeConfig(true) : config);
         if (revision !== this.revision) return;
         this.card = card;
+        this.card.setConfig(this.runtimeConfig(Boolean(needsControls)));
       }
       this.loadingControls = Boolean(needsControls);
+      this.syncedPrivacy = this.cameraPrivate();
       this.sync();
       if (needsControls) {
         // Let the installed Area card lazy-load its own native controls before extending them.
         await this.updateComplete;
         await bounded(customElements.whenDefined("hui-area-controls-card-feature"), "The installed frontend cannot load native Area controls. Update Home Assistant, then retry.");
         if (revision !== this.revision) return;
-        this.card!.setConfig(config);
+        this.card!.setConfig(this.runtimeConfig());
         this.loadingControls = false;
       }
     } catch (error) {
@@ -249,6 +260,11 @@ export class MushroomAreaAdvancedCard extends LitElement {
   }
   private sync() {
     if (this.card) {
+      const privacy = this.cameraPrivate();
+      if (privacy !== this.syncedPrivacy) {
+        this.card.setConfig(this.runtimeConfig(this.loadingControls));
+        this.syncedPrivacy = privacy;
+      }
       const refreshHass = this.relevantHassChanged(this.card.hass);
       if (!refreshHass && this.card.layout === this.layout &&
         this.syncedConfig === this.config && this.syncedCard === this.card) return;
@@ -744,9 +760,11 @@ export class MushroomAreaAdvancedEditor extends LitElement {
   private installContentEditor(editor: NativeAreaEditor) {
     if (!editor._schema) throw new Error("This Home Assistant frontend cannot extend the Area editor Content schema.");
     const labels: Record<string, string> = { alert_color: "Alert icon color",
+      camera_privacy_entity: "Camera privacy entity",
       sensor_wrap: "Wrap sensor values onto additional lines", sensor_icons: "Show small grey entity icons beside sensor values",
       use_light_color: "Use the light color as the room accent" };
     const helpers: Record<string, string> = {
+      camera_privacy_entity: "Shows the camera only when this entity is off. On, unknown, unavailable or missing hides the camera and keeps room controls visible.",
       alert_color: "Changes the colored alert circles, including the compact alert badge. Clear to use Home Assistant's default.",
       sensor_wrap: "Keeps all selected sensor classes visible instead of truncating a long row.",
       sensor_icons: "Uses each sensor entity's default icon. Values and aggregation remain controlled by Home Assistant.",
@@ -763,6 +781,7 @@ export class MushroomAreaAdvancedEditor extends LitElement {
         { name: "sensor_wrap", selector: { boolean: {} } },
         { name: "sensor_icons", selector: { boolean: {} } },
         { name: "use_light_color", selector: { boolean: {} } },
+        { name: "camera_privacy_entity", selector: { entity: { domain: ["switch", "input_boolean", "binary_sensor"] } } },
       ] });
         cache.set(base, extended);
       }

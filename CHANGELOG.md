@@ -4,6 +4,10 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Area Advanced and Area Mushroom offer a Camera privacy entity. Only an
+  explicit Off state permits the camera view; privacy, missing and unavailable
+  states use the compact room view without mounting the camera.
+
 - Pollen's Additional sensors toggle now mounts its repeatable entity/label/icon/
   color controls in Features and preserves rows when hidden or reopened.
 

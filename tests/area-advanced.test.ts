@@ -85,6 +85,39 @@ beforeEach(() => { vi.clearAllMocks(); areaWindow.loadCardHelpers = loader; });
 afterEach(() => { document.body.replaceChildren(); delete areaWindow.loadCardHelpers; vi.useRealTimers(); });
 
 describe("native Area card delegation", () => {
+  it("removes the camera layout during privacy and restores it only for an explicitly off entity", async () => {
+    const card = document.createElement(AREA_TAG) as MushroomAreaAdvancedCard;
+    const privacyId = "input_boolean.camera_privacy";
+    const home = (value?: string): HomeAssistant => ({
+      ...hass, entities: {}, devices: {},
+      states: { ...hass.states, ...(value === undefined ? {} : {
+        [privacyId]: { entity_id: privacyId, state: value, attributes: {} },
+      }) },
+    });
+    card.hass = home("on");
+    card.setConfig({ ...base, display_type: "camera", camera_view: "live", camera_privacy_entity: privacyId,
+      features: [{ type: "area-controls", controls: ["light"] }] });
+    document.body.append(card);
+    await settle(card);
+    const native = card.shadowRoot!.querySelector("hui-area-card") as NativeArea;
+    expect(native.config).toMatchObject({ display_type: "compact", features: [{ type: "area-controls", controls: ["light"] }] });
+    expect(native.config).not.toHaveProperty("camera_privacy_entity");
+    for (const value of ["off", "on", "unknown", "unavailable", undefined, "off"]) {
+      card.hass = home(value);
+      await settle(card);
+      expect(native.config?.display_type).toBe(value === "off" ? "camera" : "compact");
+      expect(native.config?.camera_view).toBe("live");
+    }
+    const calls = native.setConfig.mock.calls.length;
+    card.hass = home("off");
+    await settle(card);
+    expect(native.setConfig).toHaveBeenCalledTimes(calls);
+    card.setConfig({ ...base, display_type: "camera" });
+    card.hass = home("on");
+    await settle(card);
+    expect(native.config?.display_type).toBe("camera");
+  });
+
   it("keeps the Mushroom comparison card separate and preserves its type in the shared editor", async () => {
     await import("../src/index");
     expect(customElements.get(MUSHROOM_AREA_TAG)).toBe(MushroomAreaCard);
@@ -325,7 +358,8 @@ describe("native Area card delegation", () => {
   });
   it("places alert and sensor options inside native Content, preserving native edits", async () => {
     const editor = document.createElement(`${AREA_TAG}-editor`) as MushroomAreaAdvancedEditor;
-    const config = { ...base, alert_color: "red", sensor_wrap: true, sensor_icons: true };
+    const config = { ...base, alert_color: "red", sensor_wrap: true, sensor_icons: true,
+      camera_privacy_entity: "switch.camera_privacy" };
     editor.hass = hass; editor.setConfig(config);
     document.body.append(editor); await settle(editor);
     const native = editor.shadowRoot!.querySelector("test-area-editor") as NativeEditor;
@@ -335,10 +369,12 @@ describe("native Area card delegation", () => {
     };
     void native.updateComplete;
     expect(form.schema[0].schema.map(field => field.name)).toEqual([
-      "sensor_classes", "alert_color", "sensor_wrap", "sensor_icons", "use_light_color",
+      "sensor_classes", "alert_color", "sensor_wrap", "sensor_icons", "use_light_color", "camera_privacy_entity",
     ]);
     expect(form.data).toMatchObject({ alert_color: "red", sensor_wrap: true, sensor_icons: true });
     expect(form.computeLabel({ name: "alert_color" })).toBe("Alert icon color");
+    expect(form.computeLabel({ name: "camera_privacy_entity" })).toBe("Camera privacy entity");
+    expect(form.data.camera_privacy_entity).toBe("switch.camera_privacy");
     const schema = form.schema;
     for (let index = 0; index < 5; index++) {
       editor.hass = { ...hass, states: { ...hass.states } };
@@ -353,7 +389,7 @@ describe("native Area card delegation", () => {
       config: { ...native.config, alert_color: "blue", sensor_wrap: false, sensor_icons: true },
     }, bubbles: true, composed: true }));
     expect((events.mock.calls[0][0] as CustomEvent).detail.config).toMatchObject({
-      alert_color: "blue", sensor_wrap: false, sensor_icons: true,
+      alert_color: "blue", sensor_wrap: false, sensor_icons: true, camera_privacy_entity: "switch.camera_privacy",
     });
   });
   it("shows an explicit missing-helper error and can retry", async () => {
