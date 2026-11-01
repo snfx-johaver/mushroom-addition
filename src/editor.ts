@@ -28,6 +28,7 @@ import { areaSceneItems } from "./light-area";
 import { REMOTE_DEFAULTS, REMOTE_KEYS, REMOTE_SECTIONS, resolveRemoteEntities } from "./remote-card";
 import { PIHOLE_DEFAULTS, PIHOLE_METRICS, PIHOLE_SECTIONS, piHoleMetricEntities } from "./pi-hole";
 import { SONOS_CONTROLS } from "./sonos-controls";
+import { discoverWasherEntities } from "./washer";
 import { CONSOLE_ENTITIES } from "./console";
 import { editorHelper, localize, localizeText } from "./localize";
 import { localizeEditorSchema } from "./localized-schema";
@@ -764,6 +765,16 @@ export class MushroomAdditionEditor extends LitElement {
     ) {
       for (const { configKey } of CONSOLE_ENTITIES) {
         if (this.config[configKey] === undefined) delete next[configKey];
+      }
+    }
+    if (
+      getCatalogItem(this.config.type.replace(/^custom:/, ""))?.upstreamId === "custom_card_washer" &&
+      typeof value.entity === "string" && value.entity &&
+      value.entity !== this.config.entity
+    ) {
+      const discovered = discoverWasherEntities(this.hass, value.entity);
+      for (const [key, id] of Object.entries(discovered)) {
+        if (next[key] === undefined || next[key] === "") next[key] = id;
       }
     }
     this.config = next;

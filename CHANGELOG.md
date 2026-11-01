@@ -4,6 +4,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Washer-Dryer starts with empty entity selectors, saves same-device mappings once
+  when its primary entity is selected, and shows translated/readable program names.
+
 - Added fully visual-editable Weather Advanced with shared Mushroom presentation
   and actions, animated modern/classic skies, forecasts, clocks and sensor overrides.
   Offscreen/reduced-motion animation safeguards and bounded forecast retries

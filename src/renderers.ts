@@ -6,6 +6,7 @@ import { localize, localizeText } from "./localize";
 import { ROOM_STATUS_KINDS, ROOM_STATUS_LIMIT, roomEntityIcon, roomEntityUnavailable, roomItemDefaultsFor, roomLightEntity, roomLightRgb, roomSecondary, roomStatusActive, roomStatusIcon, roomStatusKind } from "./room";
 import { activeStates, cssUrl, displayName, fireEvent, hasOnOffState, stateLabel } from "./helpers";
 import { wasteStreamsForConfig } from "./waste-streams";
+import { washerProgramLabel } from "./washer";
 import { defaultIconFor } from "./defaults";
 import { renderEntityIcon } from "./entity-icon";
 import { resolveColor } from "./colors";
@@ -1058,7 +1059,7 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
           });
         }}>
         ${programOptions.map((option) => html`
-          <option value=${option} ?selected=${option === programSelect.state}>${option}</option>
+          <option value=${option} ?selected=${option === programSelect.state}>${washerProgramLabel(ctx.hass, programSelect, option)}</option>
         `)}
       </select>
     ` : nothing}

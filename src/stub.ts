@@ -58,6 +58,7 @@ export const createStubConfig = (
   entities: string[] = [],
   entitiesFallback: string[] = [],
 ): AdditionConfig => {
+  if (descriptor.upstreamId === "custom_card_washer") return populatedDefaultsFor(descriptor);
   if (descriptor.upstreamId === "weather_advanced") return weatherStub(hass, entities, entitiesFallback);
   if (descriptor.upstreamId === "smart_saving") return smartSavingStub(hass, entities, entitiesFallback);
   if (descriptor.upstreamId === "energy_entityworkflow") return workflowStub(hass, entities, entitiesFallback);
@@ -197,10 +198,7 @@ export const createStubConfig = (
                         : descriptor.upstreamId === "custom_card_nas_metrics"
                             ? findEntity(["switch", "binary_sensor"], ["nas"]) ??
                                 findEntity(["switch", "binary_sensor"], ["status"])
-                              : descriptor.upstreamId === "custom_card_washer"
-                                ? findEntity(["sensor"], ["operation", "state"]) ??
-                                  findEntity(["sensor"], ["washer", "state"])
-                                : descriptor.upstreamId === "custom_card_sun"
+                              : descriptor.upstreamId === "custom_card_sun"
                                   ? findEntity(["sun"], [])
                                   : descriptor.upstreamId === "custom_card_media_player_sonos"
                                         ? sonosPlayer
@@ -336,29 +334,6 @@ export const createStubConfig = (
         electricity_price_entity: findEntity(["sensor"], ["nordpool", "kwh", "nl", "eur"]),
         tariff_markup_entity: findEntity(["sensor", "input_number"], ["hems", "rate", "markup"]),
         tariff_vat_entity: findEntity(["sensor", "input_number"], ["hems", "vat", "percentage"]),
-      }
-      : {}),
-    ...(descriptor.upstreamId === "custom_card_washer"
-      ? {
-        program_stage_entity: findEntity(["sensor", "select"], ["wasmachine", "program"]) ??
-          findEntity(["sensor", "select"], ["washer", "program"]) ??
-          findEntity(["sensor", "select"], ["washer", "job"]) ??
-          entity,
-        washer_power_entity: findEntity(["sensor", "switch"], ["wasmachine", "power"]) ??
-          findEntity(["sensor", "switch"], ["washer", "power"]) ??
-          findEntity(["sensor", "switch"], ["power"]),
-        program_select_entity: findEntity(["select", "input_select"], ["washer", "program"]) ??
-          findEntity(["select", "input_select"], ["program"]),
-        power_switch_entity: findEntity(["switch", "input_boolean"], ["washer", "power"]) ??
-          findEntity(["switch", "input_boolean"], ["wasmachine"]),
-        door_entity: findEntity(["sensor", "binary_sensor"], ["washer", "door"]) ??
-          findEntity(["sensor", "binary_sensor"], ["door"]),
-        finished_entity: findEntity(["sensor", "binary_sensor"], ["washer", "finished"]) ??
-          findEntity(["sensor", "binary_sensor"], ["finished"]),
-        ulm_custom_card_washer_machine_stop_state: "stop",
-        ulm_custom_card_washer_label_idle: "idle",
-        ulm_custom_card_washer_label_configuring: "configure",
-        ulm_custom_card_washer_label_running: "run",
       }
       : {}),
     ...(descriptor.upstreamId === "custom_card_sun"

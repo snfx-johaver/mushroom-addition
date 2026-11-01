@@ -107,6 +107,20 @@ Found a rough edge or have an idea for another card?
 [Open an issue or feature request](https://github.com/snfx-johaver/mushroom-addition/issues)
 and help grow the next batch.
 
+### Washer-Dryer Card
+
+New cards start with all entity selectors empty. Selecting the primary entity in
+Context fills unambiguous, available matching entities from the same device into
+empty Features fields. These mappings are saved in the card configuration; normal
+state updates, reopening the editor, and clearing an individual field do not
+trigger discovery. Existing manual selections are preserved. Missing or ambiguous
+matches remain empty for you to select, and devices without registry information
+are never matched by unrelated entity names.
+
+Program selection displays Home Assistant's translated option names when
+available, with readable names for raw integration identifiers. Service calls
+always use the original option value.
+
 ### Stock Card
 
 Choose **Mushroom Addition: Stock Card** in the picker. Its visual editor uses
