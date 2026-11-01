@@ -76,6 +76,47 @@ describe("Carousel entity defaults and gestures", () => {
     const matrix = (["coverflow", "slide", "fade", "cube", "flip"] as CarouselEffect[])
       .flatMap(effect => (["bullets", "fraction", "progressbar"] as CarouselPagination[]).map(pagination => ({ effect, pagination })));
 
+    it("shows both neighbors in a narrow automatic coverflow and reveals new items during a long drag", async () => {
+      const scenes = Array.from({ length: 15 }, (_, index) => ({ entity: `scene.example_${index}`, name: `Scene ${index}` }));
+      const card = await create({ carousel_items: scenes, carousel_slides_per_view: "auto",
+        carousel_button_width: 82, carousel_coverflow_stretch: 44 });
+      Object.defineProperty(card.shadowRoot!.querySelector(".carousel"), "clientWidth", { value: 220 });
+      (card as unknown as { carouselWidth: number }).carouselWidth = 220;
+      await card.updateComplete;
+      const visible = () => [...card.shadowRoot!.querySelectorAll<HTMLButtonElement>(".item")].filter(item => !item.hidden);
+      expect(visible().map(item => item.dataset.carouselIndex)).toEqual(["0", "1", "14"]);
+      const surface = card.shadowRoot!.querySelector(".carousel")!;
+      surface.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: 200, clientY: 20, button: 0 }));
+      for (let step = 1; step <= 5; step++) {
+        surface.dispatchEvent(new PointerEvent("pointermove", { bubbles: true, clientX: 200 - step * 126, clientY: 20 }));
+        await card.updateComplete;
+        const centered = visible().find(item => item.style.transform.startsWith("translateX(0px)"));
+        expect(centered?.dataset.carouselIndex).toBe(String(step));
+      }
+      surface.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, clientX: 200 - 5 * 126, clientY: 20 }));
+      await card.updateComplete;
+      expect(selected(card)).toBe("5");
+      surface.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: 20, clientY: 20, button: 0 }));
+      surface.dispatchEvent(new PointerEvent("pointermove", { bubbles: true, clientX: 20 + 7 * 126, clientY: 20 }));
+      await card.updateComplete;
+      expect(visible().find(item => item.style.transform.startsWith("translateX(0px)"))?.dataset.carouselIndex).toBe("13");
+      surface.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, clientX: 20 + 7 * 126, clientY: 20 }));
+      await card.updateComplete;
+      expect(selected(card)).toBe("13");
+    });
+
+    it.each(["coverflow", "slide"] as const)("uses the same %s spacing to draw and settle a drag", async effect => {
+      const card = await create({ carousel_items: items, carousel_effect: effect, carousel_button_width: 80,
+        carousel_coverflow_stretch: 50, carousel_coverflow_modifier: 2, carousel_loop: false });
+      const surface = card.shadowRoot!.querySelector(".carousel")!;
+      const distance = effect === "coverflow" ? 180 : 80;
+      for (const [name, x] of [["pointerdown", 200], ["pointermove", 200 - distance * 2], ["pointerup", 200 - distance * 2]] as const) {
+        surface.dispatchEvent(new PointerEvent(name, { bubbles: true, clientX: x, clientY: 20, button: 0 }));
+      }
+      await card.updateComplete;
+      expect(selected(card)).toBe("2");
+    });
+
     it.each(["coverflow", "slide", "fade", "cube", "flip"] as CarouselEffect[])(
       "sizes buttons, symbols, stage and effect geometry consistently for %s", async (effect) => {
         for (const [requested, expected] of [

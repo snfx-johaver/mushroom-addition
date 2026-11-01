@@ -257,19 +257,18 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     const entity = this.entityFor(item);
     const color = item.color || (entity?.attributes.icon ? "primary" : "primary");
     const modifier = this.coverflowModifier;
-    const stretch = this.effect === "coverflow" ? this.coverflowStretch * modifier : 0;
-    const slideStep = Math.max(18, this.buttonWidth + stretch);
-    const visualOffset = offset + this.dragOffset / slideStep;
+    const slideStep = this.slideStep;
+    const visualOffset = offset;
     const visualDistance = Math.abs(visualOffset);
     const alignmentOffset = this.singleSlideEffect || this.centeredSlides ? 0 : -((visible - 1) * slideStep) / 2;
-    const translate = alignmentOffset + offset * slideStep + this.dragOffset;
+    const translate = Math.round((alignmentOffset + offset * slideStep) * 1000) / 1000;
     const depth = this.effect === "coverflow" ? -visualDistance * this.coverflowDepth * modifier : 0;
     const rotate = this.effect === "coverflow" ? visualOffset * -this.coverflowRotate * modifier : 0;
     const opacity = Math.max(0.18, 1 - visualDistance * (this.effect === "coverflow" ? 0.16 : 0.08));
     const shadowOpacity = this.coverflowSlideShadows
       ? Math.min(0.48, visualDistance * 0.16 * Math.max(0.25, modifier))
       : 0;
-    const progress = offset + Math.max(-1, Math.min(1, this.dragOffset / this.buttonWidth));
+    const progress = offset;
     const transform = this.effect === "fade" ? "translateX(0px)"
       : this.effect === "cube" ? `rotateY(${progress * 90}deg)`
       : this.effect === "flip" ? `rotateY(${progress * 180}deg)`
@@ -346,7 +345,8 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       this.config?.parameters?.slidesPerView;
     if (configured === "auto") {
       if (!this.carouselWidth) return this.legacyVisibleCount;
-      return Math.min(11, Math.max(1, Math.floor((this.carouselWidth - 16) / this.buttonWidth)));
+      const count = Math.min(11, Math.max(1, Math.floor((this.carouselWidth - 16) / this.buttonWidth)));
+      return this.centeredSlides && this.effect === "coverflow" ? Math.max(3, count + (count % 2 === 0 ? 1 : 0)) : count;
     }
     const numeric = Number(configured);
     if (Number.isFinite(numeric) && numeric > 0) {
@@ -410,6 +410,10 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       true;
   }
 
+  private get slideStep(): number {
+    return Math.max(18, this.buttonWidth + (this.effect === "coverflow" ? this.coverflowStretch * this.coverflowModifier : 0));
+  }
+
   private entityFor(item: AdditionItemConfig): HassEntity | undefined {
     return item.entity ? this.hass?.states[item.entity] : undefined;
   }
@@ -425,21 +429,25 @@ export class MushroomAdditionEntityCarousel extends LitElement {
   }
 
   private itemOffset(index: number): number {
-    let offset = index - this.selectedIndex;
+    const movement = this.singleSlideEffect ? Math.max(-1, Math.min(1, this.dragOffset / this.buttonWidth))
+      : this.dragOffset / this.slideStep;
+    let offset = index - this.selectedIndex + movement;
     if (this.config?.carousel_loop !== false && this.items.length > 2) {
+      const count = this.items.length;
+      offset = ((offset % count) + count) % count;
       const half = this.items.length / 2;
-      if (offset > half) offset -= this.items.length;
-      if (offset < -half) offset += this.items.length;
+      if (offset > half) offset -= count;
     }
     return offset;
   }
 
   private itemIsHidden(offset: number, visible: number): boolean {
     if (this.singleSlideEffect) return Math.abs(offset) > 1;
-    if (!this.centeredSlides) return offset < 0 || offset >= visible;
+    const buffer = this.dragging ? 1 : 0;
+    if (!this.centeredSlides) return offset < -buffer || offset >= visible + buffer;
     const before = Math.floor((visible - 1) / 2);
     const after = Math.ceil((visible - 1) / 2);
-    return offset < -before || offset > after;
+    return offset < -before - buffer || offset > after + buffer;
   }
 
   protected updated(): void {
@@ -557,7 +565,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     this.resetPointer();
     if (wasHorizontal && (Math.abs(delta) >= 10 || Math.abs(releaseVelocity) >= 0.16)) {
       const direction = delta > 0 || (delta === 0 && releaseVelocity > 0) ? -1 : 1;
-      const slideStep = Math.max(18, this.buttonWidth + this.coverflowStretch);
+      const slideStep = this.slideStep;
       this.select(direction, this.singleSlideEffect ? 1 : Math.max(1, Math.round(Math.abs(delta) / slideStep)));
       return;
     }
@@ -598,9 +606,12 @@ export class MushroomAdditionEntityCarousel extends LitElement {
 
   private constrainDrag(delta: number): number {
     if (this.config?.carousel_loop !== false) return delta;
-    const pullingPastStart = this.selectedIndex === 0 && delta > 0;
-    const pullingPastEnd = this.selectedIndex === this.items.length - 1 && delta < 0;
-    return pullingPastStart || pullingPastEnd ? delta * 0.28 : delta;
+    const step = this.singleSlideEffect ? this.buttonWidth : this.slideStep;
+    const minimum = -(this.items.length - 1 - this.selectedIndex) * step;
+    const maximum = this.selectedIndex * step;
+    if (delta < minimum) return minimum + Math.max(-step * 0.5, (delta - minimum) * 0.28);
+    if (delta > maximum) return maximum + Math.min(step * 0.5, (delta - maximum) * 0.28);
+    return delta;
   }
 
   private resetPointer(): void {

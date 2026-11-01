@@ -4,6 +4,10 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Light Area coverflow keeps both neighboring scene tiles visible on narrow cards,
+  reveals successive scenes during long drags, and uses consistent effect spacing
+  when snapping after release.
+
 ## 0.6.2 - 2026-11-01
 
 - Added Smart Saving and Energy Entityworkflow cards with shared Mushroom
