@@ -4,6 +4,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Washer-Dryer displays its live program state independently of the power-switch
+  heading and uses the operation state to distinguish running from ready/idle.
+
 - Washer-Dryer starts with empty entity selectors, saves same-device mappings once
   when its primary entity is selected, and shows translated/readable program names.
 

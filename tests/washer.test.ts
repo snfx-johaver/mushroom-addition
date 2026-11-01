@@ -124,6 +124,36 @@ describe("Washer-Dryer entity setup", () => {
 });
 
 describe("Washer-Dryer program labels", () => {
+  it("shows the actual operation state independently of power/heading and updates it live", async () => {
+    const hass = makeHass();
+    hass.formatEntityState = entity => entity.state === "run" ? "Running"
+      : entity.state === "ready" ? "Ready" : entity.state;
+    const card = document.createElement(type.replace("custom:", "")) as MushroomAdditionCard;
+    card.hass = hass;
+    card.setConfig({
+      type, entity: "switch.dishwasher_power", secondary_info: "state",
+      program_stage_entity: "sensor.dishwasher_operation_state",
+      power_switch_entity: "switch.dishwasher_power",
+      ulm_custom_card_washer_remote_control: "binary_sensor.dishwasher_remote_control",
+    });
+    document.body.append(card);
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelector(".washer-operation-state")?.textContent).toContain("Running");
+    expect(card.shadowRoot!.querySelector('[aria-label="Pause washer"]')).not.toBeNull();
+    card.hass = { ...hass, states: { ...hass.states,
+      "sensor.dishwasher_operation_state": { ...hass.states["sensor.dishwasher_operation_state"], state: "ready" },
+    } };
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelector(".washer-operation-state")?.textContent).toContain("Ready");
+    expect(card.shadowRoot!.querySelector('[aria-label="Start washer"]')).not.toBeNull();
+    card.setConfig({
+      type, entity: "switch.dishwasher_power", secondary_info: "none",
+      ulm_custom_card_washer_job_state: "sensor.dishwasher_operation_state",
+    });
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelector(".washer-operation-state")?.textContent).toContain("Ready");
+  });
+
   it("uses HA translated option states and readable integration identifiers", () => {
     const hass = makeHass();
     const entity = hass.states["select.dishwasher_selected_program"];

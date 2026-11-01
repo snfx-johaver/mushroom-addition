@@ -959,12 +959,12 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
   const power = entityFromConfig(ctx, "washer_power_entity") ??
     entityFromConfig(ctx, "power_entity") ??
     entityFromConfig(ctx, "ulm_custom_card_washer_power");
-  const machine = entityFromConfig(ctx, "ulm_custom_card_washer_machine_state") ??
-    ctx.entity;
   const progress = entityFromConfig(ctx, "ulm_custom_card_washer_job_progress");
   const job = entityFromConfig(ctx, "program_stage_entity") ??
     entityFromConfig(ctx, "ulm_custom_card_washer_job_state") ??
-    machine;
+    entityFromConfig(ctx, "ulm_custom_card_washer_machine_state");
+  const machine = entityFromConfig(ctx, "ulm_custom_card_washer_machine_state") ??
+    job ?? ctx.entity;
   const remote = entityFromConfig(ctx, "ulm_custom_card_washer_remote_control");
   const delayed = entityFromConfig(ctx, "ulm_custom_card_washer_delayed_start");
   const delayedTime = entityFromConfig(ctx, "ulm_custom_card_washer_delayed_starttime");
@@ -984,7 +984,9 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
     : machine
       ? !["off", "unavailable", "unknown"].includes(machine.state.toLowerCase())
       : true;
-  const stopped = !machine || machine.state === stopState || machine.state === "off";
+  const stopped = !machine ||
+    [stopState.toLowerCase(), "off", "idle", "ready", "finished", "complete", "completed", "unknown", "unavailable"]
+      .includes(machine.state.toLowerCase());
   const remoteEnabled = ["true", "on", "enabled"].includes(remote?.state.toLowerCase() ?? "");
   const delayedEnabled = delayed?.state === "on";
   const percent = Math.max(0, Math.min(100, numeric(progress?.state) ?? 0));
@@ -1100,8 +1102,12 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
         ${button(localizeText(ctx.hass, "Move delayed start 15 minutes later"), "mdi:arrow-up", (event) => setDelayedMinutes(event, 15))}
       </div>
     ` : nothing}
-    ${(door || finished || remote) ? html`
+    ${(job || door || finished || remote) ? html`
       <div class="washer-status">
+        ${job ? html`<span class="washer-operation-state"
+          title=${displayName({ type: "", entity: job.entity_id }, job, ctx.hass)}>
+          <ha-icon icon="mdi:washing-machine"></ha-icon>${stateLabel(job, ctx.hass)}
+        </span>` : nothing}
         ${door ? html`<span><ha-icon icon="mdi:door"></ha-icon>${stateLabel(door, ctx.hass)}</span>` : nothing}
         ${finished ? html`<span><ha-icon icon="mdi:check-circle"></ha-icon>${stateLabel(finished, ctx.hass)}</span>` : nothing}
         ${remote ? html`<span><ha-icon icon="mdi:remote"></ha-icon>${stateLabel(remote, ctx.hass)}</span>` : nothing}

@@ -120,6 +120,9 @@ are never matched by unrelated entity names.
 Program selection displays Home Assistant's translated option names when
 available, with readable names for raw integration identifiers. Service calls
 always use the original option value.
+The configured current program stage also displays its live state (such as
+Running or Ready) in the status row, independently of the primary power entity
+and Mushroom heading settings.
 
 ### Stock Card
 
