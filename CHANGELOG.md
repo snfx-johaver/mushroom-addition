@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+## 0.6.2 - 2026-11-01
+
 - Added Smart Saving and Energy Entityworkflow cards with shared Mushroom
   presentation, interactions, picker defaults and lazy visual editor sections.
 

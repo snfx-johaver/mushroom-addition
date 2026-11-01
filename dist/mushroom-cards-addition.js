@@ -60415,7 +60415,7 @@ Ar.styles = ge`
     :host { --ha-card-border-radius: var(--mush-card-border-radius, 12px); }
   `;
 let Ii = Ar;
-const zp = "0.6.1";
+const zp = "0.6.2";
 for (const e of Fa)
   if (!customElements.get(e.tag)) {
     if (e.upstreamId === "energy_entityworkflow") {
