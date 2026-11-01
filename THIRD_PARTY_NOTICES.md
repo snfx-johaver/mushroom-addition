@@ -1,5 +1,16 @@
 # Third-Party Notices
 
+## Energy planning and entity workflow cards (MIT)
+
+`src/energy-cards/` and `tests/energy-cards/` incorporate MIT-licensed energy
+cards from Mushroom Addition Energy Cards. Copyright (c) 2026 Mushroom Cards
+Addition contributors. The complete license is preserved in
+`licenses/Energy-cards-LICENSE` and included in the production bundle.
+
+Adaptations: canonical Smart Saving and Energy Entityworkflow registration,
+shared Mushroom presentation and interactions, lazy shared editor integration,
+and consolidated types, localization, and picker metadata.
+
 ## NAS dashboard cards (Apache-2.0)
 
 `src/nas/` and the upstream-derived fixtures/tests in `tests/nas/` incorporate

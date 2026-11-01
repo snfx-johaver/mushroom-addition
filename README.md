@@ -38,7 +38,7 @@ Click a screenshot for a closer look.
 
 These are real setups, not mockups; some cards are only partially configured.
 The NAS image is from the earlier dashboard whose layouts are now included.
-Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all 32.
+Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all cards.
 
 ## Install with HACS
 
@@ -172,6 +172,65 @@ examples and resource paths.
 
 [Report a bug](https://github.com/snfx-johaver/mushroom-addition/issues).
 Please keep household screenshots and personal information out of reports.
+
+## Smart Saving and Energy Entityworkflow
+
+Both cards are included in the existing bundle and picker; do not install a
+second energy-card resource. They use the same Context, Content, Layout,
+Interactions and lazily mounted Features editor sections as other cards.
+Name and Primary/Secondary information use the shared Mushroom presentation.
+Header actions use the usual tap, hold and double-tap settings.
+
+**Smart Saving** displays published electricity prices, measured battery level,
+timestamped forecasts, and configured purchase, sale, EV and solar tracks.
+It never synthesizes missing prices or forecasts and does not execute plans.
+Select the price sensor in Context, the visible horizon in Layout, and source
+attribute/JSON mappings, battery, tracks, summary and periods in Features.
+Only EUR/kWh and ct/kWh conversions are supported.
+
+```yaml
+type: custom:mushroom-addition-smart-saving
+name: Smart Saving
+entity: sensor.example_prices
+visibleHours: 36
+price:
+  entity: sensor.example_prices
+  path: prices
+  startField: start
+  endField: end
+  priceField: price
+  sourceUnit: EUR/kWh
+  displayUnit: ct/kWh
+```
+
+**Energy Entityworkflow** displays grouped entities and directed relationships
+in sequential or graph layouts. Entity rows open more-info, never execute
+workflow steps. Groups, nodes, rows and relationships are editable under
+Features; invalid IDs or references show errors rather than saving broken
+configurations. See [the full workflow schema and examples](docs/ENERGY_WORKFLOW.md).
+
+```yaml
+type: custom:mushroom-addition-energy-entityworkflow
+name: Energy Entityworkflow
+presentation: sequential
+nodes:
+  - id: source
+    label: Available energy
+    entities:
+      - entity: sensor.example_available_energy
+  - id: proposal
+    label: Proposed purchase
+    entities:
+      - entity: sensor.example_purchase_plan
+relations:
+  - from: source
+    to: proposal
+    label: informs
+```
+
+Replace the synthetic example IDs with your own entities. The source `title`
+and Smart Saving `subtitle` are accepted as Name and secondary text fallbacks;
+the shared editor does not expose duplicate title fields.
 
 ## Development
 

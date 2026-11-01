@@ -1,6 +1,9 @@
 import { LitElement, css, html, nothing, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { repeat } from "lit/directives/repeat.js";
+import "./energy-cards/editor";
+import "./energy-cards/workflow-editor";
+import { workflowStub } from "./energy-cards/workflow-config";
 import { mdiDelete, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
 import type {
   ActionConfig,
@@ -65,6 +68,7 @@ const contentFields = new Set([
   "mini_graph_show_state", "mini_graph_show_top_labels", "mini_graph_name_adaptive_color", "mini_graph_icon_adaptive_color",
 ]);
 const layoutFields = new Set([
+  "visibleHours", "presentation",
   "layout", "fill_container", "card_shadow", "variant", "features_position", "multiline_secondary", "height", "line_width",
   "bar_spacing", "font_size", "font_size_header", "align_header", "align_icon", "align_state",
   "group", "mini_graph_show_fill", "mini_graph_show_points", "mini_graph_show_labels",
@@ -194,6 +198,18 @@ export class MushroomAdditionEditor extends LitElement {
         ? { upcoming_data_attribute: "data" } : {}),
       variant: config.variant ?? alias?.variant,
     };
+    if (tag === "mushroom-addition-smart-saving") {
+      this.config = {
+        ...this.config,
+        name: config.name ?? config.title ?? "Smart Saving",
+        entity: config.entity ?? config.price?.entity,
+        price: config.price ?? { entity: config.entity ?? "sensor.electricity_prices", path: "prices" },
+      };
+    } else if (tag === "mushroom-addition-energy-entityworkflow") {
+      const stub = workflowStub(this.hass);
+      this.config = { ...stub, ...this.config, nodes: config.nodes ?? stub.nodes,
+        name: config.name ?? config.title ?? "Energy Entityworkflow" };
+    }
   }
 
   protected render() {
@@ -336,6 +352,12 @@ export class MushroomAdditionEditor extends LitElement {
         : this.config.layout ?? populatedDefaults.layout,
     };
     const customFeatures = !this.expandedSections.has("features") ? nothing
+      : item.upstreamId === "smart_saving"
+      ? html`<mushroom-addition-smart-saving-features .hass=${this.hass} ._config=${this.config}
+          .embedded=${true} @config-changed=${this.energyConfigChanged}></mushroom-addition-smart-saving-features>`
+      : item.upstreamId === "energy_entityworkflow"
+      ? html`<mushroom-addition-energy-workflow-features .hass=${this.hass} ._config=${this.config}
+          .embedded=${true} @config-changed=${this.energyConfigChanged}></mushroom-addition-energy-workflow-features>`
       : item.upstreamId === "mini_graph_card"
       ? this.renderMiniGraphEditors()
       : item.upstreamId === "remote_card"
@@ -364,6 +386,8 @@ export class MushroomAdditionEditor extends LitElement {
           ? html`${this.renderItemEditor("room_sensors", localize(this.hass, "room_buttons"))}${this.renderRoomStatusEditor()}`
           : nothing;
     const hasCustomFeatures = item.upstreamId === "mini_graph_card" ||
+      item.upstreamId === "smart_saving" ||
+      item.upstreamId === "energy_entityworkflow" ||
       item.upstreamId === "remote_card" ||
       item.upstreamId === "pi_hole_card" ||
       item.upstreamId === "custom_card_trash" ||
@@ -438,6 +462,16 @@ export class MushroomAdditionEditor extends LitElement {
     else expanded.delete(section);
     this.expandedSections = expanded;
   }
+
+  private readonly energyConfigChanged = (event: CustomEvent<{ config: AdditionConfig }>): void => {
+    event.stopPropagation();
+    const config = event.detail.config;
+    this.config = {
+      ...config,
+      ...(config.price ? { entity: config.price.entity } : {}),
+    };
+    fireEvent(this, "config-changed", { config: this.config });
+  };
 
   private readonly computeLabel = (schema: { name: string }): string =>
     stockMetricLabel(schema.name) ? localizeText(this.hass, stockMetricLabel(schema.name)!)
@@ -641,6 +675,9 @@ export class MushroomAdditionEditor extends LitElement {
     const changed = { ...this.config, ...value } as AdditionConfig;
     const next = Object.prototype.hasOwnProperty.call(value, "icon") && !value.icon
       ? clearCardIcon(changed) : changed;
+    if (next.type === "custom:mushroom-addition-smart-saving" && next.price && typeof value.entity === "string") {
+      next.price = { ...next.price, entity: value.entity };
+    }
     if (this.config.type.includes("mini-graph-card")) {
       const show = { ...(this.config.show as MiniGraphShowConfig | undefined) };
       const showMappings: Record<string, keyof MiniGraphShowConfig> = {

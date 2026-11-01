@@ -1,5 +1,5 @@
 import { localizeText } from "./localize";
-import { LitElement, html, nothing, type TemplateResult } from "lit";
+import { LitElement, html, nothing, type TemplateResult, type CSSResultGroup } from "lit";
 import { property } from "lit/decorators.js";
 import type { AdditionConfig, CatalogItem, HomeAssistant, WeatherForecast } from "./types";
 import { handleAction, normalizeConfig } from "./helpers";
@@ -8,7 +8,7 @@ import { renderAutomaticPresentation, renderByFamily, type RenderContext } from 
 import { PARITY_BY_ID } from "./parity.generated";
 
 export class MushroomAdditionCard extends LitElement {
-  public static styles = sharedStyles;
+  public static styles: CSSResultGroup = sharedStyles;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
   @property({ attribute: false }) protected config?: AdditionConfig;
@@ -88,6 +88,21 @@ export class MushroomAdditionCard extends LitElement {
 
   protected willUpdate(): void {
     this.toggleAttribute("dark", this.hass?.themes?.darkMode === true);
+  }
+
+  protected renderSharedHeading(): TemplateResult | typeof nothing {
+    if (!this.config || !this.descriptor || !this.hass) return nothing;
+    const context: RenderContext = {
+      config: !this.config.entity && !this.config.secondary && this.config.secondary_info === undefined
+        ? { ...this.config, secondary_info: "none" } : this.config,
+      descriptor: this.descriptor,
+      hass: this.hass,
+      entity: this.config.entity ? this.hass.states[this.config.entity] : undefined,
+      presentation: { rendered: false },
+      actionSurface: (classes, content, style) => this.actionSurface(classes, content, style),
+      service: (domain, service, data) => void this.hass?.callService(domain, service, data),
+    };
+    return this.actionSurface("energy-heading", renderAutomaticPresentation(context), "", false);
   }
 
   protected updated(): void {
@@ -194,7 +209,7 @@ export class MushroomAdditionCard extends LitElement {
     }
   }
 
-  private readonly actionSurface = (classes: string, content: TemplateResult, style = ""): TemplateResult => {
+  private readonly actionSurface = (classes: string, content: TemplateResult, style = "", wrap = true): TemplateResult => {
     const parity = this.descriptor ? PARITY_BY_ID.get(this.descriptor.upstreamId) : undefined;
     const native = this.descriptor?.sourcePath.startsWith("src/") ?? false;
     if (!parity && !native) {
@@ -212,7 +227,7 @@ export class MushroomAdditionCard extends LitElement {
         @pointercancel=${this.pointerUp} @keydown=${this.keydown}>
         ${content}
       </div>`;
-    return html`<ha-card class="mushroom-addition-card${this.config?.card_shadow ? " card-shadow" : ""}">${surface}</ha-card>`;
+    return wrap ? html`<ha-card class="mushroom-addition-card${this.config?.card_shadow ? " card-shadow" : ""}">${surface}</ha-card>` : surface;
   };
 
   private readonly keydown = (event: KeyboardEvent): void => {

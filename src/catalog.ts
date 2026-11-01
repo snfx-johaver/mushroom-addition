@@ -198,6 +198,28 @@ export const UPSTREAM_CATALOG: readonly CatalogItem[] = [
 
 export const NATIVE_CATALOG: readonly CatalogItem[] = [
   {
+    upstreamId: "smart_saving",
+    sourcePath: "src/energy-cards/card.ts",
+    kind: "card",
+    category: "custom-card",
+    family: "energy",
+    tag: "mushroom-addition-smart-saving",
+    name: "Smart Saving",
+    description: "Published electricity prices, battery forecasts, and configurable purchase, sale, vehicle charging and solar planning tracks.",
+    preferredDomains: ["sensor"],
+  },
+  {
+    upstreamId: "energy_entityworkflow",
+    sourcePath: "src/energy-cards/workflow.ts",
+    kind: "card",
+    category: "custom-card",
+    family: "energy",
+    tag: "mushroom-addition-energy-entityworkflow",
+    name: "Energy Entityworkflow",
+    description: "Grouped energy entities and directed relationships in sequential or graph views, with live states and more-info controls.",
+    preferredDomains: ["sensor"],
+  },
+  {
     upstreamId: "stock_card",
     sourcePath: "src/stock.ts",
     kind: "card",

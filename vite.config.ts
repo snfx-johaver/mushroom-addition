@@ -7,6 +7,7 @@ const notices = [
   "licenses/SNFX-Synology-cards-LICENSE",
   "licenses/Material-Design-Icons-LICENSE",
   "licenses/Lit-LICENSE",
+  "licenses/Energy-cards-LICENSE",
 ].map((path) => readFileSync(new URL(path, import.meta.url), "utf8").trim()).join("\n\n");
 
 export default defineConfig({

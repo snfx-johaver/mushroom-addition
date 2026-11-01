@@ -283,6 +283,18 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
 };
 
 export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass?: HomeAssistant): EditorField[] => {
+  if (item.upstreamId === "smart_saving") return [
+    ...common(item),
+    entity(["sensor"], "statusEntity"),
+    number("visibleHours", 1, 168),
+  ];
+  if (item.upstreamId === "energy_entityworkflow") return [
+    ...common(item),
+    select("presentation", [
+      { value: "sequential", label: "Sequential process" },
+      { value: "graph", label: "Relationship graph" },
+    ]),
+  ];
   if (item.upstreamId === "stock_card") return [
     ...(config?.stock_source === "stock_market_deluxe" ? [] : [entity(["sensor"])]),
     ...presentation(),

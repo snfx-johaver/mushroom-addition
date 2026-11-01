@@ -264,6 +264,21 @@ export interface PiHoleConfig {
 }
 
 export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, PiHoleConfig {
+  title?: string;
+  subtitle?: string;
+  statusEntity?: string;
+  visibleHours?: number;
+  price?: import("./energy-cards/types").PriceConfig;
+  battery?: import("./energy-cards/types").BatteryConfig;
+  tracks?: import("./energy-cards/types").SmartSavingConfig["tracks"];
+  summary?: import("./energy-cards/types").SmartSavingConfig["summary"];
+  periods?: import("./energy-cards/types").PeriodConfig[];
+  planBlocksEntity?: string;
+  planBlocksPath?: string;
+  presentation?: "sequential" | "graph";
+  groups?: import("./energy-cards/workflow-config").WorkflowGroup[];
+  nodes?: import("./energy-cards/workflow-config").WorkflowNode[];
+  relations?: import("./energy-cards/workflow-config").WorkflowRelation[];
   stock_source?: "entity" | "yahoo" | "stock_market_deluxe";
   stock_currency?: string;
   stock_symbol?: string;

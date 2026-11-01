@@ -4,6 +4,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Added Smart Saving and Energy Entityworkflow cards with shared Mushroom
+  presentation, interactions, picker defaults and lazy visual editor sections.
+
 - Mini Graph clips plots to their viewport, bounds bar geometry, and aligns grouped bars by timestamp without overlapping narrow time slots.
 
 - Shared card editors retain lazy content through Home Assistant's pre-collapse measurement instead of unmounting it when a collapse is first requested.

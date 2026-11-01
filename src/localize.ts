@@ -1,5 +1,6 @@
 import type { HomeAssistant } from "./types";
 import { commonTranslations } from "./translations/common";
+import { energyEditorLabels, energyEditorHelpers } from "./translations/energy-editor";
 import { optionTranslations } from "./translations/options";
 import { translatedHelpers } from "./translations/helpers";
 import { messageTranslations } from "./translations/messages";
@@ -699,7 +700,7 @@ export const localize = (
   values: Record<string, string | number> = {},
 ): string => {
   const language = normalizeLocale(hass?.language);
-  const message = translationCatalogs[language]?.[key] ?? translationCatalogs.en[key] ??
+  const message = energyEditorLabels[language]?.[key] ?? translationCatalogs[language]?.[key] ?? translationCatalogs.en[key] ??
     key
       .replace(/^ulm_(?:custom_)?card_/, "")
       .replace(/^(?:custom_)?card_/, "")
@@ -1304,6 +1305,8 @@ export const helperCatalogs: Record<string, Record<string, string>> = {
 };
 
 export const editorHelper = (key: string, hass?: HomeAssistant): string | undefined => {
+  const energyHelp = energyEditorHelpers[normalizeLocale(hass?.language)]?.[key];
+  if (energyHelp) return energyHelp;
   const stockHelp = stockEditorHelper(key);
   if (stockHelp) return localizeText(hass, stockHelp);
   if (key === "welcome_weather_date_format") return localize(hass, "upcoming_date_format");
@@ -1323,6 +1326,7 @@ export const editorHelper = (key: string, hass?: HomeAssistant): string | undefi
 const englishLabelKeys = new Map(
   [
     ...Object.entries(translationCatalogs.en),
+    ...Object.entries(energyEditorLabels.en),
     ...Object.entries(commonTranslations.en),
     ...Object.entries(optionTranslations.en),
   ].map(([key, label]) => [label, key]),
