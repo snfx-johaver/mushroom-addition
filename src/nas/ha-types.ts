@@ -34,6 +34,7 @@ export interface EntityRegistryEntry {
 }
 
 export interface HomeAssistant {
+  themes?: { darkMode?: boolean };
   states: HassEntities;
   devices?: Record<string, DeviceRegistryEntry>;
   entities?: Record<string, EntityRegistryEntry>;

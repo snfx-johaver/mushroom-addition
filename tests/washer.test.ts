@@ -188,11 +188,18 @@ describe("Washer-Dryer program labels", () => {
       type, entity: "switch.dishwasher_power", secondary_info: "state",
       program_stage_entity: "sensor.dishwasher_operation_state",
       power_switch_entity: "switch.dishwasher_power",
+      washer_power_entity: "switch.dishwasher_power",
+      ulm_custom_card_washer_job_progress: "sensor.dishwasher_program_progress",
       ulm_custom_card_washer_remote_control: "binary_sensor.dishwasher_remote_control",
     });
     document.body.append(card);
     await card.updateComplete;
     expect(card.shadowRoot!.querySelector(".washer-operation-state")?.textContent).toContain("Running");
+    const metrics = card.shadowRoot!.querySelector(".washer-heading-metrics")!;
+    expect(metrics.querySelector(".washer-power ha-icon")?.getAttribute("icon")).toBe("mdi:power");
+    expect(metrics.querySelector(".washer-progress")?.textContent).toContain("25%");
+    expect(metrics.querySelector(".washer-progress ha-icon")?.getAttribute("icon")).toBe("mdi:progress-clock");
+    expect(card.shadowRoot!.querySelector(".custom-washer > .washer-progress")).toBeNull();
     expect(card.shadowRoot!.querySelector('[aria-label="Pause washer"]')).not.toBeNull();
     card.hass = { ...hass, states: { ...hass.states,
       "sensor.dishwasher_operation_state": { ...hass.states["sensor.dishwasher_operation_state"], state: "ready" },

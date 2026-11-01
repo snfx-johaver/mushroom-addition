@@ -3,6 +3,7 @@ import { containerSource, nasSource, nasSourceNames, usesRegistryDiscovery, type
 import { fireEvent, type HomeAssistant } from "./ha-types";
 import { cachedRegistries, loadRegistries, nasDevices, portainerEndpoints, qnapGroups, selectedDevice, type Registries } from "./data";
 import { live } from "lit/directives/live.js";
+import { nativeSelectStyles } from "../control-styles";
 
 export const mappingFields: Record<string, string> = {
   cpu_usage: "CPU utilization (%)", ram_usage: "Memory utilization (%)",
@@ -29,6 +30,9 @@ export class SynologyCardEditor extends LitElement {
   private registryKey?: object;
   private requestVersion = 0;
   static override styles = css`
+    ${nativeSelectStyles}
+    :host { color-scheme: light; }
+    :host([dark]) { color-scheme: dark; }
     .card-config { display:flex;flex-direction:column;gap:14px;padding:8px 0;color:var(--primary-text-color); }
     label { display:flex;flex-direction:column;gap:6px;font-size:.85rem; }
     select, input[type=text] { padding:8px 12px;border-radius:6px;border:1px solid var(--divider-color);
@@ -47,6 +51,7 @@ export class SynologyCardEditor extends LitElement {
     this.loading = false;
   }
   override willUpdate(changes: PropertyValues<this>): void {
+    this.toggleAttribute("dark", this.hass?.themes?.darkMode === true);
     if ((changes.has("hass") || changes.has("_config")) && this.hass && this._config) {
       if (!usesRegistryDiscovery(this._config)) {
         this.requestVersion++;

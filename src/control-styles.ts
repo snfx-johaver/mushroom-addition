@@ -8,7 +8,17 @@ export const updateRangeProgress = (event: Event): void => {
   input.style.setProperty("--range-progress", rangeProgress(input.valueAsNumber, Number(input.min), Number(input.max)));
 };
 
+export const nativeSelectStyles = css`
+  select { color-scheme: inherit; }
+  select option, select optgroup {
+    color: var(--primary-text-color, CanvasText);
+    background-color: var(--ha-card-background, var(--card-background-color, Canvas));
+  }
+  select:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+`;
+
 export const mediaControlStyles = css`
+  ${nativeSelectStyles}
   input.mushroom-range {
     appearance: none;
     -webkit-appearance: none;
@@ -72,6 +82,5 @@ export const mediaControlStyles = css`
     font-weight: var(--mush-card-primary-font-weight, 500);
     line-height: var(--mush-card-primary-line-height, 20px);
   }
-  select.mushroom-select option { color: var(--primary-text-color); background: var(--ha-card-background, var(--card-background-color)); }
   select.mushroom-select:disabled { color: var(--disabled-text-color); background: var(--addition-disabled-background); }
 `;

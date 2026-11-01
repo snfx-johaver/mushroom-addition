@@ -1053,7 +1053,14 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
     <div class="custom-card-heading washer-heading">
       ${iconBubble(ctx, "mdi:washing-machine", powered ? "blue" : "grey")}
       ${heading(ctx, label)}
-      ${power ? html`<b class="washer-power">${stateLabel(power, ctx.hass)}</b>` : nothing}
+      ${(power || progress) ? html`<div class="washer-heading-metrics">
+        ${power ? html`<b class="washer-power" title=${displayName({ type: "", entity: power.entity_id }, power, ctx.hass)}>
+          <ha-icon icon="mdi:power" aria-hidden="true"></ha-icon>${stateLabel(power, ctx.hass)}
+        </b>` : nothing}
+        ${progress ? html`<b class="washer-progress" title=${displayName({ type: "", entity: progress.entity_id }, progress, ctx.hass)}>
+          <ha-icon icon="mdi:progress-clock" aria-hidden="true"></ha-icon>${Math.round(percent)}%
+        </b>` : nothing}
+      </div>` : nothing}
     </div>
     ${powered && stages.length ? html`
       <div class="washer-stages" style=${`--washer-stage-count:${stages.length}`}>
@@ -1062,12 +1069,6 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
             <ha-icon .icon=${stage.icon}></ha-icon>
           </span>
         `)}
-      </div>
-    ` : nothing}
-    ${powered && progress ? html`
-      <div class="washer-progress">
-        <span style=${`width:${percent}%`}></span>
-        <b>${Math.round(percent)}%</b>
       </div>
     ` : nothing}
     ${programSelect ? html`

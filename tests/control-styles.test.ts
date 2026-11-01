@@ -1,10 +1,26 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { mediaControlStyles, rangeProgress, updateRangeProgress } from "../src/control-styles";
+import { mediaControlStyles, nativeSelectStyles, rangeProgress, updateRangeProgress } from "../src/control-styles";
 import { sharedStyles } from "../src/styles";
 
 describe("Mushroom media controls and selected presentation alignment", () => {
+  it("themes native popup options across shared cards and standalone editors", () => {
+    expect(nativeSelectStyles.cssText).toContain("select option, select optgroup");
+    expect(nativeSelectStyles.cssText).toContain("color: var(--primary-text-color, CanvasText)");
+    expect(nativeSelectStyles.cssText).toContain("background-color: var(--ha-card-background, var(--card-background-color, Canvas))");
+    expect(sharedStyles.cssText).toContain("color-scheme: light");
+    expect(sharedStyles.cssText).toContain("color-scheme: dark");
+    for (const file of ["area-advanced.ts", "nas\\dashboard-cards-editor.ts"]) {
+      const source = readFileSync(join(process.cwd(), "src", file), "utf8");
+      expect(source).toContain("${nativeSelectStyles}");
+      expect(source).toContain('this.toggleAttribute("dark", this.hass?.themes?.darkMode === true)');
+    }
+    for (const file of ["remote-card.ts", "pi-hole.ts"]) {
+      expect(readFileSync(join(process.cwd(), "src", file), "utf8"))
+        .toContain('color-scheme: ${this.hass?.themes?.darkMode ? "dark" : "light"}');
+    }
+  });
   it.each([
     [50, 0, 100, "50%"], [-5, -10, 10, "25%"], [200, 0, 100, "100%"],
     [-50, 0, 100, "0%"], [1, 1, 1, "0%"],

@@ -5,6 +5,7 @@ import { mediaControlStyles } from "./control-styles";
 export const sharedStyles = css`
   ${mediaControlStyles}
   :host {
+    color-scheme: light;
     --ulm-blue: ${unsafeCSS(resolveColorRgb("blue"))};
     --ulm-yellow: ${unsafeCSS(resolveColorRgb("yellow"))};
     --ulm-red: ${unsafeCSS(resolveColorRgb("red"))};
@@ -24,6 +25,7 @@ export const sharedStyles = css`
     min-width: 0;
   }
   :host([dark]) {
+    color-scheme: dark;
     --addition-neutral-background: rgba(var(--rgb-primary-text-color, 225, 225, 225), .05);
     --addition-track-background: rgba(var(--rgb-secondary-text-color, 155, 155, 155), .2);
     --addition-disabled-rgb: var(--mush-rgb-disabled, var(--rgb-disabled, 111, 111, 111));
@@ -375,7 +377,9 @@ export const sharedStyles = css`
   .welcome-items > button.scene-button.is-off i { background: rgba(var(--ulm-grey), .18); color: rgb(var(--ulm-grey)); }
   .welcome-items > button.scene-button.is-off ha-icon { color: rgb(var(--ulm-grey)); }
   .welcome-items i > ha-icon { --mdc-icon-size: var(--mush-icon-symbol-size, calc(var(--mush-icon-size, 36px) * .667)); }
-  .washer-heading .washer-power { font-size: 12px; font-weight: 700; }
+  .washer-heading-metrics { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; min-width: 0; }
+  .washer-heading-metrics b { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .washer-heading-metrics ha-icon { --mdc-icon-size: 16px; }
   .washer-stages { display: grid; grid-template-columns: repeat(var(--washer-stage-count, 4), 1fr); border-radius: 22px; background: var(--addition-neutral-background); }
   .washer-stages span { display: grid; height: 42px; place-items: center; color: rgb(var(--addition-disabled-rgb)); }
   .washer-stages span.is-active { color: var(--primary-text-color); }

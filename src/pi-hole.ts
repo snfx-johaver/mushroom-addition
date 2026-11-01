@@ -220,7 +220,7 @@ export class MushroomPiHole extends LitElement {
       const targets = this.targets;
       const supported = targets.length > 0 && targets.every(entity => !!piHolePauseService(this.hass, config, entity));
       return html`<div class="pause">
-        <select class="mushroom-select" aria-label=${localize(this.hass, "message.pause_target")} .value=${this.target} @change=${(event: Event) => { this.target = (event.target as HTMLSelectElement).value; }}>
+        <select class="mushroom-select" style=${`color-scheme: ${this.hass?.themes?.darkMode ? "dark" : "light"}`} aria-label=${localize(this.hass, "message.pause_target")} .value=${this.target} @change=${(event: Event) => { this.target = (event.target as HTMLSelectElement).value; }}>
           <option value="all">${localize(this.hass, "message.all_switches")}</option>
           ${this.switches.map(entity => html`<option value=${entity.entity_id} ?disabled=${!available(entity)}>${entity.attributes.friendly_name || entity.entity_id}</option>`)}
         </select>

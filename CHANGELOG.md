@@ -4,6 +4,12 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Washer-Dryer groups power and progress in the heading with small icons instead
+  of a separate percentage row.
+
+- Native dropdown popups follow HA light/dark themes across Washer-Dryer, Remote,
+  Pi-hole, Area Advanced and NAS editors, with explicit option colors.
+
 - Washer-Dryer offers three optional custom entity buttons with visual name,
   icon and action overrides and responsive wrapping.
 

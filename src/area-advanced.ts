@@ -6,6 +6,7 @@ import { property, state } from "lit/decorators.js";
 import { repeat } from "lit/directives/repeat.js";
 import { mdiDelete, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
 import { controlActions } from "./control-actions";
+import { nativeSelectStyles } from "./control-styles";
 import { fireEvent, stateLabel } from "./helpers";
 import type { ActionConfig, AdditionConfig, HomeAssistant } from "./types";
 import { applyAreaContent, applyNativeControlColor, areaCssColor, AREA_CONTENT_KEYS, type AreaContentOptions } from "./area-content";
@@ -556,6 +557,9 @@ export function mergeNativeAreaEdit(previous: AreaAdvancedConfig, next: AreaAdva
 }
 
 export class MushroomAreaAdvancedEditor extends LitElement {
+  protected willUpdate(): void {
+    this.toggleAttribute("dark", this.hass?.themes?.darkMode === true);
+  }
   @property({ attribute: false }) hass?: HomeAssistant;
   @state() private config?: AreaAdvancedConfig;
   @state() private editor?: NativeElement;
@@ -826,7 +830,11 @@ export class MushroomAreaAdvancedEditor extends LitElement {
           <button @click=${() => { this.selected = undefined; this.controls(featureIndex, []); }}>${localizeText(this.hass, "Clear controls")}</button>
         </fieldset>`)}`;
   }
-  static styles = css`fieldset { border: 1px solid var(--divider-color); margin: 16px 0; border-radius: 12px; }
+  static styles = css`
+    ${nativeSelectStyles}
+    :host { color-scheme: light; }
+    :host([dark]) { color-scheme: dark; }
+    fieldset { border: 1px solid var(--divider-color); margin: 16px 0; border-radius: 12px; }
     .control { display: flex; align-items: center; min-height: 60px; }
     .row-label { display: flex; flex-direction: column; flex: 1; min-width: 0; }
     .row-label span { color: var(--secondary-text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

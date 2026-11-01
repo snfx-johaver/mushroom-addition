@@ -171,7 +171,7 @@ export class MushroomRemote extends LitElement {
     if (section === "source") {
       const media = this.entities.media;
       const sources = Array.isArray(media?.attributes.source_list) ? media.attributes.source_list.filter((source): source is string => typeof source === "string") : [];
-      return html`<select class="mushroom-select" aria-label=${localize(this.hass, "ui.source")} ?disabled=${!this.supports(2048) || !sources.length} .value=${String(media?.attributes.source || "")}
+      return html`<select class="mushroom-select" style=${`color-scheme: ${this.hass?.themes?.darkMode ? "dark" : "light"}`} aria-label=${localize(this.hass, "ui.source")} ?disabled=${!this.supports(2048) || !sources.length} .value=${String(media?.attributes.source || "")}
         @change=${(event: Event) => void this.call("media_player", "select_source", { entity_id: media?.entity_id, source: (event.target as HTMLSelectElement).value })}>
         <option value="" disabled>${localize(this.hass, sources.length ? "ui.choose_source" : "ui.no_sources")}</option>
         ${sources.map(source => html`<option value=${source}>${source}</option>`)}
