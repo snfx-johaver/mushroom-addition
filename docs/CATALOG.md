@@ -5,7 +5,7 @@ registrations. It is generated from `src/catalog.ts`; CI rejects duplicate
 IDs, missing source paths, invalid namespaces, or broken popup mappings.
 
 **Coverage:** 19 documented upstream card sources map to
-35 public card components.
+36 public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
 of duplicate picker entries. 0 popup templates and
 1 implementation helpers are inventoried but are not
@@ -35,6 +35,7 @@ without instantiating every custom card.
 | Speedtest | `custom_card_speedtest_gauges` | custom-card | `custom:mushroom-addition-custom-card-speedtest-gauges` | energy | default | `custom_card_speedtest_gauges` |
 | Pollen | `custom_card_pollen` | custom-card | `custom:mushroom-addition-custom-card-pollen` | weather | default | `custom_card_pollen` |
 | Graph Advanced | `mini_graph_card` | custom-card | `custom:mushroom-addition-mini-graph-card` | energy | line, bar, radial, scatter, pie, donut | `mini_graph_card` |
+| Weather Advanced | `weather_advanced` | custom-card | `custom:mushroom-addition-weather-advanced` | weather | default | `weather_advanced` |
 | Smart Saving | `smart_saving` | custom-card | `custom:mushroom-addition-smart-saving` | energy | default | `smart_saving` |
 | Energy Entityworkflow | `energy_entityworkflow` | custom-card | `custom:mushroom-addition-energy-entityworkflow` | energy | default | `energy_entityworkflow` |
 | Stock Card | `stock_card` | custom-card | `custom:mushroom-addition-stock-card` | sensor | default | `stock_card` |

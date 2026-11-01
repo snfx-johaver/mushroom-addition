@@ -185,8 +185,8 @@ const cardHeading = (
   </div>
 `;
 
-export const renderAutomaticPresentation = (ctx: RenderContext): TemplateResult =>
-  html`<div class="automatic-presentation">${cardHeading(ctx)}</div>`;
+export const renderAutomaticPresentation = (ctx: RenderContext, defaults?: { primary?: string; secondary?: string }): TemplateResult =>
+  html`<div class="automatic-presentation">${cardHeading(ctx, defaults?.secondary, defaults?.primary)}</div>`;
 const button = (label: string, iconName: string, handler: (event: Event) => void, disabled = false) => html`
   <button class="ulm-control" aria-label=${label} ?disabled=${disabled}
     @pointerdown=${(event: Event) => event.stopPropagation()} @click=${handler}>

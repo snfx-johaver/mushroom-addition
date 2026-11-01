@@ -102,11 +102,18 @@ export class MushroomAdditionCard extends LitElement {
       actionSurface: (classes, content, style) => this.actionSurface(classes, content, style),
       service: (domain, service, data) => void this.hass?.callService(domain, service, data),
     };
-    return this.actionSurface("energy-heading", renderAutomaticPresentation(context), "", false);
+    return this.actionSurface("energy-heading", renderAutomaticPresentation(context, {
+      primary: typeof this.config.name === "string" ? this.config.name : undefined,
+      secondary: this.config.secondary,
+    }), "", false);
   }
 
   protected updated(): void {
     void this.subscribeForecast();
+  }
+
+  protected renderSharedSurface(classes: string, content: TemplateResult): TemplateResult {
+    return this.actionSurface(classes, content, "", false);
   }
 
   public disconnectedCallback(): void {

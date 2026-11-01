@@ -264,6 +264,7 @@ export interface PiHoleConfig {
 }
 
 export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, PiHoleConfig {
+  weather?: import("./weather-advanced/config").WeatherAdvancedOptions;
   title?: string;
   subtitle?: string;
   statusEntity?: string;

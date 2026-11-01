@@ -1,5 +1,18 @@
 # Third-Party Notices
 
+## Animated weather (MIT)
+
+`src/weather-advanced/` incorporates Dynamic Weather Card from
+https://github.com/teuchezh/dynamic-weather-card, revision
+`df336a0211b9d421d0f6e18741861b806a22d983`.
+Copyright (c) 2026 Teuchezh Nurbiy. The complete MIT license is preserved
+in `licenses/Dynamic-weather-LICENSE` and included in the distributed bundle.
+
+Adaptations: Weather Advanced registration and namespaced internal components,
+shared Mushroom heading and actions, lazy visual editor controls, container-aware
+layout, per-instance localization, relevant-entity updates, bounded forecast
+subscription retries and animation lifecycle/performance safeguards.
+
 ## Energy planning and entity workflow cards (MIT)
 
 `src/energy-cards/` and `tests/energy-cards/` incorporate MIT-licensed energy

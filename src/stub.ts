@@ -1,5 +1,6 @@
 import { smartSavingStub } from "./energy-cards/stub";
 import { workflowStub } from "./energy-cards/workflow-config";
+import { weatherStub } from "./weather-advanced/config";
 import type { AdditionConfig, CatalogItem, HomeAssistant } from "./types";
 import { populatedDefaultsFor } from "./defaults";
 import { roomLightingSceneExample, sceneItemDefaultsFor } from "./scene-item-defaults";
@@ -57,6 +58,7 @@ export const createStubConfig = (
   entities: string[] = [],
   entitiesFallback: string[] = [],
 ): AdditionConfig => {
+  if (descriptor.upstreamId === "weather_advanced") return weatherStub(hass, entities, entitiesFallback);
   if (descriptor.upstreamId === "smart_saving") return smartSavingStub(hass, entities, entitiesFallback);
   if (descriptor.upstreamId === "energy_entityworkflow") return workflowStub(hass, entities, entitiesFallback);
   if (descriptor.upstreamId === "stock_card") return {

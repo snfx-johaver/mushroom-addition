@@ -1,0 +1,126 @@
+import { LitElement, html, css, TemplateResult } from 'lit';
+import { property, state } from 'lit/decorators.js';
+import { formatClockTime, formatDate } from '../utils.js';
+import { I18n } from '../internationalization';
+import { applyUserStyles } from '../user-styles.js';
+
+export class WeatherClock extends LitElement {
+  private readonly i18n = new I18n();
+  @property({ type: String }) format: '12h' | '24h' | null = null;
+  @property({ type: Boolean, reflect: true }) compact = false;
+  @property({ type: Boolean }) showDate = false;
+  @property({ type: String }) lang = 'en';
+  // The card's `styles` option, added to this part's own styles
+  @property({ attribute: false }) userStyles: string | null = null;
+  @state() private currentTime: string = '';
+  @state() private currentDate: string = '';
+
+  private clockInterval: number | null = null;
+
+  static styles = css`
+    :host {
+      display: block;
+    }
+
+    :host([hidden]) {
+      display: none;
+    }
+
+    .clock {
+      margin-top: 0;
+      margin-bottom: 0;
+      font-size: var(--dwc-clock-size, calc(48px * var(--dwc-clock-scale, 1)));
+      font-weight: var(--dwc-clock-weight, 200);
+      line-height: 1;
+      color: var(--dwc-text-color, white);
+      text-align: right;
+      text-shadow: var(--card-text-shadow);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    @container (max-width: 600px) {
+      .clock {
+        font-size: var(--dwc-clock-size, calc(36px * var(--dwc-clock-scale, 1)));
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+    }
+
+    .date {
+      margin-top: 4px;
+      font-size: var(--dwc-date-size, calc(16px * var(--dwc-clock-scale, 1)));
+      font-weight: var(--dwc-date-weight, 400);
+      line-height: 1.2;
+      opacity: 0.85;
+      color: var(--dwc-text-color, white);
+      text-align: right;
+      text-shadow: var(--card-text-shadow);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    :host([compact]) .clock {
+      font-size: var(--dwc-clock-size, calc(32px * var(--dwc-clock-scale, 1)));
+    }
+
+    :host([compact]) .date {
+      margin-top: 2px;
+      font-size: var(--dwc-date-size, calc(14px * var(--dwc-clock-scale, 1)));
+    }
+  `;
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.restartTimer();
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.stopTimer();
+  }
+
+  updated(changedProperties: Map<string, unknown>): void {
+    super.updated(changedProperties);
+    if (changedProperties.has('userStyles')) applyUserStyles(this.shadowRoot, this.userStyles);
+    if (changedProperties.has('format') || changedProperties.has('showDate') || changedProperties.has('lang')) {
+      this.restartTimer();
+    }
+  }
+
+  private restartTimer(): void {
+    this.stopTimer();
+    this.i18n.setLanguage(this.lang);
+    if (this.format || this.showDate) {
+      this.updateTime();
+      this.clockInterval = window.setInterval(() => this.updateTime(), 60_000);
+    }
+  }
+
+  private stopTimer(): void {
+    if (this.clockInterval) {
+      clearInterval(this.clockInterval);
+      this.clockInterval = null;
+    }
+  }
+
+  private updateTime(): void {
+    const now = new Date();
+    if (this.format) {
+      this.currentTime = formatClockTime(now, this.format, this.i18n.t('am'), this.i18n.t('pm'));
+    }
+    if (this.showDate) {
+      this.currentDate = formatDate(now, this.lang);
+    }
+  }
+
+  render(): TemplateResult {
+    if (!this.format && !this.showDate) return html``;
+    return html`
+      ${this.format ? html`<div class="clock">${this.currentTime}</div>` : ''}
+      ${this.showDate ? html`<div class="date">${this.currentDate}</div>` : ''}
+    `;
+  }
+}
+
+customElements.define('mushroom-addition-weather-clock', WeatherClock);

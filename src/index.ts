@@ -3,6 +3,7 @@ import "./nas";
 import "./energy-cards/card";
 import "./energy-cards/workflow-editor";
 import { MushroomWorkflowCard } from "./energy-cards/workflow";
+import { MushroomWeatherAdvancedCard } from "./weather-advanced/card";
 import { CATALOG, LEGACY_ALIASES, PUBLIC_CATALOG } from "./catalog";
 import { MushroomAdditionCard } from "./card";
 import { MushroomMiniGraphCard } from "./mini-graph";
@@ -14,6 +15,10 @@ import { version as VERSION } from "../package.json";
 
 for (const item of CATALOG) {
   if (!customElements.get(item.tag)) {
+    if (item.upstreamId === "weather_advanced") {
+      customElements.define(item.tag, MushroomWeatherAdvancedCard);
+      continue;
+    }
     if (item.upstreamId === "energy_entityworkflow") {
       customElements.define(item.tag, MushroomWorkflowCard);
       continue;
@@ -120,6 +125,7 @@ console.info(
 
 export { CATALOG } from "./catalog";
 export type { AdditionConfig } from "./types";
+export type { WeatherAdvancedOptions } from "./weather-advanced/config";
 export type { SmartSavingConfig } from "./energy-cards/types";
 export type { WorkflowConfig } from "./energy-cards/workflow-config";
 export type {

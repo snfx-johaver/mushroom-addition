@@ -198,6 +198,17 @@ export const UPSTREAM_CATALOG: readonly CatalogItem[] = [
 
 export const NATIVE_CATALOG: readonly CatalogItem[] = [
   {
+    upstreamId: "weather_advanced",
+    sourcePath: "src/weather-advanced/card.ts",
+    kind: "card",
+    category: "custom-card",
+    family: "weather",
+    tag: "mushroom-addition-weather-advanced",
+    name: "Weather Advanced",
+    description: "Animated skies, rain, snow, clouds and aurora with current conditions, sensor overrides and hourly or daily forecasts.",
+    preferredDomains: ["weather"],
+  },
+  {
     upstreamId: "smart_saving",
     sourcePath: "src/energy-cards/card.ts",
     kind: "card",

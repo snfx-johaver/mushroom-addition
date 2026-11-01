@@ -10,7 +10,7 @@ export function relevantHassChanged(previous: HomeAssistant | undefined, next: H
   function visit(value: unknown): void {
     if (!value || typeof value !== "object") return;
     for (const [key, item] of Object.entries(value)) {
-      if ((key === "entity" || key.endsWith("Entity")) && typeof item === "string") entities.add(item);
+      if ((key === "entity" || key.endsWith("Entity") || key.endsWith("_entity")) && typeof item === "string") entities.add(item);
       else if (item && typeof item === "object") visit(item);
     }
   }

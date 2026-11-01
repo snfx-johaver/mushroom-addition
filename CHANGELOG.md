@@ -4,6 +4,11 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Added fully visual-editable Weather Advanced with shared Mushroom presentation
+  and actions, animated modern/classic skies, forecasts, clocks and sensor overrides.
+  Offscreen/reduced-motion animation safeguards and bounded forecast retries
+  avoid unnecessary background work.
+
 - Light Area coverflow keeps both neighboring scene tiles visible on narrow cards,
   reveals successive scenes during long drags, and uses consistent effect spacing
   when snapping after release.

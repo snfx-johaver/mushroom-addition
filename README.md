@@ -232,6 +232,47 @@ Replace the synthetic example IDs with your own entities. The source `title`
 and Smart Saving `subtitle` are accepted as Name and secondary text fallbacks;
 the shared editor does not expose duplicate title fields.
 
+## Weather Advanced
+
+**Weather Advanced** is included in the main resource and card picker as
+`custom:mushroom-addition-weather-advanced`. No additional weather-card resource
+is needed. It retains animated modern/classic skies, drifting clouds, sun/moon,
+rain, snow, lightning, fog, wind, glass raindrops and optional northern lights.
+
+The visual editor exposes every supported setting: select a weather entity in
+**Context**, use the normal Mushroom Name, Primary/Secondary information and
+icon settings in **Content**, and configure the scene layout, dimensions,
+graphics, colors and animation settings in **Layout**. **Interactions** controls
+tap, hold and double-tap for both the heading and scene. **Features** contains
+weather details, hourly/daily forecasts (including temperature charts/bars and
+wind), clock/date controls, language and optional sensor overrides. Related
+sensor overrides and minimum-temperature attribute selection stay together.
+
+Scene options are stored under `weather`, separate from the Mushroom heading's
+`layout`. For example:
+
+```yaml
+type: custom:mushroom-addition-weather-advanced
+entity: weather.example_home
+name: Weather Advanced
+weather:
+  layout: default
+  visual_style: modern
+  animation_quality: medium
+  show_animations: true
+  show_hourly_forecast: true
+  show_daily_forecast: true
+  show_clock: true
+  show_date: true
+```
+
+Forecast availability depends on the selected integration; unsupported forecast
+types are not requested. Sensor overrides fall back to the weather entity when
+unavailable. Animations pause offscreen or in hidden tabs and become still frames
+when the operating system requests reduced motion. Medium quality is the default;
+high and low remain editable. The scene retains high-contrast weather artwork
+while its heading uses the dashboard's Mushroom theme.
+
 ## Development
 
 Use **Node.js 24 LTS or 26+**.
