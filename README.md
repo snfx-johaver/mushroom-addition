@@ -268,6 +268,11 @@ the shared editor does not expose duplicate title fields.
 
 ## Weather Advanced
 
+The animated scene stays directly below its content-sized Mushroom heading,
+including in fixed-height dashboard sections. Mushroom layout controls the heading;
+the separate scene layout setting selects the default or minimal weather view.
+Interactions exposes tap, hold and double-tap actions in the visual editor.
+
 **Weather Advanced** is included in the main resource and card picker as
 `custom:mushroom-addition-weather-advanced`. No additional weather-card resource
 is needed. It retains animated modern/classic skies, drifting clouds, sun/moon,

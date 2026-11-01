@@ -292,7 +292,7 @@ export class AnimatedWeatherCard extends LitElement {
       showAnimations: config.show_animations !== false,
       layout: config.layout || DEFAULT_CONFIG.layout,
       visualStyle: config.visual_style === 'classic' ? 'classic' : 'modern',
-      animationQuality: config.animation_quality === 'medium' || config.animation_quality === 'low' ? config.animation_quality : DEFAULT_CONFIG.animationQuality,
+      animationQuality: config.animation_quality === 'high' || config.animation_quality === 'medium' || config.animation_quality === 'low' ? config.animation_quality : DEFAULT_CONFIG.animationQuality,
       sunriseEntity: config.sunrise_entity || null,
       sunsetEntity: config.sunset_entity || null,
       templowAttribute: config.templow_attribute || null,

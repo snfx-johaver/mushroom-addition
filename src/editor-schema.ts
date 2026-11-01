@@ -283,7 +283,10 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
 };
 
 export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass?: HomeAssistant): EditorField[] => {
-  if (item.upstreamId === "weather_advanced") return common(item);
+  if (item.upstreamId === "weather_advanced") return [
+    ...common(item),
+    action("tap_action"), action("hold_action"), action("double_tap_action"),
+  ];
   if (item.upstreamId === "smart_saving") return [
     ...common(item),
     entity(["sensor"], "statusEntity"),

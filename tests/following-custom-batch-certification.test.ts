@@ -244,11 +244,7 @@ describe("following custom batch certification", () => {
   it("creates source-specific picker defaults from the provided live entity mappings", () => {
     const expected = {
       custom_card_washer: {
-        entity: "sensor.wasmachine_operation_state",
-        program_stage_entity: "sensor.wasmachine_program_state",
-        washer_power_entity: "sensor.wasmachine_plug_power",
-        door_entity: "sensor.wasmachine_door",
-        finished_entity: "sensor.wasmachine_program_finished",
+        entity: undefined,
       },
       custom_card_sun: {
         entity: "sun.sun",
@@ -267,14 +263,20 @@ describe("following custom batch certification", () => {
       const constructor = customElements.get(descriptor.tag) as typeof HTMLElement & {
         getStubConfig(hass: HomeAssistant, entities: string[], fallback: string[]): AdditionConfig;
       };
-      expect(constructor.getStubConfig(
+      const stub = constructor.getStubConfig(
         { states, language: "en-GB", callService: vi.fn() },
         Object.keys(states),
         [],
-      )).toMatchObject({
+      );
+      expect(stub).toMatchObject({
         type: `custom:${descriptor.tag}`,
         ...expectedConfig,
       });
+      if (sourceId === "custom_card_washer") {
+        for (const key of ["program_stage_entity", "washer_power_entity", "door_entity", "finished_entity"]) {
+          expect(stub[key]).toBeUndefined();
+        }
+      }
     }
   });
 

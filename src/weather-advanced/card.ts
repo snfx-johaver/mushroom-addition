@@ -12,16 +12,23 @@ export class MushroomWeatherAdvancedCard extends MushroomAdditionCard {
   protected descriptor = getCatalogItem("mushroom-addition-weather-advanced");
   private input?: ConfigInput;
   static styles = [MushroomAdditionCard.styles, css`
-    :host { display: block; min-width: 0; }
-    ha-card { overflow: hidden; }
+    :host { display: block; min-width: 0; height: auto; }
+    :host([fill-container]) { height: 100%; }
+    ha-card.mushroom-addition-card { overflow: hidden; height: auto; }
+    ha-card.mushroom-addition-card.fill-container { height: 100%; }
+    ha-card.mushroom-addition-card > .action-surface { min-height: 0; height: auto; }
     .energy-heading { padding: 12px; }
+    .energy-heading.layout-vertical .card-heading { display: flex; flex-direction: column; text-align: center; }
     .weather-content { padding: 0; width: 100%; min-width: 0; }
+    .weather-content.layout-vertical { display: block; text-align: initial; }
+    mushroom-addition-weather-scene { width: 100%; }
   `];
   public static getStubConfig(hass?: HomeAssistant): AdditionConfig { return weatherStub(hass); }
   public setConfig(config: AdditionConfig): void {
     if (!config || typeof config !== "object") throw new Error("A Weather Advanced configuration is required.");
     validateWeatherOptions(config.weather);
     const normalized = normalizeConfig(config);
+    this.toggleAttribute("fill-container", normalized.fill_container === true);
     this.input = { ...weatherDefaults, ...normalized.weather, entity: normalized.entity ?? "weather.home" };
     super.setConfig(normalized);
   }
@@ -35,7 +42,7 @@ export class MushroomWeatherAdvancedCard extends MushroomAdditionCard {
   }
   protected render() {
     if (!this.config) return nothing;
-    return html`<ha-card class="mushroom-addition-card${this.config.card_shadow ? " card-shadow" : ""}">
+    return html`<ha-card class="mushroom-addition-card${this.config.card_shadow ? " card-shadow" : ""}${this.config.fill_container ? " fill-container" : ""}">
       ${this.renderSharedHeading()}
       ${this.renderSharedSurface("weather-content", html`
         <mushroom-addition-weather-scene .hass=${this.hass} .input=${this.input}></mushroom-addition-weather-scene>

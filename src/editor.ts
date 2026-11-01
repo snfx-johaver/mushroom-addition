@@ -397,6 +397,7 @@ export class MushroomAdditionEditor extends LitElement {
       item.upstreamId === "remote_card" ||
       item.upstreamId === "pi_hole_card" ||
       item.upstreamId === "custom_card_trash" ||
+      item.upstreamId === "custom_card_pollen" ||
       item.upstreamId === "custom_card_media_player_sonos" ||
       item.upstreamId === "custom_card_entity_carousel" ||
       item.upstreamId === "custom_card_light" ||
@@ -1482,7 +1483,7 @@ export class MushroomAdditionEditor extends LitElement {
       <label class="field${wide ? " wide" : ""}">
         <span>${localizeText(this.hass, label)}</span>
         <ha-selector .hass=${this.hass} .selector=${selector} .value=${value}
-          @value-changed=${(event: CustomEvent) => this.updatePollenExtra(index, name, event.detail.value)}></ha-selector>
+          @value-changed=${(event: CustomEvent) => { event.stopPropagation(); this.updatePollenExtra(index, name, event.detail.value); }}></ha-selector>
       </label>`;
     return html`
       <section class="item-editor waste-stream-editor">

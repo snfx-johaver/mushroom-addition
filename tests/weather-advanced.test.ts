@@ -6,8 +6,8 @@ import type { AdditionConfig, HomeAssistant } from "../src/types";
 import type { MushroomAdditionEditor } from "../src/editor";
 import type { WeatherAdvancedEditor } from "../src/weather-advanced/editor";
 import type { AnimatedWeatherCard } from "../src/weather-advanced/components/card";
-import type { MushroomWeatherAdvancedCard } from "../src/weather-advanced/card";
-import { WEATHER_OPTIONS, validateWeatherOptions, weatherDefaults } from "../src/weather-advanced/config";
+import { MushroomWeatherAdvancedCard } from "../src/weather-advanced/card";
+import { WEATHER_OPTIONS, validateWeatherOptions, weatherDefaults, type WeatherAdvancedOptions } from "../src/weather-advanced/config";
 import { I18n } from "../src/weather-advanced/internationalization";
 import type { EditorField } from "../src/editor-schema";
 
@@ -47,6 +47,78 @@ async function section(editor: MushroomAdditionEditor, title: string, expanded: 
 type Form = HTMLElement & { schema: EditorField[]; data: Record<string, unknown>; hass: HomeAssistant };
 
 describe("Weather Advanced integration", () => {
+  it("keeps the scene below a content-sized heading instead of full-height clipped action surfaces", () => {
+    const styles = MushroomWeatherAdvancedCard.styles;
+    const css = styles.map(style => Array.isArray(style) ? style.map(value => String(value)).join("") : String(style)).join("");
+    expect(css).toContain("ha-card.mushroom-addition-card > .action-surface { min-height: 0; height: auto; }");
+    expect(css).toContain("ha-card.mushroom-addition-card { overflow: hidden; height: auto; }");
+  });
+
+  it("stretches the host only when Fill container is enabled", async () => {
+    const { card } = await cardFor({ fill_container: true });
+    expect(card.hasAttribute("fill-container")).toBe(true);
+    expect(card.shadowRoot!.querySelector("ha-card.fill-container")).not.toBeNull();
+    card.setConfig({ type: `custom:${tag}`, entity: "weather.example", weather: { show_animations: false } });
+    await card.updateComplete;
+    expect(card.hasAttribute("fill-container")).toBe(false);
+    expect(card.shadowRoot!.querySelector("ha-card.fill-container")).toBeNull();
+  });
+
+  it("round-trips every specialist editor option through the card and normalized scene config", async () => {
+    const { card, scene } = await cardFor();
+    const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
+    editor.hass = card.hass;
+    let config: AdditionConfig = { type: `custom:${tag}`, entity: "weather.example",
+      name: "Garden", layout: "horizontal", weather: { show_animations: false } };
+    editor.setConfig(config);
+    document.body.append(editor);
+    await editor.updateComplete;
+    const layout = await section(editor, "Layout", true);
+    const features = await section(editor, "Features", true);
+    const controls = [layout.controls!, features.controls!];
+    editor.addEventListener("config-changed", event => {
+      config = (event as CustomEvent<{ config: AdditionConfig }>).detail.config;
+      editor.setConfig(config);
+      card.setConfig(config);
+    });
+    const camel = (key: string) => key.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
+    const aliases: Record<string, string> = { show_hourly_forecast: "showHourlyForecast", show_daily_forecast: "showDailyForecast" };
+    for (const { field, value: defaultValue } of Object.values(WEATHER_OPTIONS).flat()) {
+      const selector = field.selector!;
+      const values: unknown[] = "boolean" in selector ? [true, false]
+        : "select" in selector ? (selector.select as { options: string[] }).options
+          : "number" in selector ? [(selector.number as { min: number }).min, (selector.number as { max: number }).max]
+            : "entity" in selector ? ["sensor.temperature", ""]
+              : [field.name === "text_color" ? "#ffcc00" : field.name === "styles" ? ".weather-card { letter-spacing: 1px; }" : "Example", ""];
+      for (const value of values) {
+        const form = controls.flatMap(control => [...control.shadowRoot!.querySelectorAll<Form>("ha-form")])
+          .find(form => form.schema.some(candidate => candidate.name === field.name))!;
+        form.dispatchEvent(new CustomEvent("value-changed", { detail: { value: { ...form.data, [field.name]: value } } }));
+        await editor.updateComplete;
+        await Promise.all(controls.map(control => control.updateComplete));
+        await card.updateComplete;
+        await scene.updateComplete;
+        expect(config.layout).toBe("horizontal");
+        expect(config.name).toBe("Garden");
+        expect(config.weather?.[field.name as keyof WeatherAdvancedOptions], field.name).toBe(value === "" ? undefined : value);
+        const internal = scene.config;
+        if (field.name.endsWith("_entity") && !["sunrise_entity", "sunset_entity"].includes(field.name)) {
+          expect(internal.sensorEntities?.[camel(field.name.replace(/_entity$/, "")) as keyof NonNullable<typeof internal.sensorEntities>], field.name).toBe(value || null);
+        } else if (value !== "") {
+          expect(internal[(aliases[field.name] ?? camel(field.name)) as keyof typeof internal], field.name).toBe(value);
+        }
+        expect(scene.shadowRoot!.querySelector(".weather-card"), field.name).not.toBeNull();
+      }
+      // Restore animation defaults before closing forms to avoid background animation work.
+      if (field.name === "show_animations" && defaultValue) expect(config.weather?.show_animations).toBe(false);
+    }
+    await section(editor, "Features", false);
+    const reopened = await section(editor, "Features", true);
+    const sensorForm = [...reopened.controls!.shadowRoot!.querySelectorAll<Form>("ha-form")]
+      .find(form => form.schema.some(field => field.name === "temperature_entity"))!;
+    expect(sensorForm.data.temperature_entity).toBeUndefined();
+  });
+
   it("is registered once with a healthy weather picker example and no costly preview", () => {
     const descriptor = CATALOG.find(item => item.tag === tag)!;
     const hass = source();
@@ -105,6 +177,9 @@ describe("Weather Advanced integration", () => {
     expect(editor.shadowRoot!.querySelector("mushroom-addition-weather-options")).toBeNull();
     const layout = await section(editor, "Layout", true);
     const features = await section(editor, "Features", true);
+    const interactions = await section(editor, "Interactions", true);
+    expect(interactions.panel.querySelector<Form>("ha-form")!.schema.map(field => field.name))
+      .toEqual(["tap_action", "hold_action", "double_tap_action"]);
     const forms = [layout.controls!, features.controls!].flatMap(control =>
       [...control.shadowRoot!.querySelectorAll<Form>("ha-form")]);
     const fields = forms.flatMap(form => form.schema.map(field => field.name));

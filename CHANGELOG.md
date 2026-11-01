@@ -4,6 +4,14 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Pollen's Additional sensors toggle now mounts its repeatable entity/label/icon/
+  color controls in Features and preserves rows when hidden or reopened.
+
+- Weather Advanced keeps its heading content-sized so the animated scene is not
+  pushed outside the clipped card and stretches correctly with Fill container.
+  Restored Interactions in its visual editor,
+  honored High animation quality, and added complete option round-trip coverage.
+
 - Washer-Dryer power is blue while On; program controls use cached supported
   same-device defaults, with explicit feedback when Pause is unsupported.
 
