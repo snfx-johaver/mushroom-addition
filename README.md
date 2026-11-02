@@ -50,7 +50,8 @@ corresponding sensor's more-info dialog. Mould risk is a humidity-based indicati
 not a mould measurement.
 
 **Content** independently controls the header, title, header icon and upper-right
-quality indicator. Name, primary/secondary information and header interactions
+quality indicator, which shows both the status icon and its text. Name,
+primary/secondary information and header interactions
 use the shared Mushroom presentation and actions.
 
 Select an optional qualitative air-quality sensor in **Context** for Good,

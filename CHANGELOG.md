@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Air Quality displays the current quality text beside its changing status icon.
+
 - Air Quality adds compact, reorderable sensor columns for temperature, humidity,
   CO₂, PM2.5, VOC, humidity-derived mould risk, radon, pressure and custom readings.
   Its visual editor controls entities, visibility, icons, colors, units, precision

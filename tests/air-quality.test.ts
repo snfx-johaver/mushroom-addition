@@ -96,6 +96,7 @@ describe("Air Quality card and visual editor", () => {
     expect(card.shadowRoot!.querySelector(".ulm-name")!.textContent).toBe("Office");
     expect(card.shadowRoot!.querySelector(".aq-reading b")!.textContent).toBe("900");
     expect(card.shadowRoot!.querySelector(".aq-status")!.getAttribute("aria-label")).toBe("Air Quality: Fair");
+    expect(card.shadowRoot!.querySelector(".aq-status-label")!.textContent).toBe("Fair");
     const listener = vi.fn(); card.addEventListener("hass-action", listener);
     card.shadowRoot!.querySelector<HTMLButtonElement>(".aq-reading")!.click();
     expect(listener).toHaveBeenCalledOnce();
@@ -103,9 +104,11 @@ describe("Air Quality card and visual editor", () => {
     expect(listener.mock.calls[0][0].detail.config.tap_action.action).toBe("more-info");
     card.hass = source("1500"); await card.updateComplete;
     expect(card.shadowRoot!.querySelector(".aq-status ha-icon")).toHaveProperty("icon", "mdi:emoticon-dead-outline");
+    expect(card.shadowRoot!.querySelector(".aq-status-label")!.textContent).toBe("Very poor");
     card.hass = source("unavailable"); await card.updateComplete;
     expect(card.shadowRoot!.querySelector(".aq-reading b")!.textContent).toBe("—");
     expect(card.shadowRoot!.querySelector(".aq-reading")!.getAttribute("aria-label")).toContain("Unavailable");
+    expect(card.shadowRoot!.querySelector(".aq-status-label")!.textContent).toBe("Unknown");
   });
   it("honors shared primary/secondary presentation and independent header controls", async () => {
     const card = await cardFor({ entity: "sensor.quality", primary_info: "state", secondary_info: "name", name: "Office" });

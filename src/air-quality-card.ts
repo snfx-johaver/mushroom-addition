@@ -22,8 +22,9 @@ export class MushroomAirQualityCard extends MushroomAdditionCard {
     .aq-header .ulm-icon { width:32px; height:28px; background:none; color:var(--secondary-text-color); }
     .aq-header .ulm-icon ha-icon, .aq-header .ulm-icon ha-state-icon { --mdc-icon-size:20px; }
     .aq-header .ulm-name { font-size:var(--mush-card-primary-font-size,13px); }
-    .aq-status { display:flex; flex:none; margin-left:auto; }
-    .aq-status ha-icon { --mdc-icon-size:20px; color:var(--aq-color); }
+    .aq-status { display:flex; flex:none; align-items:center; gap:5px; margin-left:auto; }
+    .aq-status-label { color:var(--primary-text-color); font-size:12px; line-height:20px; white-space:nowrap; }
+    .aq-status ha-icon { --mdc-icon-size:20px; color:var(--aq-color); flex:none; }
     .aq-readings { display:grid; grid-template-columns:repeat(var(--aq-columns), minmax(0,1fr)); gap:2px; }
     .aq-reading { display:flex; flex-direction:column; align-items:center; justify-content:space-between;
       gap:14px; min-width:0; min-height:64px; padding:8px 0 2px; border:0; border-radius:8px;
@@ -75,7 +76,7 @@ export class MushroomAirQualityCard extends MushroomAdditionCard {
           ${config.air_quality_show_badge !== false ? html`<span class="aq-status" role="img"
             title=${localizeText(hass, status.name)} aria-label=${`${localizeText(hass, "Air Quality")}: ${localizeText(hass, status.name)}`}
             style=${styleMap({ "--aq-color": `var(--${status.color}-color, ${status.color})` })}>
-            <ha-icon .icon=${status.icon}></ha-icon></span>` : nothing}
+            <ha-icon .icon=${status.icon}></ha-icon><span class="aq-status-label">${localizeText(hass, status.name)}</span></span>` : nothing}
         </div>` : nothing}
       ${rows.length ? html`<div class="aq-readings" style=${`--aq-columns:${Math.min(8, rows.length)}`}>
         ${rows.map(row => {
