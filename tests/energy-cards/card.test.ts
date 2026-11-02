@@ -63,7 +63,9 @@ describe("Smart Saving rendering", () => {
     missing.setConfig(cardConfig);
     document.body.append(missing);
     await missing.updateComplete;
-    expect(missing.shadowRoot?.textContent).toContain("Source missing");
+    const scheduleNotes = (card: typeof missing) => [...card.shadowRoot!.querySelectorAll("svg .empty-note")]
+      .filter(note => Number(note.getAttribute("y")) >= 390).map(note => note.textContent);
+    expect(scheduleNotes(missing)).toContain("Source missing");
     expect(missing.shadowRoot?.textContent).not.toContain("No blocks scheduled");
 
     const empty = document.createElement("mushroom-addition-smart-saving") as typeof missing;
@@ -72,7 +74,7 @@ describe("Smart Saving rendering", () => {
     document.body.append(empty);
     await empty.updateComplete;
     expect(empty.shadowRoot?.textContent).toContain("No blocks scheduled");
-    expect(empty.shadowRoot?.textContent).not.toContain("Source missing");
+    expect(scheduleNotes(empty)).not.toContain("Source missing");
   });
 
   it("renders explicit no-price and missing-forecast states without creating data", async () => {
@@ -85,7 +87,7 @@ describe("Smart Saving rendering", () => {
     card.setConfig(cardConfig);
     document.body.append(card);
     await card.updateComplete;
-    expect(card.shadowRoot?.textContent).toContain("No published price intervals available");
-    expect(card.shadowRoot?.textContent).toContain("Forecast source missing");
+    expect(card.shadowRoot?.textContent).toContain("No published intervals");
+    expect(card.shadowRoot?.textContent).toContain("Forecast: Source missing");
   });
 });

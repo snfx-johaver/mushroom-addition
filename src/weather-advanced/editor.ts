@@ -43,7 +43,9 @@ export class WeatherAdvancedEditor extends LitElement {
         const select = field.selector.select as { mode: string; options: string[] };
         return { ...field, selector: { select: { ...select, options: select.options.map(value => {
           const key = `editor.${field.name}_${value}`;
-          const label = labels.t(key);
+          const label = field.name === "language" && value !== "auto"
+            ? new Intl.DisplayNames([this.hass?.language || "en"], { type: "language" }).of(value) ?? value
+            : labels.t(key);
           return { value, label: label === key ? value : label };
         }) } } };
       }),

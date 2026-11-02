@@ -97,7 +97,7 @@ describe("Stock Card", () => {
     const call = vi.fn().mockRejectedValue({ message: "Unknown command" });
     const e = await content({}, makeHass(call));
     expect(e.shadowRoot!.querySelector('[role="alert"]')?.textContent).toContain("Unknown command");
-    expect(e.shadowRoot!.textContent).toContain("Stock Market Deluxe integration");
+    expect(e.shadowRoot!.textContent).toContain("Set up Stock Market Deluxe");
     call.mockResolvedValue(snapshot);
     (e.shadowRoot!.querySelector("button") as HTMLButtonElement).click(); await settle(e);
     expect(e.shadowRoot!.querySelector('[role="alert"]')).toBeNull();
@@ -266,7 +266,7 @@ describe("Stock Card", () => {
     });
     expect(schema.find(f => f.name === "stock_source")?.selector).toMatchObject({
       select: { options: expect.arrayContaining([
-        { value: "yahoo", label: "Yahoo Finance (Mushroom Addition Market Data backend)" },
+        { value: "yahoo", label: "Yahoo Finance (Mushroom Addition Market Data)" },
       ]) },
     });
     expect(schema.map(f => f.name)).toEqual(expect.arrayContaining([
@@ -293,7 +293,7 @@ describe("Stock Card", () => {
     const call = vi.fn().mockRejectedValue({ message: "Unknown command" });
     const e = await content({ stock_source: "yahoo", stock_symbol: "MSFT", stock_range: "5Y" }, makeHass(call));
     expect(e.shadowRoot!.querySelector('[role="alert"]')?.textContent).toContain("Mushroom Addition Market Data");
-    expect(e.shadowRoot!.textContent).toContain("Yahoo Finance sensor plugin alone does not provide history");
+    expect(e.shadowRoot!.textContent).toContain("Yahoo sensors alone have no history");
     expect(e.shadowRoot!.querySelector("mushroom-addition-mini-graph-card")).toBeNull();
     call.mockResolvedValue({ ...snapshot, symbol: "MSFT" });
     e.shadowRoot!.querySelector("button")!.click(); await settle(e);

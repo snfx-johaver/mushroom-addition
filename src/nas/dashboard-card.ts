@@ -10,7 +10,7 @@ import "./storage-card";
 
 const tabs = [
   { key: "overview", label: "Overview", icon: mdiServer },
-  { key: "storage", label: "Storage & Disks", icon: mdiHarddisk },
+  { key: "storage", label: "Storage Volumes & Disks", icon: mdiHarddisk },
   { key: "docker", label: "Docker", icon: mdiDocker },
 ];
 
@@ -25,16 +25,16 @@ export class SynologyDashboardCard extends BaseSynologyCard {
     const active = visible.some((tab) => tab.key === this._activeTab) ? this._activeTab : visible[0]?.key;
     const child = (type: string) => ({ ...this.config, title: undefined, type: `custom:mushroom-addition-nas-${type}-card`, embedded: true });
     return html`<ha-card style="gap:12px">
-      ${this.renderHeader(`${this.config.title || this.config.name || device?.name_by_user || device?.name || (nasSource(this.config) === "synology_dsm" ? "Synology NAS" : nasSource(this.config) === "qnap" ? "QNAP NAS" : "NAS")} Dashboard`, "Unified NAS Control Center", mdiServer)}
+      ${this.renderHeader(this.config.title || `${this.config.name || device?.name_by_user || device?.name || (nasSource(this.config) === "synology_dsm" ? "Synology NAS" : nasSource(this.config) === "qnap" ? "QNAP NAS" : "NAS")}`, this.t("Overview"), mdiServer)}
       ${this.renderErrors()}
-      <div class="tab-strip" role="tablist" aria-label="NAS dashboard">
+      <div class="tab-strip" role="tablist" aria-label=${`NAS: ${this.t("Overview")}`}>
         ${visible.map((tab) => html`<button role="tab" aria-selected=${active === tab.key} class="tab-btn ${active === tab.key ? "active" : ""}"
-          @click=${() => this._activeTab = tab.key}>${iconTemplate(tab.icon, 14)} ${tab.label}</button>`)}
+          @click=${() => this._activeTab = tab.key}>${iconTemplate(tab.icon, 14)} ${this.t(tab.label)}</button>`)}
       </div><div role="tabpanel">
         ${active === "overview" ? html`<mushroom-addition-nas-server-card .hass=${this.hass} .config=${child("server")}></mushroom-addition-nas-server-card>` : nothing}
         ${active === "storage" ? html`<mushroom-addition-nas-storage-card .hass=${this.hass} .config=${child("storage")}></mushroom-addition-nas-storage-card>` : nothing}
         ${active === "docker" ? html`<mushroom-addition-nas-docker-card .hass=${this.hass} .config=${child("docker")}></mushroom-addition-nas-docker-card>` : nothing}
-        ${!active ? this.renderNotice("All tabs are hidden. Enable tabs in the card editor.") : nothing}
+        ${!active ? this.renderNotice(`${this.t("Visible dashboard tabs")}: ${this.t("Disabled")}`) : nothing}
       </div>
     </ha-card>`;
   }

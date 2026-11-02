@@ -312,7 +312,7 @@ describe("workflow visual editor", () => {
     element.addEventListener("config-changed", listener);
     change(forms(element).find(form => form.data.id === "source")!, { id: "proposal" });
     await element.updateComplete;
-    element.shadowRoot!.querySelector<HTMLButtonElement>('[aria-label="Remove node Source"]')!.click();
+    element.shadowRoot!.querySelector<HTMLButtonElement>('[aria-label="Remove Nodes: Source"]')!.click();
     await element.updateComplete;
     expect(listener.mock.lastCall![0].detail.config.nodes.map((node: WorkflowConfig["nodes"][number]) => node.id))
       .toEqual(["proposal"]);
@@ -335,16 +335,16 @@ describe("workflow visual editor", () => {
     const element = await editor();
     const listener = vi.fn();
     element.addEventListener("config-changed", listener);
-    element.shadowRoot!.querySelector<HTMLButtonElement>('[aria-label="Move group Plan up"]')!.click();
+    element.shadowRoot!.querySelector<HTMLButtonElement>('[aria-label="Move Group: Plan up"]')!.click();
     await element.updateComplete;
     expect(listener.mock.lastCall![0].detail.config.groups[0].id).toBe("plan");
-    element.shadowRoot!.querySelector<HTMLButtonElement>('[aria-label="Move entity row 2 in Source up"]')!.click();
+    element.shadowRoot!.querySelector<HTMLButtonElement>('[aria-label="Move Entity rows 2: Source up"]')!.click();
     await element.updateComplete;
     expect(listener.mock.lastCall![0].detail.config.nodes[0].entities[0].attribute).toBe("forecast");
-    element.shadowRoot!.querySelector<HTMLButtonElement>('[aria-label="Remove group Input"]')!.click();
+    element.shadowRoot!.querySelector<HTMLButtonElement>('[aria-label="Remove Group: Input"]')!.click();
     await element.updateComplete;
     expect(listener.mock.lastCall![0].detail.config.nodes[0].group).toBeUndefined();
-    element.shadowRoot!.querySelector<HTMLButtonElement>('[aria-label="Remove node Source"]')!.click();
+    element.shadowRoot!.querySelector<HTMLButtonElement>('[aria-label="Remove Nodes: Source"]')!.click();
     await element.updateComplete;
     expect(listener.mock.lastCall![0].detail.config.relations).toEqual([]);
   });

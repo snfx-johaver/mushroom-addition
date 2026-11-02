@@ -11,14 +11,13 @@ const entitySelector = { entity: {} };
 const textSelector = { text: {} };
 const numberSelector = { number: { mode: "box", min: 0, max: 168, step: 1 } };
 const unitSelector = { select: { options: ["EUR/kWh", "ct/kWh"], mode: "dropdown" } };
-const adapterSelector = { select: { options: ["attribute", "state"], mode: "dropdown" } };
+const adapterSelector = { select: { options: [{ value: "attribute", label: "Entity attribute" }, { value: "state", label: "State" }], mode: "dropdown" } };
 
 function rootLabel(name: string): string {
   const labels: Record<string, string> = {
     title: "Title",
     subtitle: "Subtitle",
     visibleHours: "Visible hours (timeline)",
-    statusEntity: "Status entity",
   };
   return labels[name] ?? name;
 }
@@ -63,8 +62,15 @@ export class SmartSavingPlanCardEditor extends LitElement {
     this.fire({ ...this._config, ...event.detail.value } as SmartSavingConfig);
   }
 
-  private readonly computeLabel = (schema: { name: string }): string =>
-    localizeText(this.hass, rootLabel(schema.name).replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, value => value.toUpperCase()));
+  private t(text: string): string { return localizeText(this.hass, text); }
+  private readonly computeLabel = (schema: { name: string }): string => {
+    const label = rootLabel(schema.name).replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, value => value.toUpperCase());
+    const direct = this.t(label);
+    if (direct !== label || ["title", "subtitle", "visibleHours"].includes(schema.name)) return direct;
+    const words: Record<string, string> = { adapter: "Source", purchase: "Planned purchase", display: "Content", time: "Start" };
+    return schema.name.replace(/([a-z])([A-Z])/g, "$1 $2").split(" ")
+      .map(word => this.t(words[word.toLowerCase()] ?? word.replace(/^./, character => character.toUpperCase()))).join(": ");
+  };
 
   private updatePrice(event: FormChange): void {
     if (!this._config) return;
@@ -109,7 +115,7 @@ export class SmartSavingPlanCardEditor extends LitElement {
     const config = this._config;
     return html`
       ${this.error ? html`<p role="alert">${this.error}</p>` : nothing}
-      ${this.embedded ? nothing : html`<h3>Card</h3>
+      ${this.embedded ? nothing : html`<h3>${this.t("Card")}</h3>
       <ha-form .hass=${this.hass} .data=${{
         title: config.title ?? "Smart Saving",
         subtitle: config.subtitle ?? "",
@@ -122,8 +128,8 @@ export class SmartSavingPlanCardEditor extends LitElement {
         { name: "statusEntity", selector: entitySelector },
       ])} .computeLabel=${this.computeLabel} @value-changed=${(event: FormChange) => this.updateRoot(event)}></ha-form>`}
 
-      <h3>Prices</h3>
-      <p>Map source attributes to the actual published intervals; intervals without timestamps and prices are ignored.</p>
+      <h3>${this.t("Prices")}</h3>
+      <p>${this.t("Map timestamps and prices to published intervals. Entries without them are ignored.")}</p>
       <ha-form .hass=${this.hass} .data=${{
         entity: config.price?.entity ?? "",
         adapter: config.price?.adapter ?? "attribute",
@@ -136,7 +142,7 @@ export class SmartSavingPlanCardEditor extends LitElement {
         displayUnit: config.price?.displayUnit ?? "ct/kWh",
       }} .schema=${this.schemas.get([
         { name: "entity", selector: entitySelector },
-        { name: "adapter", selector: adapterSelector },
+        { name: "adapter", selector: { select: { ...adapterSelector.select, options: adapterSelector.select.options.map(option => ({ ...option, label: this.t(option.label) })) } } },
         { name: "path", selector: textSelector },
         { name: "startField", selector: textSelector },
         { name: "endField", selector: textSelector },
@@ -146,7 +152,7 @@ export class SmartSavingPlanCardEditor extends LitElement {
         { name: "displayUnit", selector: unitSelector },
       ])} .computeLabel=${this.computeLabel} @value-changed=${(event: FormChange) => this.updatePrice(event)}></ha-form>
 
-      <h3>Battery</h3>
+      <h3>${this.t("Battery")}</h3>
       <ha-form .hass=${this.hass} .data=${{
         currentEntity: config.battery?.current?.entity ?? "",
         currentValue: config.battery?.current?.value ?? "",
@@ -192,10 +198,10 @@ export class SmartSavingPlanCardEditor extends LitElement {
         });
       }}></ha-form>
 
-      <h3>Timeline tracks</h3>
+      <h3>${this.t("Timeline")}</h3>
       ${(["plan", "applied", "ev", "solar"] as const).map((track) => {
         const value = config.tracks?.[track] ?? {};
-        return html`<p><b>${track === "applied" ? "Applied sale" : track.toUpperCase()}</b></p>
+        return html`<p><b>${this.t(track === "applied" ? "Applied sale" : track === "plan" ? "Plan" : track === "solar" ? "Solar forecast" : "EV")}</b></p>
           <ha-form .hass=${this.hass} .data=${{
             entity: value.entity ?? "",
             path: value.path ?? "blocks",
@@ -216,7 +222,7 @@ export class SmartSavingPlanCardEditor extends LitElement {
           ])} .computeLabel=${this.computeLabel} @value-changed=${(event: FormChange) => this.updateTrack(track, event)}></ha-form>`;
       })}
 
-      <h3>Plan estimate summary</h3>
+      <h3>${this.t("Plan")}: ${this.t("Summary")}</h3>
       <ha-form .hass=${this.hass} .data=${{
         purchaseEnergyEntity: config.summary?.purchaseEnergy?.entity ?? "",
         purchaseEnergyField: config.summary?.purchaseEnergy?.field ?? "",
@@ -243,14 +249,14 @@ export class SmartSavingPlanCardEditor extends LitElement {
           planBlocksPath: String(v.planBlocksPath ?? ""),
         });
       }}></ha-form>
-      <h3>Average-price periods</h3>
-      <p>Hour boundaries use local time. An end hour earlier than the start means the period spans midnight.</p>
+      <h3>${this.t("Average")}: ${this.t("Price")}: ${this.t("Periods")}</h3>
+      <p>${this.t("An end hour before the start spans midnight (local time).")}</p>
       ${(config.periods?.length ? config.periods : [
         { name: "Morning", startHour: 6, endHour: 12 },
         { name: "Afternoon", startHour: 12, endHour: 18 },
         { name: "Evening", startHour: 18, endHour: 24 },
         { name: "Night", startHour: 0, endHour: 6 },
-      ]).map((period, index) => html`
+      ].map(period => ({ ...period, name: this.t(period.name) }))).map((period, index) => html`
         <ha-form .hass=${this.hass} .data=${period} .schema=${this.schemas.get([
           { name: "name", selector: textSelector },
           { name: "startHour", selector: { number: { mode: "box", min: 0, max: 23, step: 1 } } },
@@ -261,7 +267,7 @@ export class SmartSavingPlanCardEditor extends LitElement {
             { name: "Afternoon", startHour: 12, endHour: 18 },
             { name: "Evening", startHour: 18, endHour: 24 },
             { name: "Night", startHour: 0, endHour: 6 },
-          ];
+          ].map(period => ({ ...period, name: this.t(period.name) }));
           periods[index] = {
             name: String(event.detail.value.name ?? period.name),
             startHour: Number(event.detail.value.startHour ?? period.startHour),

@@ -7,6 +7,6 @@ export { englishHelpers, helperCatalogs, localeDirection, normalizeLocale, SUPPO
 export const translationCatalogs: Record<string, Record<string, string>> = Object.fromEntries(
   Object.entries(currentCatalogs).map(([locale, catalog]) => [
     locale,
-    Object.fromEntries(Object.entries(catalog).filter(([key]) => key !== "washer_details_entities")),
+    Object.fromEntries(Object.entries(catalog).filter(([key]) => key !== "washer_details_entities" && !key.startsWith("ui.release."))),
   ]),
 );

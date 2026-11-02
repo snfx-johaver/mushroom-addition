@@ -139,7 +139,7 @@ export function airQualityStub(hass?: HomeAssistant): AdditionConfig {
   const classes: Partial<Record<AirQualityKind, string>> = { co2: "carbon_dioxide", pm25: "pm25", voc: "volatile_organic_compounds_parts",
     temperature: "temperature", humidity: "humidity", pressure: "atmospheric_pressure", radon: "radon" };
   return {
-    type: "custom:mushroom-addition-air-quality", name: "Air Quality", icon: "mdi:air-filter",
+    type: "custom:mushroom-addition-air-quality", icon: "mdi:air-filter",
     air_quality_show_header: true, air_quality_show_title: true,
     air_quality_show_icon: true, air_quality_show_badge: true,
     air_quality_sensors: AIR_QUALITY_KINDS.filter(k => classes[k]).flatMap(kind => {

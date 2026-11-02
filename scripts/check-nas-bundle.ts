@@ -66,7 +66,7 @@ for (const kind of ["server", "storage", "docker", "dashboard"]) {
     await editor.updateComplete;
     assert.deepEqual(editor._config, config);
     const title = [...editor.shadowRoot!.querySelectorAll<HTMLInputElement>('input[type="text"]')]
-      .find((input) => input.parentElement?.textContent?.startsWith("Custom title"))!;
+      .find((input) => input.parentElement?.textContent?.startsWith("Title"))!;
     let edited: CardConfig | undefined;
     editor.addEventListener("config-changed", (event) => {
       edited = (event as CustomEvent<{ config: CardConfig }>).detail.config;

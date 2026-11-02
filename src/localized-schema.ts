@@ -1,6 +1,6 @@
 import type { HomeAssistant } from "./types";
 import type { EditorField } from "./editor-schema";
-import { localizeText } from "./localize";
+import { localizeText, normalizeLocale } from "./localize";
 
 /** Only schema-owned display labels are translated; selector values and HA selectors are untouched. */
 export const localizeEditorSchema = (hass: HomeAssistant | undefined, fields: EditorField[]): EditorField[] =>
@@ -17,7 +17,9 @@ export const localizeEditorSchema = (hass: HomeAssistant | undefined, fields: Ed
             ...select,
             options: select.options.map(option =>
               typeof option === "object" && option !== null && "label" in option && typeof option.label === "string"
-                ? { ...option, label: localizeText(hass, option.label) }
+                ? { ...option, label: ["locale", "language"].includes(field.name) && "value" in option && typeof option.value === "string" && option.value !== "auto"
+                  ? new Intl.DisplayNames([normalizeLocale(hass?.language)], { type: "language" }).of(option.value) ?? option.label
+                  : localizeText(hass, option.label) }
                 : option),
           },
         },

@@ -68,7 +68,7 @@ describe("integrated NAS registration and configuration continuation", () => {
     expect(editor._config).toEqual(snapshot);
 
     const title = [...editor.shadowRoot!.querySelectorAll<HTMLInputElement>('input[type="text"]')]
-      .find((input) => input.parentElement?.textContent?.startsWith("Custom title"))!;
+      .find((input) => input.parentElement?.textContent?.startsWith("Title"))!;
     expect(title).not.toBeNull();
     const changes: CardConfig[] = [];
     editor.addEventListener("config-changed", (event) =>

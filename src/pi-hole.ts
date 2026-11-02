@@ -202,7 +202,7 @@ export class MushroomPiHole extends LitElement {
       const definition = PIHOLE_METRICS[key], value = piHoleMetricValue(key, mapped, this.hass);
       const entity = mapped[key][0] || (key === "percentage" ? mapped.queries[0] : undefined);
       const unit = definition.unit || (key === "temperature" ? entity?.attributes.unit_of_measurement || "" : "");
-      return html`<button class="metric" ?disabled=${!entity} aria-label=${`${localizeText(this.hass, definition.name)}: ${value ?? localizeText(this.hass, "unavailable")}`}
+      return html`<button class="metric" ?disabled=${!entity} aria-label=${`${localizeText(this.hass, definition.name)}: ${value ?? localizeText(this.hass, "Unavailable")}`}
         @pointerdown=${() => this.metricHold(entity)} @pointerup=${this.clearHold} @pointercancel=${this.clearHold} @pointerleave=${this.clearHold}
         @click=${(event: MouseEvent) => { if (event.detail < 2) this.metricTap(entity); }} @dblclick=${() => this.metricDoubleTap(entity)}>
         <ha-icon .icon=${definition.icon}></ha-icon><span class="value">${value === undefined ? "--" : value.toLocaleString(this.hass?.language, { maximumFractionDigits: definition.unit ? 1 : 0 })}${value === undefined ? "" : unit}</span>

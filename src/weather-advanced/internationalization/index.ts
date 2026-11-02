@@ -1,5 +1,5 @@
-import { translations } from './locales.generated';
-import type { SupportedLanguage } from './locales.generated';
+import { translations } from './complete';
+import type { SupportedLanguage } from './complete';
 import type { Translation } from './types';
 
 export class I18n {

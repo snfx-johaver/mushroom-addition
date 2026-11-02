@@ -7,6 +7,18 @@ import { messageTranslations } from "./translations/messages";
 import { controlLabelTranslations } from "./translations/control-labels";
 import { mediaLabelTranslations } from "./translations/media-labels";
 import { editorControlTranslations } from "./translations/editor-controls";
+import { airQualityTranslations } from "./translations/air-quality";
+import { releaseGuidanceTranslations } from "./translations/release-guidance";
+import { workflowTranslations } from "./translations/workflow";
+import { stockTranslations } from "./translations/stock";
+import { nasTranslations } from "./translations/nas";
+import { nasGuidanceTranslations } from "./translations/nas-guidance";
+import { stockGuidanceTranslations } from "./translations/stock-guidance";
+import { releaseOptionTranslations } from "./translations/release-options";
+import { energyPlanTranslations } from "./translations/energy-plan";
+import { energyFieldTranslations } from "./translations/energy-fields";
+import { releaseDataTranslations } from "./translations/release-data";
+import { releaseStatusTranslations } from "./translations/release-status";
 import { editorGuidanceTranslations } from "./translations/editor-guidance";
 import { mediaOptionTranslations } from "./translations/media-options";
 import { remoteOptionTranslations } from "./translations/remote-options";
@@ -637,6 +649,18 @@ export const translationCatalogs: Record<string, Record<string, string>> = Objec
     ...controlLabelTranslations[locale],
     ...mediaLabelTranslations[locale],
     ...editorControlTranslations[locale],
+    ...airQualityTranslations[locale],
+    ...releaseGuidanceTranslations[locale],
+    ...workflowTranslations[locale],
+    ...stockTranslations[locale],
+    ...nasTranslations[locale],
+    ...nasGuidanceTranslations[locale],
+    ...stockGuidanceTranslations[locale],
+    ...releaseOptionTranslations[locale],
+    ...energyPlanTranslations[locale],
+    ...energyFieldTranslations[locale],
+    ...releaseDataTranslations[locale],
+    ...releaseStatusTranslations[locale],
     ...editorGuidanceTranslations[locale],
     ...mediaOptionTranslations[locale],
     ...remoteOptionTranslations[locale],
@@ -695,8 +719,8 @@ for (const locale of SUPPORTED_LOCALES) {
   }
 }
 
-export const localize = (
-  hass: HomeAssistant | undefined,
+export const localize = <T extends Pick<HomeAssistant, "language">>(
+  hass: T | undefined,
   key: string,
   values: Record<string, string | number> = {},
 ): string => {
@@ -1311,16 +1335,16 @@ export const helperCatalogs: Record<string, Record<string, string>> = {
 };
 
 export const editorHelper = (key: string, hass?: HomeAssistant): string | undefined => {
-  if (key === "washer_details_entities") return localizeText(hass, "Optional entities shown when the status-row chevron is expanded. Select settings and diagnostics from the same appliance.");
+  if (key === "washer_details_entities") return localizeText(hass, "Select settings and diagnostics from the same appliance. Expand them with the status-row chevron.");
   const airQualityHelp: Record<string, string> = {
-    air_quality_show_header: "Show the Mushroom heading above the readings. The quality indicator is controlled separately.",
-    air_quality_show_title: "Show the header's primary information; sensor readings remain visible.",
-    air_quality_show_icon: "Show the header icon without changing the sensor icons or quality indicator.",
-    air_quality_show_badge: "Show a changing quality icon at the upper right, using the selected quality sensor or the worst available pollutant reading.",
+    air_quality_show_header: "Show the Mushroom heading; the quality indicator is independent.",
+    air_quality_show_title: "Hide the heading text without hiding readings.",
+    air_quality_show_icon: "Hide the heading icon without hiding sensor icons.",
+    air_quality_show_badge: "Show the current quality icon and text at the upper right.",
   };
   if (airQualityHelp[key]) return localizeText(hass, airQualityHelp[key]);
   if (/^washer_button_[123]_/.test(key)) {
-    if (key.endsWith("_entity")) return localizeText(hass, "Optional extra appliance function, such as Child lock. Switches toggle, buttons press, and other entities open more-info. Not auto-discovered.");
+    if (key.endsWith("_entity")) return localizeText(hass, "Optional appliance button: switches toggle, buttons press, other entities open more-info. Configure an action to override this.");
     if (key.endsWith("_action")) return localizeText(hass, "Override the default entity action for this button.");
     return editorHelper(key.endsWith("_icon") ? "icon" : "name", hass);
   }
@@ -1352,7 +1376,7 @@ const englishLabelKeys = new Map(
 );
 
 /** Translate only built-in UI text. Never pass user-provided names or values here. */
-export const localizeText = (hass: HomeAssistant | undefined, label: string): string => {
+export const localizeText = <T extends Pick<HomeAssistant, "language">>(hass: T | undefined, label: string): string => {
   const key = englishLabelKeys.get(label);
   return key ? localize(hass, key) : label;
 };

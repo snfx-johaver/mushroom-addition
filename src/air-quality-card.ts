@@ -72,7 +72,7 @@ export class MushroomAirQualityCard extends MushroomAdditionCard {
       ${config.air_quality_show_header !== false || config.air_quality_show_badge !== false ? html`
         <div class="aq-header">
           ${config.air_quality_show_header !== false ? this.renderSharedSurface("aq-heading",
-            renderAutomaticPresentation(context, { primary: typeof config.name === "string" ? config.name : "Air Quality" })) : nothing}
+            renderAutomaticPresentation(context, { primary: typeof config.name === "string" ? config.name : localizeText(hass, "Air Quality") })) : nothing}
           ${config.air_quality_show_badge !== false ? html`<span class="aq-status" role="img"
             title=${localizeText(hass, status.name)} aria-label=${`${localizeText(hass, "Air Quality")}: ${localizeText(hass, status.name)}`}
             style=${styleMap({ "--aq-color": `var(--${status.color}-color, ${status.color})` })}>

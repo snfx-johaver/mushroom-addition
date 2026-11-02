@@ -4,6 +4,7 @@ import type { AdditionConfig, HomeAssistant } from "./types";
 import type { EditorField } from "./editor-schema";
 import { AIR_QUALITY_DEFAULTS, AIR_QUALITY_KINDS, validateAirQuality, type AirQualitySensor } from "./air-quality";
 import { localizeText } from "./localize";
+import { localizeEditorSchema } from "./localized-schema";
 
 export const airQualityLabels: Record<string, string> = {
   air_quality_show_header: "Show header",
@@ -90,15 +91,15 @@ export class AirQualityEditor extends LitElement {
     const t = (text: string) => localizeText(this.hass, text);
     return html`
       <p>${t("Add, hide or reorder readings. Tap a reading to open its sensor.")}</p>
-      <p>${t("The optional quality sensor uses Good, Fair, Poor or Very poor states. Without it, the indicator uses the worst available CO₂, PM2.5, VOC or radon reading, not a regulatory AQI.")}</p>
+      <p>${t("Quality follows the selected entity, or the worst CO₂, PM2.5, VOC or radon reading. This is not a regulatory AQI.")}</p>
       ${this.error ? html`<p role="alert">${this.error}</p>` : nothing}
       ${this.rows.map((row, index) => html`<details>
         <summary>${row.name || t(AIR_QUALITY_DEFAULTS[row.kind]?.name ?? "Sensor")} ${index + 1}</summary>
         <ha-form .hass=${this.hass} .data=${{ enabled: true, ...AIR_QUALITY_DEFAULTS[row.kind], ...row }}
-          .schema=${airQualitySensorSchema(row)}
+          .schema=${localizeEditorSchema(this.hass, airQualitySensorSchema(row))}
           .computeLabel=${(field: EditorField) => `${t(labels[field.name] ?? field.name)}${thresholds.some(key => key === field.name) && thresholdUnits[row.kind] ? ` (${thresholdUnits[row.kind]})` : ""}`}
           @value-changed=${(event: CustomEvent<{ value: AirQualitySensor }>) => this.changed(event, index)}></ha-form>
-        <p>${t("Thresholds use the units shown above, independently of display units. Unsupported sensor units keep their reading but have no automatic color or quality rating.")}</p>
+        <p>${t("Thresholds use the units shown. Unsupported units disable automatic colors and quality ratings, not readings.")}</p>
         <div class="tools">
           <button ?disabled=${index === 0} @click=${() => {
             const rows = [...this.rows]; [rows[index - 1], rows[index]] = [rows[index], rows[index - 1]]; this.save(rows);

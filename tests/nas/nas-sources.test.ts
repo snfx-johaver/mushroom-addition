@@ -62,7 +62,7 @@ describe("NAS data sources", () => {
     expect(storageSummary(hass, config, registries)).toEqual({ total: 10e12, used: 2.5e12, percent: 25 });
     const card = await mount("synology-storage-card", config, hass);
     const text = card.shadowRoot!.textContent!;
-    expect(text).toContain("2 Volumes");
+    expect(text).toContain("2 Storage volumes");
     expect(text).toContain("2 Drives");
     expect(text).toContain("SMART: GOOD");
     expect(text).toContain("Attention needed");
@@ -225,7 +225,7 @@ describe("Visual NAS editor", () => {
     await editor.updateComplete;
     const listener = vi.fn();
     editor.addEventListener("config-changed", listener);
-    const source = editor.shadowRoot!.querySelector<HTMLSelectElement>('[aria-label="NAS system"]')!;
+    const source = editor.shadowRoot!.querySelector<HTMLSelectElement>('[aria-label="NAS: System"]')!;
     expect(source.value).toBe("synology_dsm");
     source.value = "qnap";
     source.dispatchEvent(new Event("change"));
@@ -248,9 +248,9 @@ describe("Visual NAS editor", () => {
     source.dispatchEvent(new Event("change"));
     await editor.updateComplete;
     expect(editor.shadowRoot!.querySelector('[aria-label="QNAP NAS"]')).toBeNull();
-    expect(editor.shadowRoot!.textContent).toContain("Manual volumes");
-    expect(editor.shadowRoot!.textContent).toContain("Manual drives");
-    expect(editor.shadowRoot!.textContent).toContain("Overview entity mappings");
+    expect(editor.shadowRoot!.textContent).toContain("Manual: Storage volumes");
+    expect(editor.shadowRoot!.textContent).toContain("Manual: Drives");
+    expect(editor.shadowRoot!.textContent).toContain("Entity mappings");
   });
   it("adds, maps and removes manual volumes and drives using entity pickers", async () => {
     const editor = document.createElement("synology-storage-card-editor") as SynologyCardEditor;
@@ -259,8 +259,8 @@ describe("Visual NAS editor", () => {
     document.body.append(editor);
     await editor.updateComplete;
     const button = (text: string) => [...editor.shadowRoot!.querySelectorAll<HTMLButtonElement>("button")].find((element) => element.textContent === text)!;
-    button("Add volume").click();
-    button("Add drive").click();
+    button("Add: Storage volume").click();
+    button("Add: Drive").click();
     await editor.updateComplete;
     const fieldsets = editor.shadowRoot!.querySelectorAll("fieldset");
     fieldsets[0]!.querySelector("ha-entity-picker")!.dispatchEvent(new CustomEvent("value-changed", { detail: { value: "sensor.volume_pct" } }));
@@ -268,8 +268,8 @@ describe("Visual NAS editor", () => {
     await editor.updateComplete;
     expect(editor._config!.volumes).toEqual([{ usage_entity: "sensor.volume_pct" }]);
     expect(editor._config!.drives).toEqual([{ status_entity: "sensor.disk_status" }]);
-    button("Remove volume 1").click();
-    button("Remove drive 1").click();
+    button("Remove: Storage volume 1").click();
+    button("Remove: Drive 1").click();
     expect(editor._config!.volumes).toEqual([]);
     expect(editor._config!.drives).toEqual([]);
   });

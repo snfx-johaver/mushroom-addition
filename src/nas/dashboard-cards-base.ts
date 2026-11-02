@@ -4,6 +4,7 @@ import { dashboardCardStyles } from "./dashboard-cards-styles";
 import { fireEvent, type HassEntity, type HomeAssistant } from "./ha-types";
 import { belongsTo, cachedRegistries, loadRegistries, nasDevices, overviewEntity, safeUrl, selectedDevice, type Registries } from "./data";
 import { iconTemplate } from "./icons";
+import { localize, localizeText } from "../localize";
 
 export abstract class BaseSynologyCard extends LitElement {
   static override styles = dashboardCardStyles;
@@ -52,6 +53,7 @@ export abstract class BaseSynologyCard extends LitElement {
     if (changes.size !== 1 || !changes.has("hass")) return true;
     const previous = changes.get("hass");
     if (!previous || !this.hass) return true;
+    if (previous.language !== this.hass.language || previous.themes !== this.hass.themes) return true;
     if ((previous.connection ?? previous.callWS) !== (this.hass.connection ?? this.hass.callWS)) return true;
     if (usesRegistryDiscovery(this.config) && !this.hass.callWS && (previous.devices !== this.hass.devices || previous.entities !== this.hass.entities)) return true;
     const snapshot = usesRegistryDiscovery(this.config) ? cachedRegistries(this.hass) : undefined;
@@ -203,6 +205,14 @@ export abstract class BaseSynologyCard extends LitElement {
     return overviewEntity(this.hass, this.config, this.registries, key, domain);
   }
   protected openMoreInfo(entityId: string): void { fireEvent(this, "hass-more-info", { entityId }); }
+  protected t(text: string): string { return localizeText(this.hass, text); }
+  protected message(text: string, values: Record<string, string | number>): string {
+    return localize(this.hass, `ui.release.${text}`, values);
+  }
+  protected stateText(entity?: HassEntity): string {
+    return entity && !["unknown", "unavailable"].includes(entity.state)
+      ? this.hass?.formatEntityState?.(entity) ?? entity.state : this.t("Unavailable");
+  }
   protected async runAction(domain: string, service: string, entityId: string): Promise<void> {
     this.actionError = "";
     if (!this.hass) { this.actionError = "Home Assistant is not connected."; return; }
@@ -222,7 +232,7 @@ export abstract class BaseSynologyCard extends LitElement {
     return html`<div class="empty-state">${message}</div>`;
   }
   protected renderErrors(): TemplateResult {
-    return html`${this.registryError ? html`<div role="alert" class="empty-state">${this.registryError} <button class="btn" @click=${() => this.refreshRegistries(true)}>Retry</button></div>` : nothing}
+    return html`${this.registryError ? html`<div role="alert" class="empty-state">${this.registryError} <button class="btn" @click=${() => this.refreshRegistries(true)}>${this.t("Retry")}</button></div>` : nothing}
       ${this.actionError ? html`<div role="alert" class="empty-state">${this.actionError}</div>` : nothing}`;
   }
   protected renderHeader(title: string, subtitle: string, iconPath: string, badge?: TemplateResult): TemplateResult | typeof nothing {

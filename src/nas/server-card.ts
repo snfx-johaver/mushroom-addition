@@ -6,20 +6,25 @@ import { bytes, formatBytes, formatRate, formatValue, percentage, safeUrl, stora
 import type { HassEntity } from "./ha-types";
 import { mdiServer } from "./icons";
 import { registerDashboardCard } from "./register-dashboard-card";
+import { localizeText } from "../localize";
+import { nasHelp } from "../translations/nas-guidance";
+import type { HomeAssistant } from "./ha-types";
 
-export function formatUptime(entity?: HassEntity): string {
-  if (!usable(entity)) return "Unavailable";
+export function formatUptime(entity?: HassEntity, hass?: Pick<HomeAssistant, "language">): string {
+  if (!usable(entity)) return localizeText(hass, "Unavailable");
   const value = entity!.state.trim();
   const durations: Record<string, number> = { ms: .001, s: 1, min: 60, h: 3600, d: 86400 };
   const unit = entity!.attributes.unit_of_measurement;
   const multiplier = unit === undefined ? 1 : typeof unit === "string" ? durations[unit] : undefined;
   const seconds = /^\d+(\.\d+)?$/.test(value)
     ? multiplier === undefined ? NaN : Number(value) * multiplier : (Date.now() - Date.parse(value)) / 1000;
-  if (!Number.isFinite(seconds) || seconds < 0) return "Unavailable";
+  if (!Number.isFinite(seconds) || seconds < 0) return localizeText(hass, "Unavailable");
   const days = Math.floor(seconds / 86400);
   const hours = Math.floor(seconds % 86400 / 3600);
   const minutes = Math.floor(seconds % 3600 / 60);
-  return days ? `${days}d ${hours}h` : hours ? `${hours}h ${minutes}m` : `${minutes}m`;
+  const duration = (value: number, unit: "day" | "hour" | "minute") => new Intl.NumberFormat(hass?.language || "en",
+    { style: "unit", unit, unitDisplay: "narrow" }).format(value);
+  return days ? `${duration(days, "day")} ${duration(hours, "hour")}` : hours ? `${duration(hours, "hour")} ${duration(minutes, "minute")}` : duration(minutes, "minute");
 }
 
 export class SynologyServerCard extends BaseSynologyCard {
@@ -33,7 +38,7 @@ export class SynologyServerCard extends BaseSynologyCard {
       }}>
       <div class="ring-gauge" style="--pct: ${value ?? 0}; --ring-color: ${value === undefined ? "var(--synology-border)" : value > 85 ? "var(--synology-warning)" : "var(--synology-accent)"}">
         <span class="ring-content">${value === undefined ? "--" : `${value.toFixed(decimals)}%`}</span>
-      </div><span class="ring-label">${label}</span><span class="ring-subtext">${subtext}</span>
+      </div><span class="ring-label">${this.t(label)}</span><span class="ring-subtext">${subtext}</span>
     </div>`;
   }
   private detail(label: string, value: string, entity?: HassEntity): TemplateResult {
@@ -41,7 +46,7 @@ export class SynologyServerCard extends BaseSynologyCard {
       @click=${() => entity && this.openMoreInfo(entity.entity_id)}
       @keydown=${(event: KeyboardEvent) => {
         if (entity && ["Enter", " "].includes(event.key)) { event.preventDefault(); this.openMoreInfo(entity.entity_id); }
-      }}><span class="detail-label">${label}</span><span class="detail-val">${value}</span></div>`;
+      }}><span class="detail-label">${this.t(label)}</span><span class="detail-val">${value}</span></div>`;
   }
   protected override render(): TemplateResult {
     const source = nasSource(this.config);
@@ -72,42 +77,43 @@ export class SynologyServerCard extends BaseSynologyCard {
       .some((key) => this.config.entities?.[key]);
     const memoryPct = manual && !this.config.entities?.ram_usage && totalBytes !== undefined && totalBytes > 0 && usedBytes !== undefined
       ? Math.round(Math.max(0, Math.min(100, usedBytes / totalBytes * 100))) : percent(ram);
-    const memoryText = totalBytes !== undefined && usedBytes !== undefined ? `${formatBytes(usedBytes)} / ${formatBytes(totalBytes)}`
-      : synology ? "Enable total/free memory sensors for capacity"
-      : [totalBytes !== undefined ? `Total: ${formatBytes(totalBytes)}` : "", freeBytes !== undefined ? `Free: ${formatBytes(freeBytes)}` : "",
-        usedBytes !== undefined ? `Used: ${formatBytes(usedBytes)}` : ""].filter(Boolean).join(" • ");
+    const memoryText = totalBytes !== undefined && usedBytes !== undefined ? `${formatBytes(usedBytes, "GB", this.hass)} / ${formatBytes(totalBytes, "GB", this.hass)}`
+      : synology ? this.t(nasHelp.capacity)
+      : [totalBytes !== undefined ? `${this.t("Total")}: ${formatBytes(totalBytes, "GB", this.hass)}` : "", freeBytes !== undefined ? `${this.t("Free")}: ${formatBytes(freeBytes, "GB", this.hass)}` : "",
+        usedBytes !== undefined ? `${this.t("Used")}: ${formatBytes(usedBytes, "GB", this.hass)}` : ""].filter(Boolean).join(" • ");
     const storage = storageSummary(this.hass, this.config, this.registries);
     const storageEntity = this.getEntity("storage_usage", "sensor");
     const storagePct = storageEntity || this.config.entities?.storage_usage ? percent(storageEntity) : storage.percent;
-    const health = !usable(security) ? "Unavailable" : security!.state === "off" ? "Safe" : "Attention needed";
+    const health = this.t(!usable(security) ? "Unavailable" : security!.state === "off" ? "Safe" : "Attention needed");
     const managementUrl = safeUrl(this.config.management_url || device?.configuration_url);
-    const modelName = this.config.entities?.model ? (usable(model) ? model!.state : "Unavailable") : device?.model;
-    const softwareVersion = this.config.entities?.software_version ? (usable(version) ? version!.state : "Unavailable") : device?.sw_version;
+    const modelName = this.config.entities?.model ? this.stateText(model) : device?.model;
+    const softwareVersion = this.config.entities?.software_version ? this.stateText(version) : device?.sw_version;
+    const reading = (entity?: HassEntity) => formatValue(entity, this.hass);
     const hasStorage = synology || !!storageEntity || !!this.config.entities?.storage_usage ||
       volumeData(this.hass, this.config, this.registries).some((volume) => volume.total || volume.used) ||
       (manual && this.config.volumes?.some((volume) => volume.total_entity || volume.used_entity));
     return html`<ha-card>
       ${this.renderHeader(this.config.title || this.config.name || device?.name_by_user || device?.name || (synology ? "Synology NAS" : source === "qnap" ? "QNAP NAS" : "NAS"),
-        [modelName || (synology ? "DSM" : source === "qnap" ? "QNAP" : "Manual entities"), show("uptime", uptime) ? `Up ${formatUptime(uptime)}` : ""].filter(Boolean).join(" • "), mdiServer,
-        synology ? html`<span class="badge ${!usable(security) ? "badge-standby" : security!.state === "off" ? "badge-online" : "badge-warning"}">Security: ${health}</span>`
-          : show("system_status", status) ? html`<span class="badge badge-standby">Status: ${formatValue(status)}</span>` : undefined)}
+        [modelName || (synology ? "DSM" : source === "qnap" ? "QNAP" : this.t("Manual")), show("uptime", uptime) ? `${this.t("Uptime")}: ${formatUptime(uptime, this.hass)}` : ""].filter(Boolean).join(" • "), mdiServer,
+        synology ? html`<span class="badge ${!usable(security) ? "badge-standby" : security!.state === "off" ? "badge-online" : "badge-warning"}">${this.t("Security")}: ${health}</span>`
+          : show("system_status", status) ? html`<span class="badge badge-standby">${this.t("Status")}: ${this.stateText(status)}</span>` : undefined)}
       ${this.renderErrors()}
-      ${!manual && !device ? this.renderNotice(`Select your ${synology ? "Synology DSM" : "QNAP"} NAS in the card editor. No cross-server entity matching is performed.`) : nothing}
-      ${manual && !Object.values(this.config.entities ?? {}).some(Boolean) ? this.renderNotice("Choose overview entities in the card editor. No NAS device or automatic entity matching is required in manual mode.") : nothing}
+      ${!manual && !device ? this.renderNotice(this.t(nasHelp.discovery)) : nothing}
+      ${manual && !Object.values(this.config.entities ?? {}).some(Boolean) ? this.renderNotice(`${this.t("Entity mappings")}: ${this.t(nasHelp.mappings)}`) : nothing}
       <div class="rings-grid">
-        ${show("cpu_usage", cpu) ? this.ring("CPU Load", percent(cpu, 2), show("system_temperature", temperature) ? `System: ${formatValue(temperature)}` : "", cpu, 2) : nothing}
+        ${show("cpu_usage", cpu) ? this.ring("CPU usage", percent(cpu, 2), show("system_temperature", temperature) ? `${this.t("System")}: ${reading(temperature)}` : "", cpu, 2) : nothing}
         ${memoryConfigured ? this.ring("Memory", memoryPct, memoryText, ram ?? usedMemory ?? totalMemory ?? freeMemory) : nothing}
-        ${hasStorage ? this.ring("Volume Storage", storagePct, storage.total !== undefined ? `${formatBytes(storage.used)} / ${formatBytes(storage.total)}` : synology ? "Enable every volume's total-size sensor" : "", storageEntity) : nothing}
+        ${hasStorage ? this.ring("Storage", storagePct, storage.total !== undefined ? `${formatBytes(storage.used, "GB", this.hass)} / ${formatBytes(storage.total, "GB", this.hass)}` : synology ? this.t(nasHelp.capacity) : "", storageEntity) : nothing}
       </div>
       ${this.config.show_system_info !== false ? html`<div class="divider"></div><div class="detail-grid">
-        ${synology || modelName || this.config.entities?.model ? this.detail("NAS Model", modelName || "Unavailable", model) : nothing}
-        ${synology || softwareVersion || this.config.entities?.software_version ? this.detail(synology ? "DSM Version" : "Firmware Version", softwareVersion || "Unavailable", version) : nothing}
-        ${show("uptime", uptime) ? this.detail("System Uptime", formatUptime(uptime), uptime) : nothing}
-        ${show("system_temperature", temperature) ? this.detail("System Temperature", formatValue(temperature), temperature) : nothing}
-        ${show("network_rx", rx) ? this.detail("Download", formatRate(rx), rx) : nothing}
-        ${show("network_tx", tx) ? this.detail("Upload", formatRate(tx), tx) : nothing}
-        ${synology ? this.detail("Security Advisor", health, security) : show("system_status", status) ? this.detail("System Status", formatValue(status), status) : nothing}
-        ${managementUrl ? html`<div class="detail-item"><span class="detail-label">${synology ? "DSM Management" : "NAS Management"}</span><a class="detail-val" href=${managementUrl} target="_blank" rel="noreferrer" style="color:var(--synology-accent)">${synology ? "Open DSM" : "Open NAS"}</a></div>` : nothing}
+        ${synology || modelName || this.config.entities?.model ? this.detail("Model", modelName || this.t("Unavailable"), model) : nothing}
+        ${synology || softwareVersion || this.config.entities?.software_version ? this.detail("Firmware version", softwareVersion || this.t("Unavailable"), version) : nothing}
+        ${show("uptime", uptime) ? this.detail("Uptime", formatUptime(uptime, this.hass), uptime) : nothing}
+        ${show("system_temperature", temperature) ? this.detail("Temperature", reading(temperature), temperature) : nothing}
+        ${show("network_rx", rx) ? this.detail("Download", formatRate(rx, this.hass), rx) : nothing}
+        ${show("network_tx", tx) ? this.detail("Upload", formatRate(tx, this.hass), tx) : nothing}
+        ${synology ? this.detail("Security", health, security) : show("system_status", status) ? this.detail("Status", this.stateText(status), status) : nothing}
+        ${managementUrl ? html`<div class="detail-item"><span class="detail-label">${this.t("NAS management")}</span><a class="detail-val" href=${managementUrl} target="_blank" rel="noreferrer" style="color:var(--synology-accent)">${this.t("Open NAS")}</a></div>` : nothing}
       </div>` : nothing}
     </ha-card>`;
   }

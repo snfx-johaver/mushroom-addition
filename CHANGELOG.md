@@ -4,6 +4,22 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+## 0.7.1 - 2026-11-02
+
+- Complete the 0.7 translation audit across all 33 supported Mushroom languages,
+  including the four NAS cards, Air Quality, appliances, stock data, workflow and
+  Smart Saving editors, chart captions, selector options and helper guidance.
+- Expand Weather Advanced to all 33 languages while preserving its existing
+  Estonian, Portuguese and Chinese language IDs. Resolve regional and script
+  variants correctly, including Serbian Latin and Traditional Chinese.
+- Refresh optimized NAS cards and editors when only the Home Assistant language
+  changes. Use localized native entity states and duration units.
+- Translate generated workflow labels and period names without rewriting saved
+  custom names, selector values, entity IDs or mappings.
+- Check the shipping Weather Advanced catalogs alongside the shared catalogs,
+  add 33-language rendering regressions, and guard against unregistered UI text
+  and raw English HTML/SVG captions returning.
+
 ## 0.7.0 - 2026-11-02
 
 - Light Area Card follows Mushroom's bulb colour normalization, tinted icon

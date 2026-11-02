@@ -494,7 +494,7 @@ export class MushroomAdditionEditor extends LitElement {
     this.config?.type.endsWith("air-quality") && schema.name === "entity"
       ? localizeText(this.hass, "Air quality sensor (optional; otherwise calculated from pollutants)")
     : airQualityLabels[schema.name] ? localizeText(this.hass, airQualityLabels[schema.name])
-    : stockMetricLabel(schema.name) ? localizeText(this.hass, stockMetricLabel(schema.name)!)
+    : stockMetricLabel(schema.name) ? `${localizeText(this.hass, STOCK_METRICS.find(([key]) => schema.name.startsWith(`stock_${key}_`))![1])}: ${localizeText(this.hass, schema.name.endsWith("_entity") ? "Metric entity override" : "Metric attribute")}`
     : stockLabels[schema.name] ? localizeText(this.hass, stockLabels[schema.name])
     : welcomeWeatherLabels[schema.name]
       ? `${localize(this.hass, "ulm_weather")}: ${localize(this.hass, welcomeWeatherLabels[schema.name]!)}`
@@ -505,7 +505,7 @@ export class MushroomAdditionEditor extends LitElement {
       : this.config?.type.endsWith("remote-card") && schema.name === "entity"
       ? localize(this.hass, "editor.remote_entity")
       : this.config?.type.includes("custom-card-trash") && schema.name === "entity"
-      ? "Optional card entity"
+      ? `${localizeText(this.hass, "Card")}: ${localize(this.hass, "entity")} (${localizeText(this.hass, "Optional")})`
       : this.config?.type.includes("custom-card-washer") && schema.name === "entity"
         ? localize(this.hass, "machine_state_entity")
       : localize(this.hass, schema.name);
@@ -1497,7 +1497,7 @@ export class MushroomAdditionEditor extends LitElement {
     return html`
       <section class="item-editor waste-stream-editor">
         <h3>${localizeText(this.hass, "Additional pollen sensors")}</h3>
-        <p>${localizeText(this.hass, "Each enabled row is shown below the three main pollen types. Empty or disabled rows are omitted from the card.")}</p>
+        <p>${localizeText(this.hass, "Each enabled row appears below the main pollen types. Empty or disabled rows are hidden.")}</p>
         ${rows.map((row, index) => html`
           <div class="item-row waste-stream-row" data-pollen-index=${index}>
             <h4>${row.label || `${localizeText(this.hass, "Pollen sensor")} ${index + 1}`}</h4>
@@ -1806,7 +1806,7 @@ export class MushroomAdditionEditor extends LitElement {
     if (!this.config) return;
     this.updateWasteStreams([
       ...wasteStreamsForConfig(this.config),
-      { enabled: true, entity: "", label: "Custom waste", icon: "mdi:trash-can", color: "#43a047" },
+      { enabled: true, entity: "", label: localize(this.hass, "ui.renderer.waste_number", { number: wasteStreamsForConfig(this.config).length + 1 }), icon: "mdi:trash-can", color: "#43a047" },
     ]);
   };
 

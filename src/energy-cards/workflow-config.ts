@@ -1,5 +1,6 @@
 import type { HomeAssistant } from "./types";
 import type { AdditionConfig } from "../types";
+import { localizeText } from "../localize";
 
 export interface WorkflowRow {
   entity: string;
@@ -106,12 +107,12 @@ export function workflowStub(
     type: `custom:${WORKFLOW_TAG}`,
     name: "Energy Entityworkflow",
     presentation: "sequential",
-    groups: [{ id: "input", label: "Input", color: "#42a5f5" }, { id: "plan", label: "Plan", color: "#26a69a" }],
+    groups: [{ id: "input", label: localizeText(hass, "Input"), color: "#42a5f5" }, { id: "plan", label: localizeText(hass, "Plan"), color: "#26a69a" }],
     nodes: [
-      { id: "source", label: "Input", group: "input", icon: "mdi:database-outline", entities: available[0] ? [{ entity: available[0] }] : [] },
-      { id: "proposal", label: "Proposed plan", group: "plan", icon: "mdi:clipboard-text-outline",
-        note: "A proposed plan is not confirmation of execution.", entities: available[1] ? [{ entity: available[1] }] : [] },
+      { id: "source", label: localizeText(hass, "Input"), group: "input", icon: "mdi:database-outline", entities: available[0] ? [{ entity: available[0] }] : [] },
+      { id: "proposal", label: localizeText(hass, "Proposed plan"), group: "plan", icon: "mdi:clipboard-text-outline",
+        note: localizeText(hass, "Define relationships and display existing entity values. This card does not calculate or execute a workflow."), entities: available[1] ? [{ entity: available[1] }] : [] },
     ],
-    relations: [{ from: "source", to: "proposal", label: "informs" }],
+    relations: [{ from: "source", to: "proposal", label: localizeText(hass, "informs") }],
   };
 }

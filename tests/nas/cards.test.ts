@@ -55,7 +55,7 @@ describe("Scoped discovery and values", () => {
     expect(belongsTo(hass.devices!.disk, "nas", hass.devices!)).toBe(true);
     expect(belongsTo(hass.devices!.volume2, "nas", hass.devices!)).toBe(false);
     const card = await mount("synology-storage-card", {}, hass);
-    expect(card.shadowRoot!.textContent).toContain("1 Volumes");
+    expect(card.shadowRoot!.textContent).toContain("1 Storage volumes");
     expect(card.shadowRoot!.textContent).toContain("2 Drives");
     expect(card.shadowRoot!.textContent).toContain("SMART: normal");
     expect(card.shadowRoot!.textContent).not.toContain("Other NAS");
@@ -133,7 +133,7 @@ describe("Scoped discovery and values", () => {
     const registries = { devices: hass.devices!, entities: hass.entities! };
     expect(synologyDevices(registries).map((device) => device.id)).toEqual(["nas", "nas2"]);
     const card = await mount("synology-storage-card", {}, hass);
-    expect(card.shadowRoot!.textContent).toContain("1 Volumes");
+    expect(card.shadowRoot!.textContent).toContain("1 Storage volumes");
     expect(card.shadowRoot!.textContent).toContain("2 Drives");
     expect(card.shadowRoot!.textContent).not.toContain("Other NAS");
   });
@@ -223,7 +223,7 @@ describe("Cards", () => {
   });
   it("does not select a NAS arbitrarily and invalid saved selections do not fall back", async () => {
     const card = await mount("synology-server-card", { server: "" });
-    expect(card.shadowRoot!.textContent).toContain("Select your Synology");
+    expect(card.shadowRoot!.textContent).toContain("Select the intended NAS");
     expect(card.shadowRoot!.textContent).not.toContain("18.00%");
     card.setConfig({ type: "custom:synology-server-card", server: "deleted" });
     await card.updateComplete;
@@ -249,13 +249,13 @@ describe("Cards", () => {
     const card = await mount("synology-docker-card");
     expect(card.shadowRoot!.textContent).toContain("Plex");
     expect(card.shadowRoot!.textContent).not.toContain("Unraid Plex");
-    expect(card.shadowRoot!.textContent).toContain("1 unavailable");
+    expect(card.shadowRoot!.textContent).toContain("1 Unavailable");
     expect(card.shadowRoot!.textContent).not.toContain("Unavailable fields");
     expect(card.shadowRoot!.querySelector("details")).toBeNull();
     expect(card.shadowRoot!.querySelector<HTMLButtonElement>('[title="Start Offline"]')!.disabled).toBe(true);
     card.setConfig({ type: "custom:synology-docker-card", server: "nas" });
     await card.updateComplete;
-    expect(card.shadowRoot!.textContent).toContain("No endpoint is selected automatically");
+    expect(card.shadowRoot!.textContent).toContain("Select: Portainer");
     expect(card.shadowRoot!.querySelectorAll(".container-tile")).toHaveLength(0);
   });
   it("uses entity-based start and restart actions and reports service failure", async () => {
@@ -331,7 +331,7 @@ describe("Cards", () => {
     expect(child.shadowRoot!.textContent).not.toContain("Unraid Plex");
     card.setConfig({ type: "custom:synology-dashboard-card", tabs: [] });
     await card.updateComplete;
-    expect(card.shadowRoot!.textContent).toContain("All tabs are hidden");
+    expect(card.shadowRoot!.textContent).toContain("Visible dashboard tabs: Disabled");
   });
   it("shows actionable registry failure instead of silently falling back", async () => {
     const hass = createFixture();
@@ -363,7 +363,7 @@ describe("Visual editor", () => {
     }
     expect(editor.renders).toBe(initial);
     expect(editor.shadowRoot!.querySelector<HTMLSelectElement>('[aria-label="Synology NAS"]')!.value).toBe("nas");
-    expect(editor.shadowRoot!.querySelector<HTMLSelectElement>('[aria-label="Portainer endpoint"]')!.value).toBe("synEndpoint");
+    expect(editor.shadowRoot!.querySelector<HTMLSelectElement>('[aria-label="Portainer: Endpoint"]')!.value).toBe("synEndpoint");
   });
   it("does not restart discovery on state updates, and refresh reaches existing cards", async () => {
     const fixture = createFixture();
@@ -443,8 +443,8 @@ describe("Visual editor", () => {
     const selected = (label: string) =>
       editor.shadowRoot!.querySelector<HTMLOptionElement>(`[aria-label="${label}"] option[selected]`)!.value;
     expect(selected("Synology NAS")).toBe("nas2");
-    expect(selected("Portainer endpoint")).toBe("synEndpoint");
-    expect(selected("Container layout")).toBe("list");
+    expect(selected("Portainer: Endpoint")).toBe("synEndpoint");
+    expect(selected("Containers: Layout")).toBe("list");
   });
   it("saves endpoint, layout, tab visibility and mappings as config-changed", async () => {
     const editor = document.createElement("synology-dashboard-card-editor") as SynologyCardEditor;
@@ -454,12 +454,12 @@ describe("Visual editor", () => {
     await editor.updateComplete;
     const listener = vi.fn();
     editor.addEventListener("config-changed", listener);
-    const select = editor.shadowRoot!.querySelector<HTMLSelectElement>('[aria-label="Portainer endpoint"]')!;
+    const select = editor.shadowRoot!.querySelector<HTMLSelectElement>('[aria-label="Portainer: Endpoint"]')!;
     select.value = "synEndpoint";
     select.dispatchEvent(new Event("change"));
     await editor.updateComplete;
     expect(listener.mock.lastCall![0].detail.config.portainer_endpoint).toBe("synEndpoint");
-    const layout = editor.shadowRoot!.querySelector<HTMLSelectElement>('[aria-label="Container layout"]')!;
+    const layout = editor.shadowRoot!.querySelector<HTMLSelectElement>('[aria-label="Containers: Layout"]')!;
     layout.value = "list";
     layout.dispatchEvent(new Event("change"));
     await editor.updateComplete;
@@ -467,7 +467,7 @@ describe("Visual editor", () => {
     const picker = editor.shadowRoot!.querySelector("ha-entity-picker")!;
     picker.dispatchEvent(new CustomEvent("value-changed", { detail: { value: "sensor.manual_cpu" } }));
     expect(listener.mock.lastCall![0].detail.config.entities.cpu_usage).toBe("sensor.manual_cpu");
-    const storageCheckbox = [...editor.shadowRoot!.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')].find((input) => input.parentElement?.textContent?.includes("Storage & Disks"))!;
+    const storageCheckbox = [...editor.shadowRoot!.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')].find((input) => input.parentElement?.textContent?.includes("Storage Volumes & Disks"))!;
     storageCheckbox.checked = false;
     storageCheckbox.dispatchEvent(new Event("change"));
     expect(listener.mock.lastCall![0].detail.config.tabs).toEqual(["overview", "docker"]);
@@ -485,7 +485,7 @@ describe("Visual editor", () => {
       expect(card.shadowRoot!.querySelectorAll('[role="tab"]')).toHaveLength(2);
       const standalone = await mount("synology-docker-card", { container_source: "disabled" });
       expect(standalone.shadowRoot!.querySelectorAll(".container-tile")).toHaveLength(0);
-      expect(standalone.shadowRoot!.textContent).toContain("Container support is disabled");
+      expect(standalone.shadowRoot!.textContent).toContain("Container source: Disabled");
     });
     it("renders manual containers without Portainer, hides unmapped data and uses exact status states", async () => {
       const hass = createFixture();
@@ -507,7 +507,7 @@ describe("Visual editor", () => {
       card.hass = { ...hass };
       await card.updateComplete;
       expect(card.shadowRoot!.textContent).toContain("paused");
-      expect(card.shadowRoot!.textContent).toContain("0 stopped");
+      expect(card.shadowRoot!.textContent).toContain("0 Stopped");
       card.setConfig({ type: "custom:synology-docker-card", container_source: "manual", containers: [{ status_entity: "sensor.custom_status" }] });
       await card.updateComplete;
       expect(card.shadowRoot!.textContent).not.toContain("% CPU");
@@ -607,8 +607,8 @@ describe("Visual editor", () => {
       source.value = "manual";
       source.dispatchEvent(new Event("change"));
       await editor.updateComplete;
-      expect(editor.shadowRoot!.querySelector('[aria-label="Portainer endpoint"]')).toBeNull();
-      const add = [...editor.shadowRoot!.querySelectorAll("button")].find((button) => button.textContent === "Add container")!;
+      expect(editor.shadowRoot!.querySelector('[aria-label="Portainer: Endpoint"]')).toBeNull();
+      const add = [...editor.shadowRoot!.querySelectorAll("button")].find((button) => button.textContent === "Add: Container")!;
       add.click();
       await editor.updateComplete;
       const picker = editor.shadowRoot!.querySelector("fieldset ha-entity-picker")!;
@@ -619,7 +619,7 @@ describe("Visual editor", () => {
       source.dispatchEvent(new Event("change"));
       await editor.updateComplete;
       expect(editor.shadowRoot!.querySelector("fieldset")).toBeNull();
-      expect(editor.shadowRoot!.querySelector('[aria-label="Container layout"]')).toBeNull();
+      expect(editor.shadowRoot!.querySelector('[aria-label="Containers: Layout"]')).toBeNull();
       expect(editor._config!.portainer_endpoint).toBe("synEndpoint");
       expect(editor._config!.containers![0]!.status_entity).toBe("sensor.custom_status");
     });

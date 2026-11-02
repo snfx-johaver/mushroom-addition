@@ -1,4 +1,5 @@
 import type { AdditionConfig, HomeAssistant, WasteStreamConfig } from "./types";
+import { localizeText } from "./localize";
 
 export interface WasteStreamPreset extends Required<Pick<WasteStreamConfig, "preset" | "label" | "icon" | "color">> {
   legacyKey?: string;
@@ -62,7 +63,7 @@ export const wasteStreamExamples = (
       /waste|trash|afval|garbage/.test(platform);
     if (!collection || /\b(today|tomorrow|vandaag|morgen|update|updated|last update|days until|dagen tot)\b/.test(text)) return [];
     const preset = WASTE_STREAM_PRESETS.find(candidate => terms[candidate.preset]?.test(text));
-    if (preset) return [{ ...streamFromPreset(preset, id, true), label: String(entity.attributes.friendly_name || preset.label) }];
+    if (preset) return [{ ...streamFromPreset(preset, id, true), label: String(entity.attributes.friendly_name || localizeText(hass, preset.label)) }];
     return [{
       enabled: true,
       entity: id,

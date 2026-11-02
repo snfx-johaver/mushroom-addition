@@ -5,6 +5,7 @@ import { SynologyDockerCardEditor } from "./dashboard-cards-editor";
 import { belongsTo, bytes, deviceEntity, formatBytes, formatValue, hasDomain, numeric, usable } from "./data";
 import { iconTemplate, mdiDocker, mdiPower, mdiRestart, mdiViewGrid, mdiViewList } from "./icons";
 import { registerDashboardCard } from "./register-dashboard-card";
+import { nasHelp } from "../translations/nas-guidance";
 
 interface ContainerItem {
   id: string;
@@ -53,7 +54,7 @@ export class SynologyDockerCard extends BaseSynologyCard {
         id: `manual-${index}`,
         name: container.name || String(status?.attributes.friendly_name || container.status_entity),
         statusEntityId: container.status_entity,
-        status: usable(status) ? status!.state : "Unavailable",
+        status: this.stateText(status),
         isRunning: usable(status) && status!.state === states.running,
         isStopped: usable(status) && status!.state === states.stopped,
         available: usable(status),
@@ -62,7 +63,7 @@ export class SynologyDockerCard extends BaseSynologyCard {
         stopEntityId: container.stop_entity,
         restartEntityId: container.restart_entity,
         cpuPct: cpu?.attributes.unit_of_measurement === "%" ? numeric(cpu) : undefined,
-        memoryUsage: memoryBytes !== undefined ? formatBytes(memoryBytes) : undefined,
+        memoryUsage: memoryBytes !== undefined ? formatBytes(memoryBytes, "GB", this.hass) : undefined,
       };
     });
   }
@@ -87,14 +88,14 @@ export class SynologyDockerCard extends BaseSynologyCard {
       list.push({
         id: device.id, name: device.name_by_user || device.name,
         isRunning: sw.state === "on", isStopped: sw.state === "off", available: usable(sw),
-        status: usable(state) ? state!.state : usable(sw) ? sw.state === "on" ? "Running" : "Stopped" : "Unavailable",
+        status: usable(state) ? this.stateText(state) : this.t(usable(sw) ? sw.state === "on" ? "Running" : "Stopped" : "Unavailable"),
         image: usable(image) ? image!.state : undefined,
         switchEntityId: sw.entity_id,
         statusEntityId: sw.entity_id,
         // A button's unknown state means it has never been pressed, not that it is unavailable.
         restartEntityId: restart && restart.state !== "unavailable" ? restart.entity_id : undefined,
         cpuPct: cpu?.attributes.unit_of_measurement === "%" ? numeric(cpu) : undefined,
-        memoryUsage: usable(memory) ? (memoryBytes !== undefined ? formatBytes(memoryBytes) : formatValue(memory)) : undefined,
+        memoryUsage: usable(memory) ? (memoryBytes !== undefined ? formatBytes(memoryBytes, "GB", this.hass) : formatValue(memory, this.hass)) : undefined,
       });
     }
     return this.sortContainers(list);
@@ -114,7 +115,7 @@ export class SynologyDockerCard extends BaseSynologyCard {
   }
   private handlePower(container: ContainerItem): void {
     if (!container.available || (!container.isRunning && !container.isStopped)) return;
-    if (container.isRunning && !confirm(`Are you sure you want to stop container "${container.name}"?`)) return;
+    if (container.isRunning && !confirm(this.message('Stop container "{name}"?', { name: container.name }))) return;
     const action = container.isRunning ? container.stopEntityId : container.startEntityId;
     if (action) this.triggerEntity(action);
     else if (container.switchEntityId) void this.runAction("switch", container.isRunning ? "turn_off" : "turn_on", container.switchEntityId);
@@ -132,13 +133,13 @@ export class SynologyDockerCard extends BaseSynologyCard {
       : container.switchEntityId || container.startEntityId || container.stopEntityId;
     return html`<div class="row-right" style="gap:4px">
       ${container.restartEntityId ? html`<button class=${compact ? "btn-icon" : "btn"} ?disabled=${!container.available || !this.actionAvailable(container.restartEntityId)}
-        title="Restart ${container.name}" @click=${() => this.handleRestart(container)}>
-        ${iconTemplate(mdiRestart, compact ? 14 : 13)}${compact ? nothing : "Restart"}
+        title="${this.t("Restart")} ${container.name}" @click=${() => this.handleRestart(container)}>
+        ${iconTemplate(mdiRestart, compact ? 14 : 13)}${compact ? nothing : this.t("Restart")}
       </button>` : nothing}
       ${power ? html`<button class=${compact ? "btn-icon" : container.isRunning ? "btn" : "btn btn-primary"}
-        ?disabled=${!container.available || (!container.isRunning && !container.isStopped) || !this.actionAvailable(power)} title="${container.isRunning ? "Stop" : "Start"} ${container.name}"
+        ?disabled=${!container.available || (!container.isRunning && !container.isStopped) || !this.actionAvailable(power)} title="${this.t(container.isRunning ? "Stop" : "Start")} ${container.name}"
         @click=${() => this.handlePower(container)}>
-        ${iconTemplate(mdiPower, compact ? 14 : 13)}${compact ? nothing : container.isRunning ? "Stop" : "Start"}
+        ${iconTemplate(mdiPower, compact ? 14 : 13)}${compact ? nothing : this.t(container.isRunning ? "Stop" : "Start")}
       </button>` : nothing}
     </div>`;
   }
@@ -152,22 +153,22 @@ export class SynologyDockerCard extends BaseSynologyCard {
       this._filter === "all" || (this._filter === "running" ? container.isRunning : container.isStopped)
     );
     return html`<ha-card>
-      ${this.renderHeader(this.config.title || "Docker Containers", `${running} running • ${stopped} stopped • ${unavailable} unavailable`, mdiDocker,
-        html`<span class="badge ${running ? "badge-online" : "badge-standby"}">${running} Running</span>`)}
+      ${this.renderHeader(this.config.title || `Docker ${this.t("Containers")}`, `${running} ${this.t("Running")} • ${stopped} ${this.t("Stopped")} • ${unavailable} ${this.t("Unavailable")}`, mdiDocker,
+        html`<span class="badge ${running ? "badge-online" : "badge-standby"}">${running} ${this.t("Running")}</span>`)}
       ${this.renderErrors()}
-      ${source === "disabled" ? this.renderNotice("Container support is disabled. Choose a container source in the card editor.")
-        : source === "manual" ? (!containers.length ? this.renderNotice("Add containers and select their status entities in the card editor.") : nothing)
-        : !this.config.portainer_endpoint ? this.renderNotice("Select the Portainer endpoint belonging to your NAS in the card editor. No endpoint is selected automatically.")
-        : !containers.length ? this.renderNotice("No container switches found under the selected Portainer endpoint. Check the endpoint selection and enable its container switch entities.") : nothing}
-      ${source === "manual" && this.config.containers?.some((container) => !container.status_entity) ? this.renderNotice("A manual container is missing its required status entity. Complete its mapping in the card editor.") : nothing}
+      ${source === "disabled" ? this.renderNotice(`${this.t("Container source")}: ${this.t("Disabled")}`)
+        : source === "manual" ? (!containers.length ? this.renderNotice(this.t(nasHelp.containers)) : nothing)
+        : !this.config.portainer_endpoint ? this.renderNotice(`${this.t("Select")}: Portainer. ${this.t(nasHelp.discovery)}`)
+        : !containers.length ? this.renderNotice(`${this.t("No data")}: ${this.t(nasHelp.discovery)}`) : nothing}
+      ${source === "manual" && this.config.containers?.some((container) => !container.status_entity) ? this.renderNotice(this.t(nasHelp.containers)) : nothing}
       ${source !== "disabled" ? html`
       <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
         <div style="display:flex;gap:4px">
-          <button class="tab-btn ${this._filter === "all" ? "active" : ""}" @click=${() => this._filter = "all"}>All (${containers.length})</button>
-          <button class="tab-btn ${this._filter === "running" ? "active" : ""}" @click=${() => this._filter = "running"}>Running (${running})</button>
-          <button class="tab-btn ${this._filter === "stopped" ? "active" : ""}" @click=${() => this._filter = "stopped"}>Stopped (${stopped})</button>
+          <button class="tab-btn ${this._filter === "all" ? "active" : ""}" @click=${() => this._filter = "all"}>${this.t("All")} (${containers.length})</button>
+          <button class="tab-btn ${this._filter === "running" ? "active" : ""}" @click=${() => this._filter = "running"}>${this.t("Running")} (${running})</button>
+          <button class="tab-btn ${this._filter === "stopped" ? "active" : ""}" @click=${() => this._filter = "stopped"}>${this.t("Stopped")} (${stopped})</button>
         </div>
-        <button class="btn-icon" title="Toggle View Mode" @click=${() => this._viewMode = this._viewMode === "grid" ? "list" : "grid"}>
+        <button class="btn-icon" title=${this.t("Toggle view mode")} @click=${() => this._viewMode = this._viewMode === "grid" ? "list" : "grid"}>
           ${iconTemplate(this._viewMode === "grid" ? mdiViewList : mdiViewGrid, 18)}
         </button>
       </div>

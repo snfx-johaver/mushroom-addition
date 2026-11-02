@@ -3,6 +3,7 @@ import type { ConfigInput } from "./types";
 import type { EditorField } from "../editor-schema";
 import { I18n } from "./internationalization";
 import { resolveLanguage } from "./internationalization/resolveLanguage";
+import { SUPPORTED_LOCALES } from "../localize";
 
 export type WeatherAdvancedOptions = Omit<ConfigInput, "type" | "entity" | "name" | "tap_action" | "hold_action" | "double_tap_action">;
 type Option = { field: EditorField; value?: string | number | boolean };
@@ -45,7 +46,7 @@ export const WEATHER_OPTIONS = {
     boolean("show_forecast_description", false),
   ],
   clock: [
-    select("language", ["auto", "da", "de", "en", "es", "et", "fr", "hu", "it", "nb", "nl", "pl", "pt", "ru", "sk", "sl", "sr-Latn", "sr", "tr", "zh"], "auto"),
+    select("language", ["auto", ...SUPPORTED_LOCALES, "et", "pt", "zh"], "auto"),
     boolean("show_clock", false), boolean("show_date", false),
     select("clock_position", ["top", "details"], "top"),
     select("clock_format", ["24h", "12h"], "24h"),

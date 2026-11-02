@@ -200,9 +200,9 @@ export class MushroomStockContent extends LitElement {
         "code" in error && ["unknown_command", "not_loaded"].includes(String(error.code)));
       const guidance = this.config.stock_source === "yahoo"
         ? missingBackend
-          ? "Install the optional Mushroom Addition Market Data backend and add it in Settings > Devices & services. The Yahoo Finance sensor plugin alone does not provide history."
-          : "Check the stock symbol, internet connection and Home Assistant logs. Yahoo may be temporarily unavailable or rate limited."
-        : "Install and set up the Stock Market Deluxe integration in Settings > Devices & services.";
+          ? "Install Mushroom Addition Market Data in Settings > Devices & services. Yahoo sensors alone have no history."
+          : "Check symbol, internet and logs. Yahoo may be unavailable or rate limited."
+        : "Set up Stock Market Deluxe in Settings > Devices & services.";
       this.error = `${localizeText(this.hass, "Stock data unavailable")}: ${message}. ${localizeText(this.hass, guidance)}`;
     } finally {
       if (generation === this.generation && this.isConnected) {
@@ -324,7 +324,7 @@ export class MushroomStockContent extends LitElement {
         ${this.config?.stock_show_statistics !== false ? html`<dl>${[
           ["Open", quote.regularMarketOpen], ["High", quote.regularMarketDayHigh],
           ["Low", quote.regularMarketDayLow], ["Previous close", quote.regularMarketPreviousClose],
-          ["Volume", quote.regularMarketVolume], ["Market cap", quote.marketCap],
+          ["Trading volume", quote.regularMarketVolume], ["Market cap", quote.marketCap],
           ["52-week high", quote.fiftyTwoWeekHigh], ["52-week low", quote.fiftyTwoWeekLow],
           ["P/E", quote.trailingPE], ["EPS", quote.epsTrailingTwelveMonths],
           ["Beta", snapshot!.beta], ["After hours", quote.postMarketPrice], ["Pre-market", quote.preMarketPrice],

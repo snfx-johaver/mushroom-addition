@@ -1,5 +1,11 @@
 import { englishHelpers, helperCatalogs, SUPPORTED_LOCALES, translationCatalogs } from "./localize";
 import { nativeDiagnosticCatalogs } from "./native-diagnostics";
+import { translations as weatherCatalogs } from "./weather-advanced/internationalization/complete";
+
+const flattenMessages = (value: object, prefix = ""): Record<string, string> =>
+  Object.fromEntries(Object.entries(value).filter(([key]) => key !== "demo" && !key.startsWith("language_"))
+    .flatMap(([key, text]) => typeof text === "string" ? [[`${prefix}${key}`, text]]
+      : text && typeof text === "object" ? Object.entries(flattenMessages(text, `${prefix}${key}.`)) : []));
 
 export const placeholders = (message: string): string[] =>
   [...message.matchAll(/\{\w+\}|\$[a-zA-Z_]\w*/g)].map(match => match[0]).sort();
@@ -13,6 +19,7 @@ export const translationCoverage = () => SUPPORTED_LOCALES.map(locale => {
     ["labels", translationCatalogs.en, translationCatalogs[locale]],
     ["helpers", englishHelpers, helperCatalogs[locale]],
     ["diagnostics", nativeDiagnosticCatalogs.en, nativeDiagnosticCatalogs[locale]],
+    ["weather", flattenMessages(weatherCatalogs.en), flattenMessages(weatherCatalogs[locale])],
   ] as const) {
     for (const [key, original] of Object.entries(english)) {
       const path = `${namespace}.${key}`;
@@ -31,7 +38,8 @@ export const translationCoverage = () => SUPPORTED_LOCALES.map(locale => {
   }
   return {
     locale,
-    total: Object.keys(translationCatalogs.en).length + Object.keys(englishHelpers).length + Object.keys(nativeDiagnosticCatalogs.en).length,
+    total: Object.keys(translationCatalogs.en).length + Object.keys(englishHelpers).length + Object.keys(nativeDiagnosticCatalogs.en).length +
+      Object.keys(flattenMessages(weatherCatalogs.en)).length,
     translated,
     missing,
     invalid,

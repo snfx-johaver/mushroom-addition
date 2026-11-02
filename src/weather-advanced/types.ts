@@ -7,7 +7,7 @@ export type ClockWeight = 'thin' | 'regular' | 'bold';
  * Type definitions for Home Assistant and Weather Card
  */
 
-import type { SupportedLanguage } from './internationalization/locales.generated';
+import type { SupportedLanguage } from './internationalization/complete';
 
 // Home Assistant Entity State
 export type { HassEntity, HomeAssistant } from "../types";

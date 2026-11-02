@@ -11,7 +11,7 @@ export const STOCK_METRICS = [
   ["percent", "Daily change (%)", "regularMarketChangePercent"],
   ["open", "Open", "regularMarketOpen"], ["high", "High", "regularMarketDayHigh"],
   ["low", "Low", "regularMarketDayLow"], ["previous", "Previous close", "regularMarketPreviousClose"],
-  ["volume", "Volume", "regularMarketVolume"], ["market_cap", "Market cap", "marketCap"],
+  ["volume", "Trading volume", "regularMarketVolume"], ["market_cap", "Market cap", "marketCap"],
   ["year_high", "52-week high", "fiftyTwoWeekHigh"], ["year_low", "52-week low", "fiftyTwoWeekLow"],
   ["pe", "P/E", "trailingPE"], ["eps", "EPS", "epsTrailingTwelveMonths"],
   ["beta", "Beta", "beta"], ["after_hours", "After hours", "postMarketPrice"],
@@ -29,19 +29,19 @@ export const stockMetricLabel = (field: string): string | undefined => {
 
 export const stockEditorHelper = (field: string): string | undefined => {
   if (stockMetricLabel(field)) return field.endsWith("_entity")
-    ? "Optional sensor override for this value. Leave empty to read from the main stock entity."
-    : "Attribute on the selected sensor. An empty value reads its state. In Yahoo mode, mappings supplement missing provider values; a metric entity override takes priority.";
+    ? "Optional metric sensor override. Empty uses the main entity."
+    : "Attribute or empty for state. Overrides win; Yahoo mappings fill missing values.";
   const helpers: Record<string, string> = {
-    stock_source: "Use any provider's HA sensors, Yahoo market history with the optional Mushroom Addition Market Data backend, or Stock Market Deluxe. The Yahoo Finance sensor integration alone does not supply history.",
-    stock_symbol: "Yahoo ticker, such as MSFT (inferred from the main entity's symbol when empty). Entity mode uses it as a display label; Stock Market Deluxe defaults to AAPL.",
-    stock_currency: "Optional ISO currency code override, such as USD or EUR. Otherwise read from the entity or provider.",
-    stock_shares: "Number of shares owned, including fractions. Position value and daily change are calculated from the quote.",
-    stock_interval: "Graph/backend refresh interval in seconds. Backend market-open and market-closed limits still apply.",
-    stock_range: "Yahoo mode retrieves actual market history, including 5Y. Entity mode uses recorder retention, not backfilled market prices. Stock Market Deluxe supports up to 1Y.",
-    stock_show_position: "Show shares owned, current position value and daily value change.",
-    stock_show_statistics: "Show available provider values such as market cap, daily high/low and valuation ratios.",
-    stock_show_volume: "Show trading volume supplied with market history by the selected backend.",
-    stock_show_trends: "Show 20-sample simple and exponential moving averages on provider-supplied history.",
+    stock_source: "Choose entity sensors, Yahoo (Market Data backend), or Stock Market Deluxe. Yahoo sensors alone have no history.",
+    stock_symbol: "Ticker (e.g. MSFT). Empty uses entity symbol; Stock Market Deluxe defaults to AAPL.",
+    stock_currency: "Currency override (ISO code, e.g. USD or EUR).",
+    stock_shares: "Shares owned, including fractions. Calculates position value and daily change.",
+    stock_interval: "Refresh interval in seconds. Backend market-hour limits still apply.",
+    stock_range: "Yahoo: market history up to 5Y. Entities: recorder retention only. Stock Market Deluxe: up to 1Y.",
+    stock_show_position: "Show shares, position value and daily change.",
+    stock_show_statistics: "Show market capitalization, highs/lows and valuation ratios.",
+    stock_show_volume: "Show backend trading volume.",
+    stock_show_trends: "Show 20-sample simple/exponential moving averages.",
   };
   return helpers[field];
 };

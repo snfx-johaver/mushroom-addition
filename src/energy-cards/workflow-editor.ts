@@ -3,6 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { repeat } from "lit/directives/repeat.js";
 import { fireEvent } from "./helpers";
 import { localizeText } from "./localize";
+import { localize } from "../localize";
 import { validateWorkflow, WORKFLOW_EDITOR_TAG } from "./workflow-config";
 import type { WorkflowConfig, WorkflowGroup, WorkflowNode, WorkflowRelation, WorkflowRow } from "./workflow-config";
 import type { HomeAssistant } from "./types";
@@ -61,7 +62,10 @@ export class MushroomWorkflowEditor extends LitElement {
       }}></ha-form>`;
   }
   private select(name: string, options: Array<{ value: string; label: string }>) {
-    return field(name, { select: { mode: "dropdown", options } });
+    return field(name, { select: { mode: "dropdown", options: options.map(option =>
+      name === "presentation" || (name === "group" && option.value === "")
+        ? { ...option, label: localizeText(this.hass, option.label) }
+        : option) } });
   }
   private nextId(kind: "group" | "node"): string {
     const ids = new Set((kind === "group" ? this.config?.groups : this.config?.nodes)?.map(item => item.id));
@@ -105,9 +109,9 @@ export class MushroomWorkflowEditor extends LitElement {
   }
   private controls(index: number, count: number, label: string, move: (direction: number) => void, remove: () => void) {
     return html`<div class="controls">
-      <button type="button" ?disabled=${index === 0} aria-label=${`Move ${label} up`} @click=${() => move(-1)}>↑</button>
-      <button type="button" ?disabled=${index === count - 1} aria-label=${`Move ${label} down`} @click=${() => move(1)}>↓</button>
-      <button type="button" aria-label=${`Remove ${label}`} @click=${remove}>${localizeText(this.hass, "Remove")}</button>
+      <button type="button" ?disabled=${index === 0} aria-label=${localize(this.hass, "ui.release.Move {name} up", { name: label })} @click=${() => move(-1)}>↑</button>
+      <button type="button" ?disabled=${index === count - 1} aria-label=${localize(this.hass, "ui.release.Move {name} down", { name: label })} @click=${() => move(1)}>↓</button>
+      <button type="button" aria-label=${localize(this.hass, "editor.remove", { name: label })} @click=${remove}>${localizeText(this.hass, "Remove")}</button>
     </div>`;
   }
   private rows(node: WorkflowNode, index: number) {
@@ -118,7 +122,7 @@ export class MushroomWorkflowEditor extends LitElement {
         ${this.form(row, [
           field("entity", { entity: {} }), field("label"), field("attribute"), field("icon", { icon: {} }), field("unit"),
         ], value => update(rows.map((item, i) => i === rowIndex ? value : item)))}
-        ${this.controls(rowIndex, rows.length, `entity row ${rowIndex + 1} in ${node.label}`,
+        ${this.controls(rowIndex, rows.length, `${localizeText(this.hass, "Entity rows")} ${rowIndex + 1}: ${node.label}`,
           direction => update(this.move(rows, rowIndex, direction)),
           () => update(rows.filter((_, i) => i !== rowIndex)))}
       </div>`)}
@@ -141,27 +145,27 @@ export class MushroomWorkflowEditor extends LitElement {
       <section><h3>${localizeText(this.hass, "Groups")}</h3>
         <p>${localizeText(this.hass, "Group order defines process order. Ungrouped nodes appear last.")}</p>
         ${repeat(groups, (_, index) => index, (group, index) => html`<details open>
-          <summary>${group.label || `Group ${index + 1}`}</summary>
+          <summary>${group.label || `${localizeText(this.hass, "Group")} ${index + 1}`}</summary>
           ${this.form(group, [field("id"), field("label"), field("color")], value => this.replaceGroup(index, value))}
-          ${this.controls(index, groups.length, `group ${group.label}`,
+          ${this.controls(index, groups.length, `${localizeText(this.hass, "Group")}: ${group.label}`,
             direction => this.commit({ ...config, groups: this.move(groups, index, direction) }),
             () => this.commit({ ...config, groups: groups.filter((_, i) => i !== index),
               nodes: nodes.map(node => node.group === (this.groupReferenceIds.get(group) ?? group.id) ? this.withGroup(node) : node) }))}
         </details>`)}
-        <button type="button" @click=${() => this.commit({ ...config, groups: [...groups, { id: this.nextId("group"), label: "New group" }] })}>
+        <button type="button" @click=${() => this.commit({ ...config, groups: [...groups, { id: this.nextId("group"), label: localizeText(this.hass, "New group") }] })}>
           ${localizeText(this.hass, "Add group")}</button>
       </section>
       <section><h3>${localizeText(this.hass, "Nodes")}</h3>
         <p>${localizeText(this.hass, "Node order defines order within each group. Renaming IDs updates relationships; removing nodes removes their relationships.")}</p>
         ${repeat(nodes, (_, index) => index, (node, index) => html`<details open>
-          <summary>${node.label || `Node ${index + 1}`}</summary>
+          <summary>${node.label || `${localizeText(this.hass, "Nodes")} ${index + 1}`}</summary>
           ${this.form({ ...node, group: node.group ?? "" }, [
             field("id"), field("label"), this.select("group", [
               { value: "", label: "Ungrouped" }, ...groups.map(group => ({ value: group.id, label: group.label })),
             ]), field("icon", { icon: {} }), field("color"), field("note", { text: { multiline: true } }),
           ], value => this.replaceNode(index, { ...value, group: value.group || undefined }))}
           ${this.rows(node, index)}
-          ${this.controls(index, nodes.length, `node ${node.label}`,
+          ${this.controls(index, nodes.length, `${localizeText(this.hass, "Nodes")}: ${node.label}`,
             direction => this.commit({ ...config, nodes: this.move(nodes, index, direction) }),
             () => this.commit({ ...config, nodes: nodes.filter((_, i) => i !== index),
               relations: relations.filter(edge => {
@@ -169,22 +173,22 @@ export class MushroomWorkflowEditor extends LitElement {
                 return edge.from !== referenceId && edge.to !== referenceId;
               }) }))}
         </details>`)}
-        <button type="button" @click=${() => this.commit({ ...config, nodes: [...nodes, { id: this.nextId("node"), label: "New node", entities: [] }] })}>
+        <button type="button" @click=${() => this.commit({ ...config, nodes: [...nodes, { id: this.nextId("node"), label: localizeText(this.hass, "New node"), entities: [] }] })}>
           ${localizeText(this.hass, "Add node")}</button>
       </section>
       <section><h3>${localizeText(this.hass, "Relationships")}</h3>
-        ${relations.map((edge, index) => html`<details open><summary>${edge.label || `Relationship ${index + 1}`}</summary>
+        ${relations.map((edge, index) => html`<details open><summary>${edge.label || `${localizeText(this.hass, "Relationships")} ${index + 1}`}</summary>
           ${this.form(edge, [
             this.select("from", nodes.map(node => ({ value: node.id, label: node.label }))),
             this.select("to", nodes.map(node => ({ value: node.id, label: node.label }))),
             field("label"), field("color"),
           ], value => this.commit({ ...config, relations: relations.map((item, i) => i === index ? value : item) }))}
-          ${this.controls(index, relations.length, `relationship ${index + 1}`,
+          ${this.controls(index, relations.length, `${localizeText(this.hass, "Relationships")} ${index + 1}`,
             direction => this.commit({ ...config, relations: this.move(relations, index, direction) }),
             () => this.commit({ ...config, relations: relations.filter((_, i) => i !== index) }))}
         </details>`)}
         <button type="button" ?disabled=${!nodes.length} @click=${() => this.commit({ ...config,
-          relations: [...relations, { from: nodes[0].id, to: (nodes[1] ?? nodes[0]).id, label: "relates to" }] })}>
+          relations: [...relations, { from: nodes[0].id, to: (nodes[1] ?? nodes[0]).id, label: localizeText(this.hass, "relates to") }] })}>
           ${localizeText(this.hass, "Add relationship")}</button>
       </section>`;
   }

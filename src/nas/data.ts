@@ -1,5 +1,6 @@
 import { nasSource, type CardConfig, type NasSource } from "./config";
 import type { DeviceRegistryEntry, EntityRegistryEntry, HassEntity, HomeAssistant } from "./ha-types";
+import { localizeText } from "../localize";
 
 export interface Registries {
   devices: Record<string, DeviceRegistryEntry>;
@@ -231,8 +232,8 @@ export function percentage(entity?: HassEntity, decimals = 0): number | undefine
   return value === undefined ? undefined : Number(Math.max(0, Math.min(100, value)).toFixed(decimals));
 }
 
-export function formatValue(entity?: HassEntity): string {
-  return usable(entity) ? `${entity!.state}${entity!.attributes.unit_of_measurement ? ` ${entity!.attributes.unit_of_measurement}` : ""}` : "Unavailable";
+export function formatValue(entity?: HassEntity, hass?: HomeAssistant): string {
+  return usable(entity) ? hass?.formatEntityState?.(entity!) ?? `${entity!.state}${entity!.attributes.unit_of_measurement ? ` ${entity!.attributes.unit_of_measurement}` : ""}` : localizeText(hass, "Unavailable");
 }
 
 const byteUnits: Record<string, number> = {
@@ -247,20 +248,20 @@ export function bytes(entity?: HassEntity): number | undefined {
   return value !== undefined && multiplier !== undefined ? value * multiplier : undefined;
 }
 
-export function formatBytes(value: number | undefined, minimumUnit: "B" | "GB" = "GB"): string {
-  if (value === undefined || !Number.isFinite(value)) return "Unavailable";
+export function formatBytes(value: number | undefined, minimumUnit: "B" | "GB" = "GB", hass?: HomeAssistant): string {
+  if (value === undefined || !Number.isFinite(value)) return localizeText(hass, "Unavailable");
   const unit = value >= 1e12 ? "TB" : value >= 1e9 || minimumUnit === "GB" ? "GB" : value >= 1e6 ? "MB" : value >= 1e3 ? "kB" : "B";
-  return `${(value / byteUnits[unit]!).toLocaleString(undefined, { maximumFractionDigits: 2 })} ${unit}`;
+  return `${(value / byteUnits[unit]!).toLocaleString(hass?.language, { maximumFractionDigits: 2 })} ${unit}`;
 }
 
-export function formatRate(entity?: HassEntity): string {
+export function formatRate(entity?: HassEntity, hass?: HomeAssistant): string {
   const value = numeric(entity);
   const unit = entity?.attributes.unit_of_measurement;
-  if (value === undefined || typeof unit !== "string") return "Unavailable";
+  if (value === undefined || typeof unit !== "string") return localizeText(hass, "Unavailable");
   const base = unit.replace(/\/s$/, "");
   const multiplier = byteUnits[base];
-  if (multiplier === undefined) return formatValue(entity);
-  return `${formatBytes(value * multiplier, "B")}/s`;
+  if (multiplier === undefined) return formatValue(entity, hass);
+  return `${formatBytes(value * multiplier, "B", hass)}/s`;
 }
 
 export function safeUrl(url: string | null | undefined): string | undefined {

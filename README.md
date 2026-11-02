@@ -42,6 +42,9 @@ Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all card
 
 ## What's new in 0.7
 
+- **Languages:** all 37 cards and visual editors now use the 33 Mushroom language
+  catalogs, including NAS, stock data, Smart Saving and Weather Advanced.
+  Version 0.7.1 completes the translation audit for the 0.7 release.
 - **Air Quality:** compact, reorderable sensor readings, editable thresholds and a
   changing quality icon with Good/Fair/Poor text. Hide the header or quality badge
   independently.
@@ -57,11 +60,12 @@ Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all card
   visual additional pollen sensors, and dropdowns that follow light/dark themes.
 
 Existing dashboard card types and configurations remain supported. Install
-**v0.7.0** through HACS, then reload every dashboard browser. If you have been
+**v0.7.1** through HACS, then reload every dashboard browser. If you have been
 using an unreleased hotfix, return to the single HACS-managed resource after the
 update; do not load both bundles.
 
-See the [changelog](CHANGELOG.md#070---2026-11-02) for the full release details.
+See the [changelog](CHANGELOG.md#071---2026-11-02) for the translation update and
+[0.7.0 release details](CHANGELOG.md#070---2026-11-02).
 
 ## Air Quality
 
@@ -155,8 +159,11 @@ Cards use your Home Assistant theme and language. Your custom names, entity IDs
 and action values stay untouched. Some cards need their corresponding sensors
 or integrations; installing a card does not install its data source.
 
-The original 27 cards support all 33 Mushroom languages. Stock-specific labels
-and the four expanded NAS cards currently use English fallbacks.
+All 37 cards and their visual editors use the 33 Mushroom language catalogs.
+This includes stock-specific labels, the four NAS cards, Smart Saving and
+Weather Advanced. Language and script variants follow Home Assistant; saved
+custom names and entity values are preserved. Technical identifiers, brands,
+upstream error details and user-provided text are not translated.
 
 See the **[card catalog](docs/CATALOG.md)** for the complete list and source
 references, or the [changelog](CHANGELOG.md) for what's new.
@@ -233,7 +240,7 @@ not trading sessions, and cannot show data older than recorder retention.
 The card does not fetch external APIs, store API keys, or install a provider.
 
 For actual market history, select **Yahoo Finance (Mushroom Addition Market
-Data backend)** in Context after installing the optional backend. This retrieves
+Data)** in Context after installing the optional backend. This retrieves
 prices from Yahoo, including **5Y**, rather than relying on recorder retention.
 It also retrieves available company statistics such as opening price, market
 cap, EPS, P/E and beta, plus trading volume and SMA/EMA overlays.
@@ -241,7 +248,7 @@ Your existing Yahoo Finance sensor plugin can remain installed, but does not
 provide this history endpoint by itself. See **[Stock setup](docs/STOCK.md)** for
 backend installation, metric overrides and provider limitations.
 
-The optional **Stock Market Deluxe integration** source supports its quote
+The optional **Stock Market Deluxe** source supports its integration's quote
 and historical-price WebSocket API, including volume and SMA/EMA chart overlays.
 For that source only, separately install and configure
 [Stock Market Deluxe](https://github.com/codemonkey2k5/stock-market-deluxe-card).

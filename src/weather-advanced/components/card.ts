@@ -2,6 +2,7 @@ import { LitElement, html, TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
 import { CLOCK_SCALE, CLOCK_WEIGHT, DEFAULT_CONFIG } from '../constants.js';
 import { I18n } from '../internationalization/index.js';
+import { localizeText } from '../../localize';
 import { resolveLanguage } from '../internationalization/resolveLanguage.js';
 import {
   getSunriseSunsetData,
@@ -325,7 +326,7 @@ export class AnimatedWeatherCard extends LitElement {
 
   render(): TemplateResult {
     if (!this.hass) {
-      return html`<div>No Home Assistant connection</div>`;
+      return html`<div>${localizeText({ language: resolveLanguage({ configLang: this.config.language }) }, "No Home Assistant connection")}</div>`;
     }
 
     const weather = getWeatherData(
