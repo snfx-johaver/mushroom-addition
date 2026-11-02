@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+## 0.7.0 - 2026-11-02
+
 - Light Area Card follows Mushroom's bulb colour normalization, tinted icon
   backgrounds and solid brightness fill over a 20%-tinted track, without added
   light-mode shadows, outlines or a brightness thumb.

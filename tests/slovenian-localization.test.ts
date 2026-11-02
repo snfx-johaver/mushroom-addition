@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { englishHelpers, helperCatalogs, normalizeLocale, SUPPORTED_LOCALES, translationCatalogs } from "../src/localize";
+import { englishHelpers, helperCatalogs, normalizeLocale, SUPPORTED_LOCALES, translationCatalogs } from "./helpers/localization-baseline";
 import { nativeDiagnosticCatalogs } from "../src/native-diagnostics";
 import { placeholders } from "../src/translation-coverage";
 import { slovenianHelpers, slovenianLabels } from "../src/translations/sl";

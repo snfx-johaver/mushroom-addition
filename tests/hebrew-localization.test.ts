@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { englishHelpers, helperCatalogs, localeDirection, translationCatalogs } from "../src/localize";
+import { englishHelpers, helperCatalogs, localeDirection, translationCatalogs } from "./helpers/localization-baseline";
 import { nativeDiagnosticCatalogs } from "../src/native-diagnostics";
 import { placeholders } from "../src/translation-coverage";
 import { hebrewHelpers, hebrewLabels } from "../src/translations/he";

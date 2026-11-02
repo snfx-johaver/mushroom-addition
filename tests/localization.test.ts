@@ -68,6 +68,13 @@ describe("locale identity", () => {
 });
 
 describe("translated text safety and coverage", () => {
+  it.each(SUPPORTED_LOCALES)("translates appliance details without an English fallback for %s", locale => {
+    const label = translationCatalogs[locale].washer_details_entities;
+    expect(label?.trim()).toBeTruthy();
+    expect(localize(makeHass(locale), "washer_details_entities")).toBe(label);
+    if (locale !== "en") expect(label).not.toBe(translationCatalogs.en.washer_details_entities);
+    expect(editorHelper("washer_details_entities", makeHass(locale))).toBeTruthy();
+  });
   it("retains every named placeholder in the original translated tables", () => {
     for (const catalogs of [commonTranslations, optionTranslations, messageTranslations, controlLabelTranslations, mediaLabelTranslations, editorControlTranslations, editorGuidanceTranslations, mediaOptionTranslations, remoteOptionTranslations, presentationOptionTranslations, greetingPollenTranslations, runtimeControlTranslations]) {
       for (const locale of SUPPORTED_LOCALES) {
@@ -83,6 +90,7 @@ describe("translated text safety and coverage", () => {
     const coverage = translationCoverage();
     expect(coverage).toHaveLength(33);
     expect(coverage.every(locale => locale.invalid.length === 0)).toBe(true);
+    expect(coverage.every(locale => locale.missing.length === 0)).toBe(true);
     expect(coverage.find(locale => locale.locale === "en")?.missing).toEqual([]);
     const missing = coverage.find(locale => locale.locale === "pt-BR")!;
     expect(missing.translated + missing.missing.length).toBe(missing.total);

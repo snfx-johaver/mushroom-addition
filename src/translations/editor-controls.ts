@@ -45,10 +45,49 @@ const rows: Record<string, string> = {
   "zh-Hant": "Pi-hole 實體（已選擇裝置時可選填）|即將推出的媒體感測器|電視或遙控器實體|重新排序 {name}|移除 {name}|新增 {name} 區段|感測器對應與實體順序|要設定的統計|目前對應：{entities}|找不到符合的感測器。請在下方選擇一個或多個。|{name} 感測器覆寫|優先顯示的 Pi-hole 實體|恢復自動實體順序|遙控器區段|遙控指令|Home Assistant 動作|新增自訂按鈕|重新排序自訂按鈕|編輯自訂按鈕|移除自訂按鈕|按鈕 {number}|按鍵對應|恢復預設指令|覆寫指令|按鈕類型|標籤|指令代碼|動作|圖片無法使用|自訂媒體 URL 無效或使用了不支援的協定。請檢查互動設定。",
 };
 
+const applianceDetailsLabels: Record<string, string> = {
+  en: "Settings & diagnostics entities",
+  ar: "كيانات الإعدادات والتشخيص",
+  bg: "Обекти за настройки и диагностика",
+  ca: "Entitats de configuració i diagnòstic",
+  cs: "Entity nastavení a diagnostiky",
+  da: "Entiteter for indstillinger og diagnostik",
+  de: "Entitäten für Einstellungen und Diagnose",
+  el: "Οντότητες ρυθμίσεων και διαγνωστικών",
+  es: "Entidades de ajustes y diagnóstico",
+  fi: "Asetusten ja diagnostiikan entiteetit",
+  fr: "Entités des paramètres et du diagnostic",
+  he: "ישויות הגדרות ואבחון",
+  hu: "Beállítási és diagnosztikai entitások",
+  id: "Entitas pengaturan dan diagnostik",
+  it: "Entità delle impostazioni e della diagnostica",
+  "ko-KR": "설정 및 진단 엔티티",
+  nb: "Entiteter for innstillinger og diagnostikk",
+  nl: "Entiteiten voor instellingen en diagnostiek",
+  pl: "Encje ustawień i diagnostyki",
+  "pt-BR": "Entidades de configurações e diagnóstico",
+  "pt-PT": "Entidades de definições e diagnóstico",
+  ro: "Entități pentru setări și diagnosticare",
+  ru: "Сущности настроек и диагностики",
+  sk: "Entity nastavení a diagnostiky",
+  sl: "Entitete nastavitev in diagnostike",
+  sr: "Ентитети подешавања и дијагностике",
+  "sr-Latn": "Entiteti podešavanja i dijagnostike",
+  sv: "Entiteter för inställningar och diagnostik",
+  tr: "Ayarlar ve tanılama varlıkları",
+  uk: "Сутності налаштувань і діагностики",
+  vi: "Thực thể cài đặt và chẩn đoán",
+  "zh-Hans": "设置与诊断实体",
+  "zh-Hant": "設定與診斷實體",
+};
+
 export const editorControlTranslations: Record<string, Record<string, string>> = Object.fromEntries(
   Object.entries(rows).map(([locale, row]) => {
     const values = row.split("|");
     if (values.length !== keys.length) throw new Error(`Invalid ${locale} editor control row: ${values.length}/${keys.length}`);
-    return [locale, Object.fromEntries(keys.map((key, index) => [key, values[index]]))];
+    return [locale, {
+      ...Object.fromEntries(keys.map((key, index) => [key, values[index]])),
+      washer_details_entities: applianceDetailsLabels[locale],
+    }];
   }),
 );

@@ -1311,6 +1311,7 @@ export const helperCatalogs: Record<string, Record<string, string>> = {
 };
 
 export const editorHelper = (key: string, hass?: HomeAssistant): string | undefined => {
+  if (key === "washer_details_entities") return localizeText(hass, "Optional entities shown when the status-row chevron is expanded. Select settings and diagnostics from the same appliance.");
   const airQualityHelp: Record<string, string> = {
     air_quality_show_header: "Show the Mushroom heading above the readings. The quality indicator is controlled separately.",
     air_quality_show_title: "Show the header's primary information; sensor readings remain visible.",

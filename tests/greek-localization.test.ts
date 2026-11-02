@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { englishHelpers, helperCatalogs, translationCatalogs } from "../src/localize";
+import { englishHelpers, helperCatalogs, translationCatalogs } from "./helpers/localization-baseline";
 import { placeholders } from "../src/translation-coverage";
 import { greekHelpers, greekLabels } from "../src/translations/el";
 

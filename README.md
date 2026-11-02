@@ -6,7 +6,7 @@
 Your dashboard called. It wants fewer YAML headaches and a little more fun(gus).
 
 **37 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
-Energy, media, rooms, batteries, graphs, remotes and more.
+Air quality, animated weather, lights, appliances, energy, media, rooms, NAS and more.
 Pick a card, pick your entities, enjoy your dashboard.
 YAML is still welcome; it just isn't compulsory.
 
@@ -39,6 +39,29 @@ Click a screenshot for a closer look.
 These are real setups, not mockups; some cards are only partially configured.
 The NAS image is from the earlier dashboard whose layouts are now included.
 Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all cards.
+
+## What's new in 0.7
+
+- **Air Quality:** compact, reorderable sensor readings, editable thresholds and a
+  changing quality icon with Good/Fair/Poor text. Hide the header or quality badge
+  independently.
+- **Weather Advanced:** animated skies, forecasts, clocks and sensor overrides,
+  with visual controls for content, layout, animation quality and interactions.
+- **Light Area Card:** standard Mushroom bulb colours and brightness sliders,
+  individual group-light controls and improved narrow-card scene coverflow.
+- **Appliances:** readable program names, saved same-device entity mappings,
+  supported start/pause/stop actions, three optional extra controls and compact
+  settings/diagnostics that expand beside the status indicators. Power and program
+  selection share a row.
+- **Privacy and editor polish:** camera privacy selectors on both Area cards,
+  visual additional pollen sensors, and dropdowns that follow light/dark themes.
+
+Existing dashboard card types and configurations remain supported. Install
+**v0.7.0** through HACS, then reload every dashboard browser. If you have been
+using an unreleased hotfix, return to the single HACS-managed resource after the
+update; do not load both bundles.
+
+See the [changelog](CHANGELOG.md#070---2026-11-02) for the full release details.
 
 ## Air Quality
 
