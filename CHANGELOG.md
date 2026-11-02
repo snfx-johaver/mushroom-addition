@@ -4,6 +4,11 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Appliance cards show unavailable progress explicitly rather than 0%, and allow
+  choosing an initial program when Home Connect reports an unknown selection.
+  Extra controls grow to fit their labels, and operation status uses the configured
+  appliance icon with readable, wrapping status badges.
+
 - Air Quality displays the current quality text beside its changing status icon.
 
 - Air Quality adds compact, reorderable sensor columns for temperature, humidity,

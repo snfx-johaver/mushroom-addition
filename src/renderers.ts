@@ -972,9 +972,10 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
   const finished = entityFromConfig(ctx, "finished_entity");
   const programSelect = entityFromConfig(ctx, "program_select_entity");
   const programOptions = Array.isArray(programSelect?.attributes.options)
-    ? (programSelect.attributes.options as unknown[]).map(String)
+    ? (programSelect.attributes.options as unknown[]).map(String).filter(option => !["unknown", "unavailable", ""].includes(option))
     : [];
-  if (programSelect && !programOptions.includes(programSelect.state)) programOptions.unshift(programSelect.state);
+  const hasSelectedProgram = programSelect && !["unknown", "unavailable", ""].includes(programSelect.state);
+  if (hasSelectedProgram && !programOptions.includes(programSelect.state)) programOptions.unshift(programSelect.state);
   const powerSwitch = entityFromConfig(ctx, "power_switch_entity");
   const stopState = configured<string>(ctx, "ulm_custom_card_washer_machine_stop_state") ?? "stop";
   const powered = powerSwitch
@@ -989,7 +990,8 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
       .includes(machine.state.toLowerCase());
   const remoteEnabled = ["true", "on", "enabled"].includes(remote?.state.toLowerCase() ?? "");
   const delayedEnabled = delayed?.state === "on";
-  const percent = Math.max(0, Math.min(100, numeric(progress?.state) ?? 0));
+  const rawProgress = progress?.state.trim() ? numeric(progress.state) : undefined;
+  const percent = rawProgress === undefined ? undefined : Math.max(0, Math.min(100, rawProgress));
   const configuredStages = configured<Record<string, { name?: string; icon?: string }>>(
     ctx,
     "ulm_custom_card_washer_job_states",
@@ -1068,7 +1070,7 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
           <ha-icon icon="mdi:power" aria-hidden="true"></ha-icon>${stateLabel(power, ctx.hass)}
         </b>` : nothing}
         ${progress ? html`<b class="washer-progress" title=${displayName({ type: "", entity: progress.entity_id }, progress, ctx.hass)}>
-          <ha-icon icon="mdi:progress-clock" aria-hidden="true"></ha-icon>${Math.round(percent)}%
+          <ha-icon icon="mdi:progress-clock" aria-hidden="true"></ha-icon>${percent === undefined ? stateLabel(progress, ctx.hass) : `${Math.round(percent)}%`}
         </b>` : nothing}
       </div>` : nothing}
     </div>
@@ -1083,7 +1085,7 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
     ` : nothing}
     ${programSelect ? html`
       <select class="washer-program" aria-label=${localizeText(ctx.hass, "Program selection")}
-        ?disabled=${!powered || ["unavailable", "unknown"].includes(programSelect.state)}
+        ?disabled=${!powered || programSelect.state === "unavailable" || !programOptions.length}
         @pointerdown=${(event: Event) => event.stopPropagation()}
         @click=${(event: Event) => event.stopPropagation()}
         @change=${(event: Event) => {
@@ -1093,6 +1095,7 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
             option: (event.target as HTMLSelectElement).value,
           });
         }}>
+        ${!hasSelectedProgram ? html`<option value="" disabled selected>${stateLabel(programSelect, ctx.hass)}</option>` : nothing}
         ${programOptions.map((option) => html`
           <option value=${option} ?selected=${option === programSelect.state}>${washerProgramLabel(ctx.hass, programSelect, option)}</option>
         `)}
@@ -1142,7 +1145,7 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
       <div class="washer-status">
         ${job ? html`<span class="washer-operation-state"
           title=${displayName({ type: "", entity: job.entity_id }, job, ctx.hass)}>
-          <ha-icon icon="mdi:washing-machine"></ha-icon>${stateLabel(job, ctx.hass)}
+          <ha-icon .icon=${ctx.config.icon || "mdi:washing-machine"}></ha-icon>${stateLabel(job, ctx.hass)}
         </span>` : nothing}
         ${door ? html`<span><ha-icon icon="mdi:door"></ha-icon>${stateLabel(door, ctx.hass)}</span>` : nothing}
         ${finished ? html`<span><ha-icon icon="mdi:check-circle"></ha-icon>${stateLabel(finished, ctx.hass)}</span>` : nothing}

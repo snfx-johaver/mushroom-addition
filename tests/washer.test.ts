@@ -234,7 +234,7 @@ describe("Washer-Dryer program labels", () => {
     const card = document.createElement(type.replace("custom:", "")) as MushroomAdditionCard;
     card.hass = hass;
     card.setConfig({
-      type, entity: "switch.dishwasher_power", secondary_info: "state",
+      type, entity: "switch.dishwasher_power", icon: "mdi:dishwasher", secondary_info: "state",
       program_stage_entity: "sensor.dishwasher_operation_state",
       power_switch_entity: "switch.dishwasher_power",
       washer_power_entity: "switch.dishwasher_power",
@@ -244,6 +244,7 @@ describe("Washer-Dryer program labels", () => {
     document.body.append(card);
     await card.updateComplete;
     expect(card.shadowRoot!.querySelector(".washer-operation-state")?.textContent).toContain("Running");
+    expect(card.shadowRoot!.querySelector(".washer-operation-state ha-icon")).toHaveProperty("icon", "mdi:dishwasher");
     const metrics = card.shadowRoot!.querySelector(".washer-heading-metrics")!;
     expect(metrics.querySelector(".washer-power ha-icon")?.getAttribute("icon")).toBe("mdi:power");
     expect(metrics.querySelector(".washer-progress")?.textContent).toContain("25%");
@@ -296,5 +297,53 @@ describe("Washer-Dryer program labels", () => {
       entity_id: "select.dishwasher_selected_program",
       option: "dishcare_dishwasher_program_auto_45_65",
     });
+  });
+  it("allows choosing the first program when no program has been selected, but disables unavailable appliances", async () => {
+    const hass = makeHass();
+    hass.states["select.dishwasher_selected_program"].state = "unknown";
+    const card = document.createElement(type.replace("custom:", "")) as MushroomAdditionCard;
+    card.hass = hass;
+    card.setConfig({ type, entity: "switch.dishwasher_power", power_switch_entity: "switch.dishwasher_power",
+      program_select_entity: "select.dishwasher_selected_program" });
+    document.body.append(card);
+    await card.updateComplete;
+    const select = card.shadowRoot!.querySelector<HTMLSelectElement>(".washer-program")!;
+    expect(select.disabled).toBe(false);
+    expect(select.options[0].disabled).toBe(true);
+    expect([...select.options].map(option => option.value)).not.toContain("unknown");
+    select.value = "dishcare_dishwasher_program_eco_50";
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+    expect(hass.callService).toHaveBeenCalledWith("select", "select_option", {
+      entity_id: "select.dishwasher_selected_program", option: "dishcare_dishwasher_program_eco_50",
+    });
+    for (const state of ["unavailable", "off"]) {
+      card.hass = { ...hass, states: { ...hass.states,
+        "switch.dishwasher_power": { ...hass.states["switch.dishwasher_power"], state },
+      } };
+      await card.updateComplete;
+      expect(select.disabled).toBe(true);
+    }
+    card.hass = { ...hass, states: { ...hass.states,
+      "select.dishwasher_selected_program": { ...hass.states["select.dishwasher_selected_program"], state: "unavailable" },
+    } };
+    await card.updateComplete;
+    expect(select.disabled).toBe(true);
+  });
+
+  it.each(["unknown", "unavailable", ""])("never fabricates zero progress for %s", async state => {
+    const hass = makeHass();
+    hass.states["sensor.dishwasher_program_progress"].state = state;
+    const card = document.createElement(type.replace("custom:", "")) as MushroomAdditionCard;
+    card.hass = hass;
+    card.setConfig({ type, entity: "switch.dishwasher_power",
+      ulm_custom_card_washer_job_progress: "sensor.dishwasher_program_progress" });
+    document.body.append(card);
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelector(".washer-progress")!.textContent).not.toContain("0%");
+    card.hass = { ...hass, states: { ...hass.states,
+      "sensor.dishwasher_program_progress": { ...hass.states["sensor.dishwasher_program_progress"], state: "0" },
+    } };
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelector(".washer-progress")!.textContent).toContain("0%");
   });
 });
