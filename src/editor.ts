@@ -388,7 +388,6 @@ export class MushroomAdditionEditor extends LitElement {
         ? this.renderItemEditor(
           "scene_items",
           localizeText(this.hass, "Scene buttons"),
-          ["scene"],
         )
         : item.upstreamId === "custom_card_welcome"
           ? this.renderItemEditor("scene_items", localizeText(this.hass, "Scene buttons"))
@@ -794,7 +793,6 @@ export class MushroomAdditionEditor extends LitElement {
   private renderItemEditor(
     key: "scene_items" | "room_sensors",
     title: string,
-    domains?: string[],
   ) {
     if (!this.config) return nothing;
     const configuredItems = this.config[key];
@@ -818,7 +816,7 @@ export class MushroomAdditionEditor extends LitElement {
               <span>${localizeText(this.hass, "Button entity")}</span>
               <ha-selector
                 .hass=${this.hass}
-                .selector=${{ entity: domains?.length ? { domain: domains } : {} }}
+                .selector=${{ entity: {} }}
                 .value=${item.entity}
                 @value-changed=${(event: CustomEvent) => this.updateItem(key, index, "entity", event.detail.value)}
               ></ha-selector>

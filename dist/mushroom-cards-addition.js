@@ -54019,8 +54019,7 @@ let Gt = class extends me {
           .embedded=${!0} @config-changed=${this.energyConfigChanged}></mushroom-addition-smart-saving-features>` : e.upstreamId === "energy_entityworkflow" ? u`<mushroom-addition-energy-workflow-features .hass=${this.hass} ._config=${this.config}
           .embedded=${!0} @config-changed=${this.energyConfigChanged}></mushroom-addition-energy-workflow-features>` : e.upstreamId === "mini_graph_card" ? this.renderMiniGraphEditors() : e.upstreamId === "remote_card" ? this.renderRemoteEditor() : e.upstreamId === "pi_hole_card" ? this.renderPiHoleEditor() : e.upstreamId === "custom_card_trash" ? this.renderWasteStreamEditor() : e.upstreamId === "custom_card_pollen" ? this.config.show_extra_pollen === !0 ? this.renderPollenExtraEditor() : g : e.upstreamId === "custom_card_media_player_sonos" ? this.renderSonosShortcutEditor() : e.upstreamId === "custom_card_entity_carousel" ? this.renderCarouselItemEditor() : e.upstreamId === "custom_card_light" ? this.config.light_show_scenes === !1 ? g : this.renderCarouselItemEditor() : e.family === "scene" ? this.renderItemEditor(
       "scene_items",
-      m(this.hass, "Scene buttons"),
-      ["scene"]
+      m(this.hass, "Scene buttons")
     ) : e.upstreamId === "custom_card_welcome" ? this.renderItemEditor("scene_items", m(this.hass, "Scene buttons")) : e.upstreamId === "card_room" ? u`${this.renderItemEditor("room_sensors", v(this.hass, "room_buttons"))}${this.renderRoomStatusEditor()}` : g : g, d = e.upstreamId === "mini_graph_card" || e.upstreamId === "air_quality" || e.upstreamId === "weather_advanced" || e.upstreamId === "smart_saving" || e.upstreamId === "energy_entityworkflow" || e.upstreamId === "remote_card" || e.upstreamId === "pi_hole_card" || e.upstreamId === "custom_card_trash" || e.upstreamId === "custom_card_pollen" || e.upstreamId === "custom_card_media_player_sonos" || e.upstreamId === "custom_card_entity_carousel" || e.upstreamId === "custom_card_light" || e.family === "scene" || e.upstreamId === "custom_card_welcome" || e.upstreamId === "card_room";
     return u`
       <div class="editor-sections">
@@ -54213,22 +54212,22 @@ let Gt = class extends me {
     const i = this.remoteEditing === void 0 ? void 0 : a[this.remoteEditing];
     a.splice(t, 0, a.splice(e, 1)[0]), this.remoteEditing = i ? a.indexOf(i) : void 0, this.saveRemote({ remote_buttons: a });
   }
-  renderItemEditor(e, t, a) {
+  renderItemEditor(e, t) {
     if (!this.config) return g;
-    const i = this.config[e], r = ((e === "scene_items" ? i?.length ? i : void 0 : i) ?? (this.config.entities ?? []).map((o) => ({ entity: o }))).map((o) => e === "scene_items" ? { ...gn(this.hass, o.entity), ...o } : { ...zi(this.hass, o.entity), ...o });
+    const a = this.config[e], n = ((e === "scene_items" ? a?.length ? a : void 0 : a) ?? (this.config.entities ?? []).map((r) => ({ entity: r }))).map((r) => e === "scene_items" ? { ...gn(this.hass, r.entity), ...r } : { ...zi(this.hass, r.entity), ...r });
     return u`
       <section class="item-editor">
         <h3>${t}</h3>
         <p>${e === "scene_items" ? m(this.hass, "Each button starts with sensible values from its entity. You can override every value, including its name.") : v(this.hass, "room_buttons_help")}</p>
-        ${r.map((o, s) => u`
+        ${n.map((r, o) => u`
           <div class="item-row">
             <label class="field wide">
               <span>${m(this.hass, "Button entity")}</span>
               <ha-selector
                 .hass=${this.hass}
-                .selector=${{ entity: a?.length ? { domain: a } : {} }}
-                .value=${o.entity}
-                @value-changed=${(l) => this.updateItem(e, s, "entity", l.detail.value)}
+                .selector=${{ entity: {} }}
+                .value=${r.entity}
+                @value-changed=${(s) => this.updateItem(e, o, "entity", s.detail.value)}
               ></ha-selector>
               <small>${e === "scene_items" ? m(this.hass, "Select the entity this button controls. Welcome Scenes supports every Home Assistant domain.") : m(this.hass, "Select the entity represented by this room sensor button.")}</small>
             </label>
@@ -54237,8 +54236,8 @@ let Gt = class extends me {
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ text: {} }}
-                .value=${o.name ?? o.label ?? ""}
-                @value-changed=${(l) => this.updateItem(e, s, "name", l.detail.value)}
+                .value=${r.name ?? r.label ?? ""}
+                @value-changed=${(s) => this.updateItem(e, o, "name", s.detail.value)}
               ></ha-selector>
               <small>${m(this.hass, "Text shown below the button. Change it independently for every button.")}</small>
             </label>` : g}
@@ -54247,8 +54246,8 @@ let Gt = class extends me {
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ icon: {} }}
-                .value=${o.icon}
-                @value-changed=${(l) => this.updateItem(e, s, "icon", l.detail.value)}
+                .value=${r.icon}
+                @value-changed=${(s) => this.updateItem(e, o, "icon", s.detail.value)}
               ></ha-selector>
               <small>${m(this.hass, "Defaults to the entity icon or a suitable icon for its domain.")}</small>
             </label>
@@ -54264,8 +54263,8 @@ let Gt = class extends me {
         { value: "entity-picture", label: m(this.hass, "Entity picture") }
       ]
     } }}
-                  .value=${o.icon_type ?? "icon"}
-                  @value-changed=${(l) => this.updateItem(e, s, "icon_type", l.detail.value)}
+                  .value=${r.icon_type ?? "icon"}
+                  @value-changed=${(s) => this.updateItem(e, o, "icon_type", s.detail.value)}
                 ></ha-selector>
                 <small>${m(this.hass, "Show the selected icon or the entity picture when one is available.")}</small>
               </label>
@@ -54275,8 +54274,8 @@ let Gt = class extends me {
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ ui_color: { default_color: e === "room_sensors" ? "blue" : "purple" } }}
-                .value=${o.color}
-                @value-changed=${(l) => this.updateItem(e, s, "color", l.detail.value)}
+                .value=${r.color}
+                @value-changed=${(s) => this.updateItem(e, o, "color", s.detail.value)}
               ></ha-selector>
               <small>${m(this.hass, "Accent color used by the button and its active state.")}</small>
             </label>
@@ -54286,8 +54285,8 @@ let Gt = class extends me {
                 <ha-selector
                   .hass=${this.hass}
                   .selector=${{ navigation: {} }}
-                  .value=${o.navigation_path ?? o.nav_path ?? ""}
-                  @value-changed=${(l) => this.updateItem(e, s, "navigation_path", l.detail.value)}
+                  .value=${r.navigation_path ?? r.nav_path ?? ""}
+                  @value-changed=${(s) => this.updateItem(e, o, "navigation_path", s.detail.value)}
                 ></ha-selector>
                 <small>${m(this.hass, "Optional destination selected from your Home Assistant dashboards. It overrides the tap action.")}</small>
               </label>
@@ -54295,15 +54294,15 @@ let Gt = class extends me {
             ${e === "room_sensors" ? u`
               <label class="field">
                 <span>${v(this.hass, "active_state")}</span>
-                <ha-selector .hass=${this.hass} .selector=${{ text: {} }} .value=${o.active_state}
-                  @value-changed=${(l) => this.updateItem(e, s, "active_state", l.detail.value)}></ha-selector>
+                <ha-selector .hass=${this.hass} .selector=${{ text: {} }} .value=${r.active_state}
+                  @value-changed=${(s) => this.updateItem(e, o, "active_state", s.detail.value)}></ha-selector>
                 <small>${v(this.hass, "room_active_state_help")}</small>
               </label>
-              ${["hold_action", "double_tap_action"].map((l) => u`
+              ${["hold_action", "double_tap_action"].map((s) => u`
                 <label class="field">
-                  <span>${v(this.hass, l)}</span>
-                  <ha-selector .hass=${this.hass} .selector=${{ ui_action: {} }} .value=${o[l]}
-                    @value-changed=${(_) => this.updateItem(e, s, l, _.detail.value)}></ha-selector>
+                  <span>${v(this.hass, s)}</span>
+                  <ha-selector .hass=${this.hass} .selector=${{ ui_action: {} }} .value=${r[s]}
+                    @value-changed=${(l) => this.updateItem(e, o, s, l.detail.value)}></ha-selector>
                 </label>
               `)}
             ` : g}
@@ -54312,19 +54311,19 @@ let Gt = class extends me {
               <ha-selector
                 .hass=${this.hass}
                 .selector=${{ ui_action: {} }}
-                .value=${o.tap_action}
-                @value-changed=${(l) => this.updateItem(e, s, "tap_action", l.detail.value)}
+                .value=${r.tap_action}
+                @value-changed=${(s) => this.updateItem(e, o, "tap_action", s.detail.value)}
               ></ha-selector>
               <small>${e === "scene_items" ? "Defaults to activating scenes and toggling other supported entities." : v(this.hass, "room_button_action_help")}</small>
             </label>
             <div class="item-actions wide">
               ${e === "room_sensors" ? u`
-                <button class="move-up" ?disabled=${s === 0}
-                  @click=${() => this.moveRoomSensor(s, -1)}>${v(this.hass, "room_move_up")}</button>
-                <button class="move-down" ?disabled=${s === r.length - 1}
-                  @click=${() => this.moveRoomSensor(s, 1)}>${v(this.hass, "room_move_down")}</button>
+                <button class="move-up" ?disabled=${o === 0}
+                  @click=${() => this.moveRoomSensor(o, -1)}>${v(this.hass, "room_move_up")}</button>
+                <button class="move-down" ?disabled=${o === n.length - 1}
+                  @click=${() => this.moveRoomSensor(o, 1)}>${v(this.hass, "room_move_down")}</button>
               ` : g}
-              <button @click=${() => this.removeItem(e, s)}>${m(this.hass, "Remove")}</button>
+              <button @click=${() => this.removeItem(e, o)}>${m(this.hass, "Remove")}</button>
             </div>
           </div>
         `)}

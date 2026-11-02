@@ -6,6 +6,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## 0.7.1 - 2026-11-02
 
+- Scenes button entity pickers now allow every Home Assistant domain, matching
+  Welcome Scenes and the existing per-button actions and on/off colors.
+
 - Complete the 0.7 translation audit across all 33 supported Mushroom languages,
   including the four NAS cards, Air Quality, appliances, stock data, workflow and
   Smart Saving editors, chart captions, selector options and helper guidance.
