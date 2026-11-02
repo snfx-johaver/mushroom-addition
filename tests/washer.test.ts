@@ -289,6 +289,11 @@ describe("Washer-Dryer program labels", () => {
     document.body.append(card);
     await card.updateComplete;
     const select = card.shadowRoot!.querySelector<HTMLSelectElement>(".washer-program")!;
+    const row = card.shadowRoot!.querySelector(".washer-program-controls")!;
+    expect(row.classList.contains("has-power-and-program")).toBe(true);
+    expect(row.firstElementChild!.classList.contains("washer-power-button")).toBe(true);
+    expect(select.parentElement).toBe(row);
+    expect(card.shadowRoot!.querySelectorAll(".washer-power-button")).toHaveLength(1);
     expect(select.options[0].text).toBe("Eco 50");
     expect(select.options[0].value).toBe("dishcare_dishwasher_program_eco_50");
     select.value = "dishcare_dishwasher_program_auto_45_65";
@@ -296,6 +301,24 @@ describe("Washer-Dryer program labels", () => {
     expect(hass.callService).toHaveBeenCalledWith("select", "select_option", {
       entity_id: "select.dishwasher_selected_program",
       option: "dishcare_dishwasher_program_auto_45_65",
+    });
+  });
+  describe("Appliance power/program layout", () => {
+    it.each(["power", "program", "neither"])("renders %s without empty control cells", async mode => {
+      const card = document.createElement(type.replace("custom:", "")) as MushroomAdditionCard;
+      card.hass = makeHass();
+      card.setConfig({ type,
+        ...(mode === "power" ? { power_switch_entity: "switch.dishwasher_power" } : {}),
+        ...(mode === "program" ? { program_select_entity: "select.dishwasher_selected_program" } : {}),
+      });
+      document.body.append(card);
+      await card.updateComplete;
+      const row = card.shadowRoot!.querySelector(".washer-program-controls");
+      if (mode === "neither") expect(row).toBeNull();
+      else {
+        expect(row!.children).toHaveLength(1);
+        expect(row!.classList.contains("has-power-and-program")).toBe(false);
+      }
     });
   });
   it("allows choosing the first program when no program has been selected, but disables unavailable appliances", async () => {

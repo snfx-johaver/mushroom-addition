@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Appliance power and program selection share one row in a 1:4 layout.
+
 - Appliance cards show unavailable progress explicitly rather than 0%, and allow
   choosing an initial program when Home Connect reports an unknown selection.
   Extra controls grow to fit their labels, and operation status uses the configured

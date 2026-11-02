@@ -385,10 +385,13 @@ export const sharedStyles = css`
   .washer-stages span.is-active { color: var(--primary-text-color); }
   .washer-stages span.is-active ha-icon { padding: 9px; border-radius: 50%; background: var(--card-background-color); }
   .washer-controls { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--mush-control-spacing, 12px); }
+  .washer-program-controls { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--mush-control-spacing, 12px); min-width: 0; }
+  .washer-program-controls.has-power-and-program { grid-template-columns: minmax(0, 1fr) minmax(0, 4fr); }
+  .washer-program-controls > * { min-width: 0; box-sizing: border-box; }
   .washer-program { width: 100%; height: var(--mush-control-height, 42px); padding: 0 12px; border: 0; border-radius: var(--mush-control-border-radius, 12px); background: var(--addition-neutral-background); color: var(--primary-text-color); font: inherit; font-size: 14px; }
   .washer-program:disabled { opacity: .5; }
-  .washer-controls .ulm-control { width: 100%; height: var(--mush-control-height, 42px); border-radius: var(--mush-control-border-radius, 12px); }
-  .washer-controls .washer-power-button.is-on { color: rgb(var(--ulm-blue)); background: rgba(var(--ulm-blue), .16); }
+  .washer-controls .ulm-control, .washer-program-controls .ulm-control { width: 100%; height: var(--mush-control-height, 42px); border-radius: var(--mush-control-border-radius, 12px); }
+  .washer-program-controls .washer-power-button.is-on { color: rgb(var(--ulm-blue)); background: rgba(var(--ulm-blue), .16); }
   .washer-control-notice { margin: 0; color: var(--secondary-text-color); font-size: 12px; }
   .washer-extra-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 110px), 1fr)); gap: var(--mush-control-spacing, 12px); min-width: 0; }
   .washer-extra-button { grid-template-columns: auto minmax(0, 1fr); min-width: 0; width: 100%; height: auto; min-height: var(--mush-control-height, 42px); padding: 8px; gap: 6px; }

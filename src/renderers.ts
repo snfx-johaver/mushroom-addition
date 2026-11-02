@@ -1083,7 +1083,16 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
         `)}
       </div>
     ` : nothing}
-    ${programSelect ? html`
+    ${programSelect || powerSwitch ? html`
+      <div class="washer-program-controls ${programSelect && powerSwitch ? "has-power-and-program" : ""}">
+        ${powerSwitch ? html`<button class="ulm-control washer-power-button ${powerSwitch.state === "on" ? "is-on" : ""}"
+          type="button" aria-label=${localizeText(ctx.hass, "Toggle power")} aria-pressed=${powerSwitch.state === "on"}
+          ?disabled=${["unknown", "unavailable"].includes(powerSwitch.state)}
+          @pointerdown=${(event: Event) => event.stopPropagation()}
+          @click=${(event: Event) => runControlAction(event, ctx, { action: "toggle" }, powerSwitch.entity_id)}>
+          <ha-icon icon="mdi:power"></ha-icon>
+        </button>` : nothing}
+      ${programSelect ? html`
       <select class="washer-program" aria-label=${localizeText(ctx.hass, "Program selection")}
         ?disabled=${!powered || programSelect.state === "unavailable" || !programOptions.length}
         @pointerdown=${(event: Event) => event.stopPropagation()}
@@ -1100,16 +1109,11 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
           <option value=${option} ?selected=${option === programSelect.state}>${washerProgramLabel(ctx.hass, programSelect, option)}</option>
         `)}
       </select>
+      ` : nothing}
+      </div>
     ` : nothing}
-    ${(powered && remoteEnabled) || powerSwitch ? html`
+    ${powered && remoteEnabled ? html`
       <div class="washer-controls">
-        ${powerSwitch ? html`<button class="ulm-control washer-power-button ${powerSwitch.state === "on" ? "is-on" : ""}"
-          type="button" aria-label=${localizeText(ctx.hass, "Toggle power")} aria-pressed=${powerSwitch.state === "on"}
-          ?disabled=${["unknown", "unavailable"].includes(powerSwitch.state)}
-          @pointerdown=${(event: Event) => event.stopPropagation()}
-          @click=${(event: Event) => runControlAction(event, ctx, { action: "toggle" }, powerSwitch.entity_id)}>
-          <ha-icon icon="mdi:power"></ha-icon>
-        </button>` : nothing}
         ${powered && remoteEnabled ? html`${button(
           resume ? localizeText(ctx.hass, "Start washer") : localizeText(ctx.hass, "Pause washer"),
           resume ? "mdi:play" : "mdi:pause",
