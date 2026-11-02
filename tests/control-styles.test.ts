@@ -11,7 +11,7 @@ describe("Mushroom media controls and selected presentation alignment", () => {
     expect(nativeSelectStyles.cssText).toContain("background-color: var(--ha-card-background, var(--card-background-color, Canvas))");
     expect(sharedStyles.cssText).toContain("color-scheme: light");
     expect(sharedStyles.cssText).toContain("color-scheme: dark");
-    for (const file of ["area-advanced.ts", "nas\\dashboard-cards-editor.ts"]) {
+    for (const file of ["area-advanced.ts", join("nas", "dashboard-cards-editor.ts")]) {
       const source = readFileSync(join(process.cwd(), "src", file), "utf8");
       expect(source).toContain("${nativeSelectStyles}");
       expect(source).toContain('this.toggleAttribute("dark", this.hass?.themes?.darkMode === true)');
