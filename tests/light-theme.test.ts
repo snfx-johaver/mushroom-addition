@@ -46,13 +46,15 @@ describe("Light Area Card theme colours", () => {
   });
 
   it("scopes contrast treatment to light cards and preserves dark-mode and standalone carousel colours", () => {
-    expect(sharedStyles.cssText).toContain("--light-icon-mix: 45%");
-    expect(sharedStyles.cssText).toContain(":host([dark]) .custom-light { --light-icon-mix: 100%; }");
+    expect(sharedStyles.cssText).not.toContain("--light-icon-mix");
+    expect(sharedStyles.cssText).toContain("--light-control-color: var(--light-color)");
+    expect(sharedStyles.cssText).toContain("--light-icon-filter: drop-shadow");
     expect(sharedStyles.cssText).toContain(".custom-light .light-member.is-active ha-icon");
     expect(sharedStyles.cssText).toContain(".light-slider:not(:disabled)::-webkit-slider-thumb");
     expect(sharedStyles.cssText).toContain(".light-slider:not(:disabled)::-moz-range-thumb");
     expect(sharedStyles.cssText).toContain(".light-member.is-off ha-icon { color: var(--secondary-text-color");
-    expect(MushroomAdditionEntityCarousel.styles.cssText).toContain("var(--light-icon-mix, 100%)");
+    expect(MushroomAdditionEntityCarousel.styles.cssText).toContain("color: var(--carousel-color, var(--primary-color))");
+    expect(MushroomAdditionEntityCarousel.styles.cssText).toContain("filter: var(--light-icon-filter, none)");
     expect(MushroomAdditionEntityCarousel.styles.cssText).toContain("var(--light-scene-outline, inset 0 0 0 0 transparent)");
   });
 });

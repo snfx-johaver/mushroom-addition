@@ -48525,7 +48525,7 @@ Ct.styles = _e`
       padding: 0;
       border: 0;
       border-radius: 18px;
-      color: color-mix(in srgb, var(--carousel-color, var(--primary-color)) var(--light-icon-mix, 100%), var(--primary-text-color));
+      color: var(--carousel-color, var(--primary-color));
       background: var(--card-background-color);
       box-shadow: var(--light-scene-outline, inset 0 0 0 0 transparent), var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
       transition: transform 270ms cubic-bezier(.2,.8,.2,1), opacity 270ms ease, filter 110ms ease;
@@ -48544,7 +48544,7 @@ Ct.styles = _e`
     }
     .item[data-shadow="false"]::after { display: none; }
     .item.active {
-      color: color-mix(in srgb, var(--carousel-color, var(--primary-color)) var(--light-icon-mix, 100%), var(--primary-text-color));
+      color: var(--carousel-color, var(--primary-color));
     }
     .icon-circle {
       display: grid;
@@ -48580,6 +48580,7 @@ Ct.styles = _e`
     .scrollbar { display: block; box-sizing: border-box; width: calc(100% - 16px); height: 20px; margin: 0 8px; accent-color: var(--primary-color); cursor: pointer; }
     @media (prefers-reduced-motion: reduce) { .item { transition: none; } }
     .item ha-icon, .item ha-state-icon { --mdc-icon-size: var(--carousel-icon-size, 28px); pointer-events: none; }
+    .item ha-icon, .item ha-state-icon { filter: var(--light-icon-filter, none); }
     .picture {
       width: var(--carousel-picture-size, 34px);
       height: var(--carousel-picture-size, 34px);
@@ -56283,17 +56284,18 @@ const Lo = _e`
   .sonos-details[open] summary ha-icon { transform: rotate(180deg); }
   .sonos-details-always-visible { padding-top: 4px; }
   .custom-light { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; padding: var(--mush-spacing, 12px); }
-  .custom-light { --light-icon-mix: 45%; }
-  .custom-light .source-icon.is-source-active { color: color-mix(in srgb, var(--source-color) var(--light-icon-mix), var(--primary-text-color, #212121)); }
-  .custom-light .light-brightness { --light-control-color: color-mix(in srgb, var(--light-color) var(--light-icon-mix), var(--primary-text-color, #212121)); }
-  .custom-light .light-member.is-active ha-icon { color: color-mix(in srgb, var(--item-color) var(--light-icon-mix), var(--primary-text-color, #212121)); }
+  .custom-light .light-brightness { --light-control-color: var(--light-color); }
+  :host(:not([dark])) .custom-light { --light-icon-filter: drop-shadow(0 0 1px rgba(0,0,0,.65)); }
+  :host(:not([dark])) .custom-light .source-icon.is-source-active > ha-icon,
+  :host(:not([dark])) .custom-light .source-icon.is-source-active > ha-state-icon,
+  :host(:not([dark])) .custom-light .light-member.is-active ha-icon { filter: var(--light-icon-filter); }
+  :host(:not([dark])) .custom-light .light-brightness { box-shadow: inset 0 0 0 1px var(--divider-color, #e0e0e0); }
   :host(:not([dark])) .custom-light .source-icon:not(.is-source-active) { color: var(--secondary-text-color, #616161); background: var(--addition-neutral-background); }
   :host(:not([dark])) .custom-light .light-member.is-off ha-icon { color: var(--secondary-text-color, #616161); }
   :host(:not([dark])) .custom-light { --light-scene-outline: inset 0 0 0 1px var(--divider-color, #e0e0e0); }
   :host(:not([dark])) .custom-light .light-member { box-shadow: inset 0 0 0 1px var(--divider-color, #e0e0e0); background: var(--addition-neutral-background); }
   :host(:not([dark])) .custom-light .light-slider:not(:disabled)::-webkit-slider-thumb { background: var(--primary-text-color, #212121); box-shadow: 0 0 0 1px rgba(255,255,255,.7); }
   :host(:not([dark])) .custom-light .light-slider:not(:disabled)::-moz-range-thumb { background: var(--primary-text-color, #212121); box-shadow: 0 0 0 1px rgba(255,255,255,.7); }
-  :host([dark]) .custom-light { --light-icon-mix: 100%; }
   .custom-light .light-brightness { width: 100%; }
   .custom-light input.mushroom-range.light-gradient { width: 100%; background: var(--light-gradient); }
   .custom-light .light-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }

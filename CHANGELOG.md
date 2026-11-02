@@ -4,8 +4,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
-- Light Area Card keeps pale bulb colours readable in light mode, with contrasting
-  icons, brightness fill and slider thumbs, and defined member button surfaces.
+- Light Area Card preserves actual bulb and scene colours in both themes, using
+  subtle light-mode icon shadows, slider outlines and contrasting thumbs rather
+  than darkening warm whites into brown.
 
 - Appliance settings and diagnostics can expand from an icon beside the status indicators,
   with UI-editable detail entities and no separate heading row.
