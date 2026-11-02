@@ -55,9 +55,9 @@ describe("Mushroom media controls and selected presentation alignment", () => {
 
   it("uses theme sizing for Alarm Time, Washer and Input Datetime without resizing Trash/Printer rows", () => {
     const css = sharedStyles.cssText;
-    for (const selector of [".alarm-time-controls .ulm-control", ".washer-controls .ulm-control", ".input-datetime-controls .ulm-control"]) {
+    for (const selector of [".alarm-time-controls .ulm-control", ".washer-controls .ulm-control", ".washer-program-controls .ulm-control", ".input-datetime-controls .ulm-control"]) {
       const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const rule = css.match(new RegExp(`${escaped}\\s*\\{([^}]+)\\}`))?.[1];
+      const rule = css.match(new RegExp(`${escaped}(?:\\s*,[^{}]+)?\\s*\\{([^}]+)\\}`))?.[1];
       expect(rule).toContain("height: var(--mush-control-height, 42px)");
       expect(rule).toContain("border-radius: var(--mush-control-border-radius, 12px)");
     }

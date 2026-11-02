@@ -55,9 +55,9 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       padding: 0;
       border: 0;
       border-radius: 18px;
-      color: var(--carousel-color, var(--primary-color));
+      color: color-mix(in srgb, var(--carousel-color, var(--primary-color)) var(--light-icon-mix, 100%), var(--primary-text-color));
       background: var(--card-background-color);
-      box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
+      box-shadow: var(--light-scene-outline, inset 0 0 0 0 transparent), var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
       transition: transform 270ms cubic-bezier(.2,.8,.2,1), opacity 270ms ease, filter 110ms ease;
       cursor: pointer;
       transform-style: preserve-3d;
@@ -74,7 +74,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     }
     .item[data-shadow="false"]::after { display: none; }
     .item.active {
-      color: var(--carousel-color, var(--primary-color));
+      color: color-mix(in srgb, var(--carousel-color, var(--primary-color)) var(--light-icon-mix, 100%), var(--primary-text-color));
     }
     .icon-circle {
       display: grid;

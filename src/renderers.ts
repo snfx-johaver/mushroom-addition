@@ -889,7 +889,7 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
           </div>` : nothing}
     ${showBrightness ? html`
       <input class="mushroom-range light-slider light-brightness" type="range" min="1" max="100" step="1" .value=${String(brightness)}
-        style=${`--range-color:${color};--range-progress:${rangeProgress(brightness, 1, 100)}`}
+        style=${`--light-color:${color};--range-color:var(--light-control-color);--range-progress:${rangeProgress(brightness, 1, 100)}`}
         aria-label=${localizeText(ctx.hass, "Brightness")} ?disabled=${unavailable}
         @pointerdown=${stop} @pointerup=${stop} @click=${stop} @keydown=${stop}
         @input=${updateRangeProgress}
