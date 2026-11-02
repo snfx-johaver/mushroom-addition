@@ -391,6 +391,7 @@ const translations: Record<string, Record<string, string>> = {
     machine_state_entity: "Machine state",
     program_stage_entity: "Current program stage",
     washer_power_entity: "Power sensor",
+    washer_details_entities: "Settings & diagnostics entities",
     program_select_entity: "Program selection",
     power_switch_entity: "Power button",
     grid_power_entity: "Grid power",

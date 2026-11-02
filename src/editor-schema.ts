@@ -896,6 +896,7 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
         entity(["switch", "input_boolean"], "power_switch_entity"),
         entity(["sensor", "binary_sensor"], "door_entity"),
         entity(["sensor", "binary_sensor"], "finished_entity"),
+        { name: "washer_details_entities", selector: { entity: { multiple: true } } },
         ...[1, 2, 3].flatMap(slot => [
           entity(undefined, `washer_button_${slot}_entity`),
           ...(config?.[`washer_button_${slot}_entity`] ? [

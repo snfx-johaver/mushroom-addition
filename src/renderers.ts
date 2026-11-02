@@ -40,6 +40,7 @@ import { readUpcomingData, upcomingItems } from "./upcoming-media";
 import "./remote-card";
 import "./pi-hole";
 import "./stock";
+import "./appliance-details";
 
 export interface RenderContext {
   config: AdditionConfig;
@@ -1061,6 +1062,16 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
       <span class="washer-extra-copy"><span>${name}</span><small>${stateLabel(entity, ctx.hass)}</small></span>
     </button>`];
   });
+  const status = html`
+    <div class="washer-status">
+      ${job ? html`<span class="washer-operation-state"
+        title=${displayName({ type: "", entity: job.entity_id }, job, ctx.hass)}>
+        <ha-icon .icon=${ctx.config.icon || "mdi:washing-machine"}></ha-icon>${stateLabel(job, ctx.hass)}
+      </span>` : nothing}
+      ${door ? html`<span><ha-icon icon="mdi:door"></ha-icon>${stateLabel(door, ctx.hass)}</span>` : nothing}
+      ${finished ? html`<span><ha-icon icon="mdi:check-circle"></ha-icon>${stateLabel(finished, ctx.hass)}</span>` : nothing}
+      ${remote ? html`<span><ha-icon icon="mdi:remote"></ha-icon>${stateLabel(remote, ctx.hass)}</span>` : nothing}
+    </div>`;
   return ctx.actionSurface("custom-washer", html`
     <div class="custom-card-heading washer-heading">
       ${iconBubble(ctx, "mdi:washing-machine", powered ? "blue" : "grey")}
@@ -1145,17 +1156,10 @@ const renderWasher = (ctx: RenderContext): TemplateResult => {
         ${button(localizeText(ctx.hass, "Move delayed start 15 minutes later"), "mdi:arrow-up", (event) => setDelayedMinutes(event, 15))}
       </div>
     ` : nothing}
-    ${(job || door || finished || remote) ? html`
-      <div class="washer-status">
-        ${job ? html`<span class="washer-operation-state"
-          title=${displayName({ type: "", entity: job.entity_id }, job, ctx.hass)}>
-          <ha-icon .icon=${ctx.config.icon || "mdi:washing-machine"}></ha-icon>${stateLabel(job, ctx.hass)}
-        </span>` : nothing}
-        ${door ? html`<span><ha-icon icon="mdi:door"></ha-icon>${stateLabel(door, ctx.hass)}</span>` : nothing}
-        ${finished ? html`<span><ha-icon icon="mdi:check-circle"></ha-icon>${stateLabel(finished, ctx.hass)}</span>` : nothing}
-        ${remote ? html`<span><ha-icon icon="mdi:remote"></ha-icon>${stateLabel(remote, ctx.hass)}</span>` : nothing}
-      </div>
-    ` : nothing}
+    ${ctx.config.washer_details_entities?.length ? html`
+      <mushroom-addition-appliance-details .hass=${ctx.hass} .entities=${ctx.config.washer_details_entities}
+        .label=${localizeText(ctx.hass, "Settings & diagnostics")}>${status}</mushroom-addition-appliance-details>
+    ` : (job || door || finished || remote) ? status : nothing}
   `);
 };
 

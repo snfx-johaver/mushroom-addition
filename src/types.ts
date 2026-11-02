@@ -522,6 +522,7 @@ export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, P
   power_entity?: string;
   program_stage_entity?: string;
   washer_power_entity?: string;
+  washer_details_entities?: string[];
   washer_button_1_entity?: string;
   washer_button_1_name?: string;
   washer_button_1_icon?: string;

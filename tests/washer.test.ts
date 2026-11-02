@@ -42,6 +42,8 @@ describe("Washer-Dryer entity setup", () => {
     expect(config.entity).toBeUndefined();
     const flatten = (fields: EditorField[]): EditorField[] =>
       fields.flatMap(field => [field, ...flatten(field.schema ?? [])]);
+    expect(flatten(editorSchemaFor(descriptor, config)).find(field => field.name === "washer_details_entities")?.selector)
+      .toEqual({ entity: { multiple: true } });
     for (const field of flatten(editorSchemaFor(descriptor, config))) {
       if (field.selector?.entity) expect(config[field.name], field.name).toBeUndefined();
     }
@@ -240,10 +242,12 @@ describe("Washer-Dryer program labels", () => {
       washer_power_entity: "switch.dishwasher_power",
       ulm_custom_card_washer_job_progress: "sensor.dishwasher_program_progress",
       ulm_custom_card_washer_remote_control: "binary_sensor.dishwasher_remote_control",
+      washer_details_entities: ["select.dishwasher_active_program"],
     });
     document.body.append(card);
     await card.updateComplete;
     expect(card.shadowRoot!.querySelector(".washer-operation-state")?.textContent).toContain("Running");
+    expect(card.shadowRoot!.querySelector("mushroom-addition-appliance-details .washer-status")).not.toBeNull();
     expect(card.shadowRoot!.querySelector(".washer-operation-state ha-icon")).toHaveProperty("icon", "mdi:dishwasher");
     const metrics = card.shadowRoot!.querySelector(".washer-heading-metrics")!;
     expect(metrics.querySelector(".washer-power ha-icon")?.getAttribute("icon")).toBe("mdi:power");

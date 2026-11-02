@@ -4,6 +4,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Appliance settings and diagnostics can expand from an icon beside the status indicators,
+  with UI-editable detail entities and no separate heading row.
+
 - Appliance power and program selection share one row in a 1:4 layout.
 
 - Appliance cards show unavailable progress explicitly rather than 0%, and allow

@@ -146,6 +146,10 @@ and help grow the next batch.
 
 ### Washer-Dryer Card
 
+The Features editor's **Settings & diagnostics entities** selector adds native
+Home Assistant controls beneath the card. They expand from an icon-only chevron
+beside the status indicators and remain collapsed by default.
+
 New cards start with all entity selectors empty. Selecting the primary entity in
 Context fills unambiguous, available matching entities from the same device into
 empty Features fields. These mappings are saved in the card configuration; normal
