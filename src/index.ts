@@ -4,6 +4,7 @@ import "./energy-cards/card";
 import "./energy-cards/workflow-editor";
 import { MushroomWorkflowCard } from "./energy-cards/workflow";
 import { MushroomWeatherAdvancedCard } from "./weather-advanced/card";
+import { MushroomAirQualityCard } from "./air-quality-card";
 import { CATALOG, LEGACY_ALIASES, PUBLIC_CATALOG } from "./catalog";
 import { MushroomAdditionCard } from "./card";
 import { MushroomMiniGraphCard } from "./mini-graph";
@@ -15,6 +16,10 @@ import { version as VERSION } from "../package.json";
 
 for (const item of CATALOG) {
   if (!customElements.get(item.tag)) {
+    if (item.upstreamId === "air_quality") {
+      customElements.define(item.tag, MushroomAirQualityCard);
+      continue;
+    }
     if (item.upstreamId === "weather_advanced") {
       customElements.define(item.tag, MushroomWeatherAdvancedCard);
       continue;

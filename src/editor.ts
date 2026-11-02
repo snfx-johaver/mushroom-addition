@@ -4,6 +4,7 @@ import { repeat } from "lit/directives/repeat.js";
 import "./energy-cards/editor";
 import "./energy-cards/workflow-editor";
 import "./weather-advanced/editor";
+import { airQualityLabels } from "./air-quality-editor";
 import { workflowStub } from "./energy-cards/workflow-config";
 import { mdiDelete, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
 import type {
@@ -106,6 +107,7 @@ const stockLabels: Record<string, string> = {
 };
 
 const sectionForField = (field: EditorField): EditorSectionId => {
+  if (field.name.startsWith("air_quality_show_")) return "content";
   if (field.name === "stock_symbol" || field.name === "stock_source") return "context";
   if (field.name === "pihole_device_ids") return "context";
   if (field.name === "pihole_show_header") return "content";
@@ -354,6 +356,9 @@ export class MushroomAdditionEditor extends LitElement {
         : this.config.layout ?? populatedDefaults.layout,
     };
     const customFeatures = !this.expandedSections.has("features") ? nothing
+      : item.upstreamId === "air_quality"
+      ? html`<mushroom-addition-air-quality-options .hass=${this.hass} .config=${this.config}
+          @config-changed=${this.energyConfigChanged}></mushroom-addition-air-quality-options>`
       : item.upstreamId === "weather_advanced"
       ? html`<mushroom-addition-weather-options .hass=${this.hass} .config=${this.config}
           section="features" @config-changed=${this.energyConfigChanged}></mushroom-addition-weather-options>`
@@ -391,6 +396,7 @@ export class MushroomAdditionEditor extends LitElement {
           ? html`${this.renderItemEditor("room_sensors", localize(this.hass, "room_buttons"))}${this.renderRoomStatusEditor()}`
           : nothing;
     const hasCustomFeatures = item.upstreamId === "mini_graph_card" ||
+      item.upstreamId === "air_quality" ||
       item.upstreamId === "weather_advanced" ||
       item.upstreamId === "smart_saving" ||
       item.upstreamId === "energy_entityworkflow" ||
@@ -485,7 +491,10 @@ export class MushroomAdditionEditor extends LitElement {
   };
 
   private readonly computeLabel = (schema: { name: string }): string =>
-    stockMetricLabel(schema.name) ? localizeText(this.hass, stockMetricLabel(schema.name)!)
+    this.config?.type.endsWith("air-quality") && schema.name === "entity"
+      ? localizeText(this.hass, "Air quality sensor (optional; otherwise calculated from pollutants)")
+    : airQualityLabels[schema.name] ? localizeText(this.hass, airQualityLabels[schema.name])
+    : stockMetricLabel(schema.name) ? localizeText(this.hass, stockMetricLabel(schema.name)!)
     : stockLabels[schema.name] ? localizeText(this.hass, stockLabels[schema.name])
     : welcomeWeatherLabels[schema.name]
       ? `${localize(this.hass, "ulm_weather")}: ${localize(this.hass, welcomeWeatherLabels[schema.name]!)}`

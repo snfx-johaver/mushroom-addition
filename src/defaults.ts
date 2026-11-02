@@ -39,6 +39,7 @@ const defaultIcons: Array<[RegExp, string]> = [
 export const defaultIconFor = (item: CatalogItem, entity?: HassEntity): string => {
   if (item.upstreamId === "stock_card") return "mdi:chart-line";
   if (entity?.attributes.icon) return entity.attributes.icon;
+  if (item.upstreamId === "air_quality") return "mdi:air-filter";
   if (item.upstreamId === "custom_card_trash") return "mdi:trash-can-outline";
   if (item.upstreamId === "custom_card_entity_carousel") return "mdi:view-carousel";
   if (item.upstreamId === "custom_card_light") return "mdi:lightbulb";
@@ -88,7 +89,9 @@ export const populatedDefaultsFor = (
   entityId?: string,
 ): AdditionConfig => {
   const sourceDefaults: Partial<AdditionConfig> =
-    item.upstreamId === "stock_card"
+    item.upstreamId === "air_quality"
+      ? { air_quality_show_header: true, air_quality_show_title: true, air_quality_show_icon: true, air_quality_show_badge: true }
+      : item.upstreamId === "stock_card"
       ? { stock_source: "entity", stock_shares: 0, stock_interval: 300, stock_range: "1D",
         stock_show_position: true, stock_show_statistics: true, stock_show_volume: true, stock_show_trends: true }
       : item.upstreamId === "pi_hole_card"

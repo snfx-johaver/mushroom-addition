@@ -4,6 +4,13 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Air Quality adds compact, reorderable sensor columns for temperature, humidity,
+  CO₂, PM2.5, VOC, humidity-derived mould risk, radon, pressure and custom readings.
+  Its visual editor controls entities, visibility, icons, colors, units, precision
+  and thresholds. Header title/icon and the live quality indicator can be hidden
+  independently. The indicator can follow a quality entity or the worst available
+  pollutant reading; unavailable readings never become fabricated numeric values.
+
 - Area Advanced and Area Mushroom offer a Camera privacy entity. Only an
   explicit Off state permits the camera view; privacy, missing and unavailable
   states use the compact room view without mounting the camera.

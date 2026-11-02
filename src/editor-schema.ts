@@ -283,6 +283,12 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
 };
 
 export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass?: HomeAssistant): EditorField[] => {
+  if (item.upstreamId === "air_quality") return [
+    entity(["sensor"]), ...presentation(),
+    toggle("air_quality_show_header"), toggle("air_quality_show_title"), toggle("air_quality_show_icon"),
+    toggle("air_quality_show_badge"),
+    action("tap_action"), action("hold_action"), action("double_tap_action"),
+  ];
   if (item.upstreamId === "weather_advanced") return [
     ...common(item),
     action("tap_action"), action("hold_action"), action("double_tap_action"),

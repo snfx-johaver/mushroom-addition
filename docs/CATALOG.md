@@ -5,7 +5,7 @@ registrations. It is generated from `src/catalog.ts`; CI rejects duplicate
 IDs, missing source paths, invalid namespaces, or broken popup mappings.
 
 **Coverage:** 19 documented upstream card sources map to
-36 public card components.
+37 public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
 of duplicate picker entries. 0 popup templates and
 1 implementation helpers are inventoried but are not
@@ -38,6 +38,7 @@ without instantiating every custom card.
 | Weather Advanced | `weather_advanced` | custom-card | `custom:mushroom-addition-weather-advanced` | weather | default | `weather_advanced` |
 | Smart Saving | `smart_saving` | custom-card | `custom:mushroom-addition-smart-saving` | energy | default | `smart_saving` |
 | Energy Entityworkflow | `energy_entityworkflow` | custom-card | `custom:mushroom-addition-energy-entityworkflow` | energy | default | `energy_entityworkflow` |
+| Air Quality | `air_quality` | custom-card | `custom:mushroom-addition-air-quality` | sensor | default | `air_quality` |
 | Stock Card | `stock_card` | custom-card | `custom:mushroom-addition-stock-card` | sensor | default | `stock_card` |
 | Pi-hole | `pi_hole_card` | custom-card | `custom:mushroom-addition-pi-hole-card` | sensor | default | `pi_hole_card` |
 | Upcoming Media | `upcoming_media` | custom-card | `custom:mushroom-addition-upcoming-media-card` | media | default | `upcoming_media` |

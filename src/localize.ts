@@ -1310,6 +1310,13 @@ export const helperCatalogs: Record<string, Record<string, string>> = {
 };
 
 export const editorHelper = (key: string, hass?: HomeAssistant): string | undefined => {
+  const airQualityHelp: Record<string, string> = {
+    air_quality_show_header: "Show the Mushroom heading above the readings. The quality indicator is controlled separately.",
+    air_quality_show_title: "Show the header's primary information; sensor readings remain visible.",
+    air_quality_show_icon: "Show the header icon without changing the sensor icons or quality indicator.",
+    air_quality_show_badge: "Show a changing quality icon at the upper right, using the selected quality sensor or the worst available pollutant reading.",
+  };
+  if (airQualityHelp[key]) return localizeText(hass, airQualityHelp[key]);
   if (/^washer_button_[123]_/.test(key)) {
     if (key.endsWith("_entity")) return localizeText(hass, "Optional extra appliance function, such as Child lock. Switches toggle, buttons press, and other entities open more-info. Not auto-discovered.");
     if (key.endsWith("_action")) return localizeText(hass, "Override the default entity action for this button.");

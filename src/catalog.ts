@@ -231,6 +231,17 @@ export const NATIVE_CATALOG: readonly CatalogItem[] = [
     preferredDomains: ["sensor"],
   },
   {
+    upstreamId: "air_quality",
+    sourcePath: "src/air-quality-card.ts",
+    kind: "card",
+    category: "custom-card",
+    family: "sensor",
+    tag: "mushroom-addition-air-quality",
+    name: "Air Quality",
+    description: "Compact indoor air readings with editable sensor columns, threshold colors and a live air-quality indicator.",
+    preferredDomains: ["sensor"],
+  },
+  {
     upstreamId: "stock_card",
     sourcePath: "src/stock.ts",
     kind: "card",

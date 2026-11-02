@@ -1,3 +1,5 @@
+import type { AirQualityOptions } from "./air-quality";
+
 export interface HassEntity {
   entity_id: string;
   state: string;
@@ -263,7 +265,7 @@ export interface PiHoleConfig {
   pihole_metric_double_tap_action?: ActionConfig;
 }
 
-export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, PiHoleConfig {
+export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, PiHoleConfig, AirQualityOptions {
   weather?: import("./weather-advanced/config").WeatherAdvancedOptions;
   title?: string;
   subtitle?: string;

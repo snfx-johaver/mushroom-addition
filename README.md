@@ -5,7 +5,7 @@
 
 Your dashboard called. It wants fewer YAML headaches and a little more fun(gus).
 
-**32 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
+**37 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
 Energy, media, rooms, batteries, graphs, remotes and more.
 Pick a card, pick your entities, enjoy your dashboard.
 YAML is still welcome; it just isn't compulsory.
@@ -39,6 +39,35 @@ Click a screenshot for a closer look.
 These are real setups, not mockups; some cards are only partially configured.
 The NAS image is from the earlier dashboard whose layouts are now included.
 Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all cards.
+
+## Air Quality
+
+`custom:mushroom-addition-air-quality` shows compact icon-over-value sensor
+columns. Add, reorder, hide or remove readings in **Features**. Each reading has a
+sensor selector, tooltip label, icon, automatic or fixed color, display unit,
+decimal precision and editable high/low thresholds. Reading buttons open the
+corresponding sensor's more-info dialog. Mould risk is a humidity-based indication,
+not a mould measurement.
+
+**Content** independently controls the header, title, header icon and upper-right
+quality indicator. Name, primary/secondary information and header interactions
+use the shared Mushroom presentation and actions.
+
+Select an optional qualitative air-quality sensor in **Context** for Good,
+Fair/Moderate, Poor or Very poor/Unhealthy states. Without it, the indicator uses
+the worst available CO₂, PM2.5, VOC or radon reading. Temperature, humidity,
+pressure and custom readings do not determine overall air quality. A numeric AQI
+sensor is not interpreted as a qualitative state; missing/unsupported states show
+Unknown. This is a configurable indoor indication, not a regulatory AQI or
+health assessment.
+
+Threshold units are always °C, %, ppm CO₂, µg/m³ PM2.5, ppb VOC, Bq/m³ radon and
+hPa pressure; custom thresholds use the entity's native units. Fahrenheit/Kelvin,
+mg/m³ particles, ppm VOC, pCi/L radon and common pressure units are converted for
+classification without changing the displayed reading. Unsupported units retain
+their value but have no automatic rating. VOC mass concentrations cannot be
+converted to ppb without knowing the compound. Display-unit overrides change the
+suffix only, not the value. Unavailable readings display a dash.
 
 ## Install with HACS
 
