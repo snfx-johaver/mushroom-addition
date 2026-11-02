@@ -144,6 +144,13 @@ Found a rough edge or have an idea for another card?
 [Open an issue or feature request](https://github.com/snfx-johaver/mushroom-addition/issues)
 and help grow the next batch.
 
+### Light Area Card colours
+
+Light icons and brightness controls follow Mushroom's colour normalization.
+Brightness uses a solid fill over a 20%-tinted track without a thumb. Enabling
+**Use light color** follows the bulb colour; otherwise the configured icon colour
+or Mushroom's theme light colour is used. The same rules apply in both themes.
+
 ### Washer-Dryer Card
 
 The Features editor's **Settings & diagnostics entities** selector adds native

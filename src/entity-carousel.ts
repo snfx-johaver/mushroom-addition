@@ -57,7 +57,7 @@ export class MushroomAdditionEntityCarousel extends LitElement {
       border-radius: 18px;
       color: var(--carousel-color, var(--primary-color));
       background: var(--card-background-color);
-      box-shadow: var(--light-scene-outline, inset 0 0 0 0 transparent), var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
+      box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
       transition: transform 270ms cubic-bezier(.2,.8,.2,1), opacity 270ms ease, filter 110ms ease;
       cursor: pointer;
       transform-style: preserve-3d;
@@ -110,7 +110,6 @@ export class MushroomAdditionEntityCarousel extends LitElement {
     .scrollbar { display: block; box-sizing: border-box; width: calc(100% - 16px); height: 20px; margin: 0 8px; accent-color: var(--primary-color); cursor: pointer; }
     @media (prefers-reduced-motion: reduce) { .item { transition: none; } }
     .item ha-icon, .item ha-state-icon { --mdc-icon-size: var(--carousel-icon-size, 28px); pointer-events: none; }
-    .item ha-icon, .item ha-state-icon { filter: var(--light-icon-filter, none); }
     .picture {
       width: var(--carousel-picture-size, 34px);
       height: var(--carousel-picture-size, 34px);

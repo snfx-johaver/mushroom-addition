@@ -4,9 +4,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
-- Light Area Card preserves actual bulb and scene colours in both themes, using
-  subtle light-mode icon shadows, slider outlines and contrasting thumbs rather
-  than darkening warm whites into brown.
+- Light Area Card follows Mushroom's bulb colour normalization, tinted icon
+  backgrounds and solid brightness fill over a 20%-tinted track, without added
+  light-mode shadows, outlines or a brightness thumb.
 
 - Appliance settings and diagnostics can expand from an icon beside the status indicators,
   with UI-editable detail entities and no separate heading row.

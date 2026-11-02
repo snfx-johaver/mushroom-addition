@@ -35,7 +35,7 @@ import { energyPriceBounds, energyPriceSlots, energyTradeResult, formatEnergyPri
 import type { EnergyTradeSelection } from "./energy-buy-sell";
 import { inverterPanelEntities, panelGaugeColor, panelGaugePercent, summarizePanels } from "./panel-health";
 import "./entity-carousel";
-import { areaSceneItems } from "./light-area";
+import { areaSceneItems, mushroomLightRgb } from "./light-area";
 import { readUpcomingData, upcomingItems } from "./upcoming-media";
 import "./remote-card";
 import "./pi-hole";
@@ -809,8 +809,9 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
   const entity = ctx.entity;
   const unavailable = !entity || ["unavailable", "unknown"].includes(entity.state);
   const on = entity?.state === "on";
-  const rgb = attr(entity, "rgb_color");
-  const color = on && ctx.config.use_light_color !== false && Array.isArray(rgb) && rgb.length === 3 ? `rgb(${rgb.join(",")})` : on ? "rgb(var(--ulm-yellow))" : "rgb(var(--ulm-grey))";
+  const rgb = ctx.config.use_light_color !== false ? mushroomLightRgb(attr(entity, "rgb_color")) : undefined;
+  const defaultColor = configuredColor(ctx.config.icon_color, "rgb(var(--mush-rgb-state-light, var(--rgb-state-light, var(--rgb-orange, 255, 152, 0))))");
+  const color = on ? rgb ? `rgb(${rgb.join(",")})` : defaultColor : "rgb(var(--addition-disabled-rgb))";
   const modes = attr(entity, "supported_color_modes");
   const dimmable = Array.isArray(modes) ? modes.some((mode) => mode !== "onoff") : attr(entity, "brightness") !== undefined;
   const hasMode = (...wanted: string[]) => Array.isArray(modes) && modes.some((mode) => wanted.includes(String(mode)));
@@ -869,7 +870,7 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
   };
   return ctx.actionSurface("custom-light", html`
     <div class="card-heading">
-      ${sourceIconBubble(ctx, defaultIconFor(ctx.descriptor, entity), color, on)}
+      ${sourceIconBubble(ctx, defaultIconFor(ctx.descriptor, entity), color, on, rgb ? "light-rgb" : "")}
       ${heading(ctx, stateText)}
     </div>
     ${controlCount ? html`
@@ -929,12 +930,12 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
         <div class="light-members" style=${`--light-members-per-row:${perRow}`}>
           ${members.map((member) => {
             const memberOn = member.state === "on";
-            const memberRgb = attr(member, "rgb_color");
-            const memberColor = memberOn && Array.isArray(memberRgb) && memberRgb.length === 3
-              ? `rgb(${memberRgb.join(",")})` : "rgb(var(--ulm-yellow))";
+            const memberRgb = ctx.config.use_light_color !== false ? mushroomLightRgb(attr(member, "rgb_color")) : undefined;
+            const memberColor = memberOn && memberRgb
+              ? `rgb(${memberRgb.join(",")})` : defaultColor;
             const name = displayName({ type: "", entity: member.entity_id }, member, ctx.hass);
             return html`
-              <button class="scene-button light-member ${memberOn ? "is-active" : "is-off"}"
+              <button class="scene-button light-member ${memberOn ? "is-active" : "is-off"} ${memberRgb ? "light-rgb" : ""}"
                 style=${`--item-color:${memberColor}`} aria-label=${name} title=${name} aria-pressed=${memberOn}
                 ?disabled=${["unavailable", "unknown"].includes(member.state)}
                 @pointerdown=${stop}

@@ -550,17 +550,20 @@ export const sharedStyles = css`
   .sonos-details-always-visible { padding-top: 4px; }
   .custom-light { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; padding: var(--mush-spacing, 12px); }
   .custom-light .light-brightness { --light-control-color: var(--light-color); }
-  :host(:not([dark])) .custom-light { --light-icon-filter: drop-shadow(0 0 1px rgba(0,0,0,.65)); }
-  :host(:not([dark])) .custom-light .source-icon.is-source-active > ha-icon,
-  :host(:not([dark])) .custom-light .source-icon.is-source-active > ha-state-icon,
-  :host(:not([dark])) .custom-light .light-member.is-active ha-icon { filter: var(--light-icon-filter); }
-  :host(:not([dark])) .custom-light .light-brightness { box-shadow: inset 0 0 0 1px var(--divider-color, #e0e0e0); }
-  :host(:not([dark])) .custom-light .source-icon:not(.is-source-active) { color: var(--secondary-text-color, #616161); background: var(--addition-neutral-background); }
-  :host(:not([dark])) .custom-light .light-member.is-off ha-icon { color: var(--secondary-text-color, #616161); }
-  :host(:not([dark])) .custom-light { --light-scene-outline: inset 0 0 0 1px var(--divider-color, #e0e0e0); }
-  :host(:not([dark])) .custom-light .light-member { box-shadow: inset 0 0 0 1px var(--divider-color, #e0e0e0); background: var(--addition-neutral-background); }
-  :host(:not([dark])) .custom-light .light-slider:not(:disabled)::-webkit-slider-thumb { background: var(--primary-text-color, #212121); box-shadow: 0 0 0 1px rgba(255,255,255,.7); }
-  :host(:not([dark])) .custom-light .light-slider:not(:disabled)::-moz-range-thumb { background: var(--primary-text-color, #212121); box-shadow: 0 0 0 1px rgba(255,255,255,.7); }
+  .custom-light .source-icon.is-source-active { background: color-mix(in srgb, var(--source-color) 20%, transparent); }
+  .custom-light .source-icon.is-source-active.light-rgb { background: color-mix(in srgb, var(--source-color) 25%, transparent); }
+  .custom-light .source-icon:not(.is-source-active) { color: rgb(var(--addition-disabled-rgb)); background: var(--addition-disabled-background); }
+  .custom-light .light-member.is-active i { background: color-mix(in srgb, var(--item-color) 20%, transparent); }
+  .custom-light .light-member.is-active.light-rgb i { background: color-mix(in srgb, var(--item-color) 25%, transparent); }
+  .custom-light .light-member.is-off i { background: var(--addition-disabled-background); }
+  .custom-light .light-member.is-off ha-icon { color: rgb(var(--addition-disabled-rgb)); }
+  .custom-light input.light-brightness:not(:disabled) {
+    padding: 0;
+    background: linear-gradient(to right, var(--light-control-color) 0 var(--range-progress, 0%), transparent var(--range-progress, 0%) 100%),
+      color-mix(in srgb, var(--light-control-color) 20%, transparent);
+  }
+  .custom-light .light-brightness::-webkit-slider-thumb { width: 0; background: transparent; box-shadow: none; }
+  .custom-light .light-brightness::-moz-range-thumb { width: 0; border: 0; background: transparent; box-shadow: none; }
   .custom-light .light-brightness { width: 100%; }
   .custom-light input.mushroom-range.light-gradient { width: 100%; background: var(--light-gradient); }
   .custom-light .light-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }

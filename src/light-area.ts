@@ -1,5 +1,17 @@
 import type { AdditionItemConfig, HomeAssistant } from "./types";
 
+export const mushroomLightRgb = (value: unknown): number[] | undefined => {
+  if (!Array.isArray(value) || value.length !== 3 ||
+    !value.every(channel => typeof channel === "number" && Number.isFinite(channel) && channel >= 0 && channel <= 255)) return undefined;
+  const maximum = Math.max(...value);
+  const minimum = Math.min(...value);
+  const saturation = maximum ? (maximum - minimum) / maximum : 0;
+  if (saturation < .1) return maximum ? value.map(channel => channel * 225 / maximum) : [225, 225, 225];
+  if (saturation >= .4) return [...value];
+  // Increase saturation without changing hue or brightness.
+  return value.map(channel => maximum - (maximum - channel) * .4 / saturation);
+};
+
 const SCENE_COLORS = [
   "yellow", "light-blue", "red", "cyan", "green", "pink", "light-green", "accent",
   "indigo", "amber", "deep-orange", "orange", "blue", "light-grey",
