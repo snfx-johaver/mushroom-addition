@@ -62669,7 +62669,7 @@ xs([
 xs([
   F()
 ], ki.prototype, "geometry");
-const x2 = "0.7.1", Vt = {
+const x2 = "0.7.2", Vt = {
   SUNRISE_START: 360,
   // 6:00
   SUNRISE_END: 480,

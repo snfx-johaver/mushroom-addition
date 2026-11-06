@@ -42,7 +42,10 @@ Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all card
 
 ## What's new in 0.7
 
-- **Languages:** all 37 cards and visual editors now use the 33 Mushroom language
+- **Energy cards (0.7.2):** Energy Plan, Energy Insights & Purchases and Energy Log,
+  with shared Mushroom presentation, native visual editors and the shadow option.
+  Smart Saving and existing energy cards remain supported.
+- **Languages:** all 40 cards and visual editors now use the 33 Mushroom language
   catalogs, including NAS, stock data, Smart Saving and Weather Advanced.
   Version 0.7.1 completes the translation audit for the 0.7 release.
 - **Air Quality:** compact, reorderable sensor readings, editable thresholds and a
@@ -60,11 +63,12 @@ Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all card
   visual additional pollen sensors, and dropdowns that follow light/dark themes.
 
 Existing dashboard card types and configurations remain supported. Install
-**v0.7.1** through HACS, then reload every dashboard browser. If you have been
+**v0.7.2** through HACS, then reload every dashboard browser. If you have been
 using an unreleased hotfix, return to the single HACS-managed resource after the
 update; do not load both bundles.
 
-See the [changelog](CHANGELOG.md#071---2026-11-02) for the translation update and
+See the [changelog](CHANGELOG.md#072---2026-11-06) for the new energy cards,
+[translation update](CHANGELOG.md#071---2026-11-02) and
 [0.7.0 release details](CHANGELOG.md#070---2026-11-02).
 
 ## Air Quality

@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+## 0.7.2 - 2026-11-06
+
 - Add Energy Plan, Energy Insights & Purchases and Energy Log to the existing
   bundle and card picker, retaining Smart Saving and every existing energy card.
 - Use the shared Mushroom presentation, five editor sections, native structured
