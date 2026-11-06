@@ -16,6 +16,11 @@ import { nasGuidanceTranslations } from "./translations/nas-guidance";
 import { stockGuidanceTranslations } from "./translations/stock-guidance";
 import { releaseOptionTranslations } from "./translations/release-options";
 import { energyPlanTranslations } from "./translations/energy-plan";
+import { energyPlanCardTranslations } from "./translations/energy-plan-card";
+import { energyInsightsTranslations } from "./translations/energy-insights";
+import { energyInsightsDetails } from "./translations/energy-insights-details";
+import { energyNativeFields, energySourceLabels } from "./translations/energy-native-fields";
+import { energyLogTranslations } from "./translations/energy-log";
 import { energyFieldTranslations } from "./translations/energy-fields";
 import { releaseDataTranslations } from "./translations/release-data";
 import { releaseStatusTranslations } from "./translations/release-status";
@@ -658,6 +663,12 @@ export const translationCatalogs: Record<string, Record<string, string>> = Objec
     ...stockGuidanceTranslations[locale],
     ...releaseOptionTranslations[locale],
     ...energyPlanTranslations[locale],
+    ...energyPlanCardTranslations[locale],
+    ...energyInsightsTranslations[locale],
+    ...energyInsightsDetails[locale],
+    ...energyNativeFields[locale],
+    ...energySourceLabels[locale],
+    ...energyLogTranslations[locale],
     ...energyFieldTranslations[locale],
     ...releaseDataTranslations[locale],
     ...releaseStatusTranslations[locale],
@@ -1334,7 +1345,18 @@ export const helperCatalogs: Record<string, Record<string, string>> = {
   en: englishHelpers,
 };
 
-export const editorHelper = (key: string, hass?: HomeAssistant): string | undefined => {
+export const editorHelper = (key: string, hass?: HomeAssistant, cardType?: string): string | undefined => {
+  const logHelp: Record<string, string[]> = {
+    allIcon: ["All", "Icon"],
+    sources: ["Source", "Path", "Field mappings"], categories: ["Label", "Color", "Icon"],
+    limit: ["Entry limit"], sortOrder: ["Newest first", "Oldest first"],
+    timeZone: ["Time zone"], clockFormat: ["Clock format"],
+    showSource: ["Source", "Description"], footer: ["Footer", "Description"],
+    emptyState: ["Empty state", "No log entries."],
+  };
+  if (cardType === "custom:mushroom-addition-energy-log" && logHelp[key]) return logHelp[key].map(label => localizeText(hass, label)).join(" / ");
+  if (key === "energy_plan") return ["Source", "Timeline", "Summary", "Periods"].map(label => localizeText(hass, label)).join(" / ");
+  if (key === "energy_insights") return ["Source", "Consumers", "Prices", "Plan"].map(label => localizeText(hass, label)).join(" / ");
   if (key === "washer_details_entities") return localizeText(hass, "Select settings and diagnostics from the same appliance. Expand them with the status-row chevron.");
   const airQualityHelp: Record<string, string> = {
     air_quality_show_header: "Show the Mushroom heading; the quality indicator is independent.",

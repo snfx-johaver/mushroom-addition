@@ -38,6 +38,10 @@ import { additionalEditorSchemaFor, editorSchemaFor, type EditorField } from "./
 import { populatedDefaultsFor } from "./defaults";
 import { wasteStreamsForConfig } from "./waste-streams";
 import { sceneItemDefaultsFor } from "./scene-item-defaults";
+import { planOptions, validatePlan, ENERGY_PLAN_TAG } from "./energy-plan/config";
+import { insightsOptions, validateInsights, ENERGY_INSIGHTS_TAG } from "./energy-insights/config";
+import { energyLogStub, validateEnergyLogConfig, ENERGY_LOG_TAG } from "./energy-cards/energy-log-config";
+import { ENERGY_LOG_LABELS } from "./energy-editor-schema";
 import { ROOM_STATUS_KINDS, ROOM_STATUS_LIMIT, roomItemDefaultsFor, roomStatusKind, roomStatusIcon, roomStatusActive } from "./room";
 import type {
   MiniGraphEntityConfig,
@@ -191,9 +195,11 @@ export class MushroomAdditionEditor extends LitElement {
   @state() private remoteEditing?: number;
   @state() private piHoleMapping: PiHoleMetric = "queries";
   @state() private expandedSections = new Set<EditorSectionId>();
+  @state() private energyError = "";
   private preparedEditorSchema?: PreparedEditorSchema;
 
   public setConfig(config: AdditionConfig): void {
+    this.energyError = "";
     const tag = config.type.replace(/^custom:/, "");
     const alias = LEGACY_ALIASES.find((item) => item.tag === tag);
     this.config = {
@@ -201,6 +207,12 @@ export class MushroomAdditionEditor extends LitElement {
       ...(tag === "mushroom-addition-upcoming-media-card" && config.upcoming_data_attribute === "friendly_name"
         ? { upcoming_data_attribute: "data" } : {}),
       variant: config.variant ?? alias?.variant,
+    };
+    if (tag === ENERGY_PLAN_TAG) this.config = { ...this.config, energy_plan: planOptions(this.config, this.hass) };
+    if (tag === ENERGY_INSIGHTS_TAG) this.config = { ...this.config, energy_insights: insightsOptions(this.config) };
+    if (tag === ENERGY_LOG_TAG) this.config = {
+      ...energyLogStub(this.hass), ...this.config, name: config.name ?? config.title,
+      secondary: config.secondary ?? config.subtitle,
     };
     if (tag === "mushroom-addition-smart-saving") {
       this.config = {
@@ -411,6 +423,7 @@ export class MushroomAdditionEditor extends LitElement {
       item.upstreamId === "card_room";
     return html`
       <div class="editor-sections">
+        ${this.energyError ? html`<ha-alert alert-type="error" role="alert">${localizeText(this.hass, "Invalid data source or field mapping")}: ${this.energyError}</ha-alert>` : nothing}
         ${editorSections.map((section) => this.renderEditorSection(
           section,
           preparedSchema.localized[section.id],
@@ -490,7 +503,13 @@ export class MushroomAdditionEditor extends LitElement {
   };
 
   private readonly computeLabel = (schema: { name: string }): string =>
-    this.config?.type.endsWith("air-quality") && schema.name === "entity"
+    this.config?.type === `custom:${ENERGY_LOG_TAG}` && schema.name === "allIcon"
+      ? `${localizeText(this.hass, "All")}: ${localizeText(this.hass, "Icon")}`
+    : this.config?.type === `custom:${ENERGY_LOG_TAG}` && ENERGY_LOG_LABELS[schema.name]
+      ? localizeText(this.hass, ENERGY_LOG_LABELS[schema.name])
+    : schema.name === "energy_plan" || schema.name === "energy_insights"
+      ? localizeText(this.hass, getCatalogItem(this.config!.type.replace(/^custom:/, ""))?.name ?? schema.name)
+    : this.config?.type.endsWith("air-quality") && schema.name === "entity"
       ? localizeText(this.hass, "Air quality sensor (optional; otherwise calculated from pollutants)")
     : airQualityLabels[schema.name] ? localizeText(this.hass, airQualityLabels[schema.name])
     : stockMetricLabel(schema.name) ? `${localizeText(this.hass, STOCK_METRICS.find(([key]) => schema.name.startsWith(`stock_${key}_`))![1])}: ${localizeText(this.hass, schema.name.endsWith("_entity") ? "Metric entity override" : "Metric attribute")}`
@@ -686,6 +705,7 @@ export class MushroomAdditionEditor extends LitElement {
         ? "machine_state_entity"
         : schema.name,
       this.hass,
+      this.config?.type,
     );
 
   private readonly valueChanged = (event: CustomEvent): void => {
@@ -784,6 +804,19 @@ export class MushroomAdditionEditor extends LitElement {
       const discovered = discoverWasherEntities(this.hass, value.entity);
       for (const [key, id] of Object.entries(discovered)) {
         if (next[key] === undefined || next[key] === "") next[key] = id;
+      }
+    }
+    if ([`custom:${ENERGY_PLAN_TAG}`, `custom:${ENERGY_INSIGHTS_TAG}`, `custom:${ENERGY_LOG_TAG}`].includes(next.type)) {
+      try {
+        if (next.type === `custom:${ENERGY_PLAN_TAG}`) validatePlan(next);
+        else if (next.type === `custom:${ENERGY_LOG_TAG}`) validateEnergyLogConfig(next);
+        else validateInsights(next);
+        this.energyError = "";
+      } catch (error) {
+        if (!(error instanceof Error)) throw error;
+        this.config = next;
+        this.energyError = error.message;
+        return;
       }
     }
     this.config = next;

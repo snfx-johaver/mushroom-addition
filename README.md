@@ -5,7 +5,7 @@
 
 Your dashboard called. It wants fewer YAML headaches and a little more fun(gus).
 
-**37 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
+**40 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
 Air quality, animated weather, lights, appliances, energy, media, rooms, NAS and more.
 Pick a card, pick your entities, enjoy your dashboard.
 YAML is still welcome; it just isn't compulsory.
@@ -159,7 +159,7 @@ Cards use your Home Assistant theme and language. Your custom names, entity IDs
 and action values stay untouched. Some cards need their corresponding sensors
 or integrations; installing a card does not install its data source.
 
-All 37 cards and their visual editors use the 33 Mushroom language catalogs.
+All 40 cards and their visual editors use the 33 Mushroom language catalogs.
 This includes stock-specific labels, the four NAS cards, Smart Saving and
 Weather Advanced. Language and script variants follow Home Assistant; saved
 custom names and entity values are preserved. Technical identifiers, brands,
@@ -285,7 +285,37 @@ examples and resource paths.
 [Report a bug](https://github.com/snfx-johaver/mushroom-addition/issues).
 Please keep household screenshots and personal information out of reports.
 
-## Smart Saving and Energy Entityworkflow
+## Energy cards
+
+Three additional energy cards are included in the existing bundle and card
+picker; no additional resource is needed.
+
+| Card | Configuration type | Purpose |
+| --- | --- | --- |
+| [Energy Plan](docs/ENERGY_PLAN.md) | `custom:mushroom-addition-energy-plan` | Configurable aligned timeline for supplied prices, solar, battery, grid and consumer forecasts. |
+| [Energy Insights & Purchases](docs/ENERGY_INSIGHTS.md) | `custom:mushroom-addition-energy-insights` | Measured consumption and interval-priced purchases, with a separate view for supplied future purchase allocations. |
+| [Energy Log](docs/ENERGY_LOG.md) | `custom:mushroom-addition-energy-log` | Entity-backed events with category filters, date grouping and source details. |
+
+All three use the shared Mushroom presentation, theme-aware colors, shadow
+option, header actions and Context, Content, Layout, Interactions and Features
+editor sections. Repeatable rows, metrics, periods, consumers, sources, categories
+and field mappings use Home Assistant's native structured object selectors.
+These editors require HA 2026.11 / frontend 20261028.4 or newer.
+Built-in labels use all 33 language catalogs; custom names and source text are
+preserved.
+
+The cards display supplied data; they do not generate forecasts, optimize
+schedules or control devices. Missing, invalid and stale sources are shown
+explicitly. Picker defaults select compatible sources when available; otherwise
+configure sources using the contracts in each card's documentation.
+
+**Existing cards are preserved.** Energy Plan overlaps with Smart Saving's
+forecast display, but has a different configuration and a customizable aligned
+timeline. It does not replace or migrate Smart Saving dashboards. Energy Insights
+adds measured accounting rather than duplicating Home Energy Management or Buy
+and Sell; Energy Log adds event history rather than duplicating Entityworkflow.
+
+### Smart Saving and Energy Entityworkflow
 
 Both cards are included in the existing bundle and picker; do not install a
 second energy-card resource. They use the same Context, Content, Layout,

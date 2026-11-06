@@ -7,6 +7,7 @@ import { FLOWER_BARS, flowerBarsForConfig, flowerEntityConfigKey } from "./flowe
 import { REMOTE_KEYS } from "./remote-card";
 import { PIHOLE_METRICS, PIHOLE_SECTIONS } from "./pi-hole";
 import { STOCK_METRICS, STOCK_RANGES, stockUsesBackend } from "./stock-data";
+import { energyFeatureField, energyLogFeatureFields } from "./energy-editor-schema";
 
 export interface EditorField {
   name: string;
@@ -283,6 +284,17 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
 };
 
 export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass?: HomeAssistant): EditorField[] => {
+  if (item.upstreamId === "energy_log") return [
+    ...common(item), text("secondary"),
+    action("tap_action"), action("hold_action"), action("double_tap_action"),
+    ...energyLogFeatureFields(),
+  ];
+  if (item.upstreamId === "energy_plan" || item.upstreamId === "energy_insights") return [
+    ...common(item), text("secondary"),
+    ...(item.upstreamId === "energy_plan" ? [number("visibleHours", 1, 168)] : []),
+    action("tap_action"), action("hold_action"), action("double_tap_action"),
+    energyFeatureField(item.upstreamId),
+  ];
   if (item.upstreamId === "air_quality") return [
     entity(["sensor"]), ...presentation(),
     toggle("air_quality_show_header"), toggle("air_quality_show_title"), toggle("air_quality_show_icon"),

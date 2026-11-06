@@ -2,7 +2,7 @@ import type { HomeAssistant } from "./types";
 export { stateLabel, displayName, fireEvent } from "../helpers";
 
 export function relevantHassChanged(previous: HomeAssistant | undefined, next: HomeAssistant | undefined, config: unknown): boolean {
-  if (!previous || !next || previous.language !== next.language || previous.themes !== next.themes ||
+  if (!previous || !next || previous.language !== next.language || previous.locale !== next.locale || previous.themes !== next.themes ||
       previous.config !== next.config || previous.formatEntityState !== next.formatEntityState ||
       previous.formatEntityName !== next.formatEntityName || previous.devices !== next.devices ||
       previous.entities !== next.entities) return true;

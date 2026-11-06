@@ -1,6 +1,9 @@
 import "./editor";
+import "./energy-plan/card";
+import "./energy-insights/card";
 import "./nas";
 import "./energy-cards/card";
+import { MushroomEnergyLogCard } from "./energy-cards/energy-log";
 import "./energy-cards/workflow-editor";
 import { MushroomWorkflowCard } from "./energy-cards/workflow";
 import { MushroomWeatherAdvancedCard } from "./weather-advanced/card";
@@ -16,6 +19,10 @@ import { version as VERSION } from "../package.json";
 
 for (const item of CATALOG) {
   if (!customElements.get(item.tag)) {
+    if (item.upstreamId === "energy_log") {
+      customElements.define(item.tag, MushroomEnergyLogCard);
+      continue;
+    }
     if (item.upstreamId === "air_quality") {
       customElements.define(item.tag, MushroomAirQualityCard);
       continue;
@@ -130,6 +137,9 @@ console.info(
 
 export { CATALOG } from "./catalog";
 export type { AdditionConfig } from "./types";
+export type { EnergyLogConfig, EnergyLogCategory, EnergyLogSource, EnergyLogEntry } from "./energy-cards/energy-log-config";
+export type { EnergyPlanConfig, EnergyPlanOptions, PlanRow, PlanMetric, PlanPeriod } from "./energy-plan/config";
+export type { EnergyInsightsConfig, EnergyInsightsOptions, InsightsConsumer } from "./energy-insights/config";
 export type { WeatherAdvancedOptions } from "./weather-advanced/config";
 export type { SmartSavingConfig } from "./energy-cards/types";
 export type { WorkflowConfig } from "./energy-cards/workflow-config";

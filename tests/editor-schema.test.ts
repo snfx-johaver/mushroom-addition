@@ -175,7 +175,10 @@ describe("family editor schemas", () => {
     const selfExplanatory = new Set(["entities"]);
     for (const item of CATALOG) {
       for (const field of flattenSchema(editorSchemaFor(item))) {
-        if (!selfExplanatory.has(field.name)) expect(editorHelper(field.name)).toBeTruthy();
+        if (!selfExplanatory.has(field.name)) expect(
+          editorHelper(field.name, undefined, `custom:${item.tag}`),
+          `${item.tag}: ${field.name}`,
+        ).toBeTruthy();
       }
     }
   });

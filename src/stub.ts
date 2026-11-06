@@ -10,6 +10,9 @@ import { sonosControlCount } from "./sonos-controls";
 import { inferConsolePlatform, resolveConsoleEntities } from "./console";
 import { readUpcomingData } from "./upcoming-media";
 import { wasteStreamExamples } from "./waste-streams";
+import { EnergyPlanCard } from "./energy-plan/card";
+import { EnergyInsightsCard } from "./energy-insights/card";
+import { energyLogStub } from "./energy-cards/energy-log-config";
 
 const firstMatchingEntity = (
   descriptor: CatalogItem,
@@ -59,6 +62,9 @@ export const createStubConfig = (
   entities: string[] = [],
   entitiesFallback: string[] = [],
 ): AdditionConfig => {
+  if (descriptor.upstreamId === "energy_log") return energyLogStub(hass, entities, entitiesFallback);
+  if (descriptor.upstreamId === "energy_plan") return EnergyPlanCard.getStubConfig(hass, entities, entitiesFallback);
+  if (descriptor.upstreamId === "energy_insights") return EnergyInsightsCard.getStubConfig(hass, entities, entitiesFallback);
   if (descriptor.upstreamId === "air_quality") return airQualityStub(hass);
   if (descriptor.upstreamId === "custom_card_washer") return populatedDefaultsFor(descriptor);
   if (descriptor.upstreamId === "weather_advanced") return weatherStub(hass, entities, entitiesFallback);

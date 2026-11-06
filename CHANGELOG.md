@@ -4,6 +4,15 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Add Energy Plan, Energy Insights & Purchases and Energy Log to the existing
+  bundle and card picker, retaining Smart Saving and every existing energy card.
+- Use the shared Mushroom presentation, five editor sections, native structured
+  selectors, theme-aware colors, header actions and shadow option, including
+  missing/stale-source surfaces. Avoid duplicate shared presentation controls.
+- Add source validation, measured interval accounting separated from supplied
+  forecasts, healthy compatible picker defaults, all 33 language catalogs and
+  configuration examples for the new cards.
+
 ## 0.7.1 - 2026-11-02
 
 - Scenes button entity pickers now allow every Home Assistant domain, matching

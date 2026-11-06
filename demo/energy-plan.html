@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Energy cards - Native cards and shared editor</title>
+  <style>
+    :root { color-scheme: dark; --primary-text-color:#e7e8eb; --secondary-text-color:#9c9fa9; --primary-color:#70c69a; --ha-card-background:#1c1c1e; --card-background-color:#1c1c1e; --secondary-background-color:#242427; --divider-color:#343437; --ha-card-border-color:#343437; --error-color:#f28b82; --rgb-primary-text-color:231,232,235; --rgb-secondary-text-color:156,159,169; }
+    :root.light { color-scheme:light; --primary-text-color:#25272d; --secondary-text-color:#656a75; --ha-card-background:#fff; --card-background-color:#fff; --secondary-background-color:#f3f4f6; --divider-color:#e2e4e9; --ha-card-border-color:#e2e4e9; --primary-color:#287c50; --rgb-primary-text-color:37,39,45; --rgb-secondary-text-color:101,106,117; }
+    * { box-sizing:border-box; } body { font:14px Roboto,"Segoe UI",sans-serif; margin:0; background:#111113; color:var(--primary-text-color); } body.light { background:#f5f6f8; }
+    main { max-width:1520px; margin:0 auto; padding:28px; } header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:20px; }
+    h1 { font-size:24px; font-weight:500; margin:0 0 8px; } p { color:var(--secondary-text-color); font-size:12px; line-height:1.7; }
+    .workspace { display:grid; grid-template-columns:minmax(0,1fr) 370px; gap:24px; align-items:start; }
+    #preview { min-width:0; } aside { background:var(--ha-card-background); padding:16px; border:1px solid var(--divider-color); border-radius:14px; max-height:80vh; overflow:auto; }
+    h2 { font-size:14px; font-weight:500; margin:0 0 14px; } button { background:var(--secondary-background-color); color:var(--primary-text-color); border:1px solid var(--divider-color); border-radius:10px; padding:10px 14px; cursor:pointer; }
+    #notice { background:var(--secondary-background-color); border-radius:12px; padding:12px; margin-top:16px; }
+    @media(max-width:1000px) { .workspace { grid-template-columns:1fr; } aside { max-height:none; } main { padding:16px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header><div><h1>Energy Plan</h1><p>Real registered Mushroom Addition card and shared visual editor. All data is synthetic.</p></div><button id="theme">Light theme</button></header>
+    <div class="workspace"><div id="preview"></div><aside><h2>Visual card editor</h2><div id="editor"></div></aside></div>
+    <h1 style="margin-top:32px">Energy Insights &amp; Purchases</h1>
+    <p>All values below are synthetic, including the measured-history example and supplied planner outputs.</p>
+    <div class="workspace"><div id="insights-preview"></div><aside><h2>Shared card editor (demo selector shims)</h2><div id="insights-editor"></div></aside></div>
+    <p id="notice">Synthetic showcase only. Changes update real registered cards and are saved locally in this browser. Only fictional demo sensors are accepted. No live accounts, external data requests or device control. These lightweight selector shims exercise configuration, but are not a real Home Assistant editor test. Production uses native structured object selectors (verified against Home Assistant 2026.11).</p>
+    <button id="reset">Reset synthetic example</button>
+    <p id="saved" role="status"></p>
+  </main>
+  <script type="module" src="./energy-plan.ts"></script>
+</body>
+</html>

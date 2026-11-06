@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="510" viewBox="0 0 720 510" role="img" aria-labelledby="title description">
+  <title id="title">Energy Log synthetic example</title>
+  <desc id="description">Synthetic Energy Log with UI-configurable icons for All, Planning, Measurement and Availability filters and matching category badges. No live data.</desc>
+  <rect width="720" height="510" fill="#f1f3f6"/>
+  <rect x="18" y="16" width="684" height="478" rx="18" fill="#fff" stroke="#dce1e7"/>
+  <circle cx="48" cy="48" r="13" fill="#e1f3ef"/>
+  <path d="M47 40l-4 9h5l-1 7 6-10h-5l2-6z" fill="#168879"/>
+  <text x="73" y="47" fill="#25313c" font-family="Arial, sans-serif" font-size="16" font-weight="700">Energy Log</text>
+  <text x="73" y="65" fill="#647386" font-family="Arial, sans-serif" font-size="12">Synthetic activity from placeholder entities</text>
+  <g font-family="Arial, sans-serif" font-size="11">
+    <rect x="38" y="82" width="59" height="25" rx="13" fill="#dff2ed"/><text x="65" y="98" fill="#267b6f">All</text>
+    <g fill="none" stroke="#267b6f" stroke-width="1.2"><rect x="48" y="89" width="4" height="4"/><rect x="55" y="89" width="4" height="4"/><rect x="48" y="96" width="4" height="4"/><rect x="55" y="96" width="4" height="4"/></g>
+    <rect x="103" y="82" width="91" height="25" rx="13" fill="#f2eafb"/><text x="130" y="98" fill="#7953a8">Planning</text>
+    <g fill="none" stroke="#7953a8" stroke-width="1.2"><rect x="114" y="89" width="10" height="13" rx="1"/><path d="M117 88h4v3h-4zM117 95h4m-4 3h4"/></g>
+    <rect x="200" y="82" width="117" height="25" rx="13" fill="#e5f3f0"/><text x="227" y="98" fill="#167e72">Measurement</text>
+    <path d="M210 89v12h12m-10-4 3-4 3 2 4-5" fill="none" stroke="#167e72" stroke-width="1.2"/>
+    <rect x="323" y="82" width="107" height="25" rx="13" fill="#f4eee3"/><text x="350" y="98" fill="#9a702c">Availability</text>
+    <g fill="none" stroke="#9a702c" stroke-width="1.2"><circle cx="340" cy="95" r="6"/><path d="m337 95 2 2 4-4"/></g>
+  </g>
+  <text x="38" y="132" fill="#657386" font-family="Arial, sans-serif" font-size="11" font-weight="700" letter-spacing=".5">15 APRIL 2026 · NEWEST FIRST · EUROPE/AMSTERDAM</text>
+  <line x1="52" y1="151" x2="52" y2="423" stroke="#d7dde4"/>
+  <circle cx="52" cy="164" r="4" fill="#7953a8"/>
+  <text x="69" y="168" fill="#738092" font-family="Arial, sans-serif" font-size="11">12:15</text>
+  <rect x="109" y="154" width="91" height="19" rx="5" fill="#f2eafb"/>
+  <g fill="none" stroke="#7953a8" stroke-width="1.1"><rect x="116" y="158" width="8" height="11" rx="1"/><path d="M118 157h4v3h-4zM118 163h4m-4 3h4"/></g>
+  <text x="130" y="168" fill="#7953a8" font-family="Arial, sans-serif" font-size="10" font-weight="700">Planning</text>
+  <text x="69" y="193" fill="#26323c" font-family="Arial, sans-serif" font-size="13" font-weight="700">Sample schedule prepared</text>
+  <text x="69" y="214" fill="#26323c" font-family="Arial, sans-serif" font-size="12" font-weight="700">3 sample intervals</text>
+  <text x="69" y="236" fill="#647386" font-family="Arial, sans-serif" font-size="12">Example payload from an existing placeholder entity.</text>
+  <text x="69" y="258" fill="#168879" font-family="Arial, sans-serif" font-size="11">› Source</text>
+  <text x="112" y="258" fill="#647386" font-family="Arial, sans-serif" font-size="10">sensor.example_schedule</text>
+  <circle cx="52" cy="291" r="4" fill="#168879"/>
+  <text x="69" y="295" fill="#738092" font-family="Arial, sans-serif" font-size="11">10:25</text>
+  <rect x="109" y="281" width="107" height="19" rx="5" fill="#e5f3f0"/>
+  <path d="M116 285v11h10m-8-4 2-3 2 1 4-4" fill="none" stroke="#167e72" stroke-width="1.1"/>
+  <text x="130" y="295" fill="#167e72" font-family="Arial, sans-serif" font-size="10" font-weight="700">Measurement</text>
+  <text x="69" y="320" fill="#26323c" font-family="Arial, sans-serif" font-size="13" font-weight="700">Sample reading received</text>
+  <text x="69" y="341" fill="#26323c" font-family="Arial, sans-serif" font-size="12" font-weight="700">12.4 example units</text>
+  <text x="69" y="363" fill="#647386" font-family="Arial, sans-serif" font-size="12">Synthetic measurement text for this illustration.</text>
+  <text x="69" y="385" fill="#168879" font-family="Arial, sans-serif" font-size="11">› Source</text>
+  <text x="112" y="385" fill="#647386" font-family="Arial, sans-serif" font-size="10">sensor.example_reading</text>
+  <line x1="38" y1="420" x2="682" y2="420" stroke="#dce1e7"/>
+  <text x="38" y="443" fill="#647386" font-family="Arial, sans-serif" font-size="11">Synthetic preview only. Entries are mapped from existing entity data;</text>
+  <text x="38" y="460" fill="#647386" font-family="Arial, sans-serif" font-size="11">Filter icons are editable in Features; the card does not record or control devices.</text>
+</svg>

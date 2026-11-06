@@ -28,7 +28,7 @@ export interface HomeAssistant {
   themes?: { darkMode?: boolean };
   services?: Record<string, Record<string, unknown>>;
   areas?: Record<string, { area_id: string; name: string; [key: string]: unknown }>;
-  config?: { unit_system?: { temperature?: string }; time_zone?: string };
+  config?: { unit_system?: { temperature?: string }; time_zone?: string; currency?: string };
   entities?: Record<string, {
     device_id?: string | null;
     area_id?: string | null;
@@ -38,6 +38,7 @@ export interface HomeAssistant {
   }>;
   devices?: Record<string, { area_id?: string | null; name?: string; name_by_user?: string }>;
   language?: string;
+  locale?: { language?: string; number_format?: string; time_format?: string };
   user?: { name?: string };
   localize?: (key: string) => string;
   formatEntityState?: (entity: HassEntity) => string;
@@ -266,6 +267,8 @@ export interface PiHoleConfig {
 }
 
 export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, PiHoleConfig, AirQualityOptions {
+  energy_plan?: import("./energy-plan/config").EnergyPlanOptions;
+  energy_insights?: import("./energy-insights/config").EnergyInsightsOptions;
   weather?: import("./weather-advanced/config").WeatherAdvancedOptions;
   title?: string;
   subtitle?: string;

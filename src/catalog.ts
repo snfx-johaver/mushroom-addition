@@ -198,6 +198,25 @@ export const UPSTREAM_CATALOG: readonly CatalogItem[] = [
 
 export const NATIVE_CATALOG: readonly CatalogItem[] = [
   {
+    upstreamId: "energy_log", sourcePath: "src/energy-cards/energy-log.ts", kind: "card",
+    category: "custom-card", family: "energy", tag: "mushroom-addition-energy-log",
+    name: "Energy Log",
+    description: "Entity-backed event timeline with configurable sources, category filters and date grouping.",
+    preferredDomains: ["sensor", "event", "text"],
+  },
+  {
+    upstreamId: "energy_plan", sourcePath: "src/energy-plan/card.ts", kind: "card",
+    category: "custom-card", family: "energy", tag: "mushroom-addition-energy-plan",
+    name: "Energy Plan", description: "Source-backed energy forecasts on an aligned timeline with native Home Assistant configuration.",
+    preferredDomains: ["sensor"],
+  },
+  {
+    upstreamId: "energy_insights", sourcePath: "src/energy-insights/card.ts", kind: "card",
+    category: "custom-card", family: "energy", tag: "mushroom-addition-energy-insights",
+    name: "Energy Insights & Purchases", description: "Measured household consumption, interval purchase accounting and upcoming purchase allocations.",
+    preferredDomains: ["sensor"],
+  },
+  {
     upstreamId: "weather_advanced",
     sourcePath: "src/weather-advanced/card.ts",
     kind: "card",
