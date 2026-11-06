@@ -45,7 +45,8 @@ export const sharedStyles = css`
   .mushroom-addition-card.card-shadow { box-shadow: var(--ha-card-box-shadow, 0 2px 8px rgba(0,0,0,.08)); }
   .mushroom-addition-card:has(.fill-container), .fill-container { height: 100%; }
   .fill-container { min-height: 100%; }
-  .mushroom-addition-card > .action-surface { min-height: 100%; }
+  .mushroom-addition-card > .action-surface:not(.energy-heading) { min-height: 100%; }
+  .energy-heading.action-surface { height: auto; min-height: 0; }
   .action-surface {
     box-sizing: border-box;
     color: var(--primary-text-color);

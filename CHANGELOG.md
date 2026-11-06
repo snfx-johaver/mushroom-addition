@@ -6,6 +6,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## 0.7.2 - 2026-11-06
 
+- Fix empty space beneath shared energy-card headings in fixed-height previews
+  and fill-container layouts. Headers size to their content instead of filling
+  the card and pushing its controls below the visible area.
 - Add Energy Plan, Energy Insights & Purchases and Energy Log to the existing
   bundle and card picker, retaining Smart Saving and every existing energy card.
 - Use the shared Mushroom presentation, five editor sections, native structured

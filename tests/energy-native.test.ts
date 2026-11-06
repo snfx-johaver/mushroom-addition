@@ -12,6 +12,7 @@ import { editorSchemaFor, type EditorField } from "../src/editor-schema";
 import { insightsDefaults, validateInsights, type EnergyInsightsOptions } from "../src/energy-insights/config";
 import { livePower, readActuals, readPurchasePlan } from "../src/energy-insights/data";
 import { energyNumber, energyTime } from "../src/energy-format";
+import { sharedStyles } from "../src/styles";
 import { PLAN_FIELDS, PLAN_ROW_FIELDS, PLAN_METRIC_FIELDS, PLAN_PERIOD_FIELDS, INSIGHTS_FIELDS, INSIGHTS_CONSUMER_FIELDS, type NativeFields } from "../src/energy-editor-schema";
 import { localizeEditorSchema } from "../src/localized-schema";
 import { editorHelper, localizeText, translationCatalogs } from "../src/localize";
@@ -292,6 +293,10 @@ describe("measured accounting and supplied purchase plans", () => {
 });
 
 describe("energy rendering and HA lifecycle", () => {
+  it("does not stretch shared headings to fill the entire card or editor preview", () => {
+    expect(sharedStyles.cssText).toContain(".mushroom-addition-card > .action-surface:not(.energy-heading) { min-height: 100%; }");
+    expect(sharedStyles.cssText).toContain(".energy-heading.action-surface { height: auto; min-height: 0; }");
+  });
   it.each(["energy-plan", "energy-insights", "energy-log"])("uses shared presentation, actions and shadow on %s in both data and error states", async tag => {
     clock();
     const h = hass();
