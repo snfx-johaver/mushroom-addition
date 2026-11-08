@@ -56682,11 +56682,13 @@ const Pr = _e`
   .sonos-controls button:disabled { cursor: not-allowed; opacity: .45; }
   .sonos-controls button {
     box-shadow: var(--addition-raised-shadow);
-    min-height: var(--mush-control-height, 42px); border: 0; border-radius: var(--mush-control-border-radius, 12px); background: var(--addition-neutral-background); color: var(--primary-text-color);
+    display: flex; align-items: center; justify-content: center; padding: 0;
+    min-height: calc(var(--mush-control-height, 42px) * .6); border: 0; border-radius: var(--mush-control-border-radius, 12px); background: var(--addition-neutral-background); color: var(--primary-text-color);
   }
+  .sonos-controls button ha-icon { --mdc-icon-size: 20px; }
   .sonos-details { min-width: 0; }
   .sonos-details summary {
-    display: flex; min-height: 40px; align-items: center; justify-content: space-between; padding: 0 4px;
+    display: flex; min-height: 24px; align-items: center; justify-content: space-between; padding: 0 4px;
     color: var(--primary-text-color); cursor: pointer; font-size: 14px; font-weight: 700; list-style: none;
   }
   .sonos-details summary::-webkit-details-marker { display: none; }
@@ -56736,7 +56738,7 @@ const Pr = _e`
   .sonos-switches { display: flex; flex-wrap: wrap; gap: 8px; padding: 4px 0 10px; }
   .sonos-switches button {
     box-shadow: var(--addition-raised-shadow);
-    display: inline-flex; min-height: 40px; align-items: center; gap: 6px; padding: 0 12px;
+    display: inline-flex; min-height: 24px; align-items: center; gap: 6px; padding: 0 12px;
     border: 0; border-radius: 20px; background: var(--card-background-color, var(--ha-card-background, #fff));
     color: var(--primary-text-color); font: inherit; font-size: 12px; font-weight: 700;
   }
@@ -56759,15 +56761,15 @@ const Pr = _e`
   }
   .sonos-shortcuts button {
     box-shadow: var(--addition-raised-shadow);
-    display: grid; min-width: 0; min-height: 56px; place-items: center; gap: 4px; padding: 8px 4px;
+    display: grid; box-sizing: border-box; min-width: 0; min-height: 33.6px; place-items: center; gap: 1px; padding: 1.8px 4px;
     border: 0; border-radius: 14px;
     background: var(--card-background-color, var(--ha-card-background, #fff));
     color: var(--primary-text-color); cursor: pointer;
   }
   .sonos-shortcuts button:disabled { cursor: not-allowed; opacity: .45; }
-  .sonos-shortcuts ha-icon { --mdc-icon-size: 22px; color: rgb(var(--ulm-blue)); }
+  .sonos-shortcuts ha-icon { --mdc-icon-size: 16px; color: rgb(var(--ulm-blue)); }
   .sonos-shortcuts span {
-    min-width: 0; max-width: 100%; overflow: hidden; font-size: 11px; font-weight: 700;
+    min-width: 0; max-width: 100%; overflow: hidden; font-size: 11px; line-height: 13px; font-weight: 700;
     text-overflow: ellipsis; white-space: nowrap;
   }
   .nas-metrics-header {
@@ -62670,7 +62672,7 @@ xs([
 xs([
   F()
 ], ki.prototype, "geometry");
-const x2 = "0.7.2", Vt = {
+const x2 = "0.7.3", Vt = {
   SUNRISE_START: 360,
   // 6:00
   SUNRISE_END: 480,

@@ -63,7 +63,7 @@ Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all card
   visual additional pollen sensors, and dropdowns that follow light/dark themes.
 
 Existing dashboard card types and configurations remain supported. Install
-**v0.7.2** through HACS, then reload every dashboard browser. If you have been
+**v0.7.3** through HACS, then reload every dashboard browser. If you have been
 using an unreleased hotfix, return to the single HACS-managed resource after the
 update; do not load both bundles.
 

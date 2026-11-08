@@ -5,6 +5,29 @@ import { mediaControlStyles, nativeSelectStyles, rangeProgress, updateRangeProgr
 import { sharedStyles } from "../src/styles";
 
 describe("Mushroom media controls and selected presentation alignment", () => {
+  it("reduces only Advanced Media button heights by 40%, with room for shortcut content", () => {
+    const css = sharedStyles.cssText;
+    const rule = (selector: string) => {
+      const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return [...css.matchAll(new RegExp(`${escaped}\\s*\\{([^}]+)\\}`, "g"))]
+        .map(match => match[1]).join("\n");
+    };
+    expect(rule(".sonos-controls button")).toContain("min-height: calc(var(--mush-control-height, 42px) * .6)");
+    expect(rule(".sonos-controls button")).toContain("padding: 0");
+    expect(rule(".sonos-controls button ha-icon")).toContain("--mdc-icon-size: 20px");
+    for (const selector of [".sonos-switches button", ".sonos-details summary"]) {
+      expect(rule(selector)).toContain(`min-height: ${40 * .6}px`);
+    }
+    expect(rule(".sonos-shortcuts button")).toContain(`min-height: ${56 * .6}px`);
+    expect(rule(".sonos-shortcuts button")).toContain("box-sizing: border-box");
+    expect(rule(".sonos-shortcuts button")).toContain("gap: 1px");
+    expect(rule(".sonos-shortcuts button")).toContain("padding: 1.8px 4px");
+    expect(rule(".sonos-shortcuts ha-icon")).toContain("--mdc-icon-size: 16px");
+    expect(rule(".sonos-shortcuts span")).toContain("line-height: 13px");
+    expect(16 + 13 + 1 + 2 * 1.8).toBeCloseTo(56 * .6);
+    expect(rule(".sonos-sliders label")).toContain("min-height: var(--mush-control-height, 42px)");
+    expect(mediaControlStyles.cssText).toContain("height: var(--mush-control-height, 42px)");
+  });
   it("themes native popup options across shared cards and standalone editors", () => {
     expect(nativeSelectStyles.cssText).toContain("select option, select optgroup");
     expect(nativeSelectStyles.cssText).toContain("color: var(--primary-text-color, CanvasText)");

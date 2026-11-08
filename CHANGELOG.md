@@ -4,6 +4,11 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+## 0.7.3 - 2026-11-08
+
+- Reduce Advanced Media playback, shortcut and sound-setting button heights by
+  40%, with compact shortcut icons and unchanged slider sizing.
+
 ## 0.7.2 - 2026-11-06
 
 - Fix empty space beneath shared energy-card headings in fixed-height previews
