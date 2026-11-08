@@ -56683,7 +56683,7 @@ const Pr = _e`
   .sonos-controls button {
     box-shadow: var(--addition-raised-shadow);
     display: flex; align-items: center; justify-content: center; padding: 0;
-    min-height: calc(var(--mush-control-height, 42px) * .6); border: 0; border-radius: var(--mush-control-border-radius, 12px); background: var(--addition-neutral-background); color: var(--primary-text-color);
+    height: calc(var(--mush-control-height, 42px) * .6); min-height: calc(var(--mush-control-height, 42px) * .6); border: 0; border-radius: var(--mush-control-border-radius, 12px); background: var(--addition-neutral-background); color: var(--primary-text-color);
   }
   .sonos-controls button ha-icon { --mdc-icon-size: 20px; }
   .sonos-details { min-width: 0; }
@@ -62672,7 +62672,7 @@ xs([
 xs([
   F()
 ], ki.prototype, "geometry");
-const x2 = "0.7.3", Vt = {
+const x2 = "0.7.4", Vt = {
   SUNRISE_START: 360,
   // 6:00
   SUNRISE_END: 480,

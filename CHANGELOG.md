@@ -4,6 +4,11 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+## 0.7.4 - 2026-11-08
+
+- Correct the Advanced Media playback button height when shared control styles
+  previously overrode the compact sizing.
+
 ## 0.7.3 - 2026-11-08
 
 - Reduce Advanced Media playback, shortcut and sound-setting button heights by

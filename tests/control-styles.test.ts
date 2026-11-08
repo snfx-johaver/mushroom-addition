@@ -13,6 +13,7 @@ describe("Mushroom media controls and selected presentation alignment", () => {
         .map(match => match[1]).join("\n");
     };
     expect(rule(".sonos-controls button")).toContain("min-height: calc(var(--mush-control-height, 42px) * .6)");
+    expect(rule(".sonos-controls button")).toContain("height: calc(var(--mush-control-height, 42px) * .6)");
     expect(rule(".sonos-controls button")).toContain("padding: 0");
     expect(rule(".sonos-controls button ha-icon")).toContain("--mdc-icon-size: 20px");
     for (const selector of [".sonos-switches button", ".sonos-details summary"]) {
