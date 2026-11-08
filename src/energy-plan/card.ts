@@ -10,9 +10,9 @@ import { timestamp, readPath } from "../energy-cards/data";
 import { relevantHassChanged } from "../energy-cards/helpers";
 import type { HomeAssistant } from "../types";
 import { ENERGY_PLAN_TAG, planOptions, validatePlan, type EnergyPlanConfig, type PlanMetric, type PlanRow } from "./config";
-import { displayIntervals, intervalLabel, metricValue, rowData, type RowData } from "./data";
+import { displayIntervals, displayPowerScale, displayPriceIntervals, intervalLabel, metricValue, rowCoverage, rowData, type RowData } from "./data";
 
-const LEFT = 140, RIGHT = 1068, WIDTH = 1080, TOP = 52;
+const LEFT = 0, RIGHT = 848, WIDTH = 848, TOP = 0;
 
 @customElement(ENERGY_PLAN_TAG)
 export class EnergyPlanCard extends MushroomAdditionCard {
@@ -34,11 +34,39 @@ export class EnergyPlanCard extends MushroomAdditionCard {
     ha-icon { --mdc-icon-size: 18px; }
     .metric-value { font-size: 22px; margin-top: 8px; color: var(--primary-text-color); }
     .metric-value small { font-size: 12px; color: var(--secondary-text-color); }
-    .chart-scroll { overflow-x: auto; margin-top: 12px; }
-    .timeline { display: block; width: 100%; height: auto; }
+    :host { container-type: inline-size; display: block; min-width: 0; }
+    .chart-scroll { overflow: auto; max-height: 560px; margin-top: 12px; }
+    .timeline-layout { display: grid; grid-template-columns: 180px minmax(540px, 1fr); }
+    .timeline { display: block; width: 100%; }
+    .timeline-axis, .axis-corner { position: sticky; top: 0; background: var(--ha-card-background, var(--card-background-color)); z-index: 2; }
+    .axis-corner { left: 0; z-index: 4; }
+    .timeline-labels { position: sticky; left: 0; background: var(--ha-card-background, var(--card-background-color)); z-index: 3; }
+    .row-label { display: flex; flex-direction: column; justify-content: center; font-size: 12px; padding-inline-end: 8px; color: var(--secondary-text-color); }
+    .row-label span { display: flex; align-items: center; gap: 7px; }
+    .row-label small, .status { font-size: 10px; color: var(--secondary-text-color); }
+    .status { margin: 8px 0; }
+    .timeline:focus-visible { outline: 2px solid var(--primary-color); outline-offset: -2px; }
+    @container (max-width: 620px) {
+      .content { padding: 12px; }
+      .timeline-layout { grid-template-columns: 128px minmax(540px, 1fr); }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+      .metric, .period { min-width: 0; overflow-wrap: anywhere; }
+      .row-label { overflow-wrap: anywhere; }
+      .row-label span { gap: 5px; }
+      .row-label ha-icon { flex-shrink: 0; --mdc-icon-size: 16px; }
+      .inspector label { flex-wrap: wrap; gap: 8px; }
+      .inspector input { min-height: 44px; margin: 4px 0; }
+      .details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; overflow-wrap: anywhere; }
+      .periods { grid-template-columns: 1fr; }
+    }
+    @container (max-width: 480px) {
+      .timeline-layout { grid-template-columns: 112px minmax(540px, 1fr); }
+      .row-label { font-size: 11px; }
+      .metric-value { font-size: 20px; }
+    }
     .track { fill: var(--addition-neutral-background); }
-    .axis, .row-label, .empty { fill: var(--secondary-text-color); font: 18px sans-serif; }
-    .block-label { fill: var(--primary-text-color); font: 16px sans-serif; }
+    .axis, .empty { fill: var(--secondary-text-color); font: 13px sans-serif; }
+    .block-label { fill: var(--primary-text-color); font: 12px sans-serif; }
     .grid { stroke: var(--ha-card-border-color, var(--divider-color)); stroke-width: 1; }
     .cursor { stroke: var(--primary-text-color); stroke-dasharray: 3 4; stroke-width: 1; }
     .inspector { border: 1px solid var(--ha-card-border-color, var(--divider-color)); border-radius: 12px; margin-top: 14px; padding: 12px; }
@@ -68,6 +96,10 @@ export class EnergyPlanCard extends MushroomAdditionCard {
   }
 
   public getCardSize(): number { return (planOptions(this.config ?? EnergyPlanCard.getStubConfig()).rows.filter(row => row.enabled).length + 4); }
+
+  public getGridOptions(): { columns: "full"; rows: "auto"; min_columns: number; max_columns: number; min_rows: number } {
+    return { columns: "full", rows: "auto", min_columns: 12, max_columns: 12, min_rows: 3 };
+  }
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -101,29 +133,46 @@ export class EnergyPlanCard extends MushroomAdditionCard {
     const color = resolveColor(row.color, "green");
     const x = (time: number) => LEFT + (time - start) / (end - start) * (RIGHT - LEFT);
     const height = planOptions(this.config!).rowHeight - 12;
+    const scale = displayPowerScale(row, data.intervals);
     return svg`<g>
-      <foreignObject x="0" y=${y + 8} width="20" height="24"><ha-icon .icon=${row.icon} style=${`color:${color}`}></ha-icon></foreignObject>
-      <text class="row-label" x="28" y=${y + 22}>${row.name.slice(0, 12)}<title>${row.name}</title></text>
       <rect class="track" x=${LEFT} y=${y} width=${RIGHT - LEFT} height=${height} rx="8"></rect>
-      ${data.error ? svg`<text class="empty" x=${LEFT + 10} y=${y + 22}>${this.t(data.error)}</text>` : displayIntervals(row, data.intervals).map(item => {
+      ${row.kind === "power" ? svg`<line class="grid" x1=${LEFT} x2=${RIGHT} y1=${y + height / 2} y2=${y + height / 2}></line>` : nothing}
+      ${data.error ? svg`<text class="empty" x=${LEFT + 10} y=${y + 22}>${this.t(data.error)}</text>` : (row.kind === "price"
+        ? displayPriceIntervals(row, data.intervals) : displayIntervals(row, data.intervals)).map(item => {
         const left = x(item.start), width = Math.max(.5, x(item.end) - left - 1);
         const tone = row.kind === "price"
           ? resolveColor(item.value <= row.low ? row.lowColor : item.value >= row.high ? row.highColor : row.color, color) : color;
         const tooltip = `${this.time(item.start)} – ${this.time(item.end)}: ${this.value(item.minimum)}${item.minimum !== item.maximum ? ` – ${this.value(item.maximum)}` : ""} ${row.unit}`;
         if (row.kind === "power") {
-          const center = y + height / 2, size = Math.min(height / 2 - 2, Math.abs(item.value) / row.scale * (height / 2 - 2));
+          const center = y + height / 2, size = Math.min(height / 2 - 2, Math.abs(item.value) / scale * (height / 2 - 2));
           return svg`<rect x=${left} y=${item.value >= 0 ? center - size : center} width=${width} height=${Math.max(.5, size)} rx="1" fill=${tone}><title>${tooltip}</title></rect>`;
         }
+
         if (row.kind === "soc") {
           const lineY = y + height - item.value / 100 * (height - 4);
           return svg`<rect x=${left} y=${lineY} width=${width + 1} height=${y + height - lineY} fill=${tone} fill-opacity=".12"></rect>
             <line x1=${left} x2=${left + width + 1} y1=${lineY} y2=${lineY} stroke=${tone} stroke-width="2" stroke-dasharray="4 2"><title>${tooltip}</title></line>`;
         }
-        const label = row.kind === "schedule" ? intervalLabel(row, item) : `${this.value(item.value)} ${row.unit}`;
+        const label = row.kind === "schedule" ? intervalLabel(row, item)
+          : row.kind === "price" && item.minimum !== item.maximum
+            ? `${this.value(item.minimum)}–${this.value(item.maximum)}`
+            : this.value(item.value);
         return svg`<rect x=${left} y=${y + 2} width=${width} height=${height - 4} rx="5" fill=${tone} fill-opacity=".25"><title>${tooltip}${row.kind === "schedule" ? ` · ${label}` : ""}</title></rect>
-          ${width > 60 ? svg`<text class="block-label" x=${left + 7} y=${y + 22}>${label.slice(0, Math.floor((width - 14) / 9))}</text>` : nothing}`;
+          ${width > Math.max(60, label.length * 9 + 14)
+            ? svg`<text class="block-label" x=${left + 7} y=${y + 22}>${label}</text>` : nothing}`;
       })}
     </g>`;
+  }
+
+  private selectTime(event: PointerEvent): void {
+    const bounds = (event.currentTarget as SVGSVGElement).getBoundingClientRect();
+    this.selected = Math.max(0, Math.min(999, Math.round((event.clientX - bounds.left) / bounds.width * 1000)));
+  }
+  private timelineKey(event: KeyboardEvent): void {
+    const delta = event.key === "ArrowLeft" ? -10 : event.key === "ArrowRight" ? 10 : 0;
+    if (!delta && !["Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    this.selected = event.key === "Home" ? 0 : event.key === "End" ? 999 : Math.max(0, Math.min(999, this.selected + delta));
   }
 
   protected render() {
@@ -142,14 +191,28 @@ export class EnergyPlanCard extends MushroomAdditionCard {
     const labelStep = Math.max(1, Math.ceil(ticks / 6));
     const instant = start + this.selected / 1000 * duration;
     const selectedX = LEFT + this.selected / 1000 * (RIGHT - LEFT);
+    const sourceTimes = rows.map(row => timestamp(this.hass?.states[row.entity || this.config?.entity || ""]?.last_updated))
+      .filter((time): time is number => time !== undefined);
+    const oldest = sourceTimes.length ? Math.min(...sourceTimes) : undefined;
+    const cheapest = rows.flatMap((row, index) => row.kind === "price" && !data[index].error
+      ? [{ row, intervals: data[index].intervals }] : []).map(({ row, intervals }) => {
+      const minimum = Math.min(...intervals.map(item => item.value));
+      return { row, interval: intervals.find(item => item.value === minimum) };
+    });
     return html`<ha-card class=${`mushroom-addition-card${this.config.card_shadow ? " card-shadow" : ""}`}>
       <div class="content">
         ${options.showHeader ? this.renderSharedHeading() : nothing}
         ${options.showOverview ? html`<div class="overview"><h3>${options.overview}</h3><p>${options.description}</p></div>` : nothing}
         ${options.showMetrics && options.metrics.length ? html`<div class="metrics">${options.metrics.map(metric => this.metric(metric))}</div>` : nothing}
         <h3>${options.timelineTitle}</h3>
+        <p class="status">${this.t("Supplied plan; not measured or executed.")}<br>
+          ${this.time(start)} - ${this.time(end)} · ${this.t("Updated")}: ${oldest === undefined ? this.t("Not supplied") : this.time(oldest)}
+          ${cheapest.map(({ row, interval }) => interval ? html`<br>${row.name} · ${this.t("Low")}: ${this.value(interval.value)} ${row.unit} · ${this.time(interval.start)} - ${this.time(interval.end)}` : nothing)}
+        </p>
         ${rows.length ? html`<div class="chart-scroll">
-          ${svg`<svg class="timeline" style=${`min-width:${options.minimumWidth}px`} viewBox=${`0 0 ${WIDTH} ${chartHeight}`} role="img" aria-label=${this.t("Timeline")}>
+          <div class="timeline-layout" style=${`min-width:${options.minimumWidth}px`}>
+          <div class="axis-corner"></div>
+          ${svg`<svg class="timeline timeline-axis" height="52" viewBox=${`0 0 ${WIDTH} 52`} preserveAspectRatio="none" aria-hidden="true">
             ${Array.from({ length: ticks + 1 }, (_, index) => {
               const time = Math.min(end, start + index * options.axisStep * 3600000);
               const x = LEFT + (time - start) / duration * (RIGHT - LEFT);
@@ -159,15 +222,32 @@ export class EnergyPlanCard extends MushroomAdditionCard {
               }).format(time);
               const anchor = index === 0 ? "start" : index === ticks ? "end" : "middle";
               return svg`${showLabel ? svg`<text class="axis" x=${x} y="18" text-anchor=${anchor}>${this.time(time, true)}</text>
-                <text class="axis" x=${x} y="41" text-anchor=${anchor}>${day}</text>` : nothing}
-                <line class="grid" x1=${x} x2=${x} y1="46" y2=${chartHeight}></line>`;
+                <text class="axis" x=${x} y="41" text-anchor=${anchor}>${day}</text>` : nothing}`;
+            })}
+          </svg>`}
+          <div class="timeline-labels">${rows.map((row, index) => html`<div class="row-label" style=${`height:${options.rowHeight}px`}>
+            <span><ha-icon .icon=${row.icon} style=${`color:${resolveColor(row.color, "green")}`}></ha-icon>${row.name}</span>
+            ${row.kind === "price" ? html`<small>${row.unit}</small>` : nothing}
+            ${row.kind === "power" ? html`<small>±${this.value(displayPowerScale(row, data[index].intervals))} ${row.unit}${["grid", "battery"].includes(row.id) ? ` · ↑${row.positiveLabel} ↓${row.negativeLabel}` : ""}</small>` : nothing}
+            ${row.kind === "schedule" && ["grid", "battery"].includes(row.id) ? html`<small>+ → ${row.positiveLabel} · − ← ${row.negativeLabel}</small>` : nothing}
+            ${rowCoverage(data[index], start, end) < 1 ? html`<small>${this.t(data[index].error ?? "No published intervals")} · ${this.value(rowCoverage(data[index], start, end) * 100)}%</small>` : nothing}
+          </div>`)}</div>
+          ${svg`<svg class="timeline timeline-body" height=${chartHeight} viewBox=${`0 0 ${WIDTH} ${chartHeight}`} preserveAspectRatio="none"
+            role=${options.showInspector ? "slider" : "img"} tabindex=${options.showInspector ? "0" : "-1"}
+            aria-label=${this.t("Timeline")} aria-valuemin="0" aria-valuemax="999" aria-valuenow=${this.selected} aria-valuetext=${this.time(instant)}
+            @pointerdown=${options.showInspector ? this.selectTime : nothing} @keydown=${options.showInspector ? this.timelineKey : nothing}>
+            ${Array.from({ length: ticks + 1 }, (_, index) => {
+              const x = LEFT + Math.min(duration, index * options.axisStep * 3600000) / duration * (RIGHT - LEFT);
+              return svg`<line class="grid" x1=${x} x2=${x} y1="0" y2=${chartHeight}></line>`;
             })}
             ${rows.map((row, index) => this.track(row, data[index], TOP + index * options.rowHeight, start, end))}
-            ${options.showInspector ? svg`<line class="cursor" x1=${selectedX} x2=${selectedX} y1="46" y2=${chartHeight}></line>` : nothing}
+            ${Date.now() >= start && Date.now() < end ? svg`<line stroke=${resolveColor("green", "green")} x1=${(Date.now() - start) / duration * RIGHT} x2=${(Date.now() - start) / duration * RIGHT} y1="0" y2=${chartHeight}><title>${this.t("Now")}</title></line>` : nothing}
+            ${options.showInspector ? svg`<line class="cursor" x1=${selectedX} x2=${selectedX} y1="0" y2=${chartHeight}></line>` : nothing}
           </svg>`}
+          </div>
         </div>` : html`<p class="empty-card">${this.t("No published intervals")}</p>`}
         ${options.showInspector ? html`<div class="inspector"><label for="plan-time">${this.t("Timeline")}<span>${this.time(instant)}</span></label>
-          <input id="plan-time" type="range" min="0" max="1000" .value=${String(this.selected)} aria-valuetext=${this.time(instant)}
+          <input id="plan-time" type="range" min="0" max="999" .value=${String(this.selected)} aria-valuetext=${this.time(instant)}
             @input=${(event: Event) => { this.selected = Number((event.target as HTMLInputElement).value); }}>
           <div class="details">${rows.map((row, index) => {
             const item = data[index].intervals.find(interval => interval.start <= instant && instant < interval.end);

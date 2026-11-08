@@ -4,13 +4,17 @@ import { CATALOG } from "../src/catalog";
 import { createStubConfig } from "../src/stub";
 import { EnergyPlanCard } from "../src/energy-plan/card";
 import { planDefaults, newMetric, validatePlan, type EnergyPlanConfig } from "../src/energy-plan/config";
-import { displayIntervals, metricValue, rowData } from "../src/energy-plan/data";
+import { displayIntervals, displayPowerScale, displayPriceIntervals, metricValue, rowData } from "../src/energy-plan/data";
 import { EnergyInsightsCard } from "../src/energy-insights/card";
 import { MushroomEnergyLogCard } from "../src/energy-cards/energy-log";
 import { energyLogStub } from "../src/energy-cards/energy-log-config";
 import { editorSchemaFor, type EditorField } from "../src/editor-schema";
 import { insightsDefaults, validateInsights, type EnergyInsightsOptions } from "../src/energy-insights/config";
-import { livePower, readActuals, readPurchasePlan } from "../src/energy-insights/data";
+import {
+  INSIGHTS_HISTORY_MAX_ENTITIES, INSIGHTS_HISTORY_MAX_STATES_PER_ENTITY,
+  INSIGHTS_HISTORY_REFRESH_MS, livePower, readActuals,
+  readMeteredActuals, readPurchasePlan,
+} from "../src/energy-insights/data";
 import { energyNumber, energyTime } from "../src/energy-format";
 import { sharedStyles } from "../src/styles";
 import { PLAN_FIELDS, PLAN_ROW_FIELDS, PLAN_METRIC_FIELDS, PLAN_PERIOD_FIELDS, INSIGHTS_FIELDS, INSIGHTS_CONSUMER_FIELDS, type NativeFields } from "../src/energy-editor-schema";
@@ -58,6 +62,43 @@ function hass(): HomeAssistant {
       "sensor.example_power": { entity_id: "sensor.example_power", state: "0.12", last_updated: new Date(now).toISOString(), attributes: { unit_of_measurement: "kW" } },
     },
   };
+}
+function meteredOptions(): EnergyInsightsOptions {
+  const configured = insightsDefaults();
+  configured.metered = {
+    solar: { entity: "sensor.solar_meter" },
+    gridImport: { entity: "sensor.import_meter" },
+    gridExport: { entity: "sensor.export_meter" },
+    batteryCharge: { entity: "sensor.battery_charge_meter" },
+    batteryDischarge: { entity: "sensor.battery_discharge_meter" },
+    importRate: { entity: "sensor.import_rate" },
+    exportRate: { entity: "sensor.export_rate" },
+  };
+  return configured;
+}
+function meterHistory(): unknown[][] {
+  const options = meteredOptions(), timeStart = Date.parse("2031-04-12T00:00:00Z");
+  return Object.values(options.metered).map((source, index) => {
+    const entityId = source.entity!;
+    const unit = index < 5 ? "kWh" : index === 5 || index === 6 ? "EUR/kWh" : "";
+    const readings = index === 0 ? [10, 12] : index === 1 ? [20, 24] : index === 2 ? [5, 6]
+      : index === 3 ? [1, 2] : index === 4 ? [1, 1.5] : index === 5 ? [.2, .2] : [.1, .1];
+    return readings.map((value, rowIndex) => ({
+      entity_id: entityId, state: String(value),
+      last_updated: new Date(rowIndex ? now : timeStart).toISOString(),
+      attributes: { unit_of_measurement: unit },
+    }));
+  });
+}
+function meteredHass(): HomeAssistant {
+  const h = hass();
+  for (const [index, source] of Object.values(meteredOptions().metered).entries()) {
+    h.states[source.entity!] = {
+      entity_id: source.entity!, state: String(index < 5 ? 10 : .2), last_updated: new Date(now).toISOString(),
+      attributes: { unit_of_measurement: index < 5 ? "kWh" : "EUR/kWh" },
+    };
+  }
+  return h;
 }
 type ActualRoot = { start: number; end: number; generated_at: number; home_kwh: number; solar_kwh: number; heat: number; baseline_end: number; intervals: Array<Record<string, number>> };
 const actualRoot = (h: HomeAssistant) => h.states["sensor.example_energy"].attributes.actuals as ActualRoot;
@@ -135,7 +176,7 @@ describe("native energy configuration", () => {
     expect(Object.keys(PLAN_ROW_FIELDS).sort()).toEqual([...Object.keys(planDefaults().rows[0]), "entity"].sort());
     expect(Object.keys(PLAN_METRIC_FIELDS).sort()).toEqual([...Object.keys(newMetric()), "entity", "field"].sort());
     expect(Object.keys(PLAN_PERIOD_FIELDS).sort()).toEqual(["name", "start", "end", "description", "metrics"].sort());
-    expect(Object.keys(INSIGHTS_FIELDS).sort()).toEqual([...Object.keys(insightsDefaults()), "currency", "homeEntity", "solarEntity", "gridEntity", "batteryEntity", "selfPoweredEntity"].sort());
+    expect(Object.keys(INSIGHTS_FIELDS).sort()).toEqual([...Object.keys(insightsDefaults()), "currency", "fixedExportRate", "homeEntity", "solarEntity", "gridEntity", "batteryEntity", "selfPoweredEntity"].sort());
     expect(Object.keys(INSIGHTS_CONSUMER_FIELDS)).toContain("strategyField");
     function check(fields: NativeFields) {
       for (const field of Object.values(fields)) {
@@ -209,18 +250,107 @@ describe("native energy configuration", () => {
 });
 
 describe("measured accounting and supplied purchase plans", () => {
+  it("keeps energy totals when tariffs cannot be priced and never reports a partial cost as complete", () => {
+    const h = meteredHass(), history = meterHistory();
+    history[5].splice(1, 0, { entity_id: "sensor.import_rate", state: ".3", last_updated: "2031-04-12T06:00:00Z", attributes: {} });
+    const data = readMeteredActuals(h, meteredOptions(), history, now).value!;
+    expect(data.imported).toBe(4);
+    expect(data.home).toBe(4.5);
+    expect(data.importCost).toBeUndefined();
+    expect(data.buckets).toEqual([]);
+    expect(data.exportCredit).toBeCloseTo(.1);
+    expect(data.warnings?.join()).toContain("align meter readings");
+    expect(data.intervals.find(item => item.imported)?.rate).toBeUndefined();
+  });
+  it("isolates missing meters and reports their own observation windows without inventing a household total", () => {
+    const h = meteredHass(), opt = meteredOptions();
+    delete h.states["sensor.solar_meter"];
+    const partial = readMeteredActuals(h, opt, meterHistory(), now).value!;
+    expect(partial.imported).toBe(4);
+    expect(partial.solar).toBeUndefined();
+    expect(partial.home).toBeUndefined();
+    expect(partial.coverage?.find(item => item.id === "solar")?.error).toContain("missing");
+    const history = meterHistory();
+    (history[0][1] as { last_updated: string }).last_updated = "2031-04-12T11:45:00Z";
+    const staggered = readMeteredActuals(meteredHass(), opt, history, now).value!;
+    expect(staggered.solar).toBe(2);
+    expect(staggered.home).toBeUndefined();
+    expect(staggered.warnings?.join()).toContain("observation windows differ");
+  });
+  it("supports explicitly absent equipment and fixed export credit, including negative and zero rates", () => {
+    const opt = meteredOptions();
+    opt.metered.solar = { absent: true };
+    opt.metered.batteryCharge = { absent: true };
+    opt.metered.batteryDischarge = { absent: true };
+    opt.metered.exportRate = {};
+    opt.fixedExportRate = -.05;
+    const data = readMeteredActuals(meteredHass(), opt, meterHistory(), now).value!;
+    expect(data.solar).toBe(0);
+    expect(data.home).toBe(3);
+    expect(data.exportCredit).toBeCloseTo(-.05);
+    expect(data.coverage?.find(item => item.id === "solar")?.absent).toBe(true);
+    opt.fixedExportRate = 0;
+    expect(readMeteredActuals(meteredHass(), opt, meterHistory(), now).value?.exportCredit).toBe(0);
+    expect(() => validateInsights({ type: "custom:mushroom-addition-energy-insights", energy_insights: {
+      ...opt, metered: { ...opt.metered, gridImport: { absent: true } },
+    } })).toThrow("Not installed");
+  });
+  it("reads consumer meters within the same batch and validates their coverage and household allocation", () => {
+    const h = meteredHass(), opt = meteredOptions();
+    opt.consumers = [{ id: "device", name: "Device", energySource: { entity: "sensor.device" } }];
+    h.states["sensor.device"] = { ...h.states["sensor.solar_meter"], entity_id: "sensor.device" };
+    const history = meterHistory();
+    history.push([
+      { entity_id: "sensor.device", state: "100", last_updated: "2031-04-12T00:00:00Z" },
+      { entity_id: "sensor.device", state: "102", last_updated: new Date(now).toISOString() },
+    ]);
+    const data = readMeteredActuals(h, opt, history, now).value!;
+    expect(data.consumers[0].energy).toBe(2);
+    expect(data.remainder).toBe(2.5);
+    (history[7][1] as { state: string }).state = "120";
+    const overcount = readMeteredActuals(h, opt, history, now).value!;
+    expect(overcount.consumers[0].energy).toBeUndefined();
+    expect(overcount.warnings?.join()).toContain("exceeds household");
+  });
+  it("supports compact HA history rows without mixing missing entities by array position", () => {
+    const opt = meteredOptions(), history = meterHistory();
+    const compact = Object.fromEntries(Object.values(opt.metered).map((source, index) => [
+      source.entity, history[index].map(raw => {
+        const row = raw as { state: string; last_updated: string; attributes: object };
+        return { s: row.state, lu: Date.parse(row.last_updated) / 1000, a: row.attributes };
+      }),
+    ]));
+    expect(readMeteredActuals(meteredHass(), opt, compact, now).value?.imported).toBe(4);
+    const missing = readMeteredActuals(meteredHass(), opt, history.slice(1), now).value!;
+    expect(missing.solar).toBeUndefined();
+    expect(missing.imported).toBe(4);
+  });
+  it("allows a quantity-and-rate plan without undisplayed battery and allocation mappings", () => {
+    const h = hass(), opt = options();
+    opt.showPlanBattery = opt.showPlanAllocations = opt.showPlanEfficiency = opt.showForecasts = false;
+    planRoot(h).blocks = [{ start: now, end: now + 3600000, quantity_kwh: 3, rate: .2 }];
+    const root = h.states["sensor.example_energy"].attributes.plan as Record<string, unknown>;
+    delete root.battery_min; delete root.battery_reserve; delete root.charge_efficiency;
+    const plan = readPurchasePlan(h, opt, now).value!;
+    expect(plan.quantity).toBe(3);
+    expect(plan.cost).toBeCloseTo(.6);
+    expect(plan.batteryMin).toBeUndefined();
+    expect(plan.blocks[0].battery).toBeUndefined();
+    opt.showPlanEfficiency = true;
+    expect(readPurchasePlan(h, opt, now).error).toContain("charge_efficiency");
+  });
   it("reconciles home separately from battery input and calculates weighted interval costs", () => {
     const actual = readActuals(hass(), options(), now).value!;
     expect(actual.imported).toBe(7); expect(actual.exported).toBe(2);
     expect(actual.importCost).toBeCloseTo(1.5); expect(actual.exportCredit).toBeCloseTo(.1);
-    expect(actual.importCost / actual.imported).toBeCloseTo(1.5 / 7);
+    expect(actual.importCost! / actual.imported!).toBeCloseTo(1.5 / 7);
     expect(actual.home).toBe(10); expect(actual.batteryCharge).toBe(2);
     expect(actual.remainder).toBe(6); expect(actual.consumers[0].baseline).toBe(3);
     expect(actual.buckets).toEqual([{ rate: .1, quantity: 3, cost: .3 }, { rate: .3, quantity: 4, cost: 1.2 }].map(bucket => expect.objectContaining({ rate: bucket.rate, quantity: bucket.quantity, cost: expect.closeTo(bucket.cost) })));
     const plan = readPurchasePlan(hass(), options(), now).value!;
     expect(plan.quantity).toBe(7); expect(plan.cost).toBeCloseTo(.8);
     expect(plan.blocks[0]).toMatchObject({ home: 1, ev: 2, battery: 3, target: 57 });
-    expect(plan.blocks[0].battery * plan.efficiency).toBeCloseTo(2.82);
+    expect(plan.blocks[0].battery! * plan.efficiency!).toBeCloseTo(2.82);
     expect(plan.consumers[0]).toMatchObject({ energy: 7.8, strategy: "Supplied example strategy" });
   });
   it.each(["gap", "overlap", "missing-rate", "negative-energy", "wrong-baseline", "overcount", "imbalance"])("rejects %s instead of calculating misleading actuals", kind => {
@@ -242,6 +372,79 @@ describe("measured accounting and supplied purchase plans", () => {
     const mapped = { ...options(), actualSource: { ...options().actualSource, fields: { interval_rate: "unit_price" } } };
     expect(readActuals(h, mapped, now).value?.importCost).toBeCloseTo(1.5);
   });
+  it("calculates measured totals from cumulative meters and timestamped prices", () => {
+    const h = hass(), configured = meteredOptions();
+    for (const [index, source] of Object.values(configured.metered).entries()) {
+      h.states[source.entity!] = {
+        entity_id: source.entity!, state: "ready", last_updated: new Date(now).toISOString(),
+        attributes: { unit_of_measurement: index < 5 ? "kWh" : "EUR/kWh" },
+      };
+    }
+    const actual = readMeteredActuals(h, configured, meterHistory(), now).value!;
+    expect(actual.start).toBe(Date.parse("2031-04-12T00:00:00Z"));
+    expect(actual.home).toBeCloseTo(4.5);
+    expect(actual.solar).toBe(2); expect(actual.imported).toBe(4); expect(actual.exported).toBe(1);
+    expect(actual.batteryCharge).toBe(1); expect(actual.batteryDischarge).toBe(.5);
+    expect(actual.importCost).toBeCloseTo(.8); expect(actual.exportCredit).toBeCloseTo(.1);
+    expect(actual.exportRateConfigured).toBe(true);
+    expect(actual.buckets).toEqual([{ rate: .2, quantity: 4, cost: .8 }]);
+    configured.metered.exportRate = {};
+    const withoutExportRate = readMeteredActuals(h, configured, meterHistory(), now).value!;
+    expect(withoutExportRate.exportRateConfigured).toBe(false);
+    expect(withoutExportRate.exportCredit).toBeUndefined();
+    configured.metered.solar.field = "total";
+    const mappedHistory = meterHistory();
+    for (const row of mappedHistory[0]) {
+      const state = row as { state: string; attributes: Record<string, unknown> };
+      state.attributes.total = state.state;
+    }
+    expect(readMeteredActuals(h, configured, mappedHistory, now).value?.solar).toBe(2);
+    h.config!.time_zone = "Europe/Amsterdam";
+    const localHistory = meterHistory();
+    for (const group of localHistory) {
+      const first = group[0] as { last_updated: string };
+      first.last_updated = "2031-04-11T22:00:00Z";
+    }
+    expect(readMeteredActuals(h, meteredOptions(), localHistory, now).value?.start)
+      .toBe(Date.parse("2031-04-11T22:00:00Z"));
+  });
+  it("requires configured, healthy meters, supported units, midnight coverage, and aligned tariff intervals", () => {
+    const h = hass(), configured = meteredOptions(), history = meterHistory();
+    const warnings = (opt: EnergyInsightsOptions, rows: unknown) =>
+      readMeteredActuals(h, opt, rows, now).value?.warnings?.join(" ");
+    expect(warnings(insightsDefaults(), history)).toContain("solar");
+    for (const [index, source] of Object.values(configured.metered).entries()) {
+      h.states[source.entity!] = {
+        entity_id: source.entity!, state: "ready", last_updated: new Date(now).toISOString(),
+        attributes: { unit_of_measurement: index < 5 ? "kWh" : "EUR/kWh" },
+      };
+    }
+    configured.metered.gridExport.entity = "sensor.missing_export_meter";
+    expect(warnings(configured, history)).toContain("missing or unavailable");
+    configured.metered.gridExport.entity = "sensor.export_meter";
+    h.states["sensor.solar_meter"].attributes.unit_of_measurement = "W";
+    expect(warnings(configured, history)).toContain("cumulative Wh, kWh, or MWh");
+    h.states["sensor.solar_meter"].attributes.unit_of_measurement = "kWh";
+    expect(warnings(configured, [[], ...history.slice(1)])).toContain("no cumulative reading at the start");
+    const crossedMidnight = meterHistory();
+    crossedMidnight[0][0] = { ...(crossedMidnight[0][0] as object), last_updated: "2031-04-11T23:59:00Z" };
+    expect(warnings(configured, crossedMidnight)).toContain("crossed midnight");
+    const resetMeter = meterHistory();
+    (resetMeter[0][1] as { state: string }).state = "9";
+    expect(warnings(configured, resetMeter)).toContain("meter reset or decreased");
+    const changedTariff = meterHistory();
+    changedTariff[5].splice(1, 0, {
+      entity_id: "sensor.import_rate", state: ".3", last_updated: "2031-04-12T06:00:00Z",
+      attributes: { unit_of_measurement: "EUR/kWh" },
+    });
+    expect(warnings(configured, changedTariff)).toContain("price change falls inside");
+    const oversizedHistory = meterHistory();
+    oversizedHistory[0] = Array.from({ length: INSIGHTS_HISTORY_MAX_STATES_PER_ENTITY + 1 }, () => ({
+      entity_id: "sensor.solar_meter", state: "10", last_updated: "2031-04-12T00:00:00Z",
+      attributes: { unit_of_measurement: "kWh" },
+    }));
+    expect(warnings(configured, oversizedHistory)).toContain("10000-state limit");
+  });
   it("handles negative prices, zero import and zero home without NaN totals", () => {
     const h = hass(), root = actualRoot(h);
     root.intervals[0].rate = -.1;
@@ -251,10 +454,10 @@ describe("measured accounting and supplied purchase plans", () => {
     expect(readActuals(h, options(), now).value?.importCost).toBe(0);
   });
   it("does not substitute synthetic fixtures on unconfigured, stale, unavailable or invalid sources", () => {
-    expect(readActuals(hass(), insightsDefaults(), now).error).toBe("Source missing");
+    expect(readActuals(hass(), insightsDefaults(), now).error).toContain("Measured snapshot source");
     expect(readActuals(hass(), options(), now + 7200000).error).toBe("Stale data source");
     const h = hass(); h.states["sensor.example_energy"].state = "unavailable";
-    expect(readPurchasePlan(h, options(), now).error).toBe("Source missing");
+    expect(readPurchasePlan(h, options(), now).error).toContain("Plan source");
     h.states["sensor.example_energy"].state = "ready";
     planRoot(h).charge_efficiency = 2;
     expect(readPurchasePlan(h, options(), now).error).toContain("charge_efficiency");
@@ -293,6 +496,156 @@ describe("measured accounting and supplied purchase plans", () => {
 });
 
 describe("energy rendering and HA lifecycle", () => {
+  it("keeps measured energy, live power and comparison separate in responsive consumer rows", async () => {
+    clock();
+    const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
+    card.hass = hass();
+    card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: options() });
+    document.body.append(card); await card.updateComplete;
+    const root = card.shadowRoot!, row = root.querySelector(".consumer-row")!;
+    expect(row.querySelector(".consumer-name")?.textContent).toContain(options().consumers[0].name);
+    expect(row.querySelector(".consumer-power")?.textContent).toContain("Now");
+    expect(row.querySelector(".consumer-energy")?.textContent).toContain("kWh");
+    expect(row.querySelector(".variance")?.textContent).toContain("Same-window plan");
+    const chart = root.querySelector(".chart-scroll")!;
+    expect(chart.getAttribute("tabindex")).toBe("0");
+    expect(chart.getAttribute("role")).toBe("region");
+    expect(chart.getAttribute("aria-label")).toBe("Metered intervals");
+    expect(chart.querySelectorAll(".measured-chart rect").length).toBeGreaterThan(0);
+    root.querySelectorAll<HTMLButtonElement>('[role=tab]')[1].click();
+    await card.updateComplete;
+    expect(root.querySelectorAll(".consumer-row")).toHaveLength(options().consumers.length);
+    expect(root.querySelectorAll(".allocation-metrics > div")).toHaveLength(3);
+  });
+  it("disposes pending-request timers when removed without reporting cancelled work as a failure", async () => {
+    clock();
+    const warning = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const h = meteredHass();
+    h.callWS = async <T>() => await new Promise<T>(() => undefined);
+    const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
+    card.hass = h; card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: meteredOptions() });
+    document.body.append(card); await card.updateComplete;
+    expect(vi.getTimerCount()).toBe(3);
+    card.remove(); await vi.advanceTimersByTimeAsync(0);
+    expect(vi.getTimerCount()).toBe(0);
+    expect(warning).not.toHaveBeenCalled();
+  });
+  it("pins the plan inspector with keyboard navigation without selecting the exclusive end", async () => {
+    clock();
+    const card = document.createElement("mushroom-addition-energy-plan") as EnergyPlanCard;
+    card.hass = hass(); card.setConfig(planConfig()); document.body.append(card);
+    await card.updateComplete;
+    const timeline = card.shadowRoot!.querySelector(".timeline[tabindex]")!;
+    const slider = card.shadowRoot!.querySelector<HTMLInputElement>(".inspector input")!;
+    timeline.dispatchEvent(new KeyboardEvent("keydown", { key: "End", bubbles: true }));
+    await card.updateComplete;
+    expect(slider.value).toBe("999");
+    timeline.dispatchEvent(new KeyboardEvent("keydown", { key: "Home", bubbles: true }));
+    await card.updateComplete;
+    expect(slider.value).toBe("0");
+    timeline.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+    await card.updateComplete;
+    expect(slider.value).toBe("10");
+    expect(card.getGridOptions().min_columns).toBe(12);
+  });
+  it("keeps successful measurements and reports a bounded request timeout", async () => {
+    clock();
+    const warning = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const h = meteredHass(), configured = meteredOptions();
+    const callWS = vi.fn<(message: Record<string, unknown>) => Promise<unknown>>()
+      .mockResolvedValueOnce(meterHistory()).mockImplementation(() => new Promise(() => undefined));
+    h.callWS = async <T>(message: Record<string, unknown>) => await callWS(message) as T;
+    const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
+    card.hass = h; card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: configured });
+    document.body.append(card);
+    await card.updateComplete; await vi.advanceTimersByTimeAsync(0); await card.updateComplete;
+    expect(card.shadowRoot!.textContent).toContain("4.5 kWh");
+    await vi.advanceTimersByTimeAsync(INSIGHTS_HISTORY_REFRESH_MS + 30000);
+    await card.updateComplete;
+    expect(card.shadowRoot!.textContent).toContain("4.5 kWh");
+    expect(card.shadowRoot!.textContent).toContain("timed out after 30 seconds");
+    expect(warning).toHaveBeenCalledOnce();
+    card.remove();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+  it("refreshes a replaced connection and ignores the displaced request result", async () => {
+    clock();
+    const h = meteredHass();
+    let finish: (value: unknown) => void = () => undefined;
+    const pending = new Promise<unknown>(resolve => { finish = resolve; });
+    h.callWS = async <T>() => await pending as T;
+    const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
+    card.hass = h; card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: meteredOptions() });
+    document.body.append(card); await card.updateComplete;
+    const replacement = vi.fn(async () => meterHistory());
+    card.hass = { ...h, callWS: async <T>() => await replacement() as T };
+    await card.updateComplete; await Promise.resolve(); await card.updateComplete;
+    expect(replacement).toHaveBeenCalledOnce();
+    const old = meterHistory();
+    (old[0][1] as { state: string }).state = "100";
+    finish(old); await Promise.resolve(); await Promise.resolve(); await card.updateComplete;
+    expect(card.shadowRoot!.textContent).toContain("4.5 kWh");
+    expect(card.shadowRoot!.textContent).not.toContain("92.5 kWh");
+    card.remove();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+  it("batches all 32 consumer meters with base sources and reports the actual request load", async () => {
+    clock();
+    const h = meteredHass(), configured = meteredOptions(), rows = meterHistory();
+    configured.consumers = Array.from({ length: 32 }, (_, index) => {
+      const entity = `sensor.consumer_${index}`;
+      h.states[entity] = { entity_id: entity, state: "0", last_updated: new Date(now).toISOString(), attributes: { unit_of_measurement: "kWh" } };
+      rows.push([0, 1].map(position => ({
+        entity_id: entity, state: "0", last_updated: new Date(position ? now : Date.parse("2031-04-12T00:00:00Z")).toISOString(),
+        attributes: { unit_of_measurement: "kWh" },
+      })));
+      return { id: `consumer_${index}`, name: `Consumer ${index}`, energySource: { entity } };
+    });
+    const callWS = vi.fn<(message: Record<string, unknown>) => Promise<unknown[][]>>(async () => rows);
+    h.callWS = async <T>(message: Record<string, unknown>) => await callWS(message) as T;
+    const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
+    card.hass = h; card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: configured });
+    document.body.append(card); await card.updateComplete; await vi.advanceTimersByTimeAsync(0); await card.updateComplete;
+    expect(callWS).toHaveBeenCalledOnce();
+    expect(callWS.mock.calls[0][0].entity_ids).toHaveLength(INSIGHTS_HISTORY_MAX_ENTITIES);
+    expect(card.shadowRoot!.querySelector(".diagnostics")?.textContent).toMatch(/39 Sources · 78 State/);
+    expect(card.getGridOptions().min_columns).toBe(12);
+    card.remove();
+  });
+  it("batches and caches Recorder history within the documented refresh budget", async () => {
+    clock();
+    const h = hass(), configured = meteredOptions();
+    const callWS = vi.fn<(message: Record<string, unknown>) => Promise<unknown[][]>>(async () => meterHistory());
+    h.callWS = async <T>(message: Record<string, unknown>) => await callWS(message) as T;
+    for (const [index, source] of Object.values(configured.metered).entries()) {
+      h.states[source.entity!] = {
+        entity_id: source.entity!, state: "ready", last_updated: new Date(now).toISOString(),
+        attributes: { unit_of_measurement: index < 5 ? "kWh" : "EUR/kWh" },
+      };
+    }
+    const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
+    card.hass = h;
+    card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: configured });
+    document.body.append(card);
+    await card.updateComplete;
+    await Promise.resolve();
+    await card.updateComplete;
+    expect(callWS).toHaveBeenCalledTimes(1);
+    const request = callWS.mock.calls[0][0] as Record<string, unknown>;
+    expect(request.type).toBe("history/history_during_period");
+    expect((request.entity_ids as string[])).toHaveLength(7);
+    expect((request.entity_ids as string[]).length).toBeLessThanOrEqual(INSIGHTS_HISTORY_MAX_ENTITIES);
+    expect(request.significant_changes_only).toBe(false);
+    card.requestUpdate();
+    await card.updateComplete;
+    expect(callWS).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(INSIGHTS_HISTORY_REFRESH_MS - 1);
+    expect(callWS).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1);
+    await Promise.resolve();
+    expect(callWS).toHaveBeenCalledTimes(2);
+    card.remove();
+  });
   it("does not stretch shared headings to fill the entire card or editor preview", () => {
     expect(sharedStyles.cssText).toContain(".mushroom-addition-card > .action-surface:not(.energy-heading) { min-height: 100%; }");
     expect(sharedStyles.cssText).toContain(".energy-heading.action-surface { height: auto; min-height: 0; }");
@@ -341,6 +694,32 @@ describe("energy rendering and HA lifecycle", () => {
     const card = new EnergyPlanCard();
     expect(() => card.setConfig({ type: "custom:mushroom-addition-energy-plan", visibleHours: 0 })).toThrow("visibleHours");
   });
+  it("requests full section width for the Energy Plan timeline", () => {
+    expect(new EnergyPlanCard().getGridOptions()).toEqual({
+      columns: "full", rows: "auto", min_columns: 12, max_columns: 12, min_rows: 3,
+    });
+  });
+  it("groups adjacent price intervals by configured color band and retains their source range", () => {
+    const row = planDefaults().rows[0];
+    const intervals = [
+      { start: now, end: now + 1, value: .20 },
+      { start: now + 1, end: now + 2, value: .25 },
+      { start: now + 2, end: now + 3, value: .31 },
+      { start: now + 3, end: now + 4, value: .28 },
+    ];
+    expect(displayPriceIntervals(row, intervals)).toMatchObject([
+      { start: now, end: now + 2, minimum: .20, maximum: .25 },
+      { start: now + 2, end: now + 3, minimum: .31, maximum: .31 },
+      { start: now + 3, end: now + 4, minimum: .28, maximum: .28 },
+    ]);
+  });
+  it("scales solar bars to the visible forecast while preserving configured scales on other power rows", () => {
+    const rows = planDefaults().rows;
+    const intervals = [{ start: now, end: now + 1, value: .53 }, { start: now + 1, end: now + 2, value: .2 }];
+    expect(displayPowerScale(rows[1], intervals)).toBe(.53);
+    expect(displayPowerScale(rows[1], [])).toBe(rows[1].scale);
+    expect(displayPowerScale(rows[5], intervals)).toBe(rows[5].scale);
+  });
   it("keeps dense timeline labels readable without dropping the configured grid ticks", async () => {
     clock();
     const config = planConfig();
@@ -348,7 +727,7 @@ describe("energy rendering and HA lifecycle", () => {
     config.energy_plan!.axisStep = 1;
     const card = new EnergyPlanCard(); card.hass = hass(); card.setConfig(config);
     document.body.append(card); await card.updateComplete;
-    expect(card.shadowRoot!.querySelectorAll(".grid")).toHaveLength(169);
+    expect(card.shadowRoot!.querySelectorAll(".timeline-body > .grid")).toHaveLength(169);
     expect(card.shadowRoot!.querySelectorAll(".axis").length).toBeLessThanOrEqual(14);
     expect(card.shadowRoot!.querySelector(".axis")?.getAttribute("text-anchor")).toBe("start");
     expect([...card.shadowRoot!.querySelectorAll(".axis")].at(-1)?.getAttribute("text-anchor")).toBe("end");
@@ -367,10 +746,14 @@ describe("energy rendering and HA lifecycle", () => {
   });
   it("renders escaped timeline labels, gaps, metrics and configured row order", async () => {
     clock();
-    const c = planConfig(); c.energy_plan!.rows[0].name = "<img onerror=alert(1)>";
+    const c = planConfig();
+    c.energy_plan!.rows[0].name = "<img onerror=alert(1)>";
+    c.energy_plan!.rows[1].name = "Planned grid charging";
     c.energy_plan!.metrics = [{ ...newMetric(), entity: "sensor.example_power" }];
     const card = new EnergyPlanCard(); card.hass = hass(); card.setConfig(c); document.body.append(card); await card.updateComplete;
-    expect(card.shadowRoot!.querySelectorAll(".row-label")).toHaveLength(7);
+    const labels = card.shadowRoot!.querySelectorAll(".row-label");
+    expect(labels).toHaveLength(7);
+    expect(labels[1].querySelector("span")?.textContent).toBe("Planned grid charging");
     expect(card.shadowRoot!.querySelector("img")).toBeNull();
     expect(card.shadowRoot!.querySelector(".metric-value")?.textContent).toContain("0.12");
     const slider = card.shadowRoot!.querySelector<HTMLInputElement>("input")!;
@@ -419,7 +802,7 @@ describe("energy rendering and HA lifecycle", () => {
     expect(insight.shadowRoot!.querySelector("[role=alert]")).not.toBeNull();
     expect(plan.shadowRoot!.textContent).toContain("Stale data source");
     insight.remove(); plan.remove();
-    expect(clear).toHaveBeenCalledTimes(2);
+    expect(clear).toHaveBeenCalledTimes(3);
   });
   it("does not break the valid plan when actuals fail, and uses a strict active threshold", async () => {
     clock();

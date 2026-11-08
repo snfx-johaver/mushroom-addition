@@ -64,3 +64,28 @@ export function displayIntervals(row: PlanRow, intervals: TimeInterval[]): Array
   }
   return result;
 }
+
+export function displayPriceIntervals(row: PlanRow, intervals: TimeInterval[]): Array<TimeInterval & { minimum: number; maximum: number }> {
+  const result: Array<TimeInterval & { minimum: number; maximum: number }> = [];
+  for (const item of intervals) {
+    const previous = result.at(-1);
+    const band = (value: number) => value <= row.low ? "low" : value >= row.high ? "high" : "middle";
+    if (previous && previous.end === item.start && band(previous.value) === band(item.value)) {
+      previous.end = item.end;
+      previous.minimum = Math.min(previous.minimum, item.value);
+      previous.maximum = Math.max(previous.maximum, item.value);
+    } else result.push({ ...item, minimum: item.value, maximum: item.value });
+  }
+  return result;
+}
+
+export function displayPowerScale(row: PlanRow, intervals: TimeInterval[]): number {
+  if (row.id !== "solar" || row.kind !== "power") return row.scale;
+  const maximum = intervals.reduce((value, item) => Math.max(value, Math.abs(item.value)), 0);
+  return maximum > 0 ? maximum : row.scale;
+}
+
+export function rowCoverage(data: RowData, start: number, end: number): number {
+  if (end <= start || data.error) return 0;
+  return data.intervals.reduce((sum, item) => sum + Math.max(0, Math.min(end, item.end) - Math.max(start, item.start)), 0) / (end - start);
+}

@@ -74,8 +74,26 @@ export const PLAN_FIELDS = defaults({
 }, planDefaults());
 export const INSIGHTS_CONSUMER_FIELDS: NativeFields = {
   id: { ...text("ID"), required: true }, ...appearance,
-  entity: entity("Power sensor"), energyField: { ...text("Measured energy field"), required: true },
+  entity: entity("Power sensor"), energyField: text("Measured energy field"),
+  energySource: { label: "Consumer energy sensor", selector: nativeObject({
+    entity: entity("Source"), field: text("Field"),
+  }) },
   baselineField: text("Same-window plan field"), forecastField: text("Forecast energy field"), strategyField: text("Strategy field"),
+};
+const METER_SOURCE_FIELDS: NativeFields = {
+  entity: entity("Source"), field: text("Field"),
+};
+const EQUIPMENT_SOURCE_FIELDS: NativeFields = {
+  ...METER_SOURCE_FIELDS, absent: { label: "Not installed", selector: { boolean: {} } },
+};
+const METERED_SOURCE_FIELDS: NativeFields = {
+  solar: { label: "Solar generated", selector: nativeObject(EQUIPMENT_SOURCE_FIELDS) },
+  gridImport: { label: "Imported", selector: nativeObject(METER_SOURCE_FIELDS) },
+  gridExport: { label: "Exported", selector: nativeObject(EQUIPMENT_SOURCE_FIELDS) },
+  batteryCharge: { label: "Battery input", selector: nativeObject(EQUIPMENT_SOURCE_FIELDS) },
+  batteryDischarge: { label: "Battery output", selector: nativeObject(EQUIPMENT_SOURCE_FIELDS) },
+  importRate: { label: "Unit rate", selector: nativeObject(METER_SOURCE_FIELDS) },
+  exportRate: { label: "Export rate", selector: nativeObject(METER_SOURCE_FIELDS) },
 };
 export const ACTUAL_FIELD_NAMES = [
   "start", "end", "generated_at", "currency", "home_kwh", "solar_kwh", "battery_charge_kwh", "battery_discharge_kwh",
@@ -85,7 +103,7 @@ export const ACTUAL_FIELD_NAMES = [
 export const PURCHASE_FIELD_NAMES = [
   "start", "end", "generated_at", "currency", "home_kwh", "solar_kwh", "battery_min", "battery_reserve", "charge_efficiency",
   "blocks", "block_start", "block_end", "block_home_kwh", "block_ev_kwh", "block_battery_kwh", "block_rate",
-  "block_target", "block_reason", "block_detail",
+  "block_target", "block_reason", "block_detail", "block_quantity_kwh",
 ] as const;
 const sourceLabels: Record<string, string> = {
   start: "Start", end: "End", generated_at: "Updated", currency: "Currency code",
@@ -98,6 +116,7 @@ const sourceLabels: Record<string, string> = {
   blocks: "Planned blocks", block_start: "Start", block_end: "End", block_home_kwh: "Direct home use",
   block_ev_kwh: "EV input (AC)", block_battery_kwh: "Battery input (AC)", block_rate: "Unit rate",
   block_target: "Battery target", block_reason: "Reason", block_detail: "Description",
+  block_quantity_kwh: "Energy bought",
 };
 const sourceFields = (fields: readonly string[]): NativeFields => ({
   entity: entity("Source"), path: text("Path"),
@@ -108,9 +127,24 @@ const sourceFields = (fields: readonly string[]): NativeFields => ({
   },
 });
 export const INSIGHTS_FIELDS = defaults({
-  actualSource: { label: "Measured source", selector: nativeObject(sourceFields(ACTUAL_FIELD_NAMES)) },
-  planSource: { label: "Plan source", selector: nativeObject(sourceFields(PURCHASE_FIELD_NAMES)) },
+  actualSource: {
+    label: "Measured source", description: "Optional legacy snapshot; leave empty to use the configured meter sensors.",
+    selector: nativeObject(sourceFields(ACTUAL_FIELD_NAMES)),
+  },
+  metered: {
+    label: "Metered intervals", description: "Cumulative energy and timestamped price sensors; used when Measured source is empty.",
+    selector: nativeObject(METERED_SOURCE_FIELDS),
+  },
+  planSource: {
+    label: "Plan source",
+    description: "Supplied plan; not measured or executed.",
+    selector: nativeObject(sourceFields(PURCHASE_FIELD_NAMES)),
+  },
   currency: text("Currency code"),
+  fixedExportRate: number("Fixed export rate", -1000000, 1000000),
+  showPlanBattery: { label: "Show planned battery details", selector: { boolean: {} } },
+  showPlanAllocations: { label: "Show purchase allocations", selector: { boolean: {} } },
+  showPlanEfficiency: { label: "Show charge efficiency", selector: { boolean: {} } },
   maxAgeMinutes: number("Maximum source age (minutes)", 1, 10080),
   activeThreshold: number("Active threshold (W)", 0, 1000000),
   sort: select("Sort consumers", ["energy", "power"]),

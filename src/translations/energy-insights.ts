@@ -1,5 +1,43 @@
 import { translationTable } from "./table";
 
+export const energyInsightsSetup = translationTable([
+  "Not installed", "Consumer energy sensor", "Fixed export rate",
+  "Show planned battery details", "Show purchase allocations", "Show charge efficiency",
+], {
+  ar: "غير مثبت|مستشعر طاقة المستهلك|تعرفة تصدير ثابتة|إظهار تفاصيل البطارية المخططة|إظهار توزيع المشتريات|إظهار كفاءة الشحن",
+  bg: "Не е инсталирано|Енергиен сензор на потребителя|Фиксирана цена за износ|Показване на планираните данни за батерията|Показване на разпределението на покупките|Показване на ефективността на зареждане",
+  ca: "No instal·lat|Sensor d'energia del consumidor|Tarifa fixa d'exportació|Mostra els detalls de bateria previstos|Mostra les assignacions de compra|Mostra l'eficiència de càrrega",
+  cs: "Nenainstalováno|Senzor energie spotřebiče|Pevná cena dodávky|Zobrazit plánované údaje baterie|Zobrazit rozdělení nákupů|Zobrazit účinnost nabíjení",
+  da: "Ikke installeret|Forbrugerens energisensor|Fast eksportpris|Vis planlagte batteridetaljer|Vis fordeling af køb|Vis ladeeffektivitet",
+  de: "Nicht installiert|Energiesensor des Verbrauchers|Fester Einspeisetarif|Geplante Batteriedetails anzeigen|Kaufaufteilung anzeigen|Ladewirkungsgrad anzeigen",
+  el: "Δεν έχει εγκατασταθεί|Αισθητήρας ενέργειας καταναλωτή|Σταθερή τιμή εξαγωγής|Εμφάνιση προγραμματισμένων στοιχείων μπαταρίας|Εμφάνιση κατανομής αγορών|Εμφάνιση απόδοσης φόρτισης",
+  es: "No instalado|Sensor de energía del consumidor|Tarifa fija de exportación|Mostrar detalles previstos de batería|Mostrar asignaciones de compras|Mostrar eficiencia de carga",
+  fi: "Ei asennettu|Kuluttajan energia-anturi|Kiinteä vientihinta|Näytä suunnitellut akkutiedot|Näytä ostojen kohdistukset|Näytä lataushyötysuhde",
+  fr: "Non installé|Capteur d'énergie du consommateur|Tarif d'exportation fixe|Afficher les détails de batterie prévus|Afficher la répartition des achats|Afficher le rendement de charge",
+  he: "לא מותקן|חיישן אנרגיה של צרכן|תעריף יצוא קבוע|הצגת פרטי סוללה מתוכננים|הצגת הקצאות רכישה|הצגת יעילות טעינה",
+  hu: "Nincs telepítve|Fogyasztó energiaszenzora|Rögzített exporttarifa|Tervezett akkumulátoradatok megjelenítése|Vásárlási elosztás megjelenítése|Töltési hatásfok megjelenítése",
+  id: "Tidak terpasang|Sensor energi konsumen|Tarif ekspor tetap|Tampilkan rincian baterai terencana|Tampilkan alokasi pembelian|Tampilkan efisiensi pengisian",
+  it: "Non installato|Sensore di energia del consumatore|Tariffa fissa di esportazione|Mostra dettagli batteria previsti|Mostra ripartizione acquisti|Mostra efficienza di carica",
+  "ko-KR": "설치되지 않음|소비 기기 에너지 센서|고정 수출 요금|계획된 배터리 세부 정보 표시|구매 할당 표시|충전 효율 표시",
+  nb: "Ikke installert|Forbrukerens energisensor|Fast eksportpris|Vis planlagte batteridetaljer|Vis kjøpsfordeling|Vis ladeeffektivitet",
+  nl: "Niet geïnstalleerd|Energiesensor van verbruiker|Vast teruglevertarief|Geplande batterijgegevens tonen|Inkoopverdeling tonen|Laadrendement tonen",
+  pl: "Nie zainstalowano|Czujnik energii odbiornika|Stała stawka eksportu|Pokaż planowane dane baterii|Pokaż podział zakupów|Pokaż sprawność ładowania",
+  "pt-BR": "Não instalado|Sensor de energia do consumidor|Tarifa fixa de exportação|Mostrar detalhes previstos da bateria|Mostrar alocações de compras|Mostrar eficiência de carga",
+  "pt-PT": "Não instalado|Sensor de energia do consumidor|Tarifa fixa de exportação|Mostrar detalhes planeados da bateria|Mostrar distribuição de compras|Mostrar eficiência de carga",
+  ro: "Neinstalat|Senzor de energie al consumatorului|Tarif fix de export|Arată detaliile planificate ale bateriei|Arată alocările achizițiilor|Arată eficiența încărcării",
+  ru: "Не установлено|Датчик энергии потребителя|Фиксированный тариф экспорта|Показывать плановые данные батареи|Показывать распределение покупок|Показывать эффективность зарядки",
+  sk: "Nenainštalované|Senzor energie spotrebiča|Pevná cena dodávky|Zobraziť plánované údaje batérie|Zobraziť rozdelenie nákupov|Zobraziť účinnosť nabíjania",
+  sl: "Ni nameščeno|Senzor energije porabnika|Fiksna izvozna tarifa|Pokaži načrtovane podatke baterije|Pokaži razporeditev nakupov|Pokaži učinkovitost polnjenja",
+  sr: "Није инсталирано|Сензор енергије потрошача|Фиксна извозна тарифа|Прикажи планиране податке батерије|Прикажи расподелу куповина|Прикажи ефикасност пуњења",
+  "sr-Latn": "Nije instalirano|Senzor energije potrošača|Fiksna izvozna tarifa|Prikaži planirane podatke baterije|Prikaži raspodelu kupovina|Prikaži efikasnost punjenja",
+  sv: "Inte installerat|Förbrukarens energisensor|Fast exportpris|Visa planerade batteridetaljer|Visa inköpsfördelning|Visa laddningseffektivitet",
+  tr: "Kurulu değil|Tüketici enerji sensörü|Sabit dışa verme tarifesi|Planlanan batarya ayrıntılarını göster|Satın alma dağılımını göster|Şarj verimliliğini göster",
+  uk: "Не встановлено|Датчик енергії споживача|Фіксований тариф експорту|Показувати планові дані батареї|Показувати розподіл покупок|Показувати ефективність заряджання",
+  vi: "Chưa lắp đặt|Cảm biến năng lượng thiết bị tiêu thụ|Giá xuất điện cố định|Hiển thị chi tiết pin dự kiến|Hiển thị phân bổ mua điện|Hiển thị hiệu suất sạc",
+  "zh-Hans": "未安装|用电设备能量传感器|固定上网电价|显示计划电池详情|显示购电分配|显示充电效率",
+  "zh-Hant": "未安裝|用電設備能量感測器|固定上網電價|顯示計畫電池詳情|顯示購電分配|顯示充電效率",
+});
+
 export const energyInsightsTranslations = translationTable([
   "Today so far", "Upcoming plan", "Consumers", "Measured purchases", "Planned grid purchase",
   "Home consumption", "Solar generated", "Weighted average", "Net variable grid spend", "Same-window plan",

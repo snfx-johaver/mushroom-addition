@@ -47,7 +47,7 @@ export class MushroomAdditionCard extends LitElement {
     return { type: "custom:mushroom-addition-card-battery", show_icon: true, show_state: true };
   }
 
-  public getGridOptions(): { columns: number; rows: "auto"; min_columns: number; min_rows: number } {
+  public getGridOptions(): { columns: number | "full"; rows: "auto"; min_columns: number; min_rows: number } {
     return { columns: 12, rows: "auto", min_columns: 3, min_rows: 1 };
   }
 

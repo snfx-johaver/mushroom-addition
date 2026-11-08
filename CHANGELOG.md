@@ -4,6 +4,23 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Improve Energy Plan's full-width timeline with sticky labels and time axis,
+  readable price blocks and ranges, visible power scales and direction labels,
+  published coverage, and tap/keyboard interval inspection.
+- Add standalone cumulative-meter sources and visual-editor field mappings for
+  measured solar, grid, battery and consumer energy, retaining legacy snapshots.
+- Keep valid energy totals visible when pricing or individual sources fail; add
+  explicit absent-equipment settings, fixed feed-in rates and source diagnostics.
+- Make supplied-plan battery, allocation and efficiency details configurable
+  without mixing forecast values with measured energy or executing device actions.
+- Add a measured interval chart and bounded cached history refreshes with timeout,
+  stale-response protection and request-load diagnostics.
+- Adapt both energy cards to narrow containers with readable consumer rows,
+  touch-sized controls, stacked details and internally scrolling charts/tables,
+  preserving full-width desktop layouts.
+- Update energy documentation, localized editor labels, synthetic component demos
+  and regression coverage.
+
 ## 0.7.4 - 2026-11-08
 
 - Correct the Advanced Media playback button height when shared control styles
