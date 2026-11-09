@@ -19,6 +19,7 @@ export class MushroomTodoCard extends MushroomAdditionCard {
   @state() private error = "";
   @state() private draft?: Draft;
   @state() private sort?: TodoSort;
+  @state() private expandedChecklists = new Set<string>();
   @state() private deleting?: string;
   private generation = 0;
   private timer?: ReturnType<typeof setInterval>;
@@ -53,7 +54,7 @@ export class MushroomTodoCard extends MushroomAdditionCard {
     .status { padding-block:10px; }
     [role=alert] { color:var(--error-color); }
     .icon-button { display:inline-flex; align-items:center; justify-content:center;
-      padding:8px; min-width:40px; height:40px; flex-shrink:0; }
+      box-sizing:border-box; padding:6px; min-width:32px; min-height:32px; height:32px; flex-shrink:0; }
     ha-icon { --mdc-icon-size:15px; }
     .row-actions { display:flex; flex-wrap:wrap; gap:4px; }
     .row-actions:empty { display:none; }
@@ -66,13 +67,14 @@ export class MushroomTodoCard extends MushroomAdditionCard {
     .completed-group { margin-top:8px; }
     .completed-group > summary { cursor:pointer; padding-block:8px; font-size:13px; color:var(--secondary-text-color); }
     .checklist { margin-top:4px; }
+    .checklist-toggle { display:inline-flex; align-items:center; gap:4px; margin-top:4px; padding:4px 8px; font-size:12px; }
     .checklist li { align-items:center; padding-block:2px; border:0; }
     .checklist span { font-size:12px; line-height:18px; }
     .checklist .checked { text-decoration:line-through; color:var(--secondary-text-color); }
     .confirmation { display:flex; gap:6px; flex-wrap:wrap; margin-block:6px; }
     @container (max-width:360px) {
       .task-row { flex-wrap:wrap; }
-      .row-actions { margin-inline-start:48px; flex-basis:calc(100% - 48px); }
+      .row-actions { margin-inline-start:40px; flex-basis:calc(100% - 40px); }
     }
     :host { container-type:inline-size; }
     :host([fill-container]) { height:100%; }
@@ -104,6 +106,7 @@ export class MushroomTodoCard extends MushroomAdditionCard {
   private invalidate(): void {
     this.generation++;
     this.items = [];
+    this.expandedChecklists = new Set();
     this.loaded = false;
     this.loading = false;
     this.busy = false;
@@ -334,6 +337,9 @@ export class MushroomTodoCard extends MushroomAdditionCard {
   private renderItem(item: TodoItem) {
     const t = (text: string) => localizeText(this.hass, text);
     const safe = safeTodoUid(item, this.items);
+    const checklistKey = safe ? `uid:${item.uid}` : `index:${this.items.indexOf(item)}`;
+    const checklistId = `checklist-${this.items.indexOf(item)}`;
+    const expanded = this.expandedChecklists.has(checklistKey);
     return html`<li class=${`task-row${item.status === "completed" ? " completed" : ""}`}>
             <button class="icon-button complete" aria-label=${`${t(item.status === "completed" ? "Mark incomplete" : "Complete task")}: ${item.summary}`}
               aria-pressed=${item.status === "completed"} ?disabled=${!this.writable || !safe || !this.supports(TODO_FEATURE.update)}
@@ -342,7 +348,15 @@ export class MushroomTodoCard extends MushroomAdditionCard {
             <div class="task"><b>${item.summary}</b>
               ${item.description?.trim() ? html`<p class="description">${item.description.trim()}</p>` : nothing}
               ${item.due ? html`<time datetime=${item.due}>${t("Due")}: ${this.dueLabel(item.due)}</time>` : nothing}
-              ${item.checklist?.length ? html`<ul class="checklist" aria-label=${t("Subtasks")}>
+              ${item.checklist?.length ? html`
+                <button class="checklist-toggle" aria-expanded=${expanded} aria-controls=${checklistId}
+                  @click=${() => {
+                    const next = new Set(this.expandedChecklists);
+                    if (expanded) next.delete(checklistKey); else next.add(checklistKey);
+                    this.expandedChecklists = next;
+                  }}><ha-icon .icon=${expanded ? "mdi:chevron-up" : "mdi:chevron-down"}></ha-icon>
+                  ${t("Subtasks")} (${item.checklist.length})</button>
+                <ul id=${checklistId} class="checklist" aria-label=${t("Subtasks")} ?hidden=${!expanded}>
                 ${item.checklist.map(step => html`<li>
                   <button class="icon-button checklist-complete" aria-label=${`${t(step.checked ? "Mark incomplete" : "Complete task")}: ${step.name}`}
                     aria-pressed=${step.checked} ?disabled=${!this.canUpdateChecklist(item)}

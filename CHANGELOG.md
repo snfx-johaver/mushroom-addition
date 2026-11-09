@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Collapse To-do subtasks by default, with a per-task expand/collapse button and count.
+- Reduce To-do icon-button boxes by 20%, retaining the smaller icons.
 - To-do: show existing MS365 subtasks with supported completion controls, group
   completed tasks in a collapsible bottom section, and add UI-configurable
   alphabetical/due-date sorting. Use compact icon actions and hide whitespace-only

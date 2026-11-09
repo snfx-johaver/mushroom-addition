@@ -111,6 +111,7 @@ describe("Microsoft To Do operations", () => {
   };
   it("matches subitems by UID and toggles only the selected step using the existing MS365 service", async () => {
     const hass = checklistSource(), card = await mount(hass);
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".checklist-toggle")!.click(); await settle(card);
     const steps = card.shadowRoot!.querySelectorAll<HTMLButtonElement>(".checklist-complete");
     expect(steps).toHaveLength(2);
     expect(card.shadowRoot!.querySelector(".checklist .checked")?.textContent).toBe("Done step");
@@ -123,6 +124,26 @@ describe("Microsoft To Do operations", () => {
     expect(hass.callService).toHaveBeenLastCalledWith("ms365_todo", "update_todo_checklist_item", {
       entity_id: "todo.microsoft", todo_id: "uid-1", checklist_item_id: "step-2", status: "needs_action",
     });
+  });
+  it("collapses subtasks by default and preserves button expansion across refreshes", async () => {
+    const hass = checklistSource(), card = await mount(hass);
+    const toggle = () => card.shadowRoot!.querySelector<HTMLButtonElement>(".checklist-toggle")!;
+    const list = () => card.shadowRoot!.querySelector<HTMLUListElement>(".checklist")!;
+    expect(toggle().textContent).toContain("Subtasks (2)");
+    expect(toggle().getAttribute("aria-expanded")).toBe("false");
+    expect(toggle().getAttribute("aria-controls")).toBe(list().id);
+    expect(list().hidden).toBe(true);
+    toggle().click(); await settle(card);
+    expect(toggle().getAttribute("aria-expanded")).toBe("true");
+    expect(list().hidden).toBe(false);
+    button(card, "Refresh").click(); await settle(card);
+    expect(list().hidden).toBe(false);
+    toggle().click(); await settle(card);
+    expect(list().hidden).toBe(true);
+    toggle().click(); await settle(card);
+    card.setConfig(config()); await settle(card);
+    expect(list().hidden).toBe(true);
+    expect(hass.callService).not.toHaveBeenCalled();
   });
   it("shows steps read-only without the provider service or edit capability", async () => {
     const hass = checklistSource();
@@ -187,6 +208,7 @@ describe("Microsoft To Do operations", () => {
     expect(card.shadowRoot!.querySelector(".completed-group .hint")?.textContent).toContain("No completed tasks supplied");
     const styles = String((customElements.get(TODO_TYPE.slice(7)) as typeof import("../src/todo-card").MushroomTodoCard).styles.at(-1));
     expect(styles).toContain("--mdc-icon-size:15px");
+    expect(styles).toContain("min-width:32px; min-height:32px; height:32px");
     expect(styles).toContain("padding-block:8px");
   });
   it("renders a responsive readable list, completion state, description and due date", async () => {

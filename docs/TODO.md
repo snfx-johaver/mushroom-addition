@@ -49,7 +49,8 @@ its navigation button; a custom card name is not translated.
 - Sort each group by list order (default), due date (earliest first, undated last),
   or locale-aware alphabetical order. Set the default in **Content → Sort tasks**
   or change it temporarily using the card's selector. Sorting is display-only.
-- Refresh and add use labeled icon buttons; task icons are 25% smaller.
+- Refresh and add use labeled icon buttons; task icons are 25% smaller and their
+  button boxes are 20% smaller (32 by 32 pixels).
 - Switch lists without combining task identifiers across entities.
 - Refresh manually, after mutations and relevant entity/connection changes,
   and every 30 seconds while attached. Polling also catches edits that leave
@@ -78,7 +79,9 @@ Controls follow HA's `TodoListEntityFeature` bitmask, not the integration name:
 
 MS365-ToDo lists additionally expose existing subtasks through the entity's
 `all_todos[].checklist_items` attribute. The card matches parents by unique task UID,
-shows their subtasks underneath, and enables completion/reopening only when the
+shows their subtasks underneath, collapsed by default with a **Subtasks** button
+and count to expand or hide them. Expansion is retained across refreshes and sorting
+until the list or card configuration changes. Completion/reopening is enabled only when the
 integration's `ms365_todo.update_todo_checklist_item` service and editing capability
 are available. Subtask writes check the parent and step before sending their IDs.
 No Microsoft API calls, tokens, or backend installation are involved.
