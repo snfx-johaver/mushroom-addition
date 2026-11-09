@@ -69349,7 +69349,7 @@ function _d(e, t, a = 6) {
     --control-button-focus-color: var(--addition-control-color);
   }
   ha-control-button, ha-control-button.active {
-    --control-button-background-color: var(--card-background-color);
+    --control-button-background-color: var(--mush-control-bg, rgba(var(--rgb-primary-text-color, 128,128,128), .05));
     --control-button-background-opacity: 1;
     --control-button-border-radius: var(--ha-card-border-radius, 12px);
     border-radius: var(--ha-card-border-radius, 12px);
@@ -69771,7 +69771,7 @@ rl.styles = ce`
       box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
       box-sizing: border-box; height:var(--feature-height, 42px);
       padding: 6px 4px; gap: 4px; border: 0; border-radius: var(--ha-card-border-radius, 12px); font: inherit;
-      background: var(--addition-raised-background, var(--card-background-color)); cursor: pointer;
+      background: var(--mush-control-bg, rgba(var(--rgb-primary-text-color, 128,128,128), .05)); cursor: pointer;
       color: var(--control-icon-color); --mdc-icon-size: 24px; }
     .entity:hover:not(:disabled) { background: color-mix(in srgb, var(--primary-text-color) 13%, transparent); }
     .entity:disabled { color: var(--disabled-text-color, var(--secondary-text-color)); cursor: default; }

@@ -601,6 +601,7 @@ describe("advanced controls inside the native feature position", () => {
     expect(styles).toContain("margin-top: auto");
     expect(styles).toContain("min-height: 64px; height:auto; padding:4px; gap:0");
     expect(styles).toContain(":host([named]) .button-icon, :host([named]) .button-label { flex-shrink:0; }");
+    expect(styles).toContain("background: var(--mush-control-bg, rgba(var(--rgb-primary-text-color, 128,128,128), .05))");
     element.setConfig({ type: "area-controls", controls: [{ entity_id: "sensor.test", icon: "mdi:star" }] });
     await settle(element); expect(element.hasAttribute("named")).toBe(false);
   });

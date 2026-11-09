@@ -229,7 +229,7 @@ export function applyNativeControlColor(group: HTMLElement, color?: string, perR
     --control-button-focus-color: var(--addition-control-color);
   }
   ha-control-button, ha-control-button.active {
-    --control-button-background-color: var(--card-background-color);
+    --control-button-background-color: var(--mush-control-bg, rgba(var(--rgb-primary-text-color, 128,128,128), .05));
     --control-button-background-opacity: 1;
     --control-button-border-radius: var(--ha-card-border-radius, 12px);
     border-radius: var(--ha-card-border-radius, 12px);

@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Use the thermostat-style theme-aware control background for Area buttons,
+  including dark mode.
 - Avoid reserving fixed grid height for compact Area cards and restore spacing
   above their lower controls.
 
