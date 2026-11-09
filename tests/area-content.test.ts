@@ -247,6 +247,10 @@ describe("Area native content enhancements", () => {
     applyNativeControlColor(group, "red");
     expect(group.style.getPropertyValue("--addition-control-color")).toBe("var(--red-color, red)");
     expect(group.shadowRoot!.querySelector("style")!.textContent).toContain("--control-button-icon-color");
+    const iconRule = group.shadowRoot!.querySelector("style")!.textContent!
+      .match(/ha-control-button > ha-domain-icon \{([^}]+)\}/)?.[1];
+    expect(iconRule).toContain("place-items:center");
+    expect(iconRule).not.toMatch(/background|border-radius/);
     applyNativeControlColor(group, undefined);
     expect(group.style.getPropertyValue("--addition-control-color")).toBe("");
     expect(group.shadowRoot!.querySelectorAll("style")).toHaveLength(1);

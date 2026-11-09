@@ -69377,8 +69377,7 @@ function _d(e, t, a = 6) {
     --control-button-icon-color: var(--secondary-text-color);
   }
   ha-control-button > ha-state-icon, ha-control-button > ha-domain-icon {
-    display:grid; place-items:center; width:36px; height:36px; border-radius:50%;
-    background:color-mix(in srgb, var(--control-button-icon-color) 18%, transparent);
+    display:grid; place-items:center; width:36px; height:36px;
   }
   :host([data-custom-color]) ha-control-button.active {
     --control-button-icon-color: var(--addition-control-color);
@@ -69799,10 +69798,10 @@ rl.styles = ce`
     :host([named]) .button-icon { width:24px; height:24px; }
     :host([named]) .button-icon, :host([named]) .button-label { flex-shrink:0; }
     .button-icon { display: flex; flex:none; align-items: center; justify-content: center; width:var(--mush-icon-size, 36px);
-      height:var(--mush-icon-size, 36px); line-height:0; border-radius:50%; background:color-mix(in srgb, var(--control-icon-color) 18%, transparent); }
+      height:var(--mush-icon-size, 36px); line-height:0; }
     .button-icon ha-icon, .button-icon ha-state-icon { display:flex; align-items:center; justify-content:center;
       width:24px; height:24px; }
-    .entity.is-off .button-icon { background:rgba(158,158,158,.18); color:rgb(158,158,158); }
+    .entity.is-off .button-icon { color:rgb(158,158,158); }
     .button-icon img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
     .button-label { display:-webkit-box; width:100%; overflow:hidden; overflow-wrap:anywhere; white-space:normal;
       -webkit-box-orient:vertical; -webkit-line-clamp:2; color:var(--mush-card-secondary-color, var(--secondary-text-color));

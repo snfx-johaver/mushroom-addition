@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Remove circular icon backgrounds from Area control buttons while retaining
+  their button surfaces, centering, and active/inactive icon colors.
 - Add optional motion and occupancy status icons with localized relative
   last-change times to Area cards, configurable in Content > Status.
 - Center Area button icons without compressing their backgrounds and add a

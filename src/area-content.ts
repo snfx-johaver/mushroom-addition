@@ -273,8 +273,7 @@ export function applyNativeControlColor(group: HTMLElement, color?: string, perR
     --control-button-icon-color: var(--secondary-text-color);
   }
   ha-control-button > ha-state-icon, ha-control-button > ha-domain-icon {
-    display:grid; place-items:center; width:36px; height:36px; border-radius:50%;
-    background:color-mix(in srgb, var(--control-button-icon-color) 18%, transparent);
+    display:grid; place-items:center; width:36px; height:36px;
   }
   :host([data-custom-color]) ha-control-button.active {
     --control-button-icon-color: var(--addition-control-color);
