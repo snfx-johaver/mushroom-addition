@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+## 0.7.5 - 2026-11-09
+
 - Improve Energy Plan's full-width timeline with sticky labels and time axis,
   readable price blocks and ranges, visible power scales and direction labels,
   published coverage, and tap/keyboard interval inspection.

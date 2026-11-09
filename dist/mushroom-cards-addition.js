@@ -63350,7 +63350,7 @@ Ts([
 Ts([
   K()
 ], ji.prototype, "geometry");
-const G2 = "0.7.4", Ft = {
+const G2 = "0.7.5", Ft = {
   SUNRISE_START: 360,
   // 6:00
   SUNRISE_END: 480,
