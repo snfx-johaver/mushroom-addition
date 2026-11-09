@@ -1,10 +1,15 @@
 import { html, render } from "lit";
 import type { HassEntity, HomeAssistant } from "./types";
 import { roomLightRgb } from "./room";
+import { airQualityStatus } from "./air-quality";
+import { localizeText } from "./localize";
 
-export const AREA_CONTENT_KEYS = ["alert_color", "sensor_wrap", "sensor_icons", "use_light_color", "light_entity", "camera_privacy_entity"] as const;
+export const AREA_CONTENT_KEYS = ["alert_color", "sensor_wrap", "sensor_icons", "use_light_color", "light_entity", "camera_privacy_entity", "status_air_quality_entity", "status_light_entity", "area_buttons_per_row"] as const;
 export interface AreaContentOptions {
   camera_privacy_entity?: string;
+  status_air_quality_entity?: string;
+  status_light_entity?: string;
+  area_buttons_per_row?: number;
   alert_color?: string;
   sensor_wrap?: boolean;
   sensor_icons?: boolean;
@@ -75,9 +80,38 @@ export function applyAreaContent(card: NativeContentCard, options: AreaContentOp
       .addition-sensor .value { overflow-wrap:anywhere; }
       .addition-sensor ha-state-icon { flex:none; --mdc-icon-size:14px;
         color:var(--secondary-text-color); }
+      .addition-area-status { display:flex; flex-wrap:wrap; align-items:center; gap:8px;
+        padding:8px 12px 0; color:var(--secondary-text-color);
+        font-size:var(--mush-card-secondary-font-size, 12px); line-height:16px; }
+      .addition-area-status span { display:inline-flex; align-items:center; gap:4px; }
+      .addition-area-status ha-icon { --mdc-icon-size:14px; color:var(--status-color); }
     `;
     root.append(style);
   }
+  const surface = root.querySelector("ha-card");
+  let status = surface?.querySelector<HTMLDivElement>(":scope > .addition-area-status");
+  if (surface && hass && (options.status_air_quality_entity || options.status_light_entity)) {
+    if (!status) {
+      status = document.createElement("div");
+      status.className = "addition-area-status";
+      surface.prepend(status);
+    }
+    const quality = options.status_air_quality_entity
+      ? airQualityStatus(hass, { type: "", entity: options.status_air_quality_entity }) : undefined;
+    const light = options.status_light_entity ? hass.states[options.status_light_entity] : undefined;
+    const brightness = light?.state === "on" && typeof light.attributes.brightness === "number" &&
+      light.attributes.brightness >= 0 && light.attributes.brightness <= 255
+      ? `${Math.round(light.attributes.brightness / 255 * 100)}%` : undefined;
+    const lightColor = roomLightRgb(hass, light);
+    const lightIconColor = light?.state !== "on" ? "var(--secondary-text-color)"
+      : lightColor ? `rgb(${lightColor.join(",")})` : "var(--state-light-active-color, var(--amber-color, orange))";
+    render(html`${quality ? html`<span title=${localizeText(hass, "Air Quality")}
+      style=${`--status-color:var(--${quality.color}-color, ${quality.color})`}>
+      <ha-icon .icon=${quality.icon}></ha-icon>${localizeText(hass, quality.name)}</span>` : ""}
+      ${options.status_light_entity ? html`<span title=${localizeText(hass, "Brightness")}
+        style=${`--status-color:${lightIconColor}`}>
+        <ha-icon .icon=${"mdi:lightbulb-on"}></ha-icon>${brightness ?? "—"}</span>` : ""}`, status);
+  } else status?.remove();
   const info = root.querySelector("ha-tile-info");
   if (!info) return;
   const container = root.querySelector("ha-tile-container") as (HTMLElement & { fixedInfoHeight: boolean }) | null;
@@ -136,25 +170,53 @@ export function applyAreaContent(card: NativeContentCard, options: AreaContentOp
     </span>`)}`, slot);
 }
 
-export function applyNativeControlColor(group: HTMLElement, color?: string): void {
+export function applyNativeControlColor(group: HTMLElement, color?: string, perRow = 6): void {
   const cssColor = areaCssColor(color);
   if (cssColor) group.style.setProperty("--addition-control-color", cssColor);
   else group.style.removeProperty("--addition-control-color");
   const root = group.shadowRoot;
-  if (!root || root.querySelector("style[data-area-color]")) return;
+  if (!root) return;
+  const nativeButtons = root.querySelector("ha-control-button-group");
+  if (nativeButtons instanceof HTMLElement) {
+    nativeButtons.style.setProperty("--area-native-controls-per-row",
+      String(Math.max(1, Math.min(nativeButtons.querySelectorAll("ha-control-button").length, perRow))));
+  }
+  if (nativeButtons?.shadowRoot && !nativeButtons.shadowRoot.querySelector("style[data-area-grid]")) {
+    const grid = document.createElement("style");
+    grid.dataset.areaGrid = "";
+    grid.textContent = `.container { display:grid; height:auto; gap:8px;
+      grid-template-columns:repeat(var(--area-native-controls-per-row, 6), minmax(0, 1fr)); }
+      ::slotted(*) { width:100% !important; height:var(--feature-height, 42px) !important;
+        margin:0 !important; }`;
+    nativeButtons.shadowRoot.append(grid);
+    (nativeButtons as HTMLElement).style.height = "auto";
+  }
+  if (root.querySelector("style[data-area-color]")) return;
   const style = document.createElement("style");
   style.dataset.areaColor = "";
   style.textContent = `:host([data-custom-color]) ha-control-button {
     --control-button-icon-color: var(--addition-control-color);
     --control-button-focus-color: var(--addition-control-color);
   }
+  ha-control-button, ha-control-button.active {
+    --control-button-background-color: var(--card-background-color);
+    --control-button-background-opacity: 1;
+    --control-button-border-radius: var(--ha-card-border-radius, 12px);
+    border-radius: var(--ha-card-border-radius, 12px);
+    box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
+  }
   ha-control-button:not(.active) {
-    --control-button-background-color: var(--disabled-color, var(--secondary-text-color));
-    --control-button-background-opacity: .14;
+    --control-button-icon-color: var(--secondary-text-color);
+  }
+  ha-control-button > ha-state-icon, ha-control-button > ha-domain-icon {
+    display:grid; place-items:center; width:36px; height:36px; border-radius:50%;
+    background:color-mix(in srgb, var(--control-button-icon-color) 18%, transparent);
   }
   :host([data-custom-color]) ha-control-button.active {
-    --control-button-background-color: var(--addition-control-color);
     --control-button-icon-color: var(--addition-control-color);
+  }
+  ha-control-button:hover:not([disabled]) {
+    --control-button-background-color: color-mix(in srgb, var(--primary-text-color) 13%, var(--card-background-color));
   }`;
   root.append(style);
 }

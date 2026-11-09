@@ -8,6 +8,7 @@ import { controlLabelTranslations } from "./translations/control-labels";
 import { mediaLabelTranslations } from "./translations/media-labels";
 import { editorControlTranslations } from "./translations/editor-controls";
 import { airQualityTranslations } from "./translations/air-quality";
+import { areaStatusTranslations } from "./translations/area-status";
 import { todoGuidanceTranslations, todoTranslations } from "./translations/todo";
 import { releaseGuidanceTranslations } from "./translations/release-guidance";
 import { workflowTranslations } from "./translations/workflow";
@@ -678,6 +679,7 @@ export const translationCatalogs: Record<string, Record<string, string>> = Objec
     ...energyFieldTranslations[locale],
     ...releaseDataTranslations[locale],
     ...releaseStatusTranslations[locale],
+    ...areaStatusTranslations[locale],
     ...editorGuidanceTranslations[locale],
     ...mediaOptionTranslations[locale],
     ...remoteOptionTranslations[locale],

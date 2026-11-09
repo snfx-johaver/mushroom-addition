@@ -7,7 +7,7 @@ import { repeat } from "lit/directives/repeat.js";
 import { mdiDelete, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
 import { controlActions } from "./control-actions";
 import { nativeSelectStyles } from "./control-styles";
-import { fireEvent, stateLabel } from "./helpers";
+import { activeStates, fireEvent, hasOnOffState, stateLabel } from "./helpers";
 import type { ActionConfig, AdditionConfig, HomeAssistant } from "./types";
 import { applyAreaContent, applyNativeControlColor, areaCssColor, AREA_CONTENT_KEYS, type AreaContentOptions } from "./area-content";
 
@@ -100,8 +100,8 @@ export function nativeAreaConfig(config: AreaAdvancedConfig, editor = false): Ar
         if (projection.controls) projectedControls.set(projection.controls, feature);
         return projection;
       }
-      return feature.controls?.some(enhanced)
-        ? { ...feature, type: `custom:${AREA_FEATURE_TAG}` } : feature;
+      return { ...feature, type: `custom:${AREA_FEATURE_TAG}`,
+        ...(config.area_buttons_per_row === undefined ? {} : { addition_per_row: config.area_buttons_per_row }) };
     }) } : {}),
   };
 }
@@ -458,13 +458,23 @@ export class MushroomAreaControlsAdvanced extends LitElement {
     group.position = this.position;
     group.color = domain?.icon_color ?? this.color;
     const color = domain?.icon_color;
+    const configuredPerRow = Number(this.config?.addition_per_row);
+    const perRow = Number.isInteger(configuredPerRow) && configuredPerRow >= 1 && configuredPerRow <= 24 ? configuredPerRow : 6;
     group.toggleAttribute("data-custom-color", Boolean(areaCssColor(color)));
-    applyNativeControlColor(group, color);
-    void Promise.resolve(group.updateComplete).then(() => applyNativeControlColor(group!, color))
+    applyNativeControlColor(group, color, perRow);
+    void Promise.resolve(group.updateComplete).then(async () => {
+      const buttons = group!.shadowRoot?.querySelector("ha-control-button-group") as (HTMLElement & { updateComplete?: Promise<boolean> }) | null;
+      await buttons?.updateComplete;
+      applyNativeControlColor(group!, color, perRow);
+    })
       .catch((error: unknown) => { this.error = error instanceof Error ? error.message : String(error); });
     return group;
   }
   protected render() {
+    const perRow = Number(this.config?.addition_per_row);
+    const count = this.config?.controls?.length ?? 1;
+    this.style.setProperty("--area-controls-per-row",
+      String(Math.max(1, Math.min(count || 1, Number.isInteger(perRow) && perRow >= 1 && perRow <= 24 ? perRow : 6))));
     this.toggleAttribute("named", this.config?.controls?.some(namedControl) ?? false);
     if (this.error) return html`<ha-alert alert-type="error">${localizeNativeDiagnostic(this.hass, this.error)}<button @click=${() => void this.load()}>${localizeText(this.hass, "Retry")}</button></ha-alert>`;
     if (!this.config || !this.hass || !this.ready) return nothing;
@@ -483,6 +493,7 @@ export class MushroomAreaControlsAdvanced extends LitElement {
       const entityState = this.hass!.states[entity];
       const unavailable = Boolean(entity) && (!entityState || ["unavailable", "unknown"].includes(entityState.state));
       const active = entityState && !["off", "closed", "locked", "idle", "standby", "unavailable", "unknown"].includes(entityState.state);
+      const off = hasOnOffState(entityState) && !activeStates.has(entityState?.state ?? "");
       const actionConfig: AdditionConfig = {
         type: `custom:${AREA_TAG}`, entity, tap_action: control.tap_action ?? (entity ? defaultAreaAction(entity) : { action: "none" }),
         hold_action: control.hold_action, double_tap_action: control.double_tap_action,
@@ -496,7 +507,7 @@ export class MushroomAreaControlsAdvanced extends LitElement {
       const picture = control.use_entity_picture && typeof entityState?.attributes.entity_picture === "string"
         ? entityState.attributes.entity_picture : undefined;
       const label = this.label(control);
-      return html`<button class="entity" ?disabled=${unavailable} aria-label=${String((control.name ?? entityState?.attributes.friendly_name ?? entity) || localize(this.hass, "ui.area.area_action"))}
+      return html`<button class=${`entity ${off ? "is-off" : "is-active"}`} ?disabled=${unavailable} aria-label=${String((control.name ?? entityState?.attributes.friendly_name ?? entity) || localize(this.hass, "ui.area.area_action"))}
         aria-pressed=${Boolean(active)} style=${`--control-icon-color:${iconColor}`}
         ${controlActions(actionConfig)}>
         <span class="button-icon">${picture ? html`<img src=${picture} alt="">`
@@ -509,25 +520,29 @@ export class MushroomAreaControlsAdvanced extends LitElement {
     })}`;
   }
   static styles = css`
-    :host { display: flex; gap: 8px; align-items: center; min-width: 0; }
+    :host { display: grid; grid-template-columns: repeat(var(--area-controls-per-row, 6), minmax(0, 1fr));
+      gap: 8px; align-items: stretch; min-width: 0; }
     .domain { min-width: 0; flex: 1; }
     hui-area-controls-card-feature { flex: 1; min-width: 0; }
     hui-conditional-card { flex: 1; min-width: 0; }
     hui-conditional-card[hidden] { display: none !important; }
-    .entity { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; min-width: 42px;
+    .entity { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 42px;
       box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
-      height: var(--feature-height, 42px); border: 0; border-radius: var(--ha-card-border-radius, 12px);
-      background: var(--addition-neutral-background, rgba(var(--rgb-primary-text-color, 33, 33, 33), .05)); cursor: pointer;
+      box-sizing: border-box; height:var(--feature-height, 42px);
+      padding: 6px 4px; gap: 4px; border: 0; border-radius: var(--ha-card-border-radius, 12px); font: inherit;
+      background: var(--addition-raised-background, var(--card-background-color)); cursor: pointer;
       color: var(--control-icon-color); --mdc-icon-size: 24px; }
-    .entity[aria-pressed="true"] { background: color-mix(in srgb, var(--control-icon-color) 16%, transparent); }
+    .entity:hover:not(:disabled) { background: color-mix(in srgb, var(--primary-text-color) 13%, transparent); }
     .entity:disabled { color: var(--disabled-text-color, var(--secondary-text-color)); cursor: default; }
     .entity:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
-    :host([named]) { --feature-height: 64px; }
-    :host([named]) .entity { height: 64px; padding: 6px 4px; }
-    .button-icon { display: flex; align-items: center; justify-content: center; }
+    :host([named]) .entity { height: 64px; }
+    .button-icon { display: flex; align-items: center; justify-content: center; width:var(--mush-icon-size, 36px);
+      height:var(--mush-icon-size, 36px); border-radius:50%; background:color-mix(in srgb, var(--control-icon-color) 18%, transparent); }
+    .entity.is-off .button-icon { background:rgba(158,158,158,.18); color:rgb(158,158,158); }
     .button-icon img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
-    .button-label { margin-top: auto; padding-top: 4px; line-height: 16px; font-size: 11px;
-      max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .button-label { margin-top: auto; display:-webkit-box; width:100%; overflow:hidden; overflow-wrap:anywhere; white-space:normal;
+      -webkit-box-orient:vertical; -webkit-line-clamp:2; color:var(--mush-card-secondary-color, var(--secondary-text-color));
+      font-size:var(--mush-card-secondary-font-size, 12px); line-height:var(--mush-card-secondary-line-height, 16px); }
   `;
 }
 
@@ -760,6 +775,8 @@ export class MushroomAreaAdvancedEditor extends LitElement {
   private installContentEditor(editor: NativeAreaEditor) {
     if (!editor._schema) throw new Error("This Home Assistant frontend cannot extend the Area editor Content schema.");
     const labels: Record<string, string> = { alert_color: "Alert icon color",
+      status_air_quality_entity: "Air Quality", status_light_entity: "Brightness",
+      area_buttons_per_row: "Buttons per row", status: "Status",
       camera_privacy_entity: "Camera privacy entity",
       sensor_wrap: "Wrap sensor values onto additional lines", sensor_icons: "Show small grey entity icons beside sensor values",
       use_light_color: "Use the light color as the room accent" };
@@ -776,12 +793,18 @@ export class MushroomAreaAdvancedEditor extends LitElement {
       const base = schema(...args);
       let extended = cache.get(base);
       if (!extended) {
-        extended = base.map(field => field.name !== "content" ? field : { ...field, schema: [...field.schema ?? [],
+        extended = base.map(field => field.name !== "content" ? field : { ...field, schema: [
+        { name: "status", type: "expandable", schema: [
+          { name: "status_air_quality_entity", selector: { entity: { domain: ["sensor"] } } },
+          { name: "status_light_entity", selector: { entity: { domain: ["light"] } } },
+        ] },
+        ...field.schema ?? [],
         { name: "alert_color", selector: { ui_color: {} } },
         { name: "sensor_wrap", selector: { boolean: {} } },
         { name: "sensor_icons", selector: { boolean: {} } },
         { name: "use_light_color", selector: { boolean: {} } },
         { name: "camera_privacy_entity", selector: { entity: { domain: ["switch", "input_boolean", "binary_sensor"] } } },
+        { name: "area_buttons_per_row", selector: { number: { min: 1, max: 24, mode: "box", step: 1 } } },
       ] });
         cache.set(base, extended);
       }

@@ -27,6 +27,35 @@ customElements.define("test-area-content", ContentCard);
 afterEach(() => document.body.replaceChildren());
 
 describe("Area native content enhancements", () => {
+  it("shows selected air quality and brightness with shared status colors and clears stale values", () => {
+    const card = document.createElement("test-area-content") as ContentCard;
+    card.shadowRoot!.querySelector("ha-tile-container")!.outerHTML =
+      "<ha-card><ha-tile-container><ha-tile-info></ha-tile-info></ha-tile-container></ha-card>";
+    card.hass = { ...hass, states: { ...hass.states,
+      "sensor.quality": { entity_id: "sensor.quality", state: "poor", attributes: {} },
+      "light.room": { entity_id: "light.room", state: "on", attributes: { brightness: 153, rgb_color: [12, 34, 56] } },
+    } };
+    const options = { status_air_quality_entity: "sensor.quality", status_light_entity: "light.room" };
+    applyAreaContent(card, options);
+    const status = card.shadowRoot!.querySelector(".addition-area-status")!;
+    expect(status.textContent).toContain("Poor");
+    expect(status.textContent).toContain("60%");
+    expect(status.querySelectorAll("ha-icon")).toHaveLength(2);
+    expect((status.querySelector("ha-icon") as HTMLElement & { icon: string }).icon).toBe("mdi:emoticon-sad-outline");
+    expect(status.querySelectorAll("span")[0].getAttribute("style")).toContain("orange");
+    expect(status.querySelectorAll("span")[1].getAttribute("style")).toContain("rgb(12,34,56)");
+    card.hass = { ...card.hass, states: { ...card.hass.states,
+      "light.room": { entity_id: "light.room", state: "off", attributes: {} },
+      "sensor.quality": { entity_id: "sensor.quality", state: "unavailable", attributes: {} },
+    } };
+    applyAreaContent(card, options);
+    expect(status.textContent).toContain("Unknown");
+    expect(status.textContent).toContain("—");
+    expect(status.querySelectorAll("span")[1].getAttribute("style")).toContain("secondary-text-color");
+    applyAreaContent(card, {});
+    expect(card.shadowRoot!.querySelector(".addition-area-status")).toBeNull();
+    expect(card.hass.callService).not.toHaveBeenCalled();
+  });
   it("derives the active area's light group RGB without a selector and clears stale accents", () => {
     const card = document.createElement("test-area-content") as ContentCard;
     const light: HassEntity = { entity_id: "light.member", state: "on", attributes: { rgb_color: [24, 100, 200] } };

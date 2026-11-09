@@ -154,6 +154,12 @@ compact room view with its controls instead of mounting a camera. Clearing the
 selector restores the configured camera behavior. This is a dashboard display
 guard; it does not change the camera's own recording or privacy settings.
 
+Their Content editor also offers a **Status** section for an air-quality status
+sensor and a light's brightness. The quality icon and color use the Air Quality
+card's status mapping; the brightness icon follows the selected light's RGB color.
+The maximum number of area-control buttons per row can be configured in Content.
+Existing button shapes and actions are retained.
+
 Choose your entities and configure the card in the visual editor. Layout,
 colors, information and actions are available where supported. Picker previews
 prefer compatible entities already in your Home Assistant instance.

@@ -100,7 +100,7 @@ describe("native Area card delegation", () => {
     document.body.append(card);
     await settle(card);
     const native = card.shadowRoot!.querySelector("hui-area-card") as NativeArea;
-    expect(native.config).toMatchObject({ display_type: "compact", features: [{ type: "area-controls", controls: ["light"] }] });
+    expect(native.config).toMatchObject({ display_type: "compact", features: [{ type: `custom:${AREA_FEATURE_TAG}`, controls: ["light"] }] });
     expect(native.config).not.toHaveProperty("camera_privacy_entity");
     for (const value of ["off", "on", "unknown", "unavailable", undefined, "off"]) {
       card.hass = home(value);
@@ -134,7 +134,7 @@ describe("native Area card delegation", () => {
     expect(native.config).toEqual({ ...stub, type: "area" });
     card.setConfig({ ...stub, display_type: "camera", aspect_ratio: "4:3", features: [{ type: "area-controls" }] });
     await settle(card);
-    expect(native.config).toMatchObject({ display_type: "camera", aspect_ratio: "4:3", features: [{ type: "area-controls" }] });
+    expect(native.config).toMatchObject({ display_type: "camera", aspect_ratio: "4:3", features: [{ type: `custom:${AREA_FEATURE_TAG}` }] });
     const edited = mergeNativeAreaEdit(stub, { ...base, type: "area", name: "Edited" });
     expect(edited).toMatchObject({ type: `custom:${MUSHROOM_AREA_TAG}`, name: "Edited" });
     expect((await MushroomAreaCard.getConfigElement()).localName).toBe(`${AREA_TAG}-editor`);
@@ -201,7 +201,9 @@ describe("native Area card delegation", () => {
     document.body.append(card);
     await settle(card);
     const native = card.shadowRoot!.querySelector("hui-area-card") as NativeArea;
-    expect(native.config).toEqual({ ...config, type: "area" });
+    expect(native.config).toEqual({ ...config, type: "area", features: [
+      { type: `custom:${AREA_FEATURE_TAG}` }, { type: "future-native", arbitrary: true },
+    ] });
     expect(native.hass).toBe(hass);
     expect(native.layout).toBe("panel");
     expect(card.getCardSize()).toBe(4);
@@ -222,17 +224,46 @@ describe("native Area card delegation", () => {
     expect(card.shadowRoot!.querySelector("hui-area-card")).toBe(native);
     expect(config).toEqual(snapshot);
   });
-  it("changes only enhanced area-controls feature types internally", () => {
+  it("wraps area controls while retaining unrelated native feature types", () => {
     const config: AreaAdvancedConfig = { ...base, features: [
       { type: "area-controls" }, { type: "area-controls", controls: [] },
       { type: "other", controls: [{ entity_id: "sensor.test", icon: "mdi:star" }] },
       { type: "area-controls", controls: ["light", { entity_id: "sensor.test", icon: "mdi:star" }], future: true },
     ] };
     expect(nativeAreaConfig(config).features).toEqual([
-      config.features![0], config.features![1], config.features![2],
+      { ...config.features![0], type: `custom:${AREA_FEATURE_TAG}` },
+      { ...config.features![1], type: `custom:${AREA_FEATURE_TAG}` }, config.features![2],
       { ...config.features![3], type: `custom:${AREA_FEATURE_TAG}` },
     ]);
     expect(config.features![3].type).toBe("area-controls");
+  });
+  it("forwards the button row limit only to runtime area features and preserves it in the editor", () => {
+    const config: AreaAdvancedConfig = { ...base, area_buttons_per_row: 2,
+      features: [{ type: "area-controls", controls: ["light", "switch", "fan"] }] };
+    const runtime = nativeAreaConfig(config);
+    expect(runtime).not.toHaveProperty("area_buttons_per_row");
+    expect(runtime.features![0]).toMatchObject({ type: `custom:${AREA_FEATURE_TAG}`, addition_per_row: 2 });
+    const editor = nativeAreaConfig(config, true);
+    expect(editor.features![0]).not.toHaveProperty("addition_per_row");
+    expect(mergeNativeAreaEdit(config, editor).area_buttons_per_row).toBe(2);
+  });
+  it("wraps custom buttons at the configured maximum without changing button shape", async () => {
+    const element = document.createElement(AREA_FEATURE_TAG) as MushroomAreaControlsAdvanced;
+    element.hass = hass;
+    element.context = { area_id: "office" };
+    element.setConfig({ type: "area-controls", addition_per_row: 2,
+      controls: ["light", { type: "entity", entity_id: "light.test" }, { type: "entity", entity_id: "switch.test" }] });
+    document.body.append(element);
+    await settle(element);
+    expect(element.style.getPropertyValue("--area-controls-per-row")).toBe("2");
+    const styles = MushroomAreaControlsAdvanced.styles.cssText;
+    expect(styles).toContain("repeat(var(--area-controls-per-row");
+    expect(styles).toContain("border-radius: var(--ha-card-border-radius, 12px)");
+    expect(styles).toContain(".entity:hover:not(:disabled)");
+    expect(styles).toContain(".entity.is-off .button-icon");
+    element.setConfig({ type: "area-controls", addition_per_row: 12, controls: [{ type: "entity", entity_id: "light.test" }] });
+    await settle(element);
+    expect(element.style.getPropertyValue("--area-controls-per-row")).toBe("1");
   });
   it("does not forward unrelated updates or repeatedly discover 10,800 registry entries", async () => {
     const scan = vi.fn();
@@ -369,7 +400,7 @@ describe("native Area card delegation", () => {
     };
     void native.updateComplete;
     expect(form.schema[0].schema.map(field => field.name)).toEqual([
-      "sensor_classes", "alert_color", "sensor_wrap", "sensor_icons", "use_light_color", "camera_privacy_entity",
+      "status", "sensor_classes", "alert_color", "sensor_wrap", "sensor_icons", "use_light_color", "camera_privacy_entity", "area_buttons_per_row",
     ]);
     expect(form.data).toMatchObject({ alert_color: "red", sensor_wrap: true, sensor_icons: true });
     expect(form.computeLabel({ name: "alert_color" })).toBe("Alert icon color");
