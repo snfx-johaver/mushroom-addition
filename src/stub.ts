@@ -2,6 +2,7 @@ import { smartSavingStub } from "./energy-cards/stub";
 import { workflowStub } from "./energy-cards/workflow-config";
 import { weatherStub } from "./weather-advanced/config";
 import { airQualityStub } from "./air-quality";
+import { todoStub } from "./todo";
 import type { AdditionConfig, CatalogItem, HomeAssistant } from "./types";
 import { populatedDefaultsFor } from "./defaults";
 import { roomLightingSceneExample, sceneItemDefaultsFor } from "./scene-item-defaults";
@@ -65,6 +66,7 @@ export const createStubConfig = (
   if (descriptor.upstreamId === "energy_log") return energyLogStub(hass, entities, entitiesFallback);
   if (descriptor.upstreamId === "energy_plan") return EnergyPlanCard.getStubConfig(hass, entities, entitiesFallback);
   if (descriptor.upstreamId === "energy_insights") return EnergyInsightsCard.getStubConfig(hass, entities, entitiesFallback);
+  if (descriptor.upstreamId === "todo") return todoStub(hass, entities, entitiesFallback);
   if (descriptor.upstreamId === "air_quality") return airQualityStub(hass);
   if (descriptor.upstreamId === "custom_card_washer") return populatedDefaultsFor(descriptor);
   if (descriptor.upstreamId === "weather_advanced") return weatherStub(hass, entities, entitiesFallback);

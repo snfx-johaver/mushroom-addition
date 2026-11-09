@@ -37,6 +37,7 @@ const defaultIcons: Array<[RegExp, string]> = [
 ];
 
 export const defaultIconFor = (item: CatalogItem, entity?: HassEntity): string => {
+  if (item.upstreamId === "todo") return "mdi:clipboard-check-outline";
   if (item.upstreamId === "stock_card") return "mdi:chart-line";
   if (entity?.attributes.icon) return entity.attributes.icon;
   if (item.upstreamId === "air_quality") return "mdi:air-filter";
@@ -89,7 +90,9 @@ export const populatedDefaultsFor = (
   entityId?: string,
 ): AdditionConfig => {
   const sourceDefaults: Partial<AdditionConfig> =
-    item.upstreamId === "air_quality"
+    item.upstreamId === "todo"
+      ? { todo_show_completed: true, todo_allow_add: true, todo_allow_edit: true, todo_allow_delete: true }
+      : item.upstreamId === "air_quality"
       ? { air_quality_show_header: true, air_quality_show_title: true, air_quality_show_icon: true, air_quality_show_badge: true }
       : item.upstreamId === "stock_card"
       ? { stock_source: "entity", stock_shares: 0, stock_interval: 300, stock_range: "1D",

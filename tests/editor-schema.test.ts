@@ -59,6 +59,7 @@ describe("family editor schemas", () => {
       "sensor", "media", "cover", "security", "navigation",
       "text", "camera", "light", "control", "alarm-time", "door", "entity", "bar", "nas-dashboard",
     ]);
+    supported.add("todo");
     for (const item of CATALOG) expect(supported.has(item.family)).toBe(true);
   });
 

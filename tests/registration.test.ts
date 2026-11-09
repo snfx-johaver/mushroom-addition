@@ -447,7 +447,7 @@ describe("Home Assistant registration", () => {
       element.hass = hass;
       element.setConfig({
         type: `custom:${item.tag}`,
-        entity: "sensor.example",
+        entity: item.family === "todo" ? "todo.example" : "sensor.example",
       });
       document.body.append(element);
       await element.updateComplete;

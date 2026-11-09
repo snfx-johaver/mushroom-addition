@@ -295,6 +295,13 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
     action("tap_action"), action("hold_action"), action("double_tap_action"),
     energyFeatureField(item.upstreamId),
   ];
+  if (item.upstreamId === "todo") return [
+    entity(["todo"]),
+    ...presentation(),
+    { name: "todo_entities", selector: { entity: { domain: ["todo"], multiple: true } } },
+    toggle("todo_show_completed"), toggle("todo_allow_add"), toggle("todo_allow_edit"), toggle("todo_allow_delete"),
+    action("tap_action"), action("hold_action"), action("double_tap_action"),
+  ];
   if (item.upstreamId === "air_quality") return [
     entity(["sensor"]), ...presentation(),
     toggle("air_quality_show_header"), toggle("air_quality_show_title"), toggle("air_quality_show_icon"),

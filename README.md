@@ -5,7 +5,7 @@
 
 Your dashboard called. It wants fewer YAML headaches and a little more fun(gus).
 
-**40 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
+**41 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
 Air quality, animated weather, lights, appliances, energy, media, rooms, NAS and more.
 Pick a card, pick your entities, enjoy your dashboard.
 YAML is still welcome; it just isn't compulsory.
@@ -42,10 +42,13 @@ Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all card
 
 ## What's new in 0.7
 
+- **[To-do](docs/TODO.md) (0.7.6):** a frontend-only task card using standard
+  Home Assistant `todo` entities, including Microsoft To Do. Add, complete, edit
+  and delete tasks where supported; no Home Tasks backend is required.
 - **Energy cards (0.7.2):** Energy Plan, Energy Insights & Purchases and Energy Log,
   with shared Mushroom presentation, native visual editors and the shadow option.
   Smart Saving and existing energy cards remain supported.
-- **Languages:** all 40 cards and visual editors now use the 33 Mushroom language
+- **Languages:** all cards and visual editors now use the 33 Mushroom language
   catalogs, including NAS, stock data, Smart Saving and Weather Advanced.
   Version 0.7.1 completes the translation audit for the 0.7 release.
 - **Air Quality:** compact, reorderable sensor readings, editable thresholds and a

@@ -261,6 +261,17 @@ export const NATIVE_CATALOG: readonly CatalogItem[] = [
     preferredDomains: ["sensor"],
   },
   {
+    upstreamId: "todo",
+    sourcePath: "src/todo-card.ts",
+    kind: "card",
+    category: "custom-card",
+    family: "todo",
+    tag: "mushroom-addition-todo",
+    name: "To-do",
+    description: "Frontend-only to-do lists with capability-aware task controls for Home Assistant, including Microsoft To Do.",
+    preferredDomains: ["todo"],
+  },
+  {
     upstreamId: "stock_card",
     sourcePath: "src/stock.ts",
     kind: "card",

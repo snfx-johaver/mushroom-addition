@@ -11,6 +11,11 @@ import type { AdditionConfig, HomeAssistant } from "../src/types";
 
 const hass: HomeAssistant = {
   states: {
+    "todo.example": {
+      entity_id: "todo.example",
+      state: "1",
+      attributes: { friendly_name: "Example tasks", supported_features: 0 },
+    },
     "weather.home": {
       entity_id: "weather.home",
       state: "partlycloudy",
@@ -214,6 +219,7 @@ const familySignature = (markup: string): string[] =>
 
 const entityFor = (item: (typeof CATALOG)[number]): string => {
   const domains = item.preferredDomains ?? [];
+  if (domains.includes("todo")) return "todo.example";
   if (domains.includes("weather")) return "weather.home";
   if (domains.includes("climate")) return "climate.living";
   if (domains.includes("light")) return "light.kitchen";

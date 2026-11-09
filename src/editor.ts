@@ -5,6 +5,7 @@ import "./energy-cards/editor";
 import "./energy-cards/workflow-editor";
 import "./weather-advanced/editor";
 import { airQualityLabels } from "./air-quality-editor";
+import { todoLabels } from "./todo";
 import { workflowStub } from "./energy-cards/workflow-config";
 import { mdiDelete, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
 import type {
@@ -111,6 +112,9 @@ const stockLabels: Record<string, string> = {
 };
 
 const sectionForField = (field: EditorField): EditorSectionId => {
+  if (field.name === "todo_entities") return "context";
+  if (field.name === "todo_show_completed") return "content";
+  if (field.name.startsWith("todo_allow_")) return "interactions";
   if (field.name.startsWith("air_quality_show_")) return "content";
   if (field.name === "stock_symbol" || field.name === "stock_source") return "context";
   if (field.name === "pihole_device_ids") return "context";
@@ -511,6 +515,7 @@ export class MushroomAdditionEditor extends LitElement {
       ? localizeText(this.hass, getCatalogItem(this.config!.type.replace(/^custom:/, ""))?.name ?? schema.name)
     : this.config?.type.endsWith("air-quality") && schema.name === "entity"
       ? localizeText(this.hass, "Air quality sensor (optional; otherwise calculated from pollutants)")
+    : todoLabels[schema.name] ? localizeText(this.hass, todoLabels[schema.name])
     : airQualityLabels[schema.name] ? localizeText(this.hass, airQualityLabels[schema.name])
     : stockMetricLabel(schema.name) ? `${localizeText(this.hass, STOCK_METRICS.find(([key]) => schema.name.startsWith(`stock_${key}_`))![1])}: ${localizeText(this.hass, schema.name.endsWith("_entity") ? "Metric entity override" : "Metric attribute")}`
     : stockLabels[schema.name] ? localizeText(this.hass, stockLabels[schema.name])

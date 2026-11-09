@@ -25,14 +25,15 @@ describe("entity-driven default header icons", () => {
       const card = document.createElement(item.tag) as HTMLElement & {
         hass: HomeAssistant; setConfig(config: AdditionConfig): void; updateComplete: Promise<boolean>;
       };
-      card.hass = hass;
-      card.setConfig({ type: `custom:${item.tag}`, entity: entity.entity_id, entities: [entity.entity_id],
+      const headerEntity = item.upstreamId === "todo" ? { ...entity, entity_id: "todo.test" } : entity;
+      card.hass = { ...hass, states: { ...hass.states, [headerEntity.entity_id]: headerEntity } };
+      card.setConfig({ type: `custom:${item.tag}`, entity: headerEntity.entity_id, entities: [headerEntity.entity_id],
         carousel_show_header: true, icon_type: "icon" });
       document.body.append(card);
       await card.updateComplete;
       const icon = card.shadowRoot?.querySelector<HTMLElement & { stateObj: HassEntity; _config: unknown }>("ha-state-icon");
       expect(icon, item.tag).not.toBeNull();
-      expect(icon?.stateObj).toBe(entity);
+      expect(icon?.stateObj).toBe(headerEntity);
       expect(icon?._config).toBe(hass.config);
     },
   );

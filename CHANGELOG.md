@@ -6,6 +6,13 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## 0.7.6 - 2026-11-09
 
+- Add an original frontend-only Mushroom To-do card for standard Home Assistant
+  `todo` entities, including Microsoft To Do. Capability-aware task creation,
+  completion/reopening, editing, due dates/times, descriptions and confirmed
+  deletion use HA APIs without a Home Tasks backend. Includes multiple-list
+  navigation, shared visual editor/shadow controls, safe UID checks, asynchronous
+  error handling, and all 33 supported languages.
+
 - Show a missing-source diagnostic when Energy Insights has no configured
   meter sensors instead of reporting an invalid history response.
 

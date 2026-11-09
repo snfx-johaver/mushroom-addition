@@ -3,6 +3,7 @@ import type { AdditionConfig, HomeAssistant } from "../src/types";
 import { CATALOG } from "../src/catalog";
 import { createStubConfig } from "../src/stub";
 import { EXAMPLE_CATALOG_IDS } from "../src/example-catalog";
+import type { TodoItem } from "../src/todo";
 
 class HaCard extends HTMLElement {}
 if (!customElements.get("ha-card")) customElements.define("ha-card", HaCard);
@@ -13,6 +14,12 @@ class HaIcon extends HTMLElement {
   }
 }
 if (!customElements.get("ha-icon")) customElements.define("ha-icon", HaIcon);
+
+let todoItems: TodoItem[] = [
+  { uid: "demo-1", summary: "Water the plants", status: "needs_action", description: "Synthetic demo — no real account is connected.", due: "2026-11-10" },
+  { uid: "demo-2", summary: "Plan the weekend", status: "completed" },
+];
+let nextTodoUid = 3;
 
 const hass: HomeAssistant = {
   states: {
@@ -32,10 +39,28 @@ const hass: HomeAssistant = {
     "scene.relax": { entity_id: "scene.relax", state: "scening", attributes: { friendly_name: "Relax" } },
     "scene.movie": { entity_id: "scene.movie", state: "scening", attributes: { friendly_name: "Movie" } },
     "scene.bright": { entity_id: "scene.bright", state: "scening", attributes: { friendly_name: "Bright" } },
+    "todo.demo": { entity_id: "todo.demo", state: "1", attributes: { friendly_name: "Demo tasks", supported_features: 119 } },
   },
-  callService: async () => undefined,
+  callService: async (domain, service, data) => {
+    if (domain !== "todo") return;
+    if (data?.entity_id !== "todo.demo") throw new Error("Unknown demo list");
+    if (service === "add_item") todoItems = [...todoItems, {
+      uid: `demo-${nextTodoUid++}`, summary: String(data.item), status: "needs_action",
+      description: data.description as string | null, due: (data.due_date ?? data.due_datetime) as string | null,
+    }];
+    else if (service === "remove_item") todoItems = todoItems.filter(item => item.uid !== data.item);
+    else if (service === "update_item") todoItems = todoItems.map(item => item.uid !== data.item ? item : {
+      ...item, summary: data.rename as string ?? item.summary, status: data.status as TodoItem["status"] ?? item.status,
+      description: "description" in data ? data.description as string | null : item.description,
+      due: "due_date" in data ? data.due_date as string | null : "due_datetime" in data ? data.due_datetime as string | null : item.due,
+    });
+    else throw new Error("Unsupported demo service");
+  },
   connection: {
-    sendMessagePromise: async <T>() => undefined as T,
+    sendMessagePromise: async <T>(message: Record<string, unknown>) => {
+      if (message.type === "todo/item/list") return { items: message.entity_id === "todo.demo" ? todoItems : [] } as T;
+      return undefined as T;
+    },
     subscribeMessage: async <T>(callback: (message: T) => void) => {
       callback({
         forecast: [

@@ -52,6 +52,7 @@ export interface HomeAssistant {
     data?: Record<string, unknown>,
   ) => Promise<unknown>;
   connection?: {
+    connected?: boolean;
     sendMessagePromise: <T>(message: Record<string, unknown>) => Promise<T>;
     subscribeMessage: <T>(
       callback: (message: T) => void,
@@ -267,6 +268,11 @@ export interface PiHoleConfig {
 }
 
 export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, PiHoleConfig, AirQualityOptions {
+  todo_entities?: string[];
+  todo_show_completed?: boolean;
+  todo_allow_add?: boolean;
+  todo_allow_edit?: boolean;
+  todo_allow_delete?: boolean;
   energy_plan?: import("./energy-plan/config").EnergyPlanOptions;
   energy_insights?: import("./energy-insights/config").EnergyInsightsOptions;
   weather?: import("./weather-advanced/config").WeatherAdvancedOptions;
