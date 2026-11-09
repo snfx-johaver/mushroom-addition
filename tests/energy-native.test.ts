@@ -450,6 +450,7 @@ describe("measured accounting and supplied purchase plans", () => {
     expect(readActuals(h, options(), now).value?.importCost).toBe(0);
   });
   it("does not substitute synthetic fixtures on unconfigured, stale, unavailable or invalid sources", () => {
+    expect(readMeteredActuals(meteredHass(), insightsDefaults(), null).error).toContain("Source missing");
     expect(readActuals(hass(), insightsDefaults(), now).error).toContain("Measured snapshot source");
     expect(readActuals(hass(), options(), now + 7200000).error).toBe("Stale data source");
     const h = hass(); h.states["sensor.example_energy"].state = "unavailable";

@@ -60386,7 +60386,8 @@ function Nn(e, t, a, i = Date.now()) {
   if (!e) return { error: "Source missing: Home Assistant is not connected" };
   const n = t.currency || e.config?.currency;
   try {
-    Jn(t).length > Cs && ie("too many history entities");
+    const r = Jn(t);
+    if (r.length > Cs && ie("too many history entities"), !r.length && a == null) return { error: "Source missing: select a sensor or explicitly declare equipment Not installed" };
     const o = h2(a), s = e.config?.time_zone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC", l = Vu(i, s), _ = [], d = [], c = [], m = [], p = (k, L) => {
       try {
         return L();
@@ -63350,7 +63351,7 @@ Ts([
 Ts([
   K()
 ], ji.prototype, "geometry");
-const G2 = "0.7.5", Ft = {
+const G2 = "0.7.6", Ft = {
   SUNRISE_START: 360,
   // 6:00
   SUNRISE_END: 480,

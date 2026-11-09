@@ -4,6 +4,11 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+## 0.7.6 - 2026-11-09
+
+- Show a missing-source diagnostic when Energy Insights has no configured
+  meter sensors instead of reporting an invalid history response.
+
 ## 0.7.5 - 2026-11-09
 
 - Improve Energy Plan's full-width timeline with sticky labels and time axis,

@@ -332,6 +332,7 @@ export function readMeteredActuals(
   try {
     const entityIds = meteredEntityIds(options);
     if (entityIds.length > INSIGHTS_HISTORY_MAX_ENTITIES) fail("too many history entities");
+    if (!entityIds.length && response == null) return { error: "Source missing: select a sensor or explicitly declare equipment Not installed" };
     const groups = historyGroups(response);
     const zone = hass.config?.time_zone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
     const start = localDayStart(now, zone);
