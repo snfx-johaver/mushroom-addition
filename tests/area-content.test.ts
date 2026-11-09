@@ -38,6 +38,10 @@ describe("Area native content enhancements", () => {
     const options = { status_air_quality_entity: "sensor.quality", status_light_entity: "light.room" };
     applyAreaContent(card, options);
     const status = card.shadowRoot!.querySelector(".addition-area-status")!;
+    const surface = card.shadowRoot!.querySelector("ha-card")!;
+    expect(surface.hasAttribute("data-area-status")).toBe(true);
+    expect(surface.hasAttribute("data-area-compact")).toBe(true);
+    expect(card.shadowRoot!.querySelector("style[data-area-content]")!.textContent).toContain("position:absolute");
     expect(status.textContent).toContain("Poor");
     expect(status.textContent).toContain("60%");
     expect(status.querySelectorAll("ha-icon")).toHaveLength(2);
@@ -54,6 +58,7 @@ describe("Area native content enhancements", () => {
     expect(status.querySelectorAll("span")[1].getAttribute("style")).toContain("secondary-text-color");
     applyAreaContent(card, {});
     expect(card.shadowRoot!.querySelector(".addition-area-status")).toBeNull();
+    expect(surface.hasAttribute("data-area-status")).toBe(false);
     expect(card.hass.callService).not.toHaveBeenCalled();
   });
   it("derives the active area's light group RGB without a selector and clears stale accents", () => {

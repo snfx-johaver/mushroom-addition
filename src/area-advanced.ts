@@ -548,7 +548,9 @@ export class MushroomAreaControlsAdvanced extends LitElement {
     .entity:hover:not(:disabled) { background: color-mix(in srgb, var(--primary-text-color) 13%, transparent); }
     .entity:disabled { color: var(--disabled-text-color, var(--secondary-text-color)); cursor: default; }
     .entity:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
-    :host([named]) .entity { height: 64px; }
+    :host([named]) .entity { min-height: 64px; height:auto; padding:4px; gap:0; }
+    :host([named]) .button-icon { width:24px; height:24px; }
+    :host([named]) .button-icon, :host([named]) .button-label { flex-shrink:0; }
     .button-icon { display: flex; align-items: center; justify-content: center; width:var(--mush-icon-size, 36px);
       height:var(--mush-icon-size, 36px); border-radius:50%; background:color-mix(in srgb, var(--control-icon-color) 18%, transparent); }
     .entity.is-off .button-icon { background:rgba(158,158,158,.18); color:rgb(158,158,158); }
@@ -807,7 +809,7 @@ export class MushroomAreaAdvancedEditor extends LitElement {
       let extended = cache.get(base);
       if (!extended) {
         extended = base.map(field => field.name !== "content" ? field : { ...field, schema: [
-        { name: "status", type: "expandable", schema: [
+        { name: "status", type: "expandable", flatten: true, schema: [
           { name: "status_air_quality_entity", selector: { entity: { domain: ["sensor"] } } },
           { name: "status_light_entity", selector: { entity: { domain: ["light"] } } },
         ] },

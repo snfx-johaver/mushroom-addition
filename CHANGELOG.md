@@ -6,6 +6,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## 0.7.6 - 2026-11-09
 
+- Fix Area Advanced status selectors, compact card spacing, and clipped
+  multi-line control labels.
 - Add optional air-quality and light-brightness status to Area Advanced cards,
   plus scene-style button states and configurable buttons per row while
   retaining the existing button shape.

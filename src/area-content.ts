@@ -80,8 +80,11 @@ export function applyAreaContent(card: NativeContentCard, options: AreaContentOp
       .addition-sensor .value { overflow-wrap:anywhere; }
       .addition-sensor ha-state-icon { flex:none; --mdc-icon-size:14px;
         color:var(--secondary-text-color); }
-      .addition-area-status { display:flex; flex-wrap:wrap; align-items:center; gap:8px;
-        padding:8px 12px 0; color:var(--secondary-text-color);
+      ha-card[data-area-compact] { height:auto !important; justify-content:flex-start; }
+      ha-card[data-area-compact] ha-tile-container { height:auto !important; }
+      ha-card[data-area-status] { position:relative; box-sizing:border-box; padding-top:24px; }
+      .addition-area-status { display:flex; align-items:center; gap:8px; overflow:hidden; white-space:nowrap;
+        position:absolute; top:6px; left:12px; right:12px; color:var(--secondary-text-color);
         font-size:var(--mush-card-secondary-font-size, 12px); line-height:16px; }
       .addition-area-status span { display:inline-flex; align-items:center; gap:4px; }
       .addition-area-status ha-icon { --mdc-icon-size:14px; color:var(--status-color); }
@@ -89,6 +92,8 @@ export function applyAreaContent(card: NativeContentCard, options: AreaContentOp
     root.append(style);
   }
   const surface = root.querySelector("ha-card");
+  surface?.toggleAttribute("data-area-compact", card._config?.display_type === "compact");
+  surface?.toggleAttribute("data-area-status", Boolean(hass && (options.status_air_quality_entity || options.status_light_entity)));
   let status = surface?.querySelector<HTMLDivElement>(":scope > .addition-area-status");
   if (surface && hass && (options.status_air_quality_entity || options.status_light_entity)) {
     if (!status) {

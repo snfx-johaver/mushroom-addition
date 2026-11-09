@@ -416,6 +416,7 @@ describe("native Area card delegation", () => {
     expect(form.schema[0].schema.map(field => field.name)).toEqual([
       "status", "sensor_classes", "alert_color", "sensor_wrap", "sensor_icons", "use_light_color", "camera_privacy_entity", "area_buttons_per_row",
     ]);
+    expect(form.schema[0].schema[0]).toMatchObject({ name: "status", type: "expandable", flatten: true });
     expect(form.data).toMatchObject({ alert_color: "red", sensor_wrap: true, sensor_icons: true });
     expect(form.computeLabel({ name: "alert_color" })).toBe("Alert icon color");
     expect(form.computeLabel({ name: "camera_privacy_entity" })).toBe("Camera privacy entity");
@@ -577,7 +578,8 @@ describe("advanced controls inside the native feature position", () => {
     const styles = MushroomAreaControlsAdvanced.styles.cssText;
     expect(styles).toContain("flex-direction: column");
     expect(styles).toContain("margin-top: auto");
-    expect(styles).toContain("height: 64px");
+    expect(styles).toContain("min-height: 64px; height:auto; padding:4px; gap:0");
+    expect(styles).toContain(":host([named]) .button-icon, :host([named]) .button-label { flex-shrink:0; }");
     element.setConfig({ type: "area-controls", controls: [{ entity_id: "sensor.test", icon: "mdi:star" }] });
     await settle(element); expect(element.hasAttribute("named")).toBe(false);
   });
