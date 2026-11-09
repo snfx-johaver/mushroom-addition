@@ -47,7 +47,7 @@ All settings below live under `energy_insights`:
 | `metered` | Solar, grid import/export, battery charge/discharge and import-rate sensor selectors, with optional attribute-field mappings; export rate is optional |
 | `currency` | Optional ISO currency code; otherwise use Home Assistant's currency |
 | `fixedExportRate` | Optional fixed feed-in rate in the configured currency/kWh; mutually exclusive with an export-rate sensor |
-| `maxAgeMinutes` | Maximum snapshot/live/meter-observation age, 1–10080 minutes; default 60 |
+| `maxAgeMinutes` | Maximum snapshot/live/history-refresh age, 1–10080 minutes; default 60 |
 | `activeThreshold` | Active consumer threshold in W; default 50, strictly greater than |
 | `sort` | `energy` (default) or `power` |
 | `activeOnly` | Initial active-only filter; default false |
@@ -80,38 +80,88 @@ The optional export-rate sensor or **Fixed export rate** calculates feed-in cred
 Without either, export credit is marked **Not supplied** and is not subtracted
 from the displayed import cost.
 
-The measured window begins at local midnight in Home Assistant's configured
-time zone. Every meter's end is its last recorded observation, not the time a
-request finished. The card separately shows the last successful refresh and each
-source's observation window in collapsed diagnostics. Home consumption is derived from the
+The accounting window begins at local midnight in Home Assistant's configured
+time zone (including DST) and ends at the HA state snapshot captured when the
+history request starts, **not** when the request finishes. Recorder readings and
+the captured current cumulative values establish a common endpoint for independent
+meters and consumers. A numeric, available current state is HA's current cumulative
+reading even if its `last_updated` is old because it has not changed; an idle
+export or battery meter is not rejected just for that timestamp. No power is
+extrapolated after the last update. Where the last state update precedes the
+common endpoint, a visible approximation notice states that the current counter
+is carried forward assuming no change between reports, not a synchronized
+physical sample. Diagnostics retain both the accounting endpoint and last state
+update timestamp. A newer current reading bridges Recorder lag; newer Recorder
+readings take precedence when the frontend state subscription lags. The current
+state is compared with the Recorder observation at its own timestamp, not with
+a later reading. Recorder's microsecond timestamps and HA's truncated millisecond
+ISO timestamps are synchronized at millisecond precision. A conflicting value
+for the same observation, future timestamp, invalid state, or observed
+decrease fails that source. The card separately shows the last successful refresh and each
+source's accounting window in collapsed diagnostics. Home consumption is derived from the
 configured energy balance, not read from a HEMS snapshot:
 
 `solar + grid import + battery discharge - battery charge - grid export`
 
 Meter inputs must use comparable AC boundaries. Counters must be cumulative
-and non-resetting. History must contain a reading at the start of the day; if a
-meter's first changed reading crosses midnight, the card rejects that total
-rather than guessing how much energy occurred before midnight. Recorder tariff
-history must also cover each import interval. If a price changes inside an
-interval between meter readings, the card reports that the readings need
-alignment with the tariff change instead of allocating energy by assumption.
-The optional feed-in rate sensor follows the same interval-alignment rule.
+and non-resetting. History must contain a cumulative baseline at or before midnight.
+The card uses the **last recorded HA state at midnight** as its baseline. If the
+last change preceded midnight, the first subsequent delta is attributed to today
+with a visible approximation notice: its physical timing is uncertain.
+It does **not** interpolate energy across the last-change timestamp, which can be
+many hours old on an idle meter. Recorder also synthesizes a carry-in row at the
+requested history start; complete history with no intervening changes establishes
+the same held HA state at midnight. This convention is independent of request
+lookback length and supports idle export meters whose first change is at midday.
+It is **HA state-change accounting, not an exact physical midnight measurement**.
+An unchanged carry-in/current counter establishes zero reported energy.
+A missing, unknown or unavailable carry-in is not replaced by zero.
+
+Daily/reset production meters are **not supported as non-resetting counters**, even
+when HA labels them `total_increasing`. Choose a lifetime production counter, or
+provide a validated snapshot instead. An observed reset fails solar and the derived
+household total; an unavailable midnight baseline does likewise. Neither a daily
+sensor's current value nor its first morning reading proves zero at midnight.
+
+Recorder tariff history must cover each nonzero energy interval. A tariff change
+inside a meter interval splits its energy in proportion to elapsed time. The
+individual rate allocations and resulting costs are approximate, while the
+interval's original cumulative delta is conserved. Changes exactly on meter
+boundaries and redundant equal-rate observations require no estimated allocation.
+Negative and zero rates are supported. The optional feed-in rate sensor follows
+the same rules.
 Fixed rates are explicitly assumed constant over the measured day.
+An always-visible **Approximate accounting** notice explains affected sources and
+assumptions; affected interval rows carry `≈`. Midnight timing uncertainty propagates to
+energy totals, household shares and affected costs. Aligned cumulative endpoints
+and constant tariffs require no allocation estimate, but carry-forward endpoint
+assumptions are still labeled independently.
+Accounting notices, their assumption explanations, last-state-update labels and
+table-limit notices are translated in all 33 supported languages. Changing the UI
+language also updates cached accounting explanations without another history
+request; technical source IDs and measured values are preserved.
 
 Energy and pricing validate separately. A missing or invalid tariff leaves valid
 import/export kWh visible, marks affected prices/costs **Not supplied**, and
 explains the problem. It never shows a partially priced day as a complete cost.
 Likewise, a missing energy meter does not hide unrelated valid meters. Household
-consumption is only available when all installed balance meters cover the same
-endpoint; asynchronous observation endpoints are explained, not interpolated.
+consumption is only available when all installed balance meters are valid at the
+common captured endpoint. Missing baselines, unavailable/invalid history, unit
+changes, conflicting duplicate timestamps and resets remain failures, not estimates.
 Negative balances are unavailable, not coerced into valid household totals.
 Meter resets and unsupported units remain explicit errors.
+This card cannot detect an integration that silently freezes a numeric state, a
+reset that recovers entirely between observations, or physical measurement latency.
+It trusts HA's current-state availability; old change timestamps alone do not prove
+either freshness or failure. Use integration health/availability monitoring for
+those failures; this is not billing-grade accounting.
 
 The measured import/export chart uses interval quantities in kWh (not inferred
 instantaneous power), with import above and export below zero. It draws at most
 96 groups per direction, summing consecutive measurements for dense histories.
-Tooltips identify each group's quantity and start/end; the interval table retains
-the original measurements. Source mappings stay in the editor and collapsed
+Tooltips identify each group's quantity and start/end. Interval and rate tables
+render at most the first 200 rows each, with a visible truncation note; **all**
+accepted rows still contribute to totals, rate buckets and the chart. Source mappings stay in the editor and collapsed
 diagnostics rather than a large everyday dashboard panel.
 
 History is fetched outside rendering. On initial load, source-mapping changes,
@@ -119,11 +169,15 @@ and replacement of the Home Assistant connection, the card batches the unique co
 `history/history_during_period` request. The steady-state refresh is at most
 once every 15 minutes while connected; a changed meter mapping can trigger an
 immediate batched refresh. Source-health changes revalidate cached history
-without requesting it again. Each request uses a bounded
-27-hour window and caps the batch at 39 entities (seven base sensors plus up to
-32 consumer meters) and 10,000 states per
-entity. Steady state is at most four requests per hour (96 per day) and 27
-entity-hours per source per request; the focused tests assert the one-request,
+without advancing the cached endpoint or requesting it again. Each request starts
+one hour before local midnight, allowing actual pre-midnight readings to bracket
+the day boundary. The largest usual DST window is 26 elapsed hours. The batch is
+capped at 39 entities (seven base sensors plus up to 32 consumer meters), 50,000
+states per entity, and 250,000 states across the response. Per-source overflow
+invalidates that source; aggregate overflow rejects the response. Pricing is also
+capped at 100,000 allocated intervals per direction. No downsampling discards
+meter deltas before accounting. Steady state is at most four requests per hour
+(96 per day); the focused tests assert the one-request,
 entity-count, state-count and refresh-cadence budgets. Recorder data is cached
 in the card until the next refresh; no history query runs during render. A pending
 same-configuration request is not duplicated. Diagnostics measure request-plus-
@@ -131,8 +185,9 @@ parsing duration in milliseconds, entity count and returned state count; these
 are client-side load measurements, not a claim about Recorder's CPU usage.
 Requests time out explicitly after 30 seconds. A failed refresh retains the last
 successful measurements with a visible failure warning; cached publication and
-observation age still trigger stale warnings. The 10,000-state cap is checked
-after receiving the response, not a server-side response-size limit.
+snapshot age still triggers stale warnings. State caps are checked
+after receiving the response, not server-side response-size limits; the HA
+history websocket API does not provide a response-row limit or pagination here.
 Disconnection or superseding configuration cancels the client-side wait and
 disposes its timeout; displaced responses cannot update the current card.
 

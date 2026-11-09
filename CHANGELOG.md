@@ -15,6 +15,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
   without mixing forecast values with measured energy or executing device actions.
 - Add a measured interval chart and bounded cached history refreshes with timeout,
   stale-response protection and request-load diagnostics.
+- Support high-frequency meters and independently updated counters, with clearly
+  identified estimates for midnight boundaries and tariff interval allocations.
 - Adapt both energy cards to narrow containers with readable consumer rows,
   touch-sized controls, stacked details and internally scrolling charts/tables,
   preserving full-width desktop layouts.

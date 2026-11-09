@@ -9,8 +9,8 @@ import { relevantHassChanged } from "../energy-cards/helpers";
 import type { AdditionConfig, HomeAssistant } from "../types";
 import { ENERGY_INSIGHTS_TAG, insightsDefaults, insightsOptions, validateInsights, type EnergyInsightsConfig } from "./config";
 import {
-  INSIGHTS_HISTORY_MAX_ENTITIES, INSIGHTS_HISTORY_REFRESH_MS, livePower, livePercentage,
-  meteredEntityIds, readActuals, readMeteredActuals, readPurchasePlan,
+  INSIGHTS_HISTORY_LOOKBACK_MS, INSIGHTS_HISTORY_MAX_ENTITIES, INSIGHTS_HISTORY_REFRESH_MS, livePower, livePercentage,
+  localDayStart, meteredEntityIds, readActuals, readMeteredActuals, readPurchasePlan,
   type Actuals, type PurchasePlan, type PurchaseBlock, type SourceResult,
 } from "./data";
 
@@ -32,6 +32,7 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
   private cancelHistoryRequest?: () => void;
   private historyResponse?: unknown;
   private historySnapshotAt = 0;
+  private historyHass?: HomeAssistant;
   @state() private historyLoad?: { duration: number; entities: number; states: number };
 
   static styles = [MushroomAdditionCard.styles, css`
@@ -221,7 +222,7 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
         })) {
           if (this.historyResponse !== undefined) {
             const failures = this.measuredHistory?.value?.warnings?.filter(warning => warning.startsWith("Recorder history request failed:")) ?? [];
-            const refreshed = readMeteredActuals(this.hass, insightsOptions(this.config), this.historyResponse, this.historySnapshotAt);
+            const refreshed = readMeteredActuals(this.checkedHistorySnapshot(this.historyHass!), insightsOptions(this.config), this.historyResponse, this.historySnapshotAt);
             if (refreshed.value) refreshed.value.warnings = [...(refreshed.value.warnings ?? []), ...failures];
             this.measuredHistory = refreshed;
           } else this.refreshMeasuredHistory();
@@ -234,6 +235,17 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
     this.cancelHistoryRequest?.();
     this.cancelHistoryRequest = undefined;
     this.historyPending = false;
+  }
+  private checkedHistorySnapshot(snapshot: HomeAssistant): HomeAssistant {
+    const states = { ...snapshot.states };
+    for (const id of meteredEntityIds(insightsOptions(this.config!))) {
+      const current = this.hass?.states[id];
+      if (!current || ["unknown", "unavailable"].includes(current.state) ||
+        current.attributes.unit_of_measurement !== states[id]?.attributes.unit_of_measurement) {
+        states[id] = { ...(current ?? states[id]), state: "unavailable" };
+      }
+    }
+    return { ...snapshot, states };
   }
   private refreshMeasuredHistory(): void {
     if (!this.isConnected || !this.config) return;
@@ -284,7 +296,7 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
     }
     const message = {
       type: "history/history_during_period",
-      start_time: new Date(now - 27 * 60 * 60 * 1000).toISOString(),
+      start_time: new Date(localDayStart(now, hass.config?.time_zone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC") - INSIGHTS_HISTORY_LOOKBACK_MS).toISOString(),
       end_time: new Date(now).toISOString(),
       entity_ids: ids,
       minimal_response: false,
@@ -303,11 +315,12 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
           timeout = window.setTimeout(() => reject(new Error("Recorder history request timed out after 30 seconds")), 30000);
         })]);
         if (response === undefined) throw new Error("Recorder history connection is unavailable");
-        const result = readMeteredActuals(hass, options, response, now);
+        const result = readMeteredActuals(this.checkedHistorySnapshot(hass), options, response, now);
         if (this.isConnected && generation === this.historyGeneration) {
           this.measuredHistory = result;
-          this.historyResponse = response;
+          this.historyResponse = result.value ? response : undefined;
           this.historySnapshotAt = now;
+          this.historyHass = result.value ? hass : undefined;
           const groups = Array.isArray(response) ? response : response && typeof response === "object" ? Object.values(response) : [];
           this.historyLoad = {
             duration: performance.now() - began, entities: ids.length,
@@ -434,6 +447,11 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
         data.coverage?.some(source => source.end !== undefined && Date.now() - source.end > options.maxAgeMinutes * 60000)
         ? this.error("Stale data source") : nothing}
       ${data.warnings?.map(warning => this.error(warning))}
+      ${data.approximations?.length ? html`<p class="approximation" role="note"><strong>${this.t("Approximate accounting")}</strong>:
+        ${data.approximations.map(message => {
+          const separator = message.indexOf(": ");
+          return separator < 0 ? this.t(message) : `${message.slice(0, separator)}: ${this.t(message.slice(separator + 2))}`;
+        }).join(" ")} ${this.t("Affected totals, household shares and costs are estimates, not exact measurements.")}</p>` : nothing}
       <div class="kpis">
         ${this.kpi("Imported", this.kwh(data.imported), `${this.t("Cost")} ${this.money(data.importCost)} · ${this.t("Weighted average")} ${data.imported && data.importCost !== undefined ? this.rate(data.importCost / data.imported) : this.t("Not supplied")}`)}
         ${this.kpi("Exported", this.kwh(data.exported), `${this.t("Credit")} ${this.money(data.exportCredit)} · ${data.exported && data.exportCredit !== undefined ? this.rate(data.exportCredit / data.exported) : this.t("Not supplied")}`, "mdi:transmission-tower", "orange")}
@@ -476,15 +494,18 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
       </section>` : nothing}
       ${options.showPurchases ? this.measuredChart(data) : nothing}
       ${options.showPurchases ? html`<section class="section"><h3>${this.t("What you bought, at what price")}</h3>
-        <div class="price-mix" aria-hidden="true">${data.buckets.map((bucket, index) => html`<i style=${`width:${data.imported ? bucket.quantity / data.imported * 100 : 0}%;--tone:${resolveColor(["green", "amber", "orange"][index % 3], "green")}`}></i>`)}</div>
+        <div class="price-mix" aria-hidden="true">${data.buckets.slice(0, 200).map((bucket, index) => html`<i style=${`width:${data.imported ? bucket.quantity / data.imported * 100 : 0}%;--tone:${resolveColor(["green", "amber", "orange"][index % 3], "green")}`}></i>`)}</div>
         <div class="table-scroll"><table><caption class="sr-only">${this.t("Measured purchases")}</caption>
           <thead><tr>${["Unit rate", "Energy bought", "Share of import", "Cost"].map(label => html`<th scope="col">${this.t(label)}</th>`)}</tr></thead>
-          <tbody>${data.buckets.map(bucket => html`<tr><td>${this.rate(bucket.rate)}</td><td>${this.kwh(bucket.quantity)}</td><td>${data.imported ? `${this.n(bucket.quantity / data.imported * 100, 0)}%` : this.t("Not applicable")}</td><td>${this.money(bucket.cost)}</td></tr>`)}</tbody>
+          <tbody>${data.buckets.slice(0, 200).map(bucket => html`<tr><td>${this.rate(bucket.rate)}</td><td>${this.kwh(bucket.quantity)}</td><td>${data.imported ? `${this.n(bucket.quantity / data.imported * 100, 0)}%` : this.t("Not applicable")}</td><td>${this.money(bucket.cost)}</td></tr>`)}</tbody>
           <tfoot><tr><td>${this.t("Total imported")}</td><td>${this.kwh(data.imported)}</td><td>${data.imported ? "100%" : this.t("Not applicable")}</td><td>${this.money(data.importCost)}</td></tr></tfoot>
         </table></div>
-        <details><summary>${this.t("Metered intervals")} (${data.intervals.length})</summary><div class="table-scroll"><table>
+        ${data.buckets.length > 200 ? html`<p>${this.t("Only the first 200 rate buckets are shown; totals include all {count} buckets.").replace("{count}", this.n(data.buckets.length, 0))}</p>` : nothing}
+        <details><summary>${this.t("Metered intervals")} (${data.intervals.length})</summary>
+          ${data.intervals.length > 200 ? html`<p>${this.t("Only the first 200 intervals are shown; totals and chart include all {count} intervals.").replace("{count}", this.n(data.intervals.length, 0))}</p>` : nothing}
+          <div class="table-scroll"><table>
           <thead><tr>${["Time", "Import", "Export", "Unit rate", "Export rate", "Cost", "Credit"].map(label => html`<th scope="col">${this.t(label)}</th>`)}</tr></thead>
-          <tbody>${data.intervals.map(item => html`<tr><td>${this.time(item.start)} - ${this.time(item.end)}</td><td>${this.kwh(item.imported, 3)}</td><td>${this.kwh(item.exported, 3)}</td><td>${item.imported ? this.rate(item.rate) : "-"}</td><td>${item.exported ? this.rate(item.exportRate) : "-"}</td><td>${this.money(item.rate === undefined ? undefined : item.imported * item.rate)}</td><td>${this.money(item.exportRate === undefined ? undefined : item.exported * item.exportRate)}</td></tr>`)}</tbody>
+          <tbody>${data.intervals.slice(0, 200).map(item => html`<tr><td>${item.approximate ? "≈ " : ""}${this.time(item.start)} - ${this.time(item.end)}</td><td>${this.kwh(item.imported, 3)}</td><td>${this.kwh(item.exported, 3)}</td><td>${item.imported ? this.rate(item.rate) : "-"}</td><td>${item.exported ? this.rate(item.exportRate) : "-"}</td><td>${this.money(item.rate === undefined ? undefined : item.imported * item.rate)}</td><td>${this.money(item.exportRate === undefined ? undefined : item.exported * item.exportRate)}</td></tr>`)}</tbody>
         </table></div></details>
         <div class="spend-note"><strong>${this.money(data.exportRateConfigured ? net : data.importCost)} ${this.t(data.exportRateConfigured ? "Net variable grid spend" : "Import cost")}</strong><br>
           ${this.money(data.importCost)} ${this.t("Import cost")} - ${data.exportRateConfigured ? this.money(data.exportCredit) : this.t("Not supplied")} ${this.t("Export credit")}
@@ -494,7 +515,8 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
       </section>` : nothing}
       ${data.coverage ? html`<details class="diagnostics"><summary>${this.t("Measured source")} · ${this.t("Updated")}</summary>
         ${data.coverage.map(item => html`<p>${item.id}: ${item.absent ? this.t("Not installed") :
-          item.error ?? (item.end === undefined ? this.t("Not supplied") : this.time(item.end))}</p>`)}
+          item.error ?? (item.end === undefined ? this.t("Not supplied") : this.time(item.end))}
+          ${item.lastUpdated === undefined ? nothing : html` · ${this.t("Last state update")}: ${this.time(item.lastUpdated)}`}</p>`)}
         ${this.historyLoad ? html`<p>${this.historyLoad.entities} ${this.t("Sources")} · ${this.historyLoad.states} ${this.t("State")} · ${this.n(this.historyLoad.duration, 0)} ms</p>` : nothing}
       </details>` : nothing}`;
   }

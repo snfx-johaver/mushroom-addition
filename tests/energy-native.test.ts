@@ -12,6 +12,8 @@ import { editorSchemaFor, type EditorField } from "../src/editor-schema";
 import { insightsDefaults, validateInsights, type EnergyInsightsOptions } from "../src/energy-insights/config";
 import {
   INSIGHTS_HISTORY_MAX_ENTITIES, INSIGHTS_HISTORY_MAX_STATES_PER_ENTITY,
+  INSIGHTS_HISTORY_LOOKBACK_MS, INSIGHTS_HISTORY_MAX_STATES, localDayStart,
+  INSIGHTS_APPROXIMATION_MESSAGES,
   INSIGHTS_HISTORY_REFRESH_MS, livePower, readActuals,
   readMeteredActuals, readPurchasePlan,
 } from "../src/energy-insights/data";
@@ -19,7 +21,8 @@ import { energyNumber, energyTime } from "../src/energy-format";
 import { sharedStyles } from "../src/styles";
 import { PLAN_FIELDS, PLAN_ROW_FIELDS, PLAN_METRIC_FIELDS, PLAN_PERIOD_FIELDS, INSIGHTS_FIELDS, INSIGHTS_CONSUMER_FIELDS, type NativeFields } from "../src/energy-editor-schema";
 import { localizeEditorSchema } from "../src/localized-schema";
-import { editorHelper, localizeText, translationCatalogs } from "../src/localize";
+import { editorHelper, localizeText, SUPPORTED_LOCALES, translationCatalogs } from "../src/localize";
+import { energyInsightsAccounting } from "../src/translations/energy-insights-accounting";
 import type { MushroomAdditionEditor } from "../src/editor";
 import type { AdditionConfig, HomeAssistant } from "../src/types";
 import { openEditorSections } from "./editor-helpers";
@@ -92,9 +95,10 @@ function meterHistory(): unknown[][] {
 }
 function meteredHass(): HomeAssistant {
   const h = hass();
+  const history = meterHistory();
   for (const [index, source] of Object.values(meteredOptions().metered).entries()) {
     h.states[source.entity!] = {
-      entity_id: source.entity!, state: String(index < 5 ? 10 : .2), last_updated: new Date(now).toISOString(),
+      entity_id: source.entity!, state: (history[index].at(-1) as { state: string }).state, last_updated: new Date(now).toISOString(),
       attributes: { unit_of_measurement: index < 5 ? "kWh" : "EUR/kWh" },
     };
   }
@@ -252,17 +256,17 @@ describe("native energy configuration", () => {
 describe("measured accounting and supplied purchase plans", () => {
   it("keeps energy totals when tariffs cannot be priced and never reports a partial cost as complete", () => {
     const h = meteredHass(), history = meterHistory();
-    history[5].splice(1, 0, { entity_id: "sensor.import_rate", state: ".3", last_updated: "2031-04-12T06:00:00Z", attributes: {} });
+    history[5].splice(1, 0, { entity_id: "sensor.import_rate", state: "unavailable", last_updated: "2031-04-12T06:00:00Z", attributes: {} });
     const data = readMeteredActuals(h, meteredOptions(), history, now).value!;
     expect(data.imported).toBe(4);
     expect(data.home).toBe(4.5);
     expect(data.importCost).toBeUndefined();
     expect(data.buckets).toEqual([]);
     expect(data.exportCredit).toBeCloseTo(.1);
-    expect(data.warnings?.join()).toContain("align meter readings");
+    expect(data.warnings?.join()).toContain("invalid value");
     expect(data.intervals.find(item => item.imported)?.rate).toBeUndefined();
   });
-  it("isolates missing meters and reports their own observation windows without inventing a household total", () => {
+  it("isolates missing meters and aligns independent changes using the captured current states", () => {
     const h = meteredHass(), opt = meteredOptions();
     delete h.states["sensor.solar_meter"];
     const partial = readMeteredActuals(h, opt, meterHistory(), now).value!;
@@ -274,8 +278,8 @@ describe("measured accounting and supplied purchase plans", () => {
     (history[0][1] as { last_updated: string }).last_updated = "2031-04-12T11:45:00Z";
     const staggered = readMeteredActuals(meteredHass(), opt, history, now).value!;
     expect(staggered.solar).toBe(2);
-    expect(staggered.home).toBeUndefined();
-    expect(staggered.warnings?.join()).toContain("observation windows differ");
+    expect(staggered.home).toBe(4.5);
+    expect(staggered.coverage?.filter(item => item.end).every(item => item.end === now)).toBe(true);
   });
   it("supports explicitly absent equipment and fixed export credit, including negative and zero rates", () => {
     const opt = meteredOptions();
@@ -298,7 +302,7 @@ describe("measured accounting and supplied purchase plans", () => {
   it("reads consumer meters within the same batch and validates their coverage and household allocation", () => {
     const h = meteredHass(), opt = meteredOptions();
     opt.consumers = [{ id: "device", name: "Device", energySource: { entity: "sensor.device" } }];
-    h.states["sensor.device"] = { ...h.states["sensor.solar_meter"], entity_id: "sensor.device" };
+    h.states["sensor.device"] = { ...h.states["sensor.solar_meter"], entity_id: "sensor.device", state: "102" };
     const history = meterHistory();
     history.push([
       { entity_id: "sensor.device", state: "100", last_updated: "2031-04-12T00:00:00Z" },
@@ -308,6 +312,7 @@ describe("measured accounting and supplied purchase plans", () => {
     expect(data.consumers[0].energy).toBe(2);
     expect(data.remainder).toBe(2.5);
     (history[7][1] as { state: string }).state = "120";
+    h.states["sensor.device"].state = "120";
     const overcount = readMeteredActuals(h, opt, history, now).value!;
     expect(overcount.consumers[0].energy).toBeUndefined();
     expect(overcount.warnings?.join()).toContain("exceeds household");
@@ -373,13 +378,7 @@ describe("measured accounting and supplied purchase plans", () => {
     expect(readActuals(h, mapped, now).value?.importCost).toBeCloseTo(1.5);
   });
   it("calculates measured totals from cumulative meters and timestamped prices", () => {
-    const h = hass(), configured = meteredOptions();
-    for (const [index, source] of Object.values(configured.metered).entries()) {
-      h.states[source.entity!] = {
-        entity_id: source.entity!, state: "ready", last_updated: new Date(now).toISOString(),
-        attributes: { unit_of_measurement: index < 5 ? "kWh" : "EUR/kWh" },
-      };
-    }
+    const h = meteredHass(), configured = meteredOptions();
     const actual = readMeteredActuals(h, configured, meterHistory(), now).value!;
     expect(actual.start).toBe(Date.parse("2031-04-12T00:00:00Z"));
     expect(actual.home).toBeCloseTo(4.5);
@@ -393,6 +392,7 @@ describe("measured accounting and supplied purchase plans", () => {
     expect(withoutExportRate.exportRateConfigured).toBe(false);
     expect(withoutExportRate.exportCredit).toBeUndefined();
     configured.metered.solar.field = "total";
+    h.states["sensor.solar_meter"].attributes.total = "12";
     const mappedHistory = meterHistory();
     for (const row of mappedHistory[0]) {
       const state = row as { state: string; attributes: Record<string, unknown> };
@@ -408,17 +408,11 @@ describe("measured accounting and supplied purchase plans", () => {
     expect(readMeteredActuals(h, meteredOptions(), localHistory, now).value?.start)
       .toBe(Date.parse("2031-04-11T22:00:00Z"));
   });
-  it("requires configured, healthy meters, supported units, midnight coverage, and aligned tariff intervals", () => {
-    const h = hass(), configured = meteredOptions(), history = meterHistory();
+  it("requires configured healthy meters, supported units, midnight coverage and bounded history", () => {
+    const h = meteredHass(), configured = meteredOptions(), history = meterHistory();
     const warnings = (opt: EnergyInsightsOptions, rows: unknown) =>
       readMeteredActuals(h, opt, rows, now).value?.warnings?.join(" ");
     expect(warnings(insightsDefaults(), history)).toContain("solar");
-    for (const [index, source] of Object.values(configured.metered).entries()) {
-      h.states[source.entity!] = {
-        entity_id: source.entity!, state: "ready", last_updated: new Date(now).toISOString(),
-        attributes: { unit_of_measurement: index < 5 ? "kWh" : "EUR/kWh" },
-      };
-    }
     configured.metered.gridExport.entity = "sensor.missing_export_meter";
     expect(warnings(configured, history)).toContain("missing or unavailable");
     configured.metered.gridExport.entity = "sensor.export_meter";
@@ -428,22 +422,24 @@ describe("measured accounting and supplied purchase plans", () => {
     expect(warnings(configured, [[], ...history.slice(1)])).toContain("no cumulative reading at the start");
     const crossedMidnight = meterHistory();
     crossedMidnight[0][0] = { ...(crossedMidnight[0][0] as object), last_updated: "2031-04-11T23:59:00Z" };
-    expect(warnings(configured, crossedMidnight)).toContain("crossed midnight");
+    expect(readMeteredActuals(h, configured, crossedMidnight, now).value?.approximations?.join()).toContain(INSIGHTS_APPROXIMATION_MESSAGES.midnight);
     const resetMeter = meterHistory();
     (resetMeter[0][1] as { state: string }).state = "9";
+    h.states["sensor.solar_meter"].state = "9";
     expect(warnings(configured, resetMeter)).toContain("meter reset or decreased");
+    h.states["sensor.solar_meter"].state = "12";
     const changedTariff = meterHistory();
     changedTariff[5].splice(1, 0, {
       entity_id: "sensor.import_rate", state: ".3", last_updated: "2031-04-12T06:00:00Z",
       attributes: { unit_of_measurement: "EUR/kWh" },
     });
-    expect(warnings(configured, changedTariff)).toContain("price change falls inside");
+    expect(readMeteredActuals(h, configured, changedTariff, now).value?.approximations?.join()).toContain(INSIGHTS_APPROXIMATION_MESSAGES.tariffs);
     const oversizedHistory = meterHistory();
     oversizedHistory[0] = Array.from({ length: INSIGHTS_HISTORY_MAX_STATES_PER_ENTITY + 1 }, () => ({
       entity_id: "sensor.solar_meter", state: "10", last_updated: "2031-04-12T00:00:00Z",
       attributes: { unit_of_measurement: "kWh" },
     }));
-    expect(warnings(configured, oversizedHistory)).toContain("10000-state limit");
+    expect(warnings(configured, oversizedHistory)).toContain(`${INSIGHTS_HISTORY_MAX_STATES_PER_ENTITY}-state limit`);
   });
   it("handles negative prices, zero import and zero home without NaN totals", () => {
     const h = hass(), root = actualRoot(h);
@@ -495,7 +491,355 @@ describe("measured accounting and supplied purchase plans", () => {
   });
 });
 
+describe("real-world metered Insights accounting", () => {
+  const row = (entity_id: string, state: number | string, time: number) => ({
+    entity_id, state: String(state), last_updated: new Date(time).toISOString(), attributes: {},
+  });
+  it("uses the last recorded midnight state and labels physical timing uncertainty", () => {
+    const h = meteredHass(), history = meterHistory(), opt = meteredOptions();
+    history[1] = [
+      row("sensor.import_meter", 20, start - 60000),
+      row("sensor.import_meter", 22, start + 60000),
+      row("sensor.import_meter", 24, now),
+    ];
+    const data = readMeteredActuals(h, opt, history, now).value!;
+    expect(data.imported).toBe(4);
+    expect(data.home).toBe(4.5);
+    expect(data.importCost).toBeCloseTo(.8);
+    expect(data.approximations).toContain(`gridImport: ${INSIGHTS_APPROXIMATION_MESSAGES.midnight}`);
+    expect(data.approximations).toContain(`importRate: ${INSIGHTS_APPROXIMATION_MESSAGES.tariffs}`);
+    expect(data.intervals.filter(item => item.imported).map(item => item.approximate)).toEqual([true, false]);
+    expect(data.warnings).toEqual([]);
+  });
+  it("accounts for an idle carry-in's midday first change without inventing a pre-midnight sampling timestamp", () => {
+    const h = meteredHass(), history = meterHistory();
+    history[1][0] = row("sensor.import_meter", 20, start - INSIGHTS_HISTORY_LOOKBACK_MS);
+    const data = readMeteredActuals(h, meteredOptions(), history, now).value!;
+    expect(data.imported).toBe(4);
+    expect(data.importCost).toBeCloseTo(.8);
+    expect(data.home).toBe(4.5);
+    expect(data.approximations?.join()).toContain(INSIGHTS_APPROXIMATION_MESSAGES.midnight);
+    expect(data.approximations?.join()).not.toContain("midnight energy is linearly interpolated");
+    expect(data.warnings).toEqual([]);
+    history[1][0] = row("sensor.import_meter", 20, start - 20 * 3600000);
+    const longerLookback = readMeteredActuals(h, meteredOptions(), history, now).value!;
+    expect(longerLookback.imported).toBe(data.imported);
+    expect(longerLookback.importCost).toBe(data.importCost);
+  });
+  it("accepts unchanged cumulative and price states with old change timestamps at one captured endpoint", () => {
+    const h = meteredHass(), history = meterHistory();
+    history.forEach((group, index) => {
+      const current = h.states[Object.values(meteredOptions().metered)[index].entity!];
+      current.last_updated = new Date(start - 3 * 86400000).toISOString();
+      group.splice(0, group.length, row(current.entity_id, current.state, start - INSIGHTS_HISTORY_LOOKBACK_MS));
+    });
+    const data = readMeteredActuals(h, meteredOptions(), history, now).value!;
+    expect(data.home).toBe(0);
+    expect(data.imported).toBe(0);
+    expect(data.exported).toBe(0);
+    expect(data.importCost).toBe(0);
+    expect(data.end).toBe(now);
+    expect(data.coverage?.every(item => item.end === now)).toBe(true);
+    expect(data.warnings).toEqual([]);
+    expect(data.approximations?.join()).toContain(INSIGHTS_APPROXIMATION_MESSAGES.endpoint);
+  });
+  it("uses current cumulative values to bridge Recorder lag and independent final updates without extrapolating power", () => {
+    const h = meteredHass(), history = meterHistory();
+    for (let index = 0; index < 5; index++) {
+      const current = h.states[Object.values(meteredOptions().metered)[index].entity!];
+      current.last_updated = new Date(now - (index + 1) * 60000).toISOString();
+      (history[index][1] as { last_updated: string }).last_updated = current.last_updated;
+    }
+    history[1][1] = row("sensor.import_meter", 22, now - 3600000);
+    const data = readMeteredActuals(h, meteredOptions(), history, now).value!;
+    expect(data.imported).toBe(4);
+    expect(data.home).toBe(4.5);
+    expect(data.importCost).toBeCloseTo(.8);
+    expect(data.coverage?.every(item => item.end === now)).toBe(true);
+    expect(data.approximations?.join()).toContain(INSIGHTS_APPROXIMATION_MESSAGES.endpoint);
+  });
+  it("allocates measured deltas by elapsed time across positive, negative and zero tariffs without losing energy", () => {
+    const h = meteredHass(), history = meterHistory(), opt = meteredOptions();
+    history[5] = [.2, -.1, 0, .4].map((rate, index) => row("sensor.import_rate", rate, start + index * 3 * 3600000));
+    h.states["sensor.import_rate"].state = ".4";
+    history[6] = [row("sensor.export_rate", .1, start), row("sensor.export_rate", -.1, start + 6 * 3600000)];
+    h.states["sensor.export_rate"].state = "-.1";
+    const data = readMeteredActuals(h, opt, history, now).value!;
+    expect(data.imported).toBe(4);
+    expect(data.importCost).toBeCloseTo(.5);
+    expect(data.exportCredit).toBeCloseTo(0);
+    expect(data.buckets).toHaveLength(4);
+    expect(data.buckets.reduce((sum, item) => sum + item.quantity, 0)).toBe(4);
+    expect(data.buckets.reduce((sum, item) => sum + item.cost, 0)).toBeCloseTo(data.importCost!);
+    expect(data.intervals.filter(item => item.imported).every(item => item.approximate)).toBe(true);
+    expect(data.approximations?.join()).toContain(INSIGHTS_APPROXIMATION_MESSAGES.tariffs);
+  });
+  it("does not mark aligned tariffs or redundant price observations as estimated allocations", () => {
+    const h = meteredHass(), history = meterHistory();
+    history[1].splice(1, 0, row("sensor.import_meter", 22, start + 6 * 3600000));
+    history[5] = [row("sensor.import_rate", .2, start), row("sensor.import_rate", .2, start + 3600000),
+      row("sensor.import_rate", .4, start + 6 * 3600000)];
+    h.states["sensor.import_rate"].state = ".4";
+    const data = readMeteredActuals(h, meteredOptions(), history, now).value!;
+    expect(data.importCost).toBeCloseTo(1.2);
+    expect(data.approximations).toEqual([]);
+    expect(data.intervals.some(item => item.approximate)).toBe(false);
+  });
+  it.each(["missing-baseline", "unavailable-history", "current-unavailable", "current-invalid",
+    "future-current", "missing-current-time", "reset-current", "conflict", "baseline-conflict", "unit-change"])("rejects uncertain energy: %s", kind => {
+    const h = meteredHass(), history = meterHistory();
+    const current = h.states["sensor.import_meter"];
+    if (kind === "missing-baseline") history[1].shift();
+    if (kind === "unavailable-history") history[1].splice(1, 0, row("sensor.import_meter", "unavailable", start + 3600000));
+    if (kind === "current-unavailable") current.state = "unavailable";
+    if (kind === "current-invalid") current.state = "not numeric";
+    if (kind === "future-current") current.last_updated = new Date(now + 1).toISOString();
+    if (kind === "missing-current-time") delete current.last_updated;
+    if (kind === "reset-current") { history[1].pop(); current.state = "19"; }
+    if (kind === "conflict") history[1].push(row("sensor.import_meter", 25, now));
+    if (kind === "baseline-conflict") history[1].unshift(row("sensor.import_meter", 19, start));
+    if (kind === "unit-change") history[1][0] = { ...row("sensor.import_meter", 20, start), attributes: { unit_of_measurement: "Wh" } };
+    const data = readMeteredActuals(h, meteredOptions(), history, now).value!;
+    expect(data.imported).toBeUndefined();
+    expect(data.home).toBeUndefined();
+    expect(data.importCost).toBeUndefined();
+    expect(data.solar).toBe(2);
+    expect(data.warnings?.length).toBeGreaterThan(0);
+  });
+  it("does not publish partial pricing when a price baseline is missing", () => {
+    const h = meteredHass(), history = meterHistory();
+    history[5].shift();
+    const data = readMeteredActuals(h, meteredOptions(), history, now).value!;
+    expect(data.imported).toBe(4);
+    expect(data.home).toBe(4.5);
+    expect(data.importCost).toBeUndefined();
+    expect(data.buckets).toEqual([]);
+    expect(data.warnings?.join()).toContain("no price reading");
+  });
+  it("does not let attribute mappings conceal unavailable historical states", () => {
+    const h = meteredHass(), history = meterHistory(), opt = meteredOptions();
+    opt.metered.gridImport.field = "total";
+    h.states["sensor.import_meter"].attributes.total = 24;
+    history[1] = [
+      { ...row("sensor.import_meter", 20, start), attributes: { total: 20 } },
+      { ...row("sensor.import_meter", "unavailable", start + 3600000), attributes: { total: 22 } },
+      { ...row("sensor.import_meter", 24, now), attributes: { total: 24 } },
+    ];
+    const data = readMeteredActuals(h, opt, history, now).value!;
+    expect(data.imported).toBeUndefined();
+    expect(data.warnings?.join()).toContain("unknown or unavailable");
+  });
+  it("synchronizes compact Recorder microseconds and HA's millisecond ISO state timestamps", () => {
+    const h = meteredHass(), history = meterHistory();
+    const opt = meteredOptions(), snapshot = now + 1000;
+    const compact = Object.fromEntries(Object.values(opt.metered).map((source, index) => {
+      return [source.entity, history[index].map((raw, position) => {
+        const row = raw as { state: string; last_updated: string; attributes: object };
+        return { s: row.state, lu: (Date.parse(row.last_updated) + (position ? .8406 : 0)) / 1000, a: row.attributes };
+      })];
+    }));
+    const data = readMeteredActuals(h, opt, compact, snapshot).value!;
+    expect(data.imported).toBe(4);
+    expect(data.home).toBe(4.5);
+    expect(data.importCost).toBeCloseTo(.8);
+    expect(data.warnings).toEqual([]);
+    h.states["sensor.import_meter"].state = "25";
+    expect(readMeteredActuals(h, opt, compact, snapshot).value?.imported).toBeUndefined();
+  });
+  it("uses newer Recorder observations when the frontend state subscription lags", () => {
+    const h = meteredHass(), history = meterHistory(), opt = meteredOptions();
+    const stateTime = now - 10000;
+    h.states["sensor.import_meter"].state = "23";
+    h.states["sensor.import_meter"].last_updated = new Date(stateTime).toISOString();
+    history[1].splice(1, 0, row("sensor.import_meter", 23, stateTime + .5));
+    h.states["sensor.import_rate"].last_updated = new Date(now - 3600000).toISOString();
+    history[5] = [row("sensor.import_rate", .2, start), row("sensor.import_rate", .2, now - 3600000),
+      row("sensor.import_rate", .3, now - 1800000)];
+    const data = readMeteredActuals(h, opt, history, now + 1000).value!;
+    expect(data.imported).toBe(4);
+    expect(data.importCost).toBeGreaterThan(.8);
+    expect(data.home).toBe(4.5);
+    expect(data.warnings).toEqual([]);
+    h.states["sensor.import_meter"].state = "22";
+    expect(readMeteredActuals(h, opt, history, now + 1000).value?.imported).toBeUndefined();
+  });
+  it("rejects daily solar resets and unavailable midnight baselines without guessing zero production", () => {
+    const h = meteredHass(), history = meterHistory();
+    history[0] = [row("sensor.solar_meter", 100, start - 60000),
+      row("sensor.solar_meter", 0, start + 60000), row("sensor.solar_meter", 12, now)];
+    let data = readMeteredActuals(h, meteredOptions(), history, now).value!;
+    expect(data.solar).toBeUndefined();
+    expect(data.home).toBeUndefined();
+    expect(data.warnings?.join()).toContain("reset or decreased");
+    history[0][0] = row("sensor.solar_meter", "unavailable", start - INSIGHTS_HISTORY_LOOKBACK_MS);
+    data = readMeteredActuals(h, meteredOptions(), history, now).value!;
+    expect(data.solar).toBeUndefined();
+    expect(data.imported).toBe(4);
+    expect(data.warnings?.join()).toContain("unknown or unavailable");
+  });
+  it("keeps sub-micro-kWh increments rather than discarding each small delta", () => {
+    const h = meteredHass(), history = meterHistory();
+    history[1] = [20, 20.0000004, 20.0000008].map((value, index) =>
+      row("sensor.import_meter", value, start + index * 6 * 3600000));
+    h.states["sensor.import_meter"].state = "20.0000008";
+    const data = readMeteredActuals(h, meteredOptions(), history, now).value!;
+    expect(data.imported).toBeCloseTo(.0000008, 12);
+    expect(data.importCost).toBeCloseTo(.00000016, 12);
+  });
+  it.each([["Wh", 1000], ["MWh", .001]] as const)("normalizes %s counters and cents tariffs before accounting", (unit, multiplier) => {
+    const h = meteredHass(), history = meterHistory();
+    h.states["sensor.import_meter"].state = String(24 * multiplier);
+    h.states["sensor.import_meter"].attributes.unit_of_measurement = unit;
+    history[1] = [row("sensor.import_meter", 20 * multiplier, start), row("sensor.import_meter", 24 * multiplier, now)];
+    h.states["sensor.import_rate"].state = "20";
+    h.states["sensor.import_rate"].attributes.unit_of_measurement = "ct/kWh";
+    history[5] = [row("sensor.import_rate", 20, start), row("sensor.import_rate", 20, now)];
+    const data = readMeteredActuals(h, meteredOptions(), history, now).value!;
+    expect(data.imported).toBeCloseTo(4);
+    expect(data.importCost).toBeCloseTo(.8);
+    expect(data.home).toBeCloseTo(4.5);
+  });
+  it("accounts for over 15000 real-style P1 states without dropping deltas", () => {
+    const h = meteredHass(), history = meterHistory(), count = 18000;
+    history[1] = Array.from({ length: count + 1 }, (_, index) =>
+      row("sensor.import_meter", 20 + 4 * index / count, start + (now - start) * index / count));
+    const data = readMeteredActuals(h, meteredOptions(), history, now).value!;
+    expect(data.imported).toBeCloseTo(4, 10);
+    expect(data.importCost).toBeCloseTo(.8, 10);
+    expect(data.home).toBeCloseTo(4.5, 10);
+    expect(data.intervals.filter(item => item.imported)).toHaveLength(count);
+    expect(data.warnings).toEqual([]);
+  });
+  it("rejects aggregate and malformed history before building unbounded interval lists", () => {
+    const h = meteredHass(), opt = meteredOptions();
+    const rows = Array.from({ length: 6 }, (_, index) => Array.from({
+      length: Math.floor(INSIGHTS_HISTORY_MAX_STATES / 5),
+    }, () => row(`sensor.meter_${index}`, 1, start)));
+    expect(readMeteredActuals(h, opt, rows, now).error).toContain("total limit");
+    const history = meterHistory();
+    expect(readMeteredActuals(h, opt, [...history, history[0]], now).error).toContain("duplicate history group");
+    history[1].push(row("sensor.solar_meter", 12, now));
+    expect(readMeteredActuals(h, opt, history, now).error).toContain("another entity");
+  });
+  it("uses calendar midnights across 23- and 25-hour DST days", () => {
+    const zone = "Europe/Amsterdam";
+    const midnight = (date: string) => localDayStart(Date.parse(`${date}T12:00:00Z`), zone);
+    expect(midnight("2026-03-30") - midnight("2026-03-29")).toBe(23 * 3600000);
+    expect(midnight("2026-10-26") - midnight("2026-10-25")).toBe(25 * 3600000);
+  });
+});
+
 describe("energy rendering and HA lifecycle", () => {
+  it("registers complete accounting translations without English fallback or broken count placeholders", () => {
+    expect(Object.keys(energyInsightsAccounting).sort()).toEqual([...SUPPORTED_LOCALES].sort());
+    for (const language of SUPPORTED_LOCALES) {
+      for (const [key, english] of Object.entries(energyInsightsAccounting.en)) {
+        const translated = energyInsightsAccounting[language][key];
+        expect(translated, `${language}: ${key}`).toBeTruthy();
+        expect(translationCatalogs[language][key]).toBe(translated);
+        expect(localizeText({ language }, english)).toBe(translated);
+        expect(translated.match(/\{[^}]+\}/g) ?? []).toEqual(english.match(/\{[^}]+\}/g) ?? []);
+        if (language !== "en") expect(translated, `${language}: ${key}`).not.toBe(english);
+      }
+      for (const message of Object.values(INSIGHTS_APPROXIMATION_MESSAGES)) {
+        expect(energyInsightsAccounting[language][`ui.release.${message}`]).toBeTruthy();
+      }
+    }
+  });
+  it.each(SUPPORTED_LOCALES)("localizes all accounting notices and bounds dense tables in %s, including cached language changes", async language => {
+    clock();
+    const h = meteredHass(), rows = meterHistory(), count = 350;
+    h.language = language;
+    h.states["sensor.solar_meter"].last_updated = new Date(now - 60000).toISOString();
+    rows[1] = Array.from({ length: count + 1 }, (_, index) => ({
+      entity_id: "sensor.import_meter", state: String(20 + 4 * index / count),
+      last_updated: new Date(index ? start + (now - start) * index / count : start - 60000).toISOString(),
+    }));
+    rows[5] = Array.from({ length: count }, (_, index) => ({
+      entity_id: "sensor.import_rate", state: String(.2 + index / 1000),
+      last_updated: new Date(start + (now - start) * index / count + (index === 1 ? 1000 : 0)).toISOString(),
+    }));
+    h.states["sensor.import_rate"].state = String(.2 + (count - 1) / 1000);
+    const callWS = vi.fn(async () => rows);
+    h.callWS = async <T>() => await callWS() as T;
+    const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
+    card.hass = h; card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: meteredOptions() });
+    document.body.append(card); await card.updateComplete; await vi.advanceTimersByTimeAsync(0); await card.updateComplete;
+    const root = card.shadowRoot!;
+    const assertLocalized = (current: HomeAssistant) => {
+      const notice = root.querySelector(".approximation")!.textContent!;
+      expect(notice).toContain(localizeText(current, "Approximate accounting"));
+      expect(notice).toContain(localizeText(current, "Affected totals, household shares and costs are estimates, not exact measurements."));
+      for (const message of Object.values(INSIGHTS_APPROXIMATION_MESSAGES)) {
+        expect(notice).toContain(localizeText(current, message));
+        if (current.language !== "en") expect(notice).not.toContain(message);
+      }
+      expect(notice).toContain(`gridImport: ${localizeText(current, INSIGHTS_APPROXIMATION_MESSAGES.midnight)}`);
+      expect(notice).toContain(`importRate: ${localizeText(current, INSIGHTS_APPROXIMATION_MESSAGES.tariffs)}`);
+      expect(notice).toContain(`solar: ${localizeText(current, INSIGHTS_APPROXIMATION_MESSAGES.endpoint)}`);
+      expect(root.textContent).toContain(localizeText(current, "Only the first 200 rate buckets are shown; totals include all {count} buckets.")
+        .replace("{count}", energyNumber(current, count, { maximumFractionDigits: 0 })));
+      expect(root.textContent).toContain(localizeText(current, "Only the first 200 intervals are shown; totals and chart include all {count} intervals.")
+        .replace("{count}", energyNumber(current, count + 2, { maximumFractionDigits: 0 })));
+      expect(root.querySelector(".diagnostics")?.textContent).toContain(localizeText(current, "Last state update"));
+      if (current.language !== "en") {
+        expect(root.textContent).not.toContain("Last state update");
+        expect(root.textContent).not.toContain("Approximate accounting");
+      }
+      expect(root.textContent).toContain(`${energyNumber(current, 4.5, { maximumFractionDigits: 2 })} kWh`);
+      expect(root.textContent).not.toContain("{count}");
+    };
+    assertLocalized(h);
+    expect(root.querySelectorAll("details table tbody tr")).toHaveLength(200);
+    expect(root.querySelectorAll(".price-mix i")).toHaveLength(200);
+    expect(root.querySelectorAll(".measured-chart rect").length).toBeLessThanOrEqual(192);
+    card.hass = { ...h, language: language === "nl" ? "de" : "nl" };
+    await card.updateComplete;
+    assertLocalized(card.hass);
+    expect(callWS).toHaveBeenCalledOnce();
+    card.remove();
+  });
+  it("revalidates cached availability without moving its endpoint to newer live readings", async () => {
+    clock();
+    const h = meteredHass();
+    const callWS = vi.fn(async () => meterHistory());
+    h.callWS = async <T>() => await callWS() as T;
+    const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
+    card.hass = h; card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: meteredOptions() });
+    document.body.append(card); await card.updateComplete; await vi.advanceTimersByTimeAsync(0); await card.updateComplete;
+    await vi.advanceTimersByTimeAsync(60000);
+    card.hass = { ...h, states: { ...h.states,
+      "sensor.solar_meter": { ...h.states["sensor.solar_meter"], state: "15", last_updated: new Date(now + 60000).toISOString() },
+      "sensor.import_rate": { ...h.states["sensor.import_rate"], state: "unavailable" },
+    } };
+    await card.updateComplete; await vi.advanceTimersByTimeAsync(0); await card.updateComplete;
+    expect(callWS).toHaveBeenCalledOnce();
+    expect(card.shadowRoot!.textContent).toContain("4.5 kWh");
+    expect(card.shadowRoot!.textContent).not.toContain("future timestamp");
+    expect(card.shadowRoot!.textContent).toContain("importRate: selected sensor is missing or unavailable");
+    card.hass = { ...card.hass, states: { ...card.hass!.states, "sensor.import_rate": h.states["sensor.import_rate"] } };
+    await card.updateComplete; await vi.advanceTimersByTimeAsync(0); await card.updateComplete;
+    expect(card.shadowRoot!.textContent).not.toContain("importRate: selected sensor is missing or unavailable");
+    expect(card.shadowRoot!.textContent).toContain("4.5 kWh");
+    expect(callWS).toHaveBeenCalledOnce();
+    card.remove();
+  });
+  it("does not restore a now-unavailable sensor when an earlier history request completes", async () => {
+    clock();
+    const h = meteredHass();
+    let finish: (value: unknown) => void = () => undefined;
+    const pending = new Promise<unknown>(resolve => { finish = resolve; });
+    h.callWS = async <T>() => await pending as T;
+    const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
+    card.hass = h; card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: meteredOptions() });
+    document.body.append(card); await card.updateComplete;
+    card.hass = { ...h, states: { ...h.states, "sensor.import_meter": { ...h.states["sensor.import_meter"], state: "unavailable" } } };
+    await card.updateComplete;
+    finish(meterHistory()); await vi.advanceTimersByTimeAsync(0); await card.updateComplete;
+    expect(card.shadowRoot!.textContent).toContain("gridImport: selected sensor is missing or unavailable");
+    expect(card.shadowRoot!.textContent).not.toContain("4.5 kWh");
+    card.remove();
+  });
   it("keeps measured energy, live power and comparison separate in responsive consumer rows", async () => {
     clock();
     const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
@@ -614,15 +958,9 @@ describe("energy rendering and HA lifecycle", () => {
   });
   it("batches and caches Recorder history within the documented refresh budget", async () => {
     clock();
-    const h = hass(), configured = meteredOptions();
+    const h = meteredHass(), configured = meteredOptions();
     const callWS = vi.fn<(message: Record<string, unknown>) => Promise<unknown[][]>>(async () => meterHistory());
     h.callWS = async <T>(message: Record<string, unknown>) => await callWS(message) as T;
-    for (const [index, source] of Object.values(configured.metered).entries()) {
-      h.states[source.entity!] = {
-        entity_id: source.entity!, state: "ready", last_updated: new Date(now).toISOString(),
-        attributes: { unit_of_measurement: index < 5 ? "kWh" : "EUR/kWh" },
-      };
-    }
     const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
     card.hass = h;
     card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: configured });
@@ -636,6 +974,7 @@ describe("energy rendering and HA lifecycle", () => {
     expect((request.entity_ids as string[])).toHaveLength(7);
     expect((request.entity_ids as string[]).length).toBeLessThanOrEqual(INSIGHTS_HISTORY_MAX_ENTITIES);
     expect(request.significant_changes_only).toBe(false);
+    expect(request.start_time).toBe(new Date(start - INSIGHTS_HISTORY_LOOKBACK_MS).toISOString());
     card.requestUpdate();
     await card.updateComplete;
     expect(callWS).toHaveBeenCalledTimes(1);
