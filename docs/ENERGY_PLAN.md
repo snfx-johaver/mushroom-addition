@@ -60,9 +60,10 @@ Unconfigured, unavailable and malformed sources have explicit row messages.
 Malformed entries, overlaps and battery percentages outside 0–100 reject the
 whole source row rather than hiding corrupt entries. Empty arrays and intervals
 outside the visible window display “No published intervals”. Gaps remain blank:
-there is no interpolation, extrapolation or assumed zero. Adjacent equal prices
-and adjacent matching schedule modes are grouped visually only; the inspector
-still reads the original individual interval values.
+there is no interpolation, extrapolation or assumed zero. Adjacent price
+intervals in the same configured low/mid/high color band and adjacent matching
+schedule modes are grouped visually only. Price tooltips retain the source range;
+the inspector still reads the original individual interval values.
 
 ## Feature options
 
@@ -84,6 +85,31 @@ still reads the original individual interval values.
 use Home Assistant's configured timezone; tick labels include the weekday across
 midnight. A minute timer refreshes the “now” window and is disposed on removal.
 Only relevant entity, theme, timezone and locale changes rebuild the card.
+In Home Assistant sections, the card requests the full 12-column width so timeline
+labels and price blocks have room to remain legible. The built-in solar row scales
+its bars to the largest absolute solar value in the visible forecast, making small
+but meaningful solar values visible; other power rows use their configured `scale`.
+Every power row displays its full positive/negative scale next to its name, so
+auto-scaled solar magnitude is not confused with a fixed battery or home scale.
+Power tracks have a zero baseline; battery/grid sign labels explain the source's
+configured charge/discharge and import/export convention.
+
+The row labels remain pinned while scrolling horizontally, and the time axis
+stays pinned while scrolling vertically through long lists. Tap a position on
+the actual timeline to pin the inspector to that time. Keyboard users can focus
+the timeline and use Left/Right or Home/End, or use the existing range slider.
+The now marker is distinct from the selected inspector cursor.
+At narrow card widths, summary tiles use two columns, period summaries stack,
+and the inspector uses a two-column value list with a larger touch slider.
+On phones, the pinned label column narrows to 112 px, leaving more visible
+timeline space without compressing its 24-hour data. Long labels wrap rather
+than disappear; horizontal scrolling remains inside the timeline.
+
+Above the timeline, the card identifies the supplied-plan horizon and the oldest
+row-source update. Each row reports published interval coverage; gaps stay blank,
+not zero. The lowest published price and its first source interval are listed
+as a factual summary, not a charging recommendation. Grouped price blocks show
+a rate range when their source intervals differ.
 
 ## Rows
 

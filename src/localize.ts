@@ -17,8 +17,9 @@ import { stockGuidanceTranslations } from "./translations/stock-guidance";
 import { releaseOptionTranslations } from "./translations/release-options";
 import { energyPlanTranslations } from "./translations/energy-plan";
 import { energyPlanCardTranslations } from "./translations/energy-plan-card";
-import { energyInsightsTranslations } from "./translations/energy-insights";
+import { energyInsightsTranslations, energyInsightsSetup } from "./translations/energy-insights";
 import { energyInsightsDetails } from "./translations/energy-insights-details";
+import { energyInsightsAccounting } from "./translations/energy-insights-accounting";
 import { energyNativeFields, energySourceLabels } from "./translations/energy-native-fields";
 import { energyLogTranslations } from "./translations/energy-log";
 import { energyFieldTranslations } from "./translations/energy-fields";
@@ -665,7 +666,9 @@ export const translationCatalogs: Record<string, Record<string, string>> = Objec
     ...energyPlanTranslations[locale],
     ...energyPlanCardTranslations[locale],
     ...energyInsightsTranslations[locale],
+    ...energyInsightsSetup[locale],
     ...energyInsightsDetails[locale],
+    ...energyInsightsAccounting[locale],
     ...energyNativeFields[locale],
     ...energySourceLabels[locale],
     ...energyLogTranslations[locale],

@@ -58,6 +58,42 @@ export function mountInsightsDemo(base: HomeAssistant): { theme: (dark: boolean)
     snapshot(`sensor.example_${id}_power`, String(watts), { unit_of_measurement: "W" });
   }
   snapshot("sensor.example_self_powered", "100", { unit_of_measurement: "%" });
+  const midnight = new Date(now); midnight.setHours(0, 0, 0, 0);
+  base.config = { ...base.config, currency: "EUR", time_zone: Intl.DateTimeFormat().resolvedOptions().timeZone };
+  const meterNames = ["solar_meter", "import_meter", "export_meter", "charge_meter", "discharge_meter"];
+  const history: Record<string, Array<{ state: string; last_updated: string; attributes: Record<string, unknown> }>> = {};
+  const record = (name: string, value: number, time: number, unit = "kWh") => {
+    const id = `sensor.example_${name}`;
+    (history[id] ??= []).push({ state: String(value), last_updated: new Date(time).toISOString(), attributes: { unit_of_measurement: unit } });
+    snapshot(id, String(value), { unit_of_measurement: unit });
+  };
+  const totals = Array.from({ length: 5 + devices.length }, () => 0);
+  [...meterNames, ...devices.map(device => `${device.id}_meter`)].forEach(name => record(name, 0, midnight.getTime()));
+  for (let time = midnight.getTime(); time < now; time += 900000) {
+    const until = Math.min(now, time + 900000), hours = (until - time) / 3600000;
+    const hour = (time - midnight.getTime()) / 3600000;
+    const loads = [.12 + (hour >= 6 && hour < 8 ? 1.4 : 0), hour >= 1 && hour < 3 ? 2.4 : 0,
+      hour >= 9 && hour < 10 ? 1.8 : 0, .08, .12, .21];
+    const home = loads.reduce((sum, load) => sum + load, 0);
+    const solar = hour >= 7 && hour < 18 ? Math.max(0, 3.6 * Math.sin(Math.PI * (hour - 7) / 11)) : 0;
+    const charge = Math.min(.6, Math.max(0, solar - home));
+    const discharge = solar === 0 ? .1 : 0;
+    const grid = home + charge - solar - discharge;
+    const power = [solar, Math.max(0, grid), Math.max(0, -grid), charge, discharge, ...loads];
+    [...meterNames, ...devices.map(device => `${device.id}_meter`)].forEach((name, index) => {
+      totals[index] += power[index] * hours;
+      record(name, totals[index], until);
+    });
+    record("import_rate", hour < 5 ? .16 : hour < 9 ? .27 : .22, time, "EUR/kWh");
+    record("export_rate", .075, time, "EUR/kWh");
+  }
+  base.callWS = async <T>(message: Record<string, unknown>) => {
+    if (message.type !== "history/history_during_period" || !Array.isArray(message.entity_ids) ||
+      message.entity_ids.some(id => typeof id !== "string" || !id.startsWith("sensor.example_"))) {
+      throw new Error("Only synthetic example history requests are supported.");
+    }
+    return Object.fromEntries(message.entity_ids.map(id => [String(id), history[String(id)] ?? []])) as T;
+  };
   const initial: EnergyInsightsConfig = {
     type: "custom:mushroom-addition-energy-insights", name: "Energy Insights & Purchases",
     secondary: "Synthetic snapshot - no live connections", icon: "mdi:lightning-bolt",
@@ -105,6 +141,25 @@ export function mountInsightsDemo(base: HomeAssistant): { theme: (dark: boolean)
       config = safe((event as CustomEvent<{ config: EnergyInsightsConfig }>).detail.config);
       card.setConfig(config); localStorage.setItem(key, JSON.stringify(config)); status.textContent = "Synthetic Insights configuration saved locally.";
     } catch (error) { if (!(error instanceof Error)) throw error; status.textContent = `Configuration rejected: ${error.message}`; }
+  });
+  document.querySelector("#insights-mode")?.addEventListener("click", () => {
+    const metered = {
+      ...initial.energy_insights!,
+      actualSource: { path: "actuals" },
+      metered: {
+        solar: { entity: "sensor.example_solar_meter" }, gridImport: { entity: "sensor.example_import_meter" },
+        gridExport: { entity: "sensor.example_export_meter" }, batteryCharge: { entity: "sensor.example_charge_meter" },
+        batteryDischarge: { entity: "sensor.example_discharge_meter" }, importRate: { entity: "sensor.example_import_rate" },
+        exportRate: { entity: "sensor.example_export_rate" },
+      },
+      consumers: initial.energy_insights!.consumers.map(consumer => ({
+        ...consumer, energySource: { entity: `sensor.example_${consumer.id}_meter` },
+      })),
+    };
+    config = config.energy_insights?.actualSource.entity ? { ...initial, energy_insights: metered } : initial;
+    card.setConfig(config); editor.setConfig(config);
+    status.textContent = config.energy_insights?.actualSource.entity
+      ? "Synthetic legacy snapshot example." : "Synthetic individual-meter example. Recorder is simulated locally.";
   });
   return {
     theme: dark => { card.hass = editor.hass = { ...base, themes: { darkMode: dark } }; },
