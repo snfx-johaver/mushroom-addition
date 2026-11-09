@@ -114,6 +114,17 @@ const namedControl = (control: string | AreaControl): boolean => {
 };
 const namedFeatures = (config?: AreaAdvancedConfig) => config?.features?.some((feature) =>
   feature.type === "area-controls" && feature.controls?.some(namedControl)) ?? false;
+const extraAreaRows = (config?: AreaAdvancedConfig): number => {
+  if (!config) return 0;
+  const configured = Number(config.area_buttons_per_row);
+  const perRow = Number.isInteger(configured) && configured >= 1 && configured <= 24 ? configured : 6;
+  const wrappedRows = (config.features ?? []).reduce((total, feature) =>
+    total + (feature.type === "area-controls" && feature.controls
+      ? Math.max(0, Math.ceil(feature.controls.length / perRow) - 1) : 0), 0);
+  return Number(namedFeatures(config)) + wrappedRows
+    + Number(Boolean(config.status_air_quality_entity || config.status_light_entity))
+    + Number(namedFeatures(config) && config.display_type === "camera");
+};
 
 function bounded<T>(promise: Promise<T>, message: string): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -179,14 +190,16 @@ export class MushroomAreaAdvancedCard extends LitElement {
   }
   public getCardSize() {
     const size = this.card?.getCardSize?.() ?? 3;
-    return namedFeatures(this.config) ? (typeof size === "number" ? size + 1 : size.then((value) => value + 1)) : size;
+    const extra = extraAreaRows(this.config);
+    return extra ? (typeof size === "number" ? size + extra : size.then((value) => value + extra)) : size;
   }
   public getGridOptions() {
     const options = this.card?.getGridOptions?.() ?? { columns: 12, rows: 3 };
-    if (!namedFeatures(this.config) || !options || typeof options !== "object") return options;
+    const extra = extraAreaRows(this.config);
+    if (!extra || !options || typeof options !== "object") return options;
     const grid = options as Record<string, unknown>;
-    return { ...grid, ...(typeof grid.rows === "number" ? { rows: grid.rows + 1 } : {}),
-      ...(typeof grid.min_rows === "number" ? { min_rows: grid.min_rows + 1 } : {}) };
+    return { ...grid, ...(typeof grid.rows === "number" ? { rows: grid.rows + extra } : {}),
+      ...(typeof grid.min_rows === "number" ? { min_rows: grid.min_rows + extra } : {}) };
   }
   private async load() {
     if (!this.config) return;

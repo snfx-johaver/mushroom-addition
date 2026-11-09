@@ -393,7 +393,7 @@ SOFTWARE.
  * SPDX-License-Identifier: BSD-3-Clause
  */
 const Kn = globalThis, es = Kn.ShadowRoot && (Kn.ShadyCSS === void 0 || Kn.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, ts = /* @__PURE__ */ Symbol(), dl = /* @__PURE__ */ new WeakMap();
-let dd = class {
+let ud = class {
   constructor(t, a, i) {
     if (this._$cssResult$ = !0, i !== ts) throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
     this.cssText = t, this.t = a;
@@ -411,14 +411,14 @@ let dd = class {
     return this.cssText;
   }
 };
-const ua = (e) => new dd(typeof e == "string" ? e : e + "", void 0, ts), ce = (e, ...t) => {
+const ua = (e) => new ud(typeof e == "string" ? e : e + "", void 0, ts), ce = (e, ...t) => {
   const a = e.length === 1 ? e[0] : t.reduce((i, n, r) => i + ((o) => {
     if (o._$cssResult$ === !0) return o.cssText;
     if (typeof o == "number") return o;
     throw Error("Value passed to 'css' function must be a 'css' function result: " + o + ". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.");
   })(n) + e[r + 1], e[0]);
-  return new dd(a, e, ts);
-}, fc = (e, t) => {
+  return new ud(a, e, ts);
+}, wc = (e, t) => {
   if (es) e.adoptedStyleSheets = t.map((a) => a instanceof CSSStyleSheet ? a : a.styleSheet);
   else for (const a of t) {
     const i = document.createElement("style"), n = Kn.litNonce;
@@ -434,10 +434,10 @@ const ua = (e) => new dd(typeof e == "string" ? e : e + "", void 0, ts), ce = (e
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const { is: wc, defineProperty: zc, getOwnPropertyDescriptor: jc, getOwnPropertyNames: Sc, getOwnPropertySymbols: xc, getPrototypeOf: Ac } = Object, Mr = globalThis, cl = Mr.trustedTypes, Pc = cl ? cl.emptyScript : "", Mc = Mr.reactiveElementPolyfillSupport, Yi = (e, t) => e, ir = { toAttribute(e, t) {
+const { is: zc, defineProperty: jc, getOwnPropertyDescriptor: Sc, getOwnPropertyNames: xc, getOwnPropertySymbols: Ac, getPrototypeOf: Pc } = Object, Mr = globalThis, cl = Mr.trustedTypes, Mc = cl ? cl.emptyScript : "", Cc = Mr.reactiveElementPolyfillSupport, Yi = (e, t) => e, ir = { toAttribute(e, t) {
   switch (t) {
     case Boolean:
-      e = e ? Pc : null;
+      e = e ? Mc : null;
       break;
     case Object:
     case Array:
@@ -462,7 +462,7 @@ const { is: wc, defineProperty: zc, getOwnPropertyDescriptor: jc, getOwnProperty
       }
   }
   return a;
-} }, as = (e, t) => !wc(e, t), ml = { attribute: !0, type: String, converter: ir, reflect: !1, useDefault: !1, hasChanged: as };
+} }, as = (e, t) => !zc(e, t), ml = { attribute: !0, type: String, converter: ir, reflect: !1, useDefault: !1, hasChanged: as };
 Symbol.metadata ??= /* @__PURE__ */ Symbol("metadata"), Mr.litPropertyMetadata ??= /* @__PURE__ */ new WeakMap();
 let li = class extends HTMLElement {
   static addInitializer(t) {
@@ -474,11 +474,11 @@ let li = class extends HTMLElement {
   static createProperty(t, a = ml) {
     if (a.state && (a.attribute = !1), this._$Ei(), this.prototype.hasOwnProperty(t) && ((a = Object.create(a)).wrapped = !0), this.elementProperties.set(t, a), !a.noAccessor) {
       const i = /* @__PURE__ */ Symbol(), n = this.getPropertyDescriptor(t, i, a);
-      n !== void 0 && zc(this.prototype, t, n);
+      n !== void 0 && jc(this.prototype, t, n);
     }
   }
   static getPropertyDescriptor(t, a, i) {
-    const { get: n, set: r } = jc(this.prototype, t) ?? { get() {
+    const { get: n, set: r } = Sc(this.prototype, t) ?? { get() {
       return this[a];
     }, set(o) {
       this[a] = o;
@@ -493,13 +493,13 @@ let li = class extends HTMLElement {
   }
   static _$Ei() {
     if (this.hasOwnProperty(Yi("elementProperties"))) return;
-    const t = Ac(this);
+    const t = Pc(this);
     t.finalize(), t.l !== void 0 && (this.l = [...t.l]), this.elementProperties = new Map(t.elementProperties);
   }
   static finalize() {
     if (this.hasOwnProperty(Yi("finalized"))) return;
     if (this.finalized = !0, this._$Ei(), this.hasOwnProperty(Yi("properties"))) {
-      const a = this.properties, i = [...Sc(a), ...xc(a)];
+      const a = this.properties, i = [...xc(a), ...Ac(a)];
       for (const n of i) this.createProperty(n, a[n]);
     }
     const t = this[Symbol.metadata];
@@ -545,7 +545,7 @@ let li = class extends HTMLElement {
   }
   createRenderRoot() {
     const t = this.shadowRoot ?? this.attachShadow(this.constructor.shadowRootOptions);
-    return fc(t, this.constructor.elementStyles), t;
+    return wc(t, this.constructor.elementStyles), t;
   }
   connectedCallback() {
     this.renderRoot ??= this.createRenderRoot(), this.enableUpdating(!0), this._$EO?.forEach((t) => t.hostConnected?.());
@@ -645,48 +645,48 @@ let li = class extends HTMLElement {
   firstUpdated(t) {
   }
 };
-li.elementStyles = [], li.shadowRootOptions = { mode: "open" }, li[Yi("elementProperties")] = /* @__PURE__ */ new Map(), li[Yi("finalized")] = /* @__PURE__ */ new Map(), Mc?.({ ReactiveElement: li }), (Mr.reactiveElementVersions ??= []).push("2.1.2");
+li.elementStyles = [], li.shadowRootOptions = { mode: "open" }, li[Yi("elementProperties")] = /* @__PURE__ */ new Map(), li[Yi("finalized")] = /* @__PURE__ */ new Map(), Cc?.({ ReactiveElement: li }), (Mr.reactiveElementVersions ??= []).push("2.1.2");
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const is = globalThis, pl = (e) => e, nr = is.trustedTypes, hl = nr ? nr.createPolicy("lit-html", { createHTML: (e) => e }) : void 0, ud = "$lit$", ga = `lit$${Math.random().toFixed(9).slice(2)}$`, cd = "?" + ga, Cc = `<${cd}>`, Ba = document, on = () => Ba.createComment(""), sn = (e) => e === null || typeof e != "object" && typeof e != "function", ns = Array.isArray, $c = (e) => ns(e) || typeof e?.[Symbol.iterator] == "function", Ur = `[ 	
+const is = globalThis, pl = (e) => e, nr = is.trustedTypes, hl = nr ? nr.createPolicy("lit-html", { createHTML: (e) => e }) : void 0, cd = "$lit$", ga = `lit$${Math.random().toFixed(9).slice(2)}$`, md = "?" + ga, $c = `<${md}>`, Ba = document, on = () => Ba.createComment(""), sn = (e) => e === null || typeof e != "object" && typeof e != "function", ns = Array.isArray, Ec = (e) => ns(e) || typeof e?.[Symbol.iterator] == "function", Ur = `[ 	
 \f\r]`, Vi = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, gl = /-->/g, yl = />/g, Ca = RegExp(`>|${Ur}(?:([^\\s"'>=/]+)(${Ur}*=${Ur}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`, "g"), bl = /'/g, vl = /"/g, md = /^(?:script|style|textarea|title)$/i, pd = (e) => (t, ...a) => ({ _$litType$: e, strings: t, values: a }), u = pd(1), P = pd(2), ht = /* @__PURE__ */ Symbol.for("lit-noChange"), g = /* @__PURE__ */ Symbol.for("lit-nothing"), kl = /* @__PURE__ */ new WeakMap(), Ha = Ba.createTreeWalker(Ba, 129);
-function hd(e, t) {
+\f\r"'\`<>=]|("|')|))|$)`, "g"), bl = /'/g, vl = /"/g, pd = /^(?:script|style|textarea|title)$/i, hd = (e) => (t, ...a) => ({ _$litType$: e, strings: t, values: a }), u = hd(1), P = hd(2), ht = /* @__PURE__ */ Symbol.for("lit-noChange"), g = /* @__PURE__ */ Symbol.for("lit-nothing"), kl = /* @__PURE__ */ new WeakMap(), Ha = Ba.createTreeWalker(Ba, 129);
+function gd(e, t) {
   if (!ns(e) || !e.hasOwnProperty("raw")) throw Error("invalid template strings array");
   return hl !== void 0 ? hl.createHTML(t) : t;
 }
-const Ec = (e, t) => {
+const Tc = (e, t) => {
   const a = e.length - 1, i = [];
   let n, r = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", o = Vi;
   for (let s = 0; s < a; s++) {
     const l = e[s];
     let _, d, c = -1, m = 0;
-    for (; m < l.length && (o.lastIndex = m, d = o.exec(l), d !== null); ) m = o.lastIndex, o === Vi ? d[1] === "!--" ? o = gl : d[1] !== void 0 ? o = yl : d[2] !== void 0 ? (md.test(d[2]) && (n = RegExp("</" + d[2], "g")), o = Ca) : d[3] !== void 0 && (o = Ca) : o === Ca ? d[0] === ">" ? (o = n ?? Vi, c = -1) : d[1] === void 0 ? c = -2 : (c = o.lastIndex - d[2].length, _ = d[1], o = d[3] === void 0 ? Ca : d[3] === '"' ? vl : bl) : o === vl || o === bl ? o = Ca : o === gl || o === yl ? o = Vi : (o = Ca, n = void 0);
+    for (; m < l.length && (o.lastIndex = m, d = o.exec(l), d !== null); ) m = o.lastIndex, o === Vi ? d[1] === "!--" ? o = gl : d[1] !== void 0 ? o = yl : d[2] !== void 0 ? (pd.test(d[2]) && (n = RegExp("</" + d[2], "g")), o = Ca) : d[3] !== void 0 && (o = Ca) : o === Ca ? d[0] === ">" ? (o = n ?? Vi, c = -1) : d[1] === void 0 ? c = -2 : (c = o.lastIndex - d[2].length, _ = d[1], o = d[3] === void 0 ? Ca : d[3] === '"' ? vl : bl) : o === vl || o === bl ? o = Ca : o === gl || o === yl ? o = Vi : (o = Ca, n = void 0);
     const p = o === Ca && e[s + 1].startsWith("/>") ? " " : "";
-    r += o === Vi ? l + Cc : c >= 0 ? (i.push(_), l.slice(0, c) + ud + l.slice(c) + ga + p) : l + ga + (c === -2 ? s : p);
+    r += o === Vi ? l + $c : c >= 0 ? (i.push(_), l.slice(0, c) + cd + l.slice(c) + ga + p) : l + ga + (c === -2 ? s : p);
   }
-  return [hd(e, r + (e[a] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), i];
+  return [gd(e, r + (e[a] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), i];
 };
 class ln {
   constructor({ strings: t, _$litType$: a }, i) {
     let n;
     this.parts = [];
     let r = 0, o = 0;
-    const s = t.length - 1, l = this.parts, [_, d] = Ec(t, a);
+    const s = t.length - 1, l = this.parts, [_, d] = Tc(t, a);
     if (this.el = ln.createElement(_, i), Ha.currentNode = this.el.content, a === 2 || a === 3) {
       const c = this.el.content.firstChild;
       c.replaceWith(...c.childNodes);
     }
     for (; (n = Ha.nextNode()) !== null && l.length < s; ) {
       if (n.nodeType === 1) {
-        if (n.hasAttributes()) for (const c of n.getAttributeNames()) if (c.endsWith(ud)) {
+        if (n.hasAttributes()) for (const c of n.getAttributeNames()) if (c.endsWith(cd)) {
           const m = d[o++], p = n.getAttribute(c).split(ga), y = /([.?@])?(.*)/.exec(m);
-          l.push({ type: 1, index: r, name: y[2], strings: p, ctor: y[1] === "." ? Dc : y[1] === "?" ? Nc : y[1] === "@" ? Vc : Cr }), n.removeAttribute(c);
+          l.push({ type: 1, index: r, name: y[2], strings: p, ctor: y[1] === "." ? Nc : y[1] === "?" ? Vc : y[1] === "@" ? Lc : Cr }), n.removeAttribute(c);
         } else c.startsWith(ga) && (l.push({ type: 6, index: r }), n.removeAttribute(c));
-        if (md.test(n.tagName)) {
+        if (pd.test(n.tagName)) {
           const c = n.textContent.split(ga), m = c.length - 1;
           if (m > 0) {
             n.textContent = nr ? nr.emptyScript : "";
@@ -694,7 +694,7 @@ class ln {
             n.append(c[m], on());
           }
         }
-      } else if (n.nodeType === 8) if (n.data === cd) l.push({ type: 2, index: r });
+      } else if (n.nodeType === 8) if (n.data === md) l.push({ type: 2, index: r });
       else {
         let c = -1;
         for (; (c = n.data.indexOf(ga, c + 1)) !== -1; ) l.push({ type: 7, index: r }), c += ga.length - 1;
@@ -713,7 +713,7 @@ function fi(e, t, a = e, i) {
   const r = sn(t) ? void 0 : t._$litDirective$;
   return n?.constructor !== r && (n?._$AO?.(!1), r === void 0 ? n = void 0 : (n = new r(e), n._$AT(e, a, i)), i !== void 0 ? (a._$Co ??= [])[i] = n : a._$Cl = n), n !== void 0 && (t = fi(e, n._$AS(e, t.values), n, i)), t;
 }
-class Tc {
+class Dc {
   constructor(t, a) {
     this._$AV = [], this._$AN = void 0, this._$AD = t, this._$AM = a;
   }
@@ -730,7 +730,7 @@ class Tc {
     for (; l !== void 0; ) {
       if (o === l.index) {
         let _;
-        l.type === 2 ? _ = new Pi(r, r.nextSibling, this, t) : l.type === 1 ? _ = new l.ctor(r, l.name, l.strings, this, t) : l.type === 6 && (_ = new Lc(r, this, t)), this._$AV.push(_), l = i[++s];
+        l.type === 2 ? _ = new Pi(r, r.nextSibling, this, t) : l.type === 1 ? _ = new l.ctor(r, l.name, l.strings, this, t) : l.type === 6 && (_ = new Hc(r, this, t)), this._$AV.push(_), l = i[++s];
       }
       o !== l?.index && (r = Ha.nextNode(), o++);
     }
@@ -760,7 +760,7 @@ class Pi {
     return this._$AB;
   }
   _$AI(t, a = this) {
-    t = fi(this, t, a), sn(t) ? t === g || t == null || t === "" ? (this._$AH !== g && this._$AR(), this._$AH = g) : t !== this._$AH && t !== ht && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : $c(t) ? this.k(t) : this._(t);
+    t = fi(this, t, a), sn(t) ? t === g || t == null || t === "" ? (this._$AH !== g && this._$AR(), this._$AH = g) : t !== this._$AH && t !== ht && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : Ec(t) ? this.k(t) : this._(t);
   }
   O(t) {
     return this._$AA.parentNode.insertBefore(t, this._$AB);
@@ -772,10 +772,10 @@ class Pi {
     this._$AH !== g && sn(this._$AH) ? this._$AA.nextSibling.data = t : this.T(Ba.createTextNode(t)), this._$AH = t;
   }
   $(t) {
-    const { values: a, _$litType$: i } = t, n = typeof i == "number" ? this._$AC(t) : (i.el === void 0 && (i.el = ln.createElement(hd(i.h, i.h[0]), this.options)), i);
+    const { values: a, _$litType$: i } = t, n = typeof i == "number" ? this._$AC(t) : (i.el === void 0 && (i.el = ln.createElement(gd(i.h, i.h[0]), this.options)), i);
     if (this._$AH?._$AD === n) this._$AH.p(a);
     else {
-      const r = new Tc(n, this), o = r.u(this.options);
+      const r = new Dc(n, this), o = r.u(this.options);
       r.p(a), this.T(o), this._$AH = r;
     }
   }
@@ -825,7 +825,7 @@ class Cr {
     t === g ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, t ?? "");
   }
 }
-class Dc extends Cr {
+class Nc extends Cr {
   constructor() {
     super(...arguments), this.type = 3;
   }
@@ -833,7 +833,7 @@ class Dc extends Cr {
     this.element[this.name] = t === g ? void 0 : t;
   }
 }
-class Nc extends Cr {
+class Vc extends Cr {
   constructor() {
     super(...arguments), this.type = 4;
   }
@@ -841,7 +841,7 @@ class Nc extends Cr {
     this.element.toggleAttribute(this.name, !!t && t !== g);
   }
 }
-class Vc extends Cr {
+class Lc extends Cr {
   constructor(t, a, i, n, r) {
     super(t, a, i, n, r), this.type = 5;
   }
@@ -854,7 +854,7 @@ class Vc extends Cr {
     typeof this._$AH == "function" ? this._$AH.call(this.options?.host ?? this.element, t) : this._$AH.handleEvent(t);
   }
 }
-class Lc {
+class Hc {
   constructor(t, a, i) {
     this.element = t, this.type = 6, this._$AN = void 0, this._$AM = a, this.options = i;
   }
@@ -865,9 +865,9 @@ class Lc {
     fi(this, t);
   }
 }
-const Hc = { I: Pi }, Ic = is.litHtmlPolyfillSupport;
-Ic?.(ln, Pi), (is.litHtmlVersions ??= []).push("3.3.3");
-const So = (e, t, a) => {
+const Ic = { I: Pi }, Rc = is.litHtmlPolyfillSupport;
+Rc?.(ln, Pi), (is.litHtmlVersions ??= []).push("3.3.3");
+const jo = (e, t, a) => {
   const i = a?.renderBefore ?? t;
   let n = i._$litPart$;
   if (n === void 0) {
@@ -892,7 +892,7 @@ let ve = class extends li {
   }
   update(t) {
     const a = this.render();
-    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(t), this._$Do = So(a, this.renderRoot, this.renderOptions);
+    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(t), this._$Do = jo(a, this.renderRoot, this.renderOptions);
   }
   connectedCallback() {
     super.connectedCallback(), this._$Do?.setConnected(!0);
@@ -905,8 +905,8 @@ let ve = class extends li {
   }
 };
 ve._$litElement$ = !0, ve.finalized = !0, rs.litElementHydrateSupport?.({ LitElement: ve });
-const Rc = rs.litElementPolyfillSupport;
-Rc?.({ LitElement: ve });
+const Bc = rs.litElementPolyfillSupport;
+Bc?.({ LitElement: ve });
 (rs.litElementVersions ??= []).push("4.2.2");
 /**
  * @license
@@ -923,7 +923,7 @@ const nt = (e) => (t, a) => {
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const Bc = { attribute: !0, type: String, converter: ir, reflect: !1, hasChanged: as }, Fc = (e = Bc, t, a) => {
+const Fc = { attribute: !0, type: String, converter: ir, reflect: !1, hasChanged: as }, Oc = (e = Fc, t, a) => {
   const { kind: i, metadata: n } = a;
   let r = globalThis.litPropertyMetadata.get(n);
   if (r === void 0 && globalThis.litPropertyMetadata.set(n, r = /* @__PURE__ */ new Map()), i === "setter" && ((e = Object.create(e)).wrapped = !0), r.set(a.name, e), i === "accessor") {
@@ -945,7 +945,7 @@ const Bc = { attribute: !0, type: String, converter: ir, reflect: !1, hasChanged
   throw Error("Unsupported decorator location: " + i);
 };
 function O(e) {
-  return (t, a) => typeof a == "object" ? Fc(e, t, a) : ((i, n, r) => {
+  return (t, a) => typeof a == "object" ? Oc(e, t, a) : ((i, n, r) => {
     const o = n.hasOwnProperty(r);
     return n.constructor.createProperty(r, i), o ? Object.getOwnPropertyDescriptor(n, r) : void 0;
   })(e, t, a);
@@ -985,11 +985,11 @@ let zn = class {
  * Copyright 2020 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const { I: Oc } = Hc, fl = (e) => e, gd = (e) => e.strings === void 0, wl = () => document.createComment(""), Li = (e, t, a) => {
+const { I: qc } = Ic, fl = (e) => e, yd = (e) => e.strings === void 0, wl = () => document.createComment(""), Li = (e, t, a) => {
   const i = e._$AA.parentNode, n = t === void 0 ? e._$AB : t._$AA;
   if (a === void 0) {
     const r = i.insertBefore(wl(), n), o = i.insertBefore(wl(), n);
-    a = new Oc(r, o, e, e.options);
+    a = new qc(r, o, e, e.options);
   } else {
     const r = a._$AB.nextSibling, o = a._$AM, s = o !== e;
     if (s) {
@@ -1005,7 +1005,7 @@ const { I: Oc } = Hc, fl = (e) => e, gd = (e) => e.strings === void 0, wl = () =
     }
   }
   return a;
-}, $a = (e, t, a = e) => (e._$AI(t, a), e), qc = {}, os = (e, t = qc) => e._$AH = t, Uc = (e) => e._$AH, Kr = (e) => {
+}, $a = (e, t, a = e) => (e._$AI(t, a), e), Uc = {}, os = (e, t = Uc) => e._$AH = t, Kc = (e) => e._$AH, Kr = (e) => {
   e._$AR(), e._$AA.remove();
 };
 /**
@@ -1033,7 +1033,7 @@ const zl = (e, t, a) => {
     return this.dt(e, t, a).values;
   }
   update(e, [t, a, i]) {
-    const n = Uc(e), { values: r, keys: o } = this.dt(t, a, i);
+    const n = Kc(e), { values: r, keys: o } = this.dt(t, a, i);
     if (!Array.isArray(n)) return this.ut = o, r;
     const s = this.ut ??= [], l = [];
     let _, d, c = 0, m = n.length - 1, p = 0, y = r.length - 1;
@@ -1087,7 +1087,7 @@ function Tn(e, t) {
         throw new Error(`${e}.${a} must be text.`);
   }
 }
-function yd(e) {
+function bd(e) {
   if (!Wn(e)) throw new Error("Card configuration must be an object.");
   const t = e;
   if (t.type !== "custom:mushroom-addition-smart-saving")
@@ -1235,7 +1235,7 @@ const Wr = [
   "ui.run",
   "ui.toggle",
   "ui.confirm_run"
-], Kc = {
+], Wc = {
   en: "Entity|Name|Custom secondary information|Icon|Icon color|Card style|Content layout|Show icon|Show name|Show state|Tap action|Hold action|Double-tap action|Temperature sensor|Humidity sensor|Battery sensor|Show forecast|Show controls|Title|Language|Context|Content|Layout|Interactions|Features|Up|Down|Left|Right|Select|Back|Home|Menu|Power|Information|Channel up|Channel down|Volume up|Volume down|Mute|Play / pause|Stop|Previous|Next|Rewind|Fast forward|Volume|Navigation|Playback|Number pad|Custom buttons|TV source|Choose a source|No sources available|Show less|Show {count} more|Media item|Media trailer|Close trailer|Unwatched|Statistics|Blocking switches|Pause blocking|Maintenance controls|Diagnostics|System load history|Versions|DNS queries|Ads blocked|Blocked|Domains blocked|Clients|Cached queries|Forwarded queries|CPU usage|Memory usage|Temperature|Blocking|Paused|Unavailable|Run|Toggle {name}|Run {name}?",
   ar: "كيان|الاسم|معلومات ثانوية مخصصة|أيقونة|لون الأيقونة|نمط البطاقة|تخطيط المحتوى|إظهار الأيقونة|إظهار الاسم|إظهار الحالة|إجراء النقر|إجراء الضغط المطوّل|إجراء النقر المزدوج|مستشعر الحرارة|مستشعر الرطوبة|مستشعر البطارية|إظهار التوقعات|إظهار عناصر التحكم|العنوان|اللغة|السياق|المحتوى|التخطيط|التفاعلات|الميزات|أعلى|أسفل|يسار|يمين|تحديد|رجوع|الرئيسية|القائمة|الطاقة|معلومات|القناة التالية|القناة السابقة|رفع الصوت|خفض الصوت|كتم الصوت|تشغيل / إيقاف مؤقت|إيقاف|السابق|التالي|ترجيع|تقديم سريع|مستوى الصوت|التنقل|التشغيل|لوحة الأرقام|أزرار مخصصة|مصدر التلفاز|اختر مصدرًا|لا توجد مصادر متاحة|إظهار أقل|إظهار {count} إضافية|عنصر وسائط|مقطع دعائي|إغلاق المقطع الدعائي|لم يُشاهد|إحصاءات|مفاتيح الحظر|إيقاف الحظر مؤقتًا|عناصر الصيانة|التشخيص|سجل حمل النظام|الإصدارات|استعلامات DNS|إعلانات محظورة|محظور|نطاقات محظورة|العملاء|استعلامات مخزنة مؤقتًا|استعلامات معاد توجيهها|استخدام المعالج|استخدام الذاكرة|الحرارة|الحظر مفعّل|متوقف مؤقتًا|غير متاح|تشغيل|تبديل {name}|تشغيل {name}؟",
   bg: "Обект|Име|Персонализирана вторична информация|Икона|Цвят на иконата|Стил на картата|Подредба на съдържанието|Показване на иконата|Показване на името|Показване на състоянието|Действие при докосване|Действие при задържане|Действие при двойно докосване|Сензор за температура|Сензор за влажност|Сензор за батерия|Показване на прогнозата|Показване на управлението|Заглавие|Език|Контекст|Съдържание|Подредба|Взаимодействия|Функции|Нагоре|Надолу|Наляво|Надясно|Избор|Назад|Начало|Меню|Захранване|Информация|Следващ канал|Предишен канал|Увеличаване на звука|Намаляване на звука|Заглушаване|Пускане / пауза|Стоп|Предишно|Следващо|Превъртане назад|Превъртане напред|Сила на звука|Навигация|Възпроизвеждане|Цифрова клавиатура|Персонализирани бутони|ТВ източник|Изберете източник|Няма налични източници|Показване на по-малко|Показване на още {count}|Медиен елемент|Трейлър|Затваряне на трейлъра|Негледано|Статистика|Превключватели за блокиране|Пауза на блокирането|Управление на поддръжката|Диагностика|История на натоварването|Версии|DNS заявки|Блокирани реклами|Блокирано|Блокирани домейни|Клиенти|Кеширани заявки|Препратени заявки|Натоварване на процесора|Използвана памет|Температура|Блокирането е активно|На пауза|Недостъпно|Изпълнение|Превключване на {name}|Изпълнение на {name}?",
@@ -1270,12 +1270,12 @@ const Wr = [
   "zh-Hans": "实体|名称|自定义次要信息|图标|图标颜色|卡片样式|内容布局|显示图标|显示名称|显示状态|点按操作|长按操作|双击操作|温度传感器|湿度传感器|电池传感器|显示预报|显示控件|标题|语言|上下文|内容|布局|交互|功能|上|下|左|右|选择|返回|主页|菜单|电源|信息|下一频道|上一频道|增大音量|减小音量|静音|播放 / 暂停|停止|上一个|下一个|快退|快进|音量|导航|播放|数字键盘|自定义按钮|电视信号源|选择信号源|没有可用信号源|收起|再显示 {count} 项|媒体项目|预告片|关闭预告片|未观看|统计|屏蔽开关|暂停屏蔽|维护控件|诊断|系统负载历史|版本|DNS 查询|已屏蔽广告|已屏蔽|已屏蔽域名|客户端|缓存查询|转发查询|CPU 使用率|内存使用率|温度|正在屏蔽|已暂停|不可用|运行|切换 {name}|运行 {name}？",
   "zh-Hant": "實體|名稱|自訂次要資訊|圖示|圖示顏色|卡片樣式|內容版面配置|顯示圖示|顯示名稱|顯示狀態|輕觸動作|長按動作|輕觸兩下動作|溫度感測器|濕度感測器|電池感測器|顯示預報|顯示控制項|標題|語言|情境|內容|版面配置|互動|功能|上|下|左|右|選取|返回|首頁|選單|電源|資訊|下一個頻道|上一個頻道|提高音量|降低音量|靜音|播放 / 暫停|停止|上一個|下一個|倒轉|快轉|音量|導覽|播放|數字鍵盤|自訂按鈕|電視訊號源|選擇訊號源|沒有可用的訊號源|收起|再顯示 {count} 項|媒體項目|預告片|關閉預告片|未觀看|統計|封鎖開關|暫停封鎖|維護控制項|診斷|系統負載歷程|版本|DNS 查詢|已封鎖廣告|已封鎖|已封鎖網域|用戶端|快取查詢|轉送查詢|CPU 使用率|記憶體使用率|溫度|正在封鎖|已暫停|無法使用|執行|切換 {name}|執行 {name}？"
 }, _n = Object.fromEntries(
-  Object.entries(Kc).map(([e, t]) => {
+  Object.entries(Wc).map(([e, t]) => {
     const a = t.split("|");
     if (a.length !== Wr.length) throw new Error(`Invalid ${e} translation row: ${a.length}/${Wr.length}`);
     return [e, Object.fromEntries(Wr.map((i, n) => [i, a[n]]))];
   })
-), bd = {
+), vd = {
   en: ["Visible hours", "Status entity", "Workflow presentation", "Hours shown for prices, forecasts and planning tracks.", "Optional entity reporting planning status.", "Show sequential groups or a connected relationship graph."],
   nl: ["Zichtbare uren", "Statusentiteit", "Workflowweergave", "Getoonde uren voor prijzen, prognoses en planning.", "Optionele entiteit met de planningsstatus.", "Toon opeenvolgende groepen of een verbonden relatiegrafiek."],
   de: ["Sichtbare Stunden", "Statusentität", "Workflow-Darstellung", "Angezeigte Stunden für Preise, Prognosen und Planung.", "Optionale Entität für den Planungsstatus.", "Gruppen als Ablauf oder verbundenes Beziehungsdiagramm anzeigen."],
@@ -1309,14 +1309,14 @@ const Wr = [
   sl: ["Vidne ure", "Entiteta stanja", "Prikaz poteka", "Prikazane ure za cene, napovedi in načrtovanje.", "Izbirna entiteta, ki poroča o stanju načrtovanja.", "Prikaži zaporedne skupine ali povezan graf odnosov."],
   ca: ["Hores visibles", "Entitat d'estat", "Presentació del flux", "Hores mostrades per a preus, previsions i planificació.", "Entitat opcional que indica l'estat de la planificació.", "Mostra grups seqüencials o un graf de relacions connectat."],
   hu: ["Látható órák", "Állapotentitás", "Munkafolyamat nézete", "Az árakhoz, előrejelzésekhez és tervekhez megjelenített órák.", "A tervezés állapotát jelző opcionális entitás.", "Egymást követő csoportok vagy összekapcsolt kapcsolatgráf megjelenítése."]
-}, vd = Object.fromEntries(
-  Object.entries(bd).map(([e, t]) => [e, {
+}, kd = Object.fromEntries(
+  Object.entries(vd).map(([e, t]) => [e, {
     visibleHours: t[0],
     statusEntity: t[1],
     presentation: t[2]
   }])
-), Wc = Object.fromEntries(
-  Object.entries(bd).map(([e, t]) => [e, {
+), Gc = Object.fromEntries(
+  Object.entries(vd).map(([e, t]) => [e, {
     visibleHours: t[3],
     statusEntity: t[4],
     presentation: t[5]
@@ -1357,7 +1357,7 @@ const Wr = [
   "ui.disabled",
   "ui.true",
   "ui.false"
-], Gc = {
+], Zc = {
   en: "Horizontal|Vertical|Automatic|None|Both|Buttons|Slider|Touchpad|Name|State|Brightness|Temperature|Entity attribute|Text|Done|Add|Remove|Sections|Custom button|Current|Hidden|Always|On hover|Solid|Fade|Line|Bar|Hours|Days|Date|Default|Enabled|Disabled|True|False",
   ar: "أفقي|عمودي|تلقائي|بلا|كلاهما|أزرار|شريط تمرير|لوحة لمس|الاسم|الحالة|السطوع|الحرارة|سمة الكيان|نص|تم|إضافة|إزالة|الأقسام|زر مخصص|الحالي|مخفي|دائمًا|عند التحويم|مصمت|تلاشي|خط|أعمدة|ساعات|أيام|التاريخ|الافتراضي|مفعّل|معطّل|صحيح|خطأ",
   bg: "Хоризонтално|Вертикално|Автоматично|Няма|И двете|Бутони|Плъзгач|Тъчпад|Име|Състояние|Яркост|Температура|Атрибут на обекта|Текст|Готово|Добавяне|Премахване|Раздели|Персонализиран бутон|Текущо|Скрито|Винаги|При посочване|Плътно|Преливане|Линия|Стълбове|Часове|Дни|Дата|По подразбиране|Включено|Изключено|Вярно|Невярно",
@@ -1392,7 +1392,7 @@ const Wr = [
   "zh-Hans": "水平|垂直|自动|无|两者|按钮|滑块|触控板|名称|状态|亮度|温度|实体属性|文本|完成|添加|移除|分区|自定义按钮|当前|隐藏|始终|悬停时|实心|渐变|折线|柱状|小时|天|日期|默认|已启用|已禁用|真|假",
   "zh-Hant": "水平|垂直|自動|無|兩者|按鈕|滑桿|觸控板|名稱|狀態|亮度|溫度|實體屬性|文字|完成|新增|移除|區段|自訂按鈕|目前|隱藏|一律|游標停留時|實心|漸層|折線|長條|小時|天|日期|預設|已啟用|已停用|真|假"
 }, ss = Object.fromEntries(
-  Object.entries(Gc).map(([e, t]) => {
+  Object.entries(Zc).map(([e, t]) => {
     const a = t.split("|");
     if (a.length !== Gr.length) throw new Error(`Invalid ${e} option row: ${a.length}/${Gr.length}`);
     return [e, Object.fromEntries(Gr.map((i, n) => [i, a[n]]))];
@@ -1453,7 +1453,7 @@ const Wr = [
   "message.all_switches",
   "message.pause_target",
   "message.invalid_duration"
-], Zc = {
+], Yc = {
   en: 'Choose an upcoming-media sensor in the card editor.|The upcoming-media sensor is unavailable.|The sensor has no "{attribute}" attribute. Select a compatible media sensor or another data attribute.|The "{attribute}" attribute contains invalid JSON.|The "{attribute}" attribute must contain a list of media objects.|Nothing upcoming. Time to make popcorn anyway.|Navigation needs an available remote entity, or Samsung key transport. Choose one in Context; supported media controls still work independently.|Swipe to navigate · Tap to select|TV touchpad: swipe or use arrow keys; tap or Enter to select|Double tap: {action}|This control has an empty command. Set its key mapping in Features.|The configured command target is unavailable. Check Context settings.|Remote command failed: {error}|Choose a Pi-hole device or entity in Context. Sensor and control overrides are available in Features.|Temporary pause requires a compatible backend disable service. Select Pi-hole v5/v6 or a custom action in Interactions. No browser timer is used.|A selected Pi-hole does not expose the configured pause service.|Pi-hole action failed: {error}|All available blocking switches|Pause target|Invalid: {duration}',
   ar: 'اختر مستشعر وسائط قادمة في محرر البطاقة.|مستشعر الوسائط القادمة غير متاح.|لا يحتوي المستشعر على السمة "{attribute}". اختر مستشعر وسائط متوافقًا أو سمة بيانات أخرى.|تحتوي السمة "{attribute}" على JSON غير صالح.|يجب أن تحتوي السمة "{attribute}" على قائمة من كائنات الوسائط.|لا توجد وسائط قادمة. يمكنك تحضير الفشار رغم ذلك.|يتطلب التنقل كيان تحكم عن بُعد متاحًا أو نقل مفاتيح Samsung. اختره في السياق؛ تظل عناصر تحكم الوسائط المدعومة مستقلة.|اسحب للتنقل · انقر للتحديد|لوحة لمس التلفاز: اسحب أو استخدم مفاتيح الأسهم؛ انقر أو اضغط Enter للتحديد|النقر المزدوج: {action}|أمر عنصر التحكم هذا فارغ. عيّن تعيين مفتاحه في الميزات.|هدف الأمر المضبوط غير متاح. تحقق من إعدادات السياق.|فشل أمر التحكم عن بُعد: {error}|اختر جهاز Pi-hole أو كيانًا في السياق. يمكن تجاوز المستشعرات وعناصر التحكم في الميزات.|يتطلب الإيقاف المؤقت خدمة تعطيل متوافقة في الخادم. اختر Pi-hole v5/v6 أو إجراءً مخصصًا في التفاعلات. لا يُستخدم مؤقت المتصفح.|أحد أجهزة Pi-hole المحددة لا يوفر خدمة الإيقاف المؤقت المضبوطة.|فشل إجراء Pi-hole: {error}|كل مفاتيح الحظر المتاحة|هدف الإيقاف المؤقت|غير صالح: {duration}',
   bg: 'Изберете сензор за предстоящи медии в редактора на картата.|Сензорът за предстоящи медии е недостъпен.|Сензорът няма атрибут "{attribute}". Изберете съвместим медиен сензор или друг атрибут за данните.|Атрибутът "{attribute}" съдържа невалиден JSON.|Атрибутът "{attribute}" трябва да съдържа списък от медийни обекти.|Няма нищо предстоящо. Все пак е време за пуканки.|Навигацията изисква наличен обект за дистанционно или предаване на Samsung клавиши. Изберете го в Контекст; поддържаното медийно управление работи независимо.|Плъзнете за навигация · Докоснете за избор|ТВ тъчпад: плъзнете или използвайте стрелките; докоснете или натиснете Enter за избор|Двойно докосване: {action}|Тази контрола има празна команда. Задайте съответствието на клавиша във Функции.|Настроената цел на командата е недостъпна. Проверете Контекст.|Командата на дистанционното не бе изпълнена: {error}|Изберете Pi-hole устройство или обект в Контекст. Замени на сензорите и управлението има във Функции.|Временната пауза изисква съвместима сървърна услуга за изключване. Изберете Pi-hole v5/v6 или своя действие във Взаимодействия. Не се използва таймер в браузъра.|Избрано Pi-hole устройство не предоставя настроената услуга за пауза.|Действието на Pi-hole е неуспешно: {error}|Всички налични превключватели за блокиране|Цел на паузата|Невалидно: {duration}',
@@ -1487,8 +1487,8 @@ const Wr = [
   vi: 'Chọn cảm biến nội dung sắp tới trong trình chỉnh sửa thẻ.|Cảm biến nội dung sắp tới không khả dụng.|Cảm biến không có thuộc tính "{attribute}". Chọn cảm biến đa phương tiện tương thích hoặc thuộc tính dữ liệu khác.|Thuộc tính "{attribute}" chứa JSON không hợp lệ.|Thuộc tính "{attribute}" phải chứa danh sách đối tượng đa phương tiện.|Không có gì sắp tới. Dù sao cũng đến giờ làm bỏng ngô.|Điều hướng cần thực thể điều khiển từ xa khả dụng hoặc truyền phím Samsung. Chọn trong Ngữ cảnh; các điều khiển đa phương tiện được hỗ trợ vẫn hoạt động độc lập.|Vuốt để điều hướng · Chạm để chọn|Bàn di chuột TV: vuốt hoặc dùng phím mũi tên; chạm hoặc nhấn Enter để chọn|Chạm hai lần: {action}|Điều khiển này có lệnh trống. Đặt ánh xạ phím trong Tính năng.|Đích lệnh đã cấu hình không khả dụng. Kiểm tra Ngữ cảnh.|Lệnh điều khiển từ xa thất bại: {error}|Chọn thiết bị hoặc thực thể Pi-hole trong Ngữ cảnh. Có thể ghi đè cảm biến và điều khiển trong Tính năng.|Tạm dừng có thời hạn cần dịch vụ vô hiệu hóa tương thích trên máy chủ. Chọn Pi-hole v5/v6 hoặc hành động tùy chỉnh trong Tương tác. Không dùng bộ hẹn giờ trình duyệt.|Một Pi-hole được chọn không cung cấp dịch vụ tạm dừng đã cấu hình.|Hành động Pi-hole thất bại: {error}|Tất cả công tắc chặn khả dụng|Đích tạm dừng|Không hợp lệ: {duration}',
   "zh-Hans": '请在卡片编辑器中选择即将上映媒体传感器。|即将上映媒体传感器不可用。|传感器没有 "{attribute}" 属性。请选择兼容的媒体传感器或其他数据属性。|"{attribute}" 属性包含无效的 JSON。|"{attribute}" 属性必须包含媒体对象列表。|暂无即将上映内容。不过还是可以准备爆米花。|导航需要可用的遥控器实体或 Samsung 按键传输。请在上下文中选择；支持的媒体控件仍可独立使用。|滑动导航 · 点按选择|电视触控板：滑动或使用方向键；点按或按 Enter 选择|双击：{action}|此控件的命令为空。请在功能中设置按键映射。|配置的命令目标不可用。请检查上下文设置。|遥控命令失败：{error}|请在上下文中选择 Pi-hole 设备或实体。可在功能中覆盖传感器和控件。|临时暂停需要兼容的服务器禁用服务。请在交互中选择 Pi-hole v5/v6 或自定义操作。不使用浏览器计时器。|选定的 Pi-hole 未提供配置的暂停服务。|Pi-hole 操作失败：{error}|所有可用的屏蔽开关|暂停目标|无效：{duration}',
   "zh-Hant": '請在卡片編輯器中選擇即將上映媒體感測器。|即將上映媒體感測器無法使用。|感測器沒有 "{attribute}" 屬性。請選擇相容的媒體感測器或其他資料屬性。|"{attribute}" 屬性包含無效的 JSON。|"{attribute}" 屬性必須包含媒體物件清單。|暫無即將上映內容。不過還是可以準備爆米花。|導覽需要可用的遙控器實體或 Samsung 按鍵傳輸。請在情境中選擇；支援的媒體控制項仍可獨立使用。|滑動導覽 · 輕觸選取|電視觸控板：滑動或使用方向鍵；輕觸或按 Enter 選取|輕觸兩下：{action}|此控制項的命令為空。請在功能中設定按鍵對應。|設定的命令目標無法使用。請檢查情境設定。|遙控命令失敗：{error}|請在情境中選擇 Pi-hole 裝置或實體。可在功能中覆寫感測器與控制項。|暫時暫停需要相容的伺服器停用服務。請在互動中選擇 Pi-hole v5/v6 或自訂動作。不使用瀏覽器計時器。|選取的 Pi-hole 未提供設定的暫停服務。|Pi-hole 動作失敗：{error}|所有可用的封鎖開關|暫停目標|無效：{duration}'
-}, Yc = Object.fromEntries(
-  Object.entries(Zc).map(([e, t]) => {
+}, Jc = Object.fromEntries(
+  Object.entries(Yc).map(([e, t]) => {
     const a = t.split("|");
     if (a.length !== Zr.length) throw new Error(`Invalid ${e} message row: ${a.length}/${Zr.length}`);
     return [e, Object.fromEntries(Zr.map((i, n) => [i, a[n]]))];
@@ -1529,7 +1529,7 @@ const Wr = [
   "pihole_metric_tap_action",
   "pihole_metric_hold_action",
   "pihole_metric_double_tap_action"
-], Jc = {
+], Qc = {
   en: "Command remote (automatic from the TV's device)|Media player (automatic from the selected device)|Command transport|Remote key preset|Command device (optional, for IR remotes)|Navigation controls|Volume controls|Volume step (%)|Playback buttons|Power and utility buttons|Haptic feedback|Touchpad double-tap action|Double-tap command code|Swipe distance per command|Touchpad height|Remote button size|Remote accent color|Pi-hole devices|Visible statistics (in selected order)|Initially collapsed sections|Hidden entities|Pause durations|Temporary pause backend|Custom pause action|Duration parameter name|Duration parameter format|Statistic columns|Pi-hole accent color|System history hours|System chart height|System history sensors|Show card header|Statistic tap action|Statistic hold action|Statistic double-tap action",
   ar: "جهاز التحكم بالأوامر (تلقائيًا من جهاز التلفاز)|مشغل الوسائط (تلقائيًا من الجهاز المحدد)|طريقة إرسال الأوامر|إعداد مسبق لمفاتيح التحكم|جهاز الأوامر (اختياري، للتحكم بالأشعة تحت الحمراء)|عناصر تحكم التنقل|عناصر تحكم مستوى الصوت|خطوة مستوى الصوت (%)|أزرار التشغيل|أزرار الطاقة والأدوات|استجابة لمسية|إجراء النقر المزدوج على لوحة اللمس|رمز أمر النقر المزدوج|مسافة السحب لكل أمر|ارتفاع لوحة اللمس|حجم أزرار التحكم|لون تمييز التحكم|أجهزة Pi-hole|الإحصاءات الظاهرة (بالترتيب المحدد)|الأقسام المطوية مبدئيًا|الكيانات المخفية|مدد الإيقاف المؤقت|خدمة الإيقاف المؤقت في الخادم|إجراء إيقاف مؤقت مخصص|اسم معلمة المدة|تنسيق معلمة المدة|أعمدة الإحصاءات|لون تمييز Pi-hole|ساعات سجل النظام|ارتفاع مخطط النظام|مستشعرات سجل النظام|إظهار عنوان البطاقة|إجراء النقر على الإحصاء|إجراء الضغط المطول على الإحصاء|إجراء النقر المزدوج على الإحصاء",
   bg: "Дистанционно за команди (автоматично от устройството на телевизора)|Медиен плейър (автоматично от избраното устройство)|Предаване на команди|Набор от клавиши за дистанционното|Устройство за команди (по избор, за ИЧ дистанционни)|Управление на навигацията|Управление на звука|Стъпка на звука (%)|Бутони за възпроизвеждане|Бутони за захранване и помощни функции|Тактилна обратна връзка|Действие при двойно докосване на тъчпада|Код на команда при двойно докосване|Разстояние на плъзгане за команда|Височина на тъчпада|Размер на бутоните на дистанционното|Акцентен цвят на дистанционното|Устройства Pi-hole|Видими статистики (в избрания ред)|Първоначално свити раздели|Скрити обекти|Продължителности на паузата|Сървърна услуга за временна пауза|Персонализирано действие за пауза|Име на параметъра за продължителност|Формат на параметъра за продължителност|Колони със статистики|Акцентен цвят на Pi-hole|Часове системна история|Височина на системната графика|Сензори за системна история|Показване на заглавката на картата|Действие при докосване на статистика|Действие при задържане на статистика|Действие при двойно докосване на статистика",
@@ -1563,8 +1563,8 @@ const Wr = [
   vi: "Điều khiển gửi lệnh (tự động từ thiết bị TV)|Trình phát phương tiện (tự động từ thiết bị đã chọn)|Phương thức truyền lệnh|Bộ phím điều khiển định sẵn|Thiết bị nhận lệnh (tùy chọn, cho điều khiển hồng ngoại)|Điều khiển điều hướng|Điều khiển âm lượng|Bước âm lượng (%)|Nút phát lại|Nút nguồn và tiện ích|Phản hồi xúc giác|Hành động chạm hai lần trên bàn di chuột|Mã lệnh chạm hai lần|Khoảng vuốt cho mỗi lệnh|Chiều cao bàn di chuột|Kích thước nút điều khiển|Màu nhấn của điều khiển|Thiết bị Pi-hole|Thống kê hiển thị (theo thứ tự đã chọn)|Các phần thu gọn ban đầu|Thực thể bị ẩn|Thời lượng tạm dừng|Dịch vụ tạm dừng phía máy chủ|Hành động tạm dừng tùy chỉnh|Tên tham số thời lượng|Định dạng tham số thời lượng|Cột thống kê|Màu nhấn Pi-hole|Số giờ lịch sử hệ thống|Chiều cao biểu đồ hệ thống|Cảm biến lịch sử hệ thống|Hiển thị tiêu đề thẻ|Hành động chạm thống kê|Hành động nhấn giữ thống kê|Hành động chạm hai lần thống kê",
   "zh-Hans": "命令遥控器（自动从电视设备选择）|媒体播放器（自动从所选设备选择）|命令传输方式|遥控按键预设|命令设备（可选，用于红外遥控器）|导航控件|音量控件|音量步长 (%)|播放按钮|电源与功能按钮|触觉反馈|触控板双击操作|双击命令代码|每条命令的滑动距离|触控板高度|遥控按钮大小|遥控器强调色|Pi-hole 设备|可见统计（按所选顺序）|初始折叠的分区|隐藏的实体|暂停时长|临时暂停后端|自定义暂停操作|时长参数名称|时长参数格式|统计列数|Pi-hole 强调色|系统历史小时数|系统图表高度|系统历史传感器|显示卡片标题|统计点击操作|统计长按操作|统计双击操作",
   "zh-Hant": "指令遙控器（自動從電視裝置選擇）|媒體播放器（自動從所選裝置選擇）|指令傳輸方式|遙控按鍵預設|指令裝置（選填，用於紅外線遙控器）|導覽控制項|音量控制項|音量級距 (%)|播放按鈕|電源與功能按鈕|觸覺回饋|觸控板點兩下動作|點兩下指令代碼|每個指令的滑動距離|觸控板高度|遙控按鈕大小|遙控器強調色|Pi-hole 裝置|可見統計（依所選順序）|初始摺疊的區段|隱藏的實體|暫停時間|暫時暫停後端|自訂暫停動作|時間參數名稱|時間參數格式|統計欄數|Pi-hole 強調色|系統歷史小時數|系統圖表高度|系統歷史感測器|顯示卡片標題|統計點按動作|統計長按動作|統計點兩下動作"
-}, Qc = Object.fromEntries(
-  Object.entries(Jc).map(([e, t]) => {
+}, Xc = Object.fromEntries(
+  Object.entries(Qc).map(([e, t]) => {
     const a = t.split("|");
     if (a.length !== Yr.length) throw new Error(`Invalid ${e} control label row: ${a.length}/${Yr.length}`);
     return [e, Object.fromEntries(Yr.map((i, n) => [i, a[n]]))];
@@ -1616,7 +1616,7 @@ const Wr = [
   "upcoming_item_behavior",
   "upcoming_item_action",
   "upcoming_hide_empty"
-], Xc = {
+], em = {
   en: "Media data attribute|Maximum media items|Artwork layout|Media item height|Artwork corner radius|Maximum columns|Fill the available height, then wrap into columns|Collapsed media|Initially visible items|Prioritize this attribute|Priority value|Sort media by|Ascending order|Filter by attribute (clear for all media)|Filter value|Filter comparison|Flagged item visibility|Show item flags|Flag icon|Flag description|Flag color|Date format|Clock format|Media title template|First line template|Second line template|Third line template|Fourth line template|Media title color|First line color|Second line color|Third line color|Fourth line color|Media title size|Detail text size|Raised media items|Artwork text shadows|Transparent artwork gradient|Show summaries on hover or focus|Summary delay (milliseconds)|Open trailers when available|Open media deep links when available|Custom media URL template|Media item tap behavior|Custom media item action|Hide the card when no items match",
   ar: "سمة بيانات الوسائط|الحد الأقصى لعناصر الوسائط|تخطيط الصور|ارتفاع عنصر الوسائط|نصف قطر زوايا الصورة|الحد الأقصى للأعمدة|ملء الارتفاع المتاح ثم الالتفاف إلى أعمدة|الوسائط المطوية|العناصر الظاهرة مبدئيًا|إعطاء الأولوية لهذه السمة|قيمة الأولوية|ترتيب الوسائط حسب|ترتيب تصاعدي|تصفية حسب السمة (امسح لإظهار كل الوسائط)|قيمة التصفية|مقارنة التصفية|ظهور العناصر المعلّمة|إظهار علامات العناصر|أيقونة العلامة|وصف العلامة|لون العلامة|تنسيق التاريخ|تنسيق الساعة|قالب عنوان الوسائط|قالب السطر الأول|قالب السطر الثاني|قالب السطر الثالث|قالب السطر الرابع|لون عنوان الوسائط|لون السطر الأول|لون السطر الثاني|لون السطر الثالث|لون السطر الرابع|حجم عنوان الوسائط|حجم نص التفاصيل|عناصر وسائط بارزة|ظلال النص فوق الصور|تدرج صور شفاف|إظهار الملخصات عند التحويم أو التركيز|تأخير الملخص (مللي ثانية)|فتح المقاطع الدعائية عند توفرها|فتح الروابط العميقة للوسائط عند توفرها|قالب رابط وسائط مخصص|سلوك النقر على عنصر الوسائط|إجراء مخصص لعنصر الوسائط|إخفاء البطاقة عندما لا تتطابق أي عناصر",
   bg: "Атрибут с медийни данни|Максимален брой медии|Оформление на изображенията|Височина на медиен елемент|Радиус на ъглите на изображенията|Максимален брой колони|Запълване на наличната височина, после пренасяне в колони|Свити медии|Първоначално видими елементи|Приоритет за този атрибут|Приоритетна стойност|Сортиране на медиите по|Възходящ ред|Филтриране по атрибут (изчистете за всички медии)|Стойност на филтъра|Сравнение на филтъра|Видимост на маркираните елементи|Показване на маркерите|Икона на маркера|Описание на маркера|Цвят на маркера|Формат на датата|Формат на часовника|Шаблон за медийното заглавие|Шаблон за първия ред|Шаблон за втория ред|Шаблон за третия ред|Шаблон за четвъртия ред|Цвят на медийното заглавие|Цвят на първия ред|Цвят на втория ред|Цвят на третия ред|Цвят на четвъртия ред|Размер на медийното заглавие|Размер на текста с подробности|Повдигнати медийни елементи|Сенки на текста върху изображенията|Прозрачен градиент на изображенията|Показване на резюмета при посочване или фокус|Забавяне на резюмето (милисекунди)|Отваряне на трейлъри, когато са налични|Отваряне на директни медийни връзки, когато са налични|Персонализиран шаблон за медиен URL|Поведение при докосване на медия|Персонализирано действие за медия|Скриване на картата, когато няма съвпадащи елементи",
@@ -1650,8 +1650,8 @@ const Wr = [
   vi: "Thuộc tính dữ liệu phương tiện|Số mục phương tiện tối đa|Bố cục hình ảnh|Chiều cao mục phương tiện|Bán kính góc hình ảnh|Số cột tối đa|Lấp đầy chiều cao khả dụng rồi chuyển sang cột|Phương tiện thu gọn|Mục hiển thị ban đầu|Ưu tiên thuộc tính này|Giá trị ưu tiên|Sắp xếp phương tiện theo|Thứ tự tăng dần|Lọc theo thuộc tính (xóa để xem tất cả)|Giá trị bộ lọc|Phép so sánh bộ lọc|Hiển thị mục được đánh dấu|Hiển thị dấu của mục|Biểu tượng đánh dấu|Mô tả dấu|Màu dấu|Định dạng ngày|Định dạng đồng hồ|Mẫu tiêu đề phương tiện|Mẫu dòng thứ nhất|Mẫu dòng thứ hai|Mẫu dòng thứ ba|Mẫu dòng thứ tư|Màu tiêu đề phương tiện|Màu dòng thứ nhất|Màu dòng thứ hai|Màu dòng thứ ba|Màu dòng thứ tư|Cỡ tiêu đề phương tiện|Cỡ chữ chi tiết|Mục phương tiện nổi|Bóng chữ trên hình ảnh|Chuyển màu hình ảnh trong suốt|Hiển thị tóm tắt khi di chuột hoặc lấy nét|Độ trễ tóm tắt (mili giây)|Mở đoạn giới thiệu khi có|Mở liên kết trực tiếp đến phương tiện khi có|Mẫu URL phương tiện tùy chỉnh|Hành vi chạm mục phương tiện|Hành động mục phương tiện tùy chỉnh|Ẩn thẻ khi không có mục phù hợp",
   "zh-Hans": "媒体数据属性|最大媒体项目数|图片布局|媒体项目高度|图片圆角半径|最大列数|填满可用高度后换列|折叠的媒体|初始可见项目|优先显示此属性|优先值|媒体排序依据|升序|按属性筛选（清空以显示全部媒体）|筛选值|筛选比较方式|标记项目可见性|显示项目标记|标记图标|标记说明|标记颜色|日期格式|时钟格式|媒体标题模板|第一行模板|第二行模板|第三行模板|第四行模板|媒体标题颜色|第一行颜色|第二行颜色|第三行颜色|第四行颜色|媒体标题大小|详细文本大小|凸起的媒体项目|图片文字阴影|透明图片渐变|悬停或聚焦时显示摘要|摘要延迟（毫秒）|打开可用预告片|打开可用媒体深层链接|自定义媒体 URL 模板|媒体项目点击行为|自定义媒体项目操作|没有匹配项目时隐藏卡片",
   "zh-Hant": "媒體資料屬性|最多媒體項目數|圖片配置|媒體項目高度|圖片圓角半徑|最多欄數|填滿可用高度後換欄|摺疊的媒體|初始可見項目|優先顯示此屬性|優先值|媒體排序依據|遞增排序|依屬性篩選（清空以顯示全部媒體）|篩選值|篩選比較方式|標記項目可見性|顯示項目標記|標記圖示|標記說明|標記顏色|日期格式|時鐘格式|媒體標題範本|第一行範本|第二行範本|第三行範本|第四行範本|媒體標題顏色|第一行顏色|第二行顏色|第三行顏色|第四行顏色|媒體標題大小|詳細文字大小|浮起的媒體項目|圖片文字陰影|透明圖片漸層|游標停留或聚焦時顯示摘要|摘要延遲（毫秒）|開啟可用預告片|開啟可用媒體深層連結|自訂媒體 URL 範本|媒體項目點按行為|自訂媒體項目動作|沒有符合項目時隱藏卡片"
-}, em = Object.fromEntries(
-  Object.entries(Xc).map(([e, t]) => {
+}, tm = Object.fromEntries(
+  Object.entries(em).map(([e, t]) => {
     const a = t.split("|");
     if (a.length !== Jr.length) throw new Error(`Invalid ${e} media label row: ${a.length}/${Jr.length}`);
     return [e, Object.fromEntries(Jr.map((i, n) => [i, a[n]]))];
@@ -1687,7 +1687,7 @@ const Wr = [
   "editor.action",
   "message.artwork_unavailable",
   "message.invalid_media_url"
-], tm = {
+], am = {
   en: "Pi-hole entity (optional when devices are selected)|Upcoming-media sensor|TV or remote entity|Reorder {name}|Remove {name}|Add {name} section|Sensor mapping and entity order|Metric to configure|Currently mapped: {entities}|No matching sensor found. Select one or more sensors below.|{name} sensor override|Prioritized Pi-hole entities|Restore automatic entity order|Remote sections|Remote command|Home Assistant action|Add custom button|Reorder custom button|Edit custom button|Remove custom button|Button {number}|Key mappings|Restore preset command|Override a command|Button type|Label|Command code|Action|Artwork unavailable|The custom media URL is invalid or uses an unsupported protocol. Check Interactions.",
   ar: "كيان Pi-hole (اختياري عند تحديد أجهزة)|مستشعر الوسائط القادمة|كيان التلفاز أو جهاز التحكم|إعادة ترتيب {name}|إزالة {name}|إضافة قسم {name}|تعيين المستشعرات وترتيب الكيانات|الإحصاء المراد إعداده|المعيّن حاليًا: {entities}|لم يُعثر على مستشعر مطابق. اختر مستشعرًا أو أكثر أدناه.|تجاوز مستشعر {name}|كيانات Pi-hole ذات الأولوية|استعادة الترتيب التلقائي للكيانات|أقسام جهاز التحكم|أمر جهاز التحكم|إجراء Home Assistant|إضافة زر مخصص|إعادة ترتيب زر مخصص|تعديل زر مخصص|إزالة زر مخصص|زر {number}|تعيينات المفاتيح|استعادة الأمر الافتراضي|تجاوز أمر|نوع الزر|التسمية|رمز الأمر|الإجراء|الصورة غير متاحة|رابط الوسائط المخصص غير صالح أو يستخدم بروتوكولًا غير مدعوم. تحقق من التفاعلات.",
   bg: "Обект Pi-hole (по избор при избрани устройства)|Сензор за предстоящи медии|Обект за телевизор или дистанционно|Пренареждане на {name}|Премахване на {name}|Добавяне на раздел {name}|Съпоставяне на сензори и ред на обектите|Статистика за настройване|Текущо съпоставени: {entities}|Няма съвпадащ сензор. Изберете един или повече по-долу.|Замяна на сензора за {name}|Приоритетни обекти Pi-hole|Възстановяване на автоматичния ред|Раздели на дистанционното|Команда на дистанционното|Действие на Home Assistant|Добавяне на персонализиран бутон|Пренареждане на персонализиран бутон|Редактиране на персонализиран бутон|Премахване на персонализиран бутон|Бутон {number}|Съответствия на клавишите|Възстановяване на предварително зададената команда|Замяна на команда|Тип бутон|Етикет|Код на команда|Действие|Изображението е недостъпно|Персонализираният медиен URL е невалиден или използва неподдържан протокол. Проверете Взаимодействия.",
@@ -1721,7 +1721,7 @@ const Wr = [
   vi: "Thực thể Pi-hole (tùy chọn khi đã chọn thiết bị)|Cảm biến phương tiện sắp tới|Thực thể TV hoặc điều khiển|Sắp xếp lại {name}|Xóa {name}|Thêm phần {name}|Ánh xạ cảm biến và thứ tự thực thể|Thống kê cần cấu hình|Ánh xạ hiện tại: {entities}|Không tìm thấy cảm biến phù hợp. Chọn một hoặc nhiều cảm biến bên dưới.|Ghi đè cảm biến {name}|Thực thể Pi-hole ưu tiên|Khôi phục thứ tự thực thể tự động|Các phần điều khiển|Lệnh điều khiển|Hành động Home Assistant|Thêm nút tùy chỉnh|Sắp xếp lại nút tùy chỉnh|Sửa nút tùy chỉnh|Xóa nút tùy chỉnh|Nút {number}|Ánh xạ phím|Khôi phục lệnh định sẵn|Ghi đè một lệnh|Loại nút|Nhãn|Mã lệnh|Hành động|Hình ảnh không khả dụng|URL phương tiện tùy chỉnh không hợp lệ hoặc dùng giao thức không được hỗ trợ. Kiểm tra phần Tương tác.",
   "zh-Hans": "Pi-hole 实体（已选择设备时可选）|即将推出的媒体传感器|电视或遥控器实体|重新排序 {name}|移除 {name}|添加 {name} 分区|传感器映射与实体顺序|要配置的统计|当前映射：{entities}|未找到匹配的传感器。请在下方选择一个或多个。|{name} 传感器覆盖|优先显示的 Pi-hole 实体|恢复自动实体顺序|遥控器分区|遥控命令|Home Assistant 操作|添加自定义按钮|重新排序自定义按钮|编辑自定义按钮|移除自定义按钮|按钮 {number}|按键映射|恢复预设命令|覆盖命令|按钮类型|标签|命令代码|操作|图片不可用|自定义媒体 URL 无效或使用了不支持的协议。请检查交互设置。",
   "zh-Hant": "Pi-hole 實體（已選擇裝置時可選填）|即將推出的媒體感測器|電視或遙控器實體|重新排序 {name}|移除 {name}|新增 {name} 區段|感測器對應與實體順序|要設定的統計|目前對應：{entities}|找不到符合的感測器。請在下方選擇一個或多個。|{name} 感測器覆寫|優先顯示的 Pi-hole 實體|恢復自動實體順序|遙控器區段|遙控指令|Home Assistant 動作|新增自訂按鈕|重新排序自訂按鈕|編輯自訂按鈕|移除自訂按鈕|按鈕 {number}|按鍵對應|恢復預設指令|覆寫指令|按鈕類型|標籤|指令代碼|動作|圖片無法使用|自訂媒體 URL 無效或使用了不支援的協定。請檢查互動設定。"
-}, am = {
+}, im = {
   en: "Settings & diagnostics entities",
   ar: "كيانات الإعدادات والتشخيص",
   bg: "Обекти за настройки и диагностика",
@@ -1755,13 +1755,13 @@ const Wr = [
   vi: "Thực thể cài đặt và chẩn đoán",
   "zh-Hans": "设置与诊断实体",
   "zh-Hant": "設定與診斷實體"
-}, im = Object.fromEntries(
-  Object.entries(tm).map(([e, t]) => {
+}, nm = Object.fromEntries(
+  Object.entries(am).map(([e, t]) => {
     const a = t.split("|");
     if (a.length !== Qr.length) throw new Error(`Invalid ${e} editor control row: ${a.length}/${Qr.length}`);
     return [e, {
       ...Object.fromEntries(Qr.map((i, n) => [i, a[n]])),
-      washer_details_entities: am[e]
+      washer_details_entities: im[e]
     }];
   })
 );
@@ -1773,7 +1773,7 @@ function we(e, t) {
     return [a, Object.fromEntries(e.map((r, o) => [`ui.release.${r}`, n[o]]))];
   }));
 }
-const nm = we([
+const rm = we([
   "Air Quality",
   "Add sensors in the card editor.",
   "Show header",
@@ -1837,7 +1837,7 @@ const nm = we([
   vi: "Chất lượng không khí|Thêm cảm biến trong trình sửa thẻ.|Hiện tiêu đề|Hiện tên tiêu đề|Hiện biểu tượng tiêu đề|Hiện chỉ báo chất lượng không khí|Loại số đo|Cảm biến|Hiện số đo|Nhãn (chú giải)|Màu biểu tượng (trống để tự động)|Đơn vị hiển thị|Chữ số thập phân|Cảnh báo trên|Kém trên|Rất kém trên|Cảnh báo dưới|Rất kém dưới|Thêm cảm biến|Nguy cơ nấm mốc|Tốt|Trung bình|Kém|Rất kém|Vừa|Nặng|Thực thể riêng tư camera|Nút ngữ cảnh|Cảm biến phấn hoa|Thêm cảm biến phấn hoa",
   "zh-Hans": "空气质量|请在卡片编辑器中添加传感器。|显示页眉|显示页眉标题|显示页眉图标|显示空气质量指示器|读数类型|传感器|显示读数|标签（提示）|图标颜色（留空为自动）|显示单位|小数位数|高于此值时警告|高于此值时较差|高于此值时很差|低于此值时警告|低于此值时很差|添加传感器|霉菌风险|良好|一般|较差|很差|中等|严重|摄像头隐私实体|场景按钮|花粉传感器|添加花粉传感器",
   "zh-Hant": "空氣品質|請在卡片編輯器中新增感測器。|顯示頁首|顯示頁首標題|顯示頁首圖示|顯示空氣品質指示器|讀數類型|感測器|顯示讀數|標籤（提示）|圖示顏色（留空為自動）|顯示單位|小數位數|高於此值時警告|高於此值時較差|高於此值時很差|低於此值時警告|低於此值時很差|新增感測器|黴菌風險|良好|普通|較差|很差|中等|嚴重|攝影機隱私實體|場景按鈕|花粉感測器|新增花粉感測器"
-}), rm = we(["Buttons per row"], {
+}), om = we(["Buttons per row"], {
   ar: "الأزرار في كل صف",
   bg: "Бутони на ред",
   ca: "Botons per fila",
@@ -1870,7 +1870,7 @@ const nm = we([
   vi: "Nút trên mỗi hàng",
   "zh-Hans": "每行按钮数",
   "zh-Hant": "每列按鈕數"
-}), om = we([
+}), sm = we([
   "To-do",
   "To-do lists",
   "Show completed tasks",
@@ -1927,7 +1927,7 @@ const nm = we([
   vi: "Việc cần làm|Danh sách việc cần làm|Hiện việc đã hoàn thành|Cho phép thêm việc|Cho phép sửa việc|Cho phép xóa việc|Chọn danh sách việc trong trình sửa thẻ.|Đang tải công việc…|Đang lưu công việc…|Không thể tải công việc. Kiểm tra kết nối và quyền.|Đã gửi thay đổi. Làm mới để xác minh danh sách.|Không thể thay đổi công việc. Kiểm tra kết nối và quyền rồi làm mới trước khi thử lại.|Công việc đã thay đổi hoặc không có UID an toàn. Làm mới trước khi sửa.|Không có công việc để hiển thị.|Thêm việc|Hoàn thành việc|Đánh dấu chưa hoàn thành|Công việc|Xóa công việc này?|Hạn|Ngày và giờ|Mô tả|Ngày",
   "zh-Hans": "待办事项|待办列表|显示已完成任务|允许添加任务|允许编辑任务|允许删除任务|请在卡片编辑器中选择待办列表。|正在加载任务…|正在保存任务…|无法加载任务。请检查连接和权限。|更改已发送。请刷新以验证列表。|无法更改任务。请检查连接和权限，刷新后重试。|任务已更改或没有安全的 UID。请在编辑前刷新。|没有可显示的任务。|添加任务|完成任务|标记为未完成|任务|删除此任务？|到期|日期和时间|描述|日期",
   "zh-Hant": "待辦事項|待辦清單|顯示已完成工作|允許新增工作|允許編輯工作|允許刪除工作|請在卡片編輯器中選擇待辦清單。|正在載入工作…|正在儲存工作…|無法載入工作。請檢查連線和權限。|變更已送出。請重新整理以驗證清單。|無法變更工作。請檢查連線和權限，重新整理後再試。|工作已變更或沒有安全的 UID。請在編輯前重新整理。|沒有可顯示的工作。|新增工作|完成工作|標記為未完成|工作|刪除此工作？|到期|日期和時間|描述|日期"
-}), sm = we([
+}), lm = we([
   "Additional lists are shown separately; tasks are not moved between lists.",
   "Display only; completed tasks are not deleted.",
   "Only actions supported by the selected list are offered. Home Assistant enforces permissions."
@@ -1964,7 +1964,7 @@ const nm = we([
   vi: "Các danh sách bổ sung hiển thị riêng; công việc không được chuyển giữa các danh sách.|Chỉ thay đổi hiển thị; công việc đã hoàn thành không bị xóa.|Chỉ cung cấp thao tác mà danh sách đã chọn hỗ trợ. Home Assistant thực thi quyền.",
   "zh-Hans": "附加列表单独显示；任务不会在列表之间移动。|仅影响显示；不会删除已完成任务。|仅提供所选列表支持的操作。Home Assistant 负责权限检查。",
   "zh-Hant": "額外清單分別顯示；工作不會在清單之間移動。|僅影響顯示；不會刪除已完成工作。|僅提供所選清單支援的操作。Home Assistant 負責權限檢查。"
-}), lm = we([
+}), _m = we([
   "Add, hide or reorder readings. Tap a reading to open its sensor.",
   "Quality follows the selected entity, or the worst CO₂, PM2.5, VOC or radon reading. This is not a regulatory AQI.",
   "Thresholds use the units shown. Unsupported units disable automatic colors and quality ratings, not readings.",
@@ -2011,7 +2011,7 @@ const nm = we([
   vi: "Thêm, ẩn hoặc sắp xếp số đo. Chạm số đo để mở cảm biến.|Chất lượng theo thực thể đã chọn hoặc số đo CO₂, PM2.5, VOC hay radon kém nhất. Đây không phải AQI theo quy định.|Ngưỡng dùng đơn vị được hiển thị. Đơn vị không hỗ trợ chỉ tắt màu và đánh giá tự động, không tắt số đo.|Cảm biến chất lượng không khí (tùy chọn; nếu trống tính từ chất ô nhiễm)|Hiện tiêu đề Mushroom; chỉ báo chất lượng độc lập.|Ẩn chữ tiêu đề mà không ẩn số đo.|Ẩn biểu tượng tiêu đề, không ẩn biểu tượng cảm biến.|Hiện biểu tượng và chữ chất lượng hiện tại ở góc trên phải.|Chọn cài đặt và chẩn đoán của cùng thiết bị. Mở rộng bằng mũi tên ở hàng trạng thái.|Nút tùy chọn: bật tắt công tắc, nhấn nút, mở thông tin thực thể khác. Đặt hành động riêng để thay thế.|Thay hành động mặc định của thực thể cho nút này.|Thiết bị không hỗ trợ tạm dừng. Đặt hành động tạm dừng nếu tích hợp cung cấp.|Mỗi hàng bật nằm dưới các loại phấn hoa chính. Hàng trống hoặc tắt được ẩn.",
   "zh-Hans": "添加、隐藏或重排读数。点击读数可打开其传感器。|质量跟随所选实体，或 CO₂、PM2.5、VOC、氡中最差的读数。这不是法规规定的 AQI。|阈值使用所示单位。不支持的单位会禁用自动颜色和质量评级，但保留读数。|空气质量传感器（可选，否则根据污染物计算）|显示 Mushroom 页眉；质量指示器独立控制。|隐藏页眉文字，但不隐藏读数。|隐藏页眉图标，但不隐藏传感器图标。|在右上角显示当前质量图标和文字。|选择同一设备的设置和诊断实体。用状态行的箭头展开。|可选设备按钮：切换开关、按下按钮，其他实体打开详情。可配置操作覆盖默认行为。|覆盖此按钮的默认实体操作。|此设备不支持暂停。如果集成提供暂停操作，请进行配置。|每个启用的行显示在主要花粉类型下方。空行或禁用的行会隐藏。",
   "zh-Hant": "新增、隱藏或重排讀數。點選讀數可開啟其感測器。|品質跟隨所選實體，或 CO₂、PM2.5、VOC、氡中最差的讀數。這不是法規規定的 AQI。|臨界值使用所示單位。不支援的單位會停用自動顏色與品質評級，但保留讀數。|空氣品質感測器（選填，否則根據污染物計算）|顯示 Mushroom 頁首；品質指示器獨立控制。|隱藏頁首文字，但不隱藏讀數。|隱藏頁首圖示，但不隱藏感測器圖示。|在右上角顯示目前品質圖示與文字。|選擇同一裝置的設定與診斷實體。用狀態列的箭頭展開。|選用裝置按鈕：切換開關、按下按鈕，其他實體開啟詳細資訊。可設定動作覆寫預設行為。|覆寫此按鈕的預設實體動作。|此裝置不支援暫停。如果整合提供暫停動作，請進行設定。|每個啟用的列顯示在主要花粉類型下方。空列或停用的列會隱藏。"
-}), _m = we([
+}), dm = we([
   "Presentation",
   "Stable ID",
   "Color (CSS value)",
@@ -2075,7 +2075,7 @@ const nm = we([
   vi: "Trình bày|ID cố định|Màu (giá trị CSS)|Nhóm|Ghi chú|Thuộc tính (tùy chọn)|Đơn vị thay thế (tùy chọn)|Nút nguồn|Nút đích|Hàng thực thể|Thêm hàng thực thể|Nhóm|Nhóm mới|Thêm nhóm|Nút|Nút mới|Thêm nút|Quan hệ|Thêm quan hệ|Không nhóm|liên quan đến|Thuộc tính không có sẵn|Luồng thực thể|Quy trình tuần tự|Đồ thị quan hệ|Chuyển {name} lên|Chuyển {name} xuống|Định nghĩa quan hệ và hiện giá trị thực thể có sẵn. Thẻ không tính toán hay chạy quy trình.|Thứ tự nhóm xác định thứ tự quy trình. Nút không nhóm nằm cuối.|Thứ tự nút xác định thứ tự trong nhóm. Đổi ID cập nhật quan hệ; xóa nút xóa các quan hệ của nó.",
   "zh-Hans": "显示方式|固定 ID|颜色（CSS 值）|分组|备注|属性（可选）|覆盖单位（可选）|源节点|目标节点|实体行|添加实体行|分组|新分组|添加分组|节点|新节点|添加节点|关系|添加关系|未分组|关联到|属性不可用|实体工作流|顺序流程|关系图|上移 {name}|下移 {name}|定义关系并显示现有实体值。此卡片不会计算或执行工作流。|分组顺序决定流程顺序。未分组节点显示在最后。|节点顺序决定组内顺序。重命名 ID 会更新关系；删除节点会删除其关系。",
   "zh-Hant": "顯示方式|固定 ID|顏色（CSS 值）|群組|備註|屬性（選填）|覆寫單位（選填）|來源節點|目標節點|實體列|新增實體列|群組|新群組|新增群組|節點|新節點|新增節點|關係|新增關係|未分組|關聯至|屬性無法使用|實體工作流程|順序流程|關係圖|上移 {name}|下移 {name}|定義關係並顯示現有實體值。此卡片不會計算或執行工作流程。|群組順序決定流程順序。未分組節點顯示在最後。|節點順序決定組內順序。重新命名 ID 會更新關係；刪除節點會刪除其關係。"
-}), dm = we([
+}), um = we([
   "Stock data source",
   "Currency code (optional, e.g. USD or EUR)",
   "Stock symbol",
@@ -2142,7 +2142,7 @@ const nm = we([
   vi: "Nguồn dữ liệu cổ phiếu|Mã tiền tệ (tùy chọn, ví dụ USD hoặc EUR)|Mã cổ phiếu|Cổ phiếu sở hữu|Chu kỳ làm mới (giây)|Khoảng biểu đồ mặc định|Hiện danh mục|Hiện thống kê công ty|Hiện khối lượng giao dịch|Hiện xu hướng SMA / EMA|Biến động giá trong ngày|Biến động ngày (%)|Mở cửa|Đóng cửa trước|Vốn hóa thị trường|Cao nhất 52 tuần|Thấp nhất 52 tuần|Sau giờ giao dịch|Trước giờ giao dịch|Dữ liệu cổ phiếu không có sẵn|Không có lịch sử biểu đồ.|Lịch sử giá cổ phiếu|Đang tải dữ liệu cổ phiếu...|Giới hạn yêu cầu: hiển thị dữ liệu đã lưu.|Đã cập nhật|Khoảng biểu đồ|Lịch sử thị trường Yahoo Finance|Lịch sử Home Assistant (giới hạn theo lưu giữ)|Hôm nay|Thực thể thay thế chỉ số|Thuộc tính chỉ số|Chuyển nguồn|Cài đặt và chẩn đoán",
   "zh-Hans": "股票数据来源|货币代码（可选，例如 USD 或 EUR）|股票代码|持有股数|刷新间隔（秒）|默认图表范围|显示持仓|显示公司统计|显示成交量|显示 SMA / EMA 趋势|每日价格变动|每日变动（%）|开盘|前收盘|市值|52 周最高|52 周最低|盘后|盘前|股票数据不可用|暂无图表历史。|股价历史|正在加载股票数据...|请求受限：显示缓存的股票数据。|已更新|图表范围|Yahoo Finance 市场历史|Home Assistant 历史（受保留期限限制）|今天|覆盖指标实体|指标属性|切换电源|设置和诊断",
   "zh-Hant": "股票資料來源|貨幣代碼（選填，例如 USD 或 EUR）|股票代碼|持有股數|重新整理間隔（秒）|預設圖表範圍|顯示持股|顯示公司統計|顯示成交量|顯示 SMA / EMA 趨勢|每日價格變動|每日變動（%）|開盤|前收盤|市值|52 週最高|52 週最低|盤後|盤前|股票資料無法使用|暫無圖表歷史。|股價歷史|正在載入股票資料...|請求受限：顯示快取的股票資料。|已更新|圖表範圍|Yahoo Finance 市場歷史|Home Assistant 歷史（受保留期限限制）|今天|覆寫指標實體|指標屬性|切換電源|設定與診斷"
-}), um = we([
+}), cm = we([
   "Storage",
   "Overview",
   "Storage Volumes & Disks",
@@ -2240,7 +2240,7 @@ const nm = we([
   discovery: "Select the intended NAS and Portainer endpoint. Discovery stays within that device. Enable integration entities and refresh discovery, or use manual mappings.",
   capacity: "Storage totals require used and total capacity for every volume. Memory totals require total/free memory sensors.",
   containers: "Each container requires a status entity. Match running/stopped states exactly. Other mappings are optional."
-}, cm = we([
+}, mm = we([
   "Unmapped readings stay hidden. CPU/usage requires %. Capacity requires byte-size units. Uptime accepts a timestamp or s/min/h/d.",
   "Controls must target this container. Separate start/stop actions override its switch. Unknown or transitional states disable start/stop.",
   "Changing NAS system clears device, overview and storage mappings. Container settings and layout are kept.",
@@ -2281,7 +2281,7 @@ const nm = we([
   vi: "Ẩn số đo chưa ánh xạ. CPU/mức dùng yêu cầu %. Dung lượng dùng đơn vị byte. Thời gian hoạt động nhận dấu thời gian hoặc s/min/h/d.|Điều khiển phải nhắm đúng container này. Hành động riêng ưu tiên hơn công tắc. Trạng thái lạ hoặc chuyển tiếp vô hiệu hóa bắt đầu/dừng.|Đổi NAS xóa ánh xạ thiết bị, tổng quan và lưu trữ. Giữ nguyên cấu hình container và bố cục.|Không cộng giao diện QNAP để tránh tính đôi liên kết. Bật cảm biến dung lượng, thời gian hoạt động, ổ đĩa và mạng khi cần.|Chọn đúng NAS và điểm Portainer. Phát hiện chỉ trong thiết bị đó. Bật thực thể và làm mới phát hiện hoặc ánh xạ thủ công.|Tổng lưu trữ cần dung lượng đã dùng và tổng của mọi phân vùng. Bộ nhớ cần cảm biến tổng/trống.|Mỗi container cần thực thể trạng thái. Khớp chính xác trạng thái chạy/dừng. Các ánh xạ khác tùy chọn.",
   "zh-Hans": "未映射的读数会隐藏。CPU/使用量必须为 %。容量必须使用字节单位。运行时间接受时间戳或 s/min/h/d。|控制必须针对本容器。独立启动/停止操作优先于开关。未知或过渡状态会禁用启动/停止。|切换 NAS 会清除设备、概览和存储映射。容器设置和布局会保留。|QNAP 接口不求和，以免重复计算聚合链路。按需启用容量、运行时间、硬盘和网络传感器。|选择正确的 NAS 和 Portainer 端点。发现仅限该设备。启用集成实体并刷新发现，或使用手动映射。|存储总计需要每个存储卷的已用和总容量。内存总计需要总内存和可用内存传感器。|每个容器必须有状态实体。运行/停止状态必须完全匹配。其他映射为可选。",
   "zh-Hant": "未對應的讀數會隱藏。CPU/使用量必須為 %。容量必須使用位元組單位。運作時間接受時間戳記或 s/min/h/d。|控制必須針對本容器。獨立啟動/停止動作優先於開關。未知或過渡狀態會停用啟動/停止。|切換 NAS 會清除裝置、概覽和儲存對應。容器設定和版面配置會保留。|QNAP 介面不加總，以免重複計算聚合連線。按需啟用容量、運作時間、硬碟和網路感測器。|選擇正確的 NAS 和 Portainer 端點。探索僅限該裝置。啟用整合實體並重新整理探索，或使用手動對應。|儲存總計需要每個儲存卷的已用和總容量。記憶體總計需要總記憶體和可用記憶體感測器。|每個容器必須有狀態實體。運作/停止狀態必須完全符合。其他對應為選用。"
-}), mm = we([
+}), pm = we([
   "Choose entity sensors, Yahoo (Market Data backend), or Stock Market Deluxe. Yahoo sensors alone have no history.",
   "Ticker (e.g. MSFT). Empty uses entity symbol; Stock Market Deluxe defaults to AAPL.",
   "Currency override (ISO code, e.g. USD or EUR).",
@@ -2330,7 +2330,7 @@ const nm = we([
   vi: "Chọn cảm biến, Yahoo (máy chủ Market Data) hoặc Stock Market Deluxe. Cảm biến Yahoo riêng lẻ không có lịch sử.|Mã cổ phiếu (ví dụ MSFT). Trống dùng mã thực thể; Stock Market Deluxe dùng AAPL.|Ghi đè tiền tệ (mã ISO, ví dụ USD hoặc EUR).|Cổ phiếu sở hữu, gồm phần lẻ. Tính giá trị và thay đổi ngày.|Chu kỳ giây. Giới hạn giờ thị trường của máy chủ vẫn áp dụng.|Yahoo: lịch sử tới 5Y. Thực thể: chỉ thời gian lưu bản ghi. Stock Market Deluxe: tới 1Y.|Hiện cổ phiếu, giá trị và thay đổi ngày.|Hiện vốn hóa, cao/thấp và tỷ lệ định giá.|Hiện khối lượng giao dịch từ máy chủ.|Hiện trung bình động đơn giản/hàm mũ 20 mẫu.|Ghi đè cảm biến chỉ số tùy chọn. Trống dùng thực thể chính.|Thuộc tính hoặc trống cho trạng thái. Ghi đè ưu tiên; Yahoo điền giá trị thiếu.|Cài Mushroom Addition Market Data trong Cài đặt > Thiết bị và dịch vụ. Cảm biến Yahoo riêng lẻ không có lịch sử.|Kiểm tra mã, internet và nhật ký. Yahoo có thể ngừng hoặc giới hạn yêu cầu.|Thiết lập Stock Market Deluxe trong Cài đặt > Thiết bị và dịch vụ.",
   "zh-Hans": "选择实体传感器、Yahoo（Market Data 后端）或 Stock Market Deluxe。仅 Yahoo 传感器不提供历史。|股票代码（如 MSFT）。留空使用实体代码；Stock Market Deluxe 默认 AAPL。|覆盖货币（ISO 代码，如 USD 或 EUR）。|持有股数，支持小数。计算持仓价值和每日变动。|刷新间隔（秒）。后端市场时段限制仍适用。|Yahoo：最长 5Y 市场历史。实体：仅记录器保留期。Stock Market Deluxe：最长 1Y。|显示股数、持仓价值和每日变动。|显示市值、高低价和估值比率。|显示后端交易量。|显示 20 个样本的简单/指数移动平均线。|可选指标传感器覆盖。留空使用主实体。|属性或留空读取状态。覆盖优先；Yahoo 映射补充缺失值。|在设置 > 设备与服务中安装 Mushroom Addition Market Data。仅 Yahoo 传感器不提供历史。|检查代码、网络和日志。Yahoo 可能不可用或限制请求。|在设置 > 设备与服务中配置 Stock Market Deluxe。",
   "zh-Hant": "選擇實體感測器、Yahoo（Market Data 後端）或 Stock Market Deluxe。僅 Yahoo 感測器不提供歷史。|股票代碼（如 MSFT）。留空使用實體代碼；Stock Market Deluxe 預設 AAPL。|覆寫貨幣（ISO 代碼，如 USD 或 EUR）。|持有股數，支援小數。計算持倉價值和每日變動。|重新整理間隔（秒）。後端市場時段限制仍適用。|Yahoo：最長 5Y 市場歷史。實體：僅記錄器保留期。Stock Market Deluxe：最長 1Y。|顯示股數、持倉價值和每日變動。|顯示市值、高低價和估值比率。|顯示後端交易量。|顯示 20 個樣本的簡單/指數移動平均線。|選用指標感測器覆寫。留空使用主實體。|屬性或留空讀取狀態。覆寫優先；Yahoo 對應補充缺失值。|在設定 > 裝置與服務中安裝 Mushroom Addition Market Data。僅 Yahoo 感測器不提供歷史。|檢查代碼、網路和記錄。Yahoo 可能無法使用或限制請求。|在設定 > 裝置與服務中設定 Stock Market Deluxe。"
-}), pm = we([
+}), hm = we([
   "Automatic (feature labels)",
   "Custom text",
   "Composed (primary entity values)",
@@ -2415,7 +2415,7 @@ const nm = we([
   vi: "Tự động (nhãn tính năng)|Văn bản tùy chỉnh|Kết hợp (giá trị thực thể chính)|Thực thể Home Assistant (mọi nhà cung cấp)|Biểu đồ đường|Biểu đồ cột|Vòng tròn|Biểu đồ phân tán|Biểu đồ tròn|Biểu đồ vành|Giá trị đầu|Giá trị cuối|Khoảng (lớn nhất trừ nhỏ nhất)|Hiệu (cuối trừ đầu)|Chu kỳ động|Giờ|Giữa|Bên cạnh trạng thái|Chuyển màu mượt|Bậc màu rõ|Trạng thái hiện tại|Giá trị biểu đồ cuối|Tô đặc|Tô mờ dần|Không tô|Dòng ảnh bìa|Trượt|Khối lập phương|Lật|Chấm|Số mục|Thanh tiến trình|Thanh âm lượng và phần trăm|Nút âm lượng|Phát/tạm dừng/dừng|Chế độ lặp|Bắt đầu nửa đêm|Bắt đầu ngay|Rác tùy chỉnh|Phụ đề|Giờ hiển thị (dòng thời gian)|Rác còn lại|Giấy|Bao bì / PMD|Hữu cơ / GFT|Thủy tinh|Rác cồng kềnh|Rác độc nhỏ|Cây Giáng sinh|Cành cây|Vải",
   "zh-Hans": "自动（功能标签）|自定义文本|组合（主实体值）|Home Assistant 实体（任意提供者）|折线图|条形图|圆环|散点图|饼图|环形图|首个值|末个值|范围（最大值减最小值）|差值（末个减首个）|动态间隔|小时|居中|状态旁|平滑渐变|硬色阶|当前状态|图表末值|实色填充|渐隐填充|无填充|封面流|滑动|立方体|翻转|圆点|项目数量|进度条|音量滑块和百分比|音量按钮|播放/暂停/停止|重复模式|从午夜开始|从现在开始|自定义垃圾|副标题|可见小时（时间线）|其他垃圾|纸类|包装 / PMD|有机垃圾 / GFT|玻璃|大件垃圾|小型有害垃圾|圣诞树|树枝|纺织物",
   "zh-Hant": "自動（功能標籤）|自訂文字|組合（主實體值）|Home Assistant 實體（任何提供者）|折線圖|長條圖|圓環|散佈圖|圓餅圖|環形圖|首個值|末個值|範圍（最大值減最小值）|差值（末個減首個）|動態間隔|小時|置中|狀態旁|平滑漸層|硬色階|目前狀態|圖表末值|實色填滿|漸隱填滿|無填滿|封面流|滑動|立方體|翻轉|圓點|項目數量|進度列|音量滑桿和百分比|音量按鈕|播放/暫停/停止|重複模式|從午夜開始|從現在開始|自訂垃圾|副標題|可見小時（時間軸）|其他垃圾|紙類|包裝 / PMD|有機垃圾 / GFT|玻璃|大型垃圾|小型有害垃圾|聖誕樹|樹枝|紡織物"
-}), hm = we([
+}), gm = we([
   "Plan",
   "Applied sale",
   "Current battery",
@@ -2485,7 +2485,7 @@ const nm = we([
   vi: "Kế hoạch|Bán đã áp dụng|Pin hiện tại|Bán dự kiến|Mức sạc đo hiện tại|Mục tiêu kế hoạch|Mua dự kiến|Khối kế hoạch|Dòng thời gian|Dự báo|Giá|Thẻ|Năng lượng|Đơn vị|Nguồn|Mục tiêu|Chân trời|Giai đoạn|Sáng|Chiều|Tối|Đêm|Một phần|Thiếu nguồn|Nguồn dữ liệu hoặc ánh xạ trường sai|Không có khoảng đã công bố|Không có khối đã lên lịch|Không có giá trị sản lượng dự báo|Giá điện đã công bố|Mức pin · đo hiện tại và dự báo|Nguồn sạc hiện tại thiếu hoặc sai|Sản lượng dự báo|Giá trị mặt trời là sản lượng dự báo, không phải đo.|Trung bình chỉ dùng khoảng công bố, có trọng số thời lượng. Không ước tính khoảng trống.|Giá trị kế hoạch từ thực thể. Thẻ không tính kế hoạch hay mức pin tương lai.|Ánh xạ thời gian và giá vào khoảng công bố. Bỏ qua mục thiếu các giá trị này.",
   "zh-Hans": "计划|已应用销售|当前电池|计划销售|当前实测电量|计划目标|计划购买|计划时段|时间线|预测|价格|卡片|能源|单位|来源|目标|预测范围|时段|早晨|下午|傍晚|夜间|部分|缺少来源|数据来源或字段映射无效|无已发布区间|无计划时段|无预测发电值|已发布电价|电池电量 · 当前实测与预测|当前电量来源缺失或无效|预测发电量|太阳能值为预测发电量，并非实测。|平均值仅使用已发布区间，按时长加权。不估算缺失区间。|计划值来自实体。本卡片不计算计划或推断未来电量。|将时间戳和价格映射到已发布区间。缺少这些值的记录会被忽略。",
   "zh-Hant": "計畫|已套用銷售|目前電池|計畫銷售|目前實測電量|計畫目標|計畫購買|計畫時段|時間軸|預測|價格|卡片|能源|單位|來源|目標|預測範圍|時段|早晨|下午|傍晚|夜間|部分|缺少來源|資料來源或欄位對應無效|無已發布區間|無計畫時段|無預測發電值|已發布電價|電池電量 · 目前實測與預測|目前電量來源缺失或無效|預測發電量|太陽能值為預測發電量，並非實測。|平均值僅使用已發布區間，按時長加權。不估算缺失區間。|計畫值來自實體。本卡片不計算計畫或推斷未來電量。|將時間戳記和價格對應到已發布區間。缺少這些值的紀錄會被忽略。"
-}), gm = we([
+}), ym = we([
   "Show",
   "Height",
   "Width",
@@ -2527,7 +2527,7 @@ const nm = we([
   vi: "Hiển thị|Chiều cao|Chiều rộng|Khoảng|Tối đa|Mô tả|Loại|Độ lớn công suất",
   "zh-Hans": "显示|高度|宽度|间隔|最大值|描述|类型|功率大小",
   "zh-Hant": "顯示|高度|寬度|間隔|最大值|描述|類型|功率大小"
-}), ym = we([
+}), bm = we([
   "Not installed",
   "Consumer energy sensor",
   "Fixed export rate",
@@ -2567,7 +2567,7 @@ const nm = we([
   vi: "Chưa lắp đặt|Cảm biến năng lượng thiết bị tiêu thụ|Giá xuất điện cố định|Hiển thị chi tiết pin dự kiến|Hiển thị phân bổ mua điện|Hiển thị hiệu suất sạc",
   "zh-Hans": "未安装|用电设备能量传感器|固定上网电价|显示计划电池详情|显示购电分配|显示充电效率",
   "zh-Hant": "未安裝|用電設備能量感測器|固定上網電價|顯示計畫電池詳情|顯示購電分配|顯示充電效率"
-}), bm = we([
+}), vm = we([
   "Today so far",
   "Upcoming plan",
   "Consumers",
@@ -2623,7 +2623,7 @@ const nm = we([
   vi: "Hôm nay đến hiện tại|Kế hoạch sắp tới|Thiết bị tiêu thụ|Lượng mua đo được|Lượng mua điện lưới dự kiến|Tiêu thụ trong nhà|Sản lượng mặt trời|Trung bình có trọng số|Chi phí lưới biến đổi ròng|Kế hoạch cùng khoảng thời gian|Hiệu suất sạc|Năng lượng pin lưu trữ|Nguồn dữ liệu cũ|Chưa đặt tiền tệ|Không có thiết bị để hiển thị|Không có lượng mua dự kiến|Tiêu thụ nhà chưa phân bổ|Chỉ đang hoạt động|Ánh xạ trường|Nguồn đo|Nguồn kế hoạch|Sắp xếp thiết bị",
   "zh-Hans": "今日截至目前|即将执行的计划|用电设备|实测购电|计划电网购电|家庭用电|太阳能发电|加权平均|电网净浮动费用|同期计划|充电效率|电池储能|数据源已过期|未配置货币|无可显示的用电设备|无计划购电|未分配的家庭用电|仅活跃设备|字段映射|测量数据源|计划数据源|用电设备排序",
   "zh-Hant": "今日截至目前|即將執行的計畫|用電裝置|實測購電|計畫電網購電|家庭用電|太陽能發電|加權平均|電網淨浮動費用|同期計畫|充電效率|電池儲能|資料來源已過期|未設定貨幣|無可顯示的用電裝置|無計畫購電|未分配的家庭用電|僅活躍裝置|欄位對應|測量資料來源|計畫資料來源|用電裝置排序"
-}), vm = we([
+}), km = we([
   "Measured window",
   "Not applicable",
   "Credit",
@@ -2696,7 +2696,7 @@ const nm = we([
   vi: "Khoảng đo|Không áp dụng|Khoản ghi có|Sản lượng đo được|Không gồm sạc pin|Mức tự cấp điện của nhà hiện tại|Năng lượng được dùng ở đâu|Nhiều năng lượng nhất|Nhu cầu cao nhất|Hoạt động|của nhà|Chưa đặt so sánh|Đúng kế hoạch|Tỷ lệ thiết bị|Thiết bị đã cấu hình|Tổng thiết bị không gồm sạc pin. Không ước tính chi phí từng thiết bị.|Đã mua gì và ở mức giá nào|Tổng điện nhập|Khoảng đo|Chi phí nhập|Khoản ghi có xuất|Không gồm phí cố định. Tổng dùng giá trị khoảng chưa làm tròn.|Đầu vào pin|Đầu ra pin|Ảnh chụp dữ liệu|Chi phí dự kiến|Gồm xe điện; không gồm sạc pin gia đình|24 giờ sắp tới|Dự trữ|Dư địa|Lượng mua điện lưới sắp tới|Kế hoạch được cung cấp; chưa đo hoặc thực hiện.|Chưa cung cấp|Khối dự kiến|Chưa thực hiện|Giả định kế hoạch|Đầu vào AC gồm tổn hao sạc. Dự báo không phải tổng đo được.|Vai trò thiết bị trong kế hoạch|Khoảng báo cáo năng lượng",
   "zh-Hans": "测量时段|不适用|抵扣额|实测发电量|不含电池充电|当前家庭自给率|能源去向|用能最多|功率需求最高|活跃|家庭占比|未配置比较|符合计划|设备占比|已配置设备|设备总量不含电池充电。不估算设备费用。|购买量与购买价格|总进口电量|测量区间|进口费用|出口抵扣额|不含固定费用。总额使用未四舍五入的区间值。|电池输入|电池输出|快照|预计费用|含电动车，不含家庭电池充电|未来24小时|储备|余量|即将进行的电网购电|提供的计划，未测量或执行。|未提供|计划区间|未执行|计划假设|交流输入包含充电损耗。预测不是实测总量。|设备如何纳入计划|能源报告时段",
   "zh-Hant": "測量時段|不適用|抵扣額|實測發電量|不含電池充電|目前家庭自給率|能源去向|用能最多|功率需求最高|活躍|家庭占比|未設定比較|符合計畫|裝置占比|已設定裝置|裝置總量不含電池充電。不估算裝置費用。|購買量與購買價格|總進口電量|測量區間|進口費用|出口抵扣額|不含固定費用。總額使用未四捨五入的區間值。|電池輸入|電池輸出|快照|預計費用|含電動車，不含家庭電池充電|未來24小時|儲備|餘量|即將進行的電網購電|提供的計畫，未測量或執行。|未提供|計畫區間|未執行|計畫假設|交流輸入包含充電損耗。預測不是實測總量。|裝置如何納入計畫|能源報告時段"
-}), km = we([
+}), fm = we([
   "Approximate accounting",
   "Affected totals, household shares and costs are estimates, not exact measurements.",
   "Midnight uses the last recorded HA state; the physical timing of the first delta is uncertain.",
@@ -2738,7 +2738,7 @@ const nm = we([
   vi: "Hạch toán gần đúng|Các tổng, tỷ lệ hộ gia đình và chi phí bị ảnh hưởng là ước tính, không phải phép đo chính xác.|Lúc nửa đêm dùng trạng thái HA được ghi gần nhất; thời điểm vật lý của chênh lệch đầu tiên không chắc chắn.|Chi phí dùng trạng thái giữ lại lúc nửa đêm và phân bổ giá theo tỷ lệ thời gian; giả định tiêu thụ đều trong các khoảng được chia.|Giá trị công tơ được giữ đến điểm cuối chung của ảnh chụp HA; giả định giá trị không đổi giữa các báo cáo, không phải đo vật lý đồng thời.|Lần cập nhật trạng thái cuối|Chỉ hiển thị 200 nhóm giá đầu tiên; tổng bao gồm toàn bộ {count} nhóm.|Chỉ hiển thị 200 khoảng đầu tiên; tổng và biểu đồ bao gồm toàn bộ {count} khoảng.",
   "zh-Hans": "近似核算|受影响的总量、家庭占比和费用均为估算值，而非精确测量值。|午夜使用最后记录的 HA 状态；首个差值的实际发生时间不确定。|费用使用保持的午夜状态和按时间比例分配的电价；拆分区间内假定用能均匀。|计数值保持至 HA 快照的共同结束时刻；假定两次报告之间数值不变，并非同时进行的物理测量。|上次状态更新|仅显示前 200 个电价分组；总计包含全部 {count} 个分组。|仅显示前 200 个区间；总计和图表包含全部 {count} 个区间。",
   "zh-Hant": "近似核算|受影響的總量、家庭占比和費用均為估算值，而非精確測量值。|午夜使用最後記錄的 HA 狀態；首個差值的實際發生時間不確定。|費用使用保持的午夜狀態和按時間比例分配的電價；拆分區間內假定用能均勻。|計數值保持至 HA 快照的共同結束時刻；假定兩次回報之間數值不變，並非同時進行的物理測量。|上次狀態更新|僅顯示前 200 個電價分組；總計包含全部 {count} 個分組。|僅顯示前 200 個區間；總計和圖表包含全部 {count} 個區間。"
-}), fm = we(["Imported", "Exported", "Reason"], {
+}), wm = we(["Imported", "Exported", "Reason"], {
   ar: "مستورد|مصدر|السبب",
   bg: "Внесено|Изнесено|Причина",
   ca: "Importat|Exportat|Motiu",
@@ -2771,7 +2771,7 @@ const nm = we([
   vi: "Đã nhập|Đã xuất|Lý do",
   "zh-Hans": "已进口|已出口|原因",
   "zh-Hant": "已進口|已出口|原因"
-}), wm = we([
+}), zm = we([
   "Start source",
   "Start field",
   "Show overview",
@@ -2851,7 +2851,7 @@ const nm = we([
   vi: "Nguồn bắt đầu|Trường bắt đầu|Hiện tổng quan|Hiện chỉ số|Hiện trình kiểm tra|Hiện giai đoạn|Tuổi nguồn tối đa (phút)|Hàng dòng thời gian|Loại nguồn|Thuộc tính|Trường kết thúc|Trường thời lượng|Trường giá trị|Trường trạng thái|Màu giá trị thấp|Màu giá trị cao|Nhãn dương|Nhãn âm|Nhãn không|Mã tiền tệ|Ngưỡng hoạt động (W)|Hiện luồng trực tiếp|Hiện thiết bị|Hiện lượng mua|Hiện dự báo|Công suất nhà|Công suất mặt trời|Công suất pin|Phần trăm tự cấp điện của nhà|Trường năng lượng đo được|Trường kế hoạch cùng khoảng|Trường dự báo năng lượng|Trường chiến lược|Đơn giá|Năng lượng đã mua|Tỷ lệ nhập|Giá xuất|Năng lượng và mục đích|Mục tiêu pin|Sử dụng trực tiếp trong nhà|Đầu vào xe điện (AC)|Đầu vào pin (AC)|Dự báo nhu cầu nhà|Mức pin thấp nhất dự kiến|Bắt đầu so sánh|Kết thúc so sánh",
   "zh-Hans": "开始数据源|开始字段|显示概览|显示指标|显示检查器|显示时段|数据源最大时效（分钟）|时间轴行|数据源类型|属性|结束字段|时长字段|数值字段|状态字段|低值颜色|高值颜色|正值标签|负值标签|零值标签|货币代码|活跃阈值（W）|显示实时流向|显示用电设备|显示购电|显示预测|家庭功率|太阳能功率|电池功率|家庭自给百分比|实测能源字段|同期计划字段|能源预测字段|策略字段|单位价格|已购能源|进口占比|出口费率|能源与用途|电池目标|家庭直接使用|电动车输入（交流）|电池输入（交流）|家庭需求预测|计划最低电池电量|比较开始|比较结束",
   "zh-Hant": "開始資料來源|開始欄位|顯示概覽|顯示指標|顯示檢查器|顯示時段|資料來源最大時效（分鐘）|時間軸列|資料來源類型|屬性|結束欄位|時長欄位|數值欄位|狀態欄位|低值色彩|高值色彩|正值標籤|負值標籤|零值標籤|貨幣代碼|活躍閾值（W）|顯示即時流向|顯示用電裝置|顯示購電|顯示預測|家庭功率|太陽能功率|電池功率|家庭自給百分比|實測能源欄位|同期計畫欄位|能源預測欄位|策略欄位|單位價格|已購能源|進口占比|出口費率|能源與用途|電池目標|家庭直接使用|電動車輸入（交流）|電池輸入（交流）|家庭需求預測|計畫最低電池電量|比較開始|比較結束"
-}), zm = we([
+}), jm = we([
   "Entry limit",
   "Sort order",
   "Time zone",
@@ -2897,7 +2897,7 @@ const nm = we([
   vi: "Giới hạn mục|Thứ tự sắp xếp|Múi giờ|Hiện nguồn|Chân trang|Trạng thái trống|Nguồn|Danh mục|Dấu thời gian|Mới nhất trước|Cũ nhất trước|Không có mục nhật ký.",
   "zh-Hans": "条目上限|排序顺序|时区|显示来源|页脚|空状态|来源|类别|时间戳|最新优先|最早优先|没有日志条目。",
   "zh-Hant": "項目上限|排序順序|時區|顯示來源|頁尾|空狀態|來源|類別|時間戳|最新優先|最早優先|沒有日誌項目。"
-}), jm = we([
+}), Sm = we([
   "Value",
   "Field",
   "Path",
@@ -2939,7 +2939,7 @@ const nm = we([
   vi: "Giá trị|Trường|Đường dẫn|Thời lượng|Chi phí|Tóm tắt|Kết thúc|Giờ kết thúc trước bắt đầu nghĩa là qua nửa đêm (giờ địa phương).",
   "zh-Hans": "值|字段|路径|时长|费用|摘要|结束|结束小时早于开始表示跨越午夜（本地时间）。",
   "zh-Hant": "值|欄位|路徑|時長|費用|摘要|結束|結束小時早於開始表示跨越午夜（本地時間）。"
-}), Sm = we([
+}), xm = we([
   "Trading volume",
   "Select an available stock price entity, or map its price attribute, in the visual editor.",
   "No data",
@@ -2980,7 +2980,7 @@ const nm = we([
   vi: "Khối lượng giao dịch|Chọn thực thể giá cổ phiếu khả dụng hoặc ánh xạ thuộc tính giá trong trình chỉnh sửa trực quan.|Không có dữ liệu|Khối|Đầu vào|Kế hoạch đề xuất|cung cấp thông tin",
   "zh-Hans": "成交量|在可视化编辑器中选择可用的股价实体，或映射其价格属性。|无数据|时段块|输入|建议计划|提供信息",
   "zh-Hant": "成交量|在視覺化編輯器中選擇可用的股價實體，或對應其價格屬性。|無資料|時段區塊|輸入|建議計畫|提供資訊"
-}), xm = we([
+}), Am = we([
   "Loading",
   "Configuration error",
   "No Home Assistant connection"
@@ -3026,7 +3026,7 @@ const nm = we([
   "editor.commands_help",
   "editor.add_remote_section",
   "ui.tv_volume"
-], Am = {
+], Pm = {
   en: "Drag to reorder. Keyboard: focus a handle and use Alt + Up/Down. Removed sections can be added again below.|Devices are discovered automatically. Override one metric at a time; clear its selection to restore discovery.|Entities to show first (also supports additional entities outside the selected devices). Drag the list below to change their order.|Drag to reorder, or focus a handle and use Alt + Up/Down. Remove sections you do not need.|Use a command, a TV source, or any Home Assistant action. Only the settings for that button type are shown.|Override individual command codes for the selected TV preset. Unchanged controls keep their preset.|Add remote section|TV volume",
   ar: "اسحب لإعادة الترتيب، أو ركّز المقبض واستخدم Alt مع السهم لأعلى أو لأسفل. يمكنك إعادة إضافة الأقسام المحذوفة أدناه.|تُكتشف الأجهزة تلقائيًا. تجاوز إحصاءً واحدًا في كل مرة؛ امسح التحديد لاستعادة الاكتشاف.|الكيانات التي تُعرض أولًا، بما فيها كيانات خارج الأجهزة المحددة. اسحب القائمة أدناه لتغيير ترتيبها.|اسحب لإعادة الترتيب، أو ركّز المقبض واستخدم Alt مع السهم لأعلى أو لأسفل. احذف الأقسام غير اللازمة.|استخدم أمرًا أو مصدر تلفاز أو أي إجراء Home Assistant. تظهر فقط إعدادات نوع الزر المحدد.|تجاوز رموز الأوامر منفردة للإعداد المسبق المحدد. تحتفظ عناصر التحكم غير المعدلة بإعداداتها.|إضافة قسم للتحكم|مستوى صوت التلفاز",
   bg: "Плъзнете за пренареждане или фокусирайте дръжка и използвайте Alt + нагоре/надолу. Премахнатите раздели могат да се добавят отново по-долу.|Устройствата се откриват автоматично. Заменяйте по една статистика; изчистете избора, за да възстановите откриването.|Обекти за показване първи, включително извън избраните устройства. Плъзнете списъка по-долу, за да промените реда.|Плъзнете за пренареждане или фокусирайте дръжка и използвайте Alt + нагоре/надолу. Премахнете ненужните раздели.|Използвайте команда, ТВ източник или действие на Home Assistant. Показват се само настройките за избрания тип бутон.|Заменете отделни командни кодове за избрания набор. Непроменените контроли запазват предварителните си настройки.|Добавяне на раздел на дистанционното|Сила на звука на телевизора",
@@ -3060,8 +3060,8 @@ const nm = we([
   vi: "Kéo để sắp xếp lại, hoặc lấy nét tay nắm và dùng Alt + lên/xuống. Có thể thêm lại các phần đã xóa ở bên dưới.|Thiết bị được phát hiện tự động. Ghi đè từng thống kê; xóa lựa chọn để khôi phục phát hiện tự động.|Thực thể hiển thị trước, kể cả ngoài thiết bị đã chọn. Kéo danh sách bên dưới để đổi thứ tự.|Kéo để sắp xếp lại, hoặc lấy nét tay nắm và dùng Alt + lên/xuống. Xóa các phần không cần thiết.|Dùng lệnh, nguồn TV hoặc hành động Home Assistant. Chỉ hiển thị cài đặt cho loại nút đã chọn.|Ghi đè từng mã lệnh của bộ TV định sẵn đã chọn. Điều khiển không thay đổi sẽ giữ cài đặt định sẵn.|Thêm phần điều khiển|Âm lượng TV",
   "zh-Hans": "拖动以重新排序，或聚焦拖动柄并使用 Alt + 上/下键。已移除的分区可在下方重新添加。|自动发现设备。每次覆盖一项统计；清空选择以恢复自动发现。|优先显示的实体，也支持所选设备之外的实体。拖动下方列表以更改顺序。|拖动以重新排序，或聚焦拖动柄并使用 Alt + 上/下键。移除不需要的分区。|使用命令、电视输入源或任意 Home Assistant 操作。仅显示所选按钮类型的设置。|单独覆盖所选电视预设的命令代码。未修改的控件保留预设。|添加遥控器分区|电视音量",
   "zh-Hant": "拖曳以重新排序，或聚焦拖曳把手並使用 Alt + 上/下鍵。已移除的區段可在下方重新新增。|自動探索裝置。每次覆寫一項統計；清空選擇以恢復自動探索。|優先顯示的實體，也支援所選裝置以外的實體。拖曳下方清單以變更順序。|拖曳以重新排序，或聚焦拖曳把手並使用 Alt + 上/下鍵。移除不需要的區段。|使用指令、電視輸入來源或任何 Home Assistant 動作。僅顯示所選按鈕類型的設定。|個別覆寫所選電視預設的指令代碼。未修改的控制項保留預設。|新增遙控器區段|電視音量"
-}, Pm = Object.fromEntries(
-  Object.entries(Am).map(([e, t]) => {
+}, Mm = Object.fromEntries(
+  Object.entries(Pm).map(([e, t]) => {
     const a = t.split("|");
     if (a.length !== Xr.length) throw new Error(`Invalid ${e} editor guidance row: ${a.length}/${Xr.length}`);
     return [e, Object.fromEntries(Xr.map((i, n) => [i, a[n]]))];
@@ -3100,7 +3100,7 @@ const nm = we([
   "option.flag",
   "option.contains",
   "option.equals"
-], Mm = {
+], Cm = {
   en: "Poster beside text|Full-width artwork|Show all|Show first items, expand the rest|Matching items first, expand the rest|Sensor order|All media|Flagged only|Unflagged only|Home Assistant language default|12-hour|24-hour|Localized date|Day / month / year|Month / day / year|Year - month - day|Open media / trailer automatically|Sensor more information|No action|Air date|Aired|Episode|Number|Rating|Runtime|Studio|Genres|Artist|Album|Channel|Flag|Contains|Equals",
   ar: "ملصق بجانب النص|صورة بعرض كامل|إظهار الكل|إظهار العناصر الأولى وتوسيع الباقي|العناصر المطابقة أولًا وتوسيع الباقي|ترتيب المستشعر|كل الوسائط|المعلّمة فقط|غير المعلّمة فقط|الافتراضي للغة Home Assistant|12 ساعة|24 ساعة|تاريخ محلي|يوم / شهر / سنة|شهر / يوم / سنة|سنة - شهر - يوم|فتح الوسائط أو المقطع الدعائي تلقائيًا|مزيد من معلومات المستشعر|بلا إجراء|تاريخ البث|تم بثه|الحلقة|الرقم|التقييم|المدة|الاستوديو|الأنواع|الفنان|الألبوم|القناة|العلامة|يحتوي على|يساوي",
   bg: "Плакат до текста|Изображение с пълна ширина|Показване на всички|Първите елементи, останалите с разгъване|Първо съвпадащите, останалите с разгъване|Ред на сензора|Всички медии|Само маркирани|Само немаркирани|По подразбиране за езика на Home Assistant|12-часов|24-часов|Локализирана дата|Ден / месец / година|Месец / ден / година|Година - месец - ден|Автоматично отваряне на медия или трейлър|Повече информация за сензора|Без действие|Дата на излъчване|Излъчено|Епизод|Номер|Оценка|Продължителност|Студио|Жанрове|Изпълнител|Албум|Канал|Маркер|Съдържа|Равно на",
@@ -3134,8 +3134,8 @@ const nm = we([
   vi: "Áp phích cạnh văn bản|Hình ảnh toàn chiều rộng|Hiển thị tất cả|Hiển thị mục đầu, mở rộng phần còn lại|Mục phù hợp trước, mở rộng phần còn lại|Thứ tự cảm biến|Tất cả phương tiện|Chỉ mục được đánh dấu|Chỉ mục chưa đánh dấu|Mặc định theo ngôn ngữ Home Assistant|12 giờ|24 giờ|Ngày theo địa phương|Ngày / tháng / năm|Tháng / ngày / năm|Năm - tháng - ngày|Tự động mở phương tiện hoặc đoạn giới thiệu|Thông tin thêm về cảm biến|Không có hành động|Ngày phát sóng|Đã phát sóng|Tập|Số|Đánh giá|Thời lượng|Hãng sản xuất|Thể loại|Nghệ sĩ|Album|Kênh|Dấu|Chứa|Bằng",
   "zh-Hans": "文字旁的海报|全宽图片|显示全部|显示前几项，展开其余项目|匹配项目优先，其余可展开|传感器顺序|全部媒体|仅标记项目|仅未标记项目|Home Assistant 语言默认值|12 小时制|24 小时制|本地化日期|日 / 月 / 年|月 / 日 / 年|年 - 月 - 日|自动打开媒体或预告片|传感器更多信息|无操作|播出日期|已播出|剧集|编号|评分|片长|制作公司|类型|艺人|专辑|频道|标记|包含|等于",
   "zh-Hant": "文字旁的海報|全寬圖片|顯示全部|顯示前幾項，展開其餘項目|符合項目優先，其餘可展開|感測器順序|全部媒體|僅標記項目|僅未標記項目|Home Assistant 語言預設值|12 小時制|24 小時制|本地化日期|日 / 月 / 年|月 / 日 / 年|年 - 月 - 日|自動開啟媒體或預告片|感測器詳細資訊|無動作|播出日期|已播出|集數|編號|評分|片長|製作公司|類型|藝人|專輯|頻道|標記|包含|等於"
-}, Cm = Object.fromEntries(
-  Object.entries(Mm).map(([e, t]) => {
+}, $m = Object.fromEntries(
+  Object.entries(Cm).map(([e, t]) => {
     const a = t.split("|");
     if (a.length !== eo.length) throw new Error(`Invalid ${e} media option row: ${a.length}/${eo.length}`);
     return [e, Object.fromEntries(eo.map((i, n) => [i, a[n]]))];
@@ -3162,7 +3162,7 @@ const nm = we([
   "option.duration",
   "option.source_selector",
   "option.channel_buttons"
-], $m = {
+], Em = {
   en: "Automatic (paired remote or Samsung)|Remote: send command|Samsung: media player key codes|Generic remote|Directional buttons|Touchpad and buttons|Slider and mute|Buttons and mute|Slider, buttons and mute|Buttons and volume slider|Buttons only|Volume slider only|Off|Custom key code|Disabled (immediate single tap)|Automatic (integration and service availability)|Custom Home Assistant action|Number of seconds|HH:MM:SS duration|Source selector|Channel buttons",
   ar: "تلقائي (جهاز التحكم المقترن أو Samsung)|جهاز التحكم: إرسال أمر|Samsung: رموز مفاتيح مشغل الوسائط|جهاز تحكم عام|أزرار الاتجاهات|لوحة لمس وأزرار|شريط تمرير وكتم الصوت|أزرار وكتم الصوت|شريط تمرير وأزرار وكتم الصوت|أزرار وشريط تمرير الصوت|الأزرار فقط|شريط تمرير الصوت فقط|إيقاف|رمز مفتاح مخصص|معطل (نقرة واحدة فورية)|تلقائي (حسب التكامل وتوفر الخدمة)|إجراء Home Assistant مخصص|عدد الثواني|مدة بصيغة HH:MM:SS|محدد المصدر|أزرار القنوات",
   bg: "Автоматично (сдвоено дистанционно или Samsung)|Дистанционно: изпращане на команда|Samsung: клавишни кодове на медийния плейър|Общо дистанционно|Бутони за посока|Тъчпад и бутони|Плъзгач и заглушаване|Бутони и заглушаване|Плъзгач, бутони и заглушаване|Бутони и плъзгач за звука|Само бутони|Само плъзгач за звука|Изключено|Персонализиран код на клавиш|Изключено (незабавно единично докосване)|Автоматично (според интеграцията и наличната услуга)|Персонализирано действие на Home Assistant|Брой секунди|Продължителност HH:MM:SS|Избор на източник|Бутони за канали",
@@ -3196,8 +3196,8 @@ const nm = we([
   vi: "Tự động (điều khiển đã ghép đôi hoặc Samsung)|Điều khiển: gửi lệnh|Samsung: mã phím trình phát phương tiện|Điều khiển chung|Nút điều hướng|Bàn di chuột và nút|Thanh trượt và tắt tiếng|Nút và tắt tiếng|Thanh trượt, nút và tắt tiếng|Nút và thanh trượt âm lượng|Chỉ nút|Chỉ thanh trượt âm lượng|Tắt|Mã phím tùy chỉnh|Vô hiệu hóa (chạm một lần ngay lập tức)|Tự động (tích hợp và dịch vụ khả dụng)|Hành động Home Assistant tùy chỉnh|Số giây|Thời lượng HH:MM:SS|Bộ chọn nguồn|Nút kênh",
   "zh-Hans": "自动（配对遥控器或 Samsung）|遥控器：发送命令|Samsung：媒体播放器按键代码|通用遥控器|方向按钮|触控板和按钮|滑块和静音|按钮和静音|滑块、按钮和静音|按钮和音量滑块|仅按钮|仅音量滑块|关闭|自定义按键代码|禁用（立即执行单击）|自动（集成和服务可用性）|自定义 Home Assistant 操作|秒数|HH:MM:SS 时长|输入源选择器|频道按钮",
   "zh-Hant": "自動（配對遙控器或 Samsung）|遙控器：傳送指令|Samsung：媒體播放器按鍵代碼|通用遙控器|方向按鈕|觸控板和按鈕|滑桿和靜音|按鈕和靜音|滑桿、按鈕和靜音|按鈕和音量滑桿|僅按鈕|僅音量滑桿|關閉|自訂按鍵代碼|停用（立即執行點按）|自動（整合和服務可用性）|自訂 Home Assistant 動作|秒數|HH:MM:SS 時間|輸入來源選擇器|頻道按鈕"
-}, Em = Object.fromEntries(
-  Object.entries($m).map(([e, t]) => {
+}, Tm = Object.fromEntries(
+  Object.entries(Em).map(([e, t]) => {
     const a = t.split("|");
     if (a.length !== to.length) throw new Error(`Invalid ${e} remote option row: ${a.length}/${to.length}`);
     const i = Object.fromEntries(to.map((n, r) => [n, a[r]]));
@@ -3211,7 +3211,7 @@ const nm = we([
       i[n] = new Intl.NumberFormat(e, { style: "unit", unit: o, unitDisplay: "long" }).format(r);
     return i["option.cpu_percent"] = `${_n[e]["ui.cpu"]} (%)`, i["option.memory_percent"] = `${_n[e]["ui.memory"]} (%)`, [e, i];
   })
-), Tm = {
+), Dm = {
   en: "Entity picture|Last changed|Last updated",
   ar: "صورة الكيان|آخر تغيير|آخر تحديث",
   bg: "Изображение на обекта|Последна промяна|Последно обновяване",
@@ -3245,13 +3245,13 @@ const nm = we([
   vi: "Hình thực thể|Lần thay đổi cuối|Lần cập nhật cuối",
   "zh-Hans": "实体图片|上次更改|上次更新",
   "zh-Hant": "實體圖片|上次變更|上次更新"
-}, ao = ["option.entity_picture", "option.last_changed", "option.last_updated"], Dm = Object.fromEntries(
-  Object.entries(Tm).map(([e, t]) => {
+}, ao = ["option.entity_picture", "option.last_changed", "option.last_updated"], Nm = Object.fromEntries(
+  Object.entries(Dm).map(([e, t]) => {
     const a = t.split("|");
     if (a.length !== ao.length) throw new Error(`Invalid ${e} presentation option row: ${a.length}/${ao.length}`);
     return [e, Object.fromEntries(ao.map((i, n) => [i, a[n]]))];
   })
-), Nm = {
+), Vm = {
   icon_type: "Soort pictogram",
   fill_container: "Beschikbare ruimte vullen",
   card_shadow: "Kaartschaduw",
@@ -3699,7 +3699,7 @@ const nm = we([
       [`color_${t + 1}`, `${e} navigatiekleur`]
     ])
   )
-}, Vm = {
+}, Lm = {
   pihole_show_header: "De gedeelde Mushroom-kop boven de Pi-hole-secties tonen.",
   pihole_collapsed_sections: "Secties die aanvankelijk ingeklapt zijn; tik op de kop om ze uit te klappen.",
   pihole_hidden_entities: "Deze entiteiten uitsluiten van automatische detectie, bediening en geschiedenis.",
@@ -4398,7 +4398,7 @@ const nm = we([
   "ui.runtime_edit_button_96e34f60": "Edit button",
   "ui.runtime_remove_control_93667f0a": "Remove control",
   "ui.runtime_mushroom_addition_preview_80dd20ee": "Mushroom Addition preview"
-}, Lm = [
+}, Hm = [
   "Scènes in- of uitklappen",
   "Dashboardinstellingen openen",
   "Sensorstatus",
@@ -4540,7 +4540,7 @@ const nm = we([
   "Knop bewerken",
   "Bediening verwijderen",
   "Voorbeeld van Mushroom Addition"
-], Hm = [
+], Im = [
   "Szenen ein- oder ausklappen",
   "Dashboard-Einstellungen öffnen",
   "Sensorstatus",
@@ -4683,12 +4683,12 @@ const nm = we([
   "Steuerung entfernen",
   "Mushroom Addition-Vorschau"
 ], wt = { en: ls };
-for (const [e, t] of [["nl", Lm], ["de", Hm]]) {
+for (const [e, t] of [["nl", Hm], ["de", Im]]) {
   const a = Object.keys(ls);
   if (t.length !== a.length) throw new Error(`Runtime translation count mismatch: ${e}`);
   wt[e] = Object.fromEntries(a.map((i, n) => [i, t[n]]));
 }
-const Im = [
+const Rm = [
   ["entity_unavailable", "Entity unavailable", "Entiteit niet beschikbaar", "Entität nicht verfügbar"],
   ["changed_unavailable", "Last changed unavailable", "Laatste wijziging niet beschikbaar", "Letzte Änderung nicht verfügbar"],
   ["updated_unavailable", "Last updated unavailable", "Laatste update niet beschikbaar", "Letzte Aktualisierung nicht verfügbar"],
@@ -4739,9 +4739,9 @@ const Im = [
   ["replace_automatic", "Replace automatic controls", "Automatische bediening vervangen", "Automatische Steuerung ersetzen"],
   ["area_action", "Area action", "Gebiedsactie", "Bereichsaktion"]
 ];
-for (const [e, t, a, i] of Im)
+for (const [e, t, a, i] of Rm)
   wt.en[`ui.area.${e}`] = t, wt.nl[`ui.area.${e}`] = a, wt.de[`ui.area.${e}`] = i;
-const Rm = {
+const Bm = {
   "Each button starts with sensible values from its entity. You can override every value, including its name.": ["Elke knop krijgt passende beginwaarden van de entiteit. Je kunt alle waarden aanpassen, ook de naam.", "Jede Schaltfläche erhält passende Anfangswerte von ihrer Entität. Alle Werte einschließlich des Namens sind anpassbar."],
   "Select the entity this button controls. Welcome Scenes supports every Home Assistant domain.": ["Kies de entiteit die deze knop bedient. Welkomstscènes ondersteunt elk Home Assistant-domein.", "Wähle die von dieser Schaltfläche gesteuerte Entität. Willkommensszenen unterstützt jede Home Assistant-Domäne."],
   "Select the entity represented by this room sensor button.": ["Kies de entiteit die deze kamersensorknop weergeeft.", "Wähle die von dieser Raumsensor-Schaltfläche dargestellte Entität."],
@@ -4869,11 +4869,11 @@ const Rm = {
   All: ["Alle", "Alle"],
   One: ["Eén", "Einer"]
 };
-for (const [e, [t, a]] of Object.entries(Rm)) {
+for (const [e, [t, a]] of Object.entries(Bm)) {
   const i = `ui.renderer.${e}`;
   wt.en[i] = e, wt.nl[i] = t, wt.de[i] = a;
 }
-const Bm = [
+const Fm = [
   ["entity_number", "Entity {number}", "Entiteit {number}", "Entität {number}"],
   ["threshold_number", "Threshold {number}", "Drempel {number}", "Schwelle {number}"],
   ["state_number", "State {number}", "Toestand {number}", "Zustand {number}"],
@@ -4894,7 +4894,7 @@ const Bm = [
   ["inactive_panels", "{count} panel(s) at zero. This is normal at night; otherwise, check them.", "{count} paneel/panelen op nul. Dit is normaal 's nachts; controleer ze anders.", "{count} Solarmodul(e) bei null. Nachts ist das normal; andernfalls prüfen."],
   ["panel_watts", "{name}: {value} watts", "{name}: {value} watt", "{name}: {value} Watt"]
 ];
-for (const [e, t, a, i] of Bm)
+for (const [e, t, a, i] of Fm)
   wt.en[`ui.renderer.${e}`] = t, wt.nl[`ui.renderer.${e}`] = a, wt.de[`ui.renderer.${e}`] = i;
 const jl = [
   "ui.greeting_hello",
@@ -4910,7 +4910,7 @@ const jl = [
   "ui.pollen_tree",
   "ui.pollen_grass",
   "ui.pollen_weed"
-], Fm = {
+], Om = {
   ar: "مرحبًا|صباح الخير|مساء الخير|مساء الخير|لا شيء|منخفض جدًا|منخفض|متوسط|مرتفع|مرتفع جدًا|الأشجار|الحشائش|الأعشاب الضارة",
   bg: "Здравей|Добро утро|Добър ден|Добър вечер|Няма|Много ниско|Ниско|Средно|Високо|Много високо|Дървета|Треви|Плевели",
   ca: "Hola|Bon dia|Bona tarda|Bon vespre|Cap|Molt baix|Baix|Mitjà|Alt|Molt alt|Arbres|Gramínies|Males herbes",
@@ -4944,8 +4944,8 @@ const jl = [
   vi: "Xin chào|Chào buổi sáng|Chào buổi chiều|Chào buổi tối|Không có|Rất thấp|Thấp|Trung bình|Cao|Rất cao|Cây thân gỗ|Cỏ|Cỏ dại",
   "zh-Hans": "你好|早上好|下午好|晚上好|无|极低|低|中等|高|极高|树木|禾本科植物|杂草",
   "zh-Hant": "你好|早安|午安|晚安|無|極低|低|中等|高|極高|樹木|禾本科植物|雜草"
-}, Om = Object.fromEntries(
-  Object.entries(Fm).map(([e, t]) => {
+}, qm = Object.fromEntries(
+  Object.entries(Om).map(([e, t]) => {
     const a = t.split("|");
     if (a.length !== jl.length) throw new Error(`Greeting/pollen translation count mismatch: ${e}`);
     return [e, Object.fromEntries(jl.map((i, n) => [i, a[n]]))];
@@ -4979,7 +4979,7 @@ const jl = [
   "ui.renderer.tomorrow",
   "ui.renderer.Show all scenes",
   "ui.renderer.Show fewer scenes"
-], qm = {
+], Um = {
   en: "Entity unavailable|Last changed unavailable|Last updated unavailable|Charging|Battery level|Current value|Turn on|Turn off|Start washer|Pause washer|Enable delayed start|Disable delayed start|Above horizon|Below horizon|Resume playback|Play or pause|Pause|Play|Unmute|All|One|Repeat: {mode}|Earlier by {minutes} minutes|Later by {minutes} minutes|Today: {value}|Tomorrow: {value}|Show all scenes|Show fewer scenes",
   ar: "الكيان غير متاح|وقت آخر تغيير غير متاح|وقت آخر تحديث غير متاح|جارٍ الشحن|مستوى البطارية|القيمة الحالية|تشغيل|إيقاف|تشغيل الغسالة|إيقاف الغسالة مؤقتًا|تفعيل البدء المؤجل|تعطيل البدء المؤجل|فوق الأفق|تحت الأفق|استئناف التشغيل|تشغيل أو إيقاف مؤقت|إيقاف مؤقت|تشغيل|إلغاء كتم الصوت|الكل|واحد|التكرار: {mode}|تقديم بمقدار {minutes} دقيقة|تأخير بمقدار {minutes} دقيقة|اليوم: {value}|غدًا: {value}|إظهار جميع المشاهد|إظهار مشاهد أقل",
   bg: "Обектът е недостъпен|Часът на последната промяна е недостъпен|Часът на последното обновяване е недостъпен|Зареждане|Ниво на батерията|Текуща стойност|Включване|Изключване|Стартиране на пералнята|Пауза на пералнята|Включване на отложения старт|Изключване на отложения старт|Над хоризонта|Под хоризонта|Продължаване на възпроизвеждането|Възпроизвеждане или пауза|Пауза|Възпроизвеждане|Включване на звука|Всички|Една|Повторение: {mode}|С {minutes} минути по-рано|С {minutes} минути по-късно|Днес: {value}|Утре: {value}|Показване на всички сцени|Показване на по-малко сцени",
@@ -5013,13 +5013,13 @@ const jl = [
   vi: "Thực thể không khả dụng|Không có thông tin thay đổi gần nhất|Không có thông tin cập nhật gần nhất|Đang sạc|Mức pin|Giá trị hiện tại|Bật|Tắt|Khởi động máy giặt|Tạm dừng máy giặt|Bật khởi động hẹn giờ|Tắt khởi động hẹn giờ|Trên đường chân trời|Dưới đường chân trời|Tiếp tục phát|Phát hoặc tạm dừng|Tạm dừng|Phát|Bật tiếng|Tất cả|Một|Lặp lại: {mode}|Sớm hơn {minutes} phút|Muộn hơn {minutes} phút|Hôm nay: {value}|Ngày mai: {value}|Hiển thị tất cả ngữ cảnh|Hiển thị ít ngữ cảnh hơn",
   "zh-Hans": "实体不可用|上次变更时间不可用|上次更新时间不可用|充电中|电池电量|当前值|开启|关闭|启动洗衣机|暂停洗衣机|启用延时启动|禁用延时启动|地平线上方|地平线下方|继续播放|播放或暂停|暂停|播放|取消静音|全部|单曲|重复：{mode}|提前 {minutes} 分钟|推迟 {minutes} 分钟|今天：{value}|明天：{value}|显示所有场景|显示较少场景",
   "zh-Hant": "實體無法使用|上次變更時間無法使用|上次更新時間無法使用|充電中|電池電量|目前值|開啟|關閉|啟動洗衣機|暫停洗衣機|啟用延遲啟動|停用延遲啟動|地平線上方|地平線下方|繼續播放|播放或暫停|暫停|播放|取消靜音|全部|單曲|重複：{mode}|提前 {minutes} 分鐘|延後 {minutes} 分鐘|今天：{value}|明天：{value}|顯示所有場景|顯示較少場景"
-}, Um = Object.fromEntries(
-  Object.entries(qm).map(([e, t]) => {
+}, Km = Object.fromEntries(
+  Object.entries(Um).map(([e, t]) => {
     const a = t.split("|");
     if (a.length !== Sl.length) throw new Error(`Runtime control translation count mismatch: ${e}`);
     return [e, Object.fromEntries(Sl.map((i, n) => [i, a[n]]))];
   })
-), Km = {
+), Wm = {
   fill_container: "Container ausfüllen",
   card_shadow: "Kartenschatten",
   multiline_secondary: "Mehrzeilige Zusatzinformation erlauben",
@@ -5510,7 +5510,7 @@ const jl = [
   icon_5: "Fünftes Navigationssymbol",
   name_5: "Fünfter Navigationsname",
   color_5: "Fünfte Navigationsfarbe"
-}, Wm = {
+}, Gm = {
   pihole_show_header: "Gemeinsame Mushroom-Kopfzeile über den Pi-hole-Abschnitten anzeigen.",
   pihole_collapsed_sections: "Abschnitte anfangs eingeklappt anzeigen; zum Ausklappen auf die Überschrift tippen.",
   pihole_hidden_entities: "Diese Entitäten von automatischer Erkennung, Steuerung und Verlauf ausschließen.",
@@ -6064,7 +6064,7 @@ const jl = [
   custom_card_pollen_grass_icon: "Optionales Symbol des Gräsereintrags; leer lassen für Entitätssymbol oder Quellenstandard.",
   custom_card_pollen_weed_name: "Optionaler Name des Kräutereintrags; leer lassen für Anzeigenamen der Entität oder lokalisierten Standard.",
   custom_card_pollen_weed_icon: "Optionales Symbol des Kräutereintrags; leer lassen für Entitätssymbol oder Quellenstandard."
-}, Gm = {
+}, Zm = {
   icon_type: "Tipo de icono",
   fill_container: "Rellenar el contenedor",
   card_shadow: "Sombra de la tarjeta",
@@ -6848,7 +6848,7 @@ const jl = [
   "ui.renderer.weak_panel": "El panel {panel} produce menos del {percent}% del promedio. Compruebe si hay sombras o una avería.",
   "ui.renderer.inactive_panels": "{count} panel(es) a cero. Es normal por la noche; de lo contrario, revíselos.",
   "ui.renderer.panel_watts": "{name}: {value} vatios"
-}, Zm = {
+}, Ym = {
   pihole_show_header: "Mostrar el encabezado compartido de Mushroom encima de las secciones de Pi-hole.",
   pihole_collapsed_sections: "Secciones contraídas inicialmente; pulse su encabezado para expandirlas.",
   pihole_hidden_entities: "Excluir estas entidades del descubrimiento automático, los controles y el historial.",
@@ -7436,7 +7436,7 @@ const jl = [
   "ui.device.conductivity",
   "ui.device.illuminance",
   "ui.device.daily_light_integral"
-], Ym = {
+], Jm = {
   en: "Crossfade|Night sound|Speech enhancement|Subwoofer|Surrounds|Loudness|Surround full|Audio delay|Balance|Bass|Treble|Sub gain|Surround level|Surround level music|Humidity|Moisture|Conductivity|Illuminance|Daily light integral",
   ar: "تداخل المقاطع|الصوت الليلي|تحسين الكلام|مكبر الصوت الجهير|مكبرات الصوت المحيطي|تعزيز الجهير والحدة|الصوت المحيطي الكامل|تأخير الصوت|توازن الصوت|الجهير|الحدة|كسب مكبر الجهير|مستوى الصوت المحيطي|مستوى الصوت المحيطي للموسيقى|الرطوبة|رطوبة التربة|الموصلية|شدة الاستضاءة|تكامل الضوء اليومي",
   bg: "Плавен преход|Нощен звук|Подобряване на речта|Субуфер|Съраунд високоговорители|Подсилване на ниски и високи честоти|Пълен съраунд звук|Закъснение на звука|Баланс|Ниски честоти|Високи честоти|Усилване на субуфера|Ниво на съраунд звука|Ниво на съраунд звука за музика|Влажност|Почвена влажност|Проводимост|Осветеност|Дневен светлинен интеграл",
@@ -7470,8 +7470,8 @@ const jl = [
   vi: "Chuyển tiếp mượt|Âm thanh ban đêm|Tăng cường giọng nói|Loa siêu trầm|Loa vòm|Tăng cường âm trầm và âm bổng|Âm thanh vòm đầy đủ|Độ trễ âm thanh|Cân bằng|Âm trầm|Âm bổng|Độ khuếch đại loa siêu trầm|Mức âm thanh vòm|Mức âm thanh vòm cho nhạc|Độ ẩm|Độ ẩm đất|Độ dẫn điện|Độ rọi|Tích phân ánh sáng hằng ngày",
   "zh-Hans": "交叉淡化|夜间音效|语音增强|低音炮|环绕扬声器|低音和高音增强|全音量环绕|音频延迟|左右平衡|低音|高音|低音炮增益|环绕音量|音乐环绕音量|湿度|土壤湿度|电导率|照度|每日光照积分",
   "zh-Hant": "交叉淡化|夜間音效|語音增強|重低音喇叭|環繞喇叭|低音與高音增強|全音量環繞|音訊延遲|左右平衡|低音|高音|重低音喇叭增益|環繞音量|音樂環繞音量|濕度|土壤濕度|電導度|照度|每日光照積分"
-}, Jm = Object.fromEntries(
-  Object.entries(Ym).map(([e, t]) => {
+}, Qm = Object.fromEntries(
+  Object.entries(Jm).map(([e, t]) => {
     const a = t.split("|");
     if (a.length !== xl.length) throw new Error(`Invalid device label count for ${e}`);
     return [e, Object.fromEntries(xl.map((i, n) => [i, a[n]]))];
@@ -8253,7 +8253,7 @@ Object.assign($r, Object.fromEntries(Object.entries({
   inactive_panels: "{count} panneau(x) à zéro. C’est normal la nuit ; sinon, vérifiez-les.",
   panel_watts: "{name} : {value} watts"
 }).map(([e, t]) => [`ui.renderer.${e}`, t])));
-const Qm = {
+const Xm = {
   pihole_show_header: "Afficher l’en-tête Mushroom commun au-dessus des sections Pi-hole.",
   pihole_collapsed_sections: "Sections initialement repliées ; touchez leur en-tête pour les développer.",
   pihole_hidden_entities: "Exclure ces entités de la découverte automatique, des commandes et de l’historique.",
@@ -8808,7 +8808,7 @@ const Qm = {
   "ui.renderer.maximum_value",
   "ui.renderer.net_result",
   "ui.area.select_required"
-], Xm = {
+], ep = {
   en: "Min {value}|Max {value}|Net result for {energy} kWh: {net} €|Select an area in the native Area editor.",
   ar: "الأدنى {value}|الأقصى {value}|النتيجة الصافية لـ {energy} kWh: ‏{net} €|اختر منطقة في محرر بطاقة المنطقة الأصلي.",
   bg: "Мин. {value}|Макс. {value}|Нетен резултат за {energy} kWh: {net} €|Изберете зона във вградения редактор на картата за зона.",
@@ -8842,13 +8842,13 @@ const Qm = {
   vi: "Thấp nhất {value}|Cao nhất {value}|Kết quả ròng cho {energy} kWh: {net} €|Chọn khu vực trong trình chỉnh sửa thẻ khu vực tích hợp.",
   "zh-Hans": "最小值 {value}|最大值 {value}|{energy} kWh 的净收益：{net} €|请在原生区域卡片编辑器中选择区域。",
   "zh-Hant": "最小值 {value}|最大值 {value}|{energy} kWh 的淨收益：{net} €|請在原生區域卡片編輯器中選擇區域。"
-}, ep = Object.fromEntries(
-  Object.entries(Xm).map(([e, t]) => {
+}, tp = Object.fromEntries(
+  Object.entries(ep).map(([e, t]) => {
     const a = t.split("|");
     if (a.length !== Pl.length) throw new Error(`Invalid runtime value label count for ${e}`);
     return [e, Object.fromEntries(Pl.map((i, n) => [i, a[n]]))];
   })
-), tp = {
+), ap = {
   icon_type: "图标类型",
   fill_container: "填满容器",
   card_shadow: "卡片阴影",
@@ -9632,7 +9632,7 @@ const Qm = {
   "ui.renderer.weak_panel": "光伏板 {panel} 的输出低于平均值的 {percent}%。请检查是否存在遮挡或故障。",
   "ui.renderer.inactive_panels": "{count} 块光伏板输出为零。夜间属于正常情况；否则请检查。",
   "ui.renderer.panel_watts": "{name}：{value} 瓦"
-}, ap = {
+}, ip = {
   pihole_show_header: "在 Pi-hole 各部分上方显示通用 Mushroom 标题。",
   pihole_collapsed_sections: "初始收起的部分；点按标题可展开。",
   pihole_hidden_entities: "从自动发现、控制和历史记录中排除这些实体。",
@@ -10200,7 +10200,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "可选的禾草项目图标；留空使用实体图标或来源默认图标。",
   custom_card_pollen_weed_name: "可选的杂草项目标签；留空使用实体易读名称或本地化默认名称。",
   custom_card_pollen_weed_icon: "可选的杂草项目图标；留空使用实体图标或来源默认图标。"
-}, ip = {
+}, np = {
   icon_type: "Tipo di icona",
   fill_container: "Riempi il contenitore",
   card_shadow: "Ombra della scheda",
@@ -10984,7 +10984,7 @@ const Qm = {
   "ui.renderer.weak_panel": "Il pannello {panel} produce meno del {percent}% della media. Verifica la presenza di ombre o guasti.",
   "ui.renderer.inactive_panels": "{count} pannello/i a zero. Di notte è normale; altrimenti controllali.",
   "ui.renderer.panel_watts": "{name}: {value} watt"
-}, np = {
+}, rp = {
   pihole_show_header: "Mostra l'intestazione Mushroom condivisa sopra le sezioni Pi-hole.",
   pihole_collapsed_sections: "Sezioni inizialmente compresse; tocca l'intestazione per espanderle.",
   pihole_hidden_entities: "Escludi queste entità dal rilevamento automatico, dai controlli e dalla cronologia.",
@@ -11552,7 +11552,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "Icona facoltativa per l'elemento graminacee; lascia vuoto per usare l'icona dell'entità o quella predefinita della sorgente.",
   custom_card_pollen_weed_name: "Etichetta facoltativa per l'elemento erbe infestanti; lascia vuoto per usare il nome descrittivo dell'entità o il valore localizzato predefinito.",
   custom_card_pollen_weed_icon: "Icona facoltativa per l'elemento erbe infestanti; lascia vuoto per usare l'icona dell'entità o quella predefinita della sorgente."
-}, rp = {
+}, op = {
   icon_type: "圖示類型",
   fill_container: "填滿容器",
   card_shadow: "卡片陰影",
@@ -12336,7 +12336,7 @@ const Qm = {
   "ui.renderer.weak_panel": "光伏板 {panel} 的輸出低於平均值的 {percent}%。請檢查是否存在遮擋或故障。",
   "ui.renderer.inactive_panels": "{count} 塊光伏板輸出為零。夜間屬於正常情況；否則請檢查。",
   "ui.renderer.panel_watts": "{name}：{value} 瓦"
-}, op = {
+}, sp = {
   pihole_show_header: "在 Pi-hole 各部分上方顯示通用 Mushroom 標題。",
   pihole_collapsed_sections: "初始收起的部分；點按標題可展開。",
   pihole_hidden_entities: "從自動發現、控制和歷史記錄中排除這些實體。",
@@ -12904,7 +12904,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "可選的禾草項目圖示；留空使用實體圖示或來源預設圖示。",
   custom_card_pollen_weed_name: "可選的雜草項目標籤；留空使用實體易讀名稱或在地化預設名稱。",
   custom_card_pollen_weed_icon: "可選的雜草項目圖示；留空使用實體圖示或來源預設圖示。"
-}, sp = {
+}, lp = {
   icon_type: "Tipo de ícone",
   fill_container: "Preencher o contêiner",
   card_shadow: "Sombra do cartão",
@@ -13688,7 +13688,7 @@ const Qm = {
   "ui.renderer.weak_panel": "O painel {panel} está produzindo menos de {percent}% da média. Verifique se há sombra ou defeito.",
   "ui.renderer.inactive_panels": "{count} painel(is) com produção zero. Isso é normal à noite; caso contrário, verifique-os.",
   "ui.renderer.panel_watts": "{name}: {value} watts de potência"
-}, lp = {
+}, _p = {
   pihole_show_header: "Mostra o cabeçalho compartilhado do Mushroom acima das seções do Pi-hole.",
   pihole_collapsed_sections: "Seções inicialmente recolhidas; toque no cabeçalho para expandi-las.",
   pihole_hidden_entities: "Exclui estas entidades da descoberta automática, dos controles e do histórico.",
@@ -14256,7 +14256,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "Ícone opcional do item de gramíneas; deixe vazio para usar o ícone da entidade ou o padrão original.",
   custom_card_pollen_weed_name: "Rótulo opcional do item de ervas daninhas; deixe vazio para usar o nome amigável da entidade ou o padrão traduzido.",
   custom_card_pollen_weed_icon: "Ícone opcional do item de ervas daninhas; deixe vazio para usar o ícone da entidade ou o padrão original."
-}, _p = {
+}, dp = {
   icon_type: "Typ ikony",
   fill_container: "Wypełnij kontener",
   card_shadow: "Cień karty",
@@ -15040,7 +15040,7 @@ const Qm = {
   "ui.renderer.weak_panel": "Panel {panel} dostarcza mniej niż {percent}% średniej. Sprawdź zacienienie lub usterkę.",
   "ui.renderer.inactive_panels": "{count} paneli z zerową mocą. To normalne nocą; w przeciwnym razie sprawdź je.",
   "ui.renderer.panel_watts": "{name}: {value} watów"
-}, dp = {
+}, up = {
   pihole_show_header: "Pokaż wspólny nagłówek Mushroom nad sekcjami Pi-hole.",
   pihole_collapsed_sections: "Sekcje początkowo zwinięte; dotknij nagłówka, aby je rozwinąć.",
   pihole_hidden_entities: "Wyklucz te encje z automatycznego wykrywania, sterowania i historii.",
@@ -15608,7 +15608,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "Opcjonalna ikona traw; pozostaw puste, aby użyć ikony encji lub źródłowej wartości domyślnej.",
   custom_card_pollen_weed_name: "Opcjonalna etykieta chwastów; pozostaw puste, aby użyć przyjaznej nazwy encji lub zlokalizowanej wartości domyślnej.",
   custom_card_pollen_weed_icon: "Opcjonalna ikona chwastów; pozostaw puste, aby użyć ikony encji lub źródłowej wartości domyślnej."
-}, up = {
+}, cp = {
   icon_type: "Тип значка",
   fill_container: "Заполнять контейнер",
   card_shadow: "Тень карточки",
@@ -16392,7 +16392,7 @@ const Qm = {
   "ui.renderer.weak_panel": "Панель {panel} выдаёт менее {percent}% от среднего. Проверьте наличие затенения или неисправности.",
   "ui.renderer.inactive_panels": "Панелей с нулевой выработкой: {count}. Ночью это нормально; в другое время проверьте их.",
   "ui.renderer.panel_watts": "{name}: {value} ватт"
-}, cp = {
+}, mp = {
   pihole_show_header: "Показывать общий заголовок Mushroom над разделами Pi-hole.",
   pihole_collapsed_sections: "Разделы, изначально свёрнутые; нажмите на заголовок, чтобы развернуть их.",
   pihole_hidden_entities: "Исключить эти сущности из автоматического обнаружения, управления и истории.",
@@ -16960,7 +16960,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "Необязательный значок элемента пыльцы злаков; оставьте пустым для значка сущности или исходного значения по умолчанию.",
   custom_card_pollen_weed_name: "Необязательная подпись элемента пыльцы сорных трав; оставьте пустой для понятного имени сущности или локализованного значения по умолчанию.",
   custom_card_pollen_weed_icon: "Необязательный значок элемента пыльцы сорных трав; оставьте пустым для значка сущности или исходного значения по умолчанию."
-}, mp = {
+}, pp = {
   icon_type: "Tipo de ícone",
   fill_container: "Preencher o contentor",
   card_shadow: "Sombra do cartão",
@@ -17744,7 +17744,7 @@ const Qm = {
   "ui.renderer.weak_panel": "O painel {panel} produz menos de {percent}% da média. Verifique se está à sombra ou tem uma avaria.",
   "ui.renderer.inactive_panels": "{count} painel(is) com produção zero. Isso é normal à noite; caso contrário, verifique-os.",
   "ui.renderer.panel_watts": "{name}: {value} watts de potência"
-}, pp = {
+}, hp = {
   pihole_show_header: "Mostra o cabeçalho partilhado do Mushroom acima das secções do Pi-hole.",
   pihole_collapsed_sections: "Secções inicialmente recolhidas; toque no cabeçalho para as expandir.",
   pihole_hidden_entities: "Exclui estas entidades da descoberta automática, dos controlos e do histórico.",
@@ -18312,7 +18312,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "Ícone opcional do item de gramíneas; deixe vazio para usar o ícone da entidade ou a predefinição original.",
   custom_card_pollen_weed_name: "Rótulo opcional do item de ervas daninhas; deixe vazio para usar o nome amigável da entidade ou a predefinição traduzida.",
   custom_card_pollen_weed_icon: "Ícone opcional do item de ervas daninhas; deixe vazio para usar o ícone da entidade ou a predefinição original."
-}, hp = {
+}, gp = {
   icon_type: "Тип піктограми",
   fill_container: "Заповнювати контейнер",
   card_shadow: "Тінь картки",
@@ -19096,7 +19096,7 @@ const Qm = {
   "ui.renderer.weak_panel": "Панель {panel} виробляє менше ніж {percent}% середнього. Перевірте затінення або несправність.",
   "ui.renderer.inactive_panels": "Панелей із нульовою потужністю: {count}. Уночі це нормально; інакше перевірте їх.",
   "ui.renderer.panel_watts": "{name}: {value} ват"
-}, gp = {
+}, yp = {
   pihole_show_header: "Показувати спільний заголовок Mushroom над розділами Pi-hole.",
   pihole_collapsed_sections: "Розділи, які спочатку згорнуті; натисніть заголовок, щоб розгорнути.",
   pihole_hidden_entities: "Виключити ці сутності з автоматичного виявлення, керування та історії.",
@@ -19664,7 +19664,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "Необов’язкова піктограма елемента трав; залиште порожнім для піктограми сутності або типового значення джерела.",
   custom_card_pollen_weed_name: "Необов’язковий підпис елемента бур’янів; залиште порожнім для зрозумілої назви сутності або локалізованого типового значення.",
   custom_card_pollen_weed_icon: "Необов’язкова піктограма елемента бур’янів; залиште порожнім для піктограми сутності або типового значення джерела."
-}, yp = {
+}, bp = {
   icon_type: "Typ ikony",
   fill_container: "Vyplnit kontejner",
   card_shadow: "Stín karty",
@@ -20448,7 +20448,7 @@ const Qm = {
   "ui.renderer.weak_panel": "Panel {panel} dodává méně než {percent}% průměru. Zkontrolujte zastínění nebo závadu.",
   "ui.renderer.inactive_panels": "{count} panelů má nulový výkon. V noci je to běžné; jinak je zkontrolujte.",
   "ui.renderer.panel_watts": "{name}: {value} wattů"
-}, bp = {
+}, vp = {
   pihole_show_header: "Zobrazit společné záhlaví Mushroom nad sekcemi Pi-hole.",
   pihole_collapsed_sections: "Sekce zpočátku sbalené; klepnutím na jejich záhlaví je rozbalíte.",
   pihole_hidden_entities: "Vyloučit tyto entity z automatického vyhledávání, ovládání a historie.",
@@ -21016,7 +21016,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "Volitelná ikona položky trav; prázdné použije ikonu entity nebo původní výchozí ikonu.",
   custom_card_pollen_weed_name: "Volitelný popisek položky plevelů; prázdné použije srozumitelný název entity nebo přeložené výchozí označení.",
   custom_card_pollen_weed_icon: "Volitelná ikona položky plevelů; prázdné použije ikonu entity nebo původní výchozí ikonu."
-}, vp = {
+}, kp = {
   icon_type: "Typ ikony",
   fill_container: "Vyplniť kontajner",
   card_shadow: "Tieň karty",
@@ -21800,7 +21800,7 @@ const Qm = {
   "ui.renderer.weak_panel": "Panel {panel} dodáva menej ako {percent}% priemeru. Skontrolujte zatienenie alebo poruchu.",
   "ui.renderer.inactive_panels": "{count} panelov na nule. V noci je to normálne; inak ich skontrolujte.",
   "ui.renderer.panel_watts": "{name}: {value} wattov"
-}, kp = {
+}, fp = {
   pihole_show_header: "Zobraziť spoločnú hlavičku Mushroom nad sekciami Pi-hole.",
   pihole_collapsed_sections: "Sekcie, ktoré sú spočiatku zbalené; rozbalíte ich ťuknutím na ich nadpis.",
   pihole_hidden_entities: "Vylúčiť tieto entity z automatického vyhľadávania, ovládania a histórie.",
@@ -22372,7 +22372,7 @@ const Qm = {
   "ui.graph.entity_required",
   "ui.graph.no_history",
   "ui.graph.history_failed"
-], fp = {
+], wp = {
   en: "Mini Graph Card requires at least one entity.|No recorder history is available for the selected entities.|Unable to load recorder history.",
   ar: "تتطلب بطاقة الرسم المصغر كيانًا واحدًا على الأقل.|لا يتوفر سجل من المسجل للكيانات المحددة.|تعذر تحميل سجل المسجل.",
   bg: "Картата Mini Graph изисква поне един обект.|Няма история от Recorder за избраните обекти.|Историята от Recorder не може да се зареди.",
@@ -22406,13 +22406,13 @@ const Qm = {
   vi: "Thẻ Mini Graph yêu cầu ít nhất một thực thể.|Không có lịch sử Recorder cho các thực thể đã chọn.|Không thể tải lịch sử Recorder.",
   "zh-Hans": "Mini Graph 卡片至少需要一个实体。|所选实体没有可用的 Recorder 历史记录。|无法加载 Recorder 历史记录。",
   "zh-Hant": "Mini Graph 卡片至少需要一個實體。|所選實體沒有可用的 Recorder 歷史記錄。|無法載入 Recorder 歷史記錄。"
-}, wp = Object.fromEntries(
-  Object.entries(fp).map(([e, t]) => {
+}, zp = Object.fromEntries(
+  Object.entries(wp).map(([e, t]) => {
     const a = t.split("|");
     if (a.length !== Ml.length) throw new Error(`Invalid graph error count for ${e}`);
     return [e, Object.fromEntries(Ml.map((i, n) => [i, a[n]]))];
   })
-), zp = {
+), jp = {
   icon_type: "Ikontype",
   fill_container: "Fyld beholderen",
   card_shadow: "Kortskygge",
@@ -23196,7 +23196,7 @@ const Qm = {
   "ui.renderer.weak_panel": "Panel {panel} leverer mindre end {percent}% af gennemsnittet. Undersøg for skygge eller fejl.",
   "ui.renderer.inactive_panels": "{count} panel(er) på nul. Det er normalt om natten; undersøg dem ellers.",
   "ui.renderer.panel_watts": "{name}: {value} watt"
-}, jp = {
+}, Sp = {
   pihole_show_header: "Vis den fælles Mushroom-overskrift over Pi-hole-afsnittene.",
   pihole_collapsed_sections: "Afsnit, der er sammenfoldet fra starten; tryk på overskriften for at folde dem ud.",
   pihole_hidden_entities: "Udeluk disse entiteter fra automatisk registrering, betjening og historik.",
@@ -23764,7 +23764,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "Valgfrit ikon for græselementet; lad stå tomt for entitetsikonet eller kildens standard.",
   custom_card_pollen_weed_name: "Valgfri tekst for ukrudtselementet; lad stå tomt for entitetens visningsnavn eller den oversatte standard.",
   custom_card_pollen_weed_icon: "Valgfrit ikon for ukrudtselementet; lad stå tomt for entitetsikonet eller kildens standard."
-}, Sp = {
+}, xp = {
   icon_type: "Ikontype",
   fill_container: "Fyll beholderen",
   card_shadow: "Kortskygge",
@@ -24548,7 +24548,7 @@ const Qm = {
   "ui.renderer.weak_panel": "Panel {panel} leverer mindre enn {percent}% av gjennomsnittet. Se etter skygge eller feil.",
   "ui.renderer.inactive_panels": "{count} panel(er) på null. Dette er normalt om natten; ellers bør de undersøkes.",
   "ui.renderer.panel_watts": "{name}: {value} watt"
-}, xp = {
+}, Ap = {
   pihole_show_header: "Vis den felles Mushroom-overskriften over Pi-hole-delene.",
   pihole_collapsed_sections: "Deler som er sammenfoldet fra starten; trykk på overskriften for å utvide dem.",
   pihole_hidden_entities: "Utelat disse entitetene fra automatisk oppdagelse, kontroller og historikk.",
@@ -25116,7 +25116,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "Valgfritt ikon for gresselement; la stå tomt for entitetens ikon eller kildens standard.",
   custom_card_pollen_weed_name: "Valgfri etikett for ugresselement; la stå tomt for entitetens visningsnavn eller oversatt standard.",
   custom_card_pollen_weed_icon: "Valgfritt ikon for ugresselement; la stå tomt for entitetens ikon eller kildens standard."
-}, Ap = {
+}, Pp = {
   icon_type: "Tipul pictogramei",
   fill_container: "Umplere container",
   card_shadow: "Umbra cardului",
@@ -25900,7 +25900,7 @@ const Qm = {
   "ui.renderer.weak_panel": "Panoul {panel} produce sub {percent}% din medie. Verifică dacă este umbrit sau defect.",
   "ui.renderer.inactive_panels": "{count} panou/panouri cu valoarea zero. Este normal noaptea; în caz contrar, verifică-le.",
   "ui.renderer.panel_watts": "{name}: {value} wați"
-}, Pp = {
+}, Mp = {
   pihole_show_header: "Afișează antetul Mushroom comun deasupra secțiunilor Pi-hole.",
   pihole_collapsed_sections: "Secțiunile sunt restrânse inițial; atinge antetul pentru a le extinde.",
   pihole_hidden_entities: "Exclude aceste entități din detectarea automată, comenzi și istoric.",
@@ -26468,7 +26468,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "Pictogramă opțională pentru graminee; lasă gol pentru pictograma entității sau cea implicită din sursă.",
   custom_card_pollen_weed_name: "Etichetă opțională pentru buruieni; lasă gol pentru numele prietenos al entității sau valoarea implicită tradusă.",
   custom_card_pollen_weed_icon: "Pictogramă opțională pentru buruieni; lasă gol pentru pictograma entității sau cea implicită din sursă."
-}, Mp = {
+}, Cp = {
   icon_type: "Kuvakkeen tyyppi",
   fill_container: "Täytä alue",
   card_shadow: "Kortin varjo",
@@ -27252,7 +27252,7 @@ const Qm = {
   "ui.renderer.weak_panel": "Paneeli {panel} tuottaa alle {percent} % keskiarvosta. Tarkista varjostus tai vika.",
   "ui.renderer.inactive_panels": "{count} paneelia on nollassa. Tämä on normaalia yöllä; muulloin tarkista paneelit.",
   "ui.renderer.panel_watts": "{name}: {value} wattia"
-}, Cp = {
+}, $p = {
   pihole_show_header: "Näytä yhteinen Mushroom-otsake Pi-hole-osioiden yläpuolella.",
   pihole_collapsed_sections: "Osiot ovat aluksi kutistettuina; laajenna ne napauttamalla otsikkoa.",
   pihole_hidden_entities: "Jätä nämä entiteetit pois automaattisesta tunnistuksesta, ohjaimista ja historiasta.",
@@ -27820,7 +27820,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "Valinnainen heinä-kohteen kuvake; jätä tyhjäksi, jos haluat käyttää entiteetin kuvaketta tai lähteen oletusta.",
   custom_card_pollen_weed_name: "Valinnainen rikkakasvi-kohteen tunniste; jätä tyhjäksi, jos haluat käyttää entiteetin käyttäjäystävällistä nimeä tai oletuskäännöstä.",
   custom_card_pollen_weed_icon: "Valinnainen rikkakasvi-kohteen kuvake; jätä tyhjäksi, jos haluat käyttää entiteetin kuvaketta tai lähteen oletusta."
-}, $p = {
+}, Ep = {
   icon_type: "Simge türü",
   fill_container: "Alanı tamamen doldur",
   card_shadow: "Kart gölgesi",
@@ -28604,7 +28604,7 @@ const Qm = {
   "ui.renderer.weak_panel": "Panel {panel}, ortalamanın %{percent}'inden azını üretiyor. Gölge veya arıza olup olmadığını kontrol edin.",
   "ui.renderer.inactive_panels": "{count} panelin çıkışı sıfır. Gece bu normaldir; değilse panelleri kontrol edin.",
   "ui.renderer.panel_watts": "{name}: {value} watt"
-}, Ep = {
+}, Tp = {
   pihole_show_header: "Pi-hole bölümlerinin üzerinde ortak Mushroom başlığını gösterir.",
   pihole_collapsed_sections: "Bölümler başlangıçta kapalı olur; açmak için başlıklarına dokunun.",
   pihole_hidden_entities: "Bu varlıkları otomatik keşiften, denetimlerden ve geçmişten çıkarır.",
@@ -29172,7 +29172,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "Çimen poleni kartında kullanılan simge.",
   custom_card_pollen_weed_name: "Yabani ot poleni kartında gösterilen ad.",
   custom_card_pollen_weed_icon: "Yabani ot poleni kartında kullanılan simge."
-}, Tp = {
+}, Dp = {
   icon_type: "Tipe ikon",
   fill_container: "Isi kontainer",
   card_shadow: "Bayangan kartu",
@@ -29956,7 +29956,7 @@ const Qm = {
   "ui.renderer.waste_number": "Sampah {number}",
   "ui.renderer.weak_panel": "Panel terlemah {panel} menghasilkan {percent}% dari rata-rata",
   "ui.renderer.shortcut": "Pintasan {number}"
-}, Dp = {
+}, Np = {
   pihole_show_header: "Tampilkan judul Mushroom bersama di atas bagian Pi-hole.",
   pihole_collapsed_sections: "Bagian yang dilipat saat kartu dibuka; ketuk judul bagian untuk membukanya.",
   pihole_hidden_entities: "Kecualikan entitas ini dari penemuan, kontrol, dan riwayat otomatis.",
@@ -30524,7 +30524,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "Ikon serbuk sari rumput.",
   custom_card_pollen_weed_name: "Nama serbuk sari gulma.",
   custom_card_pollen_weed_icon: "Ikon serbuk sari gulma."
-}, Np = {
+}, Vp = {
   icon_type: "Тип на иконата",
   fill_container: "Запълване на контейнера",
   card_shadow: "Сянка на картата",
@@ -31308,7 +31308,7 @@ const Qm = {
   "ui.renderer.weak_panel": "Панел {panel} подава по-малко от {percent}% от средната мощност. Проверете за засенчване или повреда.",
   "ui.renderer.inactive_panels": "{count} панела с нулева мощност. Това е нормално през нощта; в противен случай ги проверете.",
   "ui.renderer.panel_watts": "{name}: {value} вата"
-}, Vp = {
+}, Lp = {
   pihole_show_header: "Показва общия за Mushroom надпис над разделите на Pi-hole.",
   pihole_collapsed_sections: "Разделите първоначално са свити; докоснете заглавието им, за да ги разгънете.",
   pihole_hidden_entities: "Изключва тези обекти от автоматичното откриване, контролите и историята.",
@@ -31876,7 +31876,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "Незадължителна икона за полени от треви; оставете празно, за да използвате иконата на обекта или стойността по подразбиране от източника.",
   custom_card_pollen_weed_name: "Незадължителен етикет за полени от плевели; оставете празно, за да използвате разбираемото име на обекта или локализираната стойност по подразбиране.",
   custom_card_pollen_weed_icon: "Незадължителна икона за полени от плевели; оставете празно, за да използвате иконата на обекта или стойността по подразбиране от източника."
-}, Lp = {
+}, Hp = {
   icon_type: "아이콘 타입",
   fill_container: "콘테이너 채우기",
   card_shadow: "카드 그림자",
@@ -32660,7 +32660,7 @@ const Qm = {
   ulm_card_update_horizontal: "상태와 제어 항목을 나란히 배치합니다.",
   ulm_card_update_narrow_buttons: "가로 모드에서 업데이트 상태 영역을 더 넓게 표시합니다.",
   ulm_card_update_icon: "업데이트 상태에 적용할 선택적 아이콘입니다."
-}, Hp = {
+}, Ip = {
   pihole_show_header: "Pi-hole 섹션 위에 Mushroom 공통 제목을 표시합니다.",
   pihole_collapsed_sections: "처음에는 섹션을 접어 두며, 제목을 눌러 펼칠 수 있습니다.",
   pihole_hidden_entities: "자동 검색, 제어 및 기록에서 이 엔티티를 제외합니다.",
@@ -33228,7 +33228,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "선택적 잔디 항목 아이콘입니다. 비워 두면 엔티티 아이콘 또는 원본 기본값을 사용합니다.",
   custom_card_pollen_weed_name: "선택적 잡초 항목 레이블입니다. 비워 두면 엔티티 이름 또는 지역화된 기본값을 사용합니다.",
   custom_card_pollen_weed_icon: "선택적 잡초 항목 아이콘입니다. 비워 두면 엔티티 아이콘 또는 원본 기본값을 사용합니다."
-}, Ip = {
+}, Rp = {
   icon_type: "Τύπος εικονιδίου",
   fill_container: "Πλήρωση διαθέσιμου χώρου",
   card_shadow: "Σκιά κάρτας",
@@ -34012,7 +34012,7 @@ const Qm = {
   "ui.renderer.weak_panel": "Το πάνελ {panel} παράγει λιγότερο από {percent}% του μέσου όρου. Ελέγξτε για σκίαση ή βλάβη.",
   "ui.renderer.inactive_panels": "{count} πάνελ στο μηδέν. Αυτό είναι φυσιολογικό τη νύχτα· διαφορετικά, ελέγξτε τα.",
   "ui.renderer.panel_watts": "{name}: {value} watt"
-}, Rp = {
+}, Bp = {
   pihole_show_header: "Εμφανίζει την κοινή κεφαλίδα Mushroom πάνω από τις ενότητες Pi-hole.",
   pihole_collapsed_sections: "Ενότητες που είναι αρχικά συμπτυγμένες· πατήστε την επικεφαλίδα τους για να αναπτυχθούν.",
   pihole_hidden_entities: "Εξαίρεση αυτών των οντοτήτων από την αυτόματη ανακάλυψη, τα χειριστήρια και το ιστορικό.",
@@ -34580,7 +34580,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "Προαιρετικό εικονίδιο στοιχείου αγρωστωδών· αφήστε κενό για το εικονίδιο της οντότητας ή την προεπιλογή της πηγής.",
   custom_card_pollen_weed_name: "Προαιρετική ετικέτα στοιχείου ζιζανίων· αφήστε κενό για το φιλικό όνομα της οντότητας ή την τοπικοποιημένη προεπιλογή.",
   custom_card_pollen_weed_icon: "Προαιρετικό εικονίδιο στοιχείου ζιζανίων· αφήστε κενό για το εικονίδιο της οντότητας ή την προεπιλογή της πηγής."
-}, Bp = {
+}, Fp = {
   icon_type: "Kiểu biểu tượng",
   fill_container: "Lấp đầy vùng chứa",
   card_shadow: "Bóng thẻ",
@@ -35364,7 +35364,7 @@ const Qm = {
   "ui.renderer.weak_panel": "Tấm pin {panel} chỉ cung cấp dưới {percent}% mức trung bình. Kiểm tra bóng râm hoặc sự cố.",
   "ui.renderer.inactive_panels": "{count} tấm pin có công suất bằng không. Ban đêm điều này bình thường; nếu không, hãy kiểm tra tấm pin.",
   "ui.renderer.panel_watts": "{name}: {value} watt"
-}, Fp = {
+}, Op = {
   pihole_show_header: "Hiển thị tiêu đề Mushroom dùng chung phía trên các mục Pi-hole.",
   pihole_collapsed_sections: "Các mục ban đầu được thu gọn; chạm vào tiêu đề để mở rộng.",
   pihole_hidden_entities: "Loại các thực thể này khỏi việc tự động tìm kiếm, điều khiển và lịch sử.",
@@ -35932,7 +35932,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "Biểu tượng mục cỏ tùy chọn; để trống để dùng biểu tượng thực thể hoặc mặc định nguồn.",
   custom_card_pollen_weed_name: "Nhãn mục cỏ dại tùy chọn; để trống để dùng tên thân thiện của thực thể hoặc mặc định đã dịch.",
   custom_card_pollen_weed_icon: "Biểu tượng mục cỏ dại tùy chọn; để trống để dùng biểu tượng thực thể hoặc mặc định nguồn."
-}, Op = {
+}, qp = {
   icon_type: "Ikontyp",
   fill_container: "Fyll behållaren",
   card_shadow: "Kortskugga",
@@ -36716,7 +36716,7 @@ const Qm = {
   "ui.renderer.weak_panel": "Panel {panel} levererar mindre än {percent}% av medelvärdet. Kontrollera skuggning eller fel.",
   "ui.renderer.inactive_panels": "{count} panel(er) utan produktion. Det är normalt på natten; kontrollera dem annars.",
   "ui.renderer.panel_watts": "{name}: {value} watt"
-}, Qe = "Väljs automatiskt från Sonos-enheten som är kopplad till den primära mediespelaren.", io = "Hittas automatiskt på konsolkontots enhet när den är tillgänglig.", qp = {
+}, Qe = "Väljs automatiskt från Sonos-enheten som är kopplad till den primära mediespelaren.", io = "Hittas automatiskt på konsolkontots enhet när den är tillgänglig.", Up = {
   pihole_show_header: "Visa den gemensamma Mushroom-rubriken ovanför Pi-hole-avsnitten.",
   pihole_collapsed_sections: "Avsnitt som är hopfällda från början. Tryck på rubriken för att visa dem.",
   pihole_hidden_entities: "Undanta dessa entiteter från automatisk upptäckt, kontroller och historik.",
@@ -37284,7 +37284,7 @@ const Qm = {
   custom_card_pollen_grass_icon: "Valfri ikon för gräs. Lämna tomt för att använda entitetens ikon eller källans standardikon.",
   custom_card_pollen_weed_name: "Valfri etikett för ogräs. Lämna tomt för att använda entitetens läsbara namn eller lokaliserad standardtext.",
   custom_card_pollen_weed_icon: "Valfri ikon för ogräs. Lämna tomt för att använda entitetens ikon eller källans standardikon."
-}, Up = `
+}, Kp = `
 icon_type|Тип иконе
 fill_container|Попуни контејнер
 card_shadow|Сенка картице
@@ -38068,11 +38068,11 @@ ui.renderer.energy_chart|Цене енергије и планиране рад�
 ui.renderer.weak_panel|Панел {panel} даје мање од {percent}% просека. Проверите да ли је засенчен или неисправан.
 ui.renderer.inactive_panels|{count} панела има вредност нула. То је нормално ноћу; у супротном их проверите.
 ui.renderer.panel_watts|{name}: {value} вати
-`, kd = (e) => Object.fromEntries(e.trim().split(`
+`, fd = (e) => Object.fromEntries(e.trim().split(`
 `).map((t) => {
   const a = t.indexOf("|");
   return [t.slice(0, a), t.slice(a + 1)];
-})), fd = kd(Up), Kp = `
+})), wd = fd(Kp), Wp = `
 pihole_show_header|Прикажи заједничко Mushroom заглавље изнад Pi-hole одељака.
 pihole_collapsed_sections|Одељци су у почетку склопљени; додирните наслов да бисте их проширили.
 pihole_hidden_entities|Изузмите ове ентитете из аутоматског откривања, контрола и историје.
@@ -38641,7 +38641,7 @@ custom_card_pollen_grass_name|Опциона ознака ставке поле�
 custom_card_pollen_grass_icon|Опциона икона ставке полена трава; оставите празно за икону ентитета или подразумевану вредност извора.
 custom_card_pollen_weed_name|Опциона ознака ставке полена корова; оставите празно за описни назив ентитета или локализовану подразумевану вредност.
 custom_card_pollen_weed_icon|Опциона икона ставке полена корова; оставите празно за икону ентитета или подразумевану вредност извора.
-`, wd = kd(Kp), Wp = {
+`, zd = fd(Wp), Gp = {
   А: "A",
   а: "a",
   Б: "B",
@@ -38702,7 +38702,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   џ: "dž",
   Ш: "Š",
   ш: "š"
-}, Gp = (e) => [...e].map((t) => Wp[t] ?? t).join(""), zd = (e) => Object.fromEntries(Object.entries(e).map(([t, a]) => [t, Gp(a)])), Zp = zd(fd), Yp = zd(wd), Jp = {
+}, Zp = (e) => [...e].map((t) => Gp[t] ?? t).join(""), jd = (e) => Object.fromEntries(Object.entries(e).map(([t, a]) => [t, Zp(a)])), Yp = jd(wd), Jp = jd(zd), Qp = {
   icon_type: "סוג צלמית",
   fill_container: "מילוי גבולות המכל",
   card_shadow: "צל כרטיס",
@@ -39486,7 +39486,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   "ui.renderer.weak_panel": "לוח {panel} מפיק פחות מ־{percent}% מהממוצע. בדוק אם יש הצללה או תקלה.",
   "ui.renderer.inactive_panels": "{count} לוחות עם תפוקה אפסית. זה תקין בלילה; אחרת, יש לבדוק אותם.",
   "ui.renderer.panel_watts": "{name}: {value} ואט"
-}, Qp = {
+}, Xp = {
   pihole_show_header: "הצג את כותרת Mushroom המשותפת מעל מקטעי Pi-hole.",
   pihole_collapsed_sections: "מקטעים שמתחילים מכווצים; לחץ על הכותרת שלהם להרחבה.",
   pihole_hidden_entities: "החרג ישויות אלה מהגילוי האוטומטי, מהפקדים ומההיסטוריה.",
@@ -40054,7 +40054,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   custom_card_pollen_grass_icon: "צלמית לרשות לפריט הדגניים; השאר ריק לשימוש בצלמית הישות או בברירת המחדל של המקור.",
   custom_card_pollen_weed_name: "תווית לרשות לפריט העשבים; השאר ריק לשימוש בשם הידידותי של הישות או בברירת המחדל המתורגמת.",
   custom_card_pollen_weed_icon: "צלמית לרשות לפריט העשבים; השאר ריק לשימוש בצלמית הישות או בברירת המחדל של המקור."
-}, Xp = {
+}, eh = {
   icon_type: "نوع الأيقونة",
   fill_container: "ملء الحاوية",
   card_shadow: "ظل البطاقة",
@@ -40838,7 +40838,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   "ui.renderer.weak_panel": "ينتج اللوح {panel} أقل من {percent}% من المتوسط. تحقق من وجود ظل أو عطل.",
   "ui.renderer.inactive_panels": "عدد الألواح ذات الإنتاج الصفري: {count}. هذا طبيعي ليلًا؛ وإلا فتحقق منها.",
   "ui.renderer.panel_watts": "{name}: {value} واط"
-}, eh = {
+}, th = {
   pihole_show_header: "إظهار ترويسة Mushroom المشتركة أعلى أقسام Pi-hole.",
   pihole_collapsed_sections: "الأقسام المطوية في البداية؛ انقر على ترويسة القسم لتوسيعه.",
   pihole_hidden_entities: "استبعاد هذه الكيانات من الاكتشاف التلقائي وعناصر التحكم والسجل.",
@@ -41406,7 +41406,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   custom_card_pollen_grass_icon: "أيقونة اختيارية لعنصر العشب؛ اتركها فارغة لاستخدام أيقونة الكيان أو الأيقونة الافتراضية للمصدر.",
   custom_card_pollen_weed_name: "تسمية اختيارية لعنصر الأعشاب الضارة؛ اتركها فارغة لاستخدام الاسم الواضح للكيان أو التسمية الافتراضية المترجمة.",
   custom_card_pollen_weed_icon: "أيقونة اختيارية لعنصر الأعشاب الضارة؛ اتركها فارغة لاستخدام أيقونة الكيان أو الأيقونة الافتراضية للمصدر."
-}, th = {
+}, ah = {
   icon_type: "Vrsta ikone",
   fill_container: "Zapolnitev prostora",
   card_shadow: "Senca kartice",
@@ -42190,7 +42190,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   "ui.renderer.weak_panel": "Panel {panel} proizvaja manj kot {percent}% povprečja. Preverite, ali je zasenčen ali okvarjen.",
   "ui.renderer.inactive_panels": "Število panelov brez proizvodnje: {count}. Ponoči je to običajno, sicer jih preverite.",
   "ui.renderer.panel_watts": "{name}: {value} vatov"
-}, ah = {
+}, ih = {
   pihole_show_header: "Prikaži skupno glavo Mushroom nad razdelki Pi-hole.",
   pihole_collapsed_sections: "Razdelki, ki so na začetku strnjeni; dotaknite se njihove glave, da jih razširite.",
   pihole_hidden_entities: "Izloči te entitete iz samodejnega odkrivanja, kontrolnikov in zgodovine.",
@@ -42758,7 +42758,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   custom_card_pollen_grass_icon: "Neobvezna ikona postavke trav; pustite prazno za ikono entitete ali izvorno privzeto vrednost.",
   custom_card_pollen_weed_name: "Neobvezna oznaka postavke plevelov; pustite prazno za prijazni naziv entitete ali lokalizirano privzeto vrednost.",
   custom_card_pollen_weed_icon: "Neobvezna ikona postavke plevelov; pustite prazno za ikono entitete ali izvorno privzeto vrednost."
-}, ih = {
+}, nh = {
   icon_type: "Tipus d'icona",
   fill_container: "Omple el contenidor",
   card_shadow: "Ombra de la targeta",
@@ -43542,7 +43542,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   "ui.renderer.weak_panel": "El panell {panel} produeix menys del {percent}% de la mitjana. Comprova si té ombra o una avaria.",
   "ui.renderer.inactive_panels": "{count} panell(s) a zero. És normal de nit; si no, comprova'ls.",
   "ui.renderer.panel_watts": "{name}: {value} watts"
-}, Xe = "Se selecciona automàticament del dispositiu Sonos vinculat al reproductor multimèdia principal.", nh = {
+}, Xe = "Se selecciona automàticament del dispositiu Sonos vinculat al reproductor multimèdia principal.", rh = {
   pihole_show_header: "Mostra la capçalera compartida de Mushroom sobre les seccions de Pi-hole.",
   pihole_collapsed_sections: "Seccions plegades inicialment; prem-ne la capçalera per desplegar-les.",
   pihole_hidden_entities: "Exclou aquestes entitats de la detecció automàtica, els controls i l'historial.",
@@ -44110,7 +44110,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   custom_card_pollen_grass_icon: "Icona opcional de l'element de gramínies; deixa-la buida per utilitzar la icona de l'entitat o la icona original.",
   custom_card_pollen_weed_name: "Etiqueta opcional de l'element d'herbes; deixa-la buida per utilitzar el nom entenedor de l'entitat o el valor per defecte traduït.",
   custom_card_pollen_weed_icon: "Icona opcional de l'element d'herbes; deixa-la buida per utilitzar la icona de l'entitat o la icona original."
-}, rh = {
+}, oh = {
   icon_type: "Ikon típusa",
   fill_container: "Tároló kitöltése",
   card_shadow: "Kártyaárnyék",
@@ -44894,7 +44894,7 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   "ui.renderer.weak_panel": "A(z) {panel} napelem az átlag {percent}%-ánál kevesebbet termel. Ellenőrizd az árnyékolást vagy az esetleges hibát.",
   "ui.renderer.inactive_panels": "{count} napelem nulla teljesítménnyel. Ez éjjel természetes; egyébként ellenőrizd őket.",
   "ui.renderer.panel_watts": "{name}: {value} watt"
-}, et = "Automatikusan az elsődleges médialejátszóhoz kapcsolt Sonos-eszközről választja ki.", oh = {
+}, et = "Automatikusan az elsődleges médialejátszóhoz kapcsolt Sonos-eszközről választja ki.", sh = {
   pihole_show_header: "A közös Mushroom-fejléc megjelenítése a Pi-hole-szakaszok felett.",
   pihole_collapsed_sections: "Kezdetben összecsukott szakaszok; a fejlécükre koppintva nyithatók ki.",
   pihole_hidden_entities: "Ezeket az entitásokat kihagyja az automatikus felismerésből, a vezérlőkből és az előzményekből.",
@@ -45479,12 +45479,12 @@ custom_card_pollen_weed_icon|Опциона икона ставке полена
   ["beta", "Beta", "beta"],
   ["after_hours", "After hours", "postMarketPrice"],
   ["pre_market", "Pre-market", "preMarketPrice"]
-], jd = (e) => {
+], Sd = (e) => {
   for (const [t, a] of Fa) {
     if (e === `stock_${t}_entity`) return `${a} entity (optional override)`;
     if (e === `stock_${t}_attribute`) return `${a} attribute (empty uses entity state)`;
   }
-}, sh = (e) => jd(e) ? e.endsWith("_entity") ? "Optional metric sensor override. Empty uses the main entity." : "Attribute or empty for state. Overrides win; Yahoo mappings fill missing values." : {
+}, lh = (e) => Sd(e) ? e.endsWith("_entity") ? "Optional metric sensor override. Empty uses the main entity." : "Attribute or empty for state. Overrides win; Yahoo mappings fill missing values." : {
   stock_source: "Choose entity sensors, Yahoo (Market Data backend), or Stock Market Deluxe. Yahoo sensors alone have no history.",
   stock_symbol: "Ticker (e.g. MSFT). Empty uses entity symbol; Stock Market Deluxe defaults to AAPL.",
   stock_currency: "Currency override (ISO code, e.g. USD or EUR).",
@@ -45500,7 +45500,7 @@ function Mi(e, t, a) {
   const i = e[`stock_${a}_entity`], n = typeof i == "string" && i ? i : e.entity, r = n ? t?.states[n] : void 0, o = e[`stock_${a}_attribute`], s = Fa.find((_) => _[0] === a)[2], l = typeof o == "string" ? o.trim() : a === "price" || i ? "" : s;
   return { entity: r, id: n, attribute: l };
 }
-function Sd(e, t, a) {
+function xd(e, t, a) {
   const { entity: i, attribute: n } = Mi(e, t, a);
   if (!i || ["unavailable", "unknown"].includes(i.state)) return;
   const r = n ? i.attributes[n] : i.state;
@@ -45508,17 +45508,17 @@ function Sd(e, t, a) {
   const o = Number(r);
   return Number.isFinite(o) ? o : void 0;
 }
-function xd(e, t) {
+function Ad(e, t) {
   const a = (e.entity ? t?.states[e.entity] : void 0) || Mi(e, t, "price").entity, i = {
     symbol: e.stock_symbol || a?.attributes.symbol || a?.entity_id || "",
     shortName: a?.attributes.friendly_name || e.stock_symbol || "",
     currency: e.stock_currency || a?.attributes.currency || (/^[A-Z]{3}$/.test(String(a?.attributes.unit_of_measurement ?? "")) ? a?.attributes.unit_of_measurement : void 0)
   };
-  for (const [n, , r] of Fa) i[r] = Sd(e, t, n);
+  for (const [n, , r] of Fa) i[r] = xd(e, t, n);
   return i;
 }
-function lh(e, t, a) {
-  const i = { ...a }, n = xd(e, t), r = Mi(e, t, "price").entity?.attributes.symbol, o = !r || !a.symbol || String(r).toUpperCase() === String(a.symbol).toUpperCase();
+function _h(e, t, a) {
+  const i = { ...a }, n = Ad(e, t), r = Mi(e, t, "price").entity?.attributes.symbol, o = !r || !a.symbol || String(r).toUpperCase() === String(a.symbol).toUpperCase();
   for (const [s, , l] of Fa) {
     const _ = n[l];
     typeof _ == "number" && Number.isFinite(_) && (e[`stock_${s}_entity`] || o && (typeof i[l] != "number" || !Number.isFinite(i[l]))) && (i[l] = _);
@@ -45565,7 +45565,7 @@ const jn = [
 ], Dt = (e) => {
   const t = (e ?? "en").trim().replaceAll("_", "-").toLowerCase().split("-"), a = t[0];
   return a === "pt" ? t.includes("br") ? "pt-BR" : "pt-PT" : a === "zh" ? t.includes("hant") ? "zh-Hant" : t.includes("hans") ? "zh-Hans" : t.some((i) => ["tw", "hk", "mo"].includes(i)) ? "zh-Hant" : "zh-Hans" : a === "sr" ? t.includes("latn") ? "sr-Latn" : "sr" : a === "ko" ? "ko-KR" : a === "no" ? "nb" : jn.includes(a) ? a : "en";
-}, _h = {
+}, dh = {
   en: {
     upcoming_data_attribute: "Media data attribute",
     upcoming_max_items: "Maximum media items",
@@ -46294,15 +46294,14 @@ const jn = [
   }
 }, Ia = Object.fromEntries(
   jn.map((e) => [e, {
-    ..._h[e],
+    ...dh[e],
     ...e === "en" ? Object.fromEntries(Object.entries(_n.en).filter(([t]) => t.startsWith("ui."))) : _n[e],
     ...ss[e],
-    ...Yc[e],
-    ...Qc[e],
-    ...em[e],
-    ...im[e],
+    ...Jc[e],
+    ...Xc[e],
+    ...tm[e],
     ...nm[e],
-    ...om[e],
+    ...rm[e],
     ...sm[e],
     ...lm[e],
     ..._m[e],
@@ -46313,59 +46312,60 @@ const jn = [
     ...pm[e],
     ...hm[e],
     ...gm[e],
-    ...bm[e],
     ...ym[e],
     ...vm[e],
+    ...bm[e],
     ...km[e],
-    ...wm[e],
     ...fm[e],
     ...zm[e],
+    ...wm[e],
     ...jm[e],
     ...Sm[e],
     ...xm[e],
-    ...rm[e],
-    ...Pm[e],
-    ...Cm[e],
-    ...Em[e],
-    ...Dm[e],
-    ...e === "nl" ? Nm : {},
+    ...Am[e],
+    ...om[e],
+    ...Mm[e],
+    ...$m[e],
+    ...Tm[e],
+    ...Nm[e],
+    ...e === "nl" ? Vm : {},
     ...wt[e],
-    ...Om[e],
-    ...Um[e],
-    ...e === "de" ? Km : {},
-    ...e === "es" ? Gm : {},
+    ...qm[e],
+    ...Km[e],
+    ...e === "de" ? Wm : {},
+    ...e === "es" ? Zm : {},
     ...e === "fr" ? $r : {},
-    ...e === "zh-Hans" ? tp : {},
-    ...e === "it" ? ip : {},
-    ...e === "zh-Hant" ? rp : {},
-    ...e === "pt-BR" ? sp : {},
-    ...e === "pl" ? _p : {},
-    ...e === "ru" ? up : {},
-    ...e === "pt-PT" ? mp : {},
-    ...e === "uk" ? hp : {},
-    ...e === "cs" ? yp : {},
-    ...e === "sk" ? vp : {},
-    ...e === "da" ? zp : {},
-    ...e === "nb" ? Sp : {},
-    ...e === "ro" ? Ap : {},
-    ...e === "fi" ? Mp : {},
-    ...e === "tr" ? $p : {},
-    ...e === "id" ? Tp : {},
-    ...e === "bg" ? Np : {},
-    ...e === "ko-KR" ? Lp : {},
-    ...e === "el" ? Ip : {},
-    ...e === "vi" ? Bp : {},
-    ...e === "sv" ? Op : {},
-    ...e === "sr" ? fd : {},
-    ...e === "sr-Latn" ? Zp : {},
-    ...e === "he" ? Jp : {},
-    ...e === "ar" ? Xp : {},
-    ...e === "sl" ? th : {},
-    ...e === "ca" ? ih : {},
-    ...e === "hu" ? rh : {},
-    ...Jm[e],
-    ...ep[e],
-    ...wp[e]
+    ...e === "zh-Hans" ? ap : {},
+    ...e === "it" ? np : {},
+    ...e === "zh-Hant" ? op : {},
+    ...e === "pt-BR" ? lp : {},
+    ...e === "pl" ? dp : {},
+    ...e === "ru" ? cp : {},
+    ...e === "pt-PT" ? pp : {},
+    ...e === "uk" ? gp : {},
+    ...e === "cs" ? bp : {},
+    ...e === "sk" ? kp : {},
+    ...e === "da" ? jp : {},
+    ...e === "nb" ? xp : {},
+    ...e === "ro" ? Pp : {},
+    ...e === "fi" ? Cp : {},
+    ...e === "tr" ? Ep : {},
+    ...e === "id" ? Dp : {},
+    ...e === "bg" ? Vp : {},
+    ...e === "ko-KR" ? Hp : {},
+    ...e === "el" ? Rp : {},
+    ...e === "vi" ? Fp : {},
+    ...e === "sv" ? qp : {},
+    ...e === "sr" ? wd : {},
+    ...e === "sr-Latn" ? Yp : {},
+    ...e === "he" ? Qp : {},
+    ...e === "ar" ? eh : {},
+    ...e === "sl" ? ah : {},
+    ...e === "ca" ? nh : {},
+    ...e === "hu" ? oh : {},
+    ...Qm[e],
+    ...tp[e],
+    ...zp[e]
   }])
 );
 for (const e of jn) {
@@ -46385,8 +46385,8 @@ const j = (e, t, a = {}) => {
     return `${h(e, "Custom button")} ${i[1]}: ${j(e, o)}`;
   }
   const n = Dt(e?.language);
-  return (vd[n]?.[t] ?? Ia[n]?.[t] ?? Ia.en[t] ?? t.replace(/^ulm_(?:custom_)?card_/, "").replace(/^(?:custom_)?card_/, "").replace(/^ulm_/, "").replaceAll("_", " ").replace(/\b\w/g, (o) => o.toUpperCase())).replace(/\{(\w+)\}/g, (o, s) => Object.hasOwn(a, s) ? String(a[s]) : o);
-}, Ad = {
+  return (kd[n]?.[t] ?? Ia[n]?.[t] ?? Ia.en[t] ?? t.replace(/^ulm_(?:custom_)?card_/, "").replace(/^(?:custom_)?card_/, "").replace(/^ulm_/, "").replaceAll("_", " ").replace(/\b\w/g, (o) => o.toUpperCase())).replace(/\{(\w+)\}/g, (o, s) => Object.hasOwn(a, s) ? String(a[s]) : o);
+}, Pd = {
   pihole_show_header: "Show the shared Mushroom heading above the Pi-hole sections.",
   pihole_collapsed_sections: "Sections initially folded away; tap their heading to expand them.",
   pihole_hidden_entities: "Exclude these entities from automatic discovery, controls and history.",
@@ -46955,42 +46955,42 @@ const j = (e, t, a = {}) => {
   custom_card_pollen_grass_icon: "Optional grass item icon; leave empty to use the entity icon or source default.",
   custom_card_pollen_weed_name: "Optional weed item label; leave empty to use the entity friendly name or localized default.",
   custom_card_pollen_weed_icon: "Optional weed item icon; leave empty to use the entity icon or source default."
-}, dh = {
+}, uh = {
   ...me,
-  nl: { ...me.nl, ...Vm },
-  de: { ...me.de, ...Wm },
-  es: { ...me.es, ...Zm },
-  fr: { ...me.fr, ...Qm },
-  "zh-Hans": { ...me["zh-Hans"], ...ap },
-  it: { ...me.it, ...np },
-  "zh-Hant": { ...me["zh-Hant"], ...op },
-  "pt-BR": { ...me["pt-BR"], ...lp },
-  pl: { ...me.pl, ...dp },
-  ru: { ...me.ru, ...cp },
-  "pt-PT": { ...me["pt-PT"], ...pp },
-  uk: { ...me.uk, ...gp },
-  cs: { ...me.cs, ...bp },
-  sk: { ...me.sk, ...kp },
-  da: { ...me.da, ...jp },
-  nb: { ...me.nb, ...xp },
-  ro: { ...me.ro, ...Pp },
-  fi: { ...me.fi, ...Cp },
-  tr: { ...me.tr, ...Ep },
-  id: { ...me.id, ...Dp },
-  bg: { ...me.bg, ...Vp },
-  "ko-KR": { ...me["ko-KR"], ...Hp },
-  el: { ...me.el, ...Rp },
-  vi: { ...me.vi, ...Fp },
-  sv: { ...me.sv, ...qp },
-  sr: { ...me.sr, ...wd },
-  "sr-Latn": { ...me["sr-Latn"], ...Yp },
-  he: { ...me.he, ...Qp },
-  ar: { ...me.ar, ...eh },
-  sl: { ...me.sl, ...ah },
-  ca: { ...me.ca, ...nh },
-  hu: { ...me.hu, ...oh },
-  en: Ad
-}, Pd = (e, t, a) => {
+  nl: { ...me.nl, ...Lm },
+  de: { ...me.de, ...Gm },
+  es: { ...me.es, ...Ym },
+  fr: { ...me.fr, ...Xm },
+  "zh-Hans": { ...me["zh-Hans"], ...ip },
+  it: { ...me.it, ...rp },
+  "zh-Hant": { ...me["zh-Hant"], ...sp },
+  "pt-BR": { ...me["pt-BR"], ..._p },
+  pl: { ...me.pl, ...up },
+  ru: { ...me.ru, ...mp },
+  "pt-PT": { ...me["pt-PT"], ...hp },
+  uk: { ...me.uk, ...yp },
+  cs: { ...me.cs, ...vp },
+  sk: { ...me.sk, ...fp },
+  da: { ...me.da, ...Sp },
+  nb: { ...me.nb, ...Ap },
+  ro: { ...me.ro, ...Mp },
+  fi: { ...me.fi, ...$p },
+  tr: { ...me.tr, ...Tp },
+  id: { ...me.id, ...Np },
+  bg: { ...me.bg, ...Lp },
+  "ko-KR": { ...me["ko-KR"], ...Ip },
+  el: { ...me.el, ...Bp },
+  vi: { ...me.vi, ...Op },
+  sv: { ...me.sv, ...Up },
+  sr: { ...me.sr, ...zd },
+  "sr-Latn": { ...me["sr-Latn"], ...Jp },
+  he: { ...me.he, ...Xp },
+  ar: { ...me.ar, ...th },
+  sl: { ...me.sl, ...ih },
+  ca: { ...me.ca, ...rh },
+  hu: { ...me.hu, ...sh },
+  en: Pd
+}, Md = (e, t, a) => {
   if (e === "todo_entities") return h(t, "Additional lists are shown separately; tasks are not moved between lists.");
   if (e === "todo_show_completed") return h(t, "Display only; completed tasks are not deleted.");
   if (/^todo_allow_(add|edit|delete)$/.test(e)) return h(t, "Only actions supported by the selected list are offered. Home Assistant enforces permissions.");
@@ -47018,10 +47018,10 @@ const j = (e, t, a = {}) => {
   };
   if (n[e]) return h(t, n[e]);
   if (/^washer_button_[123]_/.test(e))
-    return e.endsWith("_entity") ? h(t, "Optional appliance button: switches toggle, buttons press, other entities open more-info. Configure an action to override this.") : e.endsWith("_action") ? h(t, "Override the default entity action for this button.") : Pd(e.endsWith("_icon") ? "icon" : "name", t);
-  const r = Wc[Dt(t?.language)]?.[e];
+    return e.endsWith("_entity") ? h(t, "Optional appliance button: switches toggle, buttons press, other entities open more-info. Configure an action to override this.") : e.endsWith("_action") ? h(t, "Override the default entity action for this button.") : Md(e.endsWith("_icon") ? "icon" : "name", t);
+  const r = Gc[Dt(t?.language)]?.[e];
   if (r) return r;
-  const o = sh(e);
+  const o = lh(e);
   if (o) return h(t, o);
   if (e === "welcome_weather_date_format") return j(t, "upcoming_date_format");
   if (e === "welcome_weather_icon_type")
@@ -47032,19 +47032,19 @@ const j = (e, t, a = {}) => {
     welcome_weather_secondary_info: "secondary_info",
     welcome_weather_tap_action: "tap_action"
   }[e] ?? (/^upcoming_(title|line[1-4])_text$/.test(e) ? "upcoming_text_template" : e);
-  return dh[Dt(t?.language)]?.[l] ?? Ad[l];
-}, uh = new Map(
+  return uh[Dt(t?.language)]?.[l] ?? Pd[l];
+}, ch = new Map(
   [
     ...Object.entries(Ia.en),
-    ...Object.entries(vd.en),
+    ...Object.entries(kd.en),
     ...Object.entries(_n.en),
     ...Object.entries(ss.en)
   ].map(([e, t]) => [t, e])
 ), h = (e, t) => {
-  const a = uh.get(t);
+  const a = ch.get(t);
   return a ? j(e, a) : t;
 };
-class Md {
+class Cd {
   constructor() {
     this.schemas = /* @__PURE__ */ new Map();
   }
@@ -47053,13 +47053,13 @@ class Md {
     return i || (this.schemas.size >= 64 && this.schemas.clear(), this.schemas.set(a, t), t);
   }
 }
-var ch = Object.defineProperty, mh = Object.getOwnPropertyDescriptor, Sn = (e, t, a, i) => {
-  for (var n = i > 1 ? void 0 : i ? mh(t, a) : t, r = e.length - 1, o; r >= 0; r--)
+var mh = Object.defineProperty, ph = Object.getOwnPropertyDescriptor, Sn = (e, t, a, i) => {
+  for (var n = i > 1 ? void 0 : i ? ph(t, a) : t, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = (i ? o(t, a, n) : o(n)) || n);
-  return i && n && ch(t, a, n), n;
+  return i && n && mh(t, a, n), n;
 };
 const Mt = { entity: {} }, je = { text: {} }, Cl = { number: { mode: "box", min: 0, max: 168, step: 1 } }, $l = { select: { options: ["EUR/kWh", "ct/kWh"], mode: "dropdown" } }, El = { select: { options: [{ value: "attribute", label: "Entity attribute" }, { value: "state", label: "State" }], mode: "dropdown" } };
-function ph(e) {
+function hh(e) {
   return {
     title: "Title",
     subtitle: "Subtitle",
@@ -47068,8 +47068,8 @@ function ph(e) {
 }
 let Oa = class extends ve {
   constructor() {
-    super(...arguments), this.embedded = !1, this.error = "", this.schemas = new Md(), this.computeLabel = (e) => {
-      const t = ph(e.name).replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, (n) => n.toUpperCase()), a = this.t(t);
+    super(...arguments), this.embedded = !1, this.error = "", this.schemas = new Cd(), this.computeLabel = (e) => {
+      const t = hh(e.name).replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, (n) => n.toUpperCase()), a = this.t(t);
       if (a !== t || ["title", "subtitle", "visibleHours"].includes(e.name)) return a;
       const i = { adapter: "Source", purchase: "Planned purchase", display: "Content", time: "Start" };
       return e.name.replace(/([a-z])([A-Z])/g, "$1 $2").split(" ").map((n) => this.t(i[n.toLowerCase()] ?? n.replace(/^./, (r) => r.toUpperCase()))).join(": ");
@@ -47081,7 +47081,7 @@ let Oa = class extends ve {
   fire(e) {
     this._config = e;
     try {
-      yd(e), this.error = "";
+      bd(e), this.error = "";
     } catch (t) {
       if (!(t instanceof Error)) throw t;
       this.error = t.message;
@@ -47350,7 +47350,7 @@ const rr = [
   label: e.label,
   icon: e.icon,
   color: e.color
-}), hh = () => rr.map((e) => ds(e)), gh = (e, t = [], a = []) => {
+}), gh = () => rr.map((e) => ds(e)), yh = (e, t = [], a = []) => {
   const i = {
     residual: /\b(residual|restafval|restafvalzak|rest|general waste|household waste|rubbish)\b/,
     paper: /\b(paper|papier|cardboard|karton)\b/,
@@ -47384,7 +47384,7 @@ const rr = [
     const o = (i.legacyKey && typeof e[i.legacyKey] == "string" ? e[i.legacyKey] : void 0) ?? (n === 0 ? e.entity : void 0);
     return ds(i, o, o ? !0 : i.enabledByDefault);
   });
-}, yh = (e) => {
+}, bh = (e) => {
   const t = e.type.includes("custom-card-trash"), a = e.today_entity ?? (typeof e.ulm_card_ophaling_vandaag == "string" ? e.ulm_card_ophaling_vandaag : void 0), i = e.tomorrow_entity ?? (typeof e.ulm_card_ophaling_morgen == "string" ? e.ulm_card_ophaling_morgen : void 0);
   if (!t && !a && !i) return e;
   const n = e.waste_streams?.length ? e.waste_streams : ha(e);
@@ -47396,7 +47396,7 @@ const rr = [
     show_today: e.show_today ?? !!a,
     show_tomorrow: e.show_tomorrow ?? !!i
   };
-}, bh = [
+}, vh = [
   {
     upstreamId: "nas_server",
     sourcePath: "src/nas/server-card.ts",
@@ -47445,7 +47445,7 @@ const rr = [
     description: "Tabbed NAS server overview, storage and optional containers with Synology DSM, QNAP and manual entity sources.",
     preferredDomains: ["sensor"]
   }
-], Cd = "mushroom-addition-nas-server-card", $d = `${Cd}-editor`, Ed = "mushroom-addition-nas-storage-card", Td = `${Ed}-editor`, Dd = "mushroom-addition-nas-docker-card", Nd = `${Dd}-editor`, Vd = "mushroom-addition-nas-dashboard-card", Ld = `${Vd}-editor`, Hd = ["server", "storage", "docker", "dashboard"].flatMap(
+], $d = "mushroom-addition-nas-server-card", Ed = `${$d}-editor`, Td = "mushroom-addition-nas-storage-card", Dd = `${Td}-editor`, Nd = "mushroom-addition-nas-docker-card", Vd = `${Nd}-editor`, Ld = "mushroom-addition-nas-dashboard-card", Hd = `${Ld}-editor`, Id = ["server", "storage", "docker", "dashboard"].flatMap(
   (e) => ["synology", "snfx"].map((t) => ({
     tag: `${t}-${e}-card`,
     editorTag: `${t}-${e}-card-editor`,
@@ -47456,7 +47456,7 @@ const rr = [
   qnap: "QNAP",
   manual: "Manual entities"
 };
-function Id(e) {
+function Rd(e) {
   const t = ["switch", "binary_sensor", "input_boolean"].includes(e.status_entity.split(".")[0]);
   return {
     running: e.running_state || (t ? "on" : "running"),
@@ -47472,11 +47472,11 @@ function wi(e) {
 function hi(e) {
   return !e.type.includes("docker") && Ie(e) !== "manual" || (e.type.includes("docker") || e.type.includes("dashboard")) && wi(e) === "portainer";
 }
-const vh = [
+const kh = [
   "battery",
   "room",
   "scenes"
-], kh = [
+], fh = [
   "trash",
   "alarm_time",
   "welcome",
@@ -47492,11 +47492,11 @@ const vh = [
   "plant",
   "speedtest_gauges",
   "pollen"
-], Tl = (e) => e.split("_").filter((t) => t.toLowerCase() !== "ulm").map((t) => ["nas", "mdi", "dwd", "vnc", "wifi", "http"].includes(t.toLowerCase()) ? t.toUpperCase() : `${t[0].toUpperCase()}${t.slice(1)}`).join(" "), fh = (e) => e === "custom_card_alarm_time" ? "alarm-time" : /alarm|alert|lock/.test(e) ? "security" : /navigate|back/.test(e) ? "navigation" : /battery/.test(e) ? "battery" : /power_outlet|more_power_outlet/.test(e) ? "control" : /energy|power|gauge|speedtest|graph|apex|myenedis/.test(e) ? "energy" : /weather|sun|pollen|moon/.test(e) ? "weather" : /scene/.test(e) ? "scene" : /person|tracker|tracer|presence|room|welcome/.test(e) ? "presence" : /media|playstation/.test(e) ? "media" : /thermostat|heat_pump|aircondition|temperature|simple_temp/.test(e) ? "climate" : /cover|door|garage/.test(e) ? "cover" : /vacuum/.test(e) ? "vacuum" : /light/.test(e) ? "light" : /fan|outlet|boolean|script|washer|water_heater|qubino/.test(e) ? "control" : /input_number|input_datetime/.test(e) ? "sensor" : /title|subtitle|clock|date/.test(e) ? "text" : /camera/.test(e) ? "camera" : /sensor|elapsed|update|printer|nas|tablet|flower|car|afval|waste|counter/.test(e) ? "sensor" : "entity", wh = {
+], Tl = (e) => e.split("_").filter((t) => t.toLowerCase() !== "ulm").map((t) => ["nas", "mdi", "dwd", "vnc", "wifi", "http"].includes(t.toLowerCase()) ? t.toUpperCase() : `${t[0].toUpperCase()}${t.slice(1)}`).join(" "), wh = (e) => e === "custom_card_alarm_time" ? "alarm-time" : /alarm|alert|lock/.test(e) ? "security" : /navigate|back/.test(e) ? "navigation" : /battery/.test(e) ? "battery" : /power_outlet|more_power_outlet/.test(e) ? "control" : /energy|power|gauge|speedtest|graph|apex|myenedis/.test(e) ? "energy" : /weather|sun|pollen|moon/.test(e) ? "weather" : /scene/.test(e) ? "scene" : /person|tracker|tracer|presence|room|welcome/.test(e) ? "presence" : /media|playstation/.test(e) ? "media" : /thermostat|heat_pump|aircondition|temperature|simple_temp/.test(e) ? "climate" : /cover|door|garage/.test(e) ? "cover" : /vacuum/.test(e) ? "vacuum" : /light/.test(e) ? "light" : /fan|outlet|boolean|script|washer|water_heater|qubino/.test(e) ? "control" : /input_number|input_datetime/.test(e) ? "sensor" : /title|subtitle|clock|date/.test(e) ? "text" : /camera/.test(e) ? "camera" : /sensor|elapsed|update|printer|nas|tablet|flower|car|afval|waste|counter/.test(e) ? "sensor" : "entity", zh = {
   card_room: ["default", "with-sensors"],
   card_scenes: ["list", "welcome"]
-}, zh = (e, t) => e === "custom_card_alarm_time" ? ["input_boolean"] : /alarm/.test(e) ? ["alarm_control_panel"] : /lock/.test(e) ? ["lock"] : /power_outlet|more_power_outlet/.test(e) ? ["switch", "light"] : e.includes("binary_sensor") ? ["binary_sensor"] : e.includes("battery") ? ["sensor"] : e.includes("input_boolean") ? ["input_boolean"] : e.includes("input_number") ? ["input_number", "counter", "select", "input_select"] : e.includes("input_datetime") ? ["input_datetime"] : e.includes("light") ? ["light"] : /media|playstation/.test(e) ? ["media_player", "sensor"] : /thermostat|heat_pump|aircondition/.test(e) ? ["climate"] : /scene/.test(e) ? ["scene"] : /script/.test(e) ? ["script"] : /vacuum/.test(e) ? ["vacuum"] : /weather/.test(e) ? ["weather"] : /person/.test(e) ? ["person", "device_tracker"] : /cover|door|garage/.test(e) ? ["cover", "binary_sensor"] : /fan/.test(e) ? ["fan"] : /camera/.test(e) ? ["camera"] : /lock/.test(e) ? ["lock"] : /update/.test(e) ? ["update"] : t === "battery" || t === "energy" || t === "sensor" || t === "weather" ? ["sensor"] : t === "control" ? /fan/.test(e) ? ["fan"] : /script/.test(e) ? ["script"] : /washer/.test(e) ? ["switch", "sensor"] : /water_heater/.test(e) ? ["water_heater"] : ["switch", "input_boolean", "light"] : t === "presence" ? ["person", "device_tracker"] : ["sensor", "switch"], or = (e, t) => {
-  const a = e.replace(/^custom_(card|chip)_/, "").replace(/^(card|chip)_/, ""), i = e.replaceAll("_", "-").toLowerCase(), n = e === "custom_card_playstation" ? "mushroom-addition-custom-card-game-console" : i.startsWith("custom-card-") ? `mushroom-addition-${i}` : `mushroom-addition-card-${i.replace(/^card-/, "")}`, r = fh(e), o = e === "custom_card_playstation", s = {
+}, jh = (e, t) => e === "custom_card_alarm_time" ? ["input_boolean"] : /alarm/.test(e) ? ["alarm_control_panel"] : /lock/.test(e) ? ["lock"] : /power_outlet|more_power_outlet/.test(e) ? ["switch", "light"] : e.includes("binary_sensor") ? ["binary_sensor"] : e.includes("battery") ? ["sensor"] : e.includes("input_boolean") ? ["input_boolean"] : e.includes("input_number") ? ["input_number", "counter", "select", "input_select"] : e.includes("input_datetime") ? ["input_datetime"] : e.includes("light") ? ["light"] : /media|playstation/.test(e) ? ["media_player", "sensor"] : /thermostat|heat_pump|aircondition/.test(e) ? ["climate"] : /scene/.test(e) ? ["scene"] : /script/.test(e) ? ["script"] : /vacuum/.test(e) ? ["vacuum"] : /weather/.test(e) ? ["weather"] : /person/.test(e) ? ["person", "device_tracker"] : /cover|door|garage/.test(e) ? ["cover", "binary_sensor"] : /fan/.test(e) ? ["fan"] : /camera/.test(e) ? ["camera"] : /lock/.test(e) ? ["lock"] : /update/.test(e) ? ["update"] : t === "battery" || t === "energy" || t === "sensor" || t === "weather" ? ["sensor"] : t === "control" ? /fan/.test(e) ? ["fan"] : /script/.test(e) ? ["script"] : /washer/.test(e) ? ["switch", "sensor"] : /water_heater/.test(e) ? ["water_heater"] : ["switch", "input_boolean", "light"] : t === "presence" ? ["person", "device_tracker"] : ["sensor", "switch"], or = (e, t) => {
+  const a = e.replace(/^custom_(card|chip)_/, "").replace(/^(card|chip)_/, ""), i = e.replaceAll("_", "-").toLowerCase(), n = e === "custom_card_playstation" ? "mushroom-addition-custom-card-game-console" : i.startsWith("custom-card-") ? `mushroom-addition-${i}` : `mushroom-addition-card-${i.replace(/^card-/, "")}`, r = wh(e), o = e === "custom_card_playstation", s = {
     custom_card_trash: "Trash",
     custom_card_printer: "Printer",
     custom_card_washer: "Washer-Dryer",
@@ -47530,12 +47530,12 @@ const vh = [
     tag: n,
     name: o ? "Game Console" : s[e] ?? Tl(a),
     description: o ? "Mushroom-style Xbox, PlayStation, and Nintendo profile, activity, artwork, and control card." : e === "custom_card_nas_metrics" ? "Mushroom-style NAS status and utilization card." : l[e] ?? `Mushroom-style ${Tl(a).toLowerCase()} card.`,
-    variants: wh[e],
+    variants: zh[e],
     variantLabels: void 0,
-    preferredDomains: zh(e, r)
+    preferredDomains: jh(e, r)
   };
-}, Rd = [
-  ...vh.map((e) => {
+}, Bd = [
+  ...kh.map((e) => {
     const t = {
       scenes: "reference_catalog/cards/card_scenes_welcome.yaml"
     };
@@ -47544,7 +47544,7 @@ const vh = [
       t[e] ?? `reference_catalog/cards/card_${e}.yaml`
     );
   }),
-  ...kh.map((e) => or(
+  ...fh.map((e) => or(
     `custom_card_${e}`,
     `custom_cards/custom_card_${e}`
   )),
@@ -47561,7 +47561,7 @@ const vh = [
     variantLabels: { line: "Line graph", bar: "Bar graph", radial: "Circular rings", scatter: "Scatter plot", pie: "Pie chart", donut: "Donut chart" },
     preferredDomains: ["sensor", "binary_sensor", "input_number"]
   }
-], jh = [
+], Sh = [
   {
     upstreamId: "energy_log",
     sourcePath: "src/energy-cards/energy-log.ts",
@@ -47751,7 +47751,7 @@ const vh = [
     description: "Mushroom-style solar panel output summary and per-panel performance gauges.",
     preferredDomains: ["sensor"]
   }
-], Bd = [
+], Fd = [
   {
     canonical: "card_scenes",
     sources: { card_scenes: "welcome-pills", custom_card_scenes: "scene-grid" },
@@ -47760,10 +47760,10 @@ const vh = [
     name: "Scenes"
   }
 ], zi = /* @__PURE__ */ new Map();
-for (const e of Bd)
+for (const e of Fd)
   for (const t of Object.keys(e.sources)) zi.set(t, e);
-const Fd = new Set(Bd.map((e) => e.canonical)), Er = [
-  ...Rd.filter((e) => !zi.has(e.upstreamId) || Fd.has(e.upstreamId)).map((e) => {
+const Od = new Set(Fd.map((e) => e.canonical)), Er = [
+  ...Bd.filter((e) => !zi.has(e.upstreamId) || Od.has(e.upstreamId)).map((e) => {
     const t = zi.get(e.upstreamId);
     return t ? {
       ...e,
@@ -47774,9 +47774,9 @@ const Fd = new Set(Bd.map((e) => e.canonical)), Er = [
       sourceIds: Object.keys(t.sources)
     } : { ...e, sourceIds: [e.upstreamId] };
   }),
-  ...jh.map((e) => ({ ...e, sourceIds: [e.upstreamId] })),
-  ...bh.map((e) => ({ ...e, sourceIds: [e.upstreamId] }))
-], Sh = Rd.filter((e) => zi.has(e.upstreamId) && !Fd.has(e.upstreamId)).map((e) => {
+  ...Sh.map((e) => ({ ...e, sourceIds: [e.upstreamId] })),
+  ...vh.map((e) => ({ ...e, sourceIds: [e.upstreamId] }))
+], xh = Bd.filter((e) => zi.has(e.upstreamId) && !Od.has(e.upstreamId)).map((e) => {
   const t = zi.get(e.upstreamId), a = Er.find((i) => i.upstreamId === t.canonical);
   return {
     upstreamId: e.upstreamId,
@@ -47786,14 +47786,14 @@ const Fd = new Set(Bd.map((e) => e.canonical)), Er = [
     variant: t.sources[e.upstreamId]
   };
 }), us = [
-  ...Sh,
+  ...xh,
   {
     upstreamId: "custom_card_playstation",
     tag: "mushroom-addition-custom-card-playstation",
     targetId: "custom_card_playstation",
     targetTag: "mushroom-addition-custom-card-game-console"
   }
-], dn = Er, ut = (e) => dn.find((t) => t.tag === e) ?? dn.find((t) => t.tag === Hd.find((a) => a.tag === e)?.targetTag) ?? (() => {
+], dn = Er, ut = (e) => dn.find((t) => t.tag === e) ?? dn.find((t) => t.tag === Id.find((a) => a.tag === e)?.targetTag) ?? (() => {
   const t = us.find((a) => a.tag === e);
   return t ? Er.find((a) => a.tag === t.targetTag) : void 0;
 })(), Dl = (e) => zi.get(e)?.sources[e], cs = (e) => [
@@ -47839,7 +47839,7 @@ const Fd = new Set(Bd.map((e) => e.canonical)), Er = [
 }, Zt = (e, t, a) => {
   He(e, "hass-action", { config: t, action: a });
 }, Tr = (e) => {
-  const t = Mh(e), a = xh(t), i = String(t.type), n = i.includes("card-title"), r = i.includes("card-weather"), o = i.includes("card-weather-ulm") || t.variant === "native", s = i.includes("custom-card-sun") || i.includes("custom-card-thermostat-controls") ? { action: "none" } : void 0, l = String(a.type).includes("custom-card-qubino") ? a.qubino_more_info_entity ?? a.entity : void 0, _ = i.endsWith("custom-card-pollen"), d = [
+  const t = Ch(e), a = Ah(t), i = String(t.type), n = i.includes("card-title"), r = i.includes("card-weather"), o = i.includes("card-weather-ulm") || t.variant === "native", s = i.includes("custom-card-sun") || i.includes("custom-card-thermostat-controls") ? { action: "none" } : void 0, l = String(a.type).includes("custom-card-qubino") ? a.qubino_more_info_entity ?? a.entity : void 0, _ = i.endsWith("custom-card-pollen"), d = [
     a.download_entity,
     a.upload_entity,
     a.ping_entity
@@ -47871,7 +47871,7 @@ const Fd = new Set(Bd.map((e) => e.canonical)), Er = [
     hold_action: a.hold_action ?? (String(a.type).includes("water-heater") && a.entity ? { action: "more-info" } : void 0),
     double_tap_action: a.double_tap_action ?? b
   };
-}, Hi = (e, t) => Object.entries(e).find(([a, i]) => t.test(a) && i !== void 0)?.[1], xh = (e) => {
+}, Hi = (e, t) => Object.entries(e).find(([a, i]) => t.test(a) && i !== void 0)?.[1], Ah = (e) => {
   const t = Hi(e, /_name$/), a = ut(e.type.replace(/^custom:/, "")), i = cs(a).map((l) => e[l]).find((l) => typeof l == "string" && l), n = Hi(e, /_color$/), r = Hi(e, /_enable_(controls|buttons)$/), o = Hi(e, /_enable_slider$/), s = Hi(e, /_enable_horizontal$/);
   return {
     ...e,
@@ -47886,14 +47886,14 @@ const Fd = new Set(Bd.map((e) => e.canonical)), Er = [
   const t = { ...e };
   for (const a of cs(ut(e.type.replace(/^custom:/, "")))) delete t[a];
   return t;
-}, Ah = [
+}, Ph = [
   "ulm_card_media_player_entity",
   "ulm_card_input_number_entity"
-], Od = (e) => {
+], qd = (e) => {
   if (!e.type.endsWith("mushroom-addition-card-room")) return e;
   const t = { ...e };
   return t.room_light_entity === void 0 && t.room_brightness_entity !== void 0 && (t.room_light_entity = t.room_brightness_entity), delete t.room_brightness_entity, t;
-}, qd = (e) => {
+}, Ud = (e) => {
   if (!String(e.type).includes("welcome")) return e;
   const t = e, a = Array.from({ length: 5 }, (n, r) => r + 1);
   if (!a.some((n) => t[`nav_${n}`] !== void 0)) return e;
@@ -47911,7 +47911,7 @@ const Fd = new Set(Bd.map((e) => e.canonical)), Er = [
   for (const n of a)
     for (const r of ["nav", "icon", "name", "color"]) delete i[`${r}_${n}`];
   return i;
-}, Ph = /* @__PURE__ */ new Set([
+}, Mh = /* @__PURE__ */ new Set([
   "automation",
   "binary_sensor",
   "climate",
@@ -47931,9 +47931,9 @@ const Fd = new Set(Bd.map((e) => e.canonical)), Er = [
 ]), ms = (e) => {
   if (!e) return !1;
   const t = e.entity_id.split(".", 1)[0];
-  return ["script", "scene", "button"].includes(t) ? !1 : Ph.has(t) || ["on", "off"].includes(e.state);
-}, Mh = (e) => {
-  const t = yh(Od(qd(e))), a = t.primary_entity || Ah.map((r) => t[r]).find((r) => typeof r == "string"), i = (r) => {
+  return ["script", "scene", "button"].includes(t) ? !1 : Mh.has(t) || ["on", "off"].includes(e.state);
+}, Ch = (e) => {
+  const t = bh(qd(Ud(e))), a = t.primary_entity || Ph.map((r) => t[r]).find((r) => typeof r == "string"), i = (r) => {
     if (typeof r == "string") return r;
     if (r && typeof r == "object" && "entity_id" in r && typeof r.entity_id == "string")
       return r.entity_id;
@@ -47970,8 +47970,8 @@ function $i(e, t, a) {
   }
   return n(a), [...i].some((r) => e.states[r] !== t.states[r]);
 }
-const Ch = (e) => ["ar", "he", "fa", "ur"].includes((e ?? "en").replaceAll("_", "-").split("-")[0].toLowerCase()) ? "rtl" : "ltr", Ud = "mushroom-addition-energy-entityworkflow", $h = "mushroom-addition-energy-workflow-features";
-function xo(e) {
+const $h = (e) => ["ar", "he", "fa", "ur"].includes((e ?? "en").replaceAll("_", "-").split("-")[0].toLowerCase()) ? "rtl" : "ltr", Kd = "mushroom-addition-energy-entityworkflow", Eh = "mushroom-addition-energy-workflow-features";
+function So(e) {
   if (!e || typeof e != "object" || !Array.isArray(e.nodes) || !e.nodes.length)
     throw new Error("Workflow requires at least one node.");
   if (e.presentation !== void 0 && !["sequential", "graph"].includes(e.presentation))
@@ -48011,7 +48011,7 @@ function xo(e) {
 function ps(e, t = [], a = []) {
   const i = [.../* @__PURE__ */ new Set([...t, ...a, ...Object.keys(e?.states ?? {})])].filter((n) => e?.states[n] && !["unknown", "unavailable"].includes(e.states[n].state)).sort((n, r) => Number(r.startsWith("sensor.")) - Number(n.startsWith("sensor.")));
   return {
-    type: `custom:${Ud}`,
+    type: `custom:${Kd}`,
     name: "Energy Entityworkflow",
     presentation: "sequential",
     groups: [{ id: "input", label: h(e, "Input"), color: "#42a5f5" }, { id: "plan", label: h(e, "Plan"), color: "#26a69a" }],
@@ -48029,12 +48029,12 @@ function ps(e, t = [], a = []) {
     relations: [{ from: "source", to: "proposal", label: h(e, "informs") }]
   };
 }
-var Eh = Object.defineProperty, Th = Object.getOwnPropertyDescriptor, Ei = (e, t, a, i) => {
-  for (var n = i > 1 ? void 0 : i ? Th(t, a) : t, r = e.length - 1, o; r >= 0; r--)
+var Th = Object.defineProperty, Dh = Object.getOwnPropertyDescriptor, Ei = (e, t, a, i) => {
+  for (var n = i > 1 ? void 0 : i ? Dh(t, a) : t, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = (i ? o(t, a, n) : o(n)) || n);
-  return i && n && Eh(t, a, n), n;
+  return i && n && Th(t, a, n), n;
 };
-const Ue = (e, t = { text: {} }) => ({ name: e, selector: t }), Dh = {
+const Ue = (e, t = { text: {} }) => ({ name: e, selector: t }), Nh = {
   title: "Title",
   presentation: "Presentation",
   id: "Stable ID",
@@ -48051,17 +48051,17 @@ const Ue = (e, t = { text: {} }) => ({ name: e, selector: t }), Dh = {
 };
 let wa = class extends ve {
   constructor() {
-    super(...arguments), this.embedded = !1, this.error = "", this.nodeReferenceIds = /* @__PURE__ */ new WeakMap(), this.groupReferenceIds = /* @__PURE__ */ new WeakMap(), this.schemas = new Md(), this.computeLabel = (e) => h(this.hass, Dh[e.name] ?? e.name);
+    super(...arguments), this.embedded = !1, this.error = "", this.nodeReferenceIds = /* @__PURE__ */ new WeakMap(), this.groupReferenceIds = /* @__PURE__ */ new WeakMap(), this.schemas = new Cd(), this.computeLabel = (e) => h(this.hass, Nh[e.name] ?? e.name);
   }
   setConfig(e) {
-    xo(e), this.config = structuredClone(e), this.check();
+    So(e), this.config = structuredClone(e), this.check();
   }
   willUpdate(e) {
     e.has("_config") && this._config && this.setConfig(this._config);
   }
   check() {
     try {
-      return xo(this.config), this.error = "", !0;
+      return So(this.config), this.error = "", !0;
     } catch (e) {
       if (!(e instanceof Error)) throw e;
       return this.error = e.message, !1;
@@ -48261,789 +48261,789 @@ Ei([
   F()
 ], wa.prototype, "error", 2);
 wa = Ei([
-  nt($h)
+  nt(Eh)
 ], wa);
-const Nh = "Solskin", Vh = "Klart", Lh = "Overskyet", Hh = "Skyet", Ih = "Delvist skyet", Rh = "Regnvejr", Bh = "Regn", Fh = "Snevejr", Oh = "Sne", qh = "Tåget", Uh = "Tåge", Kh = "Lyn", Wh = "Kraftig regn", Gh = "Hagl", Zh = "Blæsende", Yh = "Føles som", Jh = "Dagens vejrudsigt", Qh = "Timeprognose", Xh = "Daglig vejrudsigt", eg = "Ingen data", tg = "Vejr", ag = "km/t", ig = "m/s", ng = "mph", rg = "knob", og = "ft/s", sg = "FM", lg = "EM", _g = "Lufttryk", dg = "UV-indeks", ug = "Dugpunkt", cg = "Luftkvalitetsindeks", mg = { start: "{kind} ventes omkring {time}", soon: "{kind} ventes snart", stop: "{kind} stopper omkring {time}", continues: "{kind} i mindst {hours} timer mere", rain: "Regn", snow: "Sne", sleet: "Slud", hail: "Hagl", storm: "Tordenvejr" }, pg = { entity: "Vejrentitet", name: "Korttitel", layout: "Layout", layout_default: "Standard", layout_minimal: "Minimal", height: "Højde", show_feels_like: "Føles som", show_wind: "Vind", show_wind_gust: "Vindstød", show_wind_direction: "Retning", show_humidity: "Luftfugtighed", show_min_temp: "Min. temperatur", show_hourly_forecast: "Timeprognose", hourly_forecast_hours: "Timer", hourly_forecast_step: "Hver", hourly_forecast_chart: "Temperaturgraf", show_daily_forecast: "Dagsprognose", daily_forecast_days: "Dage", show_sunrise_sunset: "Solopgang og solnedgang", sunrise_entity: "Solopgangssensor", sunset_entity: "Solnedgangssensor", show_clock: "Ur", clock_position: "Placering", clock_position_top: "Øverst", clock_position_details: "Detaljerække", clock_format: "Format", clock_format_12h: "12-timer (FM/EM)", clock_format_24h: "24-timer", clock_size: "Størrelse", clock_size_small: "Lille", clock_size_medium: "Mellem", clock_size_large: "Stor", clock_weight: "Tykkelse", clock_weight_thin: "Tynd", clock_weight_regular: "Normal", clock_weight_bold: "Fed", overlay_opacity: "Mørkning", language: "Sprog", language_auto: "Automatisk", language_en: "Engelsk", language_ru: "Russisk", language_de: "Tysk", language_nl: "Nederlandsk", language_fr: "Fransk", language_es: "Spansk", language_it: "Italiensk", language_sk: "Slovakisk", language_hu: "Ungarsk", wind_speed_unit: "Enhed for vindhastighed", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/t", wind_speed_unit_auto: "Auto (som integrationen)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "knob", wind_speed_unit_helper: "Auto beholder integrationens eller vindsensorens enhed; de andre omregner al vind på kortet", animation_quality: "Animationskvalitet", animation_quality_helper: "Sænk den på vægtablets og langsomme enheder", animation_quality_high: "Høj", animation_quality_low: "Lav (20 FPS, til langsomme enheder)", animation_quality_medium: "Middel (30 FPS, færre partikler)", aqi_entity: "Luftkvalitetssensor (AQI)", border_radius: "Hjørneradius", daily_forecast_title: "Titel", daily_forecast_title_helper: "Tom = standardtitel", dew_point_entity: "Dugpunktssensor", feels_like_entity: "Sensor for føles som", hourly_forecast_title: "Titel", hourly_forecast_title_helper: "Tom = standardtitel", humidity_entity: "Luftfugtighedssensor", overlay_opacity_helper: "0–1, gør himlen mørkere, så teksten er let at læse", precipitation_entity: "Nedbørssensor", pressure_entity: "Lufttrykssensor", section_appearance: "Udseende", section_clock: "Sprog, ur og dato", section_details: "Detaljer", section_forecast: "Prognose", section_sensors: "Sensorer (valgfrit)", show_animations: "Animationer", show_aurora: "Nordlys", show_aurora_helper: "I klare nætter, moderne grafik", show_date: "Dato", show_dew_point: "Dugpunkt", show_precipitation_outlook: "Hvornår regnen starter/stopper", show_precipitation_outlook_helper: "Ud fra timeprognosen for de næste 12 timer", show_pressure: "Lufttryk", show_raindrops: "Regndråber på ruden", show_raindrops_helper: "I regnvejr, moderne grafik", show_temperature_bars: "Temperaturbjælker", show_forecast_wind: "Vind i prognoser", show_forecast_wind_helper: "Retning, hastighed og vindstød for hver time og dag, hvis vejrtjenesten oplyser dem", hourly_forecast_step_helper: "Vis prognosen med få timers mellemrum, fx 3 for 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "En temperaturkurve i stedet for tal, med sandsynligheden for nedbør som søjler", show_forecast_description: "Tekstprognose", show_forecast_description_helper: "Vejrtjenestens skrevne prognose, hvis den har en (fx den amerikanske National Weather Service)", show_uv_index: "UV-indeks", show_wind_effects: "Vindstød og blade", show_wind_effects_helper: "I blæsende vejr eller over 8 m/s", sun_position_x: "Sol/måne-position, vandret", sun_position_x_helper: "Lad stå tomt for at følge tidspunktet på dagen", sun_position_y: "Sol/måne-position, lodret", sun_position_y_helper: "Lad stå tomt for at følge tidspunktet på dagen", temperature_entity: "Temperatursensor", text_color: "Tekstfarve", text_color_helper: "Enhver CSS-farve, f.eks. #1a1a2e eller var(--primary-text-color)", text_shadow: "Tekstskygge", uv_index_entity: "UV-indekssensor", visual_style: "Grafik", visual_style_classic: "Klassisk", visual_style_modern: "Moderne", wind_bearing_entity: "Vindretningssensor", wind_gust_entity: "Vindstødssensor", wind_speed_entity: "Vindhastighedssensor", language_da: "Dansk", language_nb: "Norsk (bokmål)", language_pl: "Polsk", language_pt: "Portugisisk", language_sl: "Slovensk", language_sr: "Serbisk", "language_sr-Latn": "Serbisk (latinsk)", language_tr: "Tyrkisk", language_zh: "Kinesisk", hourly_forecast_hours_helper: "Ingen øvre grænse: f.eks. 72 for tre dage, eller mere for at vise hele udbyderens prognose", styles: "Egen CSS", styles_helper: "CSS til kortet og alle dets dele, fx .temperature { font-size: 48px; }" }, hg = { pageTitle: "Dynamisk vejrkort", pageSubtitle: "Interaktiv demo og konfigurationsværktøj", quickPresets: "Hurtige forudindstillinger", sunnyDay: "Solrig dag", rainy: "Regnvejr", snowy: "Snevejr", clearNight: "Klar nat", condition: "Tilstand", temperature: "Temperatur", humidity: "Luftfugtighed (%)", windSpeed: "Vindhastighed", timeOfDay: "Tidspunkt", timeMode: "Tidstilstand", manualControl: "Manuel styring", sunrise: "Solopgang", day: "Dag", sunset: "Solnedgang", night: "Nat", cardName: "Kortnavn", height: "Højde (px)", feelsLike: "Føles som temperatur", minTemp: "Min. temperatur", windDirection: "Vindretning", windGust: "Vindstød", hourlyForecast: "Timevis vejrudsigt", dailyForecast: "Daglig vejrudsigt", sunriseSunset: "Solopgang/solnedgang", showClock: "Ur", clockPosition: "Urplacering", clockPositionTop: "Øverst til højre", clockPositionDetails: "Detaljerække", clockFormat: "Urformat", clockSize: "Urets størrelse", clockSizeSmall: "Lille", clockSizeMedium: "Mellem", clockSizeLarge: "Stor", clockWeight: "Urets skrifttykkelse", clockWeightThin: "Tynd", clockWeightRegular: "Normal", clockWeightBold: "Fed", overlayOpacity: "Overlejringsopacitet (0-1)", windSpeedUnit: "Vindhastighed enhed", dailyForecastDays: "Dage i daglig vejrudsigt", hourlyForecastHours: "Timer i timevis vejrudsigt", hourlyForecastStep: "Trin for timeprognose (t)", hourlyChart: "Temperaturgraf pr. time", startDemo: "Start demo-tilstand", stopDemo: "Stop demo", madeWith: "Lavet med kærlighed til Home Assistant", loading: "Indlæser kort...", placeholderEmpty: "Lad være tom for at skjule", weatherConditions: { sunny: "Solskin", clearNight: "Klar nat", partlyCloudy: "Delvist skyet", cloudy: "Skyet", rainy: "Regnvejr", pouring: "Kraftig regn", snowy: "Snevejr", sleet: "Slud", hail: "Hagl", foggy: "Tåget", lightning: "Lyn", thunderstorm: "Tordenvejr", windy: "Blæsende", windyVariant: "Blæsende, overskyet" }, language: { title: "Sprog" }, animationQuality: "Animationskvalitet", animations: "Animationer", aqi: "Luftkvalitet (sensor)", aurora: "Nordlys", auroraNight: "Nordlys", autoShort: "Auto", borderRadius: "Hjørneradius (px)", clockAndDate: "Ur", dailyForecastTitle: "Titel på dagsprognose", details: "Detaljer", dewPoint: "Dugpunkt", documentation: "Dokumentation", forecasts: "Prognoser", hourlyForecastTitle: "Titel på timeprognose", humidityToggle: "Luftfugtighed", layout: "Layout", layoutDefault: "Standard", layoutMinimal: "Minimal", links: "Links", moonPhase: "Månefase", pause: "Pause", placeholderDefault: "Standard", play24h: "Afspil 24 timer", playSpeed: "Cykluslængde", precipitationOutlook: "Start/stop for regn", pressure: "Lufttryk", qualityHighShort: "Høj", qualityLowShort: "Lav", qualityMediumShort: "Middel", raindrops: "Regndråber på ruden", reportIssue: "Rapportér et problem", showDate: "Dato", stationSensors: "Stationssensorer", stationSensorsHint: "Stationssensorer erstatter temperatur, luftfugtighed, vind og nedbør med eksempelværdier fra en privat vejrstation.", sunPositionX: "Sol/måne X (%)", sunPositionY: "Sol/måne Y (%)", tabContent: "Indhold", tabLook: "Udseende", tabMore: "Mere", tabTime: "Tid", tabWeather: "Vejr", temperatureBars: "Temperaturbjælker", forecastWind: "Vind i prognoser", forecastDescription: "Tekstprognose", textColor: "Tekstfarve", textShadow: "Tekstskygge", uvIndex: "UV-indeks", visualStyle: "Grafisk stil", visualStyleClassic: "🎨 Klassisk", visualStyleModern: "✨ Moderne", windBearing: "Vindretning", windEffects: "Vindstød og blade", windyDay: "Blæsende", yamlTitle: "Kortets YAML", copy: "Kopiér", copied: "Kopieret", yamlHint: "Indsæt det i et manuelt kort i Home Assistant, og erstat weather.home med din vejrenhed.", customCss: "Egen CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, gg = {
-  sunny: Nh,
-  clear: Vh,
-  overcast: Lh,
-  cloudy: Hh,
-  partlycloudy: Ih,
-  rainy: Rh,
-  rain: Bh,
-  snowy: Fh,
-  snow: Oh,
-  foggy: qh,
-  fog: Uh,
-  lightning: Kh,
+const Vh = "Solskin", Lh = "Klart", Hh = "Overskyet", Ih = "Skyet", Rh = "Delvist skyet", Bh = "Regnvejr", Fh = "Regn", Oh = "Snevejr", qh = "Sne", Uh = "Tåget", Kh = "Tåge", Wh = "Lyn", Gh = "Kraftig regn", Zh = "Hagl", Yh = "Blæsende", Jh = "Føles som", Qh = "Dagens vejrudsigt", Xh = "Timeprognose", eg = "Daglig vejrudsigt", tg = "Ingen data", ag = "Vejr", ig = "km/t", ng = "m/s", rg = "mph", og = "knob", sg = "ft/s", lg = "FM", _g = "EM", dg = "Lufttryk", ug = "UV-indeks", cg = "Dugpunkt", mg = "Luftkvalitetsindeks", pg = { start: "{kind} ventes omkring {time}", soon: "{kind} ventes snart", stop: "{kind} stopper omkring {time}", continues: "{kind} i mindst {hours} timer mere", rain: "Regn", snow: "Sne", sleet: "Slud", hail: "Hagl", storm: "Tordenvejr" }, hg = { entity: "Vejrentitet", name: "Korttitel", layout: "Layout", layout_default: "Standard", layout_minimal: "Minimal", height: "Højde", show_feels_like: "Føles som", show_wind: "Vind", show_wind_gust: "Vindstød", show_wind_direction: "Retning", show_humidity: "Luftfugtighed", show_min_temp: "Min. temperatur", show_hourly_forecast: "Timeprognose", hourly_forecast_hours: "Timer", hourly_forecast_step: "Hver", hourly_forecast_chart: "Temperaturgraf", show_daily_forecast: "Dagsprognose", daily_forecast_days: "Dage", show_sunrise_sunset: "Solopgang og solnedgang", sunrise_entity: "Solopgangssensor", sunset_entity: "Solnedgangssensor", show_clock: "Ur", clock_position: "Placering", clock_position_top: "Øverst", clock_position_details: "Detaljerække", clock_format: "Format", clock_format_12h: "12-timer (FM/EM)", clock_format_24h: "24-timer", clock_size: "Størrelse", clock_size_small: "Lille", clock_size_medium: "Mellem", clock_size_large: "Stor", clock_weight: "Tykkelse", clock_weight_thin: "Tynd", clock_weight_regular: "Normal", clock_weight_bold: "Fed", overlay_opacity: "Mørkning", language: "Sprog", language_auto: "Automatisk", language_en: "Engelsk", language_ru: "Russisk", language_de: "Tysk", language_nl: "Nederlandsk", language_fr: "Fransk", language_es: "Spansk", language_it: "Italiensk", language_sk: "Slovakisk", language_hu: "Ungarsk", wind_speed_unit: "Enhed for vindhastighed", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/t", wind_speed_unit_auto: "Auto (som integrationen)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "knob", wind_speed_unit_helper: "Auto beholder integrationens eller vindsensorens enhed; de andre omregner al vind på kortet", animation_quality: "Animationskvalitet", animation_quality_helper: "Sænk den på vægtablets og langsomme enheder", animation_quality_high: "Høj", animation_quality_low: "Lav (20 FPS, til langsomme enheder)", animation_quality_medium: "Middel (30 FPS, færre partikler)", aqi_entity: "Luftkvalitetssensor (AQI)", border_radius: "Hjørneradius", daily_forecast_title: "Titel", daily_forecast_title_helper: "Tom = standardtitel", dew_point_entity: "Dugpunktssensor", feels_like_entity: "Sensor for føles som", hourly_forecast_title: "Titel", hourly_forecast_title_helper: "Tom = standardtitel", humidity_entity: "Luftfugtighedssensor", overlay_opacity_helper: "0–1, gør himlen mørkere, så teksten er let at læse", precipitation_entity: "Nedbørssensor", pressure_entity: "Lufttrykssensor", section_appearance: "Udseende", section_clock: "Sprog, ur og dato", section_details: "Detaljer", section_forecast: "Prognose", section_sensors: "Sensorer (valgfrit)", show_animations: "Animationer", show_aurora: "Nordlys", show_aurora_helper: "I klare nætter, moderne grafik", show_date: "Dato", show_dew_point: "Dugpunkt", show_precipitation_outlook: "Hvornår regnen starter/stopper", show_precipitation_outlook_helper: "Ud fra timeprognosen for de næste 12 timer", show_pressure: "Lufttryk", show_raindrops: "Regndråber på ruden", show_raindrops_helper: "I regnvejr, moderne grafik", show_temperature_bars: "Temperaturbjælker", show_forecast_wind: "Vind i prognoser", show_forecast_wind_helper: "Retning, hastighed og vindstød for hver time og dag, hvis vejrtjenesten oplyser dem", hourly_forecast_step_helper: "Vis prognosen med få timers mellemrum, fx 3 for 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "En temperaturkurve i stedet for tal, med sandsynligheden for nedbør som søjler", show_forecast_description: "Tekstprognose", show_forecast_description_helper: "Vejrtjenestens skrevne prognose, hvis den har en (fx den amerikanske National Weather Service)", show_uv_index: "UV-indeks", show_wind_effects: "Vindstød og blade", show_wind_effects_helper: "I blæsende vejr eller over 8 m/s", sun_position_x: "Sol/måne-position, vandret", sun_position_x_helper: "Lad stå tomt for at følge tidspunktet på dagen", sun_position_y: "Sol/måne-position, lodret", sun_position_y_helper: "Lad stå tomt for at følge tidspunktet på dagen", temperature_entity: "Temperatursensor", text_color: "Tekstfarve", text_color_helper: "Enhver CSS-farve, f.eks. #1a1a2e eller var(--primary-text-color)", text_shadow: "Tekstskygge", uv_index_entity: "UV-indekssensor", visual_style: "Grafik", visual_style_classic: "Klassisk", visual_style_modern: "Moderne", wind_bearing_entity: "Vindretningssensor", wind_gust_entity: "Vindstødssensor", wind_speed_entity: "Vindhastighedssensor", language_da: "Dansk", language_nb: "Norsk (bokmål)", language_pl: "Polsk", language_pt: "Portugisisk", language_sl: "Slovensk", language_sr: "Serbisk", "language_sr-Latn": "Serbisk (latinsk)", language_tr: "Tyrkisk", language_zh: "Kinesisk", hourly_forecast_hours_helper: "Ingen øvre grænse: f.eks. 72 for tre dage, eller mere for at vise hele udbyderens prognose", styles: "Egen CSS", styles_helper: "CSS til kortet og alle dets dele, fx .temperature { font-size: 48px; }" }, gg = { pageTitle: "Dynamisk vejrkort", pageSubtitle: "Interaktiv demo og konfigurationsværktøj", quickPresets: "Hurtige forudindstillinger", sunnyDay: "Solrig dag", rainy: "Regnvejr", snowy: "Snevejr", clearNight: "Klar nat", condition: "Tilstand", temperature: "Temperatur", humidity: "Luftfugtighed (%)", windSpeed: "Vindhastighed", timeOfDay: "Tidspunkt", timeMode: "Tidstilstand", manualControl: "Manuel styring", sunrise: "Solopgang", day: "Dag", sunset: "Solnedgang", night: "Nat", cardName: "Kortnavn", height: "Højde (px)", feelsLike: "Føles som temperatur", minTemp: "Min. temperatur", windDirection: "Vindretning", windGust: "Vindstød", hourlyForecast: "Timevis vejrudsigt", dailyForecast: "Daglig vejrudsigt", sunriseSunset: "Solopgang/solnedgang", showClock: "Ur", clockPosition: "Urplacering", clockPositionTop: "Øverst til højre", clockPositionDetails: "Detaljerække", clockFormat: "Urformat", clockSize: "Urets størrelse", clockSizeSmall: "Lille", clockSizeMedium: "Mellem", clockSizeLarge: "Stor", clockWeight: "Urets skrifttykkelse", clockWeightThin: "Tynd", clockWeightRegular: "Normal", clockWeightBold: "Fed", overlayOpacity: "Overlejringsopacitet (0-1)", windSpeedUnit: "Vindhastighed enhed", dailyForecastDays: "Dage i daglig vejrudsigt", hourlyForecastHours: "Timer i timevis vejrudsigt", hourlyForecastStep: "Trin for timeprognose (t)", hourlyChart: "Temperaturgraf pr. time", startDemo: "Start demo-tilstand", stopDemo: "Stop demo", madeWith: "Lavet med kærlighed til Home Assistant", loading: "Indlæser kort...", placeholderEmpty: "Lad være tom for at skjule", weatherConditions: { sunny: "Solskin", clearNight: "Klar nat", partlyCloudy: "Delvist skyet", cloudy: "Skyet", rainy: "Regnvejr", pouring: "Kraftig regn", snowy: "Snevejr", sleet: "Slud", hail: "Hagl", foggy: "Tåget", lightning: "Lyn", thunderstorm: "Tordenvejr", windy: "Blæsende", windyVariant: "Blæsende, overskyet" }, language: { title: "Sprog" }, animationQuality: "Animationskvalitet", animations: "Animationer", aqi: "Luftkvalitet (sensor)", aurora: "Nordlys", auroraNight: "Nordlys", autoShort: "Auto", borderRadius: "Hjørneradius (px)", clockAndDate: "Ur", dailyForecastTitle: "Titel på dagsprognose", details: "Detaljer", dewPoint: "Dugpunkt", documentation: "Dokumentation", forecasts: "Prognoser", hourlyForecastTitle: "Titel på timeprognose", humidityToggle: "Luftfugtighed", layout: "Layout", layoutDefault: "Standard", layoutMinimal: "Minimal", links: "Links", moonPhase: "Månefase", pause: "Pause", placeholderDefault: "Standard", play24h: "Afspil 24 timer", playSpeed: "Cykluslængde", precipitationOutlook: "Start/stop for regn", pressure: "Lufttryk", qualityHighShort: "Høj", qualityLowShort: "Lav", qualityMediumShort: "Middel", raindrops: "Regndråber på ruden", reportIssue: "Rapportér et problem", showDate: "Dato", stationSensors: "Stationssensorer", stationSensorsHint: "Stationssensorer erstatter temperatur, luftfugtighed, vind og nedbør med eksempelværdier fra en privat vejrstation.", sunPositionX: "Sol/måne X (%)", sunPositionY: "Sol/måne Y (%)", tabContent: "Indhold", tabLook: "Udseende", tabMore: "Mere", tabTime: "Tid", tabWeather: "Vejr", temperatureBars: "Temperaturbjælker", forecastWind: "Vind i prognoser", forecastDescription: "Tekstprognose", textColor: "Tekstfarve", textShadow: "Tekstskygge", uvIndex: "UV-indeks", visualStyle: "Grafisk stil", visualStyleClassic: "🎨 Klassisk", visualStyleModern: "✨ Moderne", windBearing: "Vindretning", windEffects: "Vindstød og blade", windyDay: "Blæsende", yamlTitle: "Kortets YAML", copy: "Kopiér", copied: "Kopieret", yamlHint: "Indsæt det i et manuelt kort i Home Assistant, og erstat weather.home med din vejrenhed.", customCss: "Egen CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, yg = {
+  sunny: Vh,
+  clear: Lh,
+  overcast: Hh,
+  cloudy: Ih,
+  partlycloudy: Rh,
+  rainy: Bh,
+  rain: Fh,
+  snowy: Oh,
+  snow: qh,
+  foggy: Uh,
+  fog: Kh,
+  lightning: Wh,
   "lightning-rainy": "Tordenvejr",
-  pouring: Wh,
+  pouring: Gh,
   "snowy-rainy": "Slud",
-  hail: Gh,
+  hail: Zh,
   "clear-night": "Klar nat",
-  windy: Zh,
+  windy: Yh,
   "windy-variant": "Blæsende, overskyet",
-  feels_like: Yh,
-  forecast_title: Jh,
-  forecast_title_hourly: Qh,
-  daily_forecast_title: Xh,
-  no_data: eg,
-  weather: tg,
-  wind_unit_kmh: ag,
-  wind_unit_ms: ig,
-  wind_unit_mph: ng,
-  wind_unit_knots: rg,
-  wind_unit_fts: og,
-  am: sg,
-  pm: lg,
-  pressure: _g,
-  uv_index: dg,
-  dew_point: ug,
-  aqi: cg,
-  precipitation_outlook: mg,
-  editor: pg,
-  demo: hg
-}, yg = "Sonnig", bg = "Klar", vg = "Bedeckt", kg = "Bewölkt", fg = "Teilweise bewölkt", wg = "Regnerisch", zg = "Regen", jg = "Schneefall", Sg = "Schnee", xg = "Nebelig", Ag = "Nebel", Pg = "Blitz", Mg = "Starkregen", Cg = "Hagel", $g = "Windig", Eg = "Gefühlt", Tg = "Heutige Vorhersage", Dg = "Stündliche Vorhersage", Ng = "Tagesvorhersage", Vg = "Keine Daten", Lg = "Wetter", Hg = "km/h", Ig = "m/s", Rg = "mph", Bg = "Knoten", Fg = "ft/s", Og = "AM", qg = "PM", Ug = "Luftdruck", Kg = "UV-Index", Wg = "Taupunkt", Gg = "Luftqualitätsindex", Zg = { start: "{kind} gegen {time} erwartet", soon: "{kind} in Kürze erwartet", stop: "{kind} endet gegen {time}", continues: "{kind} noch mindestens {hours} Std.", rain: "Regen", snow: "Schnee", sleet: "Schneeregen", hail: "Hagel", storm: "Gewitter" }, Yg = { entity: "Wetter-Entität", name: "Kartentitel", layout: "Layout", layout_default: "Default", layout_minimal: "Minimal", height: "Höhe", show_feels_like: "Gefühlt", show_wind: "Wind", show_wind_gust: "Böen", show_wind_direction: "Richtung", show_humidity: "Luftfeuchtigkeit", show_min_temp: "Tiefsttemperatur", show_hourly_forecast: "Stündliche Vorhersage", hourly_forecast_hours: "Stunden", hourly_forecast_step: "Alle", hourly_forecast_chart: "Temperaturdiagramm", show_daily_forecast: "Tägliche Vorhersage", daily_forecast_days: "Tage", show_sunrise_sunset: "Sonnenauf- und -untergang", sunrise_entity: "Sonnenaufgangssensor", sunset_entity: "Sonnenuntergangssensor", show_clock: "Uhr", clock_position: "Position", clock_position_top: "Oben", clock_position_details: "Details", clock_format: "Format", clock_format_12h: "12-Stunden (AM/PM)", clock_format_24h: "24-Stunden", clock_size: "Größe", clock_size_small: "Klein", clock_size_medium: "Mittel", clock_size_large: "Groß", clock_weight: "Schriftstärke", clock_weight_thin: "Dünn", clock_weight_regular: "Normal", clock_weight_bold: "Fett", overlay_opacity: "Abdunklung", text_shadow: "Textschatten", language: "Sprache", language_auto: "Automatisch", language_en: "Englisch", language_ru: "Russisch", language_de: "Deutsch", language_nl: "Niederländisch", language_fr: "Französisch", language_es: "Spanisch", language_it: "Italienisch", language_sk: "Slowakisch", language_hu: "Ungarisch", language_pt: "Portugiesisch", wind_speed_unit: "Einheit der Windgeschwindigkeit", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Auto (wie die Integration)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "Knoten", wind_speed_unit_helper: "Auto behält die Einheit der Integration oder des Windsensors; die anderen rechnen allen Wind auf der Karte um", show_animations: "Animationen", animation_quality: "Animationsqualität", animation_quality_helper: "Für Wandtablets und langsame Geräte verringern", animation_quality_high: "Hoch", animation_quality_low: "Niedrig (20 FPS, für langsame Geräte)", animation_quality_medium: "Mittel (30 FPS, weniger Partikel)", aqi_entity: "Luftqualitätssensor (AQI)", border_radius: "Eckenradius", daily_forecast_title: "Titel", daily_forecast_title_helper: "Leer = Standardtitel", dew_point_entity: "Taupunktsensor", feels_like_entity: "Sensor „Gefühlt“", hourly_forecast_title: "Titel", hourly_forecast_title_helper: "Leer = Standardtitel", humidity_entity: "Luftfeuchtigkeitssensor", overlay_opacity_helper: "0–1, dunkelt den Himmel ab, damit der Text lesbar bleibt", precipitation_entity: "Niederschlagssensor", pressure_entity: "Luftdrucksensor", section_appearance: "Darstellung", section_clock: "Sprache, Uhr und Datum", section_details: "Details", section_forecast: "Vorhersage", section_sensors: "Sensoren (optional)", show_aurora: "Polarlicht", show_aurora_helper: "In klaren Nächten, moderne Grafik", show_date: "Datum", show_dew_point: "Taupunkt", show_precipitation_outlook: "Wann Regen beginnt/endet", show_precipitation_outlook_helper: "Aus der stündlichen Vorhersage für die nächsten 12 Stunden", show_pressure: "Luftdruck", show_raindrops: "Regentropfen auf der Scheibe", show_raindrops_helper: "Bei Regen, moderne Grafik", show_temperature_bars: "Temperaturbalken", show_forecast_wind: "Wind in Vorhersagen", show_forecast_wind_helper: "Richtung, Geschwindigkeit und Böen für jede Stunde und jeden Tag, sofern der Wetterdienst sie liefert", hourly_forecast_step_helper: "Vorhersage alle paar Stunden, z. B. 3 für 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Eine Temperaturkurve statt Zahlen, mit der Regenwahrscheinlichkeit als Balken", show_forecast_description: "Textvorhersage", show_forecast_description_helper: "Die schriftliche Vorhersage des Wetterdienstes, falls vorhanden (z. B. US National Weather Service)", show_uv_index: "UV-Index", show_wind_effects: "Windböen und Blätter", show_wind_effects_helper: "Bei windigem Wetter oder über 8 m/s", sun_position_x: "Sonne/Mond-Position, horizontal", sun_position_x_helper: "Leer lassen, um der Tageszeit zu folgen", sun_position_y: "Sonne/Mond-Position, vertikal", sun_position_y_helper: "Leer lassen, um der Tageszeit zu folgen", temperature_entity: "Temperatursensor", text_color: "Textfarbe", text_color_helper: "Jede CSS-Farbe, z. B. #1a1a2e oder var(--primary-text-color)", uv_index_entity: "UV-Index-Sensor", visual_style: "Grafik", visual_style_classic: "Klassisch", visual_style_modern: "Modern", wind_bearing_entity: "Windrichtungssensor", wind_gust_entity: "Windböensensor", wind_speed_entity: "Windgeschwindigkeitssensor", language_da: "Dänisch", language_nb: "Norwegisch (Bokmål)", language_pl: "Polnisch", language_sl: "Slowenisch", language_sr: "Serbisch", "language_sr-Latn": "Serbisch (lateinisch)", language_tr: "Türkisch", language_zh: "Chinesisch", hourly_forecast_hours_helper: "Ohne Obergrenze: z. B. 72 für drei Tage oder mehr, um die ganze Vorhersage des Anbieters zu zeigen", styles: "Eigenes CSS", styles_helper: "CSS für die Karte und alle ihre Teile, z. B. .temperature { font-size: 48px; }" }, Jg = { pageTitle: "Dynamische Wetterkarte", pageSubtitle: "Interaktive Demo & Konfiguration", quickPresets: "Schnellvorlagen", sunnyDay: "Sonniger Tag", rainy: "Regnerisch", snowy: "Schnee", clearNight: "Klare Nacht", condition: "Zustand", temperature: "Temperatur", humidity: "Luftfeuchtigkeit (%)", windSpeed: "Windgeschwindigkeit", timeOfDay: "Tageszeit", timeMode: "Zeitmodus", manualControl: "Manuelle Steuerung", sunrise: "Sonnenaufgang", day: "Tag", sunset: "Sonnenuntergang", night: "Nacht", cardName: "Kartenname", height: "Höhe (px)", feelsLike: "Gefühlte Temperatur", minTemp: "Mindesttemperatur", windDirection: "Windrichtung", windGust: "Windböen", hourlyForecast: "Stündliche Vorhersage", dailyForecast: "Tägliche Vorhersage", sunriseSunset: "Sonnenaufgang / Sonnenuntergang", showClock: "Uhr", clockPosition: "Uhrposition", clockPositionTop: "Oben rechts", clockPositionDetails: "Detailzeile", clockFormat: "Uhrzeitformat", clockSize: "Uhrgröße", clockSizeSmall: "Klein", clockSizeMedium: "Mittel", clockSizeLarge: "Groß", clockWeight: "Schriftstärke der Uhr", clockWeightThin: "Dünn", clockWeightRegular: "Normal", clockWeightBold: "Fett", overlayOpacity: "Überlagerungs-Transparenz (0-1)", windSpeedUnit: "Windgeschwindigkeitseinheit", dailyForecastDays: "Tage der Prognose", hourlyForecastHours: "Stunden der Prognose", hourlyForecastStep: "Stundenvorhersage-Schritt (h)", hourlyChart: "Stündliches Temperaturdiagramm", startDemo: "Demo starten", stopDemo: "Demo stoppen", madeWith: "Mit Liebe für Home Assistant gemacht", loading: "Karte wird geladen...", placeholderEmpty: "Leer lassen, um auszublenden", weatherConditions: { sunny: "Sonnig", clearNight: "Klare Nacht", partlyCloudy: "Teilweise bewölkt", cloudy: "Bewölkt", rainy: "Regen", pouring: "Starkregen", snowy: "Schnee", sleet: "Schneeregen", hail: "Hagel", foggy: "Nebel", lightning: "Blitz", thunderstorm: "Gewitter", windy: "Windig", windyVariant: "Windig, bewölkt" }, language: { title: "Sprache" }, animationQuality: "Animationsqualität", animations: "Animationen", aqi: "Luftqualität (Sensor)", aurora: "Polarlicht", auroraNight: "Polarlicht", autoShort: "Auto", borderRadius: "Eckenradius (px)", clockAndDate: "Uhr", dailyForecastTitle: "Titel der Tagesvorhersage", details: "Details", dewPoint: "Taupunkt", documentation: "Dokumentation", forecasts: "Vorhersagen", hourlyForecastTitle: "Titel der Stundenvorhersage", humidityToggle: "Luftfeuchtigkeit", layout: "Layout", layoutDefault: "Standard", layoutMinimal: "Minimal", links: "Links", moonPhase: "Mondphase", pause: "Pause", placeholderDefault: "Standard", play24h: "24 Stunden abspielen", playSpeed: "Zykluslänge", precipitationOutlook: "Beginn/Ende des Regens", pressure: "Luftdruck", qualityHighShort: "Hoch", qualityLowShort: "Niedrig", qualityMediumShort: "Mittel", raindrops: "Regentropfen auf der Scheibe", reportIssue: "Problem melden", showDate: "Datum", stationSensors: "Stationssensoren", stationSensorsHint: "Stationssensoren ersetzen Temperatur, Luftfeuchtigkeit, Wind und Niederschlag durch Beispielwerte einer privaten Wetterstation.", sunPositionX: "Sonne/Mond X (%)", sunPositionY: "Sonne/Mond Y (%)", tabContent: "Inhalt", tabLook: "Aussehen", tabMore: "Mehr", tabTime: "Zeit", tabWeather: "Wetter", temperatureBars: "Temperaturbalken", forecastWind: "Wind in Vorhersagen", forecastDescription: "Textvorhersage", textColor: "Textfarbe", textShadow: "Textschatten", uvIndex: "UV-Index", visualStyle: "Grafikstil", visualStyleClassic: "🎨 Klassisch", visualStyleModern: "✨ Modern", windBearing: "Windrichtung", windEffects: "Windböen und Blätter", windyDay: "Windig", yamlTitle: "Karten-YAML", copy: "Kopieren", copied: "Kopiert", yamlHint: "In Home Assistant in eine manuelle Karte einfügen und weather.home durch deine Wetter-Entität ersetzen.", customCss: "Eigenes CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, Qg = {
-  sunny: yg,
-  clear: bg,
-  overcast: vg,
-  cloudy: kg,
-  partlycloudy: fg,
-  rainy: wg,
-  rain: zg,
-  snowy: jg,
-  snow: Sg,
-  foggy: xg,
-  fog: Ag,
-  lightning: Pg,
+  feels_like: Jh,
+  forecast_title: Qh,
+  forecast_title_hourly: Xh,
+  daily_forecast_title: eg,
+  no_data: tg,
+  weather: ag,
+  wind_unit_kmh: ig,
+  wind_unit_ms: ng,
+  wind_unit_mph: rg,
+  wind_unit_knots: og,
+  wind_unit_fts: sg,
+  am: lg,
+  pm: _g,
+  pressure: dg,
+  uv_index: ug,
+  dew_point: cg,
+  aqi: mg,
+  precipitation_outlook: pg,
+  editor: hg,
+  demo: gg
+}, bg = "Sonnig", vg = "Klar", kg = "Bedeckt", fg = "Bewölkt", wg = "Teilweise bewölkt", zg = "Regnerisch", jg = "Regen", Sg = "Schneefall", xg = "Schnee", Ag = "Nebelig", Pg = "Nebel", Mg = "Blitz", Cg = "Starkregen", $g = "Hagel", Eg = "Windig", Tg = "Gefühlt", Dg = "Heutige Vorhersage", Ng = "Stündliche Vorhersage", Vg = "Tagesvorhersage", Lg = "Keine Daten", Hg = "Wetter", Ig = "km/h", Rg = "m/s", Bg = "mph", Fg = "Knoten", Og = "ft/s", qg = "AM", Ug = "PM", Kg = "Luftdruck", Wg = "UV-Index", Gg = "Taupunkt", Zg = "Luftqualitätsindex", Yg = { start: "{kind} gegen {time} erwartet", soon: "{kind} in Kürze erwartet", stop: "{kind} endet gegen {time}", continues: "{kind} noch mindestens {hours} Std.", rain: "Regen", snow: "Schnee", sleet: "Schneeregen", hail: "Hagel", storm: "Gewitter" }, Jg = { entity: "Wetter-Entität", name: "Kartentitel", layout: "Layout", layout_default: "Default", layout_minimal: "Minimal", height: "Höhe", show_feels_like: "Gefühlt", show_wind: "Wind", show_wind_gust: "Böen", show_wind_direction: "Richtung", show_humidity: "Luftfeuchtigkeit", show_min_temp: "Tiefsttemperatur", show_hourly_forecast: "Stündliche Vorhersage", hourly_forecast_hours: "Stunden", hourly_forecast_step: "Alle", hourly_forecast_chart: "Temperaturdiagramm", show_daily_forecast: "Tägliche Vorhersage", daily_forecast_days: "Tage", show_sunrise_sunset: "Sonnenauf- und -untergang", sunrise_entity: "Sonnenaufgangssensor", sunset_entity: "Sonnenuntergangssensor", show_clock: "Uhr", clock_position: "Position", clock_position_top: "Oben", clock_position_details: "Details", clock_format: "Format", clock_format_12h: "12-Stunden (AM/PM)", clock_format_24h: "24-Stunden", clock_size: "Größe", clock_size_small: "Klein", clock_size_medium: "Mittel", clock_size_large: "Groß", clock_weight: "Schriftstärke", clock_weight_thin: "Dünn", clock_weight_regular: "Normal", clock_weight_bold: "Fett", overlay_opacity: "Abdunklung", text_shadow: "Textschatten", language: "Sprache", language_auto: "Automatisch", language_en: "Englisch", language_ru: "Russisch", language_de: "Deutsch", language_nl: "Niederländisch", language_fr: "Französisch", language_es: "Spanisch", language_it: "Italienisch", language_sk: "Slowakisch", language_hu: "Ungarisch", language_pt: "Portugiesisch", wind_speed_unit: "Einheit der Windgeschwindigkeit", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Auto (wie die Integration)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "Knoten", wind_speed_unit_helper: "Auto behält die Einheit der Integration oder des Windsensors; die anderen rechnen allen Wind auf der Karte um", show_animations: "Animationen", animation_quality: "Animationsqualität", animation_quality_helper: "Für Wandtablets und langsame Geräte verringern", animation_quality_high: "Hoch", animation_quality_low: "Niedrig (20 FPS, für langsame Geräte)", animation_quality_medium: "Mittel (30 FPS, weniger Partikel)", aqi_entity: "Luftqualitätssensor (AQI)", border_radius: "Eckenradius", daily_forecast_title: "Titel", daily_forecast_title_helper: "Leer = Standardtitel", dew_point_entity: "Taupunktsensor", feels_like_entity: "Sensor „Gefühlt“", hourly_forecast_title: "Titel", hourly_forecast_title_helper: "Leer = Standardtitel", humidity_entity: "Luftfeuchtigkeitssensor", overlay_opacity_helper: "0–1, dunkelt den Himmel ab, damit der Text lesbar bleibt", precipitation_entity: "Niederschlagssensor", pressure_entity: "Luftdrucksensor", section_appearance: "Darstellung", section_clock: "Sprache, Uhr und Datum", section_details: "Details", section_forecast: "Vorhersage", section_sensors: "Sensoren (optional)", show_aurora: "Polarlicht", show_aurora_helper: "In klaren Nächten, moderne Grafik", show_date: "Datum", show_dew_point: "Taupunkt", show_precipitation_outlook: "Wann Regen beginnt/endet", show_precipitation_outlook_helper: "Aus der stündlichen Vorhersage für die nächsten 12 Stunden", show_pressure: "Luftdruck", show_raindrops: "Regentropfen auf der Scheibe", show_raindrops_helper: "Bei Regen, moderne Grafik", show_temperature_bars: "Temperaturbalken", show_forecast_wind: "Wind in Vorhersagen", show_forecast_wind_helper: "Richtung, Geschwindigkeit und Böen für jede Stunde und jeden Tag, sofern der Wetterdienst sie liefert", hourly_forecast_step_helper: "Vorhersage alle paar Stunden, z. B. 3 für 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Eine Temperaturkurve statt Zahlen, mit der Regenwahrscheinlichkeit als Balken", show_forecast_description: "Textvorhersage", show_forecast_description_helper: "Die schriftliche Vorhersage des Wetterdienstes, falls vorhanden (z. B. US National Weather Service)", show_uv_index: "UV-Index", show_wind_effects: "Windböen und Blätter", show_wind_effects_helper: "Bei windigem Wetter oder über 8 m/s", sun_position_x: "Sonne/Mond-Position, horizontal", sun_position_x_helper: "Leer lassen, um der Tageszeit zu folgen", sun_position_y: "Sonne/Mond-Position, vertikal", sun_position_y_helper: "Leer lassen, um der Tageszeit zu folgen", temperature_entity: "Temperatursensor", text_color: "Textfarbe", text_color_helper: "Jede CSS-Farbe, z. B. #1a1a2e oder var(--primary-text-color)", uv_index_entity: "UV-Index-Sensor", visual_style: "Grafik", visual_style_classic: "Klassisch", visual_style_modern: "Modern", wind_bearing_entity: "Windrichtungssensor", wind_gust_entity: "Windböensensor", wind_speed_entity: "Windgeschwindigkeitssensor", language_da: "Dänisch", language_nb: "Norwegisch (Bokmål)", language_pl: "Polnisch", language_sl: "Slowenisch", language_sr: "Serbisch", "language_sr-Latn": "Serbisch (lateinisch)", language_tr: "Türkisch", language_zh: "Chinesisch", hourly_forecast_hours_helper: "Ohne Obergrenze: z. B. 72 für drei Tage oder mehr, um die ganze Vorhersage des Anbieters zu zeigen", styles: "Eigenes CSS", styles_helper: "CSS für die Karte und alle ihre Teile, z. B. .temperature { font-size: 48px; }" }, Qg = { pageTitle: "Dynamische Wetterkarte", pageSubtitle: "Interaktive Demo & Konfiguration", quickPresets: "Schnellvorlagen", sunnyDay: "Sonniger Tag", rainy: "Regnerisch", snowy: "Schnee", clearNight: "Klare Nacht", condition: "Zustand", temperature: "Temperatur", humidity: "Luftfeuchtigkeit (%)", windSpeed: "Windgeschwindigkeit", timeOfDay: "Tageszeit", timeMode: "Zeitmodus", manualControl: "Manuelle Steuerung", sunrise: "Sonnenaufgang", day: "Tag", sunset: "Sonnenuntergang", night: "Nacht", cardName: "Kartenname", height: "Höhe (px)", feelsLike: "Gefühlte Temperatur", minTemp: "Mindesttemperatur", windDirection: "Windrichtung", windGust: "Windböen", hourlyForecast: "Stündliche Vorhersage", dailyForecast: "Tägliche Vorhersage", sunriseSunset: "Sonnenaufgang / Sonnenuntergang", showClock: "Uhr", clockPosition: "Uhrposition", clockPositionTop: "Oben rechts", clockPositionDetails: "Detailzeile", clockFormat: "Uhrzeitformat", clockSize: "Uhrgröße", clockSizeSmall: "Klein", clockSizeMedium: "Mittel", clockSizeLarge: "Groß", clockWeight: "Schriftstärke der Uhr", clockWeightThin: "Dünn", clockWeightRegular: "Normal", clockWeightBold: "Fett", overlayOpacity: "Überlagerungs-Transparenz (0-1)", windSpeedUnit: "Windgeschwindigkeitseinheit", dailyForecastDays: "Tage der Prognose", hourlyForecastHours: "Stunden der Prognose", hourlyForecastStep: "Stundenvorhersage-Schritt (h)", hourlyChart: "Stündliches Temperaturdiagramm", startDemo: "Demo starten", stopDemo: "Demo stoppen", madeWith: "Mit Liebe für Home Assistant gemacht", loading: "Karte wird geladen...", placeholderEmpty: "Leer lassen, um auszublenden", weatherConditions: { sunny: "Sonnig", clearNight: "Klare Nacht", partlyCloudy: "Teilweise bewölkt", cloudy: "Bewölkt", rainy: "Regen", pouring: "Starkregen", snowy: "Schnee", sleet: "Schneeregen", hail: "Hagel", foggy: "Nebel", lightning: "Blitz", thunderstorm: "Gewitter", windy: "Windig", windyVariant: "Windig, bewölkt" }, language: { title: "Sprache" }, animationQuality: "Animationsqualität", animations: "Animationen", aqi: "Luftqualität (Sensor)", aurora: "Polarlicht", auroraNight: "Polarlicht", autoShort: "Auto", borderRadius: "Eckenradius (px)", clockAndDate: "Uhr", dailyForecastTitle: "Titel der Tagesvorhersage", details: "Details", dewPoint: "Taupunkt", documentation: "Dokumentation", forecasts: "Vorhersagen", hourlyForecastTitle: "Titel der Stundenvorhersage", humidityToggle: "Luftfeuchtigkeit", layout: "Layout", layoutDefault: "Standard", layoutMinimal: "Minimal", links: "Links", moonPhase: "Mondphase", pause: "Pause", placeholderDefault: "Standard", play24h: "24 Stunden abspielen", playSpeed: "Zykluslänge", precipitationOutlook: "Beginn/Ende des Regens", pressure: "Luftdruck", qualityHighShort: "Hoch", qualityLowShort: "Niedrig", qualityMediumShort: "Mittel", raindrops: "Regentropfen auf der Scheibe", reportIssue: "Problem melden", showDate: "Datum", stationSensors: "Stationssensoren", stationSensorsHint: "Stationssensoren ersetzen Temperatur, Luftfeuchtigkeit, Wind und Niederschlag durch Beispielwerte einer privaten Wetterstation.", sunPositionX: "Sonne/Mond X (%)", sunPositionY: "Sonne/Mond Y (%)", tabContent: "Inhalt", tabLook: "Aussehen", tabMore: "Mehr", tabTime: "Zeit", tabWeather: "Wetter", temperatureBars: "Temperaturbalken", forecastWind: "Wind in Vorhersagen", forecastDescription: "Textvorhersage", textColor: "Textfarbe", textShadow: "Textschatten", uvIndex: "UV-Index", visualStyle: "Grafikstil", visualStyleClassic: "🎨 Klassisch", visualStyleModern: "✨ Modern", windBearing: "Windrichtung", windEffects: "Windböen und Blätter", windyDay: "Windig", yamlTitle: "Karten-YAML", copy: "Kopieren", copied: "Kopiert", yamlHint: "In Home Assistant in eine manuelle Karte einfügen und weather.home durch deine Wetter-Entität ersetzen.", customCss: "Eigenes CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, Xg = {
+  sunny: bg,
+  clear: vg,
+  overcast: kg,
+  cloudy: fg,
+  partlycloudy: wg,
+  rainy: zg,
+  rain: jg,
+  snowy: Sg,
+  snow: xg,
+  foggy: Ag,
+  fog: Pg,
+  lightning: Mg,
   "lightning-rainy": "Gewitter",
-  pouring: Mg,
+  pouring: Cg,
   "snowy-rainy": "Schneeregen",
-  hail: Cg,
+  hail: $g,
   "clear-night": "Klare Nacht",
-  windy: $g,
+  windy: Eg,
   "windy-variant": "Windig, bewölkt",
-  feels_like: Eg,
-  forecast_title: Tg,
-  forecast_title_hourly: Dg,
-  daily_forecast_title: Ng,
-  no_data: Vg,
-  weather: Lg,
-  wind_unit_kmh: Hg,
-  wind_unit_ms: Ig,
-  wind_unit_mph: Rg,
-  wind_unit_knots: Bg,
-  wind_unit_fts: Fg,
-  am: Og,
-  pm: qg,
-  pressure: Ug,
-  uv_index: Kg,
-  dew_point: Wg,
-  aqi: Gg,
-  precipitation_outlook: Zg,
-  editor: Yg,
-  demo: Jg
-}, Xg = "Sunny", ey = "Clear", ty = "Overcast", ay = "Cloudy", iy = "Partly Cloudy", ny = "Rainy", ry = "Rain", oy = "Snowy", sy = "Snow", ly = "Foggy", _y = "Fog", dy = "Lightning", uy = "Heavy Rain", cy = "Hail", my = "Windy", py = "Feels like", hy = "Today's Forecast", gy = "Hourly Forecast", yy = "Daily Forecast", by = "No data", vy = "Weather", ky = "km/h", fy = "m/s", wy = "mph", zy = "knots", jy = "ft/s", Sy = "AM", xy = "PM", Ay = "Pressure", Py = "UV index", My = "Dew point", Cy = "Air quality index", $y = { start: "{kind} expected around {time}", soon: "{kind} expected soon", stop: "{kind} ending around {time}", continues: "{kind} for at least {hours} more hours", rain: "Rain", snow: "Snow", sleet: "Sleet", hail: "Hail", storm: "Thunderstorms" }, Ey = { entity: "Weather Entity", name: "Card Title", layout: "Layout", layout_default: "Default", layout_minimal: "Minimal", visual_style: "Graphics", visual_style_modern: "Modern", visual_style_classic: "Classic", animation_quality: "Animation quality", animation_quality_high: "High", animation_quality_medium: "Medium (30 FPS, fewer particles)", animation_quality_low: "Low (20 FPS, for slow devices)", height: "Height", show_feels_like: "Feels like", show_wind: "Wind", show_wind_gust: "Gusts", show_wind_direction: "Direction", show_humidity: "Humidity", show_min_temp: "Min temperature", show_hourly_forecast: "Hourly forecast", hourly_forecast_hours: "Hours", hourly_forecast_step: "Every", hourly_forecast_chart: "Temperature chart", hourly_forecast_title: "Title", show_daily_forecast: "Daily forecast", daily_forecast_days: "Days", daily_forecast_title: "Title", show_sunrise_sunset: "Sunrise and sunset", sunrise_entity: "Sunrise sensor", sunset_entity: "Sunset sensor", temperature_entity: "Temperature Sensor", feels_like_entity: "Feels Like Sensor", humidity_entity: "Humidity Sensor", wind_speed_entity: "Wind Speed Sensor", wind_gust_entity: "Wind Gust Sensor", wind_bearing_entity: "Wind Bearing Sensor", precipitation_entity: "Precipitation Sensor", show_pressure: "Pressure", show_uv_index: "UV index", show_dew_point: "Dew point", show_precipitation_outlook: "When rain starts/stops", show_temperature_bars: "Temperature bars", show_forecast_wind: "Wind in forecasts", show_forecast_wind_helper: "Direction, speed and gusts for each hour and day, when the weather provider reports them", hourly_forecast_step_helper: "Show the forecast every few hours, e.g. 3 for 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "A curve of the temperature instead of numbers, with the chance of precipitation as bars", show_forecast_description: "Text forecast", show_forecast_description_helper: "The weather provider's written forecast, when it has one (e.g. the US National Weather Service)", pressure_entity: "Pressure Sensor", uv_index_entity: "UV Index Sensor", dew_point_entity: "Dew Point Sensor", aqi_entity: "Air Quality (AQI) Sensor", show_clock: "Clock", show_date: "Date", clock_position: "Position", clock_position_top: "Top", clock_position_details: "Details", clock_format: "Format", clock_format_12h: "12-hour (AM/PM)", clock_format_24h: "24-hour", clock_size: "Size", clock_size_small: "Small", clock_size_medium: "Medium", clock_size_large: "Large", clock_weight: "Weight", clock_weight_thin: "Thin", clock_weight_regular: "Regular", clock_weight_bold: "Bold", overlay_opacity: "Darkening", text_shadow: "Text shadow", text_color: "Text color", border_radius: "Corner radius", sun_position_x: "Sun/moon position, horizontal", sun_position_y: "Sun/moon position, vertical", language: "Language", language_auto: "Auto", language_en: "English", language_ru: "Russian", language_de: "German", language_nl: "Dutch", language_fr: "French", language_es: "Spanish", language_it: "Italian", language_sk: "Slovak", language_hu: "Hungarian", language_pt: "Portuguese", language_da: "Danish", language_sr: "Serbian", language_pl: "Polish", language_zh: "Chinese", language_tr: "Turkish", language_nb: "Norwegian (Bokmål)", language_sl: "Slovenian", "language_sr-Latn": "Serbian (Latin)", wind_speed_unit: "Wind speed unit", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Auto (from the integration)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "knots", wind_speed_unit_helper: "Auto keeps the unit of the integration or wind sensor; the others convert all wind on the card", show_animations: "Animations", show_aurora: "Northern lights", section_appearance: "Appearance", section_details: "Details", section_forecast: "Forecast", section_clock: "Language, clock and date", section_sensors: "Sensors (optional)", animation_quality_helper: "Lower it for wall tablets and slow devices", show_aurora_helper: "On clear nights, Modern graphics", overlay_opacity_helper: "0–1, darkens the sky so text stays readable", text_color_helper: "Any CSS color, e.g. #1a1a2e or var(--primary-text-color)", sun_position_x_helper: "Leave empty to follow the time of day", sun_position_y_helper: "Leave empty to follow the time of day", show_precipitation_outlook_helper: "From the hourly forecast for the next 12 hours", hourly_forecast_title_helper: "Empty = default title", daily_forecast_title_helper: "Empty = default title", show_raindrops: "Raindrops on the glass", show_wind_effects: "Wind gusts and leaves", show_raindrops_helper: "In rain, Modern graphics", show_wind_effects_helper: "In windy weather or above 8 m/s", hourly_forecast_hours_helper: "No upper limit: e.g. 72 for three days, or more to show everything the provider forecasts", styles: "Custom CSS", styles_helper: "CSS for the card and all its parts, e.g. .temperature { font-size: 48px; }" }, Ty = { aurora: "Northern lights", windyDay: "Windy", auroraNight: "Aurora", pressure: "Pressure", uvIndex: "UV Index", dewPoint: "Dew Point", aqi: "Air Quality (sensor)", precipitationOutlook: "Rain start/stop time", temperatureBars: "Temperature bars", forecastWind: "Wind in forecasts", forecastDescription: "Text forecast", pageTitle: "Dynamic Weather Card", pageSubtitle: "Interactive Demo & Configuration Tool", quickPresets: "Quick Presets", sunnyDay: "Sunny Day", rainy: "Rainy", snowy: "Snowy", clearNight: "Clear Night", condition: "Condition", temperature: "Temperature", humidity: "Humidity (%)", windSpeed: "Wind Speed", timeOfDay: "Time of Day", timeMode: "Time Mode", moonPhase: "Moon Phase", visualStyle: "Graphics Style", visualStyleModern: "✨ Modern", visualStyleClassic: "🎨 Classic", animationQuality: "Animation Quality", tabWeather: "Weather", tabTime: "Time", tabLook: "Look", tabContent: "Content", tabMore: "More", windBearing: "Wind Direction", stationSensorsHint: "Station sensors override temperature, humidity, wind and precipitation with mock personal weather station values.", autoShort: "Auto", playSpeed: "Cycle length", play24h: "Play 24 hours", pause: "Pause", qualityHighShort: "High", qualityMediumShort: "Medium", qualityLowShort: "Low", animations: "Animations", layout: "Layout", layoutDefault: "Default", layoutMinimal: "Minimal", textShadow: "Text Shadow", details: "Details", humidityToggle: "Humidity", clockAndDate: "Clock", forecasts: "Forecasts", placeholderDefault: "Default", links: "Links", documentation: "Documentation", reportIssue: "Report an issue", manualControl: "Manual Control", sunrise: "Sunrise", day: "Day", sunset: "Sunset", night: "Night", cardName: "Card Name", height: "Height (px)", feelsLike: "Feels Like Temperature", minTemp: "Min Temperature", windDirection: "Wind Direction", windGust: "Wind Gust", hourlyForecast: "Hourly Forecast", dailyForecast: "Daily Forecast", sunriseSunset: "Sunrise/Sunset", showClock: "Clock", stationSensors: "Station sensors", showDate: "Date", textColor: "Text Color", borderRadius: "Corner Radius (px)", sunPositionX: "Sun/Moon X (%)", sunPositionY: "Sun/Moon Y (%)", clockPosition: "Clock Position", clockPositionTop: "Top right", clockPositionDetails: "Details row", clockFormat: "Clock Format", clockSize: "Clock size", clockSizeSmall: "Small", clockSizeMedium: "Medium", clockSizeLarge: "Large", clockWeight: "Clock weight", clockWeightThin: "Thin", clockWeightRegular: "Regular", clockWeightBold: "Bold", overlayOpacity: "Overlay Opacity (0-1)", windSpeedUnit: "Wind Speed Unit", dailyForecastDays: "Daily Forecast Days", hourlyForecastHours: "Hourly Forecast Hours", hourlyForecastStep: "Hourly forecast step (h)", hourlyChart: "Hourly temperature chart", hourlyForecastTitle: "Hourly Forecast Title", dailyForecastTitle: "Daily Forecast Title", startDemo: "Start Demo Mode", stopDemo: "Stop Demo", madeWith: "Made with love for Home Assistant", loading: "Loading card...", placeholderEmpty: "Leave empty to hide", weatherConditions: { windy: "Windy", windyVariant: "Windy, cloudy", sunny: "Sunny", clearNight: "Clear Night", partlyCloudy: "Partly Cloudy", cloudy: "Cloudy", rainy: "Rainy", pouring: "Pouring", snowy: "Snowy", sleet: "Sleet", hail: "Hail", foggy: "Foggy", lightning: "Lightning", thunderstorm: "Thunderstorm" }, language: { title: "Language" }, raindrops: "Raindrops on the glass", windEffects: "Wind gusts and leaves", yamlTitle: "Card YAML", copy: "Copy", copied: "Copied", yamlHint: "Paste it into a Manual card in Home Assistant and replace weather.home with your weather entity.", customCss: "Custom CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, Dy = {
-  sunny: Xg,
-  clear: ey,
-  overcast: ty,
-  cloudy: ay,
-  partlycloudy: iy,
-  rainy: ny,
-  rain: ry,
-  snowy: oy,
-  snow: sy,
-  foggy: ly,
-  fog: _y,
-  lightning: dy,
+  feels_like: Tg,
+  forecast_title: Dg,
+  forecast_title_hourly: Ng,
+  daily_forecast_title: Vg,
+  no_data: Lg,
+  weather: Hg,
+  wind_unit_kmh: Ig,
+  wind_unit_ms: Rg,
+  wind_unit_mph: Bg,
+  wind_unit_knots: Fg,
+  wind_unit_fts: Og,
+  am: qg,
+  pm: Ug,
+  pressure: Kg,
+  uv_index: Wg,
+  dew_point: Gg,
+  aqi: Zg,
+  precipitation_outlook: Yg,
+  editor: Jg,
+  demo: Qg
+}, ey = "Sunny", ty = "Clear", ay = "Overcast", iy = "Cloudy", ny = "Partly Cloudy", ry = "Rainy", oy = "Rain", sy = "Snowy", ly = "Snow", _y = "Foggy", dy = "Fog", uy = "Lightning", cy = "Heavy Rain", my = "Hail", py = "Windy", hy = "Feels like", gy = "Today's Forecast", yy = "Hourly Forecast", by = "Daily Forecast", vy = "No data", ky = "Weather", fy = "km/h", wy = "m/s", zy = "mph", jy = "knots", Sy = "ft/s", xy = "AM", Ay = "PM", Py = "Pressure", My = "UV index", Cy = "Dew point", $y = "Air quality index", Ey = { start: "{kind} expected around {time}", soon: "{kind} expected soon", stop: "{kind} ending around {time}", continues: "{kind} for at least {hours} more hours", rain: "Rain", snow: "Snow", sleet: "Sleet", hail: "Hail", storm: "Thunderstorms" }, Ty = { entity: "Weather Entity", name: "Card Title", layout: "Layout", layout_default: "Default", layout_minimal: "Minimal", visual_style: "Graphics", visual_style_modern: "Modern", visual_style_classic: "Classic", animation_quality: "Animation quality", animation_quality_high: "High", animation_quality_medium: "Medium (30 FPS, fewer particles)", animation_quality_low: "Low (20 FPS, for slow devices)", height: "Height", show_feels_like: "Feels like", show_wind: "Wind", show_wind_gust: "Gusts", show_wind_direction: "Direction", show_humidity: "Humidity", show_min_temp: "Min temperature", show_hourly_forecast: "Hourly forecast", hourly_forecast_hours: "Hours", hourly_forecast_step: "Every", hourly_forecast_chart: "Temperature chart", hourly_forecast_title: "Title", show_daily_forecast: "Daily forecast", daily_forecast_days: "Days", daily_forecast_title: "Title", show_sunrise_sunset: "Sunrise and sunset", sunrise_entity: "Sunrise sensor", sunset_entity: "Sunset sensor", temperature_entity: "Temperature Sensor", feels_like_entity: "Feels Like Sensor", humidity_entity: "Humidity Sensor", wind_speed_entity: "Wind Speed Sensor", wind_gust_entity: "Wind Gust Sensor", wind_bearing_entity: "Wind Bearing Sensor", precipitation_entity: "Precipitation Sensor", show_pressure: "Pressure", show_uv_index: "UV index", show_dew_point: "Dew point", show_precipitation_outlook: "When rain starts/stops", show_temperature_bars: "Temperature bars", show_forecast_wind: "Wind in forecasts", show_forecast_wind_helper: "Direction, speed and gusts for each hour and day, when the weather provider reports them", hourly_forecast_step_helper: "Show the forecast every few hours, e.g. 3 for 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "A curve of the temperature instead of numbers, with the chance of precipitation as bars", show_forecast_description: "Text forecast", show_forecast_description_helper: "The weather provider's written forecast, when it has one (e.g. the US National Weather Service)", pressure_entity: "Pressure Sensor", uv_index_entity: "UV Index Sensor", dew_point_entity: "Dew Point Sensor", aqi_entity: "Air Quality (AQI) Sensor", show_clock: "Clock", show_date: "Date", clock_position: "Position", clock_position_top: "Top", clock_position_details: "Details", clock_format: "Format", clock_format_12h: "12-hour (AM/PM)", clock_format_24h: "24-hour", clock_size: "Size", clock_size_small: "Small", clock_size_medium: "Medium", clock_size_large: "Large", clock_weight: "Weight", clock_weight_thin: "Thin", clock_weight_regular: "Regular", clock_weight_bold: "Bold", overlay_opacity: "Darkening", text_shadow: "Text shadow", text_color: "Text color", border_radius: "Corner radius", sun_position_x: "Sun/moon position, horizontal", sun_position_y: "Sun/moon position, vertical", language: "Language", language_auto: "Auto", language_en: "English", language_ru: "Russian", language_de: "German", language_nl: "Dutch", language_fr: "French", language_es: "Spanish", language_it: "Italian", language_sk: "Slovak", language_hu: "Hungarian", language_pt: "Portuguese", language_da: "Danish", language_sr: "Serbian", language_pl: "Polish", language_zh: "Chinese", language_tr: "Turkish", language_nb: "Norwegian (Bokmål)", language_sl: "Slovenian", "language_sr-Latn": "Serbian (Latin)", wind_speed_unit: "Wind speed unit", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Auto (from the integration)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "knots", wind_speed_unit_helper: "Auto keeps the unit of the integration or wind sensor; the others convert all wind on the card", show_animations: "Animations", show_aurora: "Northern lights", section_appearance: "Appearance", section_details: "Details", section_forecast: "Forecast", section_clock: "Language, clock and date", section_sensors: "Sensors (optional)", animation_quality_helper: "Lower it for wall tablets and slow devices", show_aurora_helper: "On clear nights, Modern graphics", overlay_opacity_helper: "0–1, darkens the sky so text stays readable", text_color_helper: "Any CSS color, e.g. #1a1a2e or var(--primary-text-color)", sun_position_x_helper: "Leave empty to follow the time of day", sun_position_y_helper: "Leave empty to follow the time of day", show_precipitation_outlook_helper: "From the hourly forecast for the next 12 hours", hourly_forecast_title_helper: "Empty = default title", daily_forecast_title_helper: "Empty = default title", show_raindrops: "Raindrops on the glass", show_wind_effects: "Wind gusts and leaves", show_raindrops_helper: "In rain, Modern graphics", show_wind_effects_helper: "In windy weather or above 8 m/s", hourly_forecast_hours_helper: "No upper limit: e.g. 72 for three days, or more to show everything the provider forecasts", styles: "Custom CSS", styles_helper: "CSS for the card and all its parts, e.g. .temperature { font-size: 48px; }" }, Dy = { aurora: "Northern lights", windyDay: "Windy", auroraNight: "Aurora", pressure: "Pressure", uvIndex: "UV Index", dewPoint: "Dew Point", aqi: "Air Quality (sensor)", precipitationOutlook: "Rain start/stop time", temperatureBars: "Temperature bars", forecastWind: "Wind in forecasts", forecastDescription: "Text forecast", pageTitle: "Dynamic Weather Card", pageSubtitle: "Interactive Demo & Configuration Tool", quickPresets: "Quick Presets", sunnyDay: "Sunny Day", rainy: "Rainy", snowy: "Snowy", clearNight: "Clear Night", condition: "Condition", temperature: "Temperature", humidity: "Humidity (%)", windSpeed: "Wind Speed", timeOfDay: "Time of Day", timeMode: "Time Mode", moonPhase: "Moon Phase", visualStyle: "Graphics Style", visualStyleModern: "✨ Modern", visualStyleClassic: "🎨 Classic", animationQuality: "Animation Quality", tabWeather: "Weather", tabTime: "Time", tabLook: "Look", tabContent: "Content", tabMore: "More", windBearing: "Wind Direction", stationSensorsHint: "Station sensors override temperature, humidity, wind and precipitation with mock personal weather station values.", autoShort: "Auto", playSpeed: "Cycle length", play24h: "Play 24 hours", pause: "Pause", qualityHighShort: "High", qualityMediumShort: "Medium", qualityLowShort: "Low", animations: "Animations", layout: "Layout", layoutDefault: "Default", layoutMinimal: "Minimal", textShadow: "Text Shadow", details: "Details", humidityToggle: "Humidity", clockAndDate: "Clock", forecasts: "Forecasts", placeholderDefault: "Default", links: "Links", documentation: "Documentation", reportIssue: "Report an issue", manualControl: "Manual Control", sunrise: "Sunrise", day: "Day", sunset: "Sunset", night: "Night", cardName: "Card Name", height: "Height (px)", feelsLike: "Feels Like Temperature", minTemp: "Min Temperature", windDirection: "Wind Direction", windGust: "Wind Gust", hourlyForecast: "Hourly Forecast", dailyForecast: "Daily Forecast", sunriseSunset: "Sunrise/Sunset", showClock: "Clock", stationSensors: "Station sensors", showDate: "Date", textColor: "Text Color", borderRadius: "Corner Radius (px)", sunPositionX: "Sun/Moon X (%)", sunPositionY: "Sun/Moon Y (%)", clockPosition: "Clock Position", clockPositionTop: "Top right", clockPositionDetails: "Details row", clockFormat: "Clock Format", clockSize: "Clock size", clockSizeSmall: "Small", clockSizeMedium: "Medium", clockSizeLarge: "Large", clockWeight: "Clock weight", clockWeightThin: "Thin", clockWeightRegular: "Regular", clockWeightBold: "Bold", overlayOpacity: "Overlay Opacity (0-1)", windSpeedUnit: "Wind Speed Unit", dailyForecastDays: "Daily Forecast Days", hourlyForecastHours: "Hourly Forecast Hours", hourlyForecastStep: "Hourly forecast step (h)", hourlyChart: "Hourly temperature chart", hourlyForecastTitle: "Hourly Forecast Title", dailyForecastTitle: "Daily Forecast Title", startDemo: "Start Demo Mode", stopDemo: "Stop Demo", madeWith: "Made with love for Home Assistant", loading: "Loading card...", placeholderEmpty: "Leave empty to hide", weatherConditions: { windy: "Windy", windyVariant: "Windy, cloudy", sunny: "Sunny", clearNight: "Clear Night", partlyCloudy: "Partly Cloudy", cloudy: "Cloudy", rainy: "Rainy", pouring: "Pouring", snowy: "Snowy", sleet: "Sleet", hail: "Hail", foggy: "Foggy", lightning: "Lightning", thunderstorm: "Thunderstorm" }, language: { title: "Language" }, raindrops: "Raindrops on the glass", windEffects: "Wind gusts and leaves", yamlTitle: "Card YAML", copy: "Copy", copied: "Copied", yamlHint: "Paste it into a Manual card in Home Assistant and replace weather.home with your weather entity.", customCss: "Custom CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, Ny = {
+  sunny: ey,
+  clear: ty,
+  overcast: ay,
+  cloudy: iy,
+  partlycloudy: ny,
+  rainy: ry,
+  rain: oy,
+  snowy: sy,
+  snow: ly,
+  foggy: _y,
+  fog: dy,
+  lightning: uy,
   "lightning-rainy": "Thunderstorm",
-  pouring: uy,
+  pouring: cy,
   "snowy-rainy": "Sleet",
-  hail: cy,
+  hail: my,
   "clear-night": "Clear Night",
-  windy: my,
+  windy: py,
   "windy-variant": "Windy, cloudy",
-  feels_like: py,
-  forecast_title: hy,
-  forecast_title_hourly: gy,
-  daily_forecast_title: yy,
-  no_data: by,
-  weather: vy,
-  wind_unit_kmh: ky,
-  wind_unit_ms: fy,
-  wind_unit_mph: wy,
-  wind_unit_knots: zy,
-  wind_unit_fts: jy,
-  am: Sy,
-  pm: xy,
-  pressure: Ay,
-  uv_index: Py,
-  dew_point: My,
-  aqi: Cy,
-  precipitation_outlook: $y,
-  editor: Ey,
-  demo: Ty
-}, Ny = "Soleado", Vy = "Despejado", Ly = "Cubierto", Hy = "Nublado", Iy = "Parcialmente Nublado", Ry = "Lluvioso", By = "Lluvia", Fy = "Nevado", Oy = "Nieve", qy = "Nublado", Uy = "Niebla", Ky = "Rayo", Wy = "Lluvia Intensa", Gy = "Granizo", Zy = "Ventoso", Yy = "Sensación térmica", Jy = "Previsión para hoy", Qy = "Pronóstico por horas", Xy = "Previsión Diaria", eb = "Sin datos", tb = "Clima", ab = "km/h", ib = "m/s", nb = "mph", rb = "knots", ob = "ft/s", sb = "AM", lb = "PM", _b = "Presión", db = "Índice UV", ub = "Punto de rocío", cb = "Índice de calidad del aire", mb = { start: "{kind}: empieza hacia {time}", soon: "{kind}: empieza pronto", stop: "{kind}: termina hacia {time}", continues: "{kind}: al menos {hours} h más", rain: "Lluvia", snow: "Nieve", sleet: "Aguanieve", hail: "Granizo", storm: "Tormentas" }, pb = { entity: "Entidad de clima", name: "Título de la tarjeta", layout: "Diseño", layout_default: "Default", layout_minimal: "Minimal", height: "Altura", show_feels_like: "Sensación térmica", show_wind: "Viento", show_wind_gust: "Ráfagas", show_wind_direction: "Dirección", show_humidity: "Humedad", show_min_temp: "Temperatura mínima", show_hourly_forecast: "Pronóstico por horas", hourly_forecast_hours: "Horas", hourly_forecast_step: "Cada", hourly_forecast_chart: "Gráfico de temperatura", show_daily_forecast: "Pronóstico diario", daily_forecast_days: "Días", show_sunrise_sunset: "Amanecer y atardecer", sunrise_entity: "Sensor de amanecer", sunset_entity: "Sensor de atardecer", show_clock: "Reloj", clock_position: "Posición", clock_position_top: "Arriba", clock_position_details: "Detalles", clock_format: "Formato", clock_format_12h: "12 horas (AM/PM)", clock_format_24h: "24 horas", clock_size: "Tamaño", clock_size_small: "Pequeño", clock_size_medium: "Mediano", clock_size_large: "Grande", clock_weight: "Grosor", clock_weight_thin: "Fino", clock_weight_regular: "Normal", clock_weight_bold: "Negrita", overlay_opacity: "Oscurecimiento", text_shadow: "Sombra del texto", language: "Idioma", language_auto: "Automático", language_en: "Inglés", language_ru: "Ruso", language_de: "Alemán", language_nl: "Neerlandés", language_fr: "Francés", language_es: "Español", language_it: "Italiano", language_sk: "Eslovaco", language_hu: "Húngaro", language_pt: "Portugués", wind_speed_unit: "Unidad de velocidad del viento", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Auto (como la integración)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "knots", wind_speed_unit_helper: "Auto mantiene la unidad de la integración o del sensor de viento; las demás convierten todo el viento de la tarjeta", show_animations: "Animaciones", animation_quality: "Calidad de animación", animation_quality_helper: "Redúcela en tabletas de pared y dispositivos lentos", animation_quality_high: "Alta", animation_quality_low: "Baja (20 FPS, para dispositivos lentos)", animation_quality_medium: "Media (30 FPS, menos partículas)", aqi_entity: "Sensor de calidad del aire (AQI)", border_radius: "Radio de las esquinas", daily_forecast_title: "Título", daily_forecast_title_helper: "Vacío = título predeterminado", dew_point_entity: "Sensor de punto de rocío", feels_like_entity: "Sensor de sensación térmica", hourly_forecast_title: "Título", hourly_forecast_title_helper: "Vacío = título predeterminado", humidity_entity: "Sensor de humedad", overlay_opacity_helper: "0–1, oscurece el cielo para que el texto se lea bien", precipitation_entity: "Sensor de precipitación", pressure_entity: "Sensor de presión", section_appearance: "Apariencia", section_clock: "Idioma, reloj y fecha", section_details: "Detalles", section_forecast: "Pronóstico", section_sensors: "Sensores (opcional)", show_aurora: "Aurora boreal", show_aurora_helper: "En noches despejadas, gráficos modernos", show_date: "Fecha", show_dew_point: "Punto de rocío", show_precipitation_outlook: "Cuándo empieza/termina la lluvia", show_precipitation_outlook_helper: "Según el pronóstico por horas de las próximas 12 horas", show_pressure: "Presión", show_raindrops: "Gotas de lluvia en el cristal", show_raindrops_helper: "Con lluvia, gráficos modernos", show_temperature_bars: "Barras de temperatura", show_forecast_wind: "Viento en los pronósticos", show_forecast_wind_helper: "Dirección, velocidad y rachas para cada hora y cada día, si el proveedor del tiempo las ofrece", hourly_forecast_step_helper: "Mostrar el pronóstico cada pocas horas, p. ej. 3 para 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Una curva de temperatura en lugar de números, con la probabilidad de precipitación en barras", show_forecast_description: "Pronóstico en texto", show_forecast_description_helper: "El pronóstico escrito del proveedor del tiempo, si lo ofrece (p. ej. el National Weather Service de EE. UU.)", show_uv_index: "Índice UV", show_wind_effects: "Ráfagas y hojas", show_wind_effects_helper: "Con viento o por encima de 8 m/s", sun_position_x: "Posición del sol/luna, horizontal", sun_position_x_helper: "Déjalo vacío para seguir la hora del día", sun_position_y: "Posición del sol/luna, vertical", sun_position_y_helper: "Déjalo vacío para seguir la hora del día", temperature_entity: "Sensor de temperatura", text_color: "Color del texto", text_color_helper: "Cualquier color CSS, p. ej. #1a1a2e o var(--primary-text-color)", uv_index_entity: "Sensor de índice UV", visual_style: "Gráficos", visual_style_classic: "Clásico", visual_style_modern: "Moderno", wind_bearing_entity: "Sensor de dirección del viento", wind_gust_entity: "Sensor de ráfagas", wind_speed_entity: "Sensor de velocidad del viento", language_da: "Danés", language_nb: "Noruego (bokmål)", language_pl: "Polaco", language_sl: "Esloveno", language_sr: "Serbio", "language_sr-Latn": "Serbio (latino)", language_tr: "Turco", language_zh: "Chino", hourly_forecast_hours_helper: "Sin límite: p. ej. 72 para tres días, o más para mostrar todo el pronóstico del proveedor", styles: "CSS propio", styles_helper: "CSS para la tarjeta y todas sus partes, p. ej. .temperature { font-size: 48px; }" }, hb = { pageTitle: "Tarjeta Meteorológica Dinámica", pageSubtitle: "Demostración interactiva y Herramienta de Configuración", quickPresets: "Ajustes Rápidos", sunnyDay: "Día soleado", rainy: "Lluvioso", snowy: "Nevado", clearNight: "Noche despejada", condition: "Condición", temperature: "Temperatura", humidity: "Humedad (%)", windSpeed: "Velocidad del Viento", timeOfDay: "Hora del Día", timeMode: "Modo Tiempo", manualControl: "Control Manual", sunrise: "Amanecer", day: "Día", sunset: "Atardecer", night: "Noche", cardName: "Nombre de la tarjeta", height: "Altura (px)", feelsLike: "Sensación Térmica", minTemp: "Temperatura Mínima", windDirection: "Dirección del Viento", windGust: "Ráfaga de Viento", hourlyForecast: "Previsión por Horas", dailyForecast: "Previsión Diaria", sunriseSunset: "Amanecer/Atardecer", showClock: "Reloj", clockPosition: "Posición del Reloj", clockPositionTop: "Arriba a la derecha", clockPositionDetails: "Línea de detalles", clockFormat: "Formato del Reloj", clockSize: "Tamaño del reloj", clockSizeSmall: "Pequeño", clockSizeMedium: "Mediano", clockSizeLarge: "Grande", clockWeight: "Grosor del reloj", clockWeightThin: "Fino", clockWeightRegular: "Normal", clockWeightBold: "Negrita", overlayOpacity: "Opacidad de Superposición (0-1)", windSpeedUnit: "Unidad de Velocidad del Viento", dailyForecastDays: "Días de Previsión", hourlyForecastHours: "Horas de Previsión", hourlyForecastStep: "Paso del pronóstico por horas (h)", hourlyChart: "Gráfico de temperatura por horas", startDemo: "Iniciar Modo Demostración", stopDemo: "Detener Demostración", madeWith: "Hecho con amor para Home Assistant", loading: "Cargando tarjeta...", placeholderEmpty: "Deje vacío para ocultar", weatherConditions: { sunny: "Soleado", clearNight: "Noche Despejada", partlyCloudy: "Parcialmente Nublado", cloudy: "Nublado", rainy: "Lluvioso", pouring: "Torrencial", snowy: "Nevado", sleet: "Aguanieve", hail: "Granizo", foggy: "Nublado", lightning: "Rayos", thunderstorm: "Tormenta Eléctrica", windy: "Ventoso", windyVariant: "Ventoso, nublado" }, language: { title: "Idioma" }, animationQuality: "Calidad de animación", animations: "Animaciones", aqi: "Calidad del aire (sensor)", aurora: "Aurora boreal", auroraNight: "Aurora", autoShort: "Auto", borderRadius: "Radio de las esquinas (px)", clockAndDate: "Reloj", dailyForecastTitle: "Título del pronóstico diario", details: "Detalles", dewPoint: "Punto de rocío", documentation: "Documentación", forecasts: "Pronósticos", hourlyForecastTitle: "Título del pronóstico por horas", humidityToggle: "Humedad", layout: "Diseño", layoutDefault: "Predeterminado", layoutMinimal: "Mínimo", links: "Enlaces", moonPhase: "Fase lunar", pause: "Pausa", placeholderDefault: "Predeterminado", play24h: "Reproducir 24 horas", playSpeed: "Duración del ciclo", precipitationOutlook: "Inicio/fin de la lluvia", pressure: "Presión", qualityHighShort: "Alta", qualityLowShort: "Baja", qualityMediumShort: "Media", raindrops: "Gotas de lluvia en el cristal", reportIssue: "Informar de un problema", showDate: "Fecha", stationSensors: "Sensores de estación", stationSensorsHint: "Los sensores de estación sustituyen la temperatura, la humedad, el viento y la precipitación por valores de ejemplo de una estación meteorológica personal.", sunPositionX: "Sol/Luna X (%)", sunPositionY: "Sol/Luna Y (%)", tabContent: "Contenido", tabLook: "Aspecto", tabMore: "Más", tabTime: "Hora", tabWeather: "Tiempo", temperatureBars: "Barras de temperatura", forecastWind: "Viento en los pronósticos", forecastDescription: "Pronóstico en texto", textColor: "Color del texto", textShadow: "Sombra del texto", uvIndex: "Índice UV", visualStyle: "Estilo gráfico", visualStyleClassic: "🎨 Clásico", visualStyleModern: "✨ Moderno", windBearing: "Dirección del viento", windEffects: "Ráfagas y hojas", windyDay: "Ventoso", yamlTitle: "YAML de la tarjeta", copy: "Copiar", copied: "Copiado", yamlHint: "Pégalo en una tarjeta manual de Home Assistant y sustituye weather.home por tu entidad del tiempo.", customCss: "CSS propio", customCssPlaceholder: ".temperature { font-size: 48px; }" }, gb = {
-  sunny: Ny,
-  clear: Vy,
-  overcast: Ly,
-  cloudy: Hy,
-  partlycloudy: Iy,
-  rainy: Ry,
-  rain: By,
-  snowy: Fy,
-  snow: Oy,
-  foggy: qy,
-  fog: Uy,
-  lightning: Ky,
+  feels_like: hy,
+  forecast_title: gy,
+  forecast_title_hourly: yy,
+  daily_forecast_title: by,
+  no_data: vy,
+  weather: ky,
+  wind_unit_kmh: fy,
+  wind_unit_ms: wy,
+  wind_unit_mph: zy,
+  wind_unit_knots: jy,
+  wind_unit_fts: Sy,
+  am: xy,
+  pm: Ay,
+  pressure: Py,
+  uv_index: My,
+  dew_point: Cy,
+  aqi: $y,
+  precipitation_outlook: Ey,
+  editor: Ty,
+  demo: Dy
+}, Vy = "Soleado", Ly = "Despejado", Hy = "Cubierto", Iy = "Nublado", Ry = "Parcialmente Nublado", By = "Lluvioso", Fy = "Lluvia", Oy = "Nevado", qy = "Nieve", Uy = "Nublado", Ky = "Niebla", Wy = "Rayo", Gy = "Lluvia Intensa", Zy = "Granizo", Yy = "Ventoso", Jy = "Sensación térmica", Qy = "Previsión para hoy", Xy = "Pronóstico por horas", eb = "Previsión Diaria", tb = "Sin datos", ab = "Clima", ib = "km/h", nb = "m/s", rb = "mph", ob = "knots", sb = "ft/s", lb = "AM", _b = "PM", db = "Presión", ub = "Índice UV", cb = "Punto de rocío", mb = "Índice de calidad del aire", pb = { start: "{kind}: empieza hacia {time}", soon: "{kind}: empieza pronto", stop: "{kind}: termina hacia {time}", continues: "{kind}: al menos {hours} h más", rain: "Lluvia", snow: "Nieve", sleet: "Aguanieve", hail: "Granizo", storm: "Tormentas" }, hb = { entity: "Entidad de clima", name: "Título de la tarjeta", layout: "Diseño", layout_default: "Default", layout_minimal: "Minimal", height: "Altura", show_feels_like: "Sensación térmica", show_wind: "Viento", show_wind_gust: "Ráfagas", show_wind_direction: "Dirección", show_humidity: "Humedad", show_min_temp: "Temperatura mínima", show_hourly_forecast: "Pronóstico por horas", hourly_forecast_hours: "Horas", hourly_forecast_step: "Cada", hourly_forecast_chart: "Gráfico de temperatura", show_daily_forecast: "Pronóstico diario", daily_forecast_days: "Días", show_sunrise_sunset: "Amanecer y atardecer", sunrise_entity: "Sensor de amanecer", sunset_entity: "Sensor de atardecer", show_clock: "Reloj", clock_position: "Posición", clock_position_top: "Arriba", clock_position_details: "Detalles", clock_format: "Formato", clock_format_12h: "12 horas (AM/PM)", clock_format_24h: "24 horas", clock_size: "Tamaño", clock_size_small: "Pequeño", clock_size_medium: "Mediano", clock_size_large: "Grande", clock_weight: "Grosor", clock_weight_thin: "Fino", clock_weight_regular: "Normal", clock_weight_bold: "Negrita", overlay_opacity: "Oscurecimiento", text_shadow: "Sombra del texto", language: "Idioma", language_auto: "Automático", language_en: "Inglés", language_ru: "Ruso", language_de: "Alemán", language_nl: "Neerlandés", language_fr: "Francés", language_es: "Español", language_it: "Italiano", language_sk: "Eslovaco", language_hu: "Húngaro", language_pt: "Portugués", wind_speed_unit: "Unidad de velocidad del viento", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Auto (como la integración)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "knots", wind_speed_unit_helper: "Auto mantiene la unidad de la integración o del sensor de viento; las demás convierten todo el viento de la tarjeta", show_animations: "Animaciones", animation_quality: "Calidad de animación", animation_quality_helper: "Redúcela en tabletas de pared y dispositivos lentos", animation_quality_high: "Alta", animation_quality_low: "Baja (20 FPS, para dispositivos lentos)", animation_quality_medium: "Media (30 FPS, menos partículas)", aqi_entity: "Sensor de calidad del aire (AQI)", border_radius: "Radio de las esquinas", daily_forecast_title: "Título", daily_forecast_title_helper: "Vacío = título predeterminado", dew_point_entity: "Sensor de punto de rocío", feels_like_entity: "Sensor de sensación térmica", hourly_forecast_title: "Título", hourly_forecast_title_helper: "Vacío = título predeterminado", humidity_entity: "Sensor de humedad", overlay_opacity_helper: "0–1, oscurece el cielo para que el texto se lea bien", precipitation_entity: "Sensor de precipitación", pressure_entity: "Sensor de presión", section_appearance: "Apariencia", section_clock: "Idioma, reloj y fecha", section_details: "Detalles", section_forecast: "Pronóstico", section_sensors: "Sensores (opcional)", show_aurora: "Aurora boreal", show_aurora_helper: "En noches despejadas, gráficos modernos", show_date: "Fecha", show_dew_point: "Punto de rocío", show_precipitation_outlook: "Cuándo empieza/termina la lluvia", show_precipitation_outlook_helper: "Según el pronóstico por horas de las próximas 12 horas", show_pressure: "Presión", show_raindrops: "Gotas de lluvia en el cristal", show_raindrops_helper: "Con lluvia, gráficos modernos", show_temperature_bars: "Barras de temperatura", show_forecast_wind: "Viento en los pronósticos", show_forecast_wind_helper: "Dirección, velocidad y rachas para cada hora y cada día, si el proveedor del tiempo las ofrece", hourly_forecast_step_helper: "Mostrar el pronóstico cada pocas horas, p. ej. 3 para 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Una curva de temperatura en lugar de números, con la probabilidad de precipitación en barras", show_forecast_description: "Pronóstico en texto", show_forecast_description_helper: "El pronóstico escrito del proveedor del tiempo, si lo ofrece (p. ej. el National Weather Service de EE. UU.)", show_uv_index: "Índice UV", show_wind_effects: "Ráfagas y hojas", show_wind_effects_helper: "Con viento o por encima de 8 m/s", sun_position_x: "Posición del sol/luna, horizontal", sun_position_x_helper: "Déjalo vacío para seguir la hora del día", sun_position_y: "Posición del sol/luna, vertical", sun_position_y_helper: "Déjalo vacío para seguir la hora del día", temperature_entity: "Sensor de temperatura", text_color: "Color del texto", text_color_helper: "Cualquier color CSS, p. ej. #1a1a2e o var(--primary-text-color)", uv_index_entity: "Sensor de índice UV", visual_style: "Gráficos", visual_style_classic: "Clásico", visual_style_modern: "Moderno", wind_bearing_entity: "Sensor de dirección del viento", wind_gust_entity: "Sensor de ráfagas", wind_speed_entity: "Sensor de velocidad del viento", language_da: "Danés", language_nb: "Noruego (bokmål)", language_pl: "Polaco", language_sl: "Esloveno", language_sr: "Serbio", "language_sr-Latn": "Serbio (latino)", language_tr: "Turco", language_zh: "Chino", hourly_forecast_hours_helper: "Sin límite: p. ej. 72 para tres días, o más para mostrar todo el pronóstico del proveedor", styles: "CSS propio", styles_helper: "CSS para la tarjeta y todas sus partes, p. ej. .temperature { font-size: 48px; }" }, gb = { pageTitle: "Tarjeta Meteorológica Dinámica", pageSubtitle: "Demostración interactiva y Herramienta de Configuración", quickPresets: "Ajustes Rápidos", sunnyDay: "Día soleado", rainy: "Lluvioso", snowy: "Nevado", clearNight: "Noche despejada", condition: "Condición", temperature: "Temperatura", humidity: "Humedad (%)", windSpeed: "Velocidad del Viento", timeOfDay: "Hora del Día", timeMode: "Modo Tiempo", manualControl: "Control Manual", sunrise: "Amanecer", day: "Día", sunset: "Atardecer", night: "Noche", cardName: "Nombre de la tarjeta", height: "Altura (px)", feelsLike: "Sensación Térmica", minTemp: "Temperatura Mínima", windDirection: "Dirección del Viento", windGust: "Ráfaga de Viento", hourlyForecast: "Previsión por Horas", dailyForecast: "Previsión Diaria", sunriseSunset: "Amanecer/Atardecer", showClock: "Reloj", clockPosition: "Posición del Reloj", clockPositionTop: "Arriba a la derecha", clockPositionDetails: "Línea de detalles", clockFormat: "Formato del Reloj", clockSize: "Tamaño del reloj", clockSizeSmall: "Pequeño", clockSizeMedium: "Mediano", clockSizeLarge: "Grande", clockWeight: "Grosor del reloj", clockWeightThin: "Fino", clockWeightRegular: "Normal", clockWeightBold: "Negrita", overlayOpacity: "Opacidad de Superposición (0-1)", windSpeedUnit: "Unidad de Velocidad del Viento", dailyForecastDays: "Días de Previsión", hourlyForecastHours: "Horas de Previsión", hourlyForecastStep: "Paso del pronóstico por horas (h)", hourlyChart: "Gráfico de temperatura por horas", startDemo: "Iniciar Modo Demostración", stopDemo: "Detener Demostración", madeWith: "Hecho con amor para Home Assistant", loading: "Cargando tarjeta...", placeholderEmpty: "Deje vacío para ocultar", weatherConditions: { sunny: "Soleado", clearNight: "Noche Despejada", partlyCloudy: "Parcialmente Nublado", cloudy: "Nublado", rainy: "Lluvioso", pouring: "Torrencial", snowy: "Nevado", sleet: "Aguanieve", hail: "Granizo", foggy: "Nublado", lightning: "Rayos", thunderstorm: "Tormenta Eléctrica", windy: "Ventoso", windyVariant: "Ventoso, nublado" }, language: { title: "Idioma" }, animationQuality: "Calidad de animación", animations: "Animaciones", aqi: "Calidad del aire (sensor)", aurora: "Aurora boreal", auroraNight: "Aurora", autoShort: "Auto", borderRadius: "Radio de las esquinas (px)", clockAndDate: "Reloj", dailyForecastTitle: "Título del pronóstico diario", details: "Detalles", dewPoint: "Punto de rocío", documentation: "Documentación", forecasts: "Pronósticos", hourlyForecastTitle: "Título del pronóstico por horas", humidityToggle: "Humedad", layout: "Diseño", layoutDefault: "Predeterminado", layoutMinimal: "Mínimo", links: "Enlaces", moonPhase: "Fase lunar", pause: "Pausa", placeholderDefault: "Predeterminado", play24h: "Reproducir 24 horas", playSpeed: "Duración del ciclo", precipitationOutlook: "Inicio/fin de la lluvia", pressure: "Presión", qualityHighShort: "Alta", qualityLowShort: "Baja", qualityMediumShort: "Media", raindrops: "Gotas de lluvia en el cristal", reportIssue: "Informar de un problema", showDate: "Fecha", stationSensors: "Sensores de estación", stationSensorsHint: "Los sensores de estación sustituyen la temperatura, la humedad, el viento y la precipitación por valores de ejemplo de una estación meteorológica personal.", sunPositionX: "Sol/Luna X (%)", sunPositionY: "Sol/Luna Y (%)", tabContent: "Contenido", tabLook: "Aspecto", tabMore: "Más", tabTime: "Hora", tabWeather: "Tiempo", temperatureBars: "Barras de temperatura", forecastWind: "Viento en los pronósticos", forecastDescription: "Pronóstico en texto", textColor: "Color del texto", textShadow: "Sombra del texto", uvIndex: "Índice UV", visualStyle: "Estilo gráfico", visualStyleClassic: "🎨 Clásico", visualStyleModern: "✨ Moderno", windBearing: "Dirección del viento", windEffects: "Ráfagas y hojas", windyDay: "Ventoso", yamlTitle: "YAML de la tarjeta", copy: "Copiar", copied: "Copiado", yamlHint: "Pégalo en una tarjeta manual de Home Assistant y sustituye weather.home por tu entidad del tiempo.", customCss: "CSS propio", customCssPlaceholder: ".temperature { font-size: 48px; }" }, yb = {
+  sunny: Vy,
+  clear: Ly,
+  overcast: Hy,
+  cloudy: Iy,
+  partlycloudy: Ry,
+  rainy: By,
+  rain: Fy,
+  snowy: Oy,
+  snow: qy,
+  foggy: Uy,
+  fog: Ky,
+  lightning: Wy,
   "lightning-rainy": "Tormenta Eléctrica",
-  pouring: Wy,
+  pouring: Gy,
   "snowy-rainy": "Aguanieve",
-  hail: Gy,
+  hail: Zy,
   "clear-night": "Noche Despejada",
-  windy: Zy,
+  windy: Yy,
   "windy-variant": "Ventoso, nublado",
-  feels_like: Yy,
-  forecast_title: Jy,
-  forecast_title_hourly: Qy,
-  daily_forecast_title: Xy,
-  no_data: eb,
-  weather: tb,
-  wind_unit_kmh: ab,
-  wind_unit_ms: ib,
-  wind_unit_mph: nb,
-  wind_unit_knots: rb,
-  wind_unit_fts: ob,
-  am: sb,
-  pm: lb,
-  pressure: _b,
-  uv_index: db,
-  dew_point: ub,
-  aqi: cb,
-  precipitation_outlook: mb,
-  editor: pb,
-  demo: hb
-}, yb = "Päikeseline", bb = "Pilvitu", vb = "Lauspilves", kb = "Pilves", fb = "Vahelduv pilvisus", wb = "Vihmane", zb = "Vihm", jb = "Lumine", Sb = "Lumi", xb = "Udune", Ab = "Udu", Pb = "Tuuline", Mb = "Äike", Cb = "Paduvihm", $b = "Rahe", Eb = "Tundub nagu", Tb = "Tänane prognoos", Db = "Tunniprognoos", Nb = "Päevaprognoos", Vb = "Andmed puuduvad", Lb = "Ilm", Hb = "km/h", Ib = "m/s", Rb = "mph", Bb = "sõlme", Fb = "ft/s", Ob = "AM", qb = "PM", Ub = "Õhurõhk", Kb = "UV-indeks", Wb = "Kastepunkt", Gb = "Õhukvaliteedi indeks", Zb = { start: "{kind}: algab umbes {time}", soon: "{kind}: algab peagi", stop: "{kind}: lõpeb umbes {time}", continues: "{kind}: veel vähemalt {hours} h", rain: "Vihm", snow: "Lumi", sleet: "Lörts", hail: "Rahe", storm: "Äike" }, Yb = { entity: "Ilmaolem", name: "Kaardi pealkiri", layout: "Paigutus", layout_default: "Vaikimisi", layout_minimal: "Minimaalne", visual_style: "Graafika", visual_style_modern: "Moodne", visual_style_classic: "Klassikaline", animation_quality: "Animatsiooni kvaliteet", animation_quality_high: "Kõrge", animation_quality_medium: "Keskmine (30 FPS, vähem osakesi)", animation_quality_low: "Madal (20 FPS, aeglastele seadmetele)", height: "Kõrgus", show_feels_like: "Tundub nagu", show_wind: "Tuul", show_wind_gust: "Puhangud", show_wind_direction: "Suund", show_humidity: "Niiskus", show_min_temp: "Miinimumtemperatuur", show_hourly_forecast: "Tunniprognoos", hourly_forecast_hours: "Tunnid", hourly_forecast_step: "Iga", hourly_forecast_chart: "Temperatuurigraafik", hourly_forecast_title: "Pealkiri", show_daily_forecast: "Päevaprognoos", daily_forecast_days: "Päevad", daily_forecast_title: "Pealkiri", show_sunrise_sunset: "Päikesetõus ja -loojang", sunrise_entity: "Päikesetõusu andur", sunset_entity: "Päikeseloojangu andur", temperature_entity: "Temperatuuriandur", feels_like_entity: "Tajutava temperatuuri andur", humidity_entity: "Niiskusandur", wind_speed_entity: "Tuulekiiruse andur", wind_gust_entity: "Tuulepuhangute andur", wind_bearing_entity: "Tuulesuuna andur", precipitation_entity: "Sademeteandur", show_pressure: "Õhurõhk", show_uv_index: "UV-indeks", show_dew_point: "Kastepunkt", show_precipitation_outlook: "Millal vihm algab/lõpeb", show_temperature_bars: "Temperatuuriribad", show_forecast_wind: "Tuul prognoosides", show_forecast_wind_helper: "Iga tunni ja päeva tuule suund, kiirus ja puhangud, kui ilmateenus neid edastab", hourly_forecast_step_helper: "Näita prognoosi iga paari tunni järel, nt 3 puhul 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Numbrite asemel temperatuurikõver ja sademete tõenäosus tulpadena", show_forecast_description: "Tekstiprognoos", show_forecast_description_helper: "Ilmateenuse kirjalik prognoos, kui see on olemas (nt USA National Weather Service)", pressure_entity: "Õhurõhu andur", uv_index_entity: "UV-indeksi andur", dew_point_entity: "Kastepunkti andur", aqi_entity: "Õhukvaliteedi andur (AQI)", show_clock: "Kell", show_date: "Kuupäev", clock_position: "Asukoht", clock_position_top: "Üleval", clock_position_details: "Üksikasjad", clock_format: "Vorming", clock_format_12h: "12-tunnine (AM/PM)", clock_format_24h: "24-tunnine", clock_size: "Suurus", clock_size_small: "Väike", clock_size_medium: "Keskmine", clock_size_large: "Suur", clock_weight: "Paksus", clock_weight_thin: "Õhuke", clock_weight_regular: "Tavaline", clock_weight_bold: "Paks", overlay_opacity: "Tumendus", text_shadow: "Teksti vari", text_color: "Teksti värv", border_radius: "Nurkade ümarus", sun_position_x: "Päikese/kuu asukoht, horisontaalne", sun_position_y: "Päikese/kuu asukoht, vertikaalne", language: "Keel", language_auto: "Automaatne", language_en: "Inglise", language_ru: "Vene", language_de: "Saksa", language_nl: "Hollandi", language_fr: "Prantsuse", language_es: "Hispaania", language_it: "Itaalia", language_sk: "Slovaki", language_hu: "Ungari", language_pt: "Portugali", language_da: "Taani", language_sr: "Serbia", "language_sr-Latn": "Serbia (ladina)", language_pl: "Poola", language_zh: "Hiina", language_tr: "Türgi", language_nb: "Norra (bokmål)", language_sl: "Sloveeni", wind_speed_unit: "Tuulekiiruse ühik", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Automaatne (nagu integratsioonis)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "sõlme", wind_speed_unit_helper: "Automaatne kasutab integratsiooni või tuuleanduri ühikut; teised teisendavad kogu kaardi tuule", show_animations: "Animatsioonid", show_aurora: "Virmalised", section_appearance: "Välimus", section_details: "Üksikasjad", section_forecast: "Prognoos", section_clock: "Keel, kell ja kuupäev", section_sensors: "Andurid (valikuline)", animation_quality_helper: "Vähenda seinatahvelarvutitel ja aeglastel seadmetel", show_aurora_helper: "Selgetel öödel, moodne graafika", overlay_opacity_helper: "0–1, tumendab taevast, et tekst oleks loetav", text_color_helper: "Mis tahes CSS-värv, nt #1a1a2e või var(--primary-text-color)", sun_position_x_helper: "Jäta tühjaks, et järgida kellaaega", sun_position_y_helper: "Jäta tühjaks, et järgida kellaaega", show_precipitation_outlook_helper: "Järgmise 12 tunni tunniprognoosi põhjal", hourly_forecast_title_helper: "Tühi = vaikepealkiri", daily_forecast_title_helper: "Tühi = vaikepealkiri", show_raindrops: "Vihmapiisad klaasil", show_wind_effects: "Tuulepuhangud ja lehed", show_raindrops_helper: "Vihmaga, moodne graafika", show_wind_effects_helper: "Tuulise ilmaga või üle 8 m/s", hourly_forecast_hours_helper: "Ülempiirita: nt 72 kolme päeva jaoks või rohkem, et näidata pakkuja kogu prognoosi", styles: "Oma CSS", styles_helper: "CSS kaardile ja kõigile selle osadele, nt .temperature { font-size: 48px; }" }, Jb = { aurora: "Virmalised", windyDay: "Tuuline", auroraNight: "Virmalised", pressure: "Õhurõhk", uvIndex: "UV-indeks", dewPoint: "Kastepunkt", aqi: "Õhukvaliteet (andur)", precipitationOutlook: "Vihma algus/lõpp", temperatureBars: "Temperatuuriribad", forecastWind: "Tuul prognoosides", forecastDescription: "Tekstiprognoos", pageTitle: "Dünaamiline ilmakaart", pageSubtitle: "Interaktiivne demo ja seadistamine", quickPresets: "Kiirvalikud", sunnyDay: "Päikeseline päev", rainy: "Vihmane", snowy: "Lumine", clearNight: "Selge öö", condition: "Olud", temperature: "Temperatuur", humidity: "Niiskus (%)", windSpeed: "Tuule kiirus", timeOfDay: "Kellaaeg", timeMode: "Aja režiim", moonPhase: "Kuufaas", visualStyle: "Graafika stiil", visualStyleModern: "✨ Moodne", visualStyleClassic: "🎨 Klassikaline", animationQuality: "Animatsiooni kvaliteet", tabWeather: "Ilm", tabTime: "Aeg", tabLook: "Välimus", tabContent: "Sisu", tabMore: "Veel", windBearing: "Tuule suund", stationSensorsHint: "Jaama andurid asendavad temperatuuri, niiskuse, tuule ja sademed isikliku ilmajaama näidisväärtustega.", autoShort: "Auto", playSpeed: "Tsükli pikkus", play24h: "Esita 24 tundi", pause: "Paus", qualityHighShort: "Kõrge", qualityMediumShort: "Keskmine", qualityLowShort: "Madal", animations: "Animatsioonid", layout: "Paigutus", layoutDefault: "Tavaline", layoutMinimal: "Minimaalne", textShadow: "Teksti vari", details: "Üksikasjad", humidityToggle: "Niiskus", clockAndDate: "Kell", forecasts: "Prognoosid", placeholderDefault: "Vaikimisi", links: "Lingid", documentation: "Dokumentatsioon", reportIssue: "Teata probleemist", manualControl: "Käsitsi", sunrise: "Päikesetõus", day: "Päev", sunset: "Päikeseloojang", night: "Öö", cardName: "Kaardi nimi", height: "Kõrgus (px)", feelsLike: "Tajutav temperatuur", minTemp: "Miinimumtemperatuur", windDirection: "Tuule suund", windGust: "Tuulepuhangud", hourlyForecast: "Tunniprognoos", dailyForecast: "Päevaprognoos", sunriseSunset: "Päikesetõus/-loojang", showClock: "Kell", stationSensors: "Jaama andurid", showDate: "Kuupäev", textColor: "Teksti värv", borderRadius: "Nurkade raadius (px)", sunPositionX: "Päike/Kuu X (%)", sunPositionY: "Päike/Kuu Y (%)", clockPosition: "Kella asukoht", clockPositionTop: "Üleval paremal", clockPositionDetails: "Üksikasjade real", clockFormat: "Kella vorming", clockSize: "Kella suurus", clockSizeSmall: "Väike", clockSizeMedium: "Keskmine", clockSizeLarge: "Suur", clockWeight: "Kella kirja paksus", clockWeightThin: "Õhuke", clockWeightRegular: "Tavaline", clockWeightBold: "Paks", overlayOpacity: "Ülekatte läbipaistmatus (0-1)", windSpeedUnit: "Tuule kiiruse ühik", dailyForecastDays: "Päevaprognoosi päevad", hourlyForecastHours: "Tunniprognoosi tunnid", hourlyForecastStep: "Tunniprognoosi samm (h)", hourlyChart: "Tunnipõhine temperatuurigraafik", hourlyForecastTitle: "Tunniprognoosi pealkiri", dailyForecastTitle: "Päevaprognoosi pealkiri", startDemo: "Käivita demo", stopDemo: "Peata demo", madeWith: "Tehtud armastusega Home Assistanti jaoks", loading: "Kaardi laadimine...", placeholderEmpty: "Jäta tühjaks, et peita", weatherConditions: { windy: "Tuuline", windyVariant: "Tuuline, pilves", sunny: "Päikeseline", clearNight: "Selge öö", partlyCloudy: "Vahelduv pilvisus", cloudy: "Pilvine", rainy: "Vihmane", pouring: "Paduvihm", snowy: "Lumine", sleet: "Lörts", hail: "Rahe", foggy: "Udune", lightning: "Äike", thunderstorm: "Äikesetorm" }, language: { title: "Keel" }, raindrops: "Vihmapiisad klaasil", windEffects: "Tuulepuhangud ja lehed", yamlTitle: "Kaardi YAML", copy: "Kopeeri", copied: "Kopeeritud", yamlHint: "Kleebi see Home Assistanti käsitsi kaarti ja asenda weather.home oma ilmaolemiga.", customCss: "Oma CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, Qb = {
-  sunny: yb,
-  clear: bb,
-  overcast: vb,
-  cloudy: kb,
-  partlycloudy: fb,
-  rainy: wb,
-  rain: zb,
-  snowy: jb,
-  snow: Sb,
-  foggy: xb,
-  fog: Ab,
-  windy: Pb,
+  feels_like: Jy,
+  forecast_title: Qy,
+  forecast_title_hourly: Xy,
+  daily_forecast_title: eb,
+  no_data: tb,
+  weather: ab,
+  wind_unit_kmh: ib,
+  wind_unit_ms: nb,
+  wind_unit_mph: rb,
+  wind_unit_knots: ob,
+  wind_unit_fts: sb,
+  am: lb,
+  pm: _b,
+  pressure: db,
+  uv_index: ub,
+  dew_point: cb,
+  aqi: mb,
+  precipitation_outlook: pb,
+  editor: hb,
+  demo: gb
+}, bb = "Päikeseline", vb = "Pilvitu", kb = "Lauspilves", fb = "Pilves", wb = "Vahelduv pilvisus", zb = "Vihmane", jb = "Vihm", Sb = "Lumine", xb = "Lumi", Ab = "Udune", Pb = "Udu", Mb = "Tuuline", Cb = "Äike", $b = "Paduvihm", Eb = "Rahe", Tb = "Tundub nagu", Db = "Tänane prognoos", Nb = "Tunniprognoos", Vb = "Päevaprognoos", Lb = "Andmed puuduvad", Hb = "Ilm", Ib = "km/h", Rb = "m/s", Bb = "mph", Fb = "sõlme", Ob = "ft/s", qb = "AM", Ub = "PM", Kb = "Õhurõhk", Wb = "UV-indeks", Gb = "Kastepunkt", Zb = "Õhukvaliteedi indeks", Yb = { start: "{kind}: algab umbes {time}", soon: "{kind}: algab peagi", stop: "{kind}: lõpeb umbes {time}", continues: "{kind}: veel vähemalt {hours} h", rain: "Vihm", snow: "Lumi", sleet: "Lörts", hail: "Rahe", storm: "Äike" }, Jb = { entity: "Ilmaolem", name: "Kaardi pealkiri", layout: "Paigutus", layout_default: "Vaikimisi", layout_minimal: "Minimaalne", visual_style: "Graafika", visual_style_modern: "Moodne", visual_style_classic: "Klassikaline", animation_quality: "Animatsiooni kvaliteet", animation_quality_high: "Kõrge", animation_quality_medium: "Keskmine (30 FPS, vähem osakesi)", animation_quality_low: "Madal (20 FPS, aeglastele seadmetele)", height: "Kõrgus", show_feels_like: "Tundub nagu", show_wind: "Tuul", show_wind_gust: "Puhangud", show_wind_direction: "Suund", show_humidity: "Niiskus", show_min_temp: "Miinimumtemperatuur", show_hourly_forecast: "Tunniprognoos", hourly_forecast_hours: "Tunnid", hourly_forecast_step: "Iga", hourly_forecast_chart: "Temperatuurigraafik", hourly_forecast_title: "Pealkiri", show_daily_forecast: "Päevaprognoos", daily_forecast_days: "Päevad", daily_forecast_title: "Pealkiri", show_sunrise_sunset: "Päikesetõus ja -loojang", sunrise_entity: "Päikesetõusu andur", sunset_entity: "Päikeseloojangu andur", temperature_entity: "Temperatuuriandur", feels_like_entity: "Tajutava temperatuuri andur", humidity_entity: "Niiskusandur", wind_speed_entity: "Tuulekiiruse andur", wind_gust_entity: "Tuulepuhangute andur", wind_bearing_entity: "Tuulesuuna andur", precipitation_entity: "Sademeteandur", show_pressure: "Õhurõhk", show_uv_index: "UV-indeks", show_dew_point: "Kastepunkt", show_precipitation_outlook: "Millal vihm algab/lõpeb", show_temperature_bars: "Temperatuuriribad", show_forecast_wind: "Tuul prognoosides", show_forecast_wind_helper: "Iga tunni ja päeva tuule suund, kiirus ja puhangud, kui ilmateenus neid edastab", hourly_forecast_step_helper: "Näita prognoosi iga paari tunni järel, nt 3 puhul 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Numbrite asemel temperatuurikõver ja sademete tõenäosus tulpadena", show_forecast_description: "Tekstiprognoos", show_forecast_description_helper: "Ilmateenuse kirjalik prognoos, kui see on olemas (nt USA National Weather Service)", pressure_entity: "Õhurõhu andur", uv_index_entity: "UV-indeksi andur", dew_point_entity: "Kastepunkti andur", aqi_entity: "Õhukvaliteedi andur (AQI)", show_clock: "Kell", show_date: "Kuupäev", clock_position: "Asukoht", clock_position_top: "Üleval", clock_position_details: "Üksikasjad", clock_format: "Vorming", clock_format_12h: "12-tunnine (AM/PM)", clock_format_24h: "24-tunnine", clock_size: "Suurus", clock_size_small: "Väike", clock_size_medium: "Keskmine", clock_size_large: "Suur", clock_weight: "Paksus", clock_weight_thin: "Õhuke", clock_weight_regular: "Tavaline", clock_weight_bold: "Paks", overlay_opacity: "Tumendus", text_shadow: "Teksti vari", text_color: "Teksti värv", border_radius: "Nurkade ümarus", sun_position_x: "Päikese/kuu asukoht, horisontaalne", sun_position_y: "Päikese/kuu asukoht, vertikaalne", language: "Keel", language_auto: "Automaatne", language_en: "Inglise", language_ru: "Vene", language_de: "Saksa", language_nl: "Hollandi", language_fr: "Prantsuse", language_es: "Hispaania", language_it: "Itaalia", language_sk: "Slovaki", language_hu: "Ungari", language_pt: "Portugali", language_da: "Taani", language_sr: "Serbia", "language_sr-Latn": "Serbia (ladina)", language_pl: "Poola", language_zh: "Hiina", language_tr: "Türgi", language_nb: "Norra (bokmål)", language_sl: "Sloveeni", wind_speed_unit: "Tuulekiiruse ühik", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Automaatne (nagu integratsioonis)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "sõlme", wind_speed_unit_helper: "Automaatne kasutab integratsiooni või tuuleanduri ühikut; teised teisendavad kogu kaardi tuule", show_animations: "Animatsioonid", show_aurora: "Virmalised", section_appearance: "Välimus", section_details: "Üksikasjad", section_forecast: "Prognoos", section_clock: "Keel, kell ja kuupäev", section_sensors: "Andurid (valikuline)", animation_quality_helper: "Vähenda seinatahvelarvutitel ja aeglastel seadmetel", show_aurora_helper: "Selgetel öödel, moodne graafika", overlay_opacity_helper: "0–1, tumendab taevast, et tekst oleks loetav", text_color_helper: "Mis tahes CSS-värv, nt #1a1a2e või var(--primary-text-color)", sun_position_x_helper: "Jäta tühjaks, et järgida kellaaega", sun_position_y_helper: "Jäta tühjaks, et järgida kellaaega", show_precipitation_outlook_helper: "Järgmise 12 tunni tunniprognoosi põhjal", hourly_forecast_title_helper: "Tühi = vaikepealkiri", daily_forecast_title_helper: "Tühi = vaikepealkiri", show_raindrops: "Vihmapiisad klaasil", show_wind_effects: "Tuulepuhangud ja lehed", show_raindrops_helper: "Vihmaga, moodne graafika", show_wind_effects_helper: "Tuulise ilmaga või üle 8 m/s", hourly_forecast_hours_helper: "Ülempiirita: nt 72 kolme päeva jaoks või rohkem, et näidata pakkuja kogu prognoosi", styles: "Oma CSS", styles_helper: "CSS kaardile ja kõigile selle osadele, nt .temperature { font-size: 48px; }" }, Qb = { aurora: "Virmalised", windyDay: "Tuuline", auroraNight: "Virmalised", pressure: "Õhurõhk", uvIndex: "UV-indeks", dewPoint: "Kastepunkt", aqi: "Õhukvaliteet (andur)", precipitationOutlook: "Vihma algus/lõpp", temperatureBars: "Temperatuuriribad", forecastWind: "Tuul prognoosides", forecastDescription: "Tekstiprognoos", pageTitle: "Dünaamiline ilmakaart", pageSubtitle: "Interaktiivne demo ja seadistamine", quickPresets: "Kiirvalikud", sunnyDay: "Päikeseline päev", rainy: "Vihmane", snowy: "Lumine", clearNight: "Selge öö", condition: "Olud", temperature: "Temperatuur", humidity: "Niiskus (%)", windSpeed: "Tuule kiirus", timeOfDay: "Kellaaeg", timeMode: "Aja režiim", moonPhase: "Kuufaas", visualStyle: "Graafika stiil", visualStyleModern: "✨ Moodne", visualStyleClassic: "🎨 Klassikaline", animationQuality: "Animatsiooni kvaliteet", tabWeather: "Ilm", tabTime: "Aeg", tabLook: "Välimus", tabContent: "Sisu", tabMore: "Veel", windBearing: "Tuule suund", stationSensorsHint: "Jaama andurid asendavad temperatuuri, niiskuse, tuule ja sademed isikliku ilmajaama näidisväärtustega.", autoShort: "Auto", playSpeed: "Tsükli pikkus", play24h: "Esita 24 tundi", pause: "Paus", qualityHighShort: "Kõrge", qualityMediumShort: "Keskmine", qualityLowShort: "Madal", animations: "Animatsioonid", layout: "Paigutus", layoutDefault: "Tavaline", layoutMinimal: "Minimaalne", textShadow: "Teksti vari", details: "Üksikasjad", humidityToggle: "Niiskus", clockAndDate: "Kell", forecasts: "Prognoosid", placeholderDefault: "Vaikimisi", links: "Lingid", documentation: "Dokumentatsioon", reportIssue: "Teata probleemist", manualControl: "Käsitsi", sunrise: "Päikesetõus", day: "Päev", sunset: "Päikeseloojang", night: "Öö", cardName: "Kaardi nimi", height: "Kõrgus (px)", feelsLike: "Tajutav temperatuur", minTemp: "Miinimumtemperatuur", windDirection: "Tuule suund", windGust: "Tuulepuhangud", hourlyForecast: "Tunniprognoos", dailyForecast: "Päevaprognoos", sunriseSunset: "Päikesetõus/-loojang", showClock: "Kell", stationSensors: "Jaama andurid", showDate: "Kuupäev", textColor: "Teksti värv", borderRadius: "Nurkade raadius (px)", sunPositionX: "Päike/Kuu X (%)", sunPositionY: "Päike/Kuu Y (%)", clockPosition: "Kella asukoht", clockPositionTop: "Üleval paremal", clockPositionDetails: "Üksikasjade real", clockFormat: "Kella vorming", clockSize: "Kella suurus", clockSizeSmall: "Väike", clockSizeMedium: "Keskmine", clockSizeLarge: "Suur", clockWeight: "Kella kirja paksus", clockWeightThin: "Õhuke", clockWeightRegular: "Tavaline", clockWeightBold: "Paks", overlayOpacity: "Ülekatte läbipaistmatus (0-1)", windSpeedUnit: "Tuule kiiruse ühik", dailyForecastDays: "Päevaprognoosi päevad", hourlyForecastHours: "Tunniprognoosi tunnid", hourlyForecastStep: "Tunniprognoosi samm (h)", hourlyChart: "Tunnipõhine temperatuurigraafik", hourlyForecastTitle: "Tunniprognoosi pealkiri", dailyForecastTitle: "Päevaprognoosi pealkiri", startDemo: "Käivita demo", stopDemo: "Peata demo", madeWith: "Tehtud armastusega Home Assistanti jaoks", loading: "Kaardi laadimine...", placeholderEmpty: "Jäta tühjaks, et peita", weatherConditions: { windy: "Tuuline", windyVariant: "Tuuline, pilves", sunny: "Päikeseline", clearNight: "Selge öö", partlyCloudy: "Vahelduv pilvisus", cloudy: "Pilvine", rainy: "Vihmane", pouring: "Paduvihm", snowy: "Lumine", sleet: "Lörts", hail: "Rahe", foggy: "Udune", lightning: "Äike", thunderstorm: "Äikesetorm" }, language: { title: "Keel" }, raindrops: "Vihmapiisad klaasil", windEffects: "Tuulepuhangud ja lehed", yamlTitle: "Kaardi YAML", copy: "Kopeeri", copied: "Kopeeritud", yamlHint: "Kleebi see Home Assistanti käsitsi kaarti ja asenda weather.home oma ilmaolemiga.", customCss: "Oma CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, Xb = {
+  sunny: bb,
+  clear: vb,
+  overcast: kb,
+  cloudy: fb,
+  partlycloudy: wb,
+  rainy: zb,
+  rain: jb,
+  snowy: Sb,
+  snow: xb,
+  foggy: Ab,
+  fog: Pb,
+  windy: Mb,
   "windy-variant": "Tuuline, pilves",
-  lightning: Mb,
+  lightning: Cb,
   "lightning-rainy": "Äikesevihm",
-  pouring: Cb,
+  pouring: $b,
   "snowy-rainy": "Lörts",
-  hail: $b,
+  hail: Eb,
   "clear-night": "Selge öö",
-  feels_like: Eb,
-  forecast_title: Tb,
-  forecast_title_hourly: Db,
-  daily_forecast_title: Nb,
-  no_data: Vb,
-  weather: Lb,
-  wind_unit_kmh: Hb,
-  wind_unit_ms: Ib,
-  wind_unit_mph: Rb,
-  wind_unit_knots: Bb,
-  wind_unit_fts: Fb,
-  am: Ob,
-  pm: qb,
-  pressure: Ub,
-  uv_index: Kb,
-  dew_point: Wb,
-  aqi: Gb,
-  precipitation_outlook: Zb,
-  editor: Yb,
-  demo: Jb
-}, Xb = "Ensoleillé", ev = "Dégagé", tv = "Couvert", av = "Nuageux", iv = "Partiellement nuageux", nv = "Pluvieux", rv = "Pluie", ov = "Neigeux", sv = "Neige", lv = "Brumeux", _v = "Brouillard", dv = "Éclairs", uv = "Forte pluie", cv = "Grêle", mv = "Venteux", pv = "Ressenti", hv = "Prévisions du jour", gv = "Prévisions horaires", yv = "Prévisions quotidiennes", bv = "Aucune donnée", vv = "Météo", kv = "km/h", fv = "m/s", wv = "mph", zv = "knots", jv = "ft/s", Sv = "AM", xv = "PM", Av = "Pression", Pv = "Indice UV", Mv = "Point de rosée", Cv = "Indice de qualité de l'air", $v = { start: "{kind} : début vers {time}", soon: "{kind} : début imminent", stop: "{kind} : fin vers {time}", continues: "{kind} : encore au moins {hours} h", rain: "Pluie", snow: "Neige", sleet: "Neige fondue", hail: "Grêle", storm: "Orages" }, Ev = { entity: "Entité météo", name: "Titre de la carte", layout: "Mise en page", layout_default: "Default", layout_minimal: "Minimal", height: "Hauteur", show_feels_like: "Ressenti", show_wind: "Vent", show_wind_gust: "Rafales", show_wind_direction: "Direction", show_humidity: "Humidité", show_min_temp: "Température min.", show_hourly_forecast: "Prévisions horaires", hourly_forecast_hours: "Heures", hourly_forecast_step: "Toutes les", hourly_forecast_chart: "Graphique des températures", show_daily_forecast: "Prévisions quotidiennes", daily_forecast_days: "Jours", show_sunrise_sunset: "Lever et coucher du soleil", sunrise_entity: "Capteur de lever du soleil", sunset_entity: "Capteur de coucher du soleil", show_clock: "Horloge", clock_position: "Position", clock_position_top: "En haut", clock_position_details: "Détails", clock_format: "Format", clock_format_12h: "12 heures (AM/PM)", clock_format_24h: "24 heures", clock_size: "Taille", clock_size_small: "Petite", clock_size_medium: "Moyenne", clock_size_large: "Grande", clock_weight: "Graisse", clock_weight_thin: "Fine", clock_weight_regular: "Normale", clock_weight_bold: "Grasse", overlay_opacity: "Assombrissement", text_shadow: "Ombre du texte", language: "Langue", language_auto: "Auto", language_en: "Anglais", language_ru: "Russe", language_de: "Allemand", language_nl: "Néerlandais", language_fr: "Français", language_es: "Espagnol", language_it: "Italien", language_sk: "Slovaque", language_hu: "Hongrois", language_pt: "Portugais", wind_speed_unit: "Unité de vitesse du vent", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Auto (comme l’intégration)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "knots", wind_speed_unit_helper: "Auto garde l’unité de l’intégration ou du capteur de vent ; les autres convertissent tout le vent de la carte", show_animations: "Animations", animation_quality: "Qualité d'animation", animation_quality_helper: "À réduire pour les tablettes murales et les appareils lents", animation_quality_high: "Élevée", animation_quality_low: "Faible (20 FPS, pour appareils lents)", animation_quality_medium: "Moyenne (30 FPS, moins de particules)", aqi_entity: "Capteur de qualité de l'air (AQI)", border_radius: "Arrondi des coins", daily_forecast_title: "Titre", daily_forecast_title_helper: "Vide = titre par défaut", dew_point_entity: "Capteur de point de rosée", feels_like_entity: "Capteur de température ressentie", hourly_forecast_title: "Titre", hourly_forecast_title_helper: "Vide = titre par défaut", humidity_entity: "Capteur d'humidité", overlay_opacity_helper: "0–1, assombrit le ciel pour garder le texte lisible", precipitation_entity: "Capteur de précipitations", pressure_entity: "Capteur de pression", section_appearance: "Apparence", section_clock: "Langue, horloge et date", section_details: "Détails", section_forecast: "Prévisions", section_sensors: "Capteurs (facultatif)", show_aurora: "Aurore boréale", show_aurora_helper: "Par nuit claire, graphismes modernes", show_date: "Date", show_dew_point: "Point de rosée", show_precipitation_outlook: "Début/fin de la pluie", show_precipitation_outlook_helper: "D'après la prévision horaire des 12 prochaines heures", show_pressure: "Pression", show_raindrops: "Gouttes de pluie sur la vitre", show_raindrops_helper: "Sous la pluie, graphismes modernes", show_temperature_bars: "Barres de température", show_forecast_wind: "Vent dans les prévisions", show_forecast_wind_helper: "Direction, vitesse et rafales pour chaque heure et chaque jour, si le fournisseur météo les fournit", hourly_forecast_step_helper: "Afficher la prévision toutes les quelques heures, p. ex. 3 pour 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Une courbe de température au lieu des chiffres, avec la probabilité de précipitations en barres", show_forecast_description: "Prévision textuelle", show_forecast_description_helper: "La prévision rédigée du fournisseur météo, s’il en propose une (p. ex. le National Weather Service américain)", show_uv_index: "Indice UV", show_wind_effects: "Rafales et feuilles", show_wind_effects_helper: "Par temps venteux ou au-delà de 8 m/s", sun_position_x: "Position du soleil/de la lune, horizontale", sun_position_x_helper: "Laisser vide pour suivre l'heure de la journée", sun_position_y: "Position du soleil/de la lune, verticale", sun_position_y_helper: "Laisser vide pour suivre l'heure de la journée", temperature_entity: "Capteur de température", text_color: "Couleur du texte", text_color_helper: "Toute couleur CSS, p. ex. #1a1a2e ou var(--primary-text-color)", uv_index_entity: "Capteur d'indice UV", visual_style: "Graphismes", visual_style_classic: "Classique", visual_style_modern: "Moderne", wind_bearing_entity: "Capteur de direction du vent", wind_gust_entity: "Capteur de rafales", wind_speed_entity: "Capteur de vitesse du vent", language_da: "Danois", language_nb: "Norvégien (bokmål)", language_pl: "Polonais", language_sl: "Slovène", language_sr: "Serbe", "language_sr-Latn": "Serbe (latin)", language_tr: "Turc", language_zh: "Chinois", hourly_forecast_hours_helper: "Sans limite : p. ex. 72 pour trois jours, ou plus pour afficher toute la prévision du fournisseur", styles: "CSS personnalisé", styles_helper: "CSS pour la carte et toutes ses parties, p. ex. .temperature { font-size: 48px; }" }, Tv = { pageTitle: "Carte Météo Dynamique", pageSubtitle: "Démo Interactive & Outil de Configuration", quickPresets: "Pré-réglages rapides", sunnyDay: "Journée ensoleillée", rainy: "Pluvieux", snowy: "Neigeux", clearNight: "Nuit claire", condition: "Condition", temperature: "Température", humidity: "Humidité (%)", windSpeed: "Vitesse du vent", timeOfDay: "Moment de la journée", timeMode: "Mode horaire", manualControl: "Contrôle manuel", sunrise: "Lever du soleil", day: "Jour", sunset: "Coucher du soleil", night: "Nuit", cardName: "Nom de la carte", height: "Hauteur (px)", feelsLike: "Température ressentie", minTemp: "Température minimale", windDirection: "Direction du vent", windGust: "Rafales de vent", hourlyForecast: "Prévisions horaires", dailyForecast: "Prévisions quotidiennes", sunriseSunset: "Lever/Coucher du soleil", showClock: "Horloge", clockPosition: "Position de l'horloge", clockPositionTop: "En haut à droite", clockPositionDetails: "Ligne de détails", clockFormat: "Format de l'horloge", clockSize: "Taille de l'horloge", clockSizeSmall: "Petite", clockSizeMedium: "Moyenne", clockSizeLarge: "Grande", clockWeight: "Graisse de l'horloge", clockWeightThin: "Fine", clockWeightRegular: "Normale", clockWeightBold: "Grasse", overlayOpacity: "Opacité du voile (0-1)", windSpeedUnit: "Unité de vitesse du vent", dailyForecastDays: "Jours de prévision", hourlyForecastHours: "Heures de prévision", hourlyForecastStep: "Pas des prévisions horaires (h)", hourlyChart: "Graphique horaire des températures", startDemo: "Démarrer le mode démo", stopDemo: "Arrêter la démo", madeWith: "Fait avec amour pour Home Assistant", loading: "Chargement de la carte...", placeholderEmpty: "Laisser vide pour masquer", weatherConditions: { sunny: "Ensoleillé", clearNight: "Nuit claire", partlyCloudy: "Partiellement nuageux", cloudy: "Nuageux", rainy: "Pluvieux", pouring: "Forte pluie", snowy: "Neigeux", sleet: "Neige fondue", hail: "Grêle", foggy: "Brumeux", lightning: "Éclairs", thunderstorm: "Orage", windy: "Venteux", windyVariant: "Venteux, nuageux" }, language: { title: "Langue" }, animationQuality: "Qualité d'animation", animations: "Animations", aqi: "Qualité de l'air (capteur)", aurora: "Aurore boréale", auroraNight: "Aurore", autoShort: "Auto", borderRadius: "Arrondi des coins (px)", clockAndDate: "Horloge", dailyForecastTitle: "Titre des prévisions quotidiennes", details: "Détails", dewPoint: "Point de rosée", documentation: "Documentation", forecasts: "Prévisions", hourlyForecastTitle: "Titre des prévisions horaires", humidityToggle: "Humidité", layout: "Mise en page", layoutDefault: "Par défaut", layoutMinimal: "Minimale", links: "Liens", moonPhase: "Phase de la lune", pause: "Pause", placeholderDefault: "Par défaut", play24h: "Lire 24 heures", playSpeed: "Durée du cycle", precipitationOutlook: "Début/fin de la pluie", pressure: "Pression", qualityHighShort: "Élevée", qualityLowShort: "Faible", qualityMediumShort: "Moyenne", raindrops: "Gouttes de pluie sur la vitre", reportIssue: "Signaler un problème", showDate: "Date", stationSensors: "Capteurs de station", stationSensorsHint: "Les capteurs de station remplacent la température, l'humidité, le vent et les précipitations par des valeurs fictives d'une station météo personnelle.", sunPositionX: "Soleil/Lune X (%)", sunPositionY: "Soleil/Lune Y (%)", tabContent: "Contenu", tabLook: "Apparence", tabMore: "Plus", tabTime: "Heure", tabWeather: "Météo", temperatureBars: "Barres de température", forecastWind: "Vent dans les prévisions", forecastDescription: "Prévision textuelle", textColor: "Couleur du texte", textShadow: "Ombre du texte", uvIndex: "Indice UV", visualStyle: "Style graphique", visualStyleClassic: "🎨 Classique", visualStyleModern: "✨ Moderne", windBearing: "Direction du vent", windEffects: "Rafales et feuilles", windyDay: "Venteux", yamlTitle: "YAML de la carte", copy: "Copier", copied: "Copié", yamlHint: "Collez-le dans une carte manuelle de Home Assistant et remplacez weather.home par votre entité météo.", customCss: "CSS personnalisé", customCssPlaceholder: ".temperature { font-size: 48px; }" }, Dv = {
-  sunny: Xb,
-  clear: ev,
-  overcast: tv,
-  cloudy: av,
-  partlycloudy: iv,
-  rainy: nv,
-  rain: rv,
-  snowy: ov,
-  snow: sv,
-  foggy: lv,
-  fog: _v,
-  lightning: dv,
+  feels_like: Tb,
+  forecast_title: Db,
+  forecast_title_hourly: Nb,
+  daily_forecast_title: Vb,
+  no_data: Lb,
+  weather: Hb,
+  wind_unit_kmh: Ib,
+  wind_unit_ms: Rb,
+  wind_unit_mph: Bb,
+  wind_unit_knots: Fb,
+  wind_unit_fts: Ob,
+  am: qb,
+  pm: Ub,
+  pressure: Kb,
+  uv_index: Wb,
+  dew_point: Gb,
+  aqi: Zb,
+  precipitation_outlook: Yb,
+  editor: Jb,
+  demo: Qb
+}, ev = "Ensoleillé", tv = "Dégagé", av = "Couvert", iv = "Nuageux", nv = "Partiellement nuageux", rv = "Pluvieux", ov = "Pluie", sv = "Neigeux", lv = "Neige", _v = "Brumeux", dv = "Brouillard", uv = "Éclairs", cv = "Forte pluie", mv = "Grêle", pv = "Venteux", hv = "Ressenti", gv = "Prévisions du jour", yv = "Prévisions horaires", bv = "Prévisions quotidiennes", vv = "Aucune donnée", kv = "Météo", fv = "km/h", wv = "m/s", zv = "mph", jv = "knots", Sv = "ft/s", xv = "AM", Av = "PM", Pv = "Pression", Mv = "Indice UV", Cv = "Point de rosée", $v = "Indice de qualité de l'air", Ev = { start: "{kind} : début vers {time}", soon: "{kind} : début imminent", stop: "{kind} : fin vers {time}", continues: "{kind} : encore au moins {hours} h", rain: "Pluie", snow: "Neige", sleet: "Neige fondue", hail: "Grêle", storm: "Orages" }, Tv = { entity: "Entité météo", name: "Titre de la carte", layout: "Mise en page", layout_default: "Default", layout_minimal: "Minimal", height: "Hauteur", show_feels_like: "Ressenti", show_wind: "Vent", show_wind_gust: "Rafales", show_wind_direction: "Direction", show_humidity: "Humidité", show_min_temp: "Température min.", show_hourly_forecast: "Prévisions horaires", hourly_forecast_hours: "Heures", hourly_forecast_step: "Toutes les", hourly_forecast_chart: "Graphique des températures", show_daily_forecast: "Prévisions quotidiennes", daily_forecast_days: "Jours", show_sunrise_sunset: "Lever et coucher du soleil", sunrise_entity: "Capteur de lever du soleil", sunset_entity: "Capteur de coucher du soleil", show_clock: "Horloge", clock_position: "Position", clock_position_top: "En haut", clock_position_details: "Détails", clock_format: "Format", clock_format_12h: "12 heures (AM/PM)", clock_format_24h: "24 heures", clock_size: "Taille", clock_size_small: "Petite", clock_size_medium: "Moyenne", clock_size_large: "Grande", clock_weight: "Graisse", clock_weight_thin: "Fine", clock_weight_regular: "Normale", clock_weight_bold: "Grasse", overlay_opacity: "Assombrissement", text_shadow: "Ombre du texte", language: "Langue", language_auto: "Auto", language_en: "Anglais", language_ru: "Russe", language_de: "Allemand", language_nl: "Néerlandais", language_fr: "Français", language_es: "Espagnol", language_it: "Italien", language_sk: "Slovaque", language_hu: "Hongrois", language_pt: "Portugais", wind_speed_unit: "Unité de vitesse du vent", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Auto (comme l’intégration)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "knots", wind_speed_unit_helper: "Auto garde l’unité de l’intégration ou du capteur de vent ; les autres convertissent tout le vent de la carte", show_animations: "Animations", animation_quality: "Qualité d'animation", animation_quality_helper: "À réduire pour les tablettes murales et les appareils lents", animation_quality_high: "Élevée", animation_quality_low: "Faible (20 FPS, pour appareils lents)", animation_quality_medium: "Moyenne (30 FPS, moins de particules)", aqi_entity: "Capteur de qualité de l'air (AQI)", border_radius: "Arrondi des coins", daily_forecast_title: "Titre", daily_forecast_title_helper: "Vide = titre par défaut", dew_point_entity: "Capteur de point de rosée", feels_like_entity: "Capteur de température ressentie", hourly_forecast_title: "Titre", hourly_forecast_title_helper: "Vide = titre par défaut", humidity_entity: "Capteur d'humidité", overlay_opacity_helper: "0–1, assombrit le ciel pour garder le texte lisible", precipitation_entity: "Capteur de précipitations", pressure_entity: "Capteur de pression", section_appearance: "Apparence", section_clock: "Langue, horloge et date", section_details: "Détails", section_forecast: "Prévisions", section_sensors: "Capteurs (facultatif)", show_aurora: "Aurore boréale", show_aurora_helper: "Par nuit claire, graphismes modernes", show_date: "Date", show_dew_point: "Point de rosée", show_precipitation_outlook: "Début/fin de la pluie", show_precipitation_outlook_helper: "D'après la prévision horaire des 12 prochaines heures", show_pressure: "Pression", show_raindrops: "Gouttes de pluie sur la vitre", show_raindrops_helper: "Sous la pluie, graphismes modernes", show_temperature_bars: "Barres de température", show_forecast_wind: "Vent dans les prévisions", show_forecast_wind_helper: "Direction, vitesse et rafales pour chaque heure et chaque jour, si le fournisseur météo les fournit", hourly_forecast_step_helper: "Afficher la prévision toutes les quelques heures, p. ex. 3 pour 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Une courbe de température au lieu des chiffres, avec la probabilité de précipitations en barres", show_forecast_description: "Prévision textuelle", show_forecast_description_helper: "La prévision rédigée du fournisseur météo, s’il en propose une (p. ex. le National Weather Service américain)", show_uv_index: "Indice UV", show_wind_effects: "Rafales et feuilles", show_wind_effects_helper: "Par temps venteux ou au-delà de 8 m/s", sun_position_x: "Position du soleil/de la lune, horizontale", sun_position_x_helper: "Laisser vide pour suivre l'heure de la journée", sun_position_y: "Position du soleil/de la lune, verticale", sun_position_y_helper: "Laisser vide pour suivre l'heure de la journée", temperature_entity: "Capteur de température", text_color: "Couleur du texte", text_color_helper: "Toute couleur CSS, p. ex. #1a1a2e ou var(--primary-text-color)", uv_index_entity: "Capteur d'indice UV", visual_style: "Graphismes", visual_style_classic: "Classique", visual_style_modern: "Moderne", wind_bearing_entity: "Capteur de direction du vent", wind_gust_entity: "Capteur de rafales", wind_speed_entity: "Capteur de vitesse du vent", language_da: "Danois", language_nb: "Norvégien (bokmål)", language_pl: "Polonais", language_sl: "Slovène", language_sr: "Serbe", "language_sr-Latn": "Serbe (latin)", language_tr: "Turc", language_zh: "Chinois", hourly_forecast_hours_helper: "Sans limite : p. ex. 72 pour trois jours, ou plus pour afficher toute la prévision du fournisseur", styles: "CSS personnalisé", styles_helper: "CSS pour la carte et toutes ses parties, p. ex. .temperature { font-size: 48px; }" }, Dv = { pageTitle: "Carte Météo Dynamique", pageSubtitle: "Démo Interactive & Outil de Configuration", quickPresets: "Pré-réglages rapides", sunnyDay: "Journée ensoleillée", rainy: "Pluvieux", snowy: "Neigeux", clearNight: "Nuit claire", condition: "Condition", temperature: "Température", humidity: "Humidité (%)", windSpeed: "Vitesse du vent", timeOfDay: "Moment de la journée", timeMode: "Mode horaire", manualControl: "Contrôle manuel", sunrise: "Lever du soleil", day: "Jour", sunset: "Coucher du soleil", night: "Nuit", cardName: "Nom de la carte", height: "Hauteur (px)", feelsLike: "Température ressentie", minTemp: "Température minimale", windDirection: "Direction du vent", windGust: "Rafales de vent", hourlyForecast: "Prévisions horaires", dailyForecast: "Prévisions quotidiennes", sunriseSunset: "Lever/Coucher du soleil", showClock: "Horloge", clockPosition: "Position de l'horloge", clockPositionTop: "En haut à droite", clockPositionDetails: "Ligne de détails", clockFormat: "Format de l'horloge", clockSize: "Taille de l'horloge", clockSizeSmall: "Petite", clockSizeMedium: "Moyenne", clockSizeLarge: "Grande", clockWeight: "Graisse de l'horloge", clockWeightThin: "Fine", clockWeightRegular: "Normale", clockWeightBold: "Grasse", overlayOpacity: "Opacité du voile (0-1)", windSpeedUnit: "Unité de vitesse du vent", dailyForecastDays: "Jours de prévision", hourlyForecastHours: "Heures de prévision", hourlyForecastStep: "Pas des prévisions horaires (h)", hourlyChart: "Graphique horaire des températures", startDemo: "Démarrer le mode démo", stopDemo: "Arrêter la démo", madeWith: "Fait avec amour pour Home Assistant", loading: "Chargement de la carte...", placeholderEmpty: "Laisser vide pour masquer", weatherConditions: { sunny: "Ensoleillé", clearNight: "Nuit claire", partlyCloudy: "Partiellement nuageux", cloudy: "Nuageux", rainy: "Pluvieux", pouring: "Forte pluie", snowy: "Neigeux", sleet: "Neige fondue", hail: "Grêle", foggy: "Brumeux", lightning: "Éclairs", thunderstorm: "Orage", windy: "Venteux", windyVariant: "Venteux, nuageux" }, language: { title: "Langue" }, animationQuality: "Qualité d'animation", animations: "Animations", aqi: "Qualité de l'air (capteur)", aurora: "Aurore boréale", auroraNight: "Aurore", autoShort: "Auto", borderRadius: "Arrondi des coins (px)", clockAndDate: "Horloge", dailyForecastTitle: "Titre des prévisions quotidiennes", details: "Détails", dewPoint: "Point de rosée", documentation: "Documentation", forecasts: "Prévisions", hourlyForecastTitle: "Titre des prévisions horaires", humidityToggle: "Humidité", layout: "Mise en page", layoutDefault: "Par défaut", layoutMinimal: "Minimale", links: "Liens", moonPhase: "Phase de la lune", pause: "Pause", placeholderDefault: "Par défaut", play24h: "Lire 24 heures", playSpeed: "Durée du cycle", precipitationOutlook: "Début/fin de la pluie", pressure: "Pression", qualityHighShort: "Élevée", qualityLowShort: "Faible", qualityMediumShort: "Moyenne", raindrops: "Gouttes de pluie sur la vitre", reportIssue: "Signaler un problème", showDate: "Date", stationSensors: "Capteurs de station", stationSensorsHint: "Les capteurs de station remplacent la température, l'humidité, le vent et les précipitations par des valeurs fictives d'une station météo personnelle.", sunPositionX: "Soleil/Lune X (%)", sunPositionY: "Soleil/Lune Y (%)", tabContent: "Contenu", tabLook: "Apparence", tabMore: "Plus", tabTime: "Heure", tabWeather: "Météo", temperatureBars: "Barres de température", forecastWind: "Vent dans les prévisions", forecastDescription: "Prévision textuelle", textColor: "Couleur du texte", textShadow: "Ombre du texte", uvIndex: "Indice UV", visualStyle: "Style graphique", visualStyleClassic: "🎨 Classique", visualStyleModern: "✨ Moderne", windBearing: "Direction du vent", windEffects: "Rafales et feuilles", windyDay: "Venteux", yamlTitle: "YAML de la carte", copy: "Copier", copied: "Copié", yamlHint: "Collez-le dans une carte manuelle de Home Assistant et remplacez weather.home par votre entité météo.", customCss: "CSS personnalisé", customCssPlaceholder: ".temperature { font-size: 48px; }" }, Nv = {
+  sunny: ev,
+  clear: tv,
+  overcast: av,
+  cloudy: iv,
+  partlycloudy: nv,
+  rainy: rv,
+  rain: ov,
+  snowy: sv,
+  snow: lv,
+  foggy: _v,
+  fog: dv,
+  lightning: uv,
   "lightning-rainy": "Orage",
-  pouring: uv,
+  pouring: cv,
   "snowy-rainy": "Neige fondue",
-  hail: cv,
+  hail: mv,
   "clear-night": "Nuit claire",
-  windy: mv,
+  windy: pv,
   "windy-variant": "Venteux, nuageux",
-  feels_like: pv,
-  forecast_title: hv,
-  forecast_title_hourly: gv,
-  daily_forecast_title: yv,
-  no_data: bv,
-  weather: vv,
-  wind_unit_kmh: kv,
-  wind_unit_ms: fv,
-  wind_unit_mph: wv,
-  wind_unit_knots: zv,
-  wind_unit_fts: jv,
-  am: Sv,
-  pm: xv,
-  pressure: Av,
-  uv_index: Pv,
-  dew_point: Mv,
-  aqi: Cv,
-  precipitation_outlook: $v,
-  editor: Ev,
-  demo: Tv
-}, Nv = "Napos", Vv = "Derült", Lv = "Borult", Hv = "Felhős", Iv = "Részben felhős", Rv = "Esős", Bv = "Eső", Fv = "Havas", Ov = "Hó", qv = "Ködös", Uv = "Köd", Kv = "Villámlás", Wv = "Heves eső", Gv = "Jégeső", Zv = "Szeles", Yv = "Hőérzet", Jv = "Mai előrejelzés", Qv = "Óránkénti előrejelzés", Xv = "Napi előrejelzés", ek = "Nincs adat", tk = "Időjárás", ak = "km/h", ik = "m/s", nk = "mph", rk = "csomó", ok = "ft/s", sk = "DE", lk = "DU", _k = "Légnyomás", dk = "UV-index", uk = "Harmatpont", ck = "Levegőminőségi index", mk = { start: "{kind} várható {time} körül", soon: "{kind} hamarosan várható", stop: "{kind} {time} körül eláll", continues: "{kind} még legalább {hours} órán át", rain: "Eső", snow: "Hó", sleet: "Havas eső", hail: "Jégeső", storm: "Zivatar" }, pk = { entity: "Időjárás entitás", name: "Kártya címe", layout: "Elrendezés", layout_default: "Default", layout_minimal: "Minimal", height: "Magasság", show_feels_like: "Hőérzet", show_wind: "Szél", show_wind_gust: "Széllökések", show_wind_direction: "Irány", show_humidity: "Páratartalom", show_min_temp: "Minimum hőmérséklet", show_hourly_forecast: "Óránkénti előrejelzés", hourly_forecast_hours: "Órák", hourly_forecast_step: "Lépés", hourly_forecast_chart: "Hőmérséklet-grafikon", show_daily_forecast: "Napi előrejelzés", daily_forecast_days: "Napok", show_sunrise_sunset: "Napkelte és napnyugta", sunrise_entity: "Napkelte-érzékelő", sunset_entity: "Napnyugta-érzékelő", show_clock: "Óra", clock_position: "Helyzet", clock_position_top: "Felül", clock_position_details: "Részletek", clock_format: "Formátum", clock_format_12h: "12 órás (DE/DU)", clock_format_24h: "24 órás", clock_size: "Méret", clock_size_small: "Kicsi", clock_size_medium: "Közepes", clock_size_large: "Nagy", clock_weight: "Vastagság", clock_weight_thin: "Vékony", clock_weight_regular: "Normál", clock_weight_bold: "Félkövér", overlay_opacity: "Sötétítés", text_shadow: "Szövegárnyék", language: "Nyelv", language_auto: "Automatikus", language_en: "Angol", language_ru: "Orosz", language_de: "Német", language_nl: "Holland", language_fr: "Francia", language_es: "Spanyol", language_it: "Olasz", language_hu: "Magyar", language_sk: "Szlovák", language_pt: "Portugál", wind_speed_unit: "Szélsebesség mértékegysége", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Automatikus (mint az integráció)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "csomó", wind_speed_unit_helper: "Az automatikus az integráció vagy a szélérzékelő mértékegységét használja; a többi átváltja a kártya összes szélértékét", show_animations: "Animációk", animation_quality: "Animáció minősége", animation_quality_helper: "Fali tableteken és lassú eszközökön csökkentse", animation_quality_high: "Magas", animation_quality_low: "Alacsony (20 FPS, lassú eszközökhöz)", animation_quality_medium: "Közepes (30 FPS, kevesebb részecske)", aqi_entity: "Levegőminőség-érzékelő (AQI)", border_radius: "Sarkok lekerekítése", daily_forecast_title: "Cím", daily_forecast_title_helper: "Üres = alapértelmezett cím", dew_point_entity: "Harmatpont-érzékelő", feels_like_entity: "Hőérzet-érzékelő", hourly_forecast_title: "Cím", hourly_forecast_title_helper: "Üres = alapértelmezett cím", humidity_entity: "Páratartalom-érzékelő", overlay_opacity_helper: "0–1, sötétíti az eget, hogy a szöveg olvasható maradjon", precipitation_entity: "Csapadékérzékelő", pressure_entity: "Légnyomás-érzékelő", section_appearance: "Megjelenés", section_clock: "Nyelv, óra és dátum", section_details: "Részletek", section_forecast: "Előrejelzés", section_sensors: "Érzékelők (opcionális)", show_aurora: "Sarki fény", show_aurora_helper: "Derült éjszakákon, modern grafika", show_date: "Dátum", show_dew_point: "Harmatpont", show_precipitation_outlook: "Mikor kezd/áll el az eső", show_precipitation_outlook_helper: "Az óránkénti előrejelzésből, a következő 12 órára", show_pressure: "Légnyomás", show_raindrops: "Esőcseppek az üvegen", show_raindrops_helper: "Esőben, modern grafika", show_temperature_bars: "Hőmérséklet-sávok", show_forecast_wind: "Szél az előrejelzésekben", show_forecast_wind_helper: "Irány, sebesség és széllökések óránként és naponként, ha az időjárás-szolgáltató megadja őket", hourly_forecast_step_helper: "Az előrejelzés néhány óránként, pl. 3 esetén 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Hőmérsékleti görbe számok helyett, a csapadék valószínűségével oszlopokként", show_forecast_description: "Szöveges előrejelzés", show_forecast_description_helper: "Az időjárás-szolgáltató írásos előrejelzése, ha van (pl. az amerikai National Weather Service)", show_uv_index: "UV-index", show_wind_effects: "Széllökések és levelek", show_wind_effects_helper: "Szeles időben vagy 8 m/s felett", sun_position_x: "Nap/Hold helyzete, vízszintesen", sun_position_x_helper: "Hagyja üresen, hogy a napszakot kövesse", sun_position_y: "Nap/Hold helyzete, függőlegesen", sun_position_y_helper: "Hagyja üresen, hogy a napszakot kövesse", temperature_entity: "Hőmérséklet-érzékelő", text_color: "Szövegszín", text_color_helper: "Bármilyen CSS-szín, pl. #1a1a2e vagy var(--primary-text-color)", uv_index_entity: "UV-index-érzékelő", visual_style: "Grafika", visual_style_classic: "Klasszikus", visual_style_modern: "Modern", wind_bearing_entity: "Szélirány-érzékelő", wind_gust_entity: "Széllökés-érzékelő", wind_speed_entity: "Szélsebesség-érzékelő", language_da: "Dán", language_nb: "Norvég (bokmål)", language_pl: "Lengyel", language_sl: "Szlovén", language_sr: "Szerb", "language_sr-Latn": "Szerb (latin)", language_tr: "Török", language_zh: "Kínai", hourly_forecast_hours_helper: "Nincs felső határ: pl. 72 három napra, vagy több a szolgáltató teljes előrejelzéséhez", styles: "Saját CSS", styles_helper: "CSS a kártyához és minden részéhez, pl. .temperature { font-size: 48px; }" }, hk = { pageTitle: "Dynamic Weather Card", pageSubtitle: "Interaktív demó és beállító eszköz", quickPresets: "Gyors presetek", sunnyDay: "Napos nap", rainy: "Esős", snowy: "Havas", clearNight: "Derült éj", condition: "Állapot", temperature: "Hőmérséklet", humidity: "Páratartalom (%)", windSpeed: "Szélsebesség", timeOfDay: "Napszak", timeMode: "Idő mód", manualControl: "Kézi vezérlés", sunrise: "Napkelte", day: "Nappal", sunset: "Napnyugta", night: "Éjszaka", cardName: "Kártya neve", height: "Magasság (px)", feelsLike: "Hőérzet", minTemp: "Min. hőmérséklet", windDirection: "Szélirány", windGust: "Széllökés", hourlyForecast: "Óránkénti előrejelzés", dailyForecast: "Napi előrejelzés", sunriseSunset: "Napkelte/Napnyugta", showClock: "Óra", clockPosition: "Óra pozíció", clockPositionTop: "Jobb felső", clockPositionDetails: "Részletek sora", clockFormat: "Óra formátum", clockSize: "Óra mérete", clockSizeSmall: "Kicsi", clockSizeMedium: "Közepes", clockSizeLarge: "Nagy", clockWeight: "Óra betűvastagsága", clockWeightThin: "Vékony", clockWeightRegular: "Normál", clockWeightBold: "Félkövér", overlayOpacity: "Fedőréteg átlátszóság (0–1)", windSpeedUnit: "Szélsebesség egység", dailyForecastDays: "Napi napok", hourlyForecastHours: "Óránkénti órák", hourlyForecastStep: "Óránkénti előrejelzés lépése (ó)", hourlyChart: "Óránkénti hőmérséklet-grafikon", startDemo: "Demó indítása", stopDemo: "Demó leállítása", madeWith: "Szeretettel a Home Assistanthez", loading: "Kártya betöltése…", placeholderEmpty: "Üresen hagyva elrejt", weatherConditions: { sunny: "Napos", clearNight: "Derült éj", partlyCloudy: "Részben felhős", cloudy: "Felhős", rainy: "Esős", pouring: "Zuhogó eső", snowy: "Havas", sleet: "Havas eső", hail: "Jégeső", foggy: "Ködös", lightning: "Villámlás", thunderstorm: "Zivatar", windy: "Szeles", windyVariant: "Szeles, felhős" }, language: { title: "Nyelv" }, animationQuality: "Animáció minősége", animations: "Animációk", aqi: "Levegőminőség (érzékelő)", aurora: "Sarki fény", auroraNight: "Sarki fény", autoShort: "Auto", borderRadius: "Sarkok lekerekítése (px)", clockAndDate: "Óra", dailyForecastTitle: "Napi előrejelzés címe", details: "Részletek", dewPoint: "Harmatpont", documentation: "Dokumentáció", forecasts: "Előrejelzések", hourlyForecastTitle: "Óránkénti előrejelzés címe", humidityToggle: "Páratartalom", layout: "Elrendezés", layoutDefault: "Alapértelmezett", layoutMinimal: "Minimális", links: "Hivatkozások", moonPhase: "Holdfázis", pause: "Szünet", placeholderDefault: "Alapértelmezett", play24h: "24 óra lejátszása", playSpeed: "Ciklus hossza", precipitationOutlook: "Eső kezdete/vége", pressure: "Légnyomás", qualityHighShort: "Magas", qualityLowShort: "Alacsony", qualityMediumShort: "Közepes", raindrops: "Esőcseppek az üvegen", reportIssue: "Hiba bejelentése", showDate: "Dátum", stationSensors: "Állomás érzékelői", stationSensorsHint: "Az állomás érzékelői a hőmérsékletet, páratartalmat, szelet és csapadékot egy saját időjárás-állomás mintaértékeivel helyettesítik.", sunPositionX: "Nap/Hold X (%)", sunPositionY: "Nap/Hold Y (%)", tabContent: "Tartalom", tabLook: "Megjelenés", tabMore: "Továbbiak", tabTime: "Idő", tabWeather: "Időjárás", temperatureBars: "Hőmérséklet-sávok", forecastWind: "Szél az előrejelzésekben", forecastDescription: "Szöveges előrejelzés", textColor: "Szövegszín", textShadow: "Szövegárnyék", uvIndex: "UV-index", visualStyle: "Grafikai stílus", visualStyleClassic: "🎨 Klasszikus", visualStyleModern: "✨ Modern", windBearing: "Szélirány", windEffects: "Széllökések és levelek", windyDay: "Szeles", yamlTitle: "Kártya YAML", copy: "Másolás", copied: "Másolva", yamlHint: "Illeszd be egy kézi kártyába a Home Assistantben, és cseréld a weather.home-ot a saját időjárás-entitásodra.", customCss: "Saját CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, gk = {
-  sunny: Nv,
-  clear: Vv,
-  overcast: Lv,
-  cloudy: Hv,
-  partlycloudy: Iv,
-  rainy: Rv,
-  rain: Bv,
-  snowy: Fv,
-  snow: Ov,
-  foggy: qv,
-  fog: Uv,
-  lightning: Kv,
+  feels_like: hv,
+  forecast_title: gv,
+  forecast_title_hourly: yv,
+  daily_forecast_title: bv,
+  no_data: vv,
+  weather: kv,
+  wind_unit_kmh: fv,
+  wind_unit_ms: wv,
+  wind_unit_mph: zv,
+  wind_unit_knots: jv,
+  wind_unit_fts: Sv,
+  am: xv,
+  pm: Av,
+  pressure: Pv,
+  uv_index: Mv,
+  dew_point: Cv,
+  aqi: $v,
+  precipitation_outlook: Ev,
+  editor: Tv,
+  demo: Dv
+}, Vv = "Napos", Lv = "Derült", Hv = "Borult", Iv = "Felhős", Rv = "Részben felhős", Bv = "Esős", Fv = "Eső", Ov = "Havas", qv = "Hó", Uv = "Ködös", Kv = "Köd", Wv = "Villámlás", Gv = "Heves eső", Zv = "Jégeső", Yv = "Szeles", Jv = "Hőérzet", Qv = "Mai előrejelzés", Xv = "Óránkénti előrejelzés", ek = "Napi előrejelzés", tk = "Nincs adat", ak = "Időjárás", ik = "km/h", nk = "m/s", rk = "mph", ok = "csomó", sk = "ft/s", lk = "DE", _k = "DU", dk = "Légnyomás", uk = "UV-index", ck = "Harmatpont", mk = "Levegőminőségi index", pk = { start: "{kind} várható {time} körül", soon: "{kind} hamarosan várható", stop: "{kind} {time} körül eláll", continues: "{kind} még legalább {hours} órán át", rain: "Eső", snow: "Hó", sleet: "Havas eső", hail: "Jégeső", storm: "Zivatar" }, hk = { entity: "Időjárás entitás", name: "Kártya címe", layout: "Elrendezés", layout_default: "Default", layout_minimal: "Minimal", height: "Magasság", show_feels_like: "Hőérzet", show_wind: "Szél", show_wind_gust: "Széllökések", show_wind_direction: "Irány", show_humidity: "Páratartalom", show_min_temp: "Minimum hőmérséklet", show_hourly_forecast: "Óránkénti előrejelzés", hourly_forecast_hours: "Órák", hourly_forecast_step: "Lépés", hourly_forecast_chart: "Hőmérséklet-grafikon", show_daily_forecast: "Napi előrejelzés", daily_forecast_days: "Napok", show_sunrise_sunset: "Napkelte és napnyugta", sunrise_entity: "Napkelte-érzékelő", sunset_entity: "Napnyugta-érzékelő", show_clock: "Óra", clock_position: "Helyzet", clock_position_top: "Felül", clock_position_details: "Részletek", clock_format: "Formátum", clock_format_12h: "12 órás (DE/DU)", clock_format_24h: "24 órás", clock_size: "Méret", clock_size_small: "Kicsi", clock_size_medium: "Közepes", clock_size_large: "Nagy", clock_weight: "Vastagság", clock_weight_thin: "Vékony", clock_weight_regular: "Normál", clock_weight_bold: "Félkövér", overlay_opacity: "Sötétítés", text_shadow: "Szövegárnyék", language: "Nyelv", language_auto: "Automatikus", language_en: "Angol", language_ru: "Orosz", language_de: "Német", language_nl: "Holland", language_fr: "Francia", language_es: "Spanyol", language_it: "Olasz", language_hu: "Magyar", language_sk: "Szlovák", language_pt: "Portugál", wind_speed_unit: "Szélsebesség mértékegysége", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Automatikus (mint az integráció)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "csomó", wind_speed_unit_helper: "Az automatikus az integráció vagy a szélérzékelő mértékegységét használja; a többi átváltja a kártya összes szélértékét", show_animations: "Animációk", animation_quality: "Animáció minősége", animation_quality_helper: "Fali tableteken és lassú eszközökön csökkentse", animation_quality_high: "Magas", animation_quality_low: "Alacsony (20 FPS, lassú eszközökhöz)", animation_quality_medium: "Közepes (30 FPS, kevesebb részecske)", aqi_entity: "Levegőminőség-érzékelő (AQI)", border_radius: "Sarkok lekerekítése", daily_forecast_title: "Cím", daily_forecast_title_helper: "Üres = alapértelmezett cím", dew_point_entity: "Harmatpont-érzékelő", feels_like_entity: "Hőérzet-érzékelő", hourly_forecast_title: "Cím", hourly_forecast_title_helper: "Üres = alapértelmezett cím", humidity_entity: "Páratartalom-érzékelő", overlay_opacity_helper: "0–1, sötétíti az eget, hogy a szöveg olvasható maradjon", precipitation_entity: "Csapadékérzékelő", pressure_entity: "Légnyomás-érzékelő", section_appearance: "Megjelenés", section_clock: "Nyelv, óra és dátum", section_details: "Részletek", section_forecast: "Előrejelzés", section_sensors: "Érzékelők (opcionális)", show_aurora: "Sarki fény", show_aurora_helper: "Derült éjszakákon, modern grafika", show_date: "Dátum", show_dew_point: "Harmatpont", show_precipitation_outlook: "Mikor kezd/áll el az eső", show_precipitation_outlook_helper: "Az óránkénti előrejelzésből, a következő 12 órára", show_pressure: "Légnyomás", show_raindrops: "Esőcseppek az üvegen", show_raindrops_helper: "Esőben, modern grafika", show_temperature_bars: "Hőmérséklet-sávok", show_forecast_wind: "Szél az előrejelzésekben", show_forecast_wind_helper: "Irány, sebesség és széllökések óránként és naponként, ha az időjárás-szolgáltató megadja őket", hourly_forecast_step_helper: "Az előrejelzés néhány óránként, pl. 3 esetén 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Hőmérsékleti görbe számok helyett, a csapadék valószínűségével oszlopokként", show_forecast_description: "Szöveges előrejelzés", show_forecast_description_helper: "Az időjárás-szolgáltató írásos előrejelzése, ha van (pl. az amerikai National Weather Service)", show_uv_index: "UV-index", show_wind_effects: "Széllökések és levelek", show_wind_effects_helper: "Szeles időben vagy 8 m/s felett", sun_position_x: "Nap/Hold helyzete, vízszintesen", sun_position_x_helper: "Hagyja üresen, hogy a napszakot kövesse", sun_position_y: "Nap/Hold helyzete, függőlegesen", sun_position_y_helper: "Hagyja üresen, hogy a napszakot kövesse", temperature_entity: "Hőmérséklet-érzékelő", text_color: "Szövegszín", text_color_helper: "Bármilyen CSS-szín, pl. #1a1a2e vagy var(--primary-text-color)", uv_index_entity: "UV-index-érzékelő", visual_style: "Grafika", visual_style_classic: "Klasszikus", visual_style_modern: "Modern", wind_bearing_entity: "Szélirány-érzékelő", wind_gust_entity: "Széllökés-érzékelő", wind_speed_entity: "Szélsebesség-érzékelő", language_da: "Dán", language_nb: "Norvég (bokmål)", language_pl: "Lengyel", language_sl: "Szlovén", language_sr: "Szerb", "language_sr-Latn": "Szerb (latin)", language_tr: "Török", language_zh: "Kínai", hourly_forecast_hours_helper: "Nincs felső határ: pl. 72 három napra, vagy több a szolgáltató teljes előrejelzéséhez", styles: "Saját CSS", styles_helper: "CSS a kártyához és minden részéhez, pl. .temperature { font-size: 48px; }" }, gk = { pageTitle: "Dynamic Weather Card", pageSubtitle: "Interaktív demó és beállító eszköz", quickPresets: "Gyors presetek", sunnyDay: "Napos nap", rainy: "Esős", snowy: "Havas", clearNight: "Derült éj", condition: "Állapot", temperature: "Hőmérséklet", humidity: "Páratartalom (%)", windSpeed: "Szélsebesség", timeOfDay: "Napszak", timeMode: "Idő mód", manualControl: "Kézi vezérlés", sunrise: "Napkelte", day: "Nappal", sunset: "Napnyugta", night: "Éjszaka", cardName: "Kártya neve", height: "Magasság (px)", feelsLike: "Hőérzet", minTemp: "Min. hőmérséklet", windDirection: "Szélirány", windGust: "Széllökés", hourlyForecast: "Óránkénti előrejelzés", dailyForecast: "Napi előrejelzés", sunriseSunset: "Napkelte/Napnyugta", showClock: "Óra", clockPosition: "Óra pozíció", clockPositionTop: "Jobb felső", clockPositionDetails: "Részletek sora", clockFormat: "Óra formátum", clockSize: "Óra mérete", clockSizeSmall: "Kicsi", clockSizeMedium: "Közepes", clockSizeLarge: "Nagy", clockWeight: "Óra betűvastagsága", clockWeightThin: "Vékony", clockWeightRegular: "Normál", clockWeightBold: "Félkövér", overlayOpacity: "Fedőréteg átlátszóság (0–1)", windSpeedUnit: "Szélsebesség egység", dailyForecastDays: "Napi napok", hourlyForecastHours: "Óránkénti órák", hourlyForecastStep: "Óránkénti előrejelzés lépése (ó)", hourlyChart: "Óránkénti hőmérséklet-grafikon", startDemo: "Demó indítása", stopDemo: "Demó leállítása", madeWith: "Szeretettel a Home Assistanthez", loading: "Kártya betöltése…", placeholderEmpty: "Üresen hagyva elrejt", weatherConditions: { sunny: "Napos", clearNight: "Derült éj", partlyCloudy: "Részben felhős", cloudy: "Felhős", rainy: "Esős", pouring: "Zuhogó eső", snowy: "Havas", sleet: "Havas eső", hail: "Jégeső", foggy: "Ködös", lightning: "Villámlás", thunderstorm: "Zivatar", windy: "Szeles", windyVariant: "Szeles, felhős" }, language: { title: "Nyelv" }, animationQuality: "Animáció minősége", animations: "Animációk", aqi: "Levegőminőség (érzékelő)", aurora: "Sarki fény", auroraNight: "Sarki fény", autoShort: "Auto", borderRadius: "Sarkok lekerekítése (px)", clockAndDate: "Óra", dailyForecastTitle: "Napi előrejelzés címe", details: "Részletek", dewPoint: "Harmatpont", documentation: "Dokumentáció", forecasts: "Előrejelzések", hourlyForecastTitle: "Óránkénti előrejelzés címe", humidityToggle: "Páratartalom", layout: "Elrendezés", layoutDefault: "Alapértelmezett", layoutMinimal: "Minimális", links: "Hivatkozások", moonPhase: "Holdfázis", pause: "Szünet", placeholderDefault: "Alapértelmezett", play24h: "24 óra lejátszása", playSpeed: "Ciklus hossza", precipitationOutlook: "Eső kezdete/vége", pressure: "Légnyomás", qualityHighShort: "Magas", qualityLowShort: "Alacsony", qualityMediumShort: "Közepes", raindrops: "Esőcseppek az üvegen", reportIssue: "Hiba bejelentése", showDate: "Dátum", stationSensors: "Állomás érzékelői", stationSensorsHint: "Az állomás érzékelői a hőmérsékletet, páratartalmat, szelet és csapadékot egy saját időjárás-állomás mintaértékeivel helyettesítik.", sunPositionX: "Nap/Hold X (%)", sunPositionY: "Nap/Hold Y (%)", tabContent: "Tartalom", tabLook: "Megjelenés", tabMore: "Továbbiak", tabTime: "Idő", tabWeather: "Időjárás", temperatureBars: "Hőmérséklet-sávok", forecastWind: "Szél az előrejelzésekben", forecastDescription: "Szöveges előrejelzés", textColor: "Szövegszín", textShadow: "Szövegárnyék", uvIndex: "UV-index", visualStyle: "Grafikai stílus", visualStyleClassic: "🎨 Klasszikus", visualStyleModern: "✨ Modern", windBearing: "Szélirány", windEffects: "Széllökések és levelek", windyDay: "Szeles", yamlTitle: "Kártya YAML", copy: "Másolás", copied: "Másolva", yamlHint: "Illeszd be egy kézi kártyába a Home Assistantben, és cseréld a weather.home-ot a saját időjárás-entitásodra.", customCss: "Saját CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, yk = {
+  sunny: Vv,
+  clear: Lv,
+  overcast: Hv,
+  cloudy: Iv,
+  partlycloudy: Rv,
+  rainy: Bv,
+  rain: Fv,
+  snowy: Ov,
+  snow: qv,
+  foggy: Uv,
+  fog: Kv,
+  lightning: Wv,
   "lightning-rainy": "Zivatar",
-  pouring: Wv,
+  pouring: Gv,
   "snowy-rainy": "Havas eső",
-  hail: Gv,
+  hail: Zv,
   "clear-night": "Derült éj",
-  windy: Zv,
+  windy: Yv,
   "windy-variant": "Szeles, felhős",
-  feels_like: Yv,
-  forecast_title: Jv,
-  forecast_title_hourly: Qv,
-  daily_forecast_title: Xv,
-  no_data: ek,
-  weather: tk,
-  wind_unit_kmh: ak,
-  wind_unit_ms: ik,
-  wind_unit_mph: nk,
-  wind_unit_knots: rk,
-  wind_unit_fts: ok,
-  am: sk,
-  pm: lk,
-  pressure: _k,
-  uv_index: dk,
-  dew_point: uk,
-  aqi: ck,
-  precipitation_outlook: mk,
-  editor: pk,
-  demo: hk
-}, yk = "Soleggiato", bk = "Sereno", vk = "Coperto", kk = "Nuvoloso", fk = "Parzialmente Nuvoloso", wk = "Piovoso", zk = "Pioggia", jk = "Nevoso", Sk = "Neve", xk = "Nebbia", Ak = "Nebbia", Pk = "Fulmine", Mk = "Pioggia Intensa", Ck = "Grandine", $k = "Ventoso", Ek = "Percepita", Tk = "Previsioni di oggi", Dk = "Previsioni orarie", Nk = "Previsioni Giornaliere", Vk = "Nessun dato", Lk = "Meteo", Hk = "km/h", Ik = "m/s", Rk = "mph", Bk = "knots", Fk = "ft/s", Ok = "AM", qk = "PM", Uk = "Pressione", Kk = "Indice UV", Wk = "Punto di rugiada", Gk = "Indice di qualità dell'aria", Zk = { start: "{kind}: inizio verso {time}", soon: "{kind}: inizio a breve", stop: "{kind}: fine verso {time}", continues: "{kind}: ancora almeno {hours} h", rain: "Pioggia", snow: "Neve", sleet: "Nevischio", hail: "Grandine", storm: "Temporali" }, Yk = { entity: "Entità meteo", name: "Titolo della scheda", layout: "Layout", layout_default: "Default", layout_minimal: "Minimal", height: "Altezza", show_feels_like: "Percepita", show_wind: "Vento", show_wind_gust: "Raffiche", show_wind_direction: "Direzione", show_humidity: "Umidità", show_min_temp: "Temperatura minima", show_hourly_forecast: "Previsioni orarie", hourly_forecast_hours: "Ore", hourly_forecast_step: "Ogni", hourly_forecast_chart: "Grafico della temperatura", show_daily_forecast: "Previsioni giornaliere", daily_forecast_days: "Giorni", show_sunrise_sunset: "Alba e tramonto", sunrise_entity: "Sensore alba", sunset_entity: "Sensore tramonto", show_clock: "Orologio", clock_position: "Posizione", clock_position_top: "In alto", clock_position_details: "Dettagli", clock_format: "Formato", clock_format_12h: "12 ore (AM/PM)", clock_format_24h: "24 ore", clock_size: "Dimensione", clock_size_small: "Piccola", clock_size_medium: "Media", clock_size_large: "Grande", clock_weight: "Spessore", clock_weight_thin: "Sottile", clock_weight_regular: "Normale", clock_weight_bold: "Grassetto", overlay_opacity: "Oscuramento", text_shadow: "Ombra del testo", language: "Lingua", language_auto: "Auto", language_en: "Inglese", language_ru: "Russo", language_de: "Tedesco", language_nl: "Olandese", language_fr: "Francese", language_es: "Spagnolo", language_it: "Italiano", language_sk: "Slovacco", language_hu: "Ungherese", language_pt: "Portoghese", wind_speed_unit: "Unità velocità del vento", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Auto (come l’integrazione)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "knots", wind_speed_unit_helper: "Auto mantiene l’unità dell’integrazione o del sensore del vento; le altre convertono tutto il vento della scheda", show_animations: "Animazioni", animation_quality: "Qualità animazione", animation_quality_helper: "Riducila su tablet a parete e dispositivi lenti", animation_quality_high: "Alta", animation_quality_low: "Bassa (20 FPS, per dispositivi lenti)", animation_quality_medium: "Media (30 FPS, meno particelle)", aqi_entity: "Sensore qualità dell'aria (AQI)", border_radius: "Raggio degli angoli", daily_forecast_title: "Titolo", daily_forecast_title_helper: "Vuoto = titolo predefinito", dew_point_entity: "Sensore punto di rugiada", feels_like_entity: "Sensore temperatura percepita", hourly_forecast_title: "Titolo", hourly_forecast_title_helper: "Vuoto = titolo predefinito", humidity_entity: "Sensore umidità", overlay_opacity_helper: "0–1, scurisce il cielo per mantenere il testo leggibile", precipitation_entity: "Sensore precipitazioni", pressure_entity: "Sensore pressione", section_appearance: "Aspetto", section_clock: "Lingua, orologio e data", section_details: "Dettagli", section_forecast: "Previsioni", section_sensors: "Sensori (facoltativi)", show_aurora: "Aurora boreale", show_aurora_helper: "Nelle notti serene, grafica moderna", show_date: "Data", show_dew_point: "Punto di rugiada", show_precipitation_outlook: "Quando inizia/finisce la pioggia", show_precipitation_outlook_helper: "Dalle previsioni orarie delle prossime 12 ore", show_pressure: "Pressione", show_raindrops: "Gocce di pioggia sul vetro", show_raindrops_helper: "Con la pioggia, grafica moderna", show_temperature_bars: "Barre della temperatura", show_forecast_wind: "Vento nelle previsioni", show_forecast_wind_helper: "Direzione, velocità e raffiche per ogni ora e ogni giorno, se il servizio meteo le fornisce", hourly_forecast_step_helper: "Mostra la previsione ogni qualche ora, ad es. 3 per 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Una curva della temperatura al posto dei numeri, con la probabilità di precipitazioni a barre", show_forecast_description: "Previsione testuale", show_forecast_description_helper: "La previsione scritta del servizio meteo, se disponibile (ad es. il National Weather Service statunitense)", show_uv_index: "Indice UV", show_wind_effects: "Raffiche e foglie", show_wind_effects_helper: "Con tempo ventoso o oltre 8 m/s", sun_position_x: "Posizione sole/luna, orizzontale", sun_position_x_helper: "Lascia vuoto per seguire l'ora del giorno", sun_position_y: "Posizione sole/luna, verticale", sun_position_y_helper: "Lascia vuoto per seguire l'ora del giorno", temperature_entity: "Sensore temperatura", text_color: "Colore del testo", text_color_helper: "Qualsiasi colore CSS, ad es. #1a1a2e o var(--primary-text-color)", uv_index_entity: "Sensore indice UV", visual_style: "Grafica", visual_style_classic: "Classica", visual_style_modern: "Moderna", wind_bearing_entity: "Sensore direzione del vento", wind_gust_entity: "Sensore raffiche", wind_speed_entity: "Sensore velocità del vento", language_da: "Danese", language_nb: "Norvegese (bokmål)", language_pl: "Polacco", language_sl: "Sloveno", language_sr: "Serbo", "language_sr-Latn": "Serbo (latino)", language_tr: "Turco", language_zh: "Cinese", hourly_forecast_hours_helper: "Nessun limite: ad es. 72 per tre giorni, o di più per mostrare tutte le previsioni del fornitore", styles: "CSS personalizzato", styles_helper: "CSS per la scheda e tutte le sue parti, ad es. .temperature { font-size: 48px; }" }, Jk = { pageTitle: "Dynamic Weather Card", pageSubtitle: "Demo interattiva & Strumento di configurazione", quickPresets: "Preset veloci", sunnyDay: "Giornata Soleggiata", rainy: "Piovoso", snowy: "Nevoso", clearNight: "Notte Serena", condition: "Condizione", temperature: "Temperatura", humidity: "Umidità (%)", windSpeed: "Velocità del Vento", timeOfDay: "Momento della giornata", timeMode: "Modalità ora", manualControl: "Controllo manuale", sunrise: "Alba", day: "Giorno", sunset: "Tramonto", night: "Notte", cardName: "Nome della card", height: "Altezza (px)", feelsLike: "Temperatura percepita", minTemp: "Temperatura minima", windDirection: "Direzione del vento", windGust: "Raffiche di vento", hourlyForecast: "Previsioni orarie", dailyForecast: "Previsioni giornaliere", sunriseSunset: "Alba/Tramonto", showClock: "Orologio", clockPosition: "Posizione Orologio", clockPositionTop: "In alto a destra", clockPositionDetails: "Riga dettagli", clockFormat: "Formato Orologio", clockSize: "Dimensione dell'orologio", clockSizeSmall: "Piccola", clockSizeMedium: "Media", clockSizeLarge: "Grande", clockWeight: "Spessore dell'orologio", clockWeightThin: "Sottile", clockWeightRegular: "Normale", clockWeightBold: "Grassetto", overlayOpacity: "Opacità Sovrapposizione (0-1)", windSpeedUnit: "Unità Velocità Vento", dailyForecastDays: "Giorni di Previsione", hourlyForecastHours: "Ore di Previsione", hourlyForecastStep: "Passo previsione oraria (h)", hourlyChart: "Grafico orario della temperatura", startDemo: "Avvia Demo", stopDemo: "Ferma Demo", madeWith: "Creato con amore per Home Assistant", loading: "Caricamento card...", placeholderEmpty: "Lascia vuoto per nascondere", weatherConditions: { sunny: "Soleggiato", clearNight: "Notte Serena", partlyCloudy: "Parzialmente Nuvoloso", cloudy: "Nuvoloso", rainy: "Piovoso", pouring: "Pioggia Intensa", snowy: "Nevoso", sleet: "Nevischio", hail: "Grandine", foggy: "Nebbia", lightning: "Fulmine", thunderstorm: "Temporale", windy: "Ventoso", windyVariant: "Ventoso, nuvoloso" }, language: { title: "Lingua" }, animationQuality: "Qualità animazione", animations: "Animazioni", aqi: "Qualità dell'aria (sensore)", aurora: "Aurora boreale", auroraNight: "Aurora", autoShort: "Auto", borderRadius: "Raggio degli angoli (px)", clockAndDate: "Orologio", dailyForecastTitle: "Titolo previsioni giornaliere", details: "Dettagli", dewPoint: "Punto di rugiada", documentation: "Documentazione", forecasts: "Previsioni", hourlyForecastTitle: "Titolo previsioni orarie", humidityToggle: "Umidità", layout: "Layout", layoutDefault: "Predefinito", layoutMinimal: "Minimo", links: "Link", moonPhase: "Fase lunare", pause: "Pausa", placeholderDefault: "Predefinito", play24h: "Riproduci 24 ore", playSpeed: "Durata del ciclo", precipitationOutlook: "Inizio/fine della pioggia", pressure: "Pressione", qualityHighShort: "Alta", qualityLowShort: "Bassa", qualityMediumShort: "Media", raindrops: "Gocce di pioggia sul vetro", reportIssue: "Segnala un problema", showDate: "Data", stationSensors: "Sensori della stazione", stationSensorsHint: "I sensori della stazione sostituiscono temperatura, umidità, vento e precipitazioni con valori di esempio di una stazione meteo personale.", sunPositionX: "Sole/Luna X (%)", sunPositionY: "Sole/Luna Y (%)", tabContent: "Contenuto", tabLook: "Aspetto", tabMore: "Altro", tabTime: "Ora", tabWeather: "Meteo", temperatureBars: "Barre della temperatura", forecastWind: "Vento nelle previsioni", forecastDescription: "Previsione testuale", textColor: "Colore del testo", textShadow: "Ombra del testo", uvIndex: "Indice UV", visualStyle: "Stile grafico", visualStyleClassic: "🎨 Classico", visualStyleModern: "✨ Moderno", windBearing: "Direzione del vento", windEffects: "Raffiche e foglie", windyDay: "Ventoso", yamlTitle: "YAML della scheda", copy: "Copia", copied: "Copiato", yamlHint: "Incollalo in una scheda manuale di Home Assistant e sostituisci weather.home con la tua entità meteo.", customCss: "CSS personalizzato", customCssPlaceholder: ".temperature { font-size: 48px; }" }, Qk = {
-  sunny: yk,
-  clear: bk,
-  overcast: vk,
-  cloudy: kk,
-  partlycloudy: fk,
-  rainy: wk,
-  rain: zk,
-  snowy: jk,
-  snow: Sk,
-  foggy: xk,
-  fog: Ak,
-  lightning: Pk,
+  feels_like: Jv,
+  forecast_title: Qv,
+  forecast_title_hourly: Xv,
+  daily_forecast_title: ek,
+  no_data: tk,
+  weather: ak,
+  wind_unit_kmh: ik,
+  wind_unit_ms: nk,
+  wind_unit_mph: rk,
+  wind_unit_knots: ok,
+  wind_unit_fts: sk,
+  am: lk,
+  pm: _k,
+  pressure: dk,
+  uv_index: uk,
+  dew_point: ck,
+  aqi: mk,
+  precipitation_outlook: pk,
+  editor: hk,
+  demo: gk
+}, bk = "Soleggiato", vk = "Sereno", kk = "Coperto", fk = "Nuvoloso", wk = "Parzialmente Nuvoloso", zk = "Piovoso", jk = "Pioggia", Sk = "Nevoso", xk = "Neve", Ak = "Nebbia", Pk = "Nebbia", Mk = "Fulmine", Ck = "Pioggia Intensa", $k = "Grandine", Ek = "Ventoso", Tk = "Percepita", Dk = "Previsioni di oggi", Nk = "Previsioni orarie", Vk = "Previsioni Giornaliere", Lk = "Nessun dato", Hk = "Meteo", Ik = "km/h", Rk = "m/s", Bk = "mph", Fk = "knots", Ok = "ft/s", qk = "AM", Uk = "PM", Kk = "Pressione", Wk = "Indice UV", Gk = "Punto di rugiada", Zk = "Indice di qualità dell'aria", Yk = { start: "{kind}: inizio verso {time}", soon: "{kind}: inizio a breve", stop: "{kind}: fine verso {time}", continues: "{kind}: ancora almeno {hours} h", rain: "Pioggia", snow: "Neve", sleet: "Nevischio", hail: "Grandine", storm: "Temporali" }, Jk = { entity: "Entità meteo", name: "Titolo della scheda", layout: "Layout", layout_default: "Default", layout_minimal: "Minimal", height: "Altezza", show_feels_like: "Percepita", show_wind: "Vento", show_wind_gust: "Raffiche", show_wind_direction: "Direzione", show_humidity: "Umidità", show_min_temp: "Temperatura minima", show_hourly_forecast: "Previsioni orarie", hourly_forecast_hours: "Ore", hourly_forecast_step: "Ogni", hourly_forecast_chart: "Grafico della temperatura", show_daily_forecast: "Previsioni giornaliere", daily_forecast_days: "Giorni", show_sunrise_sunset: "Alba e tramonto", sunrise_entity: "Sensore alba", sunset_entity: "Sensore tramonto", show_clock: "Orologio", clock_position: "Posizione", clock_position_top: "In alto", clock_position_details: "Dettagli", clock_format: "Formato", clock_format_12h: "12 ore (AM/PM)", clock_format_24h: "24 ore", clock_size: "Dimensione", clock_size_small: "Piccola", clock_size_medium: "Media", clock_size_large: "Grande", clock_weight: "Spessore", clock_weight_thin: "Sottile", clock_weight_regular: "Normale", clock_weight_bold: "Grassetto", overlay_opacity: "Oscuramento", text_shadow: "Ombra del testo", language: "Lingua", language_auto: "Auto", language_en: "Inglese", language_ru: "Russo", language_de: "Tedesco", language_nl: "Olandese", language_fr: "Francese", language_es: "Spagnolo", language_it: "Italiano", language_sk: "Slovacco", language_hu: "Ungherese", language_pt: "Portoghese", wind_speed_unit: "Unità velocità del vento", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Auto (come l’integrazione)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "knots", wind_speed_unit_helper: "Auto mantiene l’unità dell’integrazione o del sensore del vento; le altre convertono tutto il vento della scheda", show_animations: "Animazioni", animation_quality: "Qualità animazione", animation_quality_helper: "Riducila su tablet a parete e dispositivi lenti", animation_quality_high: "Alta", animation_quality_low: "Bassa (20 FPS, per dispositivi lenti)", animation_quality_medium: "Media (30 FPS, meno particelle)", aqi_entity: "Sensore qualità dell'aria (AQI)", border_radius: "Raggio degli angoli", daily_forecast_title: "Titolo", daily_forecast_title_helper: "Vuoto = titolo predefinito", dew_point_entity: "Sensore punto di rugiada", feels_like_entity: "Sensore temperatura percepita", hourly_forecast_title: "Titolo", hourly_forecast_title_helper: "Vuoto = titolo predefinito", humidity_entity: "Sensore umidità", overlay_opacity_helper: "0–1, scurisce il cielo per mantenere il testo leggibile", precipitation_entity: "Sensore precipitazioni", pressure_entity: "Sensore pressione", section_appearance: "Aspetto", section_clock: "Lingua, orologio e data", section_details: "Dettagli", section_forecast: "Previsioni", section_sensors: "Sensori (facoltativi)", show_aurora: "Aurora boreale", show_aurora_helper: "Nelle notti serene, grafica moderna", show_date: "Data", show_dew_point: "Punto di rugiada", show_precipitation_outlook: "Quando inizia/finisce la pioggia", show_precipitation_outlook_helper: "Dalle previsioni orarie delle prossime 12 ore", show_pressure: "Pressione", show_raindrops: "Gocce di pioggia sul vetro", show_raindrops_helper: "Con la pioggia, grafica moderna", show_temperature_bars: "Barre della temperatura", show_forecast_wind: "Vento nelle previsioni", show_forecast_wind_helper: "Direzione, velocità e raffiche per ogni ora e ogni giorno, se il servizio meteo le fornisce", hourly_forecast_step_helper: "Mostra la previsione ogni qualche ora, ad es. 3 per 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Una curva della temperatura al posto dei numeri, con la probabilità di precipitazioni a barre", show_forecast_description: "Previsione testuale", show_forecast_description_helper: "La previsione scritta del servizio meteo, se disponibile (ad es. il National Weather Service statunitense)", show_uv_index: "Indice UV", show_wind_effects: "Raffiche e foglie", show_wind_effects_helper: "Con tempo ventoso o oltre 8 m/s", sun_position_x: "Posizione sole/luna, orizzontale", sun_position_x_helper: "Lascia vuoto per seguire l'ora del giorno", sun_position_y: "Posizione sole/luna, verticale", sun_position_y_helper: "Lascia vuoto per seguire l'ora del giorno", temperature_entity: "Sensore temperatura", text_color: "Colore del testo", text_color_helper: "Qualsiasi colore CSS, ad es. #1a1a2e o var(--primary-text-color)", uv_index_entity: "Sensore indice UV", visual_style: "Grafica", visual_style_classic: "Classica", visual_style_modern: "Moderna", wind_bearing_entity: "Sensore direzione del vento", wind_gust_entity: "Sensore raffiche", wind_speed_entity: "Sensore velocità del vento", language_da: "Danese", language_nb: "Norvegese (bokmål)", language_pl: "Polacco", language_sl: "Sloveno", language_sr: "Serbo", "language_sr-Latn": "Serbo (latino)", language_tr: "Turco", language_zh: "Cinese", hourly_forecast_hours_helper: "Nessun limite: ad es. 72 per tre giorni, o di più per mostrare tutte le previsioni del fornitore", styles: "CSS personalizzato", styles_helper: "CSS per la scheda e tutte le sue parti, ad es. .temperature { font-size: 48px; }" }, Qk = { pageTitle: "Dynamic Weather Card", pageSubtitle: "Demo interattiva & Strumento di configurazione", quickPresets: "Preset veloci", sunnyDay: "Giornata Soleggiata", rainy: "Piovoso", snowy: "Nevoso", clearNight: "Notte Serena", condition: "Condizione", temperature: "Temperatura", humidity: "Umidità (%)", windSpeed: "Velocità del Vento", timeOfDay: "Momento della giornata", timeMode: "Modalità ora", manualControl: "Controllo manuale", sunrise: "Alba", day: "Giorno", sunset: "Tramonto", night: "Notte", cardName: "Nome della card", height: "Altezza (px)", feelsLike: "Temperatura percepita", minTemp: "Temperatura minima", windDirection: "Direzione del vento", windGust: "Raffiche di vento", hourlyForecast: "Previsioni orarie", dailyForecast: "Previsioni giornaliere", sunriseSunset: "Alba/Tramonto", showClock: "Orologio", clockPosition: "Posizione Orologio", clockPositionTop: "In alto a destra", clockPositionDetails: "Riga dettagli", clockFormat: "Formato Orologio", clockSize: "Dimensione dell'orologio", clockSizeSmall: "Piccola", clockSizeMedium: "Media", clockSizeLarge: "Grande", clockWeight: "Spessore dell'orologio", clockWeightThin: "Sottile", clockWeightRegular: "Normale", clockWeightBold: "Grassetto", overlayOpacity: "Opacità Sovrapposizione (0-1)", windSpeedUnit: "Unità Velocità Vento", dailyForecastDays: "Giorni di Previsione", hourlyForecastHours: "Ore di Previsione", hourlyForecastStep: "Passo previsione oraria (h)", hourlyChart: "Grafico orario della temperatura", startDemo: "Avvia Demo", stopDemo: "Ferma Demo", madeWith: "Creato con amore per Home Assistant", loading: "Caricamento card...", placeholderEmpty: "Lascia vuoto per nascondere", weatherConditions: { sunny: "Soleggiato", clearNight: "Notte Serena", partlyCloudy: "Parzialmente Nuvoloso", cloudy: "Nuvoloso", rainy: "Piovoso", pouring: "Pioggia Intensa", snowy: "Nevoso", sleet: "Nevischio", hail: "Grandine", foggy: "Nebbia", lightning: "Fulmine", thunderstorm: "Temporale", windy: "Ventoso", windyVariant: "Ventoso, nuvoloso" }, language: { title: "Lingua" }, animationQuality: "Qualità animazione", animations: "Animazioni", aqi: "Qualità dell'aria (sensore)", aurora: "Aurora boreale", auroraNight: "Aurora", autoShort: "Auto", borderRadius: "Raggio degli angoli (px)", clockAndDate: "Orologio", dailyForecastTitle: "Titolo previsioni giornaliere", details: "Dettagli", dewPoint: "Punto di rugiada", documentation: "Documentazione", forecasts: "Previsioni", hourlyForecastTitle: "Titolo previsioni orarie", humidityToggle: "Umidità", layout: "Layout", layoutDefault: "Predefinito", layoutMinimal: "Minimo", links: "Link", moonPhase: "Fase lunare", pause: "Pausa", placeholderDefault: "Predefinito", play24h: "Riproduci 24 ore", playSpeed: "Durata del ciclo", precipitationOutlook: "Inizio/fine della pioggia", pressure: "Pressione", qualityHighShort: "Alta", qualityLowShort: "Bassa", qualityMediumShort: "Media", raindrops: "Gocce di pioggia sul vetro", reportIssue: "Segnala un problema", showDate: "Data", stationSensors: "Sensori della stazione", stationSensorsHint: "I sensori della stazione sostituiscono temperatura, umidità, vento e precipitazioni con valori di esempio di una stazione meteo personale.", sunPositionX: "Sole/Luna X (%)", sunPositionY: "Sole/Luna Y (%)", tabContent: "Contenuto", tabLook: "Aspetto", tabMore: "Altro", tabTime: "Ora", tabWeather: "Meteo", temperatureBars: "Barre della temperatura", forecastWind: "Vento nelle previsioni", forecastDescription: "Previsione testuale", textColor: "Colore del testo", textShadow: "Ombra del testo", uvIndex: "Indice UV", visualStyle: "Stile grafico", visualStyleClassic: "🎨 Classico", visualStyleModern: "✨ Moderno", windBearing: "Direzione del vento", windEffects: "Raffiche e foglie", windyDay: "Ventoso", yamlTitle: "YAML della scheda", copy: "Copia", copied: "Copiato", yamlHint: "Incollalo in una scheda manuale di Home Assistant e sostituisci weather.home con la tua entità meteo.", customCss: "CSS personalizzato", customCssPlaceholder: ".temperature { font-size: 48px; }" }, Xk = {
+  sunny: bk,
+  clear: vk,
+  overcast: kk,
+  cloudy: fk,
+  partlycloudy: wk,
+  rainy: zk,
+  rain: jk,
+  snowy: Sk,
+  snow: xk,
+  foggy: Ak,
+  fog: Pk,
+  lightning: Mk,
   "lightning-rainy": "Temporale",
-  pouring: Mk,
+  pouring: Ck,
   "snowy-rainy": "Nevischio",
-  hail: Ck,
+  hail: $k,
   "clear-night": "Notte Serena",
-  windy: $k,
+  windy: Ek,
   "windy-variant": "Ventoso, nuvoloso",
-  feels_like: Ek,
-  forecast_title: Tk,
-  forecast_title_hourly: Dk,
-  daily_forecast_title: Nk,
-  no_data: Vk,
-  weather: Lk,
-  wind_unit_kmh: Hk,
-  wind_unit_ms: Ik,
-  wind_unit_mph: Rk,
-  wind_unit_knots: Bk,
-  wind_unit_fts: Fk,
-  am: Ok,
-  pm: qk,
-  pressure: Uk,
-  uv_index: Kk,
-  dew_point: Wk,
-  aqi: Gk,
-  precipitation_outlook: Zk,
-  editor: Yk,
-  demo: Jk
-}, Xk = "Sol", ef = "Klart", tf = "Overskyet", af = "Skyet", nf = "Delvis skyet", rf = "Regn", of = "Regn", sf = "Snø", lf = "Snø", _f = "Tåke", df = "Tåke", uf = "Lyn", cf = "Kraftig regn", mf = "Hagl", pf = "Vindfullt", hf = "Føles som", gf = "Dagens værvarsel", yf = "Timevarsel", bf = "Daglig værvarsel", vf = "Ingen data", kf = "Vær", ff = "km/t", wf = "m/s", zf = "mph", jf = "knop", Sf = "ft/s", xf = "AM", Af = "PM", Pf = "Lufttrykk", Mf = "UV-indeks", Cf = "Duggpunkt", $f = "Luftkvalitetsindeks", Ef = { start: "{kind} ventes rundt {time}", soon: "{kind} ventes snart", stop: "{kind} slutter rundt {time}", continues: "{kind} i minst {hours} timer til", rain: "Regn", snow: "Snø", sleet: "Sludd", hail: "Hagl", storm: "Tordenvær" }, Tf = { entity: "Værentitet", name: "Korttittel", layout: "Oppsett", layout_default: "Standard", layout_minimal: "Minimal", height: "Høyde", show_feels_like: "Føles som", show_wind: "Vind", show_wind_gust: "Vindkast", show_wind_direction: "Retning", show_humidity: "Luftfuktighet", show_min_temp: "Min. temperatur", show_hourly_forecast: "Timevarsel", hourly_forecast_hours: "Timer", hourly_forecast_step: "Hver", hourly_forecast_chart: "Temperaturgraf", show_daily_forecast: "Døgnvarsel", daily_forecast_days: "Dager", show_sunrise_sunset: "Soloppgang og solnedgang", sunrise_entity: "Soloppgangssensor", sunset_entity: "Solnedgangssensor", show_clock: "Klokke", clock_position: "Plassering", clock_position_top: "Øverst", clock_position_details: "Detaljer", clock_format: "Format", clock_format_12h: "12-timers (AM/PM)", clock_format_24h: "24-timers", clock_size: "Størrelse", clock_size_small: "Liten", clock_size_medium: "Middels", clock_size_large: "Stor", clock_weight: "Tykkelse", clock_weight_thin: "Tynn", clock_weight_regular: "Normal", clock_weight_bold: "Fet", overlay_opacity: "Mørklegging", text_shadow: "Tekstskygge", language: "Språk", language_auto: "Automatisk", language_en: "Engelsk", language_ru: "Russisk", language_de: "Tysk", language_nl: "Nederlandsk", language_fr: "Fransk", language_es: "Spansk", language_it: "Italiensk", language_sk: "Slovakisk", language_hu: "Ungarsk", language_pt: "Portugisisk", language_da: "Dansk", language_sr: "Serbisk", "language_sr-Latn": "Serbisk (latinsk)", language_pl: "Polsk", language_zh: "Kinesisk", language_tr: "Tyrkisk", language_nb: "Norsk (bokmål)", wind_speed_unit: "Enhet for vindhastighet", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/t", wind_speed_unit_auto: "Auto (som integrasjonen)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "knop", wind_speed_unit_helper: "Auto beholder enheten til integrasjonen eller vindsensoren; de andre regner om all vind på kortet", show_animations: "Animasjoner", animation_quality: "Animasjonskvalitet", animation_quality_helper: "Senk den på veggnettbrett og trege enheter", animation_quality_high: "Høy", animation_quality_low: "Lav (20 FPS, for trege enheter)", animation_quality_medium: "Middels (30 FPS, færre partikler)", aqi_entity: "Luftkvalitetssensor (AQI)", border_radius: "Hjørneradius", daily_forecast_title: "Tittel", daily_forecast_title_helper: "Tom = standardtittel", dew_point_entity: "Duggpunktsensor", feels_like_entity: "Sensor for føles som", hourly_forecast_title: "Tittel", hourly_forecast_title_helper: "Tom = standardtittel", humidity_entity: "Luftfuktighetssensor", overlay_opacity_helper: "0–1, gjør himmelen mørkere slik at teksten er lett å lese", precipitation_entity: "Nedbørsensor", pressure_entity: "Lufttrykksensor", section_appearance: "Utseende", section_clock: "Språk, klokke og dato", section_details: "Detaljer", section_forecast: "Varsel", section_sensors: "Sensorer (valgfritt)", show_aurora: "Nordlys", show_aurora_helper: "I klare netter, moderne grafikk", show_date: "Dato", show_dew_point: "Duggpunkt", show_precipitation_outlook: "Når regnet starter/slutter", show_precipitation_outlook_helper: "Fra timevarselet for de neste 12 timene", show_pressure: "Lufttrykk", show_raindrops: "Regndråper på ruten", show_raindrops_helper: "I regnvær, moderne grafikk", show_temperature_bars: "Temperaturstolper", show_forecast_wind: "Vind i varslene", show_forecast_wind_helper: "Retning, hastighet og vindkast for hver time og dag, hvis værtjenesten oppgir dem", hourly_forecast_step_helper: "Vis varselet med noen timers mellomrom, f.eks. 3 for 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "En temperaturkurve i stedet for tall, med sannsynligheten for nedbør som søyler", show_forecast_description: "Tekstvarsel", show_forecast_description_helper: "Værtjenestens skrevne varsel, hvis den har et (f.eks. amerikanske National Weather Service)", show_uv_index: "UV-indeks", show_wind_effects: "Vindkast og blader", show_wind_effects_helper: "I vindfullt vær eller over 8 m/s", sun_position_x: "Sol/måne-posisjon, vannrett", sun_position_x_helper: "La stå tomt for å følge tiden på døgnet", sun_position_y: "Sol/måne-posisjon, loddrett", sun_position_y_helper: "La stå tomt for å følge tiden på døgnet", temperature_entity: "Temperatursensor", text_color: "Tekstfarge", text_color_helper: "Hvilken som helst CSS-farge, f.eks. #1a1a2e eller var(--primary-text-color)", uv_index_entity: "UV-indekssensor", visual_style: "Grafikk", visual_style_classic: "Klassisk", visual_style_modern: "Moderne", wind_bearing_entity: "Vindretningssensor", wind_gust_entity: "Vindkastsensor", wind_speed_entity: "Vindhastighetssensor", language_sl: "Slovensk", hourly_forecast_hours_helper: "Ingen øvre grense: f.eks. 72 for tre dager, eller mer for å vise hele varselet fra leverandøren", styles: "Egen CSS", styles_helper: "CSS for kortet og alle delene, f.eks. .temperature { font-size: 48px; }" }, Df = { pageTitle: "Dynamic Weather Card", pageSubtitle: "Interaktiv demo og konfigurasjonsverktøy", quickPresets: "Hurtigvalg", sunnyDay: "Solskinnsdag", rainy: "Regn", snowy: "Snø", clearNight: "Klar natt", condition: "Forhold", temperature: "Temperatur", humidity: "Luftfuktighet (%)", windSpeed: "Vindhastighet", timeOfDay: "Tid på døgnet", timeMode: "Tidsmodus", manualControl: "Manuell styring", sunrise: "Soloppgang", day: "Dag", sunset: "Solnedgang", night: "Natt", cardName: "Kortnavn", height: "Høyde (px)", feelsLike: "Føles som-temperatur", minTemp: "Minimumstemperatur", windDirection: "Vindretning", windGust: "Vindkast", hourlyForecast: "Værvarsel time for time", dailyForecast: "Daglig værvarsel", sunriseSunset: "Soloppgang/solnedgang", showClock: "Klokke", clockPosition: "Klokkeplassering", clockPositionTop: "Øverst til høyre", clockPositionDetails: "Detaljrad", clockFormat: "Klokkeformat", clockSize: "Klokkestørrelse", clockSizeSmall: "Liten", clockSizeMedium: "Middels", clockSizeLarge: "Stor", clockWeight: "Klokkens skrifttykkelse", clockWeightThin: "Tynn", clockWeightRegular: "Normal", clockWeightBold: "Fet", overlayOpacity: "Gjennomsiktighet for overlegg (0-1)", windSpeedUnit: "Vindhastighetsenhet", dailyForecastDays: "Dager i daglig værvarsel", hourlyForecastHours: "Timer i værvarsel time for time", hourlyForecastStep: "Steg for timevarsel (t)", hourlyChart: "Temperaturgraf per time", startDemo: "Start demomodus", stopDemo: "Stopp demo", madeWith: "Laget med kjærlighet for Home Assistant", loading: "Laster kort...", placeholderEmpty: "La stå tom for å skjule", weatherConditions: { sunny: "Sol", clearNight: "Klar natt", partlyCloudy: "Delvis skyet", cloudy: "Skyet", rainy: "Regn", pouring: "Kraftig regn", snowy: "Snø", sleet: "Sludd", hail: "Hagl", foggy: "Tåke", lightning: "Lyn", thunderstorm: "Tordenvær", windy: "Vindfullt", windyVariant: "Vindfullt, skyet" }, language: { title: "Språk" }, animationQuality: "Animasjonskvalitet", animations: "Animasjoner", aqi: "Luftkvalitet (sensor)", aurora: "Nordlys", auroraNight: "Nordlys", autoShort: "Auto", borderRadius: "Hjørneradius (px)", clockAndDate: "Klokke", dailyForecastTitle: "Tittel for døgnvarsel", details: "Detaljer", dewPoint: "Duggpunkt", documentation: "Dokumentasjon", forecasts: "Varsler", hourlyForecastTitle: "Tittel for timevarsel", humidityToggle: "Luftfuktighet", layout: "Oppsett", layoutDefault: "Standard", layoutMinimal: "Minimal", links: "Lenker", moonPhase: "Månefase", pause: "Pause", placeholderDefault: "Standard", play24h: "Spill av 24 timer", playSpeed: "Syklusens lengde", precipitationOutlook: "Start/slutt for regn", pressure: "Lufttrykk", qualityHighShort: "Høy", qualityLowShort: "Lav", qualityMediumShort: "Middels", raindrops: "Regndråper på ruten", reportIssue: "Rapporter et problem", showDate: "Dato", stationSensors: "Stasjonssensorer", stationSensorsHint: "Stasjonssensorer erstatter temperatur, luftfuktighet, vind og nedbør med eksempelverdier fra en privat værstasjon.", sunPositionX: "Sol/måne X (%)", sunPositionY: "Sol/måne Y (%)", tabContent: "Innhold", tabLook: "Utseende", tabMore: "Mer", tabTime: "Tid", tabWeather: "Vær", temperatureBars: "Temperaturstolper", forecastWind: "Vind i varslene", forecastDescription: "Tekstvarsel", textColor: "Tekstfarge", textShadow: "Tekstskygge", uvIndex: "UV-indeks", visualStyle: "Grafisk stil", visualStyleClassic: "🎨 Klassisk", visualStyleModern: "✨ Moderne", windBearing: "Vindretning", windEffects: "Vindkast og blader", windyDay: "Vindfullt", yamlTitle: "Kortets YAML", copy: "Kopier", copied: "Kopiert", yamlHint: "Lim det inn i et manuelt kort i Home Assistant, og bytt ut weather.home med din værentitet.", customCss: "Egen CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, Nf = {
-  sunny: Xk,
-  clear: ef,
-  overcast: tf,
-  cloudy: af,
-  partlycloudy: nf,
-  rainy: rf,
-  rain: of,
-  snowy: sf,
-  snow: lf,
-  foggy: _f,
-  fog: df,
-  lightning: uf,
+  feels_like: Tk,
+  forecast_title: Dk,
+  forecast_title_hourly: Nk,
+  daily_forecast_title: Vk,
+  no_data: Lk,
+  weather: Hk,
+  wind_unit_kmh: Ik,
+  wind_unit_ms: Rk,
+  wind_unit_mph: Bk,
+  wind_unit_knots: Fk,
+  wind_unit_fts: Ok,
+  am: qk,
+  pm: Uk,
+  pressure: Kk,
+  uv_index: Wk,
+  dew_point: Gk,
+  aqi: Zk,
+  precipitation_outlook: Yk,
+  editor: Jk,
+  demo: Qk
+}, ef = "Sol", tf = "Klart", af = "Overskyet", nf = "Skyet", rf = "Delvis skyet", of = "Regn", sf = "Regn", lf = "Snø", _f = "Snø", df = "Tåke", uf = "Tåke", cf = "Lyn", mf = "Kraftig regn", pf = "Hagl", hf = "Vindfullt", gf = "Føles som", yf = "Dagens værvarsel", bf = "Timevarsel", vf = "Daglig værvarsel", kf = "Ingen data", ff = "Vær", wf = "km/t", zf = "m/s", jf = "mph", Sf = "knop", xf = "ft/s", Af = "AM", Pf = "PM", Mf = "Lufttrykk", Cf = "UV-indeks", $f = "Duggpunkt", Ef = "Luftkvalitetsindeks", Tf = { start: "{kind} ventes rundt {time}", soon: "{kind} ventes snart", stop: "{kind} slutter rundt {time}", continues: "{kind} i minst {hours} timer til", rain: "Regn", snow: "Snø", sleet: "Sludd", hail: "Hagl", storm: "Tordenvær" }, Df = { entity: "Værentitet", name: "Korttittel", layout: "Oppsett", layout_default: "Standard", layout_minimal: "Minimal", height: "Høyde", show_feels_like: "Føles som", show_wind: "Vind", show_wind_gust: "Vindkast", show_wind_direction: "Retning", show_humidity: "Luftfuktighet", show_min_temp: "Min. temperatur", show_hourly_forecast: "Timevarsel", hourly_forecast_hours: "Timer", hourly_forecast_step: "Hver", hourly_forecast_chart: "Temperaturgraf", show_daily_forecast: "Døgnvarsel", daily_forecast_days: "Dager", show_sunrise_sunset: "Soloppgang og solnedgang", sunrise_entity: "Soloppgangssensor", sunset_entity: "Solnedgangssensor", show_clock: "Klokke", clock_position: "Plassering", clock_position_top: "Øverst", clock_position_details: "Detaljer", clock_format: "Format", clock_format_12h: "12-timers (AM/PM)", clock_format_24h: "24-timers", clock_size: "Størrelse", clock_size_small: "Liten", clock_size_medium: "Middels", clock_size_large: "Stor", clock_weight: "Tykkelse", clock_weight_thin: "Tynn", clock_weight_regular: "Normal", clock_weight_bold: "Fet", overlay_opacity: "Mørklegging", text_shadow: "Tekstskygge", language: "Språk", language_auto: "Automatisk", language_en: "Engelsk", language_ru: "Russisk", language_de: "Tysk", language_nl: "Nederlandsk", language_fr: "Fransk", language_es: "Spansk", language_it: "Italiensk", language_sk: "Slovakisk", language_hu: "Ungarsk", language_pt: "Portugisisk", language_da: "Dansk", language_sr: "Serbisk", "language_sr-Latn": "Serbisk (latinsk)", language_pl: "Polsk", language_zh: "Kinesisk", language_tr: "Tyrkisk", language_nb: "Norsk (bokmål)", wind_speed_unit: "Enhet for vindhastighet", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/t", wind_speed_unit_auto: "Auto (som integrasjonen)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "knop", wind_speed_unit_helper: "Auto beholder enheten til integrasjonen eller vindsensoren; de andre regner om all vind på kortet", show_animations: "Animasjoner", animation_quality: "Animasjonskvalitet", animation_quality_helper: "Senk den på veggnettbrett og trege enheter", animation_quality_high: "Høy", animation_quality_low: "Lav (20 FPS, for trege enheter)", animation_quality_medium: "Middels (30 FPS, færre partikler)", aqi_entity: "Luftkvalitetssensor (AQI)", border_radius: "Hjørneradius", daily_forecast_title: "Tittel", daily_forecast_title_helper: "Tom = standardtittel", dew_point_entity: "Duggpunktsensor", feels_like_entity: "Sensor for føles som", hourly_forecast_title: "Tittel", hourly_forecast_title_helper: "Tom = standardtittel", humidity_entity: "Luftfuktighetssensor", overlay_opacity_helper: "0–1, gjør himmelen mørkere slik at teksten er lett å lese", precipitation_entity: "Nedbørsensor", pressure_entity: "Lufttrykksensor", section_appearance: "Utseende", section_clock: "Språk, klokke og dato", section_details: "Detaljer", section_forecast: "Varsel", section_sensors: "Sensorer (valgfritt)", show_aurora: "Nordlys", show_aurora_helper: "I klare netter, moderne grafikk", show_date: "Dato", show_dew_point: "Duggpunkt", show_precipitation_outlook: "Når regnet starter/slutter", show_precipitation_outlook_helper: "Fra timevarselet for de neste 12 timene", show_pressure: "Lufttrykk", show_raindrops: "Regndråper på ruten", show_raindrops_helper: "I regnvær, moderne grafikk", show_temperature_bars: "Temperaturstolper", show_forecast_wind: "Vind i varslene", show_forecast_wind_helper: "Retning, hastighet og vindkast for hver time og dag, hvis værtjenesten oppgir dem", hourly_forecast_step_helper: "Vis varselet med noen timers mellomrom, f.eks. 3 for 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "En temperaturkurve i stedet for tall, med sannsynligheten for nedbør som søyler", show_forecast_description: "Tekstvarsel", show_forecast_description_helper: "Værtjenestens skrevne varsel, hvis den har et (f.eks. amerikanske National Weather Service)", show_uv_index: "UV-indeks", show_wind_effects: "Vindkast og blader", show_wind_effects_helper: "I vindfullt vær eller over 8 m/s", sun_position_x: "Sol/måne-posisjon, vannrett", sun_position_x_helper: "La stå tomt for å følge tiden på døgnet", sun_position_y: "Sol/måne-posisjon, loddrett", sun_position_y_helper: "La stå tomt for å følge tiden på døgnet", temperature_entity: "Temperatursensor", text_color: "Tekstfarge", text_color_helper: "Hvilken som helst CSS-farge, f.eks. #1a1a2e eller var(--primary-text-color)", uv_index_entity: "UV-indekssensor", visual_style: "Grafikk", visual_style_classic: "Klassisk", visual_style_modern: "Moderne", wind_bearing_entity: "Vindretningssensor", wind_gust_entity: "Vindkastsensor", wind_speed_entity: "Vindhastighetssensor", language_sl: "Slovensk", hourly_forecast_hours_helper: "Ingen øvre grense: f.eks. 72 for tre dager, eller mer for å vise hele varselet fra leverandøren", styles: "Egen CSS", styles_helper: "CSS for kortet og alle delene, f.eks. .temperature { font-size: 48px; }" }, Nf = { pageTitle: "Dynamic Weather Card", pageSubtitle: "Interaktiv demo og konfigurasjonsverktøy", quickPresets: "Hurtigvalg", sunnyDay: "Solskinnsdag", rainy: "Regn", snowy: "Snø", clearNight: "Klar natt", condition: "Forhold", temperature: "Temperatur", humidity: "Luftfuktighet (%)", windSpeed: "Vindhastighet", timeOfDay: "Tid på døgnet", timeMode: "Tidsmodus", manualControl: "Manuell styring", sunrise: "Soloppgang", day: "Dag", sunset: "Solnedgang", night: "Natt", cardName: "Kortnavn", height: "Høyde (px)", feelsLike: "Føles som-temperatur", minTemp: "Minimumstemperatur", windDirection: "Vindretning", windGust: "Vindkast", hourlyForecast: "Værvarsel time for time", dailyForecast: "Daglig værvarsel", sunriseSunset: "Soloppgang/solnedgang", showClock: "Klokke", clockPosition: "Klokkeplassering", clockPositionTop: "Øverst til høyre", clockPositionDetails: "Detaljrad", clockFormat: "Klokkeformat", clockSize: "Klokkestørrelse", clockSizeSmall: "Liten", clockSizeMedium: "Middels", clockSizeLarge: "Stor", clockWeight: "Klokkens skrifttykkelse", clockWeightThin: "Tynn", clockWeightRegular: "Normal", clockWeightBold: "Fet", overlayOpacity: "Gjennomsiktighet for overlegg (0-1)", windSpeedUnit: "Vindhastighetsenhet", dailyForecastDays: "Dager i daglig værvarsel", hourlyForecastHours: "Timer i værvarsel time for time", hourlyForecastStep: "Steg for timevarsel (t)", hourlyChart: "Temperaturgraf per time", startDemo: "Start demomodus", stopDemo: "Stopp demo", madeWith: "Laget med kjærlighet for Home Assistant", loading: "Laster kort...", placeholderEmpty: "La stå tom for å skjule", weatherConditions: { sunny: "Sol", clearNight: "Klar natt", partlyCloudy: "Delvis skyet", cloudy: "Skyet", rainy: "Regn", pouring: "Kraftig regn", snowy: "Snø", sleet: "Sludd", hail: "Hagl", foggy: "Tåke", lightning: "Lyn", thunderstorm: "Tordenvær", windy: "Vindfullt", windyVariant: "Vindfullt, skyet" }, language: { title: "Språk" }, animationQuality: "Animasjonskvalitet", animations: "Animasjoner", aqi: "Luftkvalitet (sensor)", aurora: "Nordlys", auroraNight: "Nordlys", autoShort: "Auto", borderRadius: "Hjørneradius (px)", clockAndDate: "Klokke", dailyForecastTitle: "Tittel for døgnvarsel", details: "Detaljer", dewPoint: "Duggpunkt", documentation: "Dokumentasjon", forecasts: "Varsler", hourlyForecastTitle: "Tittel for timevarsel", humidityToggle: "Luftfuktighet", layout: "Oppsett", layoutDefault: "Standard", layoutMinimal: "Minimal", links: "Lenker", moonPhase: "Månefase", pause: "Pause", placeholderDefault: "Standard", play24h: "Spill av 24 timer", playSpeed: "Syklusens lengde", precipitationOutlook: "Start/slutt for regn", pressure: "Lufttrykk", qualityHighShort: "Høy", qualityLowShort: "Lav", qualityMediumShort: "Middels", raindrops: "Regndråper på ruten", reportIssue: "Rapporter et problem", showDate: "Dato", stationSensors: "Stasjonssensorer", stationSensorsHint: "Stasjonssensorer erstatter temperatur, luftfuktighet, vind og nedbør med eksempelverdier fra en privat værstasjon.", sunPositionX: "Sol/måne X (%)", sunPositionY: "Sol/måne Y (%)", tabContent: "Innhold", tabLook: "Utseende", tabMore: "Mer", tabTime: "Tid", tabWeather: "Vær", temperatureBars: "Temperaturstolper", forecastWind: "Vind i varslene", forecastDescription: "Tekstvarsel", textColor: "Tekstfarge", textShadow: "Tekstskygge", uvIndex: "UV-indeks", visualStyle: "Grafisk stil", visualStyleClassic: "🎨 Klassisk", visualStyleModern: "✨ Moderne", windBearing: "Vindretning", windEffects: "Vindkast og blader", windyDay: "Vindfullt", yamlTitle: "Kortets YAML", copy: "Kopier", copied: "Kopiert", yamlHint: "Lim det inn i et manuelt kort i Home Assistant, og bytt ut weather.home med din værentitet.", customCss: "Egen CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, Vf = {
+  sunny: ef,
+  clear: tf,
+  overcast: af,
+  cloudy: nf,
+  partlycloudy: rf,
+  rainy: of,
+  rain: sf,
+  snowy: lf,
+  snow: _f,
+  foggy: df,
+  fog: uf,
+  lightning: cf,
   "lightning-rainy": "Tordenvær",
-  pouring: cf,
+  pouring: mf,
   "snowy-rainy": "Sludd",
-  hail: mf,
+  hail: pf,
   "clear-night": "Klar natt",
-  windy: pf,
+  windy: hf,
   "windy-variant": "Vindfullt, skyet",
-  feels_like: hf,
-  forecast_title: gf,
-  forecast_title_hourly: yf,
-  daily_forecast_title: bf,
-  no_data: vf,
-  weather: kf,
-  wind_unit_kmh: ff,
-  wind_unit_ms: wf,
-  wind_unit_mph: zf,
-  wind_unit_knots: jf,
-  wind_unit_fts: Sf,
-  am: xf,
-  pm: Af,
-  pressure: Pf,
-  uv_index: Mf,
-  dew_point: Cf,
-  aqi: $f,
-  precipitation_outlook: Ef,
-  editor: Tf,
-  demo: Df
-}, Vf = "Zonnig", Lf = "Helder", Hf = "Bewolkt", If = "Bewolkt", Rf = "Gedeeltelijk bewolkt", Bf = "Regenachtig", Ff = "Regen", Of = "Sneeuwachtig", qf = "Sneeuw", Uf = "Mistig", Kf = "Mist", Wf = "Bliksem", Gf = "Zware regen", Zf = "Hagel", Yf = "Winderig", Jf = "Gevoelstemperatuur", Qf = "Voorspelling van vandaag", Xf = "Uurverwachting", ew = "Dagelijkse voorspelling", tw = "Geen gegevens", aw = "Weer", iw = "km/u", nw = "m/s", rw = "mph", ow = "knots", sw = "ft/s", lw = "AM", _w = "PM", dw = "Luchtdruk", uw = "UV-index", cw = "Dauwpunt", mw = "Luchtkwaliteitsindex", pw = { start: "{kind} verwacht rond {time}", soon: "{kind} binnenkort verwacht", stop: "{kind} stopt rond {time}", continues: "{kind} nog minstens {hours} uur", rain: "Regen", snow: "Sneeuw", sleet: "Natte sneeuw", hail: "Hagel", storm: "Onweer" }, hw = { entity: "Weer-entiteit", name: "Kaarttitel", layout: "Indeling", layout_default: "Default", layout_minimal: "Minimal", height: "Hoogte", show_feels_like: "Gevoelstemperatuur", show_wind: "Wind", show_wind_gust: "Windstoten", show_wind_direction: "Richting", show_humidity: "Luchtvochtigheid", show_min_temp: "Minimumtemperatuur", show_hourly_forecast: "Uurverwachting", hourly_forecast_hours: "Uren", hourly_forecast_step: "Elke", hourly_forecast_chart: "Temperatuurgrafiek", show_daily_forecast: "Dagverwachting", daily_forecast_days: "Dagen", show_sunrise_sunset: "Zonsopkomst en -ondergang", sunrise_entity: "Zonsopkomstsensor", sunset_entity: "Zonsondergangsensor", show_clock: "Klok", clock_position: "Positie", clock_position_top: "Boven", clock_position_details: "Details", clock_format: "Notatie", clock_format_12h: "12-uurs (AM/PM)", clock_format_24h: "24-uurs", clock_size: "Grootte", clock_size_small: "Klein", clock_size_medium: "Middel", clock_size_large: "Groot", clock_weight: "Letterdikte", clock_weight_thin: "Dun", clock_weight_regular: "Normaal", clock_weight_bold: "Vet", overlay_opacity: "Verduistering", text_shadow: "Tekstschaduw", language: "Taal", language_auto: "Automatisch", language_en: "Engels", language_ru: "Russisch", language_de: "Duits", language_nl: "Nederlands", language_fr: "Frans", language_es: "Spaans", language_it: "Italiaans", language_sk: "Slowaaks", language_hu: "Hongaars", language_pt: "Portugees", wind_speed_unit: "Eenheid windsnelheid", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/u", wind_speed_unit_auto: "Auto (zoals de integratie)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "knots", wind_speed_unit_helper: "Auto houdt de eenheid van de integratie of windsensor aan; de andere rekenen alle wind op de kaart om", show_animations: "Animaties", animation_quality: "Animatiekwaliteit", animation_quality_helper: "Verlaag dit voor wandtablets en trage apparaten", animation_quality_high: "Hoog", animation_quality_low: "Laag (20 FPS, voor trage apparaten)", animation_quality_medium: "Gemiddeld (30 FPS, minder deeltjes)", aqi_entity: "Luchtkwaliteitssensor (AQI)", border_radius: "Hoekafronding", daily_forecast_title: "Titel", daily_forecast_title_helper: "Leeg = standaardtitel", dew_point_entity: "Dauwpuntsensor", feels_like_entity: "Gevoelstemperatuursensor", hourly_forecast_title: "Titel", hourly_forecast_title_helper: "Leeg = standaardtitel", humidity_entity: "Luchtvochtigheidssensor", overlay_opacity_helper: "0–1, maakt de lucht donkerder zodat tekst leesbaar blijft", precipitation_entity: "Neerslagsensor", pressure_entity: "Luchtdruksensor", section_appearance: "Uiterlijk", section_clock: "Taal, klok en datum", section_details: "Details", section_forecast: "Verwachting", section_sensors: "Sensoren (optioneel)", show_aurora: "Noorderlicht", show_aurora_helper: "Bij heldere nachten, moderne grafiek", show_date: "Datum", show_dew_point: "Dauwpunt", show_precipitation_outlook: "Wanneer regen begint/stopt", show_precipitation_outlook_helper: "Uit de uurverwachting voor de komende 12 uur", show_pressure: "Luchtdruk", show_raindrops: "Regendruppels op het glas", show_raindrops_helper: "Bij regen, moderne grafiek", show_temperature_bars: "Temperatuurbalken", show_forecast_wind: "Wind in voorspellingen", show_forecast_wind_helper: "Richting, snelheid en windstoten per uur en per dag, als de weerdienst ze levert", hourly_forecast_step_helper: "Toon de voorspelling om de paar uur, bijv. 3 voor 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Een temperatuurcurve in plaats van getallen, met de neerslagkans als balken", show_forecast_description: "Tekstvoorspelling", show_forecast_description_helper: "De geschreven voorspelling van de weerdienst, als die er is (bijv. de Amerikaanse National Weather Service)", show_uv_index: "UV-index", show_wind_effects: "Windstoten en bladeren", show_wind_effects_helper: "Bij winderig weer of boven 8 m/s", sun_position_x: "Positie zon/maan, horizontaal", sun_position_x_helper: "Leeg laten om het tijdstip van de dag te volgen", sun_position_y: "Positie zon/maan, verticaal", sun_position_y_helper: "Leeg laten om het tijdstip van de dag te volgen", temperature_entity: "Temperatuursensor", text_color: "Tekstkleur", text_color_helper: "Elke CSS-kleur, bijv. #1a1a2e of var(--primary-text-color)", uv_index_entity: "UV-indexsensor", visual_style: "Grafiek", visual_style_classic: "Klassiek", visual_style_modern: "Modern", wind_bearing_entity: "Windrichtingsensor", wind_gust_entity: "Windstotensensor", wind_speed_entity: "Windsnelheidsensor", language_da: "Deens", language_nb: "Noors (Bokmål)", language_pl: "Pools", language_sl: "Sloveens", language_sr: "Servisch", "language_sr-Latn": "Servisch (Latijns)", language_tr: "Turks", language_zh: "Chinees", hourly_forecast_hours_helper: "Geen maximum: bijv. 72 voor drie dagen, of meer om de hele verwachting van de provider te tonen", styles: "Eigen CSS", styles_helper: "CSS voor de kaart en al haar onderdelen, bijv. .temperature { font-size: 48px; }" }, gw = { pageTitle: "Dynamische Weerkaart", pageSubtitle: "Interactieve demo & configuratietool", quickPresets: "Snelle presets", sunnyDay: "Zonnige dag", rainy: "Regen", snowy: "Sneeuw", clearNight: "Heldere nacht", condition: "Conditie", temperature: "Temperatuur", humidity: "Luchtvochtigheid (%)", windSpeed: "Windsnelheid", timeOfDay: "Tijd van de dag", timeMode: "Tijdmodus", manualControl: "Handmatige bediening", sunrise: "Zonsopgang", day: "Dag", sunset: "Zonsondergang", night: "Nacht", cardName: "Kaartnaam", height: "Hoogte (px)", feelsLike: "Gevoelstemperatuur", minTemp: "Minimumtemperatuur", windDirection: "Windrichting", windGust: "Windstoten", hourlyForecast: "Uurlijkse voorspelling", dailyForecast: "Dagelijkse voorspelling", sunriseSunset: "Zonsopgang / Zonsondergang", showClock: "Klok", clockPosition: "Klokpositie", clockPositionTop: "Rechtsboven", clockPositionDetails: "Detailregel", clockFormat: "Klokformaat", clockSize: "Klokgrootte", clockSizeSmall: "Klein", clockSizeMedium: "Middel", clockSizeLarge: "Groot", clockWeight: "Letterdikte van de klok", clockWeightThin: "Dun", clockWeightRegular: "Normaal", clockWeightBold: "Vet", overlayOpacity: "Overlay-transparantie (0-1)", windSpeedUnit: "Windsnelheidseenheid", dailyForecastDays: "Voorspellingsdagen", hourlyForecastHours: "Voorspellingsuren", hourlyForecastStep: "Stap uurvoorspelling (u)", hourlyChart: "Temperatuurgrafiek per uur", startDemo: "Demo starten", stopDemo: "Demo stoppen", madeWith: "Gemaakt met liefde voor Home Assistant", loading: "Kaart laden...", placeholderEmpty: "Leeg laten om te verbergen", weatherConditions: { sunny: "Zonnig", clearNight: "Heldere nacht", partlyCloudy: "Gedeeltelijk bewolkt", cloudy: "Bewolkt", rainy: "Regen", pouring: "Zware regen", snowy: "Sneeuw", sleet: "Natte sneeuw", hail: "Hagel", foggy: "Mist", lightning: "Bliksem", thunderstorm: "Onweer", windy: "Winderig", windyVariant: "Winderig, bewolkt" }, language: { title: "Taal" }, animationQuality: "Animatiekwaliteit", animations: "Animaties", aqi: "Luchtkwaliteit (sensor)", aurora: "Noorderlicht", auroraNight: "Noorderlicht", autoShort: "Auto", borderRadius: "Hoekafronding (px)", clockAndDate: "Klok", dailyForecastTitle: "Titel dagverwachting", details: "Details", dewPoint: "Dauwpunt", documentation: "Documentatie", forecasts: "Verwachtingen", hourlyForecastTitle: "Titel uurverwachting", humidityToggle: "Luchtvochtigheid", layout: "Indeling", layoutDefault: "Standaard", layoutMinimal: "Minimaal", links: "Links", moonPhase: "Maanfase", pause: "Pauze", placeholderDefault: "Standaard", play24h: "24 uur afspelen", playSpeed: "Cyclusduur", precipitationOutlook: "Begin/einde van de regen", pressure: "Luchtdruk", qualityHighShort: "Hoog", qualityLowShort: "Laag", qualityMediumShort: "Gemiddeld", raindrops: "Regendruppels op het glas", reportIssue: "Probleem melden", showDate: "Datum", stationSensors: "Stationssensoren", stationSensorsHint: "Stationssensoren vervangen temperatuur, luchtvochtigheid, wind en neerslag door voorbeeldwaarden van een eigen weerstation.", sunPositionX: "Zon/Maan X (%)", sunPositionY: "Zon/Maan Y (%)", tabContent: "Inhoud", tabLook: "Uiterlijk", tabMore: "Meer", tabTime: "Tijd", tabWeather: "Weer", temperatureBars: "Temperatuurbalken", forecastWind: "Wind in voorspellingen", forecastDescription: "Tekstvoorspelling", textColor: "Tekstkleur", textShadow: "Tekstschaduw", uvIndex: "UV-index", visualStyle: "Grafische stijl", visualStyleClassic: "🎨 Klassiek", visualStyleModern: "✨ Modern", windBearing: "Windrichting", windEffects: "Windstoten en bladeren", windyDay: "Winderig", yamlTitle: "Kaart-YAML", copy: "Kopiëren", copied: "Gekopieerd", yamlHint: "Plak het in een handmatige kaart in Home Assistant en vervang weather.home door je weerentiteit.", customCss: "Eigen CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, yw = {
-  sunny: Vf,
-  clear: Lf,
-  overcast: Hf,
-  cloudy: If,
-  partlycloudy: Rf,
-  rainy: Bf,
-  rain: Ff,
-  snowy: Of,
-  snow: qf,
-  foggy: Uf,
-  fog: Kf,
-  lightning: Wf,
+  feels_like: gf,
+  forecast_title: yf,
+  forecast_title_hourly: bf,
+  daily_forecast_title: vf,
+  no_data: kf,
+  weather: ff,
+  wind_unit_kmh: wf,
+  wind_unit_ms: zf,
+  wind_unit_mph: jf,
+  wind_unit_knots: Sf,
+  wind_unit_fts: xf,
+  am: Af,
+  pm: Pf,
+  pressure: Mf,
+  uv_index: Cf,
+  dew_point: $f,
+  aqi: Ef,
+  precipitation_outlook: Tf,
+  editor: Df,
+  demo: Nf
+}, Lf = "Zonnig", Hf = "Helder", If = "Bewolkt", Rf = "Bewolkt", Bf = "Gedeeltelijk bewolkt", Ff = "Regenachtig", Of = "Regen", qf = "Sneeuwachtig", Uf = "Sneeuw", Kf = "Mistig", Wf = "Mist", Gf = "Bliksem", Zf = "Zware regen", Yf = "Hagel", Jf = "Winderig", Qf = "Gevoelstemperatuur", Xf = "Voorspelling van vandaag", ew = "Uurverwachting", tw = "Dagelijkse voorspelling", aw = "Geen gegevens", iw = "Weer", nw = "km/u", rw = "m/s", ow = "mph", sw = "knots", lw = "ft/s", _w = "AM", dw = "PM", uw = "Luchtdruk", cw = "UV-index", mw = "Dauwpunt", pw = "Luchtkwaliteitsindex", hw = { start: "{kind} verwacht rond {time}", soon: "{kind} binnenkort verwacht", stop: "{kind} stopt rond {time}", continues: "{kind} nog minstens {hours} uur", rain: "Regen", snow: "Sneeuw", sleet: "Natte sneeuw", hail: "Hagel", storm: "Onweer" }, gw = { entity: "Weer-entiteit", name: "Kaarttitel", layout: "Indeling", layout_default: "Default", layout_minimal: "Minimal", height: "Hoogte", show_feels_like: "Gevoelstemperatuur", show_wind: "Wind", show_wind_gust: "Windstoten", show_wind_direction: "Richting", show_humidity: "Luchtvochtigheid", show_min_temp: "Minimumtemperatuur", show_hourly_forecast: "Uurverwachting", hourly_forecast_hours: "Uren", hourly_forecast_step: "Elke", hourly_forecast_chart: "Temperatuurgrafiek", show_daily_forecast: "Dagverwachting", daily_forecast_days: "Dagen", show_sunrise_sunset: "Zonsopkomst en -ondergang", sunrise_entity: "Zonsopkomstsensor", sunset_entity: "Zonsondergangsensor", show_clock: "Klok", clock_position: "Positie", clock_position_top: "Boven", clock_position_details: "Details", clock_format: "Notatie", clock_format_12h: "12-uurs (AM/PM)", clock_format_24h: "24-uurs", clock_size: "Grootte", clock_size_small: "Klein", clock_size_medium: "Middel", clock_size_large: "Groot", clock_weight: "Letterdikte", clock_weight_thin: "Dun", clock_weight_regular: "Normaal", clock_weight_bold: "Vet", overlay_opacity: "Verduistering", text_shadow: "Tekstschaduw", language: "Taal", language_auto: "Automatisch", language_en: "Engels", language_ru: "Russisch", language_de: "Duits", language_nl: "Nederlands", language_fr: "Frans", language_es: "Spaans", language_it: "Italiaans", language_sk: "Slowaaks", language_hu: "Hongaars", language_pt: "Portugees", wind_speed_unit: "Eenheid windsnelheid", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/u", wind_speed_unit_auto: "Auto (zoals de integratie)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "knots", wind_speed_unit_helper: "Auto houdt de eenheid van de integratie of windsensor aan; de andere rekenen alle wind op de kaart om", show_animations: "Animaties", animation_quality: "Animatiekwaliteit", animation_quality_helper: "Verlaag dit voor wandtablets en trage apparaten", animation_quality_high: "Hoog", animation_quality_low: "Laag (20 FPS, voor trage apparaten)", animation_quality_medium: "Gemiddeld (30 FPS, minder deeltjes)", aqi_entity: "Luchtkwaliteitssensor (AQI)", border_radius: "Hoekafronding", daily_forecast_title: "Titel", daily_forecast_title_helper: "Leeg = standaardtitel", dew_point_entity: "Dauwpuntsensor", feels_like_entity: "Gevoelstemperatuursensor", hourly_forecast_title: "Titel", hourly_forecast_title_helper: "Leeg = standaardtitel", humidity_entity: "Luchtvochtigheidssensor", overlay_opacity_helper: "0–1, maakt de lucht donkerder zodat tekst leesbaar blijft", precipitation_entity: "Neerslagsensor", pressure_entity: "Luchtdruksensor", section_appearance: "Uiterlijk", section_clock: "Taal, klok en datum", section_details: "Details", section_forecast: "Verwachting", section_sensors: "Sensoren (optioneel)", show_aurora: "Noorderlicht", show_aurora_helper: "Bij heldere nachten, moderne grafiek", show_date: "Datum", show_dew_point: "Dauwpunt", show_precipitation_outlook: "Wanneer regen begint/stopt", show_precipitation_outlook_helper: "Uit de uurverwachting voor de komende 12 uur", show_pressure: "Luchtdruk", show_raindrops: "Regendruppels op het glas", show_raindrops_helper: "Bij regen, moderne grafiek", show_temperature_bars: "Temperatuurbalken", show_forecast_wind: "Wind in voorspellingen", show_forecast_wind_helper: "Richting, snelheid en windstoten per uur en per dag, als de weerdienst ze levert", hourly_forecast_step_helper: "Toon de voorspelling om de paar uur, bijv. 3 voor 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Een temperatuurcurve in plaats van getallen, met de neerslagkans als balken", show_forecast_description: "Tekstvoorspelling", show_forecast_description_helper: "De geschreven voorspelling van de weerdienst, als die er is (bijv. de Amerikaanse National Weather Service)", show_uv_index: "UV-index", show_wind_effects: "Windstoten en bladeren", show_wind_effects_helper: "Bij winderig weer of boven 8 m/s", sun_position_x: "Positie zon/maan, horizontaal", sun_position_x_helper: "Leeg laten om het tijdstip van de dag te volgen", sun_position_y: "Positie zon/maan, verticaal", sun_position_y_helper: "Leeg laten om het tijdstip van de dag te volgen", temperature_entity: "Temperatuursensor", text_color: "Tekstkleur", text_color_helper: "Elke CSS-kleur, bijv. #1a1a2e of var(--primary-text-color)", uv_index_entity: "UV-indexsensor", visual_style: "Grafiek", visual_style_classic: "Klassiek", visual_style_modern: "Modern", wind_bearing_entity: "Windrichtingsensor", wind_gust_entity: "Windstotensensor", wind_speed_entity: "Windsnelheidsensor", language_da: "Deens", language_nb: "Noors (Bokmål)", language_pl: "Pools", language_sl: "Sloveens", language_sr: "Servisch", "language_sr-Latn": "Servisch (Latijns)", language_tr: "Turks", language_zh: "Chinees", hourly_forecast_hours_helper: "Geen maximum: bijv. 72 voor drie dagen, of meer om de hele verwachting van de provider te tonen", styles: "Eigen CSS", styles_helper: "CSS voor de kaart en al haar onderdelen, bijv. .temperature { font-size: 48px; }" }, yw = { pageTitle: "Dynamische Weerkaart", pageSubtitle: "Interactieve demo & configuratietool", quickPresets: "Snelle presets", sunnyDay: "Zonnige dag", rainy: "Regen", snowy: "Sneeuw", clearNight: "Heldere nacht", condition: "Conditie", temperature: "Temperatuur", humidity: "Luchtvochtigheid (%)", windSpeed: "Windsnelheid", timeOfDay: "Tijd van de dag", timeMode: "Tijdmodus", manualControl: "Handmatige bediening", sunrise: "Zonsopgang", day: "Dag", sunset: "Zonsondergang", night: "Nacht", cardName: "Kaartnaam", height: "Hoogte (px)", feelsLike: "Gevoelstemperatuur", minTemp: "Minimumtemperatuur", windDirection: "Windrichting", windGust: "Windstoten", hourlyForecast: "Uurlijkse voorspelling", dailyForecast: "Dagelijkse voorspelling", sunriseSunset: "Zonsopgang / Zonsondergang", showClock: "Klok", clockPosition: "Klokpositie", clockPositionTop: "Rechtsboven", clockPositionDetails: "Detailregel", clockFormat: "Klokformaat", clockSize: "Klokgrootte", clockSizeSmall: "Klein", clockSizeMedium: "Middel", clockSizeLarge: "Groot", clockWeight: "Letterdikte van de klok", clockWeightThin: "Dun", clockWeightRegular: "Normaal", clockWeightBold: "Vet", overlayOpacity: "Overlay-transparantie (0-1)", windSpeedUnit: "Windsnelheidseenheid", dailyForecastDays: "Voorspellingsdagen", hourlyForecastHours: "Voorspellingsuren", hourlyForecastStep: "Stap uurvoorspelling (u)", hourlyChart: "Temperatuurgrafiek per uur", startDemo: "Demo starten", stopDemo: "Demo stoppen", madeWith: "Gemaakt met liefde voor Home Assistant", loading: "Kaart laden...", placeholderEmpty: "Leeg laten om te verbergen", weatherConditions: { sunny: "Zonnig", clearNight: "Heldere nacht", partlyCloudy: "Gedeeltelijk bewolkt", cloudy: "Bewolkt", rainy: "Regen", pouring: "Zware regen", snowy: "Sneeuw", sleet: "Natte sneeuw", hail: "Hagel", foggy: "Mist", lightning: "Bliksem", thunderstorm: "Onweer", windy: "Winderig", windyVariant: "Winderig, bewolkt" }, language: { title: "Taal" }, animationQuality: "Animatiekwaliteit", animations: "Animaties", aqi: "Luchtkwaliteit (sensor)", aurora: "Noorderlicht", auroraNight: "Noorderlicht", autoShort: "Auto", borderRadius: "Hoekafronding (px)", clockAndDate: "Klok", dailyForecastTitle: "Titel dagverwachting", details: "Details", dewPoint: "Dauwpunt", documentation: "Documentatie", forecasts: "Verwachtingen", hourlyForecastTitle: "Titel uurverwachting", humidityToggle: "Luchtvochtigheid", layout: "Indeling", layoutDefault: "Standaard", layoutMinimal: "Minimaal", links: "Links", moonPhase: "Maanfase", pause: "Pauze", placeholderDefault: "Standaard", play24h: "24 uur afspelen", playSpeed: "Cyclusduur", precipitationOutlook: "Begin/einde van de regen", pressure: "Luchtdruk", qualityHighShort: "Hoog", qualityLowShort: "Laag", qualityMediumShort: "Gemiddeld", raindrops: "Regendruppels op het glas", reportIssue: "Probleem melden", showDate: "Datum", stationSensors: "Stationssensoren", stationSensorsHint: "Stationssensoren vervangen temperatuur, luchtvochtigheid, wind en neerslag door voorbeeldwaarden van een eigen weerstation.", sunPositionX: "Zon/Maan X (%)", sunPositionY: "Zon/Maan Y (%)", tabContent: "Inhoud", tabLook: "Uiterlijk", tabMore: "Meer", tabTime: "Tijd", tabWeather: "Weer", temperatureBars: "Temperatuurbalken", forecastWind: "Wind in voorspellingen", forecastDescription: "Tekstvoorspelling", textColor: "Tekstkleur", textShadow: "Tekstschaduw", uvIndex: "UV-index", visualStyle: "Grafische stijl", visualStyleClassic: "🎨 Klassiek", visualStyleModern: "✨ Modern", windBearing: "Windrichting", windEffects: "Windstoten en bladeren", windyDay: "Winderig", yamlTitle: "Kaart-YAML", copy: "Kopiëren", copied: "Gekopieerd", yamlHint: "Plak het in een handmatige kaart in Home Assistant en vervang weather.home door je weerentiteit.", customCss: "Eigen CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, bw = {
+  sunny: Lf,
+  clear: Hf,
+  overcast: If,
+  cloudy: Rf,
+  partlycloudy: Bf,
+  rainy: Ff,
+  rain: Of,
+  snowy: qf,
+  snow: Uf,
+  foggy: Kf,
+  fog: Wf,
+  lightning: Gf,
   "lightning-rainy": "Onweersbui",
-  pouring: Gf,
+  pouring: Zf,
   "snowy-rainy": "Natte sneeuw",
-  hail: Zf,
+  hail: Yf,
   "clear-night": "Heldere nacht",
-  windy: Yf,
+  windy: Jf,
   "windy-variant": "Winderig, bewolkt",
-  feels_like: Jf,
-  forecast_title: Qf,
-  forecast_title_hourly: Xf,
-  daily_forecast_title: ew,
-  no_data: tw,
-  weather: aw,
-  wind_unit_kmh: iw,
-  wind_unit_ms: nw,
-  wind_unit_mph: rw,
-  wind_unit_knots: ow,
-  wind_unit_fts: sw,
-  am: lw,
-  pm: _w,
-  pressure: dw,
-  uv_index: uw,
-  dew_point: cw,
-  aqi: mw,
-  precipitation_outlook: pw,
-  editor: hw,
-  demo: gw
-}, bw = "Słonecznie", vw = "Bezchmurnie", kw = "Pochmurno", fw = "Zachmurzenie", ww = "Częściowe zachmurzenie", zw = "Deszczowo", jw = "Deszcz", Sw = "Śnieżnie", xw = "Śnieg", Aw = "Mgliście", Pw = "Mgła", Mw = "Błyskawice", Cw = "Ulewa", $w = "Grad", Ew = "Wietrznie", Tw = "Odczuwalnie", Dw = "Prognoza na dziś", Nw = "Prognoza godzinowa", Vw = "Prognoza dzienna", Lw = "Brak danych", Hw = "Pogoda", Iw = "km/h", Rw = "m/s", Bw = "mph", Fw = "węzły", Ow = "ft/s", qw = "AM", Uw = "PM", Kw = "Ciśnienie", Ww = "Indeks UV", Gw = "Punkt rosy", Zw = "Indeks jakości powietrza", Yw = { start: "{kind}: początek około {time}", soon: "{kind}: początek wkrótce", stop: "{kind}: koniec około {time}", continues: "{kind}: jeszcze co najmniej {hours} h", rain: "Deszcz", snow: "Śnieg", sleet: "Deszcz ze śniegiem", hail: "Grad", storm: "Burza" }, Jw = { entity: "Encja pogody", name: "Tytuł karty", layout: "Układ", layout_default: "Domyślny", layout_minimal: "Minimalny", height: "Wysokość", show_feels_like: "Odczuwalna", show_wind: "Wiatr", show_wind_gust: "Porywy", show_wind_direction: "Kierunek", show_humidity: "Wilgotność", show_min_temp: "Temperatura minimalna", show_hourly_forecast: "Prognoza godzinowa", hourly_forecast_hours: "Godziny", hourly_forecast_step: "Co", hourly_forecast_chart: "Wykres temperatury", show_daily_forecast: "Prognoza dzienna", daily_forecast_days: "Dni", show_sunrise_sunset: "Wschód i zachód słońca", sunrise_entity: "Czujnik wschodu słońca", sunset_entity: "Czujnik zachodu słońca", show_clock: "Zegar", clock_position: "Położenie", clock_position_top: "Góra", clock_position_details: "Szczegóły", clock_format: "Format", clock_format_12h: "12-godzinny (AM/PM)", clock_format_24h: "24-godzinny", clock_size: "Rozmiar", clock_size_small: "Mały", clock_size_medium: "Średni", clock_size_large: "Duży", clock_weight: "Grubość", clock_weight_thin: "Cienka", clock_weight_regular: "Normalna", clock_weight_bold: "Pogrubiona", overlay_opacity: "Przyciemnienie", language: "Język", language_auto: "Automatycznie", language_en: "Angielski", language_ru: "Rosyjski", language_de: "Niemiecki", language_nl: "Holenderski", language_fr: "Francuski", language_es: "Hiszpański", language_it: "Włoski", language_sk: "Słowacki", language_hu: "Węgierski", language_pl: "Polski", wind_speed_unit: "Jednostka prędkości wiatru", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Auto (jak w integracji)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "węzły", wind_speed_unit_helper: "Auto zachowuje jednostkę integracji lub czujnika wiatru; pozostałe przeliczają cały wiatr na karcie", animation_quality: "Jakość animacji", animation_quality_helper: "Obniż na tabletach ściennych i wolnych urządzeniach", animation_quality_high: "Wysoka", animation_quality_low: "Niska (20 FPS, dla wolnych urządzeń)", animation_quality_medium: "Średnia (30 FPS, mniej cząsteczek)", aqi_entity: "Czujnik jakości powietrza (AQI)", border_radius: "Zaokrąglenie narożników", daily_forecast_title: "Tytuł", daily_forecast_title_helper: "Puste = tytuł domyślny", dew_point_entity: "Czujnik punktu rosy", feels_like_entity: "Czujnik temperatury odczuwalnej", hourly_forecast_title: "Tytuł", hourly_forecast_title_helper: "Puste = tytuł domyślny", humidity_entity: "Czujnik wilgotności", overlay_opacity_helper: "0–1, przyciemnia niebo, aby tekst był czytelny", precipitation_entity: "Czujnik opadów", pressure_entity: "Czujnik ciśnienia", section_appearance: "Wygląd", section_clock: "Język, zegar i data", section_details: "Szczegóły", section_forecast: "Prognoza", section_sensors: "Czujniki (opcjonalnie)", show_animations: "Animacje", show_aurora: "Zorza polarna", show_aurora_helper: "W pogodne noce, nowoczesna grafika", show_date: "Data", show_dew_point: "Punkt rosy", show_precipitation_outlook: "Kiedy zacznie/przestanie padać", show_precipitation_outlook_helper: "Na podstawie prognozy godzinowej na najbliższe 12 godzin", show_pressure: "Ciśnienie", show_raindrops: "Krople deszczu na szybie", show_raindrops_helper: "Podczas deszczu, nowoczesna grafika", show_temperature_bars: "Paski temperatury", show_forecast_wind: "Wiatr w prognozach", show_forecast_wind_helper: "Kierunek, prędkość i porywy dla każdej godziny i dnia, jeśli dostawca pogody je podaje", hourly_forecast_step_helper: "Pokazuj prognozę co kilka godzin, np. 3 dla 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Krzywa temperatury zamiast liczb, z prawdopodobieństwem opadów jako słupkami", show_forecast_description: "Prognoza tekstowa", show_forecast_description_helper: "Opisowa prognoza dostawcy pogody, jeśli ją udostępnia (np. amerykańska National Weather Service)", show_uv_index: "Indeks UV", show_wind_effects: "Porywy wiatru i liście", show_wind_effects_helper: "Przy wietrznej pogodzie lub powyżej 8 m/s", sun_position_x: "Położenie słońca/księżyca, w poziomie", sun_position_x_helper: "Pozostaw puste, aby podążać za porą dnia", sun_position_y: "Położenie słońca/księżyca, w pionie", sun_position_y_helper: "Pozostaw puste, aby podążać za porą dnia", temperature_entity: "Czujnik temperatury", text_color: "Kolor tekstu", text_color_helper: "Dowolny kolor CSS, np. #1a1a2e lub var(--primary-text-color)", text_shadow: "Cień tekstu", uv_index_entity: "Czujnik indeksu UV", visual_style: "Grafika", visual_style_classic: "Klasyczna", visual_style_modern: "Nowoczesna", wind_bearing_entity: "Czujnik kierunku wiatru", wind_gust_entity: "Czujnik porywów wiatru", wind_speed_entity: "Czujnik prędkości wiatru", language_da: "Duński", language_nb: "Norweski (bokmål)", language_pt: "Portugalski", language_sl: "Słoweński", language_sr: "Serbski", "language_sr-Latn": "Serbski (łacinka)", language_tr: "Turecki", language_zh: "Chiński", hourly_forecast_hours_helper: "Bez limitu: np. 72 na trzy dni lub więcej, aby pokazać całą prognozę dostawcy", styles: "Własny CSS", styles_helper: "CSS dla karty i wszystkich jej części, np. .temperature { font-size: 48px; }" }, Qw = { pageTitle: "Dynamiczna karta pogody", pageSubtitle: "Interaktywne demo i narzędzie konfiguracji", quickPresets: "Szybkie ustawienia", sunnyDay: "Słoneczny dzień", rainy: "Deszczowo", snowy: "Śnieżnie", clearNight: "Bezchmurna noc", condition: "Stan", temperature: "Temperatura", humidity: "Wilgotność (%)", windSpeed: "Prędkość wiatru", timeOfDay: "Pora dnia", timeMode: "Tryb czasu", manualControl: "Ręczne sterowanie", sunrise: "Wschód słońca", day: "Dzień", sunset: "Zachód słońca", night: "Noc", cardName: "Nazwa karty", height: "Wysokość (px)", feelsLike: "Temperatura odczuwalna", minTemp: "Temperatura minimalna", windDirection: "Kierunek wiatru", windGust: "Porywy wiatru", hourlyForecast: "Prognoza godzinowa", dailyForecast: "Prognoza dzienna", sunriseSunset: "Wschód/Zachód słońca", showClock: "Zegar", clockPosition: "Pozycja zegara", clockPositionTop: "Prawy górny róg", clockPositionDetails: "Wiersz szczegółów", clockFormat: "Format zegara", clockSize: "Rozmiar zegara", clockSizeSmall: "Mały", clockSizeMedium: "Średni", clockSizeLarge: "Duży", clockWeight: "Grubość zegara", clockWeightThin: "Cienka", clockWeightRegular: "Normalna", clockWeightBold: "Pogrubiona", overlayOpacity: "Przezroczystość nakładki (0-1)", windSpeedUnit: "Jednostka prędkości wiatru", dailyForecastDays: "Dni prognozy dziennej", hourlyForecastHours: "Godziny prognozy godzinowej", hourlyForecastStep: "Krok prognozy godzinowej (h)", hourlyChart: "Godzinowy wykres temperatury", startDemo: "Uruchom tryb demo", stopDemo: "Zatrzymaj demo", madeWith: "Stworzone z miłością dla Home Assistant", loading: "Ładowanie karty...", placeholderEmpty: "Pozostaw puste, aby ukryć", weatherConditions: { sunny: "Słonecznie", clearNight: "Bezchmurna noc", partlyCloudy: "Częściowe zachmurzenie", cloudy: "Zachmurzenie", rainy: "Deszczowo", pouring: "Ulewa", snowy: "Śnieżnie", sleet: "Deszcz ze śniegiem", hail: "Grad", foggy: "Mgliście", lightning: "Błyskawice", thunderstorm: "Burza", windy: "Wietrznie", windyVariant: "Wietrznie, pochmurno" }, language: { title: "Język" }, animationQuality: "Jakość animacji", animations: "Animacje", aqi: "Jakość powietrza (czujnik)", aurora: "Zorza polarna", auroraNight: "Zorza", autoShort: "Auto", borderRadius: "Zaokrąglenie narożników (px)", clockAndDate: "Zegar", dailyForecastTitle: "Tytuł prognozy dziennej", details: "Szczegóły", dewPoint: "Punkt rosy", documentation: "Dokumentacja", forecasts: "Prognozy", hourlyForecastTitle: "Tytuł prognozy godzinowej", humidityToggle: "Wilgotność", layout: "Układ", layoutDefault: "Domyślny", layoutMinimal: "Minimalny", links: "Linki", moonPhase: "Faza księżyca", pause: "Pauza", placeholderDefault: "Domyślny", play24h: "Odtwórz 24 godziny", playSpeed: "Długość cyklu", precipitationOutlook: "Początek/koniec deszczu", pressure: "Ciśnienie", qualityHighShort: "Wysoka", qualityLowShort: "Niska", qualityMediumShort: "Średnia", raindrops: "Krople deszczu na szybie", reportIssue: "Zgłoś problem", showDate: "Data", stationSensors: "Czujniki stacji", stationSensorsHint: "Czujniki stacji zastępują temperaturę, wilgotność, wiatr i opady przykładowymi wartościami z własnej stacji pogodowej.", sunPositionX: "Słońce/Księżyc X (%)", sunPositionY: "Słońce/Księżyc Y (%)", tabContent: "Treść", tabLook: "Wygląd", tabMore: "Więcej", tabTime: "Czas", tabWeather: "Pogoda", temperatureBars: "Paski temperatury", forecastWind: "Wiatr w prognozach", forecastDescription: "Prognoza tekstowa", textColor: "Kolor tekstu", textShadow: "Cień tekstu", uvIndex: "Indeks UV", visualStyle: "Styl grafiki", visualStyleClassic: "🎨 Klasyczny", visualStyleModern: "✨ Nowoczesny", windBearing: "Kierunek wiatru", windEffects: "Porywy wiatru i liście", windyDay: "Wietrznie", yamlTitle: "YAML karty", copy: "Kopiuj", copied: "Skopiowano", yamlHint: "Wklej go do karty ręcznej w Home Assistant i zastąp weather.home swoją encją pogody.", customCss: "Własny CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, Xw = {
-  sunny: bw,
-  clear: vw,
-  overcast: kw,
-  cloudy: fw,
-  partlycloudy: ww,
-  rainy: zw,
-  rain: jw,
-  snowy: Sw,
-  snow: xw,
-  foggy: Aw,
-  fog: Pw,
-  lightning: Mw,
+  feels_like: Qf,
+  forecast_title: Xf,
+  forecast_title_hourly: ew,
+  daily_forecast_title: tw,
+  no_data: aw,
+  weather: iw,
+  wind_unit_kmh: nw,
+  wind_unit_ms: rw,
+  wind_unit_mph: ow,
+  wind_unit_knots: sw,
+  wind_unit_fts: lw,
+  am: _w,
+  pm: dw,
+  pressure: uw,
+  uv_index: cw,
+  dew_point: mw,
+  aqi: pw,
+  precipitation_outlook: hw,
+  editor: gw,
+  demo: yw
+}, vw = "Słonecznie", kw = "Bezchmurnie", fw = "Pochmurno", ww = "Zachmurzenie", zw = "Częściowe zachmurzenie", jw = "Deszczowo", Sw = "Deszcz", xw = "Śnieżnie", Aw = "Śnieg", Pw = "Mgliście", Mw = "Mgła", Cw = "Błyskawice", $w = "Ulewa", Ew = "Grad", Tw = "Wietrznie", Dw = "Odczuwalnie", Nw = "Prognoza na dziś", Vw = "Prognoza godzinowa", Lw = "Prognoza dzienna", Hw = "Brak danych", Iw = "Pogoda", Rw = "km/h", Bw = "m/s", Fw = "mph", Ow = "węzły", qw = "ft/s", Uw = "AM", Kw = "PM", Ww = "Ciśnienie", Gw = "Indeks UV", Zw = "Punkt rosy", Yw = "Indeks jakości powietrza", Jw = { start: "{kind}: początek około {time}", soon: "{kind}: początek wkrótce", stop: "{kind}: koniec około {time}", continues: "{kind}: jeszcze co najmniej {hours} h", rain: "Deszcz", snow: "Śnieg", sleet: "Deszcz ze śniegiem", hail: "Grad", storm: "Burza" }, Qw = { entity: "Encja pogody", name: "Tytuł karty", layout: "Układ", layout_default: "Domyślny", layout_minimal: "Minimalny", height: "Wysokość", show_feels_like: "Odczuwalna", show_wind: "Wiatr", show_wind_gust: "Porywy", show_wind_direction: "Kierunek", show_humidity: "Wilgotność", show_min_temp: "Temperatura minimalna", show_hourly_forecast: "Prognoza godzinowa", hourly_forecast_hours: "Godziny", hourly_forecast_step: "Co", hourly_forecast_chart: "Wykres temperatury", show_daily_forecast: "Prognoza dzienna", daily_forecast_days: "Dni", show_sunrise_sunset: "Wschód i zachód słońca", sunrise_entity: "Czujnik wschodu słońca", sunset_entity: "Czujnik zachodu słońca", show_clock: "Zegar", clock_position: "Położenie", clock_position_top: "Góra", clock_position_details: "Szczegóły", clock_format: "Format", clock_format_12h: "12-godzinny (AM/PM)", clock_format_24h: "24-godzinny", clock_size: "Rozmiar", clock_size_small: "Mały", clock_size_medium: "Średni", clock_size_large: "Duży", clock_weight: "Grubość", clock_weight_thin: "Cienka", clock_weight_regular: "Normalna", clock_weight_bold: "Pogrubiona", overlay_opacity: "Przyciemnienie", language: "Język", language_auto: "Automatycznie", language_en: "Angielski", language_ru: "Rosyjski", language_de: "Niemiecki", language_nl: "Holenderski", language_fr: "Francuski", language_es: "Hiszpański", language_it: "Włoski", language_sk: "Słowacki", language_hu: "Węgierski", language_pl: "Polski", wind_speed_unit: "Jednostka prędkości wiatru", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Auto (jak w integracji)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "węzły", wind_speed_unit_helper: "Auto zachowuje jednostkę integracji lub czujnika wiatru; pozostałe przeliczają cały wiatr na karcie", animation_quality: "Jakość animacji", animation_quality_helper: "Obniż na tabletach ściennych i wolnych urządzeniach", animation_quality_high: "Wysoka", animation_quality_low: "Niska (20 FPS, dla wolnych urządzeń)", animation_quality_medium: "Średnia (30 FPS, mniej cząsteczek)", aqi_entity: "Czujnik jakości powietrza (AQI)", border_radius: "Zaokrąglenie narożników", daily_forecast_title: "Tytuł", daily_forecast_title_helper: "Puste = tytuł domyślny", dew_point_entity: "Czujnik punktu rosy", feels_like_entity: "Czujnik temperatury odczuwalnej", hourly_forecast_title: "Tytuł", hourly_forecast_title_helper: "Puste = tytuł domyślny", humidity_entity: "Czujnik wilgotności", overlay_opacity_helper: "0–1, przyciemnia niebo, aby tekst był czytelny", precipitation_entity: "Czujnik opadów", pressure_entity: "Czujnik ciśnienia", section_appearance: "Wygląd", section_clock: "Język, zegar i data", section_details: "Szczegóły", section_forecast: "Prognoza", section_sensors: "Czujniki (opcjonalnie)", show_animations: "Animacje", show_aurora: "Zorza polarna", show_aurora_helper: "W pogodne noce, nowoczesna grafika", show_date: "Data", show_dew_point: "Punkt rosy", show_precipitation_outlook: "Kiedy zacznie/przestanie padać", show_precipitation_outlook_helper: "Na podstawie prognozy godzinowej na najbliższe 12 godzin", show_pressure: "Ciśnienie", show_raindrops: "Krople deszczu na szybie", show_raindrops_helper: "Podczas deszczu, nowoczesna grafika", show_temperature_bars: "Paski temperatury", show_forecast_wind: "Wiatr w prognozach", show_forecast_wind_helper: "Kierunek, prędkość i porywy dla każdej godziny i dnia, jeśli dostawca pogody je podaje", hourly_forecast_step_helper: "Pokazuj prognozę co kilka godzin, np. 3 dla 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Krzywa temperatury zamiast liczb, z prawdopodobieństwem opadów jako słupkami", show_forecast_description: "Prognoza tekstowa", show_forecast_description_helper: "Opisowa prognoza dostawcy pogody, jeśli ją udostępnia (np. amerykańska National Weather Service)", show_uv_index: "Indeks UV", show_wind_effects: "Porywy wiatru i liście", show_wind_effects_helper: "Przy wietrznej pogodzie lub powyżej 8 m/s", sun_position_x: "Położenie słońca/księżyca, w poziomie", sun_position_x_helper: "Pozostaw puste, aby podążać za porą dnia", sun_position_y: "Położenie słońca/księżyca, w pionie", sun_position_y_helper: "Pozostaw puste, aby podążać za porą dnia", temperature_entity: "Czujnik temperatury", text_color: "Kolor tekstu", text_color_helper: "Dowolny kolor CSS, np. #1a1a2e lub var(--primary-text-color)", text_shadow: "Cień tekstu", uv_index_entity: "Czujnik indeksu UV", visual_style: "Grafika", visual_style_classic: "Klasyczna", visual_style_modern: "Nowoczesna", wind_bearing_entity: "Czujnik kierunku wiatru", wind_gust_entity: "Czujnik porywów wiatru", wind_speed_entity: "Czujnik prędkości wiatru", language_da: "Duński", language_nb: "Norweski (bokmål)", language_pt: "Portugalski", language_sl: "Słoweński", language_sr: "Serbski", "language_sr-Latn": "Serbski (łacinka)", language_tr: "Turecki", language_zh: "Chiński", hourly_forecast_hours_helper: "Bez limitu: np. 72 na trzy dni lub więcej, aby pokazać całą prognozę dostawcy", styles: "Własny CSS", styles_helper: "CSS dla karty i wszystkich jej części, np. .temperature { font-size: 48px; }" }, Xw = { pageTitle: "Dynamiczna karta pogody", pageSubtitle: "Interaktywne demo i narzędzie konfiguracji", quickPresets: "Szybkie ustawienia", sunnyDay: "Słoneczny dzień", rainy: "Deszczowo", snowy: "Śnieżnie", clearNight: "Bezchmurna noc", condition: "Stan", temperature: "Temperatura", humidity: "Wilgotność (%)", windSpeed: "Prędkość wiatru", timeOfDay: "Pora dnia", timeMode: "Tryb czasu", manualControl: "Ręczne sterowanie", sunrise: "Wschód słońca", day: "Dzień", sunset: "Zachód słońca", night: "Noc", cardName: "Nazwa karty", height: "Wysokość (px)", feelsLike: "Temperatura odczuwalna", minTemp: "Temperatura minimalna", windDirection: "Kierunek wiatru", windGust: "Porywy wiatru", hourlyForecast: "Prognoza godzinowa", dailyForecast: "Prognoza dzienna", sunriseSunset: "Wschód/Zachód słońca", showClock: "Zegar", clockPosition: "Pozycja zegara", clockPositionTop: "Prawy górny róg", clockPositionDetails: "Wiersz szczegółów", clockFormat: "Format zegara", clockSize: "Rozmiar zegara", clockSizeSmall: "Mały", clockSizeMedium: "Średni", clockSizeLarge: "Duży", clockWeight: "Grubość zegara", clockWeightThin: "Cienka", clockWeightRegular: "Normalna", clockWeightBold: "Pogrubiona", overlayOpacity: "Przezroczystość nakładki (0-1)", windSpeedUnit: "Jednostka prędkości wiatru", dailyForecastDays: "Dni prognozy dziennej", hourlyForecastHours: "Godziny prognozy godzinowej", hourlyForecastStep: "Krok prognozy godzinowej (h)", hourlyChart: "Godzinowy wykres temperatury", startDemo: "Uruchom tryb demo", stopDemo: "Zatrzymaj demo", madeWith: "Stworzone z miłością dla Home Assistant", loading: "Ładowanie karty...", placeholderEmpty: "Pozostaw puste, aby ukryć", weatherConditions: { sunny: "Słonecznie", clearNight: "Bezchmurna noc", partlyCloudy: "Częściowe zachmurzenie", cloudy: "Zachmurzenie", rainy: "Deszczowo", pouring: "Ulewa", snowy: "Śnieżnie", sleet: "Deszcz ze śniegiem", hail: "Grad", foggy: "Mgliście", lightning: "Błyskawice", thunderstorm: "Burza", windy: "Wietrznie", windyVariant: "Wietrznie, pochmurno" }, language: { title: "Język" }, animationQuality: "Jakość animacji", animations: "Animacje", aqi: "Jakość powietrza (czujnik)", aurora: "Zorza polarna", auroraNight: "Zorza", autoShort: "Auto", borderRadius: "Zaokrąglenie narożników (px)", clockAndDate: "Zegar", dailyForecastTitle: "Tytuł prognozy dziennej", details: "Szczegóły", dewPoint: "Punkt rosy", documentation: "Dokumentacja", forecasts: "Prognozy", hourlyForecastTitle: "Tytuł prognozy godzinowej", humidityToggle: "Wilgotność", layout: "Układ", layoutDefault: "Domyślny", layoutMinimal: "Minimalny", links: "Linki", moonPhase: "Faza księżyca", pause: "Pauza", placeholderDefault: "Domyślny", play24h: "Odtwórz 24 godziny", playSpeed: "Długość cyklu", precipitationOutlook: "Początek/koniec deszczu", pressure: "Ciśnienie", qualityHighShort: "Wysoka", qualityLowShort: "Niska", qualityMediumShort: "Średnia", raindrops: "Krople deszczu na szybie", reportIssue: "Zgłoś problem", showDate: "Data", stationSensors: "Czujniki stacji", stationSensorsHint: "Czujniki stacji zastępują temperaturę, wilgotność, wiatr i opady przykładowymi wartościami z własnej stacji pogodowej.", sunPositionX: "Słońce/Księżyc X (%)", sunPositionY: "Słońce/Księżyc Y (%)", tabContent: "Treść", tabLook: "Wygląd", tabMore: "Więcej", tabTime: "Czas", tabWeather: "Pogoda", temperatureBars: "Paski temperatury", forecastWind: "Wiatr w prognozach", forecastDescription: "Prognoza tekstowa", textColor: "Kolor tekstu", textShadow: "Cień tekstu", uvIndex: "Indeks UV", visualStyle: "Styl grafiki", visualStyleClassic: "🎨 Klasyczny", visualStyleModern: "✨ Nowoczesny", windBearing: "Kierunek wiatru", windEffects: "Porywy wiatru i liście", windyDay: "Wietrznie", yamlTitle: "YAML karty", copy: "Kopiuj", copied: "Skopiowano", yamlHint: "Wklej go do karty ręcznej w Home Assistant i zastąp weather.home swoją encją pogody.", customCss: "Własny CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, ez = {
+  sunny: vw,
+  clear: kw,
+  overcast: fw,
+  cloudy: ww,
+  partlycloudy: zw,
+  rainy: jw,
+  rain: Sw,
+  snowy: xw,
+  snow: Aw,
+  foggy: Pw,
+  fog: Mw,
+  lightning: Cw,
   "lightning-rainy": "Burza",
-  pouring: Cw,
+  pouring: $w,
   "snowy-rainy": "Deszcz ze śniegiem",
-  hail: $w,
+  hail: Ew,
   "clear-night": "Bezchmurna noc",
-  windy: Ew,
+  windy: Tw,
   "windy-variant": "Wietrznie, pochmurno",
-  feels_like: Tw,
-  forecast_title: Dw,
-  forecast_title_hourly: Nw,
-  daily_forecast_title: Vw,
-  no_data: Lw,
-  weather: Hw,
-  wind_unit_kmh: Iw,
-  wind_unit_ms: Rw,
-  wind_unit_mph: Bw,
-  wind_unit_knots: Fw,
-  wind_unit_fts: Ow,
-  am: qw,
-  pm: Uw,
-  pressure: Kw,
-  uv_index: Ww,
-  dew_point: Gw,
-  aqi: Zw,
-  precipitation_outlook: Yw,
-  editor: Jw,
-  demo: Qw
-}, ez = "Ensolarado", tz = "Limpo", az = "Encoberto", iz = "Nublado", nz = "Parcialmente nublado", rz = "Chuvoso", oz = "Chuva", sz = "Neve", lz = "Neve", _z = "Nevoeiro", dz = "Nevoeiro", uz = "Relâmpagos", cz = "Chuva forte", mz = "Granizo", pz = "Ventoso", hz = "Sensação", gz = "Previsão de hoje", yz = "Previsão horária", bz = "Previsão diária", vz = "Sem dados", kz = "Clima", fz = "km/h", wz = "m/s", zz = "mph", jz = "nós", Sz = "ft/s", xz = "AM", Az = "PM", Pz = "Pressão", Mz = "Índice UV", Cz = "Ponto de orvalho", $z = "Índice de qualidade do ar", Ez = { start: "{kind}: começa por volta de {time}", soon: "{kind}: começa em breve", stop: "{kind}: termina por volta de {time}", continues: "{kind}: pelo menos mais {hours} h", rain: "Chuva", snow: "Neve", sleet: "Chuva com neve", hail: "Granizo", storm: "Trovoadas" }, Tz = { entity: "Entidade de clima", name: "Título do card", layout: "Layout", layout_default: "Padrão", layout_minimal: "Mínimo", height: "Altura", show_feels_like: "Sensação térmica", show_wind: "Vento", show_wind_gust: "Rajadas", show_wind_direction: "Direção", show_humidity: "Humidade", show_min_temp: "Temperatura mínima", show_hourly_forecast: "Previsão horária", hourly_forecast_hours: "Horas", hourly_forecast_step: "A cada", hourly_forecast_chart: "Gráfico de temperatura", hourly_forecast_title: "Título da previsão horária", show_daily_forecast: "Previsão diária", daily_forecast_days: "Dias", daily_forecast_title: "Título da previsão diária", show_sunrise_sunset: "Nascer e pôr do sol", sunrise_entity: "Sensor de nascer do sol", sunset_entity: "Sensor de pôr do sol", temperature_entity: "Sensor de temperatura", feels_like_entity: "Sensor de sensação térmica", humidity_entity: "Sensor de humidade", wind_speed_entity: "Sensor de velocidade do vento", wind_gust_entity: "Sensor de rajadas de vento", wind_bearing_entity: "Sensor de direção do vento", precipitation_entity: "Sensor de precipitação", show_clock: "Relógio", show_date: "Data", clock_position: "Posição", clock_position_top: "Topo", clock_position_details: "Detalhes", clock_format: "Formato", clock_format_12h: "12 horas (AM/PM)", clock_format_24h: "24 horas", clock_size: "Tamanho", clock_size_small: "Pequeno", clock_size_medium: "Médio", clock_size_large: "Grande", clock_weight: "Espessura", clock_weight_thin: "Fina", clock_weight_regular: "Normal", clock_weight_bold: "Negrito", overlay_opacity: "Escurecimento", text_shadow: "Sombra do texto", text_color: "Cor do texto", border_radius: "Raio dos cantos", sun_position_x: "Posição do sol/lua, horizontal", sun_position_y: "Posição do sol/lua, vertical", language: "Idioma", language_auto: "Automático", language_en: "Inglês", language_ru: "Russo", language_de: "Alemão", language_nl: "Holandês", language_fr: "Francês", language_es: "Espanhol", language_it: "Italiano", language_sk: "Eslovaco", language_hu: "Húngaro", language_pt: "Português", language_da: "Dinamarquês", language_sr: "Sérvio", "language_sr-Latn": "Sérvio (latino)", language_pl: "Polaco", language_zh: "Chinês", language_tr: "Turco", language_nb: "Norueguês (Bokmål)", wind_speed_unit: "Unidade de velocidade do vento", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Auto (como a integração)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "nós", wind_speed_unit_helper: "Auto mantém a unidade da integração ou do sensor de vento; as outras convertem todo o vento do cartão", show_animations: "Animações", animation_quality: "Qualidade da animação", animation_quality_helper: "Reduza em tablets de parede e dispositivos lentos", animation_quality_high: "Alta", animation_quality_low: "Baixa (20 FPS, para dispositivos lentos)", animation_quality_medium: "Média (30 FPS, menos partículas)", aqi_entity: "Sensor de qualidade do ar (AQI)", daily_forecast_title_helper: "Vazio = título padrão", dew_point_entity: "Sensor de ponto de orvalho", hourly_forecast_title_helper: "Vazio = título padrão", overlay_opacity_helper: "0–1, escurece o céu para manter o texto legível", pressure_entity: "Sensor de pressão", section_appearance: "Aparência", section_clock: "Idioma, relógio e data", section_details: "Detalhes", section_forecast: "Previsão", section_sensors: "Sensores (opcional)", show_aurora: "Aurora boreal", show_aurora_helper: "Em noites limpas, gráficos modernos", show_dew_point: "Ponto de orvalho", show_precipitation_outlook: "Quando a chuva começa/termina", show_precipitation_outlook_helper: "Pela previsão horária das próximas 12 horas", show_pressure: "Pressão", show_raindrops: "Gotas de chuva no vidro", show_raindrops_helper: "Com chuva, gráficos modernos", show_temperature_bars: "Barras de temperatura", show_forecast_wind: "Vento nas previsões", show_forecast_wind_helper: "Direção, velocidade e rajadas para cada hora e cada dia, se o fornecedor meteorológico as indicar", hourly_forecast_step_helper: "Mostrar a previsão a cada poucas horas, p. ex. 3 para 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Uma curva de temperatura em vez de números, com a probabilidade de precipitação em barras", show_forecast_description: "Previsão em texto", show_forecast_description_helper: "A previsão escrita do fornecedor meteorológico, se a tiver (p. ex. o National Weather Service dos EUA)", show_uv_index: "Índice UV", show_wind_effects: "Rajadas e folhas", show_wind_effects_helper: "Com vento ou acima de 8 m/s", sun_position_x_helper: "Deixe vazio para seguir a hora do dia", sun_position_y_helper: "Deixe vazio para seguir a hora do dia", text_color_helper: "Qualquer cor CSS, p. ex. #1a1a2e ou var(--primary-text-color)", uv_index_entity: "Sensor de índice UV", visual_style: "Gráficos", visual_style_classic: "Clássico", visual_style_modern: "Moderno", language_sl: "Esloveno", hourly_forecast_hours_helper: "Sem limite: p. ex. 72 para três dias, ou mais para mostrar toda a previsão do fornecedor", styles: "CSS personalizado", styles_helper: "CSS para o cartão e todas as suas partes, p. ex. .temperature { font-size: 48px; }" }, Dz = { pageTitle: "Dynamic Weather Card", pageSubtitle: "Demonstração interativa e ferramenta de configuração", quickPresets: "Predefinições rápidas", sunnyDay: "Dia ensolarado", rainy: "Chuvoso", snowy: "Com neve", clearNight: "Noite limpa", condition: "Condição", temperature: "Temperatura", humidity: "Humidade (%)", windSpeed: "Velocidade do vento", timeOfDay: "Hora do dia", timeMode: "Modo de tempo", manualControl: "Controle manual", sunrise: "Nascer do sol", day: "Dia", sunset: "Pôr do sol", night: "Noite", cardName: "Nome do card", height: "Altura (px)", feelsLike: "Sensação térmica", minTemp: "Temperatura mínima", windDirection: "Direção do vento", windGust: "Rajada de vento", hourlyForecast: "Previsão horária", dailyForecast: "Previsão diária", sunriseSunset: "Nascer/pôr do sol", showClock: "Relógio", stationSensors: "Sensores da estação", showDate: "Data", textColor: "Cor do texto", borderRadius: "Raio dos cantos (px)", sunPositionX: "Sol/lua X (%)", sunPositionY: "Sol/lua Y (%)", clockPosition: "Posição do relógio", clockPositionTop: "Canto superior direito", clockPositionDetails: "Linha de detalhes", clockFormat: "Formato do relógio", clockSize: "Tamanho do relógio", clockSizeSmall: "Pequeno", clockSizeMedium: "Médio", clockSizeLarge: "Grande", clockWeight: "Espessura do relógio", clockWeightThin: "Fina", clockWeightRegular: "Normal", clockWeightBold: "Negrito", overlayOpacity: "Opacidade do overlay (0-1)", windSpeedUnit: "Unidade de velocidade do vento", dailyForecastDays: "Dias da previsão diária", hourlyForecastHours: "Horas da previsão horária", hourlyForecastStep: "Intervalo da previsão horária (h)", hourlyChart: "Gráfico horário da temperatura", hourlyForecastTitle: "Título da previsão horária", dailyForecastTitle: "Título da previsão diária", startDemo: "Iniciar modo demo", stopDemo: "Parar demo", madeWith: "Feito com amor para o Home Assistant", loading: "A carregar card...", placeholderEmpty: "Deixe em branco para ocultar", weatherConditions: { sunny: "Ensolarado", clearNight: "Noite limpa", partlyCloudy: "Parcialmente nublado", cloudy: "Nublado", rainy: "Chuvoso", pouring: "Chuva forte", snowy: "Com neve", sleet: "Chuva com neve", hail: "Granizo", foggy: "Nevoeiro", lightning: "Relâmpagos", thunderstorm: "Trovoada", windy: "Ventoso", windyVariant: "Ventoso, nublado" }, language: { title: "Idioma" }, animationQuality: "Qualidade da animação", animations: "Animações", aqi: "Qualidade do ar (sensor)", aurora: "Aurora boreal", auroraNight: "Aurora", autoShort: "Auto", clockAndDate: "Relógio", details: "Detalhes", dewPoint: "Ponto de orvalho", documentation: "Documentação", forecasts: "Previsões", humidityToggle: "Humidade", layout: "Layout", layoutDefault: "Padrão", layoutMinimal: "Mínimo", links: "Links", moonPhase: "Fase da lua", pause: "Pausa", placeholderDefault: "Padrão", play24h: "Reproduzir 24 horas", playSpeed: "Duração do ciclo", precipitationOutlook: "Início/fim da chuva", pressure: "Pressão", qualityHighShort: "Alta", qualityLowShort: "Baixa", qualityMediumShort: "Média", raindrops: "Gotas de chuva no vidro", reportIssue: "Reportar um problema", stationSensorsHint: "Os sensores da estação substituem temperatura, humidade, vento e precipitação por valores de exemplo de uma estação meteorológica pessoal.", tabContent: "Conteúdo", tabLook: "Aparência", tabMore: "Mais", tabTime: "Hora", tabWeather: "Tempo", temperatureBars: "Barras de temperatura", forecastWind: "Vento nas previsões", forecastDescription: "Previsão em texto", textShadow: "Sombra do texto", uvIndex: "Índice UV", visualStyle: "Estilo gráfico", visualStyleClassic: "🎨 Clássico", visualStyleModern: "✨ Moderno", windBearing: "Direção do vento", windEffects: "Rajadas e folhas", windyDay: "Ventoso", yamlTitle: "YAML do cartão", copy: "Copiar", copied: "Copiado", yamlHint: "Cole-o num cartão manual do Home Assistant e substitua weather.home pela sua entidade meteorológica.", customCss: "CSS personalizado", customCssPlaceholder: ".temperature { font-size: 48px; }" }, Nz = {
-  sunny: ez,
-  clear: tz,
-  overcast: az,
-  cloudy: iz,
-  partlycloudy: nz,
-  rainy: rz,
-  rain: oz,
-  snowy: sz,
-  snow: lz,
-  foggy: _z,
-  fog: dz,
-  lightning: uz,
+  feels_like: Dw,
+  forecast_title: Nw,
+  forecast_title_hourly: Vw,
+  daily_forecast_title: Lw,
+  no_data: Hw,
+  weather: Iw,
+  wind_unit_kmh: Rw,
+  wind_unit_ms: Bw,
+  wind_unit_mph: Fw,
+  wind_unit_knots: Ow,
+  wind_unit_fts: qw,
+  am: Uw,
+  pm: Kw,
+  pressure: Ww,
+  uv_index: Gw,
+  dew_point: Zw,
+  aqi: Yw,
+  precipitation_outlook: Jw,
+  editor: Qw,
+  demo: Xw
+}, tz = "Ensolarado", az = "Limpo", iz = "Encoberto", nz = "Nublado", rz = "Parcialmente nublado", oz = "Chuvoso", sz = "Chuva", lz = "Neve", _z = "Neve", dz = "Nevoeiro", uz = "Nevoeiro", cz = "Relâmpagos", mz = "Chuva forte", pz = "Granizo", hz = "Ventoso", gz = "Sensação", yz = "Previsão de hoje", bz = "Previsão horária", vz = "Previsão diária", kz = "Sem dados", fz = "Clima", wz = "km/h", zz = "m/s", jz = "mph", Sz = "nós", xz = "ft/s", Az = "AM", Pz = "PM", Mz = "Pressão", Cz = "Índice UV", $z = "Ponto de orvalho", Ez = "Índice de qualidade do ar", Tz = { start: "{kind}: começa por volta de {time}", soon: "{kind}: começa em breve", stop: "{kind}: termina por volta de {time}", continues: "{kind}: pelo menos mais {hours} h", rain: "Chuva", snow: "Neve", sleet: "Chuva com neve", hail: "Granizo", storm: "Trovoadas" }, Dz = { entity: "Entidade de clima", name: "Título do card", layout: "Layout", layout_default: "Padrão", layout_minimal: "Mínimo", height: "Altura", show_feels_like: "Sensação térmica", show_wind: "Vento", show_wind_gust: "Rajadas", show_wind_direction: "Direção", show_humidity: "Humidade", show_min_temp: "Temperatura mínima", show_hourly_forecast: "Previsão horária", hourly_forecast_hours: "Horas", hourly_forecast_step: "A cada", hourly_forecast_chart: "Gráfico de temperatura", hourly_forecast_title: "Título da previsão horária", show_daily_forecast: "Previsão diária", daily_forecast_days: "Dias", daily_forecast_title: "Título da previsão diária", show_sunrise_sunset: "Nascer e pôr do sol", sunrise_entity: "Sensor de nascer do sol", sunset_entity: "Sensor de pôr do sol", temperature_entity: "Sensor de temperatura", feels_like_entity: "Sensor de sensação térmica", humidity_entity: "Sensor de humidade", wind_speed_entity: "Sensor de velocidade do vento", wind_gust_entity: "Sensor de rajadas de vento", wind_bearing_entity: "Sensor de direção do vento", precipitation_entity: "Sensor de precipitação", show_clock: "Relógio", show_date: "Data", clock_position: "Posição", clock_position_top: "Topo", clock_position_details: "Detalhes", clock_format: "Formato", clock_format_12h: "12 horas (AM/PM)", clock_format_24h: "24 horas", clock_size: "Tamanho", clock_size_small: "Pequeno", clock_size_medium: "Médio", clock_size_large: "Grande", clock_weight: "Espessura", clock_weight_thin: "Fina", clock_weight_regular: "Normal", clock_weight_bold: "Negrito", overlay_opacity: "Escurecimento", text_shadow: "Sombra do texto", text_color: "Cor do texto", border_radius: "Raio dos cantos", sun_position_x: "Posição do sol/lua, horizontal", sun_position_y: "Posição do sol/lua, vertical", language: "Idioma", language_auto: "Automático", language_en: "Inglês", language_ru: "Russo", language_de: "Alemão", language_nl: "Holandês", language_fr: "Francês", language_es: "Espanhol", language_it: "Italiano", language_sk: "Eslovaco", language_hu: "Húngaro", language_pt: "Português", language_da: "Dinamarquês", language_sr: "Sérvio", "language_sr-Latn": "Sérvio (latino)", language_pl: "Polaco", language_zh: "Chinês", language_tr: "Turco", language_nb: "Norueguês (Bokmål)", wind_speed_unit: "Unidade de velocidade do vento", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Auto (como a integração)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "nós", wind_speed_unit_helper: "Auto mantém a unidade da integração ou do sensor de vento; as outras convertem todo o vento do cartão", show_animations: "Animações", animation_quality: "Qualidade da animação", animation_quality_helper: "Reduza em tablets de parede e dispositivos lentos", animation_quality_high: "Alta", animation_quality_low: "Baixa (20 FPS, para dispositivos lentos)", animation_quality_medium: "Média (30 FPS, menos partículas)", aqi_entity: "Sensor de qualidade do ar (AQI)", daily_forecast_title_helper: "Vazio = título padrão", dew_point_entity: "Sensor de ponto de orvalho", hourly_forecast_title_helper: "Vazio = título padrão", overlay_opacity_helper: "0–1, escurece o céu para manter o texto legível", pressure_entity: "Sensor de pressão", section_appearance: "Aparência", section_clock: "Idioma, relógio e data", section_details: "Detalhes", section_forecast: "Previsão", section_sensors: "Sensores (opcional)", show_aurora: "Aurora boreal", show_aurora_helper: "Em noites limpas, gráficos modernos", show_dew_point: "Ponto de orvalho", show_precipitation_outlook: "Quando a chuva começa/termina", show_precipitation_outlook_helper: "Pela previsão horária das próximas 12 horas", show_pressure: "Pressão", show_raindrops: "Gotas de chuva no vidro", show_raindrops_helper: "Com chuva, gráficos modernos", show_temperature_bars: "Barras de temperatura", show_forecast_wind: "Vento nas previsões", show_forecast_wind_helper: "Direção, velocidade e rajadas para cada hora e cada dia, se o fornecedor meteorológico as indicar", hourly_forecast_step_helper: "Mostrar a previsão a cada poucas horas, p. ex. 3 para 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Uma curva de temperatura em vez de números, com a probabilidade de precipitação em barras", show_forecast_description: "Previsão em texto", show_forecast_description_helper: "A previsão escrita do fornecedor meteorológico, se a tiver (p. ex. o National Weather Service dos EUA)", show_uv_index: "Índice UV", show_wind_effects: "Rajadas e folhas", show_wind_effects_helper: "Com vento ou acima de 8 m/s", sun_position_x_helper: "Deixe vazio para seguir a hora do dia", sun_position_y_helper: "Deixe vazio para seguir a hora do dia", text_color_helper: "Qualquer cor CSS, p. ex. #1a1a2e ou var(--primary-text-color)", uv_index_entity: "Sensor de índice UV", visual_style: "Gráficos", visual_style_classic: "Clássico", visual_style_modern: "Moderno", language_sl: "Esloveno", hourly_forecast_hours_helper: "Sem limite: p. ex. 72 para três dias, ou mais para mostrar toda a previsão do fornecedor", styles: "CSS personalizado", styles_helper: "CSS para o cartão e todas as suas partes, p. ex. .temperature { font-size: 48px; }" }, Nz = { pageTitle: "Dynamic Weather Card", pageSubtitle: "Demonstração interativa e ferramenta de configuração", quickPresets: "Predefinições rápidas", sunnyDay: "Dia ensolarado", rainy: "Chuvoso", snowy: "Com neve", clearNight: "Noite limpa", condition: "Condição", temperature: "Temperatura", humidity: "Humidade (%)", windSpeed: "Velocidade do vento", timeOfDay: "Hora do dia", timeMode: "Modo de tempo", manualControl: "Controle manual", sunrise: "Nascer do sol", day: "Dia", sunset: "Pôr do sol", night: "Noite", cardName: "Nome do card", height: "Altura (px)", feelsLike: "Sensação térmica", minTemp: "Temperatura mínima", windDirection: "Direção do vento", windGust: "Rajada de vento", hourlyForecast: "Previsão horária", dailyForecast: "Previsão diária", sunriseSunset: "Nascer/pôr do sol", showClock: "Relógio", stationSensors: "Sensores da estação", showDate: "Data", textColor: "Cor do texto", borderRadius: "Raio dos cantos (px)", sunPositionX: "Sol/lua X (%)", sunPositionY: "Sol/lua Y (%)", clockPosition: "Posição do relógio", clockPositionTop: "Canto superior direito", clockPositionDetails: "Linha de detalhes", clockFormat: "Formato do relógio", clockSize: "Tamanho do relógio", clockSizeSmall: "Pequeno", clockSizeMedium: "Médio", clockSizeLarge: "Grande", clockWeight: "Espessura do relógio", clockWeightThin: "Fina", clockWeightRegular: "Normal", clockWeightBold: "Negrito", overlayOpacity: "Opacidade do overlay (0-1)", windSpeedUnit: "Unidade de velocidade do vento", dailyForecastDays: "Dias da previsão diária", hourlyForecastHours: "Horas da previsão horária", hourlyForecastStep: "Intervalo da previsão horária (h)", hourlyChart: "Gráfico horário da temperatura", hourlyForecastTitle: "Título da previsão horária", dailyForecastTitle: "Título da previsão diária", startDemo: "Iniciar modo demo", stopDemo: "Parar demo", madeWith: "Feito com amor para o Home Assistant", loading: "A carregar card...", placeholderEmpty: "Deixe em branco para ocultar", weatherConditions: { sunny: "Ensolarado", clearNight: "Noite limpa", partlyCloudy: "Parcialmente nublado", cloudy: "Nublado", rainy: "Chuvoso", pouring: "Chuva forte", snowy: "Com neve", sleet: "Chuva com neve", hail: "Granizo", foggy: "Nevoeiro", lightning: "Relâmpagos", thunderstorm: "Trovoada", windy: "Ventoso", windyVariant: "Ventoso, nublado" }, language: { title: "Idioma" }, animationQuality: "Qualidade da animação", animations: "Animações", aqi: "Qualidade do ar (sensor)", aurora: "Aurora boreal", auroraNight: "Aurora", autoShort: "Auto", clockAndDate: "Relógio", details: "Detalhes", dewPoint: "Ponto de orvalho", documentation: "Documentação", forecasts: "Previsões", humidityToggle: "Humidade", layout: "Layout", layoutDefault: "Padrão", layoutMinimal: "Mínimo", links: "Links", moonPhase: "Fase da lua", pause: "Pausa", placeholderDefault: "Padrão", play24h: "Reproduzir 24 horas", playSpeed: "Duração do ciclo", precipitationOutlook: "Início/fim da chuva", pressure: "Pressão", qualityHighShort: "Alta", qualityLowShort: "Baixa", qualityMediumShort: "Média", raindrops: "Gotas de chuva no vidro", reportIssue: "Reportar um problema", stationSensorsHint: "Os sensores da estação substituem temperatura, humidade, vento e precipitação por valores de exemplo de uma estação meteorológica pessoal.", tabContent: "Conteúdo", tabLook: "Aparência", tabMore: "Mais", tabTime: "Hora", tabWeather: "Tempo", temperatureBars: "Barras de temperatura", forecastWind: "Vento nas previsões", forecastDescription: "Previsão em texto", textShadow: "Sombra do texto", uvIndex: "Índice UV", visualStyle: "Estilo gráfico", visualStyleClassic: "🎨 Clássico", visualStyleModern: "✨ Moderno", windBearing: "Direção do vento", windEffects: "Rajadas e folhas", windyDay: "Ventoso", yamlTitle: "YAML do cartão", copy: "Copiar", copied: "Copiado", yamlHint: "Cole-o num cartão manual do Home Assistant e substitua weather.home pela sua entidade meteorológica.", customCss: "CSS personalizado", customCssPlaceholder: ".temperature { font-size: 48px; }" }, Vz = {
+  sunny: tz,
+  clear: az,
+  overcast: iz,
+  cloudy: nz,
+  partlycloudy: rz,
+  rainy: oz,
+  rain: sz,
+  snowy: lz,
+  snow: _z,
+  foggy: dz,
+  fog: uz,
+  lightning: cz,
   "lightning-rainy": "Trovoada",
-  pouring: cz,
+  pouring: mz,
   "snowy-rainy": "Chuva com neve",
-  hail: mz,
+  hail: pz,
   "clear-night": "Noite limpa",
-  windy: pz,
+  windy: hz,
   "windy-variant": "Ventoso, nublado",
-  feels_like: hz,
-  forecast_title: gz,
-  forecast_title_hourly: yz,
-  daily_forecast_title: bz,
-  no_data: vz,
-  weather: kz,
-  wind_unit_kmh: fz,
-  wind_unit_ms: wz,
-  wind_unit_mph: zz,
-  wind_unit_knots: jz,
-  wind_unit_fts: Sz,
-  am: xz,
-  pm: Az,
-  pressure: Pz,
-  uv_index: Mz,
-  dew_point: Cz,
-  aqi: $z,
-  precipitation_outlook: Ez,
-  editor: Tz,
-  demo: Dz
-}, Vz = "Солнечно", Lz = "Ясно", Hz = "Пасмурно", Iz = "Облачно", Rz = "Переменная облачность", Bz = "Дождь", Fz = "Дождь", Oz = "Снег", qz = "Снег", Uz = "Туман", Kz = "Туман", Wz = "Гроза", Gz = "Сильный дождь", Zz = "Град", Yz = "Ветрено", Jz = "Ощущается как", Qz = "Прогноз на сегодня", Xz = "Почасовой прогноз", ej = "Ежедневный прогноз", tj = "Нет данных", aj = "Погода", ij = "км/ч", nj = "м/с", rj = "миль/ч", oj = "узлы", sj = "фут/с", lj = "ДП", _j = "ПП", dj = "Давление", uj = "УФ-индекс", cj = "Точка росы", mj = "Индекс качества воздуха", pj = { start: "{kind} ожидается около {time}", soon: "{kind} ожидается в ближайший час", stop: "{kind} закончится около {time}", continues: "{kind} продлится ещё не меньше {hours} ч", rain: "Дождь", snow: "Снег", sleet: "Мокрый снег", hail: "Град", storm: "Гроза" }, hj = { entity: "Погодная сущность", name: "Название карточки", layout: "Макет", layout_default: "Обычный", layout_minimal: "Минимальный", visual_style: "Графика", visual_style_modern: "Современный", visual_style_classic: "Классический", animation_quality: "Качество анимации", animation_quality_high: "Высокое", animation_quality_medium: "Среднее (30 FPS, меньше частиц)", animation_quality_low: "Низкое (20 FPS, для слабых устройств)", height: "Высота", show_feels_like: "Ощущается как", show_wind: "Ветер", show_wind_gust: "Порывы", show_wind_direction: "Направление", show_humidity: "Влажность", show_min_temp: "Мин. температура", show_hourly_forecast: "Прогноз по часам", hourly_forecast_hours: "Часов", hourly_forecast_step: "Шаг", hourly_forecast_chart: "График температуры", hourly_forecast_title: "Заголовок", show_daily_forecast: "Прогноз по дням", daily_forecast_days: "Дней", daily_forecast_title: "Заголовок", show_sunrise_sunset: "Восход и закат", sunrise_entity: "Датчик восхода", sunset_entity: "Датчик заката", temperature_entity: "Датчик температуры", feels_like_entity: "Датчик «ощущается как»", humidity_entity: "Датчик влажности", wind_speed_entity: "Датчик скорости ветра", wind_gust_entity: "Датчик порывов ветра", wind_bearing_entity: "Датчик направления ветра", precipitation_entity: "Датчик осадков", show_pressure: "Давление", show_uv_index: "УФ-индекс", show_dew_point: "Точка росы", show_precipitation_outlook: "Когда начнётся дождь", show_temperature_bars: "Полоски температур", show_forecast_wind: "Ветер в прогнозах", show_forecast_wind_helper: "Направление, скорость и порывы для каждого часа и дня, если их передаёт поставщик погоды", hourly_forecast_step_helper: "Показывать прогноз раз в несколько часов, например 3 — 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Кривая температуры вместо чисел и столбики вероятности осадков", show_forecast_description: "Текстовый прогноз", show_forecast_description_helper: "Словесный прогноз от поставщика погоды, если он есть (например, у метеослужбы США NWS)", pressure_entity: "Датчик давления", uv_index_entity: "Датчик УФ-индекса", dew_point_entity: "Датчик точки росы", aqi_entity: "Датчик качества воздуха (AQI)", show_clock: "Часы", show_date: "Дата", clock_position: "Положение", clock_position_top: "Вверху", clock_position_details: "Детали", clock_format: "Формат", clock_format_12h: "12-часовой (AM/PM)", clock_format_24h: "24-часовой", clock_size: "Размер", clock_size_small: "Маленький", clock_size_medium: "Средний", clock_size_large: "Крупный", clock_weight: "Начертание", clock_weight_thin: "Тонкое", clock_weight_regular: "Обычное", clock_weight_bold: "Жирное", overlay_opacity: "Затемнение", text_shadow: "Тень текста", text_color: "Цвет текста", border_radius: "Скругление углов", sun_position_x: "Солнце/луна по горизонтали", sun_position_y: "Солнце/луна по вертикали", language: "Язык", language_auto: "Авто", language_en: "Английский", language_ru: "Русский", language_de: "Немецкий", language_nl: "Нидерландский", language_fr: "Французский", language_es: "Испанский", language_it: "Итальянский", language_sk: "Словацкий", language_hu: "Венгерский", language_pt: "Португальский", language_da: "Датский", language_sr: "Сербский", language_pl: "Польский", language_zh: "Китайский", language_tr: "Турецкий", language_nb: "Норвежский (букмол)", language_sl: "Словенский", "language_sr-Latn": "Сербский (латиница)", wind_speed_unit: "Единица скорости ветра", wind_speed_unit_ms: "м/с", wind_speed_unit_kmh: "км/ч", wind_speed_unit_auto: "Авто (как в интеграции)", wind_speed_unit_mph: "миль/ч", wind_speed_unit_kn: "узлы", wind_speed_unit_helper: "Авто — единицы интеграции или датчика ветра; остальные варианты переводят весь ветер на карточке", show_animations: "Анимации", show_aurora: "Северное сияние", section_appearance: "Внешний вид", section_details: "Детали", section_forecast: "Прогноз", section_clock: "Язык, часы и дата", section_sensors: "Датчики (необязательно)", animation_quality_helper: "Понизьте для настенных планшетов и слабых устройств", show_aurora_helper: "Ясной ночью, в современной графике", overlay_opacity_helper: "0–1, затемняет небо, чтобы текст читался", text_color_helper: "Любой цвет CSS, например #1a1a2e или var(--primary-text-color)", sun_position_x_helper: "Пусто — по времени суток", sun_position_y_helper: "Пусто — по времени суток", show_precipitation_outlook_helper: "По почасовому прогнозу на 12 часов вперёд", hourly_forecast_title_helper: "Пусто — стандартный заголовок", daily_forecast_title_helper: "Пусто — стандартный заголовок", show_raindrops: "Капли на стекле", show_wind_effects: "Порывы ветра и листья", show_raindrops_helper: "В дождь, в современной графике", show_wind_effects_helper: "В ветреную погоду или при ветре от 8 м/с", hourly_forecast_hours_helper: "Без ограничений: например, 72 — три дня, или больше, чтобы показать весь прогноз провайдера", styles: "Свой CSS", styles_helper: "CSS для карточки и всех её частей, например .temperature { font-size: 48px; }" }, gj = { aurora: "Северное сияние", windyDay: "Ветрено", auroraNight: "Сияние", pressure: "Давление", uvIndex: "УФ-индекс", dewPoint: "Точка росы", aqi: "Качество воздуха (датчик)", precipitationOutlook: "Когда начнётся/закончится дождь", temperatureBars: "Полоски температур", forecastWind: "Ветер в прогнозах", forecastDescription: "Текстовый прогноз", pageTitle: "Динамическая карточка погоды", pageSubtitle: "Интерактивная демонстрация и настройка", quickPresets: "Быстрые пресеты", sunnyDay: "Солнечный день", rainy: "Дождь", snowy: "Снег", clearNight: "Ясная ночь", condition: "Состояние", temperature: "Температура", humidity: "Влажность (%)", windSpeed: "Скорость ветра", timeOfDay: "Время суток", timeMode: "Режим времени", moonPhase: "Фаза луны", visualStyle: "Стиль графики", visualStyleModern: "✨ Современный", visualStyleClassic: "🎨 Классический", animationQuality: "Качество анимации", tabWeather: "Погода", tabTime: "Время", tabLook: "Вид", tabContent: "Данные", tabMore: "Ещё", windBearing: "Направление ветра", stationSensorsHint: "Сенсоры станции подменяют температуру, влажность, ветер и осадки тестовыми значениями личной метеостанции.", autoShort: "Авто", playSpeed: "Длина цикла", play24h: "Проиграть сутки", pause: "Пауза", qualityHighShort: "Высокое", qualityMediumShort: "Среднее", qualityLowShort: "Низкое", animations: "Анимации", layout: "Макет", layoutDefault: "Обычный", layoutMinimal: "Компактный", textShadow: "Тень текста", details: "Детали", humidityToggle: "Влажность", clockAndDate: "Часы", forecasts: "Прогнозы", placeholderDefault: "По умолчанию", links: "Ссылки", documentation: "Документация", reportIssue: "Сообщить о проблеме", manualControl: "Ручное управление", sunrise: "Восход", day: "День", sunset: "Закат", night: "Ночь", cardName: "Название карточки", height: "Высота (px)", feelsLike: "Ощущается как", minTemp: "Мин. температура", windDirection: "Направление ветра", windGust: "Порывы ветра", hourlyForecast: "Почасовой прогноз", dailyForecast: "Ежедневный прогноз", sunriseSunset: "Восход/Закат", showClock: "Часы", stationSensors: "Датчики метеостанции", showDate: "Дата", textColor: "Цвет текста", borderRadius: "Скругление углов (px)", sunPositionX: "Солнце/луна по X (%)", sunPositionY: "Солнце/луна по Y (%)", clockPosition: "Позиция часов", clockPositionTop: "Вверху справа", clockPositionDetails: "В строке деталей", clockFormat: "Формат часов", clockSize: "Размер часов", clockSizeSmall: "Маленький", clockSizeMedium: "Средний", clockSizeLarge: "Крупный", clockWeight: "Начертание часов", clockWeightThin: "Тонкое", clockWeightRegular: "Обычное", clockWeightBold: "Жирное", overlayOpacity: "Прозрачность подложки (0-1)", windSpeedUnit: "Единицы скорости ветра", dailyForecastDays: "Дни прогноза", hourlyForecastHours: "Часы прогноза", hourlyForecastStep: "Шаг почасового прогноза (ч)", hourlyChart: "График почасовой температуры", hourlyForecastTitle: "Заголовок почасового прогноза", dailyForecastTitle: "Заголовок прогноза по дням", startDemo: "Запустить демо", stopDemo: "Остановить демо", madeWith: "Сделано с любовью для Home Assistant", loading: "Загрузка карточки...", placeholderEmpty: "Оставьте пустым, чтобы скрыть", weatherConditions: { windy: "Ветрено", windyVariant: "Ветрено, облачно", sunny: "Солнечно", clearNight: "Ясная ночь", partlyCloudy: "Переменная облачность", cloudy: "Облачно", rainy: "Дождь", pouring: "Ливень", snowy: "Снег", sleet: "Мокрый снег", hail: "Град", foggy: "Туман", lightning: "Гроза", thunderstorm: "Гроза с дождем" }, language: { title: "Язык" }, raindrops: "Капли на стекле", windEffects: "Порывы ветра и листья", yamlTitle: "YAML карточки", copy: "Копировать", copied: "Скопировано", yamlHint: "Вставьте в карточку «Вручную» в Home Assistant и замените weather.home на свою погодную сущность.", customCss: "Свой CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, yj = {
-  sunny: Vz,
-  clear: Lz,
-  overcast: Hz,
-  cloudy: Iz,
-  partlycloudy: Rz,
-  rainy: Bz,
-  rain: Fz,
-  snowy: Oz,
-  snow: qz,
-  foggy: Uz,
-  fog: Kz,
-  lightning: Wz,
+  feels_like: gz,
+  forecast_title: yz,
+  forecast_title_hourly: bz,
+  daily_forecast_title: vz,
+  no_data: kz,
+  weather: fz,
+  wind_unit_kmh: wz,
+  wind_unit_ms: zz,
+  wind_unit_mph: jz,
+  wind_unit_knots: Sz,
+  wind_unit_fts: xz,
+  am: Az,
+  pm: Pz,
+  pressure: Mz,
+  uv_index: Cz,
+  dew_point: $z,
+  aqi: Ez,
+  precipitation_outlook: Tz,
+  editor: Dz,
+  demo: Nz
+}, Lz = "Солнечно", Hz = "Ясно", Iz = "Пасмурно", Rz = "Облачно", Bz = "Переменная облачность", Fz = "Дождь", Oz = "Дождь", qz = "Снег", Uz = "Снег", Kz = "Туман", Wz = "Туман", Gz = "Гроза", Zz = "Сильный дождь", Yz = "Град", Jz = "Ветрено", Qz = "Ощущается как", Xz = "Прогноз на сегодня", ej = "Почасовой прогноз", tj = "Ежедневный прогноз", aj = "Нет данных", ij = "Погода", nj = "км/ч", rj = "м/с", oj = "миль/ч", sj = "узлы", lj = "фут/с", _j = "ДП", dj = "ПП", uj = "Давление", cj = "УФ-индекс", mj = "Точка росы", pj = "Индекс качества воздуха", hj = { start: "{kind} ожидается около {time}", soon: "{kind} ожидается в ближайший час", stop: "{kind} закончится около {time}", continues: "{kind} продлится ещё не меньше {hours} ч", rain: "Дождь", snow: "Снег", sleet: "Мокрый снег", hail: "Град", storm: "Гроза" }, gj = { entity: "Погодная сущность", name: "Название карточки", layout: "Макет", layout_default: "Обычный", layout_minimal: "Минимальный", visual_style: "Графика", visual_style_modern: "Современный", visual_style_classic: "Классический", animation_quality: "Качество анимации", animation_quality_high: "Высокое", animation_quality_medium: "Среднее (30 FPS, меньше частиц)", animation_quality_low: "Низкое (20 FPS, для слабых устройств)", height: "Высота", show_feels_like: "Ощущается как", show_wind: "Ветер", show_wind_gust: "Порывы", show_wind_direction: "Направление", show_humidity: "Влажность", show_min_temp: "Мин. температура", show_hourly_forecast: "Прогноз по часам", hourly_forecast_hours: "Часов", hourly_forecast_step: "Шаг", hourly_forecast_chart: "График температуры", hourly_forecast_title: "Заголовок", show_daily_forecast: "Прогноз по дням", daily_forecast_days: "Дней", daily_forecast_title: "Заголовок", show_sunrise_sunset: "Восход и закат", sunrise_entity: "Датчик восхода", sunset_entity: "Датчик заката", temperature_entity: "Датчик температуры", feels_like_entity: "Датчик «ощущается как»", humidity_entity: "Датчик влажности", wind_speed_entity: "Датчик скорости ветра", wind_gust_entity: "Датчик порывов ветра", wind_bearing_entity: "Датчик направления ветра", precipitation_entity: "Датчик осадков", show_pressure: "Давление", show_uv_index: "УФ-индекс", show_dew_point: "Точка росы", show_precipitation_outlook: "Когда начнётся дождь", show_temperature_bars: "Полоски температур", show_forecast_wind: "Ветер в прогнозах", show_forecast_wind_helper: "Направление, скорость и порывы для каждого часа и дня, если их передаёт поставщик погоды", hourly_forecast_step_helper: "Показывать прогноз раз в несколько часов, например 3 — 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Кривая температуры вместо чисел и столбики вероятности осадков", show_forecast_description: "Текстовый прогноз", show_forecast_description_helper: "Словесный прогноз от поставщика погоды, если он есть (например, у метеослужбы США NWS)", pressure_entity: "Датчик давления", uv_index_entity: "Датчик УФ-индекса", dew_point_entity: "Датчик точки росы", aqi_entity: "Датчик качества воздуха (AQI)", show_clock: "Часы", show_date: "Дата", clock_position: "Положение", clock_position_top: "Вверху", clock_position_details: "Детали", clock_format: "Формат", clock_format_12h: "12-часовой (AM/PM)", clock_format_24h: "24-часовой", clock_size: "Размер", clock_size_small: "Маленький", clock_size_medium: "Средний", clock_size_large: "Крупный", clock_weight: "Начертание", clock_weight_thin: "Тонкое", clock_weight_regular: "Обычное", clock_weight_bold: "Жирное", overlay_opacity: "Затемнение", text_shadow: "Тень текста", text_color: "Цвет текста", border_radius: "Скругление углов", sun_position_x: "Солнце/луна по горизонтали", sun_position_y: "Солнце/луна по вертикали", language: "Язык", language_auto: "Авто", language_en: "Английский", language_ru: "Русский", language_de: "Немецкий", language_nl: "Нидерландский", language_fr: "Французский", language_es: "Испанский", language_it: "Итальянский", language_sk: "Словацкий", language_hu: "Венгерский", language_pt: "Португальский", language_da: "Датский", language_sr: "Сербский", language_pl: "Польский", language_zh: "Китайский", language_tr: "Турецкий", language_nb: "Норвежский (букмол)", language_sl: "Словенский", "language_sr-Latn": "Сербский (латиница)", wind_speed_unit: "Единица скорости ветра", wind_speed_unit_ms: "м/с", wind_speed_unit_kmh: "км/ч", wind_speed_unit_auto: "Авто (как в интеграции)", wind_speed_unit_mph: "миль/ч", wind_speed_unit_kn: "узлы", wind_speed_unit_helper: "Авто — единицы интеграции или датчика ветра; остальные варианты переводят весь ветер на карточке", show_animations: "Анимации", show_aurora: "Северное сияние", section_appearance: "Внешний вид", section_details: "Детали", section_forecast: "Прогноз", section_clock: "Язык, часы и дата", section_sensors: "Датчики (необязательно)", animation_quality_helper: "Понизьте для настенных планшетов и слабых устройств", show_aurora_helper: "Ясной ночью, в современной графике", overlay_opacity_helper: "0–1, затемняет небо, чтобы текст читался", text_color_helper: "Любой цвет CSS, например #1a1a2e или var(--primary-text-color)", sun_position_x_helper: "Пусто — по времени суток", sun_position_y_helper: "Пусто — по времени суток", show_precipitation_outlook_helper: "По почасовому прогнозу на 12 часов вперёд", hourly_forecast_title_helper: "Пусто — стандартный заголовок", daily_forecast_title_helper: "Пусто — стандартный заголовок", show_raindrops: "Капли на стекле", show_wind_effects: "Порывы ветра и листья", show_raindrops_helper: "В дождь, в современной графике", show_wind_effects_helper: "В ветреную погоду или при ветре от 8 м/с", hourly_forecast_hours_helper: "Без ограничений: например, 72 — три дня, или больше, чтобы показать весь прогноз провайдера", styles: "Свой CSS", styles_helper: "CSS для карточки и всех её частей, например .temperature { font-size: 48px; }" }, yj = { aurora: "Северное сияние", windyDay: "Ветрено", auroraNight: "Сияние", pressure: "Давление", uvIndex: "УФ-индекс", dewPoint: "Точка росы", aqi: "Качество воздуха (датчик)", precipitationOutlook: "Когда начнётся/закончится дождь", temperatureBars: "Полоски температур", forecastWind: "Ветер в прогнозах", forecastDescription: "Текстовый прогноз", pageTitle: "Динамическая карточка погоды", pageSubtitle: "Интерактивная демонстрация и настройка", quickPresets: "Быстрые пресеты", sunnyDay: "Солнечный день", rainy: "Дождь", snowy: "Снег", clearNight: "Ясная ночь", condition: "Состояние", temperature: "Температура", humidity: "Влажность (%)", windSpeed: "Скорость ветра", timeOfDay: "Время суток", timeMode: "Режим времени", moonPhase: "Фаза луны", visualStyle: "Стиль графики", visualStyleModern: "✨ Современный", visualStyleClassic: "🎨 Классический", animationQuality: "Качество анимации", tabWeather: "Погода", tabTime: "Время", tabLook: "Вид", tabContent: "Данные", tabMore: "Ещё", windBearing: "Направление ветра", stationSensorsHint: "Сенсоры станции подменяют температуру, влажность, ветер и осадки тестовыми значениями личной метеостанции.", autoShort: "Авто", playSpeed: "Длина цикла", play24h: "Проиграть сутки", pause: "Пауза", qualityHighShort: "Высокое", qualityMediumShort: "Среднее", qualityLowShort: "Низкое", animations: "Анимации", layout: "Макет", layoutDefault: "Обычный", layoutMinimal: "Компактный", textShadow: "Тень текста", details: "Детали", humidityToggle: "Влажность", clockAndDate: "Часы", forecasts: "Прогнозы", placeholderDefault: "По умолчанию", links: "Ссылки", documentation: "Документация", reportIssue: "Сообщить о проблеме", manualControl: "Ручное управление", sunrise: "Восход", day: "День", sunset: "Закат", night: "Ночь", cardName: "Название карточки", height: "Высота (px)", feelsLike: "Ощущается как", minTemp: "Мин. температура", windDirection: "Направление ветра", windGust: "Порывы ветра", hourlyForecast: "Почасовой прогноз", dailyForecast: "Ежедневный прогноз", sunriseSunset: "Восход/Закат", showClock: "Часы", stationSensors: "Датчики метеостанции", showDate: "Дата", textColor: "Цвет текста", borderRadius: "Скругление углов (px)", sunPositionX: "Солнце/луна по X (%)", sunPositionY: "Солнце/луна по Y (%)", clockPosition: "Позиция часов", clockPositionTop: "Вверху справа", clockPositionDetails: "В строке деталей", clockFormat: "Формат часов", clockSize: "Размер часов", clockSizeSmall: "Маленький", clockSizeMedium: "Средний", clockSizeLarge: "Крупный", clockWeight: "Начертание часов", clockWeightThin: "Тонкое", clockWeightRegular: "Обычное", clockWeightBold: "Жирное", overlayOpacity: "Прозрачность подложки (0-1)", windSpeedUnit: "Единицы скорости ветра", dailyForecastDays: "Дни прогноза", hourlyForecastHours: "Часы прогноза", hourlyForecastStep: "Шаг почасового прогноза (ч)", hourlyChart: "График почасовой температуры", hourlyForecastTitle: "Заголовок почасового прогноза", dailyForecastTitle: "Заголовок прогноза по дням", startDemo: "Запустить демо", stopDemo: "Остановить демо", madeWith: "Сделано с любовью для Home Assistant", loading: "Загрузка карточки...", placeholderEmpty: "Оставьте пустым, чтобы скрыть", weatherConditions: { windy: "Ветрено", windyVariant: "Ветрено, облачно", sunny: "Солнечно", clearNight: "Ясная ночь", partlyCloudy: "Переменная облачность", cloudy: "Облачно", rainy: "Дождь", pouring: "Ливень", snowy: "Снег", sleet: "Мокрый снег", hail: "Град", foggy: "Туман", lightning: "Гроза", thunderstorm: "Гроза с дождем" }, language: { title: "Язык" }, raindrops: "Капли на стекле", windEffects: "Порывы ветра и листья", yamlTitle: "YAML карточки", copy: "Копировать", copied: "Скопировано", yamlHint: "Вставьте в карточку «Вручную» в Home Assistant и замените weather.home на свою погодную сущность.", customCss: "Свой CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, bj = {
+  sunny: Lz,
+  clear: Hz,
+  overcast: Iz,
+  cloudy: Rz,
+  partlycloudy: Bz,
+  rainy: Fz,
+  rain: Oz,
+  snowy: qz,
+  snow: Uz,
+  foggy: Kz,
+  fog: Wz,
+  lightning: Gz,
   "lightning-rainy": "Гроза с дождем",
-  pouring: Gz,
+  pouring: Zz,
   "snowy-rainy": "Мокрый снег",
-  hail: Zz,
+  hail: Yz,
   "clear-night": "Ясная ночь",
-  windy: Yz,
+  windy: Jz,
   "windy-variant": "Ветрено, облачно",
-  feels_like: Jz,
-  forecast_title: Qz,
-  forecast_title_hourly: Xz,
-  daily_forecast_title: ej,
-  no_data: tj,
-  weather: aj,
-  wind_unit_kmh: ij,
-  wind_unit_ms: nj,
-  wind_unit_mph: rj,
-  wind_unit_knots: oj,
-  wind_unit_fts: sj,
-  am: lj,
-  pm: _j,
-  pressure: dj,
-  uv_index: uj,
-  dew_point: cj,
-  aqi: mj,
-  precipitation_outlook: pj,
-  editor: hj,
-  demo: gj
-}, bj = "Slnečno", vj = "Jasno", kj = "Zamračené", fj = "Oblačno", wj = "Polooblačno", zj = "Daždivo", jj = "Dážď", Sj = "Sneženie", xj = "Sneh", Aj = "Hmlisto", Pj = "Hmla", Mj = "Blesky", Cj = "Silný dážď", $j = "Krúpy", Ej = "Veterno", Tj = "Pocitová teplota", Dj = "Predpoveď na dnes", Nj = "Hodinová predpoveď", Vj = "Denná predpoveď", Lj = "Žiadne dáta", Hj = "Počasie", Ij = "km/h", Rj = "m/s", Bj = "mph", Fj = "uzly", Oj = "ft/s", qj = "dop.", Uj = "pop.", Kj = "Tlak", Wj = "UV index", Gj = "Rosný bod", Zj = "Index kvality ovzdušia", Yj = { start: "{kind} sa očakáva okolo {time}", soon: "{kind} sa očakáva čoskoro", stop: "{kind} skončí okolo {time}", continues: "{kind} ešte aspoň {hours} h", rain: "Dážď", snow: "Sneh", sleet: "Dážď so snehom", hail: "Krupobitie", storm: "Búrka" }, Jj = { entity: "Entita počasia", name: "Názov karty", layout: "Rozloženie", layout_default: "Default", layout_minimal: "Minimal", height: "Výška", show_feels_like: "Pocitová teplota", show_wind: "Vietor", show_wind_gust: "Nárazy", show_wind_direction: "Smer", show_humidity: "Vlhkosť", show_min_temp: "Minimálna teplota", show_hourly_forecast: "Hodinová predpoveď", hourly_forecast_hours: "Hodiny", hourly_forecast_step: "Každých", hourly_forecast_chart: "Graf teploty", show_daily_forecast: "Denná predpoveď", daily_forecast_days: "Dni", show_sunrise_sunset: "Východ a západ slnka", sunrise_entity: "Senzor východu slnka", sunset_entity: "Senzor západu slnka", show_clock: "Hodiny", clock_position: "Poloha", clock_position_top: "Hore", clock_position_details: "V detailoch", clock_format: "Formát", clock_format_12h: "12-hodinový (AM/PM)", clock_format_24h: "24-hodinový", clock_size: "Veľkosť", clock_size_small: "Malá", clock_size_medium: "Stredná", clock_size_large: "Veľká", clock_weight: "Hrúbka písma", clock_weight_thin: "Tenké", clock_weight_regular: "Normálne", clock_weight_bold: "Tučné", overlay_opacity: "Stmavenie", text_shadow: "Tieň textu", language: "Jazyk", language_auto: "Automaticky", language_en: "Angličtina", language_ru: "Ruština", language_de: "Nemčina", language_nl: "Holandčina", language_fr: "Francúzština", language_es: "Španielčina", language_it: "Taliančina", language_sk: "Slovenčina", language_hu: "Maďarčina", language_pt: "Portugalčina", wind_speed_unit: "Jednotka rýchlosti vetra", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Auto (ako integrácia)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "uzly", wind_speed_unit_helper: "Auto ponechá jednotku integrácie alebo senzora vetra; ostatné prepočítajú všetok vietor na karte", show_animations: "Animácie", animation_quality: "Kvalita animácie", animation_quality_helper: "Znížte na nástenných tabletoch a pomalých zariadeniach", animation_quality_high: "Vysoká", animation_quality_low: "Nízka (20 FPS, pre pomalé zariadenia)", animation_quality_medium: "Stredná (30 FPS, menej častíc)", aqi_entity: "Senzor kvality ovzdušia (AQI)", border_radius: "Zaoblenie rohov", daily_forecast_title: "Nadpis", daily_forecast_title_helper: "Prázdne = predvolený nadpis", dew_point_entity: "Senzor rosného bodu", feels_like_entity: "Senzor pocitovej teploty", hourly_forecast_title: "Nadpis", hourly_forecast_title_helper: "Prázdne = predvolený nadpis", humidity_entity: "Senzor vlhkosti", overlay_opacity_helper: "0–1, stmaví oblohu, aby bol text čitateľný", precipitation_entity: "Senzor zrážok", pressure_entity: "Senzor tlaku", section_appearance: "Vzhľad", section_clock: "Jazyk, hodiny a dátum", section_details: "Podrobnosti", section_forecast: "Predpoveď", section_sensors: "Senzory (voliteľné)", show_aurora: "Polárna žiara", show_aurora_helper: "Za jasných nocí, moderná grafika", show_date: "Dátum", show_dew_point: "Rosný bod", show_precipitation_outlook: "Kedy začne/prestane pršať", show_precipitation_outlook_helper: "Z hodinovej predpovede na nasledujúcich 12 hodín", show_pressure: "Tlak", show_raindrops: "Kvapky dažďa na skle", show_raindrops_helper: "Pri daždi, moderná grafika", show_temperature_bars: "Teplotné pruhy", show_forecast_wind: "Vietor v predpovediach", show_forecast_wind_helper: "Smer, rýchlosť a nárazy vetra pre každú hodinu a deň, ak ich poskytovateľ počasia uvádza", hourly_forecast_step_helper: "Zobraziť predpoveď každých pár hodín, napr. 3 pre 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Krivka teploty namiesto čísel a pravdepodobnosť zrážok ako stĺpce", show_forecast_description: "Textová predpoveď", show_forecast_description_helper: "Písaná predpoveď poskytovateľa počasia, ak ju má (napr. americká National Weather Service)", show_uv_index: "UV index", show_wind_effects: "Nárazy vetra a lístie", show_wind_effects_helper: "Pri veternom počasí alebo nad 8 m/s", sun_position_x: "Poloha slnka/mesiaca, vodorovne", sun_position_x_helper: "Nechajte prázdne, aby sa riadila dennou dobou", sun_position_y: "Poloha slnka/mesiaca, zvisle", sun_position_y_helper: "Nechajte prázdne, aby sa riadila dennou dobou", temperature_entity: "Senzor teploty", text_color: "Farba textu", text_color_helper: "Ľubovoľná farba CSS, napr. #1a1a2e alebo var(--primary-text-color)", uv_index_entity: "Senzor UV indexu", visual_style: "Grafika", visual_style_classic: "Klasická", visual_style_modern: "Moderná", wind_bearing_entity: "Senzor smeru vetra", wind_gust_entity: "Senzor nárazov vetra", wind_speed_entity: "Senzor rýchlosti vetra", language_da: "Dánčina", language_nb: "Nórčina (bokmål)", language_pl: "Poľština", language_sl: "Slovinčina", language_sr: "Srbčina", "language_sr-Latn": "Srbčina (latinka)", language_tr: "Turečtina", language_zh: "Čínština", hourly_forecast_hours_helper: "Bez obmedzenia: napr. 72 na tri dni alebo viac, aby sa zobrazila celá predpoveď poskytovateľa", styles: "Vlastné CSS", styles_helper: "CSS pre kartu a všetky jej časti, napr. .temperature { font-size: 48px; }" }, Qj = { pageTitle: "Dynamická karta počasia", pageSubtitle: "Interaktívne demo a konfiguračný nástroj", quickPresets: "Rýchle predvoľby", sunnyDay: "Slnečný deň", rainy: "Daždivo", snowy: "Sneženie", clearNight: "Jasná noc", condition: "Stav", temperature: "Teplota", humidity: "Vlhkosť (%)", windSpeed: "Rýchlosť vetra", timeOfDay: "Čas dňa", timeMode: "Režim času", manualControl: "Manuálne ovládanie", sunrise: "Východ slnka", day: "Deň", sunset: "Západ slnka", night: "Noc", cardName: "Názov karty", height: "Výška (px)", feelsLike: "Pocitová teplota", minTemp: "Minimálna teplota", windDirection: "Smer vetra", windGust: "Nárazy vetra", hourlyForecast: "Hodinová predpoveď", dailyForecast: "Denná predpoveď", sunriseSunset: "Východ/Západ slnka", showClock: "Hodiny", clockPosition: "Pozícia hodín", clockPositionTop: "Vpravo hore", clockPositionDetails: "Riadok s detailmi", clockFormat: "Formát času", clockSize: "Veľkosť hodín", clockSizeSmall: "Malá", clockSizeMedium: "Stredná", clockSizeLarge: "Veľká", clockWeight: "Hrúbka písma hodín", clockWeightThin: "Tenké", clockWeightRegular: "Normálne", clockWeightBold: "Tučné", overlayOpacity: "Priehľadnosť vrstvy (0-1)", windSpeedUnit: "Jednotka rýchlosti vetra", dailyForecastDays: "Dni dennej predpovede", hourlyForecastHours: "Hodiny hodinovej predpovede", hourlyForecastStep: "Krok hodinovej predpovede (h)", hourlyChart: "Hodinový graf teploty", startDemo: "Spustiť Demo režim", stopDemo: "Zastaviť Demo", madeWith: "Vytvorené s láskou pre Home Assistant", loading: "Načítavam kartu...", placeholderEmpty: "Ponechajte prázdne pre skrytie", weatherConditions: { sunny: "Slnečno", clearNight: "Jasná noc", partlyCloudy: "Polooblačno", cloudy: "Oblačno", rainy: "Daždivo", pouring: "Lejak", snowy: "Sneženie", sleet: "Dážď so snehom", hail: "Krúpy", foggy: "Hmla", lightning: "Blesky", thunderstorm: "Búrka", windy: "Veterno", windyVariant: "Veterno, oblačno" }, language: { title: "Jazyk" }, animationQuality: "Kvalita animácie", animations: "Animácie", aqi: "Kvalita ovzdušia (senzor)", aurora: "Polárna žiara", auroraNight: "Polárna žiara", autoShort: "Auto", borderRadius: "Zaoblenie rohov (px)", clockAndDate: "Hodiny", dailyForecastTitle: "Nadpis dennej predpovede", details: "Podrobnosti", dewPoint: "Rosný bod", documentation: "Dokumentácia", forecasts: "Predpovede", hourlyForecastTitle: "Nadpis hodinovej predpovede", humidityToggle: "Vlhkosť", layout: "Rozloženie", layoutDefault: "Predvolené", layoutMinimal: "Minimálne", links: "Odkazy", moonPhase: "Fáza mesiaca", pause: "Pozastaviť", placeholderDefault: "Predvolené", play24h: "Prehrať 24 hodín", playSpeed: "Dĺžka cyklu", precipitationOutlook: "Začiatok/koniec dažďa", pressure: "Tlak", qualityHighShort: "Vysoká", qualityLowShort: "Nízka", qualityMediumShort: "Stredná", raindrops: "Kvapky dažďa na skle", reportIssue: "Nahlásiť problém", showDate: "Dátum", stationSensors: "Senzory stanice", stationSensorsHint: "Senzory stanice nahradia teplotu, vlhkosť, vietor a zrážky ukážkovými hodnotami z vlastnej meteostanice.", sunPositionX: "Slnko/Mesiac X (%)", sunPositionY: "Slnko/Mesiac Y (%)", tabContent: "Obsah", tabLook: "Vzhľad", tabMore: "Viac", tabTime: "Čas", tabWeather: "Počasie", temperatureBars: "Teplotné pruhy", forecastWind: "Vietor v predpovediach", forecastDescription: "Textová predpoveď", textColor: "Farba textu", textShadow: "Tieň textu", uvIndex: "UV index", visualStyle: "Grafický štýl", visualStyleClassic: "🎨 Klasický", visualStyleModern: "✨ Moderný", windBearing: "Smer vetra", windEffects: "Nárazy vetra a lístie", windyDay: "Veterno", yamlTitle: "YAML karty", copy: "Kopírovať", copied: "Skopírované", yamlHint: "Vložte ho do manuálnej karty v Home Assistant a nahraďte weather.home vlastnou entitou počasia.", customCss: "Vlastné CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, Xj = {
-  sunny: bj,
-  clear: vj,
-  overcast: kj,
-  cloudy: fj,
-  partlycloudy: wj,
-  rainy: zj,
-  rain: jj,
-  snowy: Sj,
-  snow: xj,
-  foggy: Aj,
-  fog: Pj,
-  lightning: Mj,
+  feels_like: Qz,
+  forecast_title: Xz,
+  forecast_title_hourly: ej,
+  daily_forecast_title: tj,
+  no_data: aj,
+  weather: ij,
+  wind_unit_kmh: nj,
+  wind_unit_ms: rj,
+  wind_unit_mph: oj,
+  wind_unit_knots: sj,
+  wind_unit_fts: lj,
+  am: _j,
+  pm: dj,
+  pressure: uj,
+  uv_index: cj,
+  dew_point: mj,
+  aqi: pj,
+  precipitation_outlook: hj,
+  editor: gj,
+  demo: yj
+}, vj = "Slnečno", kj = "Jasno", fj = "Zamračené", wj = "Oblačno", zj = "Polooblačno", jj = "Daždivo", Sj = "Dážď", xj = "Sneženie", Aj = "Sneh", Pj = "Hmlisto", Mj = "Hmla", Cj = "Blesky", $j = "Silný dážď", Ej = "Krúpy", Tj = "Veterno", Dj = "Pocitová teplota", Nj = "Predpoveď na dnes", Vj = "Hodinová predpoveď", Lj = "Denná predpoveď", Hj = "Žiadne dáta", Ij = "Počasie", Rj = "km/h", Bj = "m/s", Fj = "mph", Oj = "uzly", qj = "ft/s", Uj = "dop.", Kj = "pop.", Wj = "Tlak", Gj = "UV index", Zj = "Rosný bod", Yj = "Index kvality ovzdušia", Jj = { start: "{kind} sa očakáva okolo {time}", soon: "{kind} sa očakáva čoskoro", stop: "{kind} skončí okolo {time}", continues: "{kind} ešte aspoň {hours} h", rain: "Dážď", snow: "Sneh", sleet: "Dážď so snehom", hail: "Krupobitie", storm: "Búrka" }, Qj = { entity: "Entita počasia", name: "Názov karty", layout: "Rozloženie", layout_default: "Default", layout_minimal: "Minimal", height: "Výška", show_feels_like: "Pocitová teplota", show_wind: "Vietor", show_wind_gust: "Nárazy", show_wind_direction: "Smer", show_humidity: "Vlhkosť", show_min_temp: "Minimálna teplota", show_hourly_forecast: "Hodinová predpoveď", hourly_forecast_hours: "Hodiny", hourly_forecast_step: "Každých", hourly_forecast_chart: "Graf teploty", show_daily_forecast: "Denná predpoveď", daily_forecast_days: "Dni", show_sunrise_sunset: "Východ a západ slnka", sunrise_entity: "Senzor východu slnka", sunset_entity: "Senzor západu slnka", show_clock: "Hodiny", clock_position: "Poloha", clock_position_top: "Hore", clock_position_details: "V detailoch", clock_format: "Formát", clock_format_12h: "12-hodinový (AM/PM)", clock_format_24h: "24-hodinový", clock_size: "Veľkosť", clock_size_small: "Malá", clock_size_medium: "Stredná", clock_size_large: "Veľká", clock_weight: "Hrúbka písma", clock_weight_thin: "Tenké", clock_weight_regular: "Normálne", clock_weight_bold: "Tučné", overlay_opacity: "Stmavenie", text_shadow: "Tieň textu", language: "Jazyk", language_auto: "Automaticky", language_en: "Angličtina", language_ru: "Ruština", language_de: "Nemčina", language_nl: "Holandčina", language_fr: "Francúzština", language_es: "Španielčina", language_it: "Taliančina", language_sk: "Slovenčina", language_hu: "Maďarčina", language_pt: "Portugalčina", wind_speed_unit: "Jednotka rýchlosti vetra", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Auto (ako integrácia)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "uzly", wind_speed_unit_helper: "Auto ponechá jednotku integrácie alebo senzora vetra; ostatné prepočítajú všetok vietor na karte", show_animations: "Animácie", animation_quality: "Kvalita animácie", animation_quality_helper: "Znížte na nástenných tabletoch a pomalých zariadeniach", animation_quality_high: "Vysoká", animation_quality_low: "Nízka (20 FPS, pre pomalé zariadenia)", animation_quality_medium: "Stredná (30 FPS, menej častíc)", aqi_entity: "Senzor kvality ovzdušia (AQI)", border_radius: "Zaoblenie rohov", daily_forecast_title: "Nadpis", daily_forecast_title_helper: "Prázdne = predvolený nadpis", dew_point_entity: "Senzor rosného bodu", feels_like_entity: "Senzor pocitovej teploty", hourly_forecast_title: "Nadpis", hourly_forecast_title_helper: "Prázdne = predvolený nadpis", humidity_entity: "Senzor vlhkosti", overlay_opacity_helper: "0–1, stmaví oblohu, aby bol text čitateľný", precipitation_entity: "Senzor zrážok", pressure_entity: "Senzor tlaku", section_appearance: "Vzhľad", section_clock: "Jazyk, hodiny a dátum", section_details: "Podrobnosti", section_forecast: "Predpoveď", section_sensors: "Senzory (voliteľné)", show_aurora: "Polárna žiara", show_aurora_helper: "Za jasných nocí, moderná grafika", show_date: "Dátum", show_dew_point: "Rosný bod", show_precipitation_outlook: "Kedy začne/prestane pršať", show_precipitation_outlook_helper: "Z hodinovej predpovede na nasledujúcich 12 hodín", show_pressure: "Tlak", show_raindrops: "Kvapky dažďa na skle", show_raindrops_helper: "Pri daždi, moderná grafika", show_temperature_bars: "Teplotné pruhy", show_forecast_wind: "Vietor v predpovediach", show_forecast_wind_helper: "Smer, rýchlosť a nárazy vetra pre každú hodinu a deň, ak ich poskytovateľ počasia uvádza", hourly_forecast_step_helper: "Zobraziť predpoveď každých pár hodín, napr. 3 pre 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Krivka teploty namiesto čísel a pravdepodobnosť zrážok ako stĺpce", show_forecast_description: "Textová predpoveď", show_forecast_description_helper: "Písaná predpoveď poskytovateľa počasia, ak ju má (napr. americká National Weather Service)", show_uv_index: "UV index", show_wind_effects: "Nárazy vetra a lístie", show_wind_effects_helper: "Pri veternom počasí alebo nad 8 m/s", sun_position_x: "Poloha slnka/mesiaca, vodorovne", sun_position_x_helper: "Nechajte prázdne, aby sa riadila dennou dobou", sun_position_y: "Poloha slnka/mesiaca, zvisle", sun_position_y_helper: "Nechajte prázdne, aby sa riadila dennou dobou", temperature_entity: "Senzor teploty", text_color: "Farba textu", text_color_helper: "Ľubovoľná farba CSS, napr. #1a1a2e alebo var(--primary-text-color)", uv_index_entity: "Senzor UV indexu", visual_style: "Grafika", visual_style_classic: "Klasická", visual_style_modern: "Moderná", wind_bearing_entity: "Senzor smeru vetra", wind_gust_entity: "Senzor nárazov vetra", wind_speed_entity: "Senzor rýchlosti vetra", language_da: "Dánčina", language_nb: "Nórčina (bokmål)", language_pl: "Poľština", language_sl: "Slovinčina", language_sr: "Srbčina", "language_sr-Latn": "Srbčina (latinka)", language_tr: "Turečtina", language_zh: "Čínština", hourly_forecast_hours_helper: "Bez obmedzenia: napr. 72 na tri dni alebo viac, aby sa zobrazila celá predpoveď poskytovateľa", styles: "Vlastné CSS", styles_helper: "CSS pre kartu a všetky jej časti, napr. .temperature { font-size: 48px; }" }, Xj = { pageTitle: "Dynamická karta počasia", pageSubtitle: "Interaktívne demo a konfiguračný nástroj", quickPresets: "Rýchle predvoľby", sunnyDay: "Slnečný deň", rainy: "Daždivo", snowy: "Sneženie", clearNight: "Jasná noc", condition: "Stav", temperature: "Teplota", humidity: "Vlhkosť (%)", windSpeed: "Rýchlosť vetra", timeOfDay: "Čas dňa", timeMode: "Režim času", manualControl: "Manuálne ovládanie", sunrise: "Východ slnka", day: "Deň", sunset: "Západ slnka", night: "Noc", cardName: "Názov karty", height: "Výška (px)", feelsLike: "Pocitová teplota", minTemp: "Minimálna teplota", windDirection: "Smer vetra", windGust: "Nárazy vetra", hourlyForecast: "Hodinová predpoveď", dailyForecast: "Denná predpoveď", sunriseSunset: "Východ/Západ slnka", showClock: "Hodiny", clockPosition: "Pozícia hodín", clockPositionTop: "Vpravo hore", clockPositionDetails: "Riadok s detailmi", clockFormat: "Formát času", clockSize: "Veľkosť hodín", clockSizeSmall: "Malá", clockSizeMedium: "Stredná", clockSizeLarge: "Veľká", clockWeight: "Hrúbka písma hodín", clockWeightThin: "Tenké", clockWeightRegular: "Normálne", clockWeightBold: "Tučné", overlayOpacity: "Priehľadnosť vrstvy (0-1)", windSpeedUnit: "Jednotka rýchlosti vetra", dailyForecastDays: "Dni dennej predpovede", hourlyForecastHours: "Hodiny hodinovej predpovede", hourlyForecastStep: "Krok hodinovej predpovede (h)", hourlyChart: "Hodinový graf teploty", startDemo: "Spustiť Demo režim", stopDemo: "Zastaviť Demo", madeWith: "Vytvorené s láskou pre Home Assistant", loading: "Načítavam kartu...", placeholderEmpty: "Ponechajte prázdne pre skrytie", weatherConditions: { sunny: "Slnečno", clearNight: "Jasná noc", partlyCloudy: "Polooblačno", cloudy: "Oblačno", rainy: "Daždivo", pouring: "Lejak", snowy: "Sneženie", sleet: "Dážď so snehom", hail: "Krúpy", foggy: "Hmla", lightning: "Blesky", thunderstorm: "Búrka", windy: "Veterno", windyVariant: "Veterno, oblačno" }, language: { title: "Jazyk" }, animationQuality: "Kvalita animácie", animations: "Animácie", aqi: "Kvalita ovzdušia (senzor)", aurora: "Polárna žiara", auroraNight: "Polárna žiara", autoShort: "Auto", borderRadius: "Zaoblenie rohov (px)", clockAndDate: "Hodiny", dailyForecastTitle: "Nadpis dennej predpovede", details: "Podrobnosti", dewPoint: "Rosný bod", documentation: "Dokumentácia", forecasts: "Predpovede", hourlyForecastTitle: "Nadpis hodinovej predpovede", humidityToggle: "Vlhkosť", layout: "Rozloženie", layoutDefault: "Predvolené", layoutMinimal: "Minimálne", links: "Odkazy", moonPhase: "Fáza mesiaca", pause: "Pozastaviť", placeholderDefault: "Predvolené", play24h: "Prehrať 24 hodín", playSpeed: "Dĺžka cyklu", precipitationOutlook: "Začiatok/koniec dažďa", pressure: "Tlak", qualityHighShort: "Vysoká", qualityLowShort: "Nízka", qualityMediumShort: "Stredná", raindrops: "Kvapky dažďa na skle", reportIssue: "Nahlásiť problém", showDate: "Dátum", stationSensors: "Senzory stanice", stationSensorsHint: "Senzory stanice nahradia teplotu, vlhkosť, vietor a zrážky ukážkovými hodnotami z vlastnej meteostanice.", sunPositionX: "Slnko/Mesiac X (%)", sunPositionY: "Slnko/Mesiac Y (%)", tabContent: "Obsah", tabLook: "Vzhľad", tabMore: "Viac", tabTime: "Čas", tabWeather: "Počasie", temperatureBars: "Teplotné pruhy", forecastWind: "Vietor v predpovediach", forecastDescription: "Textová predpoveď", textColor: "Farba textu", textShadow: "Tieň textu", uvIndex: "UV index", visualStyle: "Grafický štýl", visualStyleClassic: "🎨 Klasický", visualStyleModern: "✨ Moderný", windBearing: "Smer vetra", windEffects: "Nárazy vetra a lístie", windyDay: "Veterno", yamlTitle: "YAML karty", copy: "Kopírovať", copied: "Skopírované", yamlHint: "Vložte ho do manuálnej karty v Home Assistant a nahraďte weather.home vlastnou entitou počasia.", customCss: "Vlastné CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, eS = {
+  sunny: vj,
+  clear: kj,
+  overcast: fj,
+  cloudy: wj,
+  partlycloudy: zj,
+  rainy: jj,
+  rain: Sj,
+  snowy: xj,
+  snow: Aj,
+  foggy: Pj,
+  fog: Mj,
+  lightning: Cj,
   "lightning-rainy": "Búrka",
-  pouring: Cj,
+  pouring: $j,
   "snowy-rainy": "Dážď so snehom",
-  hail: $j,
+  hail: Ej,
   "clear-night": "Jasná noc",
-  windy: Ej,
+  windy: Tj,
   "windy-variant": "Veterno, oblačno",
-  feels_like: Tj,
-  forecast_title: Dj,
-  forecast_title_hourly: Nj,
-  daily_forecast_title: Vj,
-  no_data: Lj,
-  weather: Hj,
-  wind_unit_kmh: Ij,
-  wind_unit_ms: Rj,
-  wind_unit_mph: Bj,
-  wind_unit_knots: Fj,
-  wind_unit_fts: Oj,
-  am: qj,
-  pm: Uj,
-  pressure: Kj,
-  uv_index: Wj,
-  dew_point: Gj,
-  aqi: Zj,
-  precipitation_outlook: Yj,
-  editor: Jj,
-  demo: Qj
-}, eS = "Sončno", tS = "Jasno", aS = "Zastrto", iS = "Oblačno", nS = "Delno oblačno", rS = "Deževno", oS = "Dež", sS = "Sneženo", lS = "Sneg", _S = "Megleno", dS = "Megla", uS = "Strela", cS = "Močen dež", mS = "Toča", pS = "Vetrovno", hS = "Občutno kot", gS = "Današnja napoved", yS = "Urna napoved", bS = "Dnevna napoved", vS = "Ni podatkov", kS = "Vreme", fS = "km/h", wS = "m/s", zS = "mph", jS = "vozlov", SS = "ft/s", xS = "AM", AS = "PM", PS = "Pritisk", MS = "UV indeks", CS = "Rosišče", $S = "Indeks kakovosti zraka", ES = { start: "{kind} napovedano okoli {time}", soon: "{kind} napovedano kmalu", stop: "{kind} se konča okoli {time}", continues: "{kind} najmanj za {hours} ur", rain: "Dež", snow: "Sneg", sleet: "Dež s snegom", hail: "Toča", storm: "Nevihta" }, TS = { entity: "Vremenska entiteta", name: "Naslov karte", layout: "Postavitev", layout_default: "Privzeto", layout_minimal: "Minimalistično", visual_style: "Grafično", visual_style_modern: "Moderno", visual_style_classic: "Klasično", animation_quality: "Kvaliteta animacije", animation_quality_high: "Visoko", animation_quality_medium: "Srednje (30 FPS, manj delcev)", animation_quality_low: "Nizko (20 FPS, za počasne naprave)", height: "Višina", show_feels_like: "Občutno kot", show_wind: "Veter", show_wind_gust: "Sunki", show_wind_direction: "Smer", show_humidity: "Vlažnost", show_min_temp: "Min temperatura", show_hourly_forecast: "Urna napoved", hourly_forecast_hours: "Ure", hourly_forecast_step: "Vsakih", hourly_forecast_chart: "Graf temperature", hourly_forecast_title: "Naslov", show_daily_forecast: "Dnevna napoved", daily_forecast_days: "Dni", daily_forecast_title: "Naslov", show_sunrise_sunset: "Vzhod in zahod", sunrise_entity: "Senzor sončnega vzhoda", sunset_entity: "Senzor sončnega zahoda", temperature_entity: "Temperaturni senzor", feels_like_entity: "Senzor občutene temperature", humidity_entity: "Senzor vlažnosti", wind_speed_entity: "Senzor hitrosti vetra", wind_gust_entity: "Senzor sunkov vetra", wind_bearing_entity: "Senzor smeri vetra", precipitation_entity: "Senzor padavin", show_pressure: "Pritisk", show_uv_index: "UV indeks", show_dew_point: "Rosišče", show_precipitation_outlook: "Kdaj se dež začne/konča", show_temperature_bars: "Temperaturni stolpci", show_forecast_wind: "Veter v napovedih", show_forecast_wind_helper: "Smer, hitrost in sunki vetra za vsako uro in dan, če jih ponudnik vremena posreduje", hourly_forecast_step_helper: "Prikaži napoved na nekaj ur, npr. 3 za 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Krivulja temperature namesto številk, z verjetnostjo padavin kot stolpci", show_forecast_description: "Besedilna napoved", show_forecast_description_helper: "Pisna napoved ponudnika vremena, če jo ima (npr. ameriška National Weather Service)", pressure_entity: "Senzor pritiska", uv_index_entity: "Senzor UV indeksa", dew_point_entity: "Senzor rosišča", aqi_entity: "Senzor kakovosti zraka (AQI)", show_clock: "Ura", show_date: "Datum", clock_position: "Položaj", clock_position_top: "Zgoraj", clock_position_details: "Podrobnosti", clock_format: "Oblika", clock_format_12h: "12-urna (AM/PM)", clock_format_24h: "24-urna", clock_size: "Velikost", clock_size_small: "Majhna", clock_size_medium: "Srednja", clock_size_large: "Velika", clock_weight: "Debelina", clock_weight_thin: "Tanka", clock_weight_regular: "Običajna", clock_weight_bold: "Krepka", overlay_opacity: "Zatemnitev", text_shadow: "Senca besedila", text_color: "Barva besedila", border_radius: "Zaobljenost vogalov", sun_position_x: "Položaj sonca/lune, vodoravno", sun_position_y: "Položaj sonca/lune, navpično", language: "Jezik", language_auto: "Samodejno", language_en: "Angleščina", language_ru: "Ruščina", language_de: "Nemščina", language_nl: "Nizozemščina", language_fr: "Francoščina", language_es: "Španščina", language_it: "Italijanščina", language_sk: "Slovaščina", language_hu: "Madžarščina", language_pt: "Portugalščina", language_da: "Danščina", language_sr: "Srbščina", "language_sr-Latn": "Srbščina (latinica)", language_pl: "Poljščina", language_zh: "Kitajščina", language_tr: "Turščina", language_nb: "Norveščina (bokmål)", language_sl: "Slovenščina", wind_speed_unit: "Enota hitrosti vetra", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Samodejno (kot integracija)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "vozlov", wind_speed_unit_helper: "Samodejno ohrani enoto integracije ali senzorja vetra; ostale pretvorijo ves veter na kartici", show_animations: "Animacije", show_aurora: "Severni sij", section_appearance: "Videz", section_details: "Podrobnosti", section_forecast: "Napoved", section_clock: "Jezik, ura in datum", section_sensors: "Senzorji (neobvezno)", animation_quality_helper: "Znižajte za stenske tablice in počasne naprave", show_aurora_helper: "Ob jasnih nočeh, moderna grafika", overlay_opacity_helper: "0–1, zatemni nebo, da je besedilo berljivo", text_color_helper: "Katera koli CSS barva, npr. #1a1a2e ali var(--primary-text-color)", sun_position_x_helper: "Pustite prazno za samodejni položaj glede na čas dneva", sun_position_y_helper: "Pustite prazno za samodejni položaj glede na čas dneva", show_precipitation_outlook_helper: "Iz urne napovedi za naslednjih 12 ur", hourly_forecast_title_helper: "Prazno = privzeti naslov", daily_forecast_title_helper: "Prazno = privzeti naslov", show_raindrops: "Dežne kaplje na steklu", show_wind_effects: "Sunki vetra in listje", show_raindrops_helper: "Ob dežju, moderna grafika", show_wind_effects_helper: "Ob vetrovnem vremenu ali nad 8 m/s", hourly_forecast_hours_helper: "Brez omejitve: npr. 72 za tri dni ali več za prikaz celotne napovedi ponudnika", styles: "Lasten CSS", styles_helper: "CSS za kartico in vse njene dele, npr. .temperature { font-size: 48px; }" }, DS = { aurora: "Severni sij", windyDay: "Vetrovno", auroraNight: "Polarni sij", pressure: "Pritisk", uvIndex: "UV indeks", dewPoint: "Rosišče", aqi: "Kakovost zraka (senzor)", precipitationOutlook: "Čas začetka/konca dežja", temperatureBars: "Temperaturni stolpci", forecastWind: "Veter v napovedih", forecastDescription: "Besedilna napoved", pageTitle: "Dinamična vremenska karta", pageSubtitle: "Interaktivni demo in orodje za nastavitve", quickPresets: "Hitre prednastavitve", sunnyDay: "Sončen dan", rainy: "Deževno", snowy: "Sneženo", clearNight: "Jasna noč", condition: "Stanje", temperature: "Temperatura", humidity: "Vlažnost (%)", windSpeed: "Hitrost vetra", timeOfDay: "Čas dneva", timeMode: "Način časa", moonPhase: "Luna (mena)", visualStyle: "Grafični slog", visualStyleModern: "✨ Moderno", visualStyleClassic: "🎨 Klasično", animationQuality: "Kvaliteta animacije", tabWeather: "Vreme", tabTime: "Čas", tabLook: "Videz", tabContent: "Vsebina", tabMore: "Več", windBearing: "Smer vetra", stationSensorsHint: "Senzorji postaje preglasijo temperaturo, vlažnost, veter in padavine z navideznimi vrednostmi osebne vremenske postaje.", autoShort: "Samodejno", playSpeed: "Dolžina cikla", play24h: "Predvajaj 24 ur", pause: "Premor", qualityHighShort: "Visoka", qualityMediumShort: "Srednja", qualityLowShort: "Nizka", animations: "Animacije", layout: "Postavitev", layoutDefault: "Privzeto", layoutMinimal: "Minimalistično", textShadow: "Senca besedila", details: "Podrobnosti", humidityToggle: "Vlažnost", clockAndDate: "Ura", forecasts: "Napovedi", placeholderDefault: "Privzeto", links: "Povezave", documentation: "Dokumentacija", reportIssue: "Prijavi težavo", manualControl: "Ročni nadzor", sunrise: "Sončni vzhod", day: "Dan", sunset: "Sončni zahod", night: "Noč", cardName: "Ime karte", height: "Višina (px)", feelsLike: "Občutena temperatura", minTemp: "Minimalna temperatura", windDirection: "Smer vetra", windGust: "Sunki vetra", hourlyForecast: "Urna napoved", dailyForecast: "Dnevna napoved", sunriseSunset: "Sončni vzhod/zahod", showClock: "Ura", stationSensors: "Senzorji postaje", showDate: "Datum", textColor: "Barva besedila", borderRadius: "Zaobljenost vogalov (px)", sunPositionX: "Sonce/Luna X (%)", sunPositionY: "Sonce/Luna Y (%)", clockPosition: "Položaj ure", clockPositionTop: "Zgoraj desno", clockPositionDetails: "Vrstica s podrobnostmi", clockFormat: "Oblika ure", clockSize: "Velikost ure", clockSizeSmall: "Majhna", clockSizeMedium: "Srednja", clockSizeLarge: "Velika", clockWeight: "Debelina pisave ure", clockWeightThin: "Tanka", clockWeightRegular: "Običajna", clockWeightBold: "Krepka", overlayOpacity: "Prosojnost prekrivanja (0-1)", windSpeedUnit: "Enota hitrosti vetra", dailyForecastDays: "Dnevi dnevne napovedi", hourlyForecastHours: "Ure urne napovedi", hourlyForecastStep: "Korak urne napovedi (h)", hourlyChart: "Urni graf temperature", hourlyForecastTitle: "Naslov urne napovedi", dailyForecastTitle: "Naslov dnevne napovedi", startDemo: "Zaženi demo način", stopDemo: "Ustavi demo", madeWith: "Narejeno z ljubeznijo za Home Assistant", loading: "Nalaganje karte ...", placeholderEmpty: "Pustite prazno za skritje", weatherConditions: { windy: "Vetrovno", windyVariant: "Vetrovno, oblačno", sunny: "Sončno", clearNight: "Jasna noč", partlyCloudy: "Delno oblačno", cloudy: "Oblačno", rainy: "Deževno", pouring: "Močen dež", snowy: "Sneženo", sleet: "Dež s snegom", hail: "Toča", foggy: "Megleno", lightning: "Strela", thunderstorm: "Nevihta" }, language: { title: "Jezik" }, raindrops: "Dežne kaplje na steklu", windEffects: "Sunki vetra in listje", yamlTitle: "YAML kartice", copy: "Kopiraj", copied: "Kopirano", yamlHint: "Prilepite ga v ročno kartico v Home Assistantu in zamenjajte weather.home s svojo vremensko entiteto.", customCss: "Lasten CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, NS = {
-  sunny: eS,
-  clear: tS,
-  overcast: aS,
-  cloudy: iS,
-  partlycloudy: nS,
-  rainy: rS,
-  rain: oS,
-  snowy: sS,
-  snow: lS,
-  foggy: _S,
-  fog: dS,
-  lightning: uS,
+  feels_like: Dj,
+  forecast_title: Nj,
+  forecast_title_hourly: Vj,
+  daily_forecast_title: Lj,
+  no_data: Hj,
+  weather: Ij,
+  wind_unit_kmh: Rj,
+  wind_unit_ms: Bj,
+  wind_unit_mph: Fj,
+  wind_unit_knots: Oj,
+  wind_unit_fts: qj,
+  am: Uj,
+  pm: Kj,
+  pressure: Wj,
+  uv_index: Gj,
+  dew_point: Zj,
+  aqi: Yj,
+  precipitation_outlook: Jj,
+  editor: Qj,
+  demo: Xj
+}, tS = "Sončno", aS = "Jasno", iS = "Zastrto", nS = "Oblačno", rS = "Delno oblačno", oS = "Deževno", sS = "Dež", lS = "Sneženo", _S = "Sneg", dS = "Megleno", uS = "Megla", cS = "Strela", mS = "Močen dež", pS = "Toča", hS = "Vetrovno", gS = "Občutno kot", yS = "Današnja napoved", bS = "Urna napoved", vS = "Dnevna napoved", kS = "Ni podatkov", fS = "Vreme", wS = "km/h", zS = "m/s", jS = "mph", SS = "vozlov", xS = "ft/s", AS = "AM", PS = "PM", MS = "Pritisk", CS = "UV indeks", $S = "Rosišče", ES = "Indeks kakovosti zraka", TS = { start: "{kind} napovedano okoli {time}", soon: "{kind} napovedano kmalu", stop: "{kind} se konča okoli {time}", continues: "{kind} najmanj za {hours} ur", rain: "Dež", snow: "Sneg", sleet: "Dež s snegom", hail: "Toča", storm: "Nevihta" }, DS = { entity: "Vremenska entiteta", name: "Naslov karte", layout: "Postavitev", layout_default: "Privzeto", layout_minimal: "Minimalistično", visual_style: "Grafično", visual_style_modern: "Moderno", visual_style_classic: "Klasično", animation_quality: "Kvaliteta animacije", animation_quality_high: "Visoko", animation_quality_medium: "Srednje (30 FPS, manj delcev)", animation_quality_low: "Nizko (20 FPS, za počasne naprave)", height: "Višina", show_feels_like: "Občutno kot", show_wind: "Veter", show_wind_gust: "Sunki", show_wind_direction: "Smer", show_humidity: "Vlažnost", show_min_temp: "Min temperatura", show_hourly_forecast: "Urna napoved", hourly_forecast_hours: "Ure", hourly_forecast_step: "Vsakih", hourly_forecast_chart: "Graf temperature", hourly_forecast_title: "Naslov", show_daily_forecast: "Dnevna napoved", daily_forecast_days: "Dni", daily_forecast_title: "Naslov", show_sunrise_sunset: "Vzhod in zahod", sunrise_entity: "Senzor sončnega vzhoda", sunset_entity: "Senzor sončnega zahoda", temperature_entity: "Temperaturni senzor", feels_like_entity: "Senzor občutene temperature", humidity_entity: "Senzor vlažnosti", wind_speed_entity: "Senzor hitrosti vetra", wind_gust_entity: "Senzor sunkov vetra", wind_bearing_entity: "Senzor smeri vetra", precipitation_entity: "Senzor padavin", show_pressure: "Pritisk", show_uv_index: "UV indeks", show_dew_point: "Rosišče", show_precipitation_outlook: "Kdaj se dež začne/konča", show_temperature_bars: "Temperaturni stolpci", show_forecast_wind: "Veter v napovedih", show_forecast_wind_helper: "Smer, hitrost in sunki vetra za vsako uro in dan, če jih ponudnik vremena posreduje", hourly_forecast_step_helper: "Prikaži napoved na nekaj ur, npr. 3 za 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Krivulja temperature namesto številk, z verjetnostjo padavin kot stolpci", show_forecast_description: "Besedilna napoved", show_forecast_description_helper: "Pisna napoved ponudnika vremena, če jo ima (npr. ameriška National Weather Service)", pressure_entity: "Senzor pritiska", uv_index_entity: "Senzor UV indeksa", dew_point_entity: "Senzor rosišča", aqi_entity: "Senzor kakovosti zraka (AQI)", show_clock: "Ura", show_date: "Datum", clock_position: "Položaj", clock_position_top: "Zgoraj", clock_position_details: "Podrobnosti", clock_format: "Oblika", clock_format_12h: "12-urna (AM/PM)", clock_format_24h: "24-urna", clock_size: "Velikost", clock_size_small: "Majhna", clock_size_medium: "Srednja", clock_size_large: "Velika", clock_weight: "Debelina", clock_weight_thin: "Tanka", clock_weight_regular: "Običajna", clock_weight_bold: "Krepka", overlay_opacity: "Zatemnitev", text_shadow: "Senca besedila", text_color: "Barva besedila", border_radius: "Zaobljenost vogalov", sun_position_x: "Položaj sonca/lune, vodoravno", sun_position_y: "Položaj sonca/lune, navpično", language: "Jezik", language_auto: "Samodejno", language_en: "Angleščina", language_ru: "Ruščina", language_de: "Nemščina", language_nl: "Nizozemščina", language_fr: "Francoščina", language_es: "Španščina", language_it: "Italijanščina", language_sk: "Slovaščina", language_hu: "Madžarščina", language_pt: "Portugalščina", language_da: "Danščina", language_sr: "Srbščina", "language_sr-Latn": "Srbščina (latinica)", language_pl: "Poljščina", language_zh: "Kitajščina", language_tr: "Turščina", language_nb: "Norveščina (bokmål)", language_sl: "Slovenščina", wind_speed_unit: "Enota hitrosti vetra", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Samodejno (kot integracija)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "vozlov", wind_speed_unit_helper: "Samodejno ohrani enoto integracije ali senzorja vetra; ostale pretvorijo ves veter na kartici", show_animations: "Animacije", show_aurora: "Severni sij", section_appearance: "Videz", section_details: "Podrobnosti", section_forecast: "Napoved", section_clock: "Jezik, ura in datum", section_sensors: "Senzorji (neobvezno)", animation_quality_helper: "Znižajte za stenske tablice in počasne naprave", show_aurora_helper: "Ob jasnih nočeh, moderna grafika", overlay_opacity_helper: "0–1, zatemni nebo, da je besedilo berljivo", text_color_helper: "Katera koli CSS barva, npr. #1a1a2e ali var(--primary-text-color)", sun_position_x_helper: "Pustite prazno za samodejni položaj glede na čas dneva", sun_position_y_helper: "Pustite prazno za samodejni položaj glede na čas dneva", show_precipitation_outlook_helper: "Iz urne napovedi za naslednjih 12 ur", hourly_forecast_title_helper: "Prazno = privzeti naslov", daily_forecast_title_helper: "Prazno = privzeti naslov", show_raindrops: "Dežne kaplje na steklu", show_wind_effects: "Sunki vetra in listje", show_raindrops_helper: "Ob dežju, moderna grafika", show_wind_effects_helper: "Ob vetrovnem vremenu ali nad 8 m/s", hourly_forecast_hours_helper: "Brez omejitve: npr. 72 za tri dni ali več za prikaz celotne napovedi ponudnika", styles: "Lasten CSS", styles_helper: "CSS za kartico in vse njene dele, npr. .temperature { font-size: 48px; }" }, NS = { aurora: "Severni sij", windyDay: "Vetrovno", auroraNight: "Polarni sij", pressure: "Pritisk", uvIndex: "UV indeks", dewPoint: "Rosišče", aqi: "Kakovost zraka (senzor)", precipitationOutlook: "Čas začetka/konca dežja", temperatureBars: "Temperaturni stolpci", forecastWind: "Veter v napovedih", forecastDescription: "Besedilna napoved", pageTitle: "Dinamična vremenska karta", pageSubtitle: "Interaktivni demo in orodje za nastavitve", quickPresets: "Hitre prednastavitve", sunnyDay: "Sončen dan", rainy: "Deževno", snowy: "Sneženo", clearNight: "Jasna noč", condition: "Stanje", temperature: "Temperatura", humidity: "Vlažnost (%)", windSpeed: "Hitrost vetra", timeOfDay: "Čas dneva", timeMode: "Način časa", moonPhase: "Luna (mena)", visualStyle: "Grafični slog", visualStyleModern: "✨ Moderno", visualStyleClassic: "🎨 Klasično", animationQuality: "Kvaliteta animacije", tabWeather: "Vreme", tabTime: "Čas", tabLook: "Videz", tabContent: "Vsebina", tabMore: "Več", windBearing: "Smer vetra", stationSensorsHint: "Senzorji postaje preglasijo temperaturo, vlažnost, veter in padavine z navideznimi vrednostmi osebne vremenske postaje.", autoShort: "Samodejno", playSpeed: "Dolžina cikla", play24h: "Predvajaj 24 ur", pause: "Premor", qualityHighShort: "Visoka", qualityMediumShort: "Srednja", qualityLowShort: "Nizka", animations: "Animacije", layout: "Postavitev", layoutDefault: "Privzeto", layoutMinimal: "Minimalistično", textShadow: "Senca besedila", details: "Podrobnosti", humidityToggle: "Vlažnost", clockAndDate: "Ura", forecasts: "Napovedi", placeholderDefault: "Privzeto", links: "Povezave", documentation: "Dokumentacija", reportIssue: "Prijavi težavo", manualControl: "Ročni nadzor", sunrise: "Sončni vzhod", day: "Dan", sunset: "Sončni zahod", night: "Noč", cardName: "Ime karte", height: "Višina (px)", feelsLike: "Občutena temperatura", minTemp: "Minimalna temperatura", windDirection: "Smer vetra", windGust: "Sunki vetra", hourlyForecast: "Urna napoved", dailyForecast: "Dnevna napoved", sunriseSunset: "Sončni vzhod/zahod", showClock: "Ura", stationSensors: "Senzorji postaje", showDate: "Datum", textColor: "Barva besedila", borderRadius: "Zaobljenost vogalov (px)", sunPositionX: "Sonce/Luna X (%)", sunPositionY: "Sonce/Luna Y (%)", clockPosition: "Položaj ure", clockPositionTop: "Zgoraj desno", clockPositionDetails: "Vrstica s podrobnostmi", clockFormat: "Oblika ure", clockSize: "Velikost ure", clockSizeSmall: "Majhna", clockSizeMedium: "Srednja", clockSizeLarge: "Velika", clockWeight: "Debelina pisave ure", clockWeightThin: "Tanka", clockWeightRegular: "Običajna", clockWeightBold: "Krepka", overlayOpacity: "Prosojnost prekrivanja (0-1)", windSpeedUnit: "Enota hitrosti vetra", dailyForecastDays: "Dnevi dnevne napovedi", hourlyForecastHours: "Ure urne napovedi", hourlyForecastStep: "Korak urne napovedi (h)", hourlyChart: "Urni graf temperature", hourlyForecastTitle: "Naslov urne napovedi", dailyForecastTitle: "Naslov dnevne napovedi", startDemo: "Zaženi demo način", stopDemo: "Ustavi demo", madeWith: "Narejeno z ljubeznijo za Home Assistant", loading: "Nalaganje karte ...", placeholderEmpty: "Pustite prazno za skritje", weatherConditions: { windy: "Vetrovno", windyVariant: "Vetrovno, oblačno", sunny: "Sončno", clearNight: "Jasna noč", partlyCloudy: "Delno oblačno", cloudy: "Oblačno", rainy: "Deževno", pouring: "Močen dež", snowy: "Sneženo", sleet: "Dež s snegom", hail: "Toča", foggy: "Megleno", lightning: "Strela", thunderstorm: "Nevihta" }, language: { title: "Jezik" }, raindrops: "Dežne kaplje na steklu", windEffects: "Sunki vetra in listje", yamlTitle: "YAML kartice", copy: "Kopiraj", copied: "Kopirano", yamlHint: "Prilepite ga v ročno kartico v Home Assistantu in zamenjajte weather.home s svojo vremensko entiteto.", customCss: "Lasten CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, VS = {
+  sunny: tS,
+  clear: aS,
+  overcast: iS,
+  cloudy: nS,
+  partlycloudy: rS,
+  rainy: oS,
+  rain: sS,
+  snowy: lS,
+  snow: _S,
+  foggy: dS,
+  fog: uS,
+  lightning: cS,
   "lightning-rainy": "Nevihta",
-  pouring: cS,
+  pouring: mS,
   "snowy-rainy": "Dež s snegom",
-  hail: mS,
+  hail: pS,
   "clear-night": "Jasna noč",
-  windy: pS,
+  windy: hS,
   "windy-variant": "Vetrovno, oblačno",
-  feels_like: hS,
-  forecast_title: gS,
-  forecast_title_hourly: yS,
-  daily_forecast_title: bS,
-  no_data: vS,
-  weather: kS,
-  wind_unit_kmh: fS,
-  wind_unit_ms: wS,
-  wind_unit_mph: zS,
-  wind_unit_knots: jS,
-  wind_unit_fts: SS,
-  am: xS,
-  pm: AS,
-  pressure: PS,
-  uv_index: MS,
-  dew_point: CS,
-  aqi: $S,
-  precipitation_outlook: ES,
-  editor: TS,
-  demo: DS
-}, VS = "Сунчано", LS = "Ведро", HS = "Облачно", IS = "Облачно", RS = "Делимично облачно", BS = "Кишовито", FS = "Киша", OS = "Снежно", qS = "Снег", US = "Магловито", KS = "Магла", WS = "Грмљавина", GS = "Пљусак", ZS = "Град", YS = "Ветровито", JS = "Субјективни осећај", QS = "Прогноза", XS = "Сатна прогноза", e0 = "Дневна прогноза", t0 = "Нема података", a0 = "Време", i0 = "km/h", n0 = "m/s", r0 = "mph", o0 = "чворова", s0 = "ft/s", l0 = "AM", _0 = "PM", d0 = "Притисак", u0 = "УВ индекс", c0 = "Тачка росе", m0 = "Индекс квалитета ваздуха", p0 = { start: "{kind} се очекује око {time}", soon: "{kind} се очекује ускоро", stop: "{kind} престаје око {time}", continues: "{kind} још најмање {hours} х", rain: "Киша", snow: "Снег", sleet: "Суснежица", hail: "Град", storm: "Грмљавина" }, h0 = { entity: "Ентитет", name: "Назив (опционо)", layout: "Распоред", layout_default: "Подразумевано", layout_minimal: "Минимално", height: "Висина", show_feels_like: "Осећај температуре", show_wind: "Ветар", show_wind_gust: "Удари", show_wind_direction: "Правац", show_humidity: "Влажност", show_min_temp: "Минимална температура", show_hourly_forecast: "Сатна прогноза", hourly_forecast_hours: "Сати", hourly_forecast_step: "Сваких", hourly_forecast_chart: "Графикон температуре", show_daily_forecast: "Дневна прогноза", daily_forecast_days: "Дани", show_sunrise_sunset: "Излазак и залазак сунца", sunrise_entity: "Сензор изласка сунца", sunset_entity: "Сензор закласка сунца", show_clock: "Сат", clock_position: "Положај", clock_position_top: "Врх", clock_position_details: "Детаљи", clock_format: "Формат", clock_format_12h: "12h", clock_format_24h: "24h", clock_size: "Величина", clock_size_small: "Мала", clock_size_medium: "Средња", clock_size_large: "Велика", clock_weight: "Дебљина", clock_weight_thin: "Танка", clock_weight_regular: "Обична", clock_weight_bold: "Подебљана", overlay_opacity: "Затамњење", language: "Језик", language_auto: "Аутоматски", language_en: "Енглески", language_ru: "Руски", language_de: "Немачки", language_nl: "Холандски", language_fr: "Француски", language_es: "Шпански", language_it: "Италијански", language_sk: "Словачки", language_hu: "Мађарски", wind_speed_unit: "Јединица брзине ветра", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Ауто (као интеграција)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "чворова", wind_speed_unit_helper: "Ауто задржава јединицу интеграције или сензора ветра; остале прерачунавају сав ветар на картици", animation_quality: "Квалитет анимације", animation_quality_helper: "Смањите на зидним таблетима и спорим уређајима", animation_quality_high: "Висок", animation_quality_low: "Низак (20 FPS, за споре уређаје)", animation_quality_medium: "Средњи (30 FPS, мање честица)", aqi_entity: "Сензор квалитета ваздуха (AQI)", border_radius: "Заобљеност углова", daily_forecast_title: "Наслов", daily_forecast_title_helper: "Празно = подразумевани наслов", dew_point_entity: "Сензор тачке росе", feels_like_entity: "Сензор осећаја температуре", hourly_forecast_title: "Наслов", hourly_forecast_title_helper: "Празно = подразумевани наслов", humidity_entity: "Сензор влажности", overlay_opacity_helper: "0–1, затамњује небо да би текст био читљив", precipitation_entity: "Сензор падавина", pressure_entity: "Сензор притиска", section_appearance: "Изглед", section_clock: "Језик, сат и датум", section_details: "Детаљи", section_forecast: "Прогноза", section_sensors: "Сензори (опционо)", show_animations: "Анимације", show_aurora: "Поларна светлост", show_aurora_helper: "У ведрим ноћима, модерна графика", show_date: "Датум", show_dew_point: "Тачка росе", show_precipitation_outlook: "Када киша почиње/престаје", show_precipitation_outlook_helper: "Из сатне прогнозе за наредних 12 сати", show_pressure: "Притисак", show_raindrops: "Капи кише на стаклу", show_raindrops_helper: "По киши, модерна графика", show_temperature_bars: "Траке температуре", show_forecast_wind: "Ветар у прогнозама", show_forecast_wind_helper: "Смер, брзина и удари ветра за сваки сат и дан, ако их пружалац временске прогнозе даје", hourly_forecast_step_helper: "Прикажи прогнозу на сваких неколико сати, нпр. 3 за 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Крива температуре уместо бројева, са вероватноћом падавина као стубићима", show_forecast_description: "Текстуална прогноза", show_forecast_description_helper: "Писана прогноза пружаоца временске прогнозе, ако је има (нпр. амерички National Weather Service)", show_uv_index: "УВ индекс", show_wind_effects: "Удари ветра и лишће", show_wind_effects_helper: "По ветровитом времену или изнад 8 м/с", sun_position_x: "Положај сунца/месеца, водоравно", sun_position_x_helper: "Оставите празно да прати доба дана", sun_position_y: "Положај сунца/месеца, усправно", sun_position_y_helper: "Оставите празно да прати доба дана", temperature_entity: "Сензор температуре", text_color: "Боја текста", text_color_helper: "Било која CSS боја, нпр. #1a1a2e или var(--primary-text-color)", text_shadow: "Сенка текста", uv_index_entity: "Сензор УВ индекса", visual_style: "Графика", visual_style_classic: "Класична", visual_style_modern: "Модерна", wind_bearing_entity: "Сензор правца ветра", wind_gust_entity: "Сензор удара ветра", wind_speed_entity: "Сензор брзине ветра", language_da: "Дански", language_nb: "Норвешки (bokmål)", language_pl: "Пољски", language_pt: "Португалски", language_sl: "Словеначки", language_sr: "Српски", "language_sr-Latn": "Српски (латиница)", language_tr: "Турски", language_zh: "Кинески", hourly_forecast_hours_helper: "Без ограничења: нпр. 72 за три дана, или више да би се приказала цела прогноза добављача", styles: "Сопствени CSS", styles_helper: "CSS за картицу и све њене делове, нпр. .temperature { font-size: 48px; }" }, g0 = { pageTitle: "Dynamic Weather Card", pageSubtitle: "Интерактивни демо и алат за конфигурацију", quickPresets: "Брза подешавања", sunnyDay: "Сунчан дан", rainy: "Кишовито", snowy: "Снежно", clearNight: "Ведра ноћ", condition: "Стање", temperature: "Температура", humidity: "Влажност (%)", windSpeed: "Брзина ветра", timeOfDay: "Доба дана", timeMode: "Режим времена", manualControl: "Ручно управљање", sunrise: "Излазак сунца", day: "Дан", sunset: "Залазак сунца", night: "Ноћ", cardName: "Назив картице", height: "Висина (px)", feelsLike: "Субјективни осећај", minTemp: "Мин. темп.", windDirection: "Смер ветра", windGust: "Удари ветра", hourlyForecast: "Прогноза по сатима", dailyForecast: "Дневна прогноза", sunriseSunset: "Излазак/Залазак", showClock: "Прикажи сат", clockPosition: "Позиција сата", clockPositionTop: "Горе десно", clockPositionDetails: "У детаљима", clockFormat: "Формат сата", clockSize: "Величина сата", clockSizeSmall: "Мала", clockSizeMedium: "Средња", clockSizeLarge: "Велика", clockWeight: "Дебљина сата", clockWeightThin: "Танка", clockWeightRegular: "Обична", clockWeightBold: "Подебљана", overlayOpacity: "Прозирност (0-1)", windSpeedUnit: "Јединица брзине", dailyForecastDays: "Број дана", hourlyForecastHours: "Број сати", hourlyForecastStep: "Корак сатне прогнозе (h)", hourlyChart: "Графикон температуре по сату", startDemo: "Покрени демо", stopDemo: "Заустави демо", madeWith: "Направљено за Home Assistant", loading: "Учитавање картице...", placeholderEmpty: "Оставте празно за сакривање", weatherConditions: { sunny: "Сунчано", clearNight: "Ведра ноћ", partlyCloudy: "Делимично облачно", cloudy: "Облачно", rainy: "Кишовито", pouring: "Пљусaк", snowy: "Снежно", sleet: "Суснежица", hail: "Град", foggy: "Магловито", lightning: "Грмљавина", thunderstorm: "Грмљавина са олујом", windy: "Ветровито", windyVariant: "Ветровито, облачно" }, language: { title: "Језик" }, animationQuality: "Квалитет анимације", animations: "Анимације", aqi: "Квалитет ваздуха (сензор)", aurora: "Поларна светлост", auroraNight: "Поларна светлост", autoShort: "Ауто", borderRadius: "Заобљеност углова (px)", clockAndDate: "Сат", dailyForecastTitle: "Наслов дневне прогнозе", details: "Детаљи", dewPoint: "Тачка росе", documentation: "Документација", forecasts: "Прогнозе", hourlyForecastTitle: "Наслов сатне прогнозе", humidityToggle: "Влажност", layout: "Распоред", layoutDefault: "Подразумевано", layoutMinimal: "Минимално", links: "Линкови", moonPhase: "Месечева мена", pause: "Пауза", placeholderDefault: "Подразумевано", play24h: "Пусти 24 сата", playSpeed: "Трајање циклуса", precipitationOutlook: "Почетак/крај кише", pressure: "Притисак", qualityHighShort: "Висок", qualityLowShort: "Низак", qualityMediumShort: "Средњи", raindrops: "Капи кише на стаклу", reportIssue: "Пријави проблем", showDate: "Датум", stationSensors: "Сензори станице", stationSensorsHint: "Сензори станице замењују температуру, влажност, ветар и падавине пробним вредностима личне метеоролошке станице.", sunPositionX: "Сунце/Месец X (%)", sunPositionY: "Сунце/Месец Y (%)", tabContent: "Садржај", tabLook: "Изглед", tabMore: "Више", tabTime: "Време", tabWeather: "Временска прогноза", temperatureBars: "Траке температуре", forecastWind: "Ветар у прогнозама", forecastDescription: "Текстуална прогноза", textColor: "Боја текста", textShadow: "Сенка текста", uvIndex: "УВ индекс", visualStyle: "Графички стил", visualStyleClassic: "🎨 Класични", visualStyleModern: "✨ Модерни", windBearing: "Правац ветра", windEffects: "Удари ветра и лишће", windyDay: "Ветровито", yamlTitle: "YAML картице", copy: "Копирај", copied: "Копирано", yamlHint: "Налепите га у ручну картицу у Home Assistantu и замените weather.home својим ентитетом времена.", customCss: "Сопствени CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, y0 = {
-  sunny: VS,
-  clear: LS,
-  overcast: HS,
-  cloudy: IS,
-  partlycloudy: RS,
-  rainy: BS,
-  rain: FS,
-  snowy: OS,
-  snow: qS,
-  foggy: US,
-  fog: KS,
-  lightning: WS,
+  feels_like: gS,
+  forecast_title: yS,
+  forecast_title_hourly: bS,
+  daily_forecast_title: vS,
+  no_data: kS,
+  weather: fS,
+  wind_unit_kmh: wS,
+  wind_unit_ms: zS,
+  wind_unit_mph: jS,
+  wind_unit_knots: SS,
+  wind_unit_fts: xS,
+  am: AS,
+  pm: PS,
+  pressure: MS,
+  uv_index: CS,
+  dew_point: $S,
+  aqi: ES,
+  precipitation_outlook: TS,
+  editor: DS,
+  demo: NS
+}, LS = "Сунчано", HS = "Ведро", IS = "Облачно", RS = "Облачно", BS = "Делимично облачно", FS = "Кишовито", OS = "Киша", qS = "Снежно", US = "Снег", KS = "Магловито", WS = "Магла", GS = "Грмљавина", ZS = "Пљусак", YS = "Град", JS = "Ветровито", QS = "Субјективни осећај", XS = "Прогноза", e0 = "Сатна прогноза", t0 = "Дневна прогноза", a0 = "Нема података", i0 = "Време", n0 = "km/h", r0 = "m/s", o0 = "mph", s0 = "чворова", l0 = "ft/s", _0 = "AM", d0 = "PM", u0 = "Притисак", c0 = "УВ индекс", m0 = "Тачка росе", p0 = "Индекс квалитета ваздуха", h0 = { start: "{kind} се очекује око {time}", soon: "{kind} се очекује ускоро", stop: "{kind} престаје око {time}", continues: "{kind} још најмање {hours} х", rain: "Киша", snow: "Снег", sleet: "Суснежица", hail: "Град", storm: "Грмљавина" }, g0 = { entity: "Ентитет", name: "Назив (опционо)", layout: "Распоред", layout_default: "Подразумевано", layout_minimal: "Минимално", height: "Висина", show_feels_like: "Осећај температуре", show_wind: "Ветар", show_wind_gust: "Удари", show_wind_direction: "Правац", show_humidity: "Влажност", show_min_temp: "Минимална температура", show_hourly_forecast: "Сатна прогноза", hourly_forecast_hours: "Сати", hourly_forecast_step: "Сваких", hourly_forecast_chart: "Графикон температуре", show_daily_forecast: "Дневна прогноза", daily_forecast_days: "Дани", show_sunrise_sunset: "Излазак и залазак сунца", sunrise_entity: "Сензор изласка сунца", sunset_entity: "Сензор закласка сунца", show_clock: "Сат", clock_position: "Положај", clock_position_top: "Врх", clock_position_details: "Детаљи", clock_format: "Формат", clock_format_12h: "12h", clock_format_24h: "24h", clock_size: "Величина", clock_size_small: "Мала", clock_size_medium: "Средња", clock_size_large: "Велика", clock_weight: "Дебљина", clock_weight_thin: "Танка", clock_weight_regular: "Обична", clock_weight_bold: "Подебљана", overlay_opacity: "Затамњење", language: "Језик", language_auto: "Аутоматски", language_en: "Енглески", language_ru: "Руски", language_de: "Немачки", language_nl: "Холандски", language_fr: "Француски", language_es: "Шпански", language_it: "Италијански", language_sk: "Словачки", language_hu: "Мађарски", wind_speed_unit: "Јединица брзине ветра", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Ауто (као интеграција)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "чворова", wind_speed_unit_helper: "Ауто задржава јединицу интеграције или сензора ветра; остале прерачунавају сав ветар на картици", animation_quality: "Квалитет анимације", animation_quality_helper: "Смањите на зидним таблетима и спорим уређајима", animation_quality_high: "Висок", animation_quality_low: "Низак (20 FPS, за споре уређаје)", animation_quality_medium: "Средњи (30 FPS, мање честица)", aqi_entity: "Сензор квалитета ваздуха (AQI)", border_radius: "Заобљеност углова", daily_forecast_title: "Наслов", daily_forecast_title_helper: "Празно = подразумевани наслов", dew_point_entity: "Сензор тачке росе", feels_like_entity: "Сензор осећаја температуре", hourly_forecast_title: "Наслов", hourly_forecast_title_helper: "Празно = подразумевани наслов", humidity_entity: "Сензор влажности", overlay_opacity_helper: "0–1, затамњује небо да би текст био читљив", precipitation_entity: "Сензор падавина", pressure_entity: "Сензор притиска", section_appearance: "Изглед", section_clock: "Језик, сат и датум", section_details: "Детаљи", section_forecast: "Прогноза", section_sensors: "Сензори (опционо)", show_animations: "Анимације", show_aurora: "Поларна светлост", show_aurora_helper: "У ведрим ноћима, модерна графика", show_date: "Датум", show_dew_point: "Тачка росе", show_precipitation_outlook: "Када киша почиње/престаје", show_precipitation_outlook_helper: "Из сатне прогнозе за наредних 12 сати", show_pressure: "Притисак", show_raindrops: "Капи кише на стаклу", show_raindrops_helper: "По киши, модерна графика", show_temperature_bars: "Траке температуре", show_forecast_wind: "Ветар у прогнозама", show_forecast_wind_helper: "Смер, брзина и удари ветра за сваки сат и дан, ако их пружалац временске прогнозе даје", hourly_forecast_step_helper: "Прикажи прогнозу на сваких неколико сати, нпр. 3 за 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Крива температуре уместо бројева, са вероватноћом падавина као стубићима", show_forecast_description: "Текстуална прогноза", show_forecast_description_helper: "Писана прогноза пружаоца временске прогнозе, ако је има (нпр. амерички National Weather Service)", show_uv_index: "УВ индекс", show_wind_effects: "Удари ветра и лишће", show_wind_effects_helper: "По ветровитом времену или изнад 8 м/с", sun_position_x: "Положај сунца/месеца, водоравно", sun_position_x_helper: "Оставите празно да прати доба дана", sun_position_y: "Положај сунца/месеца, усправно", sun_position_y_helper: "Оставите празно да прати доба дана", temperature_entity: "Сензор температуре", text_color: "Боја текста", text_color_helper: "Било која CSS боја, нпр. #1a1a2e или var(--primary-text-color)", text_shadow: "Сенка текста", uv_index_entity: "Сензор УВ индекса", visual_style: "Графика", visual_style_classic: "Класична", visual_style_modern: "Модерна", wind_bearing_entity: "Сензор правца ветра", wind_gust_entity: "Сензор удара ветра", wind_speed_entity: "Сензор брзине ветра", language_da: "Дански", language_nb: "Норвешки (bokmål)", language_pl: "Пољски", language_pt: "Португалски", language_sl: "Словеначки", language_sr: "Српски", "language_sr-Latn": "Српски (латиница)", language_tr: "Турски", language_zh: "Кинески", hourly_forecast_hours_helper: "Без ограничења: нпр. 72 за три дана, или више да би се приказала цела прогноза добављача", styles: "Сопствени CSS", styles_helper: "CSS за картицу и све њене делове, нпр. .temperature { font-size: 48px; }" }, y0 = { pageTitle: "Dynamic Weather Card", pageSubtitle: "Интерактивни демо и алат за конфигурацију", quickPresets: "Брза подешавања", sunnyDay: "Сунчан дан", rainy: "Кишовито", snowy: "Снежно", clearNight: "Ведра ноћ", condition: "Стање", temperature: "Температура", humidity: "Влажност (%)", windSpeed: "Брзина ветра", timeOfDay: "Доба дана", timeMode: "Режим времена", manualControl: "Ручно управљање", sunrise: "Излазак сунца", day: "Дан", sunset: "Залазак сунца", night: "Ноћ", cardName: "Назив картице", height: "Висина (px)", feelsLike: "Субјективни осећај", minTemp: "Мин. темп.", windDirection: "Смер ветра", windGust: "Удари ветра", hourlyForecast: "Прогноза по сатима", dailyForecast: "Дневна прогноза", sunriseSunset: "Излазак/Залазак", showClock: "Прикажи сат", clockPosition: "Позиција сата", clockPositionTop: "Горе десно", clockPositionDetails: "У детаљима", clockFormat: "Формат сата", clockSize: "Величина сата", clockSizeSmall: "Мала", clockSizeMedium: "Средња", clockSizeLarge: "Велика", clockWeight: "Дебљина сата", clockWeightThin: "Танка", clockWeightRegular: "Обична", clockWeightBold: "Подебљана", overlayOpacity: "Прозирност (0-1)", windSpeedUnit: "Јединица брзине", dailyForecastDays: "Број дана", hourlyForecastHours: "Број сати", hourlyForecastStep: "Корак сатне прогнозе (h)", hourlyChart: "Графикон температуре по сату", startDemo: "Покрени демо", stopDemo: "Заустави демо", madeWith: "Направљено за Home Assistant", loading: "Учитавање картице...", placeholderEmpty: "Оставте празно за сакривање", weatherConditions: { sunny: "Сунчано", clearNight: "Ведра ноћ", partlyCloudy: "Делимично облачно", cloudy: "Облачно", rainy: "Кишовито", pouring: "Пљусaк", snowy: "Снежно", sleet: "Суснежица", hail: "Град", foggy: "Магловито", lightning: "Грмљавина", thunderstorm: "Грмљавина са олујом", windy: "Ветровито", windyVariant: "Ветровито, облачно" }, language: { title: "Језик" }, animationQuality: "Квалитет анимације", animations: "Анимације", aqi: "Квалитет ваздуха (сензор)", aurora: "Поларна светлост", auroraNight: "Поларна светлост", autoShort: "Ауто", borderRadius: "Заобљеност углова (px)", clockAndDate: "Сат", dailyForecastTitle: "Наслов дневне прогнозе", details: "Детаљи", dewPoint: "Тачка росе", documentation: "Документација", forecasts: "Прогнозе", hourlyForecastTitle: "Наслов сатне прогнозе", humidityToggle: "Влажност", layout: "Распоред", layoutDefault: "Подразумевано", layoutMinimal: "Минимално", links: "Линкови", moonPhase: "Месечева мена", pause: "Пауза", placeholderDefault: "Подразумевано", play24h: "Пусти 24 сата", playSpeed: "Трајање циклуса", precipitationOutlook: "Почетак/крај кише", pressure: "Притисак", qualityHighShort: "Висок", qualityLowShort: "Низак", qualityMediumShort: "Средњи", raindrops: "Капи кише на стаклу", reportIssue: "Пријави проблем", showDate: "Датум", stationSensors: "Сензори станице", stationSensorsHint: "Сензори станице замењују температуру, влажност, ветар и падавине пробним вредностима личне метеоролошке станице.", sunPositionX: "Сунце/Месец X (%)", sunPositionY: "Сунце/Месец Y (%)", tabContent: "Садржај", tabLook: "Изглед", tabMore: "Више", tabTime: "Време", tabWeather: "Временска прогноза", temperatureBars: "Траке температуре", forecastWind: "Ветар у прогнозама", forecastDescription: "Текстуална прогноза", textColor: "Боја текста", textShadow: "Сенка текста", uvIndex: "УВ индекс", visualStyle: "Графички стил", visualStyleClassic: "🎨 Класични", visualStyleModern: "✨ Модерни", windBearing: "Правац ветра", windEffects: "Удари ветра и лишће", windyDay: "Ветровито", yamlTitle: "YAML картице", copy: "Копирај", copied: "Копирано", yamlHint: "Налепите га у ручну картицу у Home Assistantu и замените weather.home својим ентитетом времена.", customCss: "Сопствени CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, b0 = {
+  sunny: LS,
+  clear: HS,
+  overcast: IS,
+  cloudy: RS,
+  partlycloudy: BS,
+  rainy: FS,
+  rain: OS,
+  snowy: qS,
+  snow: US,
+  foggy: KS,
+  fog: WS,
+  lightning: GS,
   "lightning-rainy": "Грмљавина са кишом",
-  pouring: GS,
+  pouring: ZS,
   "snowy-rainy": "Суснежица",
-  hail: ZS,
+  hail: YS,
   "clear-night": "Ведра ноћ",
-  windy: YS,
+  windy: JS,
   "windy-variant": "Ветровито, облачно",
-  feels_like: JS,
-  forecast_title: QS,
-  forecast_title_hourly: XS,
-  daily_forecast_title: e0,
-  no_data: t0,
-  weather: a0,
-  wind_unit_kmh: i0,
-  wind_unit_ms: n0,
-  wind_unit_mph: r0,
-  wind_unit_knots: o0,
-  wind_unit_fts: s0,
-  am: l0,
-  pm: _0,
-  pressure: d0,
-  uv_index: u0,
-  dew_point: c0,
-  aqi: m0,
-  precipitation_outlook: p0,
-  editor: h0,
-  demo: g0
-}, b0 = "Sunčano", v0 = "Vedro", k0 = "Oblačno", f0 = "Oblačno", w0 = "Delimično oblačno", z0 = "Kišovito", j0 = "Kiša", S0 = "Snežno", x0 = "Sneg", A0 = "Maglovito", P0 = "Magla", M0 = "Grmljavina", C0 = "Pljusak", $0 = "Grad", E0 = "Vetrovito", T0 = "Subjektivni osećaj", D0 = "Prognoza", N0 = "Satna prognoza", V0 = "Dnevna prognoza", L0 = "Nema podataka", H0 = "Vreme", I0 = "km/h", R0 = "m/s", B0 = "mph", F0 = "čvorova", O0 = "ft/s", q0 = "AM", U0 = "PM", K0 = "Pritisak", W0 = "UV indeks", G0 = "Tačka rose", Z0 = "Indeks kvaliteta vazduha", Y0 = { start: "{kind} se očekuje oko {time}", soon: "{kind} se očekuje uskoro", stop: "{kind} prestaje oko {time}", continues: "{kind} još najmanje {hours} h", rain: "Kiša", snow: "Sneg", sleet: "Susnežica", hail: "Grad", storm: "Grmljavina" }, J0 = { entity: "Entitet", name: "Naziv (opciono)", layout: "Raspored", layout_default: "Podrazumevano", layout_minimal: "Minimalno", height: "Visina", show_feels_like: "Osećaj temperature", show_wind: "Vetar", show_wind_gust: "Udari", show_wind_direction: "Pravac", show_humidity: "Vlažnost", show_min_temp: "Minimalna temperatura", show_hourly_forecast: "Satna prognoza", hourly_forecast_hours: "Sati", hourly_forecast_step: "Svakih", hourly_forecast_chart: "Grafikon temperature", show_daily_forecast: "Dnevna prognoza", daily_forecast_days: "Dani", show_sunrise_sunset: "Izlazak i zalazak sunca", sunrise_entity: "Senzor izlaska sunca", sunset_entity: "Senzor zalaska sunca", show_clock: "Sat", clock_position: "Položaj", clock_position_top: "Vrh", clock_position_details: "Detalji", clock_format: "Format", clock_format_12h: "12h", clock_format_24h: "24h", clock_size: "Veličina", clock_size_small: "Mala", clock_size_medium: "Srednja", clock_size_large: "Velika", clock_weight: "Debljina", clock_weight_thin: "Tanka", clock_weight_regular: "Obična", clock_weight_bold: "Podebljana", overlay_opacity: "Zatamnjenje", language: "Jezik", language_auto: "Automatski", language_en: "Engleski", language_ru: "Ruski", language_de: "Nemački", language_nl: "Holandski", language_fr: "Francuski", language_es: "Španski", language_it: "Italijanski", language_sk: "Slovački", language_hu: "Mađarski", wind_speed_unit: "Jedinica brzine vetra", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Auto (kao integracija)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "čvorova", wind_speed_unit_helper: "Auto zadržava jedinicu integracije ili senzora vetra; ostale preračunavaju sav vetar na kartici", animation_quality: "Kvalitet animacije", animation_quality_helper: "Smanjite na zidnim tabletima i sporim uređajima", animation_quality_high: "Visok", animation_quality_low: "Nizak (20 FPS, za spore uređaje)", animation_quality_medium: "Srednji (30 FPS, manje čestica)", aqi_entity: "Senzor kvaliteta vazduha (AQI)", border_radius: "Zaobljenost uglova", daily_forecast_title: "Naslov", daily_forecast_title_helper: "Prazno = podrazumevani naslov", dew_point_entity: "Senzor tačke rose", feels_like_entity: "Senzor osećaja temperature", hourly_forecast_title: "Naslov", hourly_forecast_title_helper: "Prazno = podrazumevani naslov", humidity_entity: "Senzor vlažnosti", overlay_opacity_helper: "0–1, zatamnjuje nebo da bi tekst bio čitljiv", precipitation_entity: "Senzor padavina", pressure_entity: "Senzor pritiska", section_appearance: "Izgled", section_clock: "Jezik, sat i datum", section_details: "Detalji", section_forecast: "Prognoza", section_sensors: "Senzori (opciono)", show_animations: "Animacije", show_aurora: "Polarna svetlost", show_aurora_helper: "U vedrim noćima, moderna grafika", show_date: "Datum", show_dew_point: "Tačka rose", show_precipitation_outlook: "Kada kiša počinje/prestaje", show_precipitation_outlook_helper: "Iz satne prognoze za narednih 12 sati", show_pressure: "Pritisak", show_raindrops: "Kapi kiše na staklu", show_raindrops_helper: "Po kiši, moderna grafika", show_temperature_bars: "Trake temperature", show_forecast_wind: "Vetar u prognozama", show_forecast_wind_helper: "Smer, brzina i udari vetra za svaki sat i dan, ako ih pružalac vremenske prognoze daje", hourly_forecast_step_helper: "Prikaži prognozu na svakih nekoliko sati, npr. 3 za 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Kriva temperature umesto brojeva, sa verovatnoćom padavina kao stubićima", show_forecast_description: "Tekstualna prognoza", show_forecast_description_helper: "Pisana prognoza pružaoca vremenske prognoze, ako je ima (npr. američki National Weather Service)", show_uv_index: "UV indeks", show_wind_effects: "Udari vetra i lišće", show_wind_effects_helper: "Po vetrovitom vremenu ili iznad 8 m/s", sun_position_x: "Položaj sunca/meseca, vodoravno", sun_position_x_helper: "Ostavite prazno da prati doba dana", sun_position_y: "Položaj sunca/meseca, uspravno", sun_position_y_helper: "Ostavite prazno da prati doba dana", temperature_entity: "Senzor temperature", text_color: "Boja teksta", text_color_helper: "Bilo koja CSS boja, npr. #1a1a2e ili var(--primary-text-color)", text_shadow: "Senka teksta", uv_index_entity: "Senzor UV indeksa", visual_style: "Grafika", visual_style_classic: "Klasična", visual_style_modern: "Moderna", wind_bearing_entity: "Senzor pravca vetra", wind_gust_entity: "Senzor udara vetra", wind_speed_entity: "Senzor brzine vetra", language_da: "Danski", language_nb: "Norveški (bokmål)", language_pl: "Poljski", language_pt: "Portugalski", language_sl: "Slovenački", language_sr: "Srpski", "language_sr-Latn": "Srpski (latinica)", language_tr: "Turski", language_zh: "Kineski", hourly_forecast_hours_helper: "Bez ograničenja: npr. 72 za tri dana, ili više da bi se prikazala cela prognoza dobavljača", styles: "Sopstveni CSS", styles_helper: "CSS za karticu i sve njene delove, npr. .temperature { font-size: 48px; }" }, Q0 = { pageTitle: "Dynamic Weather Card", pageSubtitle: "Interaktivni demo i alat za konfiguraciju", quickPresets: "Brza podešavanja", sunnyDay: "Sunčan dan", rainy: "Kišovito", snowy: "Snežno", clearNight: "Vedra noć", condition: "Stanje", temperature: "Temperatura", humidity: "Vlažnost (%)", windSpeed: "Brzina vetra", timeOfDay: "Doba dana", timeMode: "Režim vremena", manualControl: "Ručno upravljanje", sunrise: "Izlazak sunca", day: "Dan", sunset: "Zalazak sunca", night: "Noć", cardName: "Naziv kartice", height: "Visina (px)", feelsLike: "Subjektivni osećaj", minTemp: "Min. temp.", windDirection: "Smer vetra", windGust: "Udari vetra", hourlyForecast: "Prognoza po satima", dailyForecast: "Dnevna prognoza", sunriseSunset: "Izlazak/Zalazak", showClock: "Prikaži sat", clockPosition: "Pozicija sata", clockPositionTop: "Gore desno", clockPositionDetails: "U detaljima", clockFormat: "Format sata", clockSize: "Veličina sata", clockSizeSmall: "Mala", clockSizeMedium: "Srednja", clockSizeLarge: "Velika", clockWeight: "Debljina sata", clockWeightThin: "Tanka", clockWeightRegular: "Obična", clockWeightBold: "Podebljana", overlayOpacity: "Prozirnost (0-1)", windSpeedUnit: "Jedinica brzine", dailyForecastDays: "Broj dana", hourlyForecastHours: "Broj sati", hourlyForecastStep: "Korak satne prognoze (h)", hourlyChart: "Grafikon temperature po satu", startDemo: "Pokreni demo", stopDemo: "Zaustavi demo", madeWith: "Napravljeno za Home Assistant", loading: "Učitavanje kartice...", placeholderEmpty: "Ostavite prazno za sakrivanje", weatherConditions: { sunny: "Sunčano", clearNight: "Vedra noć", partlyCloudy: "Delimično oblačno", cloudy: "Oblačno", rainy: "Kišovito", pouring: "Pljusak", snowy: "Snežno", sleet: "Susnežica", hail: "Grad", foggy: "Maglovito", lightning: "Grmljavina", thunderstorm: "Grmljavina sa olujom", windy: "Vetrovito", windyVariant: "Vetrovito, oblačno" }, language: { title: "Jezik" }, animationQuality: "Kvalitet animacije", animations: "Animacije", aqi: "Kvalitet vazduha (senzor)", aurora: "Polarna svetlost", auroraNight: "Polarna svetlost", autoShort: "Auto", borderRadius: "Zaobljenost uglova (px)", clockAndDate: "Sat", dailyForecastTitle: "Naslov dnevne prognoze", details: "Detalji", dewPoint: "Tačka rose", documentation: "Dokumentacija", forecasts: "Prognoze", hourlyForecastTitle: "Naslov satne prognoze", humidityToggle: "Vlažnost", layout: "Raspored", layoutDefault: "Podrazumevano", layoutMinimal: "Minimalno", links: "Linkovi", moonPhase: "Mesečeva mena", pause: "Pauza", placeholderDefault: "Podrazumevano", play24h: "Pusti 24 sata", playSpeed: "Trajanje ciklusa", precipitationOutlook: "Početak/kraj kiše", pressure: "Pritisak", qualityHighShort: "Visok", qualityLowShort: "Nizak", qualityMediumShort: "Srednji", raindrops: "Kapi kiše na staklu", reportIssue: "Prijavi problem", showDate: "Datum", stationSensors: "Senzori stanice", stationSensorsHint: "Senzori stanice zamenjuju temperaturu, vlažnost, vetar i padavine probnim vrednostima lične meteorološke stanice.", sunPositionX: "Sunce/Mesec X (%)", sunPositionY: "Sunce/Mesec Y (%)", tabContent: "Sadržaj", tabLook: "Izgled", tabMore: "Više", tabTime: "Vreme", tabWeather: "Vremenska prognoza", temperatureBars: "Trake temperature", forecastWind: "Vetar u prognozama", forecastDescription: "Tekstualna prognoza", textColor: "Boja teksta", textShadow: "Senka teksta", uvIndex: "UV indeks", visualStyle: "Grafički stil", visualStyleClassic: "🎨 Klasični", visualStyleModern: "✨ Moderni", windBearing: "Pravac vetra", windEffects: "Udari vetra i lišće", windyDay: "Vetrovito", yamlTitle: "YAML kartice", copy: "Kopiraj", copied: "Kopirano", yamlHint: "Nalepite ga u ručnu karticu u Home Assistantu i zamenite weather.home svojim entitetom vremena.", customCss: "Sopstveni CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, X0 = {
-  sunny: b0,
-  clear: v0,
-  overcast: k0,
-  cloudy: f0,
-  partlycloudy: w0,
-  rainy: z0,
-  rain: j0,
-  snowy: S0,
-  snow: x0,
-  foggy: A0,
-  fog: P0,
-  lightning: M0,
+  feels_like: QS,
+  forecast_title: XS,
+  forecast_title_hourly: e0,
+  daily_forecast_title: t0,
+  no_data: a0,
+  weather: i0,
+  wind_unit_kmh: n0,
+  wind_unit_ms: r0,
+  wind_unit_mph: o0,
+  wind_unit_knots: s0,
+  wind_unit_fts: l0,
+  am: _0,
+  pm: d0,
+  pressure: u0,
+  uv_index: c0,
+  dew_point: m0,
+  aqi: p0,
+  precipitation_outlook: h0,
+  editor: g0,
+  demo: y0
+}, v0 = "Sunčano", k0 = "Vedro", f0 = "Oblačno", w0 = "Oblačno", z0 = "Delimično oblačno", j0 = "Kišovito", S0 = "Kiša", x0 = "Snežno", A0 = "Sneg", P0 = "Maglovito", M0 = "Magla", C0 = "Grmljavina", $0 = "Pljusak", E0 = "Grad", T0 = "Vetrovito", D0 = "Subjektivni osećaj", N0 = "Prognoza", V0 = "Satna prognoza", L0 = "Dnevna prognoza", H0 = "Nema podataka", I0 = "Vreme", R0 = "km/h", B0 = "m/s", F0 = "mph", O0 = "čvorova", q0 = "ft/s", U0 = "AM", K0 = "PM", W0 = "Pritisak", G0 = "UV indeks", Z0 = "Tačka rose", Y0 = "Indeks kvaliteta vazduha", J0 = { start: "{kind} se očekuje oko {time}", soon: "{kind} se očekuje uskoro", stop: "{kind} prestaje oko {time}", continues: "{kind} još najmanje {hours} h", rain: "Kiša", snow: "Sneg", sleet: "Susnežica", hail: "Grad", storm: "Grmljavina" }, Q0 = { entity: "Entitet", name: "Naziv (opciono)", layout: "Raspored", layout_default: "Podrazumevano", layout_minimal: "Minimalno", height: "Visina", show_feels_like: "Osećaj temperature", show_wind: "Vetar", show_wind_gust: "Udari", show_wind_direction: "Pravac", show_humidity: "Vlažnost", show_min_temp: "Minimalna temperatura", show_hourly_forecast: "Satna prognoza", hourly_forecast_hours: "Sati", hourly_forecast_step: "Svakih", hourly_forecast_chart: "Grafikon temperature", show_daily_forecast: "Dnevna prognoza", daily_forecast_days: "Dani", show_sunrise_sunset: "Izlazak i zalazak sunca", sunrise_entity: "Senzor izlaska sunca", sunset_entity: "Senzor zalaska sunca", show_clock: "Sat", clock_position: "Položaj", clock_position_top: "Vrh", clock_position_details: "Detalji", clock_format: "Format", clock_format_12h: "12h", clock_format_24h: "24h", clock_size: "Veličina", clock_size_small: "Mala", clock_size_medium: "Srednja", clock_size_large: "Velika", clock_weight: "Debljina", clock_weight_thin: "Tanka", clock_weight_regular: "Obična", clock_weight_bold: "Podebljana", overlay_opacity: "Zatamnjenje", language: "Jezik", language_auto: "Automatski", language_en: "Engleski", language_ru: "Ruski", language_de: "Nemački", language_nl: "Holandski", language_fr: "Francuski", language_es: "Španski", language_it: "Italijanski", language_sk: "Slovački", language_hu: "Mađarski", wind_speed_unit: "Jedinica brzine vetra", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "Auto (kao integracija)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "čvorova", wind_speed_unit_helper: "Auto zadržava jedinicu integracije ili senzora vetra; ostale preračunavaju sav vetar na kartici", animation_quality: "Kvalitet animacije", animation_quality_helper: "Smanjite na zidnim tabletima i sporim uređajima", animation_quality_high: "Visok", animation_quality_low: "Nizak (20 FPS, za spore uređaje)", animation_quality_medium: "Srednji (30 FPS, manje čestica)", aqi_entity: "Senzor kvaliteta vazduha (AQI)", border_radius: "Zaobljenost uglova", daily_forecast_title: "Naslov", daily_forecast_title_helper: "Prazno = podrazumevani naslov", dew_point_entity: "Senzor tačke rose", feels_like_entity: "Senzor osećaja temperature", hourly_forecast_title: "Naslov", hourly_forecast_title_helper: "Prazno = podrazumevani naslov", humidity_entity: "Senzor vlažnosti", overlay_opacity_helper: "0–1, zatamnjuje nebo da bi tekst bio čitljiv", precipitation_entity: "Senzor padavina", pressure_entity: "Senzor pritiska", section_appearance: "Izgled", section_clock: "Jezik, sat i datum", section_details: "Detalji", section_forecast: "Prognoza", section_sensors: "Senzori (opciono)", show_animations: "Animacije", show_aurora: "Polarna svetlost", show_aurora_helper: "U vedrim noćima, moderna grafika", show_date: "Datum", show_dew_point: "Tačka rose", show_precipitation_outlook: "Kada kiša počinje/prestaje", show_precipitation_outlook_helper: "Iz satne prognoze za narednih 12 sati", show_pressure: "Pritisak", show_raindrops: "Kapi kiše na staklu", show_raindrops_helper: "Po kiši, moderna grafika", show_temperature_bars: "Trake temperature", show_forecast_wind: "Vetar u prognozama", show_forecast_wind_helper: "Smer, brzina i udari vetra za svaki sat i dan, ako ih pružalac vremenske prognoze daje", hourly_forecast_step_helper: "Prikaži prognozu na svakih nekoliko sati, npr. 3 za 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Kriva temperature umesto brojeva, sa verovatnoćom padavina kao stubićima", show_forecast_description: "Tekstualna prognoza", show_forecast_description_helper: "Pisana prognoza pružaoca vremenske prognoze, ako je ima (npr. američki National Weather Service)", show_uv_index: "UV indeks", show_wind_effects: "Udari vetra i lišće", show_wind_effects_helper: "Po vetrovitom vremenu ili iznad 8 m/s", sun_position_x: "Položaj sunca/meseca, vodoravno", sun_position_x_helper: "Ostavite prazno da prati doba dana", sun_position_y: "Položaj sunca/meseca, uspravno", sun_position_y_helper: "Ostavite prazno da prati doba dana", temperature_entity: "Senzor temperature", text_color: "Boja teksta", text_color_helper: "Bilo koja CSS boja, npr. #1a1a2e ili var(--primary-text-color)", text_shadow: "Senka teksta", uv_index_entity: "Senzor UV indeksa", visual_style: "Grafika", visual_style_classic: "Klasična", visual_style_modern: "Moderna", wind_bearing_entity: "Senzor pravca vetra", wind_gust_entity: "Senzor udara vetra", wind_speed_entity: "Senzor brzine vetra", language_da: "Danski", language_nb: "Norveški (bokmål)", language_pl: "Poljski", language_pt: "Portugalski", language_sl: "Slovenački", language_sr: "Srpski", "language_sr-Latn": "Srpski (latinica)", language_tr: "Turski", language_zh: "Kineski", hourly_forecast_hours_helper: "Bez ograničenja: npr. 72 za tri dana, ili više da bi se prikazala cela prognoza dobavljača", styles: "Sopstveni CSS", styles_helper: "CSS za karticu i sve njene delove, npr. .temperature { font-size: 48px; }" }, X0 = { pageTitle: "Dynamic Weather Card", pageSubtitle: "Interaktivni demo i alat za konfiguraciju", quickPresets: "Brza podešavanja", sunnyDay: "Sunčan dan", rainy: "Kišovito", snowy: "Snežno", clearNight: "Vedra noć", condition: "Stanje", temperature: "Temperatura", humidity: "Vlažnost (%)", windSpeed: "Brzina vetra", timeOfDay: "Doba dana", timeMode: "Režim vremena", manualControl: "Ručno upravljanje", sunrise: "Izlazak sunca", day: "Dan", sunset: "Zalazak sunca", night: "Noć", cardName: "Naziv kartice", height: "Visina (px)", feelsLike: "Subjektivni osećaj", minTemp: "Min. temp.", windDirection: "Smer vetra", windGust: "Udari vetra", hourlyForecast: "Prognoza po satima", dailyForecast: "Dnevna prognoza", sunriseSunset: "Izlazak/Zalazak", showClock: "Prikaži sat", clockPosition: "Pozicija sata", clockPositionTop: "Gore desno", clockPositionDetails: "U detaljima", clockFormat: "Format sata", clockSize: "Veličina sata", clockSizeSmall: "Mala", clockSizeMedium: "Srednja", clockSizeLarge: "Velika", clockWeight: "Debljina sata", clockWeightThin: "Tanka", clockWeightRegular: "Obična", clockWeightBold: "Podebljana", overlayOpacity: "Prozirnost (0-1)", windSpeedUnit: "Jedinica brzine", dailyForecastDays: "Broj dana", hourlyForecastHours: "Broj sati", hourlyForecastStep: "Korak satne prognoze (h)", hourlyChart: "Grafikon temperature po satu", startDemo: "Pokreni demo", stopDemo: "Zaustavi demo", madeWith: "Napravljeno za Home Assistant", loading: "Učitavanje kartice...", placeholderEmpty: "Ostavite prazno za sakrivanje", weatherConditions: { sunny: "Sunčano", clearNight: "Vedra noć", partlyCloudy: "Delimično oblačno", cloudy: "Oblačno", rainy: "Kišovito", pouring: "Pljusak", snowy: "Snežno", sleet: "Susnežica", hail: "Grad", foggy: "Maglovito", lightning: "Grmljavina", thunderstorm: "Grmljavina sa olujom", windy: "Vetrovito", windyVariant: "Vetrovito, oblačno" }, language: { title: "Jezik" }, animationQuality: "Kvalitet animacije", animations: "Animacije", aqi: "Kvalitet vazduha (senzor)", aurora: "Polarna svetlost", auroraNight: "Polarna svetlost", autoShort: "Auto", borderRadius: "Zaobljenost uglova (px)", clockAndDate: "Sat", dailyForecastTitle: "Naslov dnevne prognoze", details: "Detalji", dewPoint: "Tačka rose", documentation: "Dokumentacija", forecasts: "Prognoze", hourlyForecastTitle: "Naslov satne prognoze", humidityToggle: "Vlažnost", layout: "Raspored", layoutDefault: "Podrazumevano", layoutMinimal: "Minimalno", links: "Linkovi", moonPhase: "Mesečeva mena", pause: "Pauza", placeholderDefault: "Podrazumevano", play24h: "Pusti 24 sata", playSpeed: "Trajanje ciklusa", precipitationOutlook: "Početak/kraj kiše", pressure: "Pritisak", qualityHighShort: "Visok", qualityLowShort: "Nizak", qualityMediumShort: "Srednji", raindrops: "Kapi kiše na staklu", reportIssue: "Prijavi problem", showDate: "Datum", stationSensors: "Senzori stanice", stationSensorsHint: "Senzori stanice zamenjuju temperaturu, vlažnost, vetar i padavine probnim vrednostima lične meteorološke stanice.", sunPositionX: "Sunce/Mesec X (%)", sunPositionY: "Sunce/Mesec Y (%)", tabContent: "Sadržaj", tabLook: "Izgled", tabMore: "Više", tabTime: "Vreme", tabWeather: "Vremenska prognoza", temperatureBars: "Trake temperature", forecastWind: "Vetar u prognozama", forecastDescription: "Tekstualna prognoza", textColor: "Boja teksta", textShadow: "Senka teksta", uvIndex: "UV indeks", visualStyle: "Grafički stil", visualStyleClassic: "🎨 Klasični", visualStyleModern: "✨ Moderni", windBearing: "Pravac vetra", windEffects: "Udari vetra i lišće", windyDay: "Vetrovito", yamlTitle: "YAML kartice", copy: "Kopiraj", copied: "Kopirano", yamlHint: "Nalepite ga u ručnu karticu u Home Assistantu i zamenite weather.home svojim entitetom vremena.", customCss: "Sopstveni CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, ex = {
+  sunny: v0,
+  clear: k0,
+  overcast: f0,
+  cloudy: w0,
+  partlycloudy: z0,
+  rainy: j0,
+  rain: S0,
+  snowy: x0,
+  snow: A0,
+  foggy: P0,
+  fog: M0,
+  lightning: C0,
   "lightning-rainy": "Grmljavina sa kišom",
-  pouring: C0,
+  pouring: $0,
   "snowy-rainy": "Susnežica",
-  hail: $0,
+  hail: E0,
   "clear-night": "Vedra noć",
-  windy: E0,
+  windy: T0,
   "windy-variant": "Vetrovito, oblačno",
-  feels_like: T0,
-  forecast_title: D0,
-  forecast_title_hourly: N0,
-  daily_forecast_title: V0,
-  no_data: L0,
-  weather: H0,
-  wind_unit_kmh: I0,
-  wind_unit_ms: R0,
-  wind_unit_mph: B0,
-  wind_unit_knots: F0,
-  wind_unit_fts: O0,
-  am: q0,
-  pm: U0,
-  pressure: K0,
-  uv_index: W0,
-  dew_point: G0,
-  aqi: Z0,
-  precipitation_outlook: Y0,
-  editor: J0,
-  demo: Q0
-}, ex = "Güneşli", tx = "Açık", ax = "Kapalı", ix = "Bulutlu", nx = "Parçalı bulutlu", rx = "Yağmurlu", ox = "Yağmur", sx = "Karlı", lx = "Kar", _x = "Sisli", dx = "Sis", ux = "Şimşekli", cx = "Şiddetli yağmur", mx = "Dolu", px = "Rüzgarlı", hx = "Hissedilen", gx = "Saatlik tahmin", yx = "Saatlik tahmin", bx = "Günlük hava tahmini", vx = "Veri yok", kx = "Hava durumu", fx = "km/s", wx = "m/s", zx = "mph", jx = "knot", Sx = "ft/s", xx = "ÖÖ", Ax = "ÖS", Px = "Basınç", Mx = "UV indeksi", Cx = "Çiy noktası", $x = "Hava kalitesi indeksi", Ex = { start: "{kind} {time} civarında bekleniyor", soon: "{kind} yakında bekleniyor", stop: "{kind} {time} civarında sona eriyor", continues: "{kind} en az {hours} saat daha sürecek", rain: "Yağmur", snow: "Kar", sleet: "Karla karışık yağmur", hail: "Dolu", storm: "Gök gürültülü fırtına" }, Tx = { entity: "Hava durumu varlığı", name: "Kart başlığı", layout: "Düzen", layout_default: "Varsayılan", layout_minimal: "Minimal", height: "Yükseklik", show_feels_like: "Hissedilen", show_wind: "Rüzgâr", show_wind_gust: "Hamleler", show_wind_direction: "Yön", show_humidity: "Nem", show_min_temp: "En düşük sıcaklık", show_hourly_forecast: "Saatlik tahmin", hourly_forecast_hours: "Saat", hourly_forecast_step: "Her", hourly_forecast_chart: "Sıcaklık grafiği", show_daily_forecast: "Günlük tahmin", daily_forecast_days: "Gün", show_sunrise_sunset: "Gün doğumu ve batımı", sunrise_entity: "Gün doğumu sensörü", sunset_entity: "Gün batımı sensörü", show_clock: "Saat", clock_position: "Konum", clock_position_top: "Üstte", clock_position_details: "Detaylar", clock_format: "Biçim", clock_format_12h: "12 saat (ÖÖ/ÖS)", clock_format_24h: "24 saat", clock_size: "Boyut", clock_size_small: "Küçük", clock_size_medium: "Orta", clock_size_large: "Büyük", clock_weight: "Kalınlık", clock_weight_thin: "İnce", clock_weight_regular: "Normal", clock_weight_bold: "Kalın", overlay_opacity: "Karartma", text_shadow: "Metin gölgesi", language: "Dil", language_auto: "Otomatik", language_en: "İngilizce", language_ru: "Rusça", language_de: "Almanca", language_nl: "Flemenkçe", language_fr: "Fransızca", language_es: "İspanyolca", language_it: "İtalyanca", language_sk: "Slovakça", language_hu: "Macarca", language_pt: "Portekizce", language_da: "Danca", language_sr: "Sırpça", "language_sr-Latn": "Sırpça (Latin)", language_pl: "Lehçe", language_tr: "Türkçe", wind_speed_unit: "Rüzgâr hızı birimi", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/s", wind_speed_unit_auto: "Otomatik (entegrasyondaki gibi)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "knot", wind_speed_unit_helper: "Otomatik, entegrasyonun veya rüzgar sensörünün birimini korur; diğerleri karttaki tüm rüzgarı dönüştürür", show_animations: "Animasyonlar", language_zh: "Çince", animation_quality: "Animasyon kalitesi", animation_quality_helper: "Duvar tabletlerinde ve yavaş cihazlarda düşürün", animation_quality_high: "Yüksek", animation_quality_low: "Düşük (20 FPS, yavaş cihazlar için)", animation_quality_medium: "Orta (30 FPS, daha az parçacık)", aqi_entity: "Hava kalitesi sensörü (AQI)", border_radius: "Köşe yuvarlaklığı", daily_forecast_title: "Başlık", daily_forecast_title_helper: "Boş = varsayılan başlık", dew_point_entity: "Çiy noktası sensörü", feels_like_entity: "Hissedilen sıcaklık sensörü", hourly_forecast_title: "Başlık", hourly_forecast_title_helper: "Boş = varsayılan başlık", humidity_entity: "Nem sensörü", overlay_opacity_helper: "0–1, metnin okunur kalması için gökyüzünü karartır", precipitation_entity: "Yağış sensörü", pressure_entity: "Basınç sensörü", section_appearance: "Görünüm", section_clock: "Dil, saat ve tarih", section_details: "Ayrıntılar", section_forecast: "Tahmin", section_sensors: "Sensörler (isteğe bağlı)", show_aurora: "Kuzey ışıkları", show_aurora_helper: "Açık gecelerde, modern grafikler", show_date: "Tarih", show_dew_point: "Çiy noktası", show_precipitation_outlook: "Yağmurun başlama/bitme zamanı", show_precipitation_outlook_helper: "Önümüzdeki 12 saatlik saatlik tahminden", show_pressure: "Basınç", show_raindrops: "Camdaki yağmur damlaları", show_raindrops_helper: "Yağmurda, modern grafikler", show_temperature_bars: "Sıcaklık çubukları", show_forecast_wind: "Tahminlerde rüzgar", show_forecast_wind_helper: "Hava durumu sağlayıcısı veriyorsa her saat ve gün için yön, hız ve hamleler", hourly_forecast_step_helper: "Tahmini birkaç saatte bir göster, ör. 3 için 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Sayılar yerine sıcaklık eğrisi, yağış olasılığı çubuklarla", show_forecast_description: "Metin tahmini", show_forecast_description_helper: "Hava durumu sağlayıcısının yazılı tahmini, varsa (ör. ABD Ulusal Hava Durumu Servisi)", show_uv_index: "UV indeksi", show_wind_effects: "Rüzgâr hamleleri ve yapraklar", show_wind_effects_helper: "Rüzgârlı havada veya 8 m/s üzerinde", sun_position_x: "Güneş/ay konumu, yatay", sun_position_x_helper: "Günün saatini izlemesi için boş bırakın", sun_position_y: "Güneş/ay konumu, dikey", sun_position_y_helper: "Günün saatini izlemesi için boş bırakın", temperature_entity: "Sıcaklık sensörü", text_color: "Metin rengi", text_color_helper: "Herhangi bir CSS rengi, ör. #1a1a2e veya var(--primary-text-color)", uv_index_entity: "UV indeksi sensörü", visual_style: "Grafikler", visual_style_classic: "Klasik", visual_style_modern: "Modern", wind_bearing_entity: "Rüzgâr yönü sensörü", wind_gust_entity: "Rüzgâr hamlesi sensörü", wind_speed_entity: "Rüzgâr hızı sensörü", language_nb: "Norveççe (Bokmål)", language_sl: "Slovence", hourly_forecast_hours_helper: "Üst sınır yok: ör. üç gün için 72 veya sağlayıcının tüm tahmini için daha fazlası", styles: "Özel CSS", styles_helper: "Kart ve tüm parçaları için CSS, ör. .temperature { font-size: 48px; }" }, Dx = { pageTitle: "Dinamik Hava Durumu Kartı", pageSubtitle: "Etkileşimli Demo & Yapılandırma Aracı", quickPresets: "Hızlı hazır ayarlar", sunnyDay: "Güneşli gün", rainy: "Yağmurlu", snowy: "Karlı", clearNight: "Açık gece", condition: "Durum", temperature: "Sıcaklık", humidity: "Nem (%)", windSpeed: "Rüzgar hızı", timeOfDay: "Günün zamanı", timeMode: "Saat modu", manualControl: "Manuel kontrol", sunrise: "Gün doğumu", day: "Gündüz", sunset: "Gün batımı", night: "Gece", cardName: "Kart adı", height: "Yükseklik (px)", feelsLike: "Hissedilen sıcaklık", minTemp: "Minimum sıcaklık", windDirection: "Rüzgar yönü", windGust: "Rüzgar esintisi", hourlyForecast: "Saatlik tahmin", dailyForecast: "Günlük tahmin", sunriseSunset: "Gün doğumu/batımı", showClock: "Saat", clockPosition: "Saat konumu", clockPositionTop: "Sağ üst", clockPositionDetails: "Detay satırı", clockFormat: "Saat formatı", clockSize: "Saat boyutu", clockSizeSmall: "Küçük", clockSizeMedium: "Orta", clockSizeLarge: "Büyük", clockWeight: "Saat kalınlığı", clockWeightThin: "İnce", clockWeightRegular: "Normal", clockWeightBold: "Kalın", overlayOpacity: "Kaplama opaklığı (0-1)", windSpeedUnit: "Rüzgar hız birimi", dailyForecastDays: "Tahmin günleri", hourlyForecastHours: "Tahmin saatleri", hourlyForecastStep: "Saatlik tahmin adımı (sa)", hourlyChart: "Saatlik sıcaklık grafiği", startDemo: "Demo modunu başlat", stopDemo: "Demoyu durdur", madeWith: "Home Assistant için sevgiyle yapıldı", loading: "Kart yükleniyor...", placeholderEmpty: "Gizlemek için boş bırakın", weatherConditions: { sunny: "Güneşli", clearNight: "Açık gece", partlyCloudy: "Parçalı bulutlu", cloudy: "Bulutlu", rainy: "Yağmurlu", pouring: "Şiddetli yağmur", snowy: "Karlı", sleet: "Sulu kar", hail: "Dolu", foggy: "Sisli", lightning: "Şimşekli", thunderstorm: "Fırtına", windy: "Rüzgârlı", windyVariant: "Rüzgârlı, bulutlu" }, language: { title: "Dil" }, animationQuality: "Animasyon kalitesi", animations: "Animasyonlar", aqi: "Hava kalitesi (sensör)", aurora: "Kuzey ışıkları", auroraNight: "Kutup ışıkları", autoShort: "Otomatik", borderRadius: "Köşe yuvarlaklığı (px)", clockAndDate: "Saat", dailyForecastTitle: "Günlük tahmin başlığı", details: "Ayrıntılar", dewPoint: "Çiy noktası", documentation: "Belgeler", forecasts: "Tahminler", hourlyForecastTitle: "Saatlik tahmin başlığı", humidityToggle: "Nem", layout: "Düzen", layoutDefault: "Varsayılan", layoutMinimal: "Minimal", links: "Bağlantılar", moonPhase: "Ay evresi", pause: "Duraklat", placeholderDefault: "Varsayılan", play24h: "24 saati oynat", playSpeed: "Döngü süresi", precipitationOutlook: "Yağmurun başlangıcı/bitişi", pressure: "Basınç", qualityHighShort: "Yüksek", qualityLowShort: "Düşük", qualityMediumShort: "Orta", raindrops: "Camdaki yağmur damlaları", reportIssue: "Sorun bildir", showDate: "Tarih", stationSensors: "İstasyon sensörleri", stationSensorsHint: "İstasyon sensörleri sıcaklık, nem, rüzgâr ve yağışı kişisel bir hava istasyonunun örnek değerleriyle değiştirir.", sunPositionX: "Güneş/Ay X (%)", sunPositionY: "Güneş/Ay Y (%)", tabContent: "İçerik", tabLook: "Görünüm", tabMore: "Daha fazla", tabTime: "Zaman", tabWeather: "Hava", temperatureBars: "Sıcaklık çubukları", forecastWind: "Tahminlerde rüzgar", forecastDescription: "Metin tahmini", textColor: "Metin rengi", textShadow: "Metin gölgesi", uvIndex: "UV indeksi", visualStyle: "Grafik stili", visualStyleClassic: "🎨 Klasik", visualStyleModern: "✨ Modern", windBearing: "Rüzgâr yönü", windEffects: "Rüzgâr hamleleri ve yapraklar", windyDay: "Rüzgârlı", yamlTitle: "Kart YAML", copy: "Kopyala", copied: "Kopyalandı", yamlHint: "Home Assistant’ta manuel bir karta yapıştırın ve weather.home yerine kendi hava durumu varlığınızı yazın.", customCss: "Özel CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, Nx = {
-  sunny: ex,
-  clear: tx,
-  overcast: ax,
-  cloudy: ix,
-  partlycloudy: nx,
-  rainy: rx,
-  rain: ox,
-  snowy: sx,
-  snow: lx,
-  foggy: _x,
-  fog: dx,
-  lightning: ux,
+  feels_like: D0,
+  forecast_title: N0,
+  forecast_title_hourly: V0,
+  daily_forecast_title: L0,
+  no_data: H0,
+  weather: I0,
+  wind_unit_kmh: R0,
+  wind_unit_ms: B0,
+  wind_unit_mph: F0,
+  wind_unit_knots: O0,
+  wind_unit_fts: q0,
+  am: U0,
+  pm: K0,
+  pressure: W0,
+  uv_index: G0,
+  dew_point: Z0,
+  aqi: Y0,
+  precipitation_outlook: J0,
+  editor: Q0,
+  demo: X0
+}, tx = "Güneşli", ax = "Açık", ix = "Kapalı", nx = "Bulutlu", rx = "Parçalı bulutlu", ox = "Yağmurlu", sx = "Yağmur", lx = "Karlı", _x = "Kar", dx = "Sisli", ux = "Sis", cx = "Şimşekli", mx = "Şiddetli yağmur", px = "Dolu", hx = "Rüzgarlı", gx = "Hissedilen", yx = "Saatlik tahmin", bx = "Saatlik tahmin", vx = "Günlük hava tahmini", kx = "Veri yok", fx = "Hava durumu", wx = "km/s", zx = "m/s", jx = "mph", Sx = "knot", xx = "ft/s", Ax = "ÖÖ", Px = "ÖS", Mx = "Basınç", Cx = "UV indeksi", $x = "Çiy noktası", Ex = "Hava kalitesi indeksi", Tx = { start: "{kind} {time} civarında bekleniyor", soon: "{kind} yakında bekleniyor", stop: "{kind} {time} civarında sona eriyor", continues: "{kind} en az {hours} saat daha sürecek", rain: "Yağmur", snow: "Kar", sleet: "Karla karışık yağmur", hail: "Dolu", storm: "Gök gürültülü fırtına" }, Dx = { entity: "Hava durumu varlığı", name: "Kart başlığı", layout: "Düzen", layout_default: "Varsayılan", layout_minimal: "Minimal", height: "Yükseklik", show_feels_like: "Hissedilen", show_wind: "Rüzgâr", show_wind_gust: "Hamleler", show_wind_direction: "Yön", show_humidity: "Nem", show_min_temp: "En düşük sıcaklık", show_hourly_forecast: "Saatlik tahmin", hourly_forecast_hours: "Saat", hourly_forecast_step: "Her", hourly_forecast_chart: "Sıcaklık grafiği", show_daily_forecast: "Günlük tahmin", daily_forecast_days: "Gün", show_sunrise_sunset: "Gün doğumu ve batımı", sunrise_entity: "Gün doğumu sensörü", sunset_entity: "Gün batımı sensörü", show_clock: "Saat", clock_position: "Konum", clock_position_top: "Üstte", clock_position_details: "Detaylar", clock_format: "Biçim", clock_format_12h: "12 saat (ÖÖ/ÖS)", clock_format_24h: "24 saat", clock_size: "Boyut", clock_size_small: "Küçük", clock_size_medium: "Orta", clock_size_large: "Büyük", clock_weight: "Kalınlık", clock_weight_thin: "İnce", clock_weight_regular: "Normal", clock_weight_bold: "Kalın", overlay_opacity: "Karartma", text_shadow: "Metin gölgesi", language: "Dil", language_auto: "Otomatik", language_en: "İngilizce", language_ru: "Rusça", language_de: "Almanca", language_nl: "Flemenkçe", language_fr: "Fransızca", language_es: "İspanyolca", language_it: "İtalyanca", language_sk: "Slovakça", language_hu: "Macarca", language_pt: "Portekizce", language_da: "Danca", language_sr: "Sırpça", "language_sr-Latn": "Sırpça (Latin)", language_pl: "Lehçe", language_tr: "Türkçe", wind_speed_unit: "Rüzgâr hızı birimi", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/s", wind_speed_unit_auto: "Otomatik (entegrasyondaki gibi)", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "knot", wind_speed_unit_helper: "Otomatik, entegrasyonun veya rüzgar sensörünün birimini korur; diğerleri karttaki tüm rüzgarı dönüştürür", show_animations: "Animasyonlar", language_zh: "Çince", animation_quality: "Animasyon kalitesi", animation_quality_helper: "Duvar tabletlerinde ve yavaş cihazlarda düşürün", animation_quality_high: "Yüksek", animation_quality_low: "Düşük (20 FPS, yavaş cihazlar için)", animation_quality_medium: "Orta (30 FPS, daha az parçacık)", aqi_entity: "Hava kalitesi sensörü (AQI)", border_radius: "Köşe yuvarlaklığı", daily_forecast_title: "Başlık", daily_forecast_title_helper: "Boş = varsayılan başlık", dew_point_entity: "Çiy noktası sensörü", feels_like_entity: "Hissedilen sıcaklık sensörü", hourly_forecast_title: "Başlık", hourly_forecast_title_helper: "Boş = varsayılan başlık", humidity_entity: "Nem sensörü", overlay_opacity_helper: "0–1, metnin okunur kalması için gökyüzünü karartır", precipitation_entity: "Yağış sensörü", pressure_entity: "Basınç sensörü", section_appearance: "Görünüm", section_clock: "Dil, saat ve tarih", section_details: "Ayrıntılar", section_forecast: "Tahmin", section_sensors: "Sensörler (isteğe bağlı)", show_aurora: "Kuzey ışıkları", show_aurora_helper: "Açık gecelerde, modern grafikler", show_date: "Tarih", show_dew_point: "Çiy noktası", show_precipitation_outlook: "Yağmurun başlama/bitme zamanı", show_precipitation_outlook_helper: "Önümüzdeki 12 saatlik saatlik tahminden", show_pressure: "Basınç", show_raindrops: "Camdaki yağmur damlaları", show_raindrops_helper: "Yağmurda, modern grafikler", show_temperature_bars: "Sıcaklık çubukları", show_forecast_wind: "Tahminlerde rüzgar", show_forecast_wind_helper: "Hava durumu sağlayıcısı veriyorsa her saat ve gün için yön, hız ve hamleler", hourly_forecast_step_helper: "Tahmini birkaç saatte bir göster, ör. 3 için 00:00, 03:00, 06:00 …", hourly_forecast_chart_helper: "Sayılar yerine sıcaklık eğrisi, yağış olasılığı çubuklarla", show_forecast_description: "Metin tahmini", show_forecast_description_helper: "Hava durumu sağlayıcısının yazılı tahmini, varsa (ör. ABD Ulusal Hava Durumu Servisi)", show_uv_index: "UV indeksi", show_wind_effects: "Rüzgâr hamleleri ve yapraklar", show_wind_effects_helper: "Rüzgârlı havada veya 8 m/s üzerinde", sun_position_x: "Güneş/ay konumu, yatay", sun_position_x_helper: "Günün saatini izlemesi için boş bırakın", sun_position_y: "Güneş/ay konumu, dikey", sun_position_y_helper: "Günün saatini izlemesi için boş bırakın", temperature_entity: "Sıcaklık sensörü", text_color: "Metin rengi", text_color_helper: "Herhangi bir CSS rengi, ör. #1a1a2e veya var(--primary-text-color)", uv_index_entity: "UV indeksi sensörü", visual_style: "Grafikler", visual_style_classic: "Klasik", visual_style_modern: "Modern", wind_bearing_entity: "Rüzgâr yönü sensörü", wind_gust_entity: "Rüzgâr hamlesi sensörü", wind_speed_entity: "Rüzgâr hızı sensörü", language_nb: "Norveççe (Bokmål)", language_sl: "Slovence", hourly_forecast_hours_helper: "Üst sınır yok: ör. üç gün için 72 veya sağlayıcının tüm tahmini için daha fazlası", styles: "Özel CSS", styles_helper: "Kart ve tüm parçaları için CSS, ör. .temperature { font-size: 48px; }" }, Nx = { pageTitle: "Dinamik Hava Durumu Kartı", pageSubtitle: "Etkileşimli Demo & Yapılandırma Aracı", quickPresets: "Hızlı hazır ayarlar", sunnyDay: "Güneşli gün", rainy: "Yağmurlu", snowy: "Karlı", clearNight: "Açık gece", condition: "Durum", temperature: "Sıcaklık", humidity: "Nem (%)", windSpeed: "Rüzgar hızı", timeOfDay: "Günün zamanı", timeMode: "Saat modu", manualControl: "Manuel kontrol", sunrise: "Gün doğumu", day: "Gündüz", sunset: "Gün batımı", night: "Gece", cardName: "Kart adı", height: "Yükseklik (px)", feelsLike: "Hissedilen sıcaklık", minTemp: "Minimum sıcaklık", windDirection: "Rüzgar yönü", windGust: "Rüzgar esintisi", hourlyForecast: "Saatlik tahmin", dailyForecast: "Günlük tahmin", sunriseSunset: "Gün doğumu/batımı", showClock: "Saat", clockPosition: "Saat konumu", clockPositionTop: "Sağ üst", clockPositionDetails: "Detay satırı", clockFormat: "Saat formatı", clockSize: "Saat boyutu", clockSizeSmall: "Küçük", clockSizeMedium: "Orta", clockSizeLarge: "Büyük", clockWeight: "Saat kalınlığı", clockWeightThin: "İnce", clockWeightRegular: "Normal", clockWeightBold: "Kalın", overlayOpacity: "Kaplama opaklığı (0-1)", windSpeedUnit: "Rüzgar hız birimi", dailyForecastDays: "Tahmin günleri", hourlyForecastHours: "Tahmin saatleri", hourlyForecastStep: "Saatlik tahmin adımı (sa)", hourlyChart: "Saatlik sıcaklık grafiği", startDemo: "Demo modunu başlat", stopDemo: "Demoyu durdur", madeWith: "Home Assistant için sevgiyle yapıldı", loading: "Kart yükleniyor...", placeholderEmpty: "Gizlemek için boş bırakın", weatherConditions: { sunny: "Güneşli", clearNight: "Açık gece", partlyCloudy: "Parçalı bulutlu", cloudy: "Bulutlu", rainy: "Yağmurlu", pouring: "Şiddetli yağmur", snowy: "Karlı", sleet: "Sulu kar", hail: "Dolu", foggy: "Sisli", lightning: "Şimşekli", thunderstorm: "Fırtına", windy: "Rüzgârlı", windyVariant: "Rüzgârlı, bulutlu" }, language: { title: "Dil" }, animationQuality: "Animasyon kalitesi", animations: "Animasyonlar", aqi: "Hava kalitesi (sensör)", aurora: "Kuzey ışıkları", auroraNight: "Kutup ışıkları", autoShort: "Otomatik", borderRadius: "Köşe yuvarlaklığı (px)", clockAndDate: "Saat", dailyForecastTitle: "Günlük tahmin başlığı", details: "Ayrıntılar", dewPoint: "Çiy noktası", documentation: "Belgeler", forecasts: "Tahminler", hourlyForecastTitle: "Saatlik tahmin başlığı", humidityToggle: "Nem", layout: "Düzen", layoutDefault: "Varsayılan", layoutMinimal: "Minimal", links: "Bağlantılar", moonPhase: "Ay evresi", pause: "Duraklat", placeholderDefault: "Varsayılan", play24h: "24 saati oynat", playSpeed: "Döngü süresi", precipitationOutlook: "Yağmurun başlangıcı/bitişi", pressure: "Basınç", qualityHighShort: "Yüksek", qualityLowShort: "Düşük", qualityMediumShort: "Orta", raindrops: "Camdaki yağmur damlaları", reportIssue: "Sorun bildir", showDate: "Tarih", stationSensors: "İstasyon sensörleri", stationSensorsHint: "İstasyon sensörleri sıcaklık, nem, rüzgâr ve yağışı kişisel bir hava istasyonunun örnek değerleriyle değiştirir.", sunPositionX: "Güneş/Ay X (%)", sunPositionY: "Güneş/Ay Y (%)", tabContent: "İçerik", tabLook: "Görünüm", tabMore: "Daha fazla", tabTime: "Zaman", tabWeather: "Hava", temperatureBars: "Sıcaklık çubukları", forecastWind: "Tahminlerde rüzgar", forecastDescription: "Metin tahmini", textColor: "Metin rengi", textShadow: "Metin gölgesi", uvIndex: "UV indeksi", visualStyle: "Grafik stili", visualStyleClassic: "🎨 Klasik", visualStyleModern: "✨ Modern", windBearing: "Rüzgâr yönü", windEffects: "Rüzgâr hamleleri ve yapraklar", windyDay: "Rüzgârlı", yamlTitle: "Kart YAML", copy: "Kopyala", copied: "Kopyalandı", yamlHint: "Home Assistant’ta manuel bir karta yapıştırın ve weather.home yerine kendi hava durumu varlığınızı yazın.", customCss: "Özel CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, Vx = {
+  sunny: tx,
+  clear: ax,
+  overcast: ix,
+  cloudy: nx,
+  partlycloudy: rx,
+  rainy: ox,
+  rain: sx,
+  snowy: lx,
+  snow: _x,
+  foggy: dx,
+  fog: ux,
+  lightning: cx,
   "lightning-rainy": "Fırtınalı",
-  pouring: cx,
+  pouring: mx,
   "snowy-rainy": "Sulu kar",
-  hail: mx,
+  hail: px,
   "clear-night": "Açık gece",
-  windy: px,
+  windy: hx,
   "windy-variant": "Rüzgarlı, bulutlu",
-  feels_like: hx,
-  forecast_title: gx,
-  forecast_title_hourly: yx,
-  daily_forecast_title: bx,
-  no_data: vx,
-  weather: kx,
-  wind_unit_kmh: fx,
-  wind_unit_ms: wx,
-  wind_unit_mph: zx,
-  wind_unit_knots: jx,
-  wind_unit_fts: Sx,
-  am: xx,
-  pm: Ax,
-  pressure: Px,
-  uv_index: Mx,
-  dew_point: Cx,
-  aqi: $x,
-  precipitation_outlook: Ex,
-  editor: Tx,
-  demo: Dx
-}, Vx = "晴朗", Lx = "晴", Hx = "阴天", Ix = "多云", Rx = "局部多云", Bx = "有雨", Fx = "雨", Ox = "有雪", qx = "雪", Ux = "有雾", Kx = "雾", Wx = "雷电", Gx = "大雨", Zx = "冰雹", Yx = "有风", Jx = "体感温度", Qx = "今日预报", Xx = "逐小时预报", eA = "每日预报", tA = "无数据", aA = "天气", iA = "km/h", nA = "m/s", rA = "mph", oA = "节", sA = "ft/s", lA = "上午", _A = "下午", dA = "气压", uA = "紫外线指数", cA = "露点", mA = "空气质量指数", pA = { start: "{kind}：约{time}开始", soon: "{kind}：即将开始", stop: "{kind}：约{time}结束", continues: "{kind}：至少再持续{hours}小时", rain: "雨", snow: "雪", sleet: "雨夹雪", hail: "冰雹", storm: "雷暴" }, hA = { entity: "天气实体", name: "卡片标题", layout: "布局", layout_default: "默认", layout_minimal: "简约", height: "高度", show_feels_like: "体感温度", show_wind: "风", show_wind_gust: "阵风", show_wind_direction: "风向", show_humidity: "湿度", show_min_temp: "最低温度", show_hourly_forecast: "逐小时预报", hourly_forecast_hours: "小时数", hourly_forecast_step: "间隔", hourly_forecast_chart: "温度曲线", show_daily_forecast: "每日预报", daily_forecast_days: "天数", show_sunrise_sunset: "日出和日落", sunrise_entity: "日出传感器", sunset_entity: "日落传感器", show_clock: "时钟", clock_position: "位置", clock_position_top: "顶部", clock_position_details: "详情栏", clock_format: "格式", clock_format_12h: "12小时制 (AM/PM)", clock_format_24h: "24小时制", clock_size: "大小", clock_size_small: "小", clock_size_medium: "中", clock_size_large: "大", clock_weight: "字重", clock_weight_thin: "细", clock_weight_regular: "常规", clock_weight_bold: "粗", overlay_opacity: "暗化", text_shadow: "文字阴影", language: "语言", language_auto: "自动", language_en: "英语", language_ru: "俄语", language_de: "德语", language_nl: "荷兰语", language_fr: "法语", language_es: "西班牙语", language_it: "意大利语", language_sk: "斯洛伐克语", language_hu: "匈牙利语", language_pt: "葡萄牙语", language_da: "丹麦语", language_sr: "塞尔维亚语", "language_sr-Latn": "塞尔维亚语（拉丁字母）", language_pl: "波兰语", language_zh: "简体中文", wind_speed_unit: "风速单位", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "自动（与集成一致）", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "节", wind_speed_unit_helper: "自动：使用集成或风速传感器的单位；其他选项会换算卡片上的所有风速", show_animations: "动画", animation_quality: "动画质量", animation_quality_helper: "在壁挂平板和性能较低的设备上可调低", animation_quality_high: "高", animation_quality_low: "低（20 FPS，适合低性能设备）", animation_quality_medium: "中（30 FPS，粒子更少）", aqi_entity: "空气质量传感器（AQI）", border_radius: "圆角半径", daily_forecast_title: "标题", daily_forecast_title_helper: "留空 = 默认标题", dew_point_entity: "露点传感器", feels_like_entity: "体感温度传感器", hourly_forecast_title: "标题", hourly_forecast_title_helper: "留空 = 默认标题", humidity_entity: "湿度传感器", overlay_opacity_helper: "0–1，调暗天空以保证文字清晰可读", precipitation_entity: "降水传感器", pressure_entity: "气压传感器", section_appearance: "外观", section_clock: "语言、时钟和日期", section_details: "详细信息", section_forecast: "预报", section_sensors: "传感器（可选）", show_aurora: "极光", show_aurora_helper: "晴朗的夜晚，现代图形", show_date: "日期", show_dew_point: "露点", show_precipitation_outlook: "何时开始/停止下雨", show_precipitation_outlook_helper: "根据未来 12 小时的逐小时预报", show_pressure: "气压", show_raindrops: "玻璃上的雨滴", show_raindrops_helper: "下雨时，现代图形", show_temperature_bars: "温度条", show_forecast_wind: "预报中的风", show_forecast_wind_helper: "天气服务提供时，显示每小时和每天的风向、风速和阵风", hourly_forecast_step_helper: "每隔几小时显示一次预报，例如 3 表示 00:00、03:00、06:00 …", hourly_forecast_chart_helper: "用温度曲线代替数字，并以柱状显示降水概率", show_forecast_description: "文字预报", show_forecast_description_helper: "天气服务提供的文字预报（如有，例如美国国家气象局）", show_uv_index: "紫外线指数", show_wind_effects: "阵风和落叶", show_wind_effects_helper: "刮风天或风速超过 8 m/s 时", sun_position_x: "太阳/月亮位置，水平", sun_position_x_helper: "留空则随一天中的时间变化", sun_position_y: "太阳/月亮位置，垂直", sun_position_y_helper: "留空则随一天中的时间变化", temperature_entity: "温度传感器", text_color: "文字颜色", text_color_helper: "任意 CSS 颜色，例如 #1a1a2e 或 var(--primary-text-color)", uv_index_entity: "紫外线指数传感器", visual_style: "图形", visual_style_classic: "经典", visual_style_modern: "现代", wind_bearing_entity: "风向传感器", wind_gust_entity: "阵风传感器", wind_speed_entity: "风速传感器", language_nb: "挪威语（书面挪威语）", language_sl: "斯洛文尼亚语", language_tr: "土耳其语", hourly_forecast_hours_helper: "无上限：例如 72 表示三天，填更大的数可显示服务商提供的全部预报", styles: "自定义 CSS", styles_helper: "应用于卡片及其所有部分的 CSS，例如 .temperature { font-size: 48px; }" }, gA = { pageTitle: "动态天气卡片", pageSubtitle: "交互式演示与配置工具", quickPresets: "快速预设", sunnyDay: "晴天", rainy: "雨天", snowy: "雪天", clearNight: "晴夜", condition: "状态", temperature: "温度", humidity: "湿度 (%)", windSpeed: "风速", timeOfDay: "时间段", timeMode: "时间模式", manualControl: "手动控制", sunrise: "日出", day: "白天", sunset: "日落", night: "夜晚", cardName: "卡片名称", height: "高度 (px)", feelsLike: "体感温度", minTemp: "最低温度", windDirection: "风向", windGust: "阵风", hourlyForecast: "逐小时预报", dailyForecast: "每日预报", sunriseSunset: "日出/日落", showClock: "时钟", clockPosition: "时钟位置", clockPositionTop: "右上角", clockPositionDetails: "详情行", clockFormat: "时间格式", clockSize: "时钟大小", clockSizeSmall: "小", clockSizeMedium: "中", clockSizeLarge: "大", clockWeight: "时钟字重", clockWeightThin: "细", clockWeightRegular: "常规", clockWeightBold: "粗", overlayOpacity: "遮罩层透明度 (0-1)", windSpeedUnit: "风速单位", dailyForecastDays: "每日预报天数", hourlyForecastHours: "逐小时预报小时数", hourlyForecastStep: "逐小时预报间隔（小时）", hourlyChart: "逐小时温度曲线", startDemo: "开启演示模式", stopDemo: "停止演示模式", madeWith: "用爱发电，专为 Home Assistant 打造", loading: "正在加载卡片...", placeholderEmpty: "留空则隐藏", weatherConditions: { sunny: "晴朗", clearNight: "晴夜", partlyCloudy: "局部多云", cloudy: "多云", rainy: "有雨", pouring: "大雨", snowy: "有雪", sleet: "雨夹雪", hail: "冰雹", foggy: "有雾", lightning: "雷电", thunderstorm: "雷阵雨", windy: "有风", windyVariant: "有风，多云" }, language: { title: "语言" }, animationQuality: "动画质量", animations: "动画", aqi: "空气质量（传感器）", aurora: "极光", auroraNight: "极光", autoShort: "自动", borderRadius: "圆角半径（px）", clockAndDate: "时钟", dailyForecastTitle: "每日预报标题", details: "详细信息", dewPoint: "露点", documentation: "文档", forecasts: "预报", hourlyForecastTitle: "逐小时预报标题", humidityToggle: "湿度", layout: "布局", layoutDefault: "默认", layoutMinimal: "极简", links: "链接", moonPhase: "月相", pause: "暂停", placeholderDefault: "默认", play24h: "播放 24 小时", playSpeed: "周期长度", precipitationOutlook: "降雨开始/结束时间", pressure: "气压", qualityHighShort: "高", qualityLowShort: "低", qualityMediumShort: "中", raindrops: "玻璃上的雨滴", reportIssue: "报告问题", showDate: "日期", stationSensors: "气象站传感器", stationSensorsHint: "气象站传感器会用个人气象站的示例数据替换温度、湿度、风和降水。", sunPositionX: "太阳/月亮 X（%）", sunPositionY: "太阳/月亮 Y（%）", tabContent: "内容", tabLook: "外观", tabMore: "更多", tabTime: "时间", tabWeather: "天气", temperatureBars: "温度条", forecastWind: "预报中的风", forecastDescription: "文字预报", textColor: "文字颜色", textShadow: "文字阴影", uvIndex: "紫外线指数", visualStyle: "图形风格", visualStyleClassic: "🎨 经典", visualStyleModern: "✨ 现代", windBearing: "风向", windEffects: "阵风和落叶", windyDay: "有风", yamlTitle: "卡片 YAML", copy: "复制", copied: "已复制", yamlHint: "粘贴到 Home Assistant 的“手动”卡片中，并将 weather.home 替换为你的天气实体。", customCss: "自定义 CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, yA = {
-  sunny: Vx,
-  clear: Lx,
-  overcast: Hx,
-  cloudy: Ix,
-  partlycloudy: Rx,
-  rainy: Bx,
-  rain: Fx,
-  snowy: Ox,
-  snow: qx,
-  foggy: Ux,
-  fog: Kx,
-  lightning: Wx,
+  feels_like: gx,
+  forecast_title: yx,
+  forecast_title_hourly: bx,
+  daily_forecast_title: vx,
+  no_data: kx,
+  weather: fx,
+  wind_unit_kmh: wx,
+  wind_unit_ms: zx,
+  wind_unit_mph: jx,
+  wind_unit_knots: Sx,
+  wind_unit_fts: xx,
+  am: Ax,
+  pm: Px,
+  pressure: Mx,
+  uv_index: Cx,
+  dew_point: $x,
+  aqi: Ex,
+  precipitation_outlook: Tx,
+  editor: Dx,
+  demo: Nx
+}, Lx = "晴朗", Hx = "晴", Ix = "阴天", Rx = "多云", Bx = "局部多云", Fx = "有雨", Ox = "雨", qx = "有雪", Ux = "雪", Kx = "有雾", Wx = "雾", Gx = "雷电", Zx = "大雨", Yx = "冰雹", Jx = "有风", Qx = "体感温度", Xx = "今日预报", eA = "逐小时预报", tA = "每日预报", aA = "无数据", iA = "天气", nA = "km/h", rA = "m/s", oA = "mph", sA = "节", lA = "ft/s", _A = "上午", dA = "下午", uA = "气压", cA = "紫外线指数", mA = "露点", pA = "空气质量指数", hA = { start: "{kind}：约{time}开始", soon: "{kind}：即将开始", stop: "{kind}：约{time}结束", continues: "{kind}：至少再持续{hours}小时", rain: "雨", snow: "雪", sleet: "雨夹雪", hail: "冰雹", storm: "雷暴" }, gA = { entity: "天气实体", name: "卡片标题", layout: "布局", layout_default: "默认", layout_minimal: "简约", height: "高度", show_feels_like: "体感温度", show_wind: "风", show_wind_gust: "阵风", show_wind_direction: "风向", show_humidity: "湿度", show_min_temp: "最低温度", show_hourly_forecast: "逐小时预报", hourly_forecast_hours: "小时数", hourly_forecast_step: "间隔", hourly_forecast_chart: "温度曲线", show_daily_forecast: "每日预报", daily_forecast_days: "天数", show_sunrise_sunset: "日出和日落", sunrise_entity: "日出传感器", sunset_entity: "日落传感器", show_clock: "时钟", clock_position: "位置", clock_position_top: "顶部", clock_position_details: "详情栏", clock_format: "格式", clock_format_12h: "12小时制 (AM/PM)", clock_format_24h: "24小时制", clock_size: "大小", clock_size_small: "小", clock_size_medium: "中", clock_size_large: "大", clock_weight: "字重", clock_weight_thin: "细", clock_weight_regular: "常规", clock_weight_bold: "粗", overlay_opacity: "暗化", text_shadow: "文字阴影", language: "语言", language_auto: "自动", language_en: "英语", language_ru: "俄语", language_de: "德语", language_nl: "荷兰语", language_fr: "法语", language_es: "西班牙语", language_it: "意大利语", language_sk: "斯洛伐克语", language_hu: "匈牙利语", language_pt: "葡萄牙语", language_da: "丹麦语", language_sr: "塞尔维亚语", "language_sr-Latn": "塞尔维亚语（拉丁字母）", language_pl: "波兰语", language_zh: "简体中文", wind_speed_unit: "风速单位", wind_speed_unit_ms: "m/s", wind_speed_unit_kmh: "km/h", wind_speed_unit_auto: "自动（与集成一致）", wind_speed_unit_mph: "mph", wind_speed_unit_kn: "节", wind_speed_unit_helper: "自动：使用集成或风速传感器的单位；其他选项会换算卡片上的所有风速", show_animations: "动画", animation_quality: "动画质量", animation_quality_helper: "在壁挂平板和性能较低的设备上可调低", animation_quality_high: "高", animation_quality_low: "低（20 FPS，适合低性能设备）", animation_quality_medium: "中（30 FPS，粒子更少）", aqi_entity: "空气质量传感器（AQI）", border_radius: "圆角半径", daily_forecast_title: "标题", daily_forecast_title_helper: "留空 = 默认标题", dew_point_entity: "露点传感器", feels_like_entity: "体感温度传感器", hourly_forecast_title: "标题", hourly_forecast_title_helper: "留空 = 默认标题", humidity_entity: "湿度传感器", overlay_opacity_helper: "0–1，调暗天空以保证文字清晰可读", precipitation_entity: "降水传感器", pressure_entity: "气压传感器", section_appearance: "外观", section_clock: "语言、时钟和日期", section_details: "详细信息", section_forecast: "预报", section_sensors: "传感器（可选）", show_aurora: "极光", show_aurora_helper: "晴朗的夜晚，现代图形", show_date: "日期", show_dew_point: "露点", show_precipitation_outlook: "何时开始/停止下雨", show_precipitation_outlook_helper: "根据未来 12 小时的逐小时预报", show_pressure: "气压", show_raindrops: "玻璃上的雨滴", show_raindrops_helper: "下雨时，现代图形", show_temperature_bars: "温度条", show_forecast_wind: "预报中的风", show_forecast_wind_helper: "天气服务提供时，显示每小时和每天的风向、风速和阵风", hourly_forecast_step_helper: "每隔几小时显示一次预报，例如 3 表示 00:00、03:00、06:00 …", hourly_forecast_chart_helper: "用温度曲线代替数字，并以柱状显示降水概率", show_forecast_description: "文字预报", show_forecast_description_helper: "天气服务提供的文字预报（如有，例如美国国家气象局）", show_uv_index: "紫外线指数", show_wind_effects: "阵风和落叶", show_wind_effects_helper: "刮风天或风速超过 8 m/s 时", sun_position_x: "太阳/月亮位置，水平", sun_position_x_helper: "留空则随一天中的时间变化", sun_position_y: "太阳/月亮位置，垂直", sun_position_y_helper: "留空则随一天中的时间变化", temperature_entity: "温度传感器", text_color: "文字颜色", text_color_helper: "任意 CSS 颜色，例如 #1a1a2e 或 var(--primary-text-color)", uv_index_entity: "紫外线指数传感器", visual_style: "图形", visual_style_classic: "经典", visual_style_modern: "现代", wind_bearing_entity: "风向传感器", wind_gust_entity: "阵风传感器", wind_speed_entity: "风速传感器", language_nb: "挪威语（书面挪威语）", language_sl: "斯洛文尼亚语", language_tr: "土耳其语", hourly_forecast_hours_helper: "无上限：例如 72 表示三天，填更大的数可显示服务商提供的全部预报", styles: "自定义 CSS", styles_helper: "应用于卡片及其所有部分的 CSS，例如 .temperature { font-size: 48px; }" }, yA = { pageTitle: "动态天气卡片", pageSubtitle: "交互式演示与配置工具", quickPresets: "快速预设", sunnyDay: "晴天", rainy: "雨天", snowy: "雪天", clearNight: "晴夜", condition: "状态", temperature: "温度", humidity: "湿度 (%)", windSpeed: "风速", timeOfDay: "时间段", timeMode: "时间模式", manualControl: "手动控制", sunrise: "日出", day: "白天", sunset: "日落", night: "夜晚", cardName: "卡片名称", height: "高度 (px)", feelsLike: "体感温度", minTemp: "最低温度", windDirection: "风向", windGust: "阵风", hourlyForecast: "逐小时预报", dailyForecast: "每日预报", sunriseSunset: "日出/日落", showClock: "时钟", clockPosition: "时钟位置", clockPositionTop: "右上角", clockPositionDetails: "详情行", clockFormat: "时间格式", clockSize: "时钟大小", clockSizeSmall: "小", clockSizeMedium: "中", clockSizeLarge: "大", clockWeight: "时钟字重", clockWeightThin: "细", clockWeightRegular: "常规", clockWeightBold: "粗", overlayOpacity: "遮罩层透明度 (0-1)", windSpeedUnit: "风速单位", dailyForecastDays: "每日预报天数", hourlyForecastHours: "逐小时预报小时数", hourlyForecastStep: "逐小时预报间隔（小时）", hourlyChart: "逐小时温度曲线", startDemo: "开启演示模式", stopDemo: "停止演示模式", madeWith: "用爱发电，专为 Home Assistant 打造", loading: "正在加载卡片...", placeholderEmpty: "留空则隐藏", weatherConditions: { sunny: "晴朗", clearNight: "晴夜", partlyCloudy: "局部多云", cloudy: "多云", rainy: "有雨", pouring: "大雨", snowy: "有雪", sleet: "雨夹雪", hail: "冰雹", foggy: "有雾", lightning: "雷电", thunderstorm: "雷阵雨", windy: "有风", windyVariant: "有风，多云" }, language: { title: "语言" }, animationQuality: "动画质量", animations: "动画", aqi: "空气质量（传感器）", aurora: "极光", auroraNight: "极光", autoShort: "自动", borderRadius: "圆角半径（px）", clockAndDate: "时钟", dailyForecastTitle: "每日预报标题", details: "详细信息", dewPoint: "露点", documentation: "文档", forecasts: "预报", hourlyForecastTitle: "逐小时预报标题", humidityToggle: "湿度", layout: "布局", layoutDefault: "默认", layoutMinimal: "极简", links: "链接", moonPhase: "月相", pause: "暂停", placeholderDefault: "默认", play24h: "播放 24 小时", playSpeed: "周期长度", precipitationOutlook: "降雨开始/结束时间", pressure: "气压", qualityHighShort: "高", qualityLowShort: "低", qualityMediumShort: "中", raindrops: "玻璃上的雨滴", reportIssue: "报告问题", showDate: "日期", stationSensors: "气象站传感器", stationSensorsHint: "气象站传感器会用个人气象站的示例数据替换温度、湿度、风和降水。", sunPositionX: "太阳/月亮 X（%）", sunPositionY: "太阳/月亮 Y（%）", tabContent: "内容", tabLook: "外观", tabMore: "更多", tabTime: "时间", tabWeather: "天气", temperatureBars: "温度条", forecastWind: "预报中的风", forecastDescription: "文字预报", textColor: "文字颜色", textShadow: "文字阴影", uvIndex: "紫外线指数", visualStyle: "图形风格", visualStyleClassic: "🎨 经典", visualStyleModern: "✨ 现代", windBearing: "风向", windEffects: "阵风和落叶", windyDay: "有风", yamlTitle: "卡片 YAML", copy: "复制", copied: "已复制", yamlHint: "粘贴到 Home Assistant 的“手动”卡片中，并将 weather.home 替换为你的天气实体。", customCss: "自定义 CSS", customCssPlaceholder: ".temperature { font-size: 48px; }" }, bA = {
+  sunny: Lx,
+  clear: Hx,
+  overcast: Ix,
+  cloudy: Rx,
+  partlycloudy: Bx,
+  rainy: Fx,
+  rain: Ox,
+  snowy: qx,
+  snow: Ux,
+  foggy: Kx,
+  fog: Wx,
+  lightning: Gx,
   "lightning-rainy": "雷阵雨",
-  pouring: Gx,
+  pouring: Zx,
   "snowy-rainy": "雨夹雪",
-  hail: Zx,
+  hail: Yx,
   "clear-night": "晴夜",
-  windy: Yx,
+  windy: Jx,
   "windy-variant": "有风，多云",
-  feels_like: Jx,
-  forecast_title: Qx,
-  forecast_title_hourly: Xx,
-  daily_forecast_title: eA,
-  no_data: tA,
-  weather: aA,
-  wind_unit_kmh: iA,
-  wind_unit_ms: nA,
-  wind_unit_mph: rA,
-  wind_unit_knots: oA,
-  wind_unit_fts: sA,
-  am: lA,
-  pm: _A,
-  pressure: dA,
-  uv_index: uA,
-  dew_point: cA,
-  aqi: mA,
-  precipitation_outlook: pA,
-  editor: hA,
-  demo: gA
+  feels_like: Qx,
+  forecast_title: Xx,
+  forecast_title_hourly: eA,
+  daily_forecast_title: tA,
+  no_data: aA,
+  weather: iA,
+  wind_unit_kmh: nA,
+  wind_unit_ms: rA,
+  wind_unit_mph: oA,
+  wind_unit_knots: sA,
+  wind_unit_fts: lA,
+  am: _A,
+  pm: dA,
+  pressure: uA,
+  uv_index: cA,
+  dew_point: mA,
+  aqi: pA,
+  precipitation_outlook: hA,
+  editor: gA,
+  demo: yA
 }, ca = {
-  da: gg,
-  de: Qg,
-  en: Dy,
-  es: gb,
-  et: Qb,
-  fr: Dv,
-  hu: gk,
-  it: Qk,
-  nb: Nf,
-  nl: yw,
-  pl: Xw,
-  pt: Nz,
-  ru: yj,
-  sk: Xj,
-  sl: NS,
-  sr: y0,
-  "sr-Latn": X0,
-  tr: Nx,
-  zh: yA
-}, bA = we([
+  da: yg,
+  de: Xg,
+  en: Ny,
+  es: yb,
+  et: Xb,
+  fr: Nv,
+  hu: yk,
+  it: Xk,
+  nb: Vf,
+  nl: bw,
+  pl: ez,
+  pt: Vz,
+  ru: bj,
+  sk: eS,
+  sl: VS,
+  sr: b0,
+  "sr-Latn": ex,
+  tr: Vx,
+  zh: bA
+}, vA = we([
   "Sunny",
   "Clear",
   "Overcast",
@@ -49146,7 +49146,7 @@ const Nh = "Solskin", Vh = "Klart", Lh = "Overskyet", Hh = "Skyet", Ih = "Delvis
   uk: "Сонячно|Ясно|Суцільна хмарність|Хмарно|Мінлива хмарність|Дощова погода|Дощ|Сніжна погода|Сніг|Туманно|Туман|Блискавки|Гроза|Сильний дощ|Дощ зі снігом|Град|Ясна ніч|Вітряно|Вітряно й хмарно|Відчувається як|Прогноз на сьогодні|Погодинний прогноз|Щоденний прогноз|Немає даних|Погода|Тиск|УФ-індекс|Точка роси|Індекс якості повітря|{kind} очікується близько {time}|{kind} очікується незабаром|{kind} закінчиться близько {time}|{kind} ще щонайменше {hours} годин|Мінімальний|Графіка|Сучасна|Класична|Якість анімації|Середня (30 FPS, менше частинок)|Низька (20 FPS, для повільних пристроїв)|Висота|Вітер|Пориви|Напрямок|Мінімальна температура|Кожні|Графік температури|Схід і захід сонця|Схід сонця|Захід сонця|Швидкість вітру|Напрямок вітру|Опади|Початок/кінець дощу|Температурні смуги|Вітер у прогнозах|Текстовий прогноз|Годинник|Положення|Угорі|Подробиці|Формат|Розмір|Малий|Великий|Товщина|Тонкий|Звичайний|Жирний|Затемнення|Тінь тексту|Колір тексту|Радіус кутів|Положення сонця/місяця, горизонтальне|Положення сонця/місяця, вертикальне|Одиниця швидкості вітру|Анімації|Північне сяйво|Вигляд|Прогноз|Мова, годинник і дата|Датчики (необов'язкові)|Краплі дощу на склі|Пориви вітру й листя|Атрибут мінімальної температури",
   vi: "Nắng|Quang đãng|U ám|Nhiều mây|Mây rải rác|Trời mưa|Mưa|Trời tuyết|Tuyết|Có sương mù|Sương mù|Sét|Dông|Mưa lớn|Mưa tuyết|Mưa đá|Đêm quang|Gió mạnh|Gió mạnh và mây|Cảm giác như|Dự báo hôm nay|Dự báo theo giờ|Dự báo theo ngày|Không có dữ liệu|Thời tiết|Áp suất|Chỉ số UV|Điểm sương|Chỉ số chất lượng không khí|Dự kiến {kind} khoảng {time}|Sắp có {kind}|{kind} kết thúc khoảng {time}|{kind} trong ít nhất {hours} giờ nữa|Tối giản|Đồ họa|Hiện đại|Cổ điển|Chất lượng hoạt ảnh|Vừa (30 FPS, ít hạt hơn)|Thấp (20 FPS, cho thiết bị chậm)|Chiều cao|Gió|Gió giật|Hướng|Nhiệt độ thấp nhất|Mỗi|Biểu đồ nhiệt độ|Bình minh và hoàng hôn|Bình minh|Hoàng hôn|Tốc độ gió|Hướng gió|Lượng mưa|Thời điểm bắt đầu/kết thúc mưa|Thanh nhiệt độ|Gió trong dự báo|Dự báo bằng chữ|Đồng hồ|Vị trí|Trên|Chi tiết|Định dạng|Kích thước|Nhỏ|Lớn|Độ đậm|Mảnh|Thường|Đậm|Làm tối|Bóng chữ|Màu chữ|Bán kính góc|Vị trí mặt trời/trăng, ngang|Vị trí mặt trời/trăng, dọc|Đơn vị tốc độ gió|Hoạt ảnh|Cực quang|Giao diện|Dự báo|Ngôn ngữ, đồng hồ và ngày|Cảm biến (tùy chọn)|Giọt mưa trên kính|Gió giật và lá|Thuộc tính nhiệt độ thấp nhất",
   "zh-Hant": "晴朗|晴空|陰天|多雲|局部多雲|有雨|雨|下雪|雪|有霧|霧|閃電|雷雨|豪雨|雨夾雪|冰雹|晴朗夜晚|有風|有風且多雲|體感溫度|今日預報|逐時預報|每日預報|沒有資料|天氣|氣壓|紫外線指數|露點|空氣品質指數|預計 {time} 左右有{kind}|即將有{kind}|{kind}約於 {time} 結束|{kind}至少再持續 {hours} 小時|精簡|圖形|現代|經典|動畫品質|中（30 FPS，較少粒子）|低（20 FPS，適合較慢裝置）|高度|風|陣風|方向|最低溫度|每隔|溫度圖表|日出與日落|日出|日落|風速|風向|降水量|降雨開始／結束時間|溫度長條|預報中的風|文字預報|時鐘|位置|頂部|詳細資訊|格式|大小|小|大|粗細|細|標準|粗|調暗|文字陰影|文字顏色|圓角半徑|太陽／月亮水平位置|太陽／月亮垂直位置|風速單位|動畫|北極光|外觀|預報|語言、時鐘與日期|感測器（選填）|玻璃上的雨滴|陣風與落葉|最低溫度屬性"
-}), vA = we([
+}), kA = we([
   "Direction, speed and gusts for each hour and day, when the weather provider reports them",
   "Show the forecast every few hours, e.g. 3 for 00:00, 03:00, 06:00 …",
   "A curve of the temperature instead of numbers, with the chance of precipitation as bars",
@@ -49181,7 +49181,7 @@ const Nh = "Solskin", Vh = "Klart", Lh = "Overskyet", Hh = "Skyet", Ih = "Delvis
   uk: "Напрямок, швидкість і пориви для кожної години й дня, якщо їх надає постачальник|Показувати прогноз кожні кілька годин, напр. 3 для 00:00, 03:00, 06:00 …|Температурна крива замість чисел, імовірність опадів стовпчиками|Текстовий прогноз постачальника, якщо є (напр. US National Weather Service)|Автоматично зберігає одиницю інтеграції чи датчика; інші варіанти перетворюють усі дані вітру|Зменште для настінних планшетів і повільних пристроїв|Ясними ночами із сучасною графікою|0–1, затемнює небо для читабельного тексту|Будь-який колір CSS, напр. #1a1a2e або var(--primary-text-color)|Залиште порожнім для відповідності часу доби|З погодинного прогнозу на наступні 12 годин|Порожньо = типовий заголовок|Під час дощу із сучасною графікою|За вітряної погоди або понад 8 m/s|Без верхньої межі: напр. 72 для трьох днів або більше для всього прогнозу|CSS картки та всіх її частин, напр. .temperature { font-size: 48px; }|Автоматично (з інтеграції)",
   vi: "Hướng, tốc độ và gió giật mỗi giờ và ngày, khi nhà cung cấp báo cáo|Hiện dự báo cách vài giờ, ví dụ 3 cho 00:00, 03:00, 06:00 …|Đường cong nhiệt độ thay cho số, xác suất mưa dạng thanh|Dự báo bằng chữ của nhà cung cấp nếu có (ví dụ US National Weather Service)|Tự động giữ đơn vị của tích hợp hoặc cảm biến; lựa chọn khác đổi mọi dữ liệu gió trên thẻ|Giảm cho máy tính bảng gắn tường và thiết bị chậm|Đêm quang đãng, với đồ họa Hiện đại|0–1, làm tối bầu trời để chữ dễ đọc|Bất kỳ màu CSS nào, ví dụ #1a1a2e hoặc var(--primary-text-color)|Để trống để theo thời gian trong ngày|Từ dự báo theo giờ cho 12 giờ tới|Trống = tiêu đề mặc định|Khi mưa, với đồ họa Hiện đại|Khi có gió hoặc trên 8 m/s|Không giới hạn trên: ví dụ 72 cho ba ngày, hoặc hơn để hiện toàn bộ dự báo|CSS cho thẻ và mọi phần, ví dụ .temperature { font-size: 48px; }|Tự động (từ tích hợp)",
   "zh-Hant": "天氣供應者有提供時，顯示每小時和每天的風向、風速及陣風|每隔數小時顯示預報，例如 3 代表 00:00、03:00、06:00 …|以溫度曲線取代數字，並以長條顯示降水機率|供應者有提供時顯示文字預報（例如 US National Weather Service）|自動保留整合或風速感測器的單位；其他選項會轉換卡片上的所有風資料|牆上平板及較慢裝置請降低品質|晴朗夜晚，使用現代圖形時|0–1，調暗天空以保持文字易讀|任何 CSS 顏色，例如 #1a1a2e 或 var(--primary-text-color)|留空可跟隨一天中的時間|來自未來 12 小時的逐時預報|留空 = 預設標題|下雨時，使用現代圖形時|有風或風速超過 8 m/s 時|無上限：例如 72 代表三天，也可增加以顯示供應者的完整預報|卡片及其所有部分的 CSS，例如 .temperature { font-size: 48px; }|自動（來自整合）"
-}), kA = new Map([
+}), fA = new Map([
   ...Object.values(Ia.en),
   ...Object.values(ss.en)
 ].map((e) => [e.toLowerCase(), e])), Ll = {
@@ -49208,21 +49208,21 @@ const Nh = "Solskin", Vh = "Klart", Lh = "Overskyet", Hh = "Skyet", Ih = "Delvis
   "24-hour": "24 h",
   "Custom CSS": "CSS"
 };
-function fA(e, t) {
-  const a = { ...bA[e], ...vA[e] }, i = Object.keys(a).find((r) => r.slice(11).toLowerCase() === t.toLowerCase());
+function wA(e, t) {
+  const a = { ...vA[e], ...kA[e] }, i = Object.keys(a).find((r) => r.slice(11).toLowerCase() === t.toLowerCase());
   if (i) return a[i];
   if (Hl[t]) return Hl[t];
-  const n = kA.get(t.toLowerCase());
+  const n = fA.get(t.toLowerCase());
   if (n) return h({ language: e }, n);
   throw new Error(`Missing ${e} weather translation: ${t}`);
 }
-function wA(e) {
+function zA(e) {
   const t = e === "zh-Hans" ? ca.zh : ca[e], a = { language: e };
   if (t) return { ...t, editor: {
     ...t.editor,
     templow_attribute: `${t.editor.show_min_temp}: ${h(a, "Entity attribute")}`
   } };
-  const i = (r) => fA(e, r), n = { ...ca.en.editor };
+  const i = (r) => wA(e, r), n = { ...ca.en.editor };
   for (const [r, o] of Object.entries(ca.en.editor)) {
     let s;
     r.startsWith("language_") ? s = r === "language_auto" ? i("Automatic") : new Intl.DisplayNames([e], { type: "language" }).of(r.slice(9)) ?? r.slice(9) : s = Ll[r] ? `${i(Ll[r])}: ${i("Sensor")}` : i(o), Object.assign(n, { [r]: s });
@@ -49236,7 +49236,7 @@ function wA(e) {
 }
 const La = {
   ...ca,
-  ...Object.fromEntries(jn.map((e) => [e, wA(e)]))
+  ...Object.fromEntries(jn.map((e) => [e, zA(e)]))
 };
 class Za {
   constructor() {
@@ -49264,7 +49264,7 @@ class Za {
     !La[t] || this.lang === t || (this.lang = t);
   }
 }
-const zA = new Za(), no = (e) => {
+const jA = new Za(), no = (e) => {
   if (!e) return;
   const t = e.trim().replaceAll("_", "-").toLowerCase(), a = Object.keys(La).find((n) => n.toLowerCase() === t);
   if (a) return a;
@@ -49346,10 +49346,10 @@ const zA = new Za(), no = (e) => {
     rt("sunset_entity"),
     Ii("templow_attribute")
   ]
-}, Kd = Object.fromEntries(
+}, Wd = Object.fromEntries(
   Object.values(hs).flat().filter((e) => e.value !== void 0).map((e) => [e.field.name, e.value])
 );
-function Wd(e) {
+function Gd(e) {
   if (e !== void 0) {
     if (!e || typeof e != "object" || Array.isArray(e)) throw new Error("Weather options must be an object.");
     for (const { field: t } of Object.values(hs).flat()) {
@@ -49368,7 +49368,7 @@ function Wd(e) {
     }
   }
 }
-function Gd(e, t = [], a = []) {
+function Zd(e, t = [], a = []) {
   const n = [.../* @__PURE__ */ new Set([...t, ...a, ...Object.keys(e?.states ?? {})])].filter((o) => o.startsWith("weather."));
   return {
     type: "custom:mushroom-addition-weather-advanced",
@@ -49381,10 +49381,10 @@ function ro(e) {
   const t = new Za();
   return t.setLanguage(Zn({ hassLang: e?.language })), t;
 }
-var jA = Object.defineProperty, SA = Object.getOwnPropertyDescriptor, Ti = (e, t, a, i) => {
-  for (var n = i > 1 ? void 0 : i ? SA(t, a) : t, r = e.length - 1, o; r >= 0; r--)
+var SA = Object.defineProperty, xA = Object.getOwnPropertyDescriptor, Ti = (e, t, a, i) => {
+  for (var n = i > 1 ? void 0 : i ? xA(t, a) : t, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = (i ? o(t, a, n) : o(n)) || n);
-  return i && n && jA(t, a, n), n;
+  return i && n && SA(t, a, n), n;
 };
 let za = class extends ve {
   constructor() {
@@ -49401,7 +49401,7 @@ let za = class extends ve {
         (t[a] === "" || t[a] === null || t[a] === void 0) && delete t[a];
       this.draft = t;
       try {
-        Wd(t);
+        Gd(t);
       } catch (a) {
         if (!(a instanceof Error)) throw a;
         this.error = a.message;
@@ -49434,7 +49434,7 @@ let za = class extends ve {
   }
   render() {
     if (!this.config || !this.hass) return g;
-    const e = { ...Kd, ...this.draft ?? this.config.weather };
+    const e = { ...Wd, ...this.draft ?? this.config.weather };
     return u`${this.error ? u`<p role="alert">${this.error}</p>` : g}
       ${this.schemas.map((t) => u`<h3>${t.title}</h3>
         <ha-form .hass=${this.hass} .data=${e} .schema=${t.fields}
@@ -49475,22 +49475,22 @@ const gs = ["temperature", "humidity", "co2", "pm25", "voc", "mould", "radon", "
   radon: { name: "Radon", icon: "mdi:radioactive", decimals: 0, unit: "", warning_above: 50, poor_above: 100, bad_above: 150 },
   pressure: { name: "Pressure", icon: "mdi:gauge", decimals: 0, unit: "", warning_above: 1030, warning_below: 990 },
   custom: { name: "Sensor", icon: "mdi:air-filter", decimals: 0, unit: "" }
-}, Ao = [
+}, xo = [
   { name: "Good", icon: "mdi:emoticon-happy-outline", color: "green" },
   { name: "Fair", icon: "mdi:emoticon-neutral-outline", color: "amber" },
   { name: "Poor", icon: "mdi:emoticon-sad-outline", color: "orange" },
   { name: "Very poor", icon: "mdi:emoticon-dead-outline", color: "red" },
   { name: "Unknown", icon: "mdi:help-circle-outline", color: "grey" }
 ];
-function Zd(e, t) {
+function Yd(e, t) {
   const a = t.entity ? e.states[t.entity]?.state : void 0;
   if (!a?.trim() || !Number.isFinite(Number(a))) return;
   const i = Number(a);
   if (!(["humidity", "mould"].includes(t.kind) && (i < 0 || i > 100)) && !(["co2", "pm25", "voc", "radon", "pressure"].includes(t.kind) && i < 0))
     return i;
 }
-function Yd(e, t) {
-  const a = Zd(e, t);
+function Jd(e, t) {
+  const a = Yd(e, t);
   if (a === void 0) return;
   const i = String(e.states[t.entity ?? ""]?.attributes.unit_of_measurement ?? "").toLowerCase().replaceAll("μ", "u").replaceAll("µ", "u").replaceAll("³", "3").replaceAll(" ", "");
   if (!i || t.kind === "custom") return a;
@@ -49516,7 +49516,7 @@ function sr(e, t) {
   const a = { ...qa[e.kind], ...e }, i = (r) => r !== void 0 && (e.kind === "mould" ? t >= r : t > r), n = (r) => r !== void 0 && (["temperature", "humidity"].includes(e.kind) ? t <= r : t < r);
   return i(a.bad_above) || n(a.bad_below) ? 3 : i(a.poor_above) ? 2 : i(a.warning_above) || n(a.warning_below) ? 1 : 0;
 }
-function xA(e, t) {
+function AA(e, t) {
   if (t === void 0) return "grey";
   if (e.color) return e.color;
   const a = { ...qa[e.kind], ...e };
@@ -49524,9 +49524,9 @@ function xA(e, t) {
     if (a.bad_below !== void 0 && t <= a.bad_below) return "blue";
     if (a.warning_above !== void 0 && t > a.warning_above && sr(e, t) === 1) return "orange";
   }
-  return e.kind === "pressure" && a.warning_below !== void 0 && t < a.warning_below ? "orange" : Ao[sr(e, t)].color;
+  return e.kind === "pressure" && a.warning_below !== void 0 && t < a.warning_below ? "orange" : xo[sr(e, t)].color;
 }
-function Jd(e, t) {
+function Qd(e, t) {
   if (t.entity) {
     const i = e.states[t.entity]?.state.toLowerCase().trim().replace(/[_-]+/g, " "), r = [
       ["good", "excellent", "healthy", "very good"],
@@ -49534,15 +49534,15 @@ function Jd(e, t) {
       ["poor", "unhealthy for sensitive groups"],
       ["very poor", "bad", "unhealthy", "very unhealthy", "hazardous", "severe"]
     ].findIndex((o) => o.includes(i ?? ""));
-    return Ao[r < 0 ? 4 : r];
+    return xo[r < 0 ? 4 : r];
   }
   const a = (t.air_quality_sensors ?? []).filter((i) => i.enabled !== !1 && ["co2", "pm25", "voc", "radon"].includes(i.kind)).flatMap((i) => {
-    const n = Yd(e, i);
+    const n = Jd(e, i);
     return n === void 0 ? [] : [sr(i, n)];
   });
-  return Ao[a.length ? Math.max(...a) : 4];
+  return xo[a.length ? Math.max(...a) : 4];
 }
-function Qd(e) {
+function Xd(e) {
   if (e.air_quality_sensors !== void 0 && !Array.isArray(e.air_quality_sensors)) throw new Error("Air Quality sensors must be a list.");
   for (const t of e.air_quality_sensors ?? []) {
     if (!t || !gs.includes(t.kind)) throw new Error("Choose a valid Air Quality sensor type.");
@@ -49556,7 +49556,7 @@ function Qd(e) {
       throw new Error("The very poor lower threshold must not exceed the warning lower threshold.");
   }
 }
-function Xd(e) {
+function eu(e) {
   const t = Object.values(e?.states ?? {}).filter((o) => o.entity_id.startsWith("sensor.") && o.state.trim() !== "" && Number.isFinite(Number(o.state))), a = t.find((o) => o.attributes.device_class === "carbon_dioxide" || /_co2$/.test(o.entity_id)), i = a ? e?.entities?.[a.entity_id]?.device_id : void 0, n = i ? t.filter((o) => e?.entities?.[o.entity_id]?.device_id === i) : a ? [a] : [], r = {
     co2: "carbon_dioxide",
     pm25: "pm25",
@@ -49579,17 +49579,17 @@ function Xd(e) {
     })
   };
 }
-const AA = /* @__PURE__ */ new Set(["name", "label", "overview", "timelineTitle", "positiveLabel", "negativeLabel", "zeroLabel"]);
-function Po(e, t, a) {
-  return typeof a == "string" ? AA.has(t) ? h(e, a) : a : Array.isArray(a) ? a.map((i) => Po(e, t, i)) : a && typeof a == "object" ? Object.fromEntries(
-    Object.entries(a).map(([i, n]) => [i, Po(e, i, n)])
+const PA = /* @__PURE__ */ new Set(["name", "label", "overview", "timelineTitle", "positiveLabel", "negativeLabel", "zeroLabel"]);
+function Ao(e, t, a) {
+  return typeof a == "string" ? PA.has(t) ? h(e, a) : a : Array.isArray(a) ? a.map((i) => Ao(e, t, i)) : a && typeof a == "object" ? Object.fromEntries(
+    Object.entries(a).map(([i, n]) => [i, Ao(e, i, n)])
   ) : a;
 }
-function PA(e, t) {
+function MA(e, t) {
   return Object.fromEntries(Object.entries(t).map(([a, i]) => [a, {
     ...i,
     label: h(e, i.label),
-    ..."default" in i ? { default: Po(e, a, i.default) } : {},
+    ..."default" in i ? { default: Ao(e, a, i.default) } : {},
     ...i.description ? { description: h(e, i.description) } : {},
     selector: ji(e, [{ name: a, selector: i.selector }])[0].selector
   }]));
@@ -49600,7 +49600,7 @@ const ji = (e, t) => t.map((a) => {
     ...a,
     ...a.schema ? { schema: ji(e, a.schema) } : {},
     ...r?.fields ? {
-      selector: { ...a.selector, object: { ...r, fields: PA(e, r.fields) } }
+      selector: { ...a.selector, object: { ...r, fields: MA(e, r.fields) } }
     } : {},
     ...Array.isArray(i?.options) ? {
       selector: {
@@ -49625,17 +49625,17 @@ const ji = (e, t) => t.map((a) => {
     } : {}
   };
 });
-var MA = Object.defineProperty, CA = Object.getOwnPropertyDescriptor, xn = (e, t, a, i) => {
-  for (var n = i > 1 ? void 0 : i ? CA(t, a) : t, r = e.length - 1, o; r >= 0; r--)
+var CA = Object.defineProperty, $A = Object.getOwnPropertyDescriptor, xn = (e, t, a, i) => {
+  for (var n = i > 1 ? void 0 : i ? $A(t, a) : t, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = (i ? o(t, a, n) : o(n)) || n);
-  return i && n && MA(t, a, n), n;
+  return i && n && CA(t, a, n), n;
 };
 const Il = {
   air_quality_show_header: "Show header",
   air_quality_show_title: "Show header title",
   air_quality_show_icon: "Show header icon",
   air_quality_show_badge: "Show air quality indicator"
-}, $A = {
+}, EA = {
   kind: "Reading type",
   entity: "Sensor",
   enabled: "Show reading",
@@ -49649,7 +49649,7 @@ const Il = {
   bad_above: "Very poor above",
   warning_below: "Warning below",
   bad_below: "Very poor below"
-}, Mo = ["warning_above", "poor_above", "bad_above", "warning_below", "bad_below"], Rl = {
+}, Po = ["warning_above", "poor_above", "bad_above", "warning_below", "bad_below"], Rl = {
   temperature: "°C",
   humidity: "%",
   co2: "ppm",
@@ -49660,7 +49660,7 @@ const Il = {
   pressure: "hPa",
   custom: ""
 };
-function EA(e) {
+function TA(e) {
   return [
     { name: "enabled", selector: { boolean: {} } },
     { name: "kind", selector: { select: { mode: "dropdown", options: gs.map((t) => ({ value: t, label: qa[t].name })) } } },
@@ -49672,7 +49672,7 @@ function EA(e) {
       { name: "unit", selector: { text: {} } },
       { name: "decimals", selector: { number: { min: 0, max: 3, step: 1, mode: "box" } } }
     ],
-    ...Mo.map((t) => ({ name: t, selector: { number: { mode: "box", step: "any" } } }))
+    ...Po.map((t) => ({ name: t, selector: { number: { mode: "box", step: "any" } } }))
   ];
 }
 let Ua = class extends ve {
@@ -49690,7 +49690,7 @@ let Ua = class extends ve {
     this.draft = e;
     const t = { ...this.config, air_quality_sensors: e };
     try {
-      Qd(t);
+      Xd(t);
     } catch (a) {
       if (!(a instanceof Error)) throw a;
       this.error = a.message;
@@ -49702,7 +49702,7 @@ let Ua = class extends ve {
     e.stopPropagation();
     const a = this.rows[t], i = { ...a, ...e.detail.value };
     if (i.kind !== a.kind)
-      for (const n of [...Mo, "unit", "decimals"]) delete i[n];
+      for (const n of [...Po, "unit", "decimals"]) delete i[n];
     for (const n of Object.keys(i))
       (i[n] === null || i[n] === void 0 || i[n] === "" && n !== "unit") && delete i[n];
     this.save(this.rows.map((n, r) => r === t ? i : n));
@@ -49717,8 +49717,8 @@ let Ua = class extends ve {
       ${this.rows.map((t, a) => u`<details>
         <summary>${t.name || e(qa[t.kind]?.name ?? "Sensor")} ${a + 1}</summary>
         <ha-form .hass=${this.hass} .data=${{ enabled: !0, ...qa[t.kind], ...t }}
-          .schema=${ji(this.hass, EA(t))}
-          .computeLabel=${(i) => `${e($A[i.name] ?? i.name)}${Mo.some((n) => n === i.name) && Rl[t.kind] ? ` (${Rl[t.kind]})` : ""}`}
+          .schema=${ji(this.hass, TA(t))}
+          .computeLabel=${(i) => `${e(EA[i.name] ?? i.name)}${Po.some((n) => n === i.name) && Rl[t.kind] ? ` (${Rl[t.kind]})` : ""}`}
           @value-changed=${(i) => this.changed(i, a)}></ha-form>
         <p>${e("Thresholds use the units shown. Unsupported units disable automatic colors and quality ratings, not readings.")}</p>
         <div class="tools">
@@ -49764,7 +49764,7 @@ xn([
 Ua = xn([
   nt("mushroom-addition-air-quality-options")
 ], Ua);
-const Ke = { create: 1, delete: 2, update: 4, date: 16, datetime: 32, description: 64 }, TA = "custom:mushroom-addition-todo", Bl = {
+const Ke = { create: 1, delete: 2, update: 4, date: 16, datetime: 32, description: 64 }, DA = "custom:mushroom-addition-todo", Bl = {
   todo_entities: "To-do lists",
   todo_show_completed: "Show completed tasks",
   todo_allow_add: "Allow adding tasks",
@@ -49774,18 +49774,18 @@ const Ke = { create: 1, delete: 2, update: 4, date: 16, datetime: 32, descriptio
 function Fl(e) {
   return [...new Set([e?.entity, ...e?.todo_entities ?? []].filter((t) => !!t))];
 }
-function DA(e) {
+function NA(e) {
   if (e.todo_entities !== void 0 && (!Array.isArray(e.todo_entities) || e.todo_entities.some((t) => typeof t != "string" || !/^todo\.[a-z0-9_]+$/.test(t))))
     throw new Error("To-do lists must contain todo entity IDs.");
   if (e.entity && !/^todo\.[a-z0-9_]+$/.test(e.entity)) throw new Error("Select a todo entity.");
   for (const t of ["todo_show_completed", "todo_allow_add", "todo_allow_edit", "todo_allow_delete"])
     if (e[t] !== void 0 && typeof e[t] != "boolean") throw new Error(`${t} must be a boolean.`);
 }
-function eu(e, t = [], a = []) {
+function tu(e, t = [], a = []) {
   const n = [...t, ...a, ...Object.keys(e?.states ?? {})].find((r) => r.startsWith("todo.") && e?.states[r] && !["unavailable", "unknown"].includes(e.states[r].state));
-  return { type: TA, ...n ? { entity: n } : {}, todo_show_completed: !0 };
+  return { type: DA, ...n ? { entity: n } : {}, todo_show_completed: !0 };
 }
-function NA(e, t) {
+function VA(e, t) {
   const a = e?.attributes.supported_features;
   return typeof a == "number" && (a & t) === t;
 }
@@ -49797,13 +49797,13 @@ async function oo(e, t) {
   if (!i || !Array.isArray(i.items) || i.items.some((n) => !n || typeof n.summary != "string" || !["needs_action", "completed"].includes(n.status) || n.uid != null && typeof n.uid != "string" || n.description != null && typeof n.description != "string" || n.due != null && typeof n.due != "string")) throw new Error("Invalid to-do response.");
   return i.items;
 }
-var _i = "M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z", tu = "M21.81 10.25C21.75 10.21 21.25 9.82 20.17 9.82C19.89 9.82 19.61 9.85 19.33 9.9C19.12 8.5 17.95 7.79 17.9 7.76L17.61 7.59L17.43 7.86C17.19 8.22 17 8.63 16.92 9.05C16.72 9.85 16.84 10.61 17.25 11.26C16.76 11.54 15.96 11.61 15.79 11.61H2.62C2.28 11.61 2 11.89 2 12.24C2 13.39 2.18 14.54 2.58 15.62C3.03 16.81 3.71 17.69 4.58 18.23C5.56 18.83 7.17 19.17 9 19.17C9.79 19.17 10.61 19.1 11.42 18.95C12.54 18.75 13.62 18.36 14.61 17.79C15.43 17.32 16.16 16.72 16.78 16C17.83 14.83 18.45 13.5 18.9 12.35H19.09C20.23 12.35 20.94 11.89 21.33 11.5C21.59 11.26 21.78 10.97 21.92 10.63L22 10.39L21.81 10.25M3.85 11.24H5.61C5.69 11.24 5.77 11.17 5.77 11.08V9.5C5.77 9.42 5.7 9.34 5.61 9.34H3.85C3.76 9.34 3.69 9.41 3.69 9.5V11.08C3.7 11.17 3.76 11.24 3.85 11.24M6.28 11.24H8.04C8.12 11.24 8.2 11.17 8.2 11.08V9.5C8.2 9.42 8.13 9.34 8.04 9.34H6.28C6.19 9.34 6.12 9.41 6.12 9.5V11.08C6.13 11.17 6.19 11.24 6.28 11.24M8.75 11.24H10.5C10.6 11.24 10.67 11.17 10.67 11.08V9.5C10.67 9.42 10.61 9.34 10.5 9.34H8.75C8.67 9.34 8.6 9.41 8.6 9.5V11.08C8.6 11.17 8.66 11.24 8.75 11.24M11.19 11.24H12.96C13.04 11.24 13.11 11.17 13.11 11.08V9.5C13.11 9.42 13.05 9.34 12.96 9.34H11.19C11.11 9.34 11.04 9.41 11.04 9.5V11.08C11.04 11.17 11.11 11.24 11.19 11.24M6.28 9H8.04C8.12 9 8.2 8.91 8.2 8.82V7.25C8.2 7.16 8.13 7.09 8.04 7.09H6.28C6.19 7.09 6.12 7.15 6.12 7.25V8.82C6.13 8.91 6.19 9 6.28 9M8.75 9H10.5C10.6 9 10.67 8.91 10.67 8.82V7.25C10.67 7.16 10.61 7.09 10.5 7.09H8.75C8.67 7.09 8.6 7.15 8.6 7.25V8.82C8.6 8.91 8.66 9 8.75 9M11.19 9H12.96C13.04 9 13.11 8.91 13.11 8.82V7.25C13.11 7.16 13.04 7.09 12.96 7.09H11.19C11.11 7.09 11.04 7.15 11.04 7.25V8.82C11.04 8.91 11.11 9 11.19 9M11.19 6.72H12.96C13.04 6.72 13.11 6.65 13.11 6.56V5C13.11 4.9 13.04 4.83 12.96 4.83H11.19C11.11 4.83 11.04 4.89 11.04 5V6.56C11.04 6.64 11.11 6.72 11.19 6.72M13.65 11.24H15.41C15.5 11.24 15.57 11.17 15.57 11.08V9.5C15.57 9.42 15.5 9.34 15.41 9.34H13.65C13.57 9.34 13.5 9.41 13.5 9.5V11.08C13.5 11.17 13.57 11.24 13.65 11.24", Ui = "M21 11H3V9H21V11M21 13H3V15H21V13Z", Yn = "M6,2H18A2,2 0 0,1 20,4V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V4A2,2 0 0,1 6,2M12,4A6,6 0 0,0 6,10C6,13.31 8.69,16 12.1,16L11.22,13.77C10.95,13.29 11.11,12.68 11.59,12.4L12.45,11.9C12.93,11.63 13.54,11.79 13.82,12.27L15.74,14.69C17.12,13.59 18,11.9 18,10A6,6 0 0,0 12,4M12,9A1,1 0 0,1 13,10A1,1 0 0,1 12,11A1,1 0 0,1 11,10A1,1 0 0,1 12,9M7,18A1,1 0 0,0 6,19A1,1 0 0,0 7,20A1,1 0 0,0 8,19A1,1 0 0,0 7,18M12.09,13.27L14.58,19.58L17.17,18.08L12.95,12.77L12.09,13.27Z", au = "M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z", VA = "M16.56,5.44L15.11,6.89C16.84,7.94 18,9.83 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12C6,9.83 7.16,7.94 8.88,6.88L7.44,5.44C5.36,6.88 4,9.28 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,9.28 18.64,6.88 16.56,5.44M13,3H11V13H13", LA = "M12,4C14.1,4 16.1,4.8 17.6,6.3C20.7,9.4 20.7,14.5 17.6,17.6C15.8,19.5 13.3,20.2 10.9,19.9L11.4,17.9C13.1,18.1 14.9,17.5 16.2,16.2C18.5,13.9 18.5,10.1 16.2,7.7C15.1,6.6 13.5,6 12,6V10.6L7,5.6L12,0.6V4M6.3,17.6C3.7,15 3.3,11 5.1,7.9L6.6,9.4C5.5,11.6 5.9,14.4 7.8,16.2C8.3,16.7 8.9,17.1 9.6,17.4L9,19.4C8,19 7.1,18.4 6.3,17.6Z", ys = "M4,1H20A1,1 0 0,1 21,2V6A1,1 0 0,1 20,7H4A1,1 0 0,1 3,6V2A1,1 0 0,1 4,1M4,9H20A1,1 0 0,1 21,10V14A1,1 0 0,1 20,15H4A1,1 0 0,1 3,14V10A1,1 0 0,1 4,9M4,17H20A1,1 0 0,1 21,18V22A1,1 0 0,1 20,23H4A1,1 0 0,1 3,22V18A1,1 0 0,1 4,17M9,5H10V3H9V5M9,13H10V11H9V13M9,21H10V19H9V21M5,3V5H7V3H5M5,11V13H7V11H5M5,19V21H7V19H5Z", HA = "M3,11H11V3H3M3,21H11V13H3M13,21H21V13H13M13,3V11H21V3", IA = "M9,5V9H21V5M9,19H21V15H9M9,14H21V10H9M4,9H8V5H4M4,19H8V15H4M4,14H8V10H4V14Z";
+var _i = "M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z", au = "M21.81 10.25C21.75 10.21 21.25 9.82 20.17 9.82C19.89 9.82 19.61 9.85 19.33 9.9C19.12 8.5 17.95 7.79 17.9 7.76L17.61 7.59L17.43 7.86C17.19 8.22 17 8.63 16.92 9.05C16.72 9.85 16.84 10.61 17.25 11.26C16.76 11.54 15.96 11.61 15.79 11.61H2.62C2.28 11.61 2 11.89 2 12.24C2 13.39 2.18 14.54 2.58 15.62C3.03 16.81 3.71 17.69 4.58 18.23C5.56 18.83 7.17 19.17 9 19.17C9.79 19.17 10.61 19.1 11.42 18.95C12.54 18.75 13.62 18.36 14.61 17.79C15.43 17.32 16.16 16.72 16.78 16C17.83 14.83 18.45 13.5 18.9 12.35H19.09C20.23 12.35 20.94 11.89 21.33 11.5C21.59 11.26 21.78 10.97 21.92 10.63L22 10.39L21.81 10.25M3.85 11.24H5.61C5.69 11.24 5.77 11.17 5.77 11.08V9.5C5.77 9.42 5.7 9.34 5.61 9.34H3.85C3.76 9.34 3.69 9.41 3.69 9.5V11.08C3.7 11.17 3.76 11.24 3.85 11.24M6.28 11.24H8.04C8.12 11.24 8.2 11.17 8.2 11.08V9.5C8.2 9.42 8.13 9.34 8.04 9.34H6.28C6.19 9.34 6.12 9.41 6.12 9.5V11.08C6.13 11.17 6.19 11.24 6.28 11.24M8.75 11.24H10.5C10.6 11.24 10.67 11.17 10.67 11.08V9.5C10.67 9.42 10.61 9.34 10.5 9.34H8.75C8.67 9.34 8.6 9.41 8.6 9.5V11.08C8.6 11.17 8.66 11.24 8.75 11.24M11.19 11.24H12.96C13.04 11.24 13.11 11.17 13.11 11.08V9.5C13.11 9.42 13.05 9.34 12.96 9.34H11.19C11.11 9.34 11.04 9.41 11.04 9.5V11.08C11.04 11.17 11.11 11.24 11.19 11.24M6.28 9H8.04C8.12 9 8.2 8.91 8.2 8.82V7.25C8.2 7.16 8.13 7.09 8.04 7.09H6.28C6.19 7.09 6.12 7.15 6.12 7.25V8.82C6.13 8.91 6.19 9 6.28 9M8.75 9H10.5C10.6 9 10.67 8.91 10.67 8.82V7.25C10.67 7.16 10.61 7.09 10.5 7.09H8.75C8.67 7.09 8.6 7.15 8.6 7.25V8.82C8.6 8.91 8.66 9 8.75 9M11.19 9H12.96C13.04 9 13.11 8.91 13.11 8.82V7.25C13.11 7.16 13.04 7.09 12.96 7.09H11.19C11.11 7.09 11.04 7.15 11.04 7.25V8.82C11.04 8.91 11.11 9 11.19 9M11.19 6.72H12.96C13.04 6.72 13.11 6.65 13.11 6.56V5C13.11 4.9 13.04 4.83 12.96 4.83H11.19C11.11 4.83 11.04 4.89 11.04 5V6.56C11.04 6.64 11.11 6.72 11.19 6.72M13.65 11.24H15.41C15.5 11.24 15.57 11.17 15.57 11.08V9.5C15.57 9.42 15.5 9.34 15.41 9.34H13.65C13.57 9.34 13.5 9.41 13.5 9.5V11.08C13.5 11.17 13.57 11.24 13.65 11.24", Ui = "M21 11H3V9H21V11M21 13H3V15H21V13Z", Yn = "M6,2H18A2,2 0 0,1 20,4V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V4A2,2 0 0,1 6,2M12,4A6,6 0 0,0 6,10C6,13.31 8.69,16 12.1,16L11.22,13.77C10.95,13.29 11.11,12.68 11.59,12.4L12.45,11.9C12.93,11.63 13.54,11.79 13.82,12.27L15.74,14.69C17.12,13.59 18,11.9 18,10A6,6 0 0,0 12,4M12,9A1,1 0 0,1 13,10A1,1 0 0,1 12,11A1,1 0 0,1 11,10A1,1 0 0,1 12,9M7,18A1,1 0 0,0 6,19A1,1 0 0,0 7,20A1,1 0 0,0 8,19A1,1 0 0,0 7,18M12.09,13.27L14.58,19.58L17.17,18.08L12.95,12.77L12.09,13.27Z", iu = "M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z", LA = "M16.56,5.44L15.11,6.89C16.84,7.94 18,9.83 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12C6,9.83 7.16,7.94 8.88,6.88L7.44,5.44C5.36,6.88 4,9.28 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,9.28 18.64,6.88 16.56,5.44M13,3H11V13H13", HA = "M12,4C14.1,4 16.1,4.8 17.6,6.3C20.7,9.4 20.7,14.5 17.6,17.6C15.8,19.5 13.3,20.2 10.9,19.9L11.4,17.9C13.1,18.1 14.9,17.5 16.2,16.2C18.5,13.9 18.5,10.1 16.2,7.7C15.1,6.6 13.5,6 12,6V10.6L7,5.6L12,0.6V4M6.3,17.6C3.7,15 3.3,11 5.1,7.9L6.6,9.4C5.5,11.6 5.9,14.4 7.8,16.2C8.3,16.7 8.9,17.1 9.6,17.4L9,19.4C8,19 7.1,18.4 6.3,17.6Z", ys = "M4,1H20A1,1 0 0,1 21,2V6A1,1 0 0,1 20,7H4A1,1 0 0,1 3,6V2A1,1 0 0,1 4,1M4,9H20A1,1 0 0,1 21,10V14A1,1 0 0,1 20,15H4A1,1 0 0,1 3,14V10A1,1 0 0,1 4,9M4,17H20A1,1 0 0,1 21,18V22A1,1 0 0,1 20,23H4A1,1 0 0,1 3,22V18A1,1 0 0,1 4,17M9,5H10V3H9V5M9,13H10V11H9V13M9,21H10V19H9V21M5,3V5H7V3H5M5,11V13H7V11H5M5,19V21H7V19H5Z", IA = "M3,11H11V3H3M3,21H11V13H3M13,21H21V13H13M13,3V11H21V3", RA = "M9,5V9H21V5M9,19H21V15H9M9,14H21V10H9M4,9H8V5H4M4,19H8V15H4M4,14H8V10H4V14Z";
 /**
  * @license
  * Copyright 2018 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const iu = "important", RA = " !" + iu, Oe = wn(class extends zn {
+const nu = "important", BA = " !" + nu, Oe = wn(class extends zn {
   constructor(e) {
     if (super(e), e.type !== $t.ATTRIBUTE || e.name !== "style" || e.strings?.length > 2) throw Error("The `styleMap` directive must be used in the `style` attribute and must be the only part in the attribute.");
   }
@@ -49821,24 +49821,24 @@ const iu = "important", RA = " !" + iu, Oe = wn(class extends zn {
       const n = t[i];
       if (n != null) {
         this.ft.add(i);
-        const r = typeof n == "string" && n.endsWith(RA);
-        i.includes("-") || r ? a.setProperty(i, r ? n.slice(0, -11) : n, r ? iu : "") : a[i] = n;
+        const r = typeof n == "string" && n.endsWith(BA);
+        i.includes("-") || r ? a.setProperty(i, r ? n.slice(0, -11) : n, r ? nu : "") : a[i] = n;
       }
     }
     return ht;
   }
 });
-var BA = Object.defineProperty, FA = Object.getOwnPropertyDescriptor, Ya = (e, t, a, i) => {
-  for (var n = i > 1 ? void 0 : i ? FA(t, a) : t, r = e.length - 1, o; r >= 0; r--)
+var FA = Object.defineProperty, OA = Object.getOwnPropertyDescriptor, Ya = (e, t, a, i) => {
+  for (var n = i > 1 ? void 0 : i ? OA(t, a) : t, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = (i ? o(t, a, n) : o(n)) || n);
-  return i && n && BA(t, a, n), n;
+  return i && n && FA(t, a, n), n;
 };
 const gi = (e, t) => {
   const a = e?.[`carousel_${t}`];
   if (typeof a == "boolean") return a;
   const i = e?.parameters?.[t];
   return i !== null && typeof i == "object" ? i.enabled !== !1 : i === !0;
-}, OA = /* @__PURE__ */ new Set(["off", "unknown", "unavailable", "none", "idle"]), so = (e, t, a, i) => Math.min(i, Math.max(a, typeof e == "number" && Number.isFinite(e) ? e : t));
+}, qA = /* @__PURE__ */ new Set(["off", "unknown", "unavailable", "none", "idle"]), so = (e, t, a, i) => Math.min(i, Math.max(a, typeof e == "number" && Number.isFinite(e) ? e : t));
 let Qt = class extends ve {
   constructor() {
     super(...arguments), this.selectedIndex = 0, this.carouselWidth = 0, this.dragOffset = 0, this.dragging = !1, this.horizontalVelocity = 0, this.pointerAxis = "pending", this.holdFired = !1, this.pointerStartedOnItem = !1, this.stopControlEvent = (e) => {
@@ -49991,7 +49991,7 @@ let Qt = class extends ve {
       `filter:saturate(${Math.max(0.45, 1 - n * 0.14)})`,
       `--carousel-color:var(--${l}-color, ${l})`,
       `--carousel-shadow-opacity:${w}`
-    ].join(";"), $ = e.icon_type === "entity-picture" ? s?.attributes.entity_picture : void 0, W = s ? !OA.has(s.state.toLowerCase()) : !1;
+    ].join(";"), $ = e.icon_type === "entity-picture" ? s?.attributes.entity_picture : void 0, W = s ? !qA.has(s.state.toLowerCase()) : !1;
     return u`
       <button
         role="option"
@@ -50310,27 +50310,27 @@ const ql = (e) => {
   "orange",
   "blue",
   "light-grey"
-], lr = /* @__PURE__ */ new Map(), nu = (e, t) => {
+], lr = /* @__PURE__ */ new Map(), ru = (e, t) => {
   const a = t ? e.states[t]?.attributes.entity_id : void 0;
   return Array.isArray(a) ? a.filter((i) => typeof i == "string") : [];
-}, Co = (e, t) => {
+}, Mo = (e, t) => {
   const a = e.entities?.[t];
   return a?.area_id ?? (a?.device_id ? e.devices?.[a.device_id]?.area_id : void 0) ?? void 0;
-}, qA = (e, t) => {
-  const a = Co(e, t);
+}, UA = (e, t) => {
+  const a = Mo(e, t);
   if (a) return a;
   const i = /* @__PURE__ */ new Map();
-  for (const n of nu(e, t)) {
-    const r = Co(e, n);
+  for (const n of ru(e, t)) {
+    const r = Mo(e, n);
     r && i.set(r, (i.get(r) ?? 0) + 1);
   }
   return [...i].sort((n, r) => r[1] - n[1])[0]?.[0];
-}, UA = (e, t) => {
+}, KA = (e, t) => {
   if (!t) return [];
   const a = lr.get(t);
   if (a?.states === e.states && a.entities === e.entities && a.devices === e.devices) return a.ids;
-  const i = qA(e, t), n = /* @__PURE__ */ new Set([t, ...nu(e, t)]), r = t.split(".")[1] ?? "", o = Object.keys(e.states).filter((s) => s.startsWith("scene.")).filter((s) => {
-    if (i && Co(e, s) === i) return !0;
+  const i = UA(e, t), n = /* @__PURE__ */ new Set([t, ...ru(e, t)]), r = t.split(".")[1] ?? "", o = Object.keys(e.states).filter((s) => s.startsWith("scene.")).filter((s) => {
+    if (i && Mo(e, s) === i) return !0;
     const l = e.states[s].attributes.entity_id;
     return Array.isArray(l) && l.length > 0 && n.size > 1 && l.every((_) => typeof _ == "string" && n.has(_)) ? !0 : r.length > 2 && s.slice(6).startsWith(`${r}_`);
   }).sort((s, l) => s.localeCompare(l));
@@ -50340,17 +50340,17 @@ const ql = (e) => {
     devices: e.devices,
     ids: o
   }), o;
-}, Kl = (e) => e.replace(/[_-]+/g, " ").trim().replace(/\b\w/g, (t) => t.toUpperCase()), ru = (e, t) => {
+}, Kl = (e) => e.replace(/[_-]+/g, " ").trim().replace(/\b\w/g, (t) => t.toUpperCase()), ou = (e, t) => {
   if (!t) return [];
   const a = lr.get(t);
   if (a?.states === e.states && a.entities === e.entities && a.devices === e.devices && a.items) return a.items;
-  const i = String(e.states[t ?? ""]?.attributes.friendly_name ?? "").trim().toLowerCase(), n = (t?.split(".")[1] ?? "").toLowerCase(), r = UA(e, t).map((o, s) => {
+  const i = String(e.states[t ?? ""]?.attributes.friendly_name ?? "").trim().toLowerCase(), n = (t?.split(".")[1] ?? "").toLowerCase(), r = KA(e, t).map((o, s) => {
     const l = String(e.states[o].attributes.friendly_name ?? Kl(o.split(".")[1]));
     let _ = l;
     return i && l.toLowerCase().startsWith(`${i} `) ? _ = l.slice(i.length + 1) : n && o.slice(6).startsWith(`${n}_`) && (_ = Kl(o.slice(6 + n.length + 1))), { entity: o, name: _.trim() || l, color: Ul[s % Ul.length] };
   });
   return lr.get(t).items = r, r;
-}, KA = {
+}, WA = {
   red: "244, 67, 54",
   pink: "233, 30, 99",
   purple: "146, 107, 199",
@@ -50376,7 +50376,7 @@ const ql = (e) => {
   white: "255, 255, 255",
   disabled: "189, 189, 189"
 }, ma = (e) => {
-  const t = KA[e];
+  const t = WA[e];
   return t ? `var(--mush-rgb-${e}, var(--rgb-${e}, ${t}))` : void 0;
 }, Pe = (e, t) => {
   const a = e?.trim() || t.trim();
@@ -50392,7 +50392,7 @@ const ql = (e) => {
  * Copyright 2021 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const WA = wn(class extends zn {
+const GA = wn(class extends zn {
   constructor() {
     super(...arguments), this.key = g;
   }
@@ -50403,12 +50403,12 @@ const WA = wn(class extends zn {
     return t !== this.key && (os(e), this.key = t), a;
   }
 });
-var GA = Object.defineProperty, ZA = Object.getOwnPropertyDescriptor, Sa = (e, t, a, i) => {
-  for (var n = i > 1 ? void 0 : i ? ZA(t, a) : t, r = e.length - 1, o; r >= 0; r--)
+var ZA = Object.defineProperty, YA = Object.getOwnPropertyDescriptor, Sa = (e, t, a, i) => {
+  for (var n = i > 1 ? void 0 : i ? YA(t, a) : t, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = (i ? o(t, a, n) : o(n)) || n);
-  return i && n && GA(t, a, n), n;
+  return i && n && ZA(t, a, n), n;
 };
-const YA = {
+const JA = {
   upcoming_data_attribute: "data",
   upcoming_max_items: 5,
   upcoming_image_style: "poster",
@@ -50439,7 +50439,7 @@ const YA = {
   upcoming_links: !0,
   upcoming_item_behavior: "automatic",
   upcoming_hide_empty: !1
-}, JA = (e) => typeof e == "object" && e !== null && !Array.isArray(e), dt = (e) => Array.isArray(e) ? e.map(dt).filter(Boolean).join(", ") : ["string", "number", "boolean"].includes(typeof e) ? String(e) : "", $o = (e) => e.flag === !0 || e.flag === 1 || e.flag === "1" || typeof e.flag == "string" && e.flag.toLowerCase() === "true", Ye = (e, t, a, i) => typeof e == "number" && Number.isFinite(e) ? Math.min(i, Math.max(a, e)) : t, Dr = (e, t = "data", a) => {
+}, QA = (e) => typeof e == "object" && e !== null && !Array.isArray(e), dt = (e) => Array.isArray(e) ? e.map(dt).filter(Boolean).join(", ") : ["string", "number", "boolean"].includes(typeof e) ? String(e) : "", Co = (e) => e.flag === !0 || e.flag === 1 || e.flag === "1" || typeof e.flag == "string" && e.flag.toLowerCase() === "true", Ye = (e, t, a, i) => typeof e == "number" && Number.isFinite(e) ? Math.min(i, Math.max(a, e)) : t, Dr = (e, t = "data", a) => {
   t === "friendly_name" && (t = "data");
   const i = { items: [], defaults: {} };
   if (!e) return { ...i, error: j(a, "message.choose_media") };
@@ -50452,7 +50452,7 @@ const YA = {
     } catch {
       return { ...i, error: j(a, "message.invalid_json", { attribute: t }) };
     }
-  if (!Array.isArray(n) || n.some((s) => !JA(s)))
+  if (!Array.isArray(n) || n.some((s) => !QA(s)))
     return { ...i, error: j(a, "message.media_list", { attribute: t }) };
   const r = {}, o = [];
   for (const s of n) {
@@ -50463,8 +50463,8 @@ const YA = {
       o.push(s);
   }
   return { items: o, defaults: r };
-}, QA = (e) => e ? Object.keys(e.attributes).filter((t) => t !== "friendly_name" && !Dr({ ...e, state: "0" }, t).error) : [], Eo = (e, t, a, i = !1) => !t || (i ? dt(e[t]).toLowerCase() === (a ?? "").toLowerCase() : dt(e[t]).toLowerCase().includes((a ?? "").toLowerCase())), ou = (e, t) => {
-  let a = e.items.filter((n) => (t.upcoming_flag_filter !== "flagged" || $o(n)) && (t.upcoming_flag_filter !== "unflagged" || !$o(n)) && Eo(n, t.upcoming_filter_attribute, t.upcoming_filter_value, t.upcoming_filter_match === "exact"));
+}, XA = (e) => e ? Object.keys(e.attributes).filter((t) => t !== "friendly_name" && !Dr({ ...e, state: "0" }, t).error) : [], $o = (e, t, a, i = !1) => !t || (i ? dt(e[t]).toLowerCase() === (a ?? "").toLowerCase() : dt(e[t]).toLowerCase().includes((a ?? "").toLowerCase())), su = (e, t) => {
+  let a = e.items.filter((n) => (t.upcoming_flag_filter !== "flagged" || Co(n)) && (t.upcoming_flag_filter !== "unflagged" || !Co(n)) && $o(n, t.upcoming_filter_attribute, t.upcoming_filter_value, t.upcoming_filter_match === "exact"));
   const i = t.upcoming_sort_by;
   if (i) {
     const n = (r) => {
@@ -50490,7 +50490,7 @@ const YA = {
     });
   }
   if (!t.upcoming_overflow && t.upcoming_collapse_mode === "matching") {
-    const n = (r) => Eo(r, t.upcoming_group_attribute || "flag", t.upcoming_group_value ?? "true", !0);
+    const n = (r) => $o(r, t.upcoming_group_attribute || "flag", t.upcoming_group_value ?? "true", !0);
     a = [...a.filter(n), ...a.filter((r) => !n(r))];
   }
   return a.slice(0, Ye(t.upcoming_max_items, 5, 1, 50));
@@ -50547,7 +50547,7 @@ let Vt = class extends ve {
   }
   render() {
     if (!this.config) return g;
-    const e = this.config, t = Dr(e.entity ? this.hass?.states[e.entity] : void 0, e.upcoming_data_attribute, this.hass), a = ou(t, e), i = e.upcoming_overflow ? "none" : e.upcoming_collapse_mode, n = i === "count" ? Ye(e.upcoming_collapse_count, 2, 1, 50) : i === "matching" ? a.filter((c) => Eo(c, e.upcoming_group_attribute || "flag", e.upcoming_group_value ?? "true", !0)).length : a.length, r = this.expanded ? a : a.slice(0, n), o = Ye(e.upcoming_item_height, 128, 80, 320), s = e.upcoming_overflow ? Math.max(1, Math.min(
+    const e = this.config, t = Dr(e.entity ? this.hass?.states[e.entity] : void 0, e.upcoming_data_attribute, this.hass), a = su(t, e), i = e.upcoming_overflow ? "none" : e.upcoming_collapse_mode, n = i === "count" ? Ye(e.upcoming_collapse_count, 2, 1, 50) : i === "matching" ? a.filter((c) => $o(c, e.upcoming_group_attribute || "flag", e.upcoming_group_value ?? "true", !0)).length : a.length, r = this.expanded ? a : a.slice(0, n), o = Ye(e.upcoming_item_height, 128, 80, 320), s = e.upcoming_overflow ? Math.max(1, Math.min(
       Ye(e.upcoming_max_columns, 3, 1, 6),
       Math.floor(this.width / 230)
     )) : 1, l = Math.min(window.innerHeight - 32, window.innerHeight - Math.max(0, this.getBoundingClientRect().top) - 24), _ = Math.max(1, Math.min(r.length, Math.max(Math.ceil(r.length / s), Math.floor(l / (o + 12))))), d = e.upcoming_overflow ? Math.max(1, Math.ceil(r.length / _)) : 1;
@@ -50598,7 +50598,7 @@ let Vt = class extends ve {
         @pointerenter=${(l) => this.showTooltip(l, o)}
         @pointerleave=${this.hideTooltip} @focusin=${(l) => this.showTooltip(l, o)}
         @focusout=${this.hideTooltip}>
-        <span class="art"><ha-icon .icon=${"mdi:movie-open-outline"}></ha-icon>${r ? WA(r, u`<img src=${r} alt="" loading="lazy" @error=${(l) => {
+        <span class="art"><ha-icon .icon=${"mdi:movie-open-outline"}></ha-icon>${r ? GA(r, u`<img src=${r} alt="" loading="lazy" @error=${(l) => {
       const _ = l.currentTarget;
       _.hidden = !0, _.parentElement?.setAttribute("title", j(this.hass, "message.artwork_unavailable"));
     }} @load=${(l) => {
@@ -50608,7 +50608,7 @@ let Vt = class extends ve {
         <span class="copy"><span class="title">${i}</span>
           ${s.map((l, _) => l ? u`<span class="line" style=${Oe({ color: typeof a[`upcoming_line${_ + 1}_color`] == "string" ? Pe(String(a[`upcoming_line${_ + 1}_color`]), "inherit") : void 0 })}>${l}</span>` : g)}
         </span>
-        ${a.upcoming_show_flag !== !1 && $o(e) ? u`<span class="flag" title=${a.upcoming_flag_label || j(this.hass, "ui.unwatched")}><ha-icon .icon=${a.upcoming_flag_icon || "mdi:eye-off-outline"}></ha-icon></span>` : g}
+        ${a.upcoming_show_flag !== !1 && Co(e) ? u`<span class="flag" title=${a.upcoming_flag_label || j(this.hass, "ui.unwatched")}><ha-icon .icon=${a.upcoming_flag_icon || "mdi:eye-off-outline"}></ha-icon></span>` : g}
       </button>
     </div>`;
   }
@@ -50723,7 +50723,7 @@ const he = {
   play: 16384,
   shuffle: 32768,
   repeat: 262144
-}, su = [
+}, lu = [
   { configKey: "crossfade_entity", domain: "switch", suffix: "crossfade", label: "Crossfade", icon: "mdi:swap-horizontal" },
   { configKey: "night_sound_entity", domain: "switch", suffix: "night_sound", label: "Night sound", icon: "mdi:weather-night" },
   { configKey: "speech_enhancement_entity", domain: "switch", suffix: "speech_enhancement", label: "Speech enhancement", icon: "mdi:ear-hearing" },
@@ -50731,7 +50731,7 @@ const he = {
   { configKey: "surrounds_entity", domain: "switch", suffix: "surround_enabled", label: "Surrounds", icon: "mdi:surround-sound" },
   { configKey: "loudness_entity", domain: "switch", suffix: "loudness", label: "Loudness", icon: "mdi:bullhorn" },
   { configKey: "surround_full_entity", domain: "switch", suffix: "surround_music_full_volume", label: "Surround full", icon: "mdi:music-note-plus" }
-], lu = [
+], _u = [
   { configKey: "audio_delay_entity", domain: "number", suffix: "audio_delay", label: "Audio delay", icon: "mdi:tune-variant" },
   { configKey: "balance_entity", domain: "number", suffix: "balance", label: "Balance", icon: "mdi:tune-variant" },
   { configKey: "bass_entity", domain: "number", suffix: "bass", label: "Bass", icon: "mdi:tune-variant" },
@@ -50739,11 +50739,11 @@ const he = {
   { configKey: "sub_gain_entity", domain: "number", suffix: "sub_gain", label: "Sub gain", icon: "mdi:tune-variant" },
   { configKey: "surround_level_entity", domain: "number", suffix: "surround_level", label: "Surround level", icon: "mdi:tune-variant" },
   { configKey: "music_surround_level_entity", domain: "number", suffix: "music_surround_level", label: "Surround level music", icon: "mdi:tune-variant" }
-], bs = [...su, ...lu], vs = (e) => e.split(".", 2)[1] ?? e, Gl = (e) => vs(e).replace(/_\d+$/, ""), _u = (e, t) => {
+], bs = [...lu, ..._u], vs = (e) => e.split(".", 2)[1] ?? e, Gl = (e) => vs(e).replace(/_\d+$/, ""), du = (e, t) => {
   if (!e.startsWith(`${t.domain}.`)) return !1;
   const a = vs(e);
   return t.suffix === "surround_level" && a.endsWith("_music_surround_level") ? !1 : a === t.suffix || a.endsWith(`_${t.suffix}`);
-}, Zl = (e) => bs.filter((t) => e.some((a) => _u(a, t))).length, ks = (e, t, a) => {
+}, Zl = (e) => bs.filter((t) => e.some((a) => du(a, t))).length, ks = (e, t, a) => {
   if (!e || !t) return {};
   const i = Object.keys(e.states), n = e.entities ?? {}, r = Gl(t), o = [.../* @__PURE__ */ new Set([t, ...i.filter((m) => m.startsWith("media_player.") && Gl(m) === r)])], _ = [...new Set(o.map((m) => n[m]?.device_id).filter((m) => typeof m == "string" && m.length > 0))].map((m) => i.filter((p) => n[p]?.device_id === m)).sort((m, p) => Zl(p) - Zl(m))[0] ?? [], d = i.filter((m) => {
     const p = m.split(".", 1)[0], y = vs(m);
@@ -50752,10 +50752,10 @@ const he = {
   return Object.fromEntries(bs.flatMap((m) => {
     const p = a?.[m.configKey];
     if (typeof p == "string" && p.length > 0) return [[m.configKey, p]];
-    const y = c.find((b) => _u(b, m));
+    const y = c.find((b) => du(b, m));
     return y ? [[m.configKey, y]] : [];
   }));
-}, XA = (e, t) => Object.keys(ks(e, t)).length, un = (e, t, a) => `${a > t ? Math.max(0, Math.min(100, (e - t) / (a - t) * 100)) : 0}%`, _r = (e) => {
+}, e1 = (e, t) => Object.keys(ks(e, t)).length, un = (e, t, a) => `${a > t ? Math.max(0, Math.min(100, (e - t) / (a - t) * 100)) : 0}%`, _r = (e) => {
   const t = e.currentTarget;
   t.style.setProperty("--range-progress", un(t.valueAsNumber, Number(t.min), Number(t.max)));
 }, fs = ce`
@@ -50832,10 +50832,10 @@ const he = {
   }
   select.mushroom-select:disabled { color: var(--disabled-text-color); background: var(--addition-disabled-background); }
 `;
-var e1 = Object.defineProperty, t1 = Object.getOwnPropertyDescriptor, Nr = (e, t, a, i) => {
-  for (var n = i > 1 ? void 0 : i ? t1(t, a) : t, r = e.length - 1, o; r >= 0; r--)
+var t1 = Object.defineProperty, a1 = Object.getOwnPropertyDescriptor, Nr = (e, t, a, i) => {
+  for (var n = i > 1 ? void 0 : i ? a1(t, a) : t, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = (i ? o(t, a, n) : o(n)) || n);
-  return i && n && e1(t, a, n), n;
+  return i && n && t1(t, a, n), n;
 };
 const Dn = {
   power: "Power and utility buttons",
@@ -50886,13 +50886,13 @@ const Dn = {
 }, ur = Object.entries(dr).map(([e, t]) => ({ value: e, label: t[0] })), Jn = (e) => !!e && !["unknown", "unavailable"].includes(e.state), Vr = (e, t) => {
   const a = t.entity, i = a ? e?.entities?.[a]?.device_id : void 0, n = (s) => i ? Object.keys(e?.states ?? {}).find((l) => l.startsWith(`${s}.`) && e?.entities?.[l]?.device_id === i && Jn(e?.states[l])) : void 0, r = t.remote_entity || (a?.startsWith("remote.") ? a : n("remote")), o = t.remote_media_entity || (a?.startsWith("media_player.") ? a : n("media_player"));
   return { remote: r ? e?.states[r] : void 0, media: o ? e?.states[o] : void 0 };
-}, du = (e, t) => {
+}, uu = (e, t) => {
   if (t.remote_preset && t.remote_preset !== "auto") return t.remote_preset;
   const { remote: a, media: i } = Vr(e, t), n = `${a ? e?.entities?.[a.entity_id]?.platform : ""} ${i ? e?.entities?.[i.entity_id]?.platform : ""}`;
   return /samsung/.test(n) ? "samsung" : /android|google_tv/.test(n) ? "android_tv" : /apple_tv/.test(n) ? "apple_tv" : /roku/.test(n) ? "roku" : "generic";
 }, lo = (e, t, a) => {
   if (Object.hasOwn(t.remote_commands ?? {}, a)) return t.remote_commands[a];
-  const i = du(e, t);
+  const i = uu(e, t);
   if (/^\d$/.test(a)) return i === "samsung" ? `KEY_${a}` : i === "android_tv" ? `KEYCODE_${a}` : i === "roku" ? "" : a;
   if (i === "apple_tv") return a === "back" ? "menu" : a === "home" ? "top_menu" : a === "power" ? Vr(e, t).remote?.state === "off" ? "wakeup" : "suspend" : a;
   if (i === "roku") return a === "play_pause" ? "play" : a === "mute" ? "volume_mute" : a === "rewind" ? "reverse" : ["previous", "next", "stop", "menu"].includes(a) || /^\d$/.test(a) ? "" : a;
@@ -50946,7 +50946,7 @@ let Si = class extends ve {
     return Jn(this.entities.media) && (Number(this.entities.media?.attributes.supported_features) & e) !== 0;
   }
   get transport() {
-    return this.config?.remote_transport && this.config.remote_transport !== "auto" ? this.config.remote_transport : this.entities.remote ? "remote" : du(this.hass, this.config) === "samsung" ? "samsung" : "unconfigured";
+    return this.config?.remote_transport && this.config.remote_transport !== "auto" ? this.config.remote_transport : this.entities.remote ? "remote" : uu(this.hass, this.config) === "samsung" ? "samsung" : "unconfigured";
   }
   get canSend() {
     return this.transport === "remote" ? Jn(this.entities.remote) : this.transport === "samsung" && Jn(this.entities.media);
@@ -51128,10 +51128,10 @@ Nr([
 Si = Nr([
   nt("mushroom-addition-remote")
 ], Si);
-var a1 = Object.defineProperty, i1 = Object.getOwnPropertyDescriptor, An = (e, t, a, i) => {
-  for (var n = i > 1 ? void 0 : i ? i1(t, a) : t, r = e.length - 1, o; r >= 0; r--)
+var i1 = Object.defineProperty, n1 = Object.getOwnPropertyDescriptor, An = (e, t, a, i) => {
+  for (var n = i > 1 ? void 0 : i ? n1(t, a) : t, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = (i ? o(t, a, n) : o(n)) || n);
-  return i && n && a1(t, a, n), n;
+  return i && n && i1(t, a, n), n;
 };
 const cn = {
   queries: { name: "DNS queries", icon: "mdi:dns", keys: ["dns_queries_today", "dns_queries", "queries_today"] },
@@ -51166,15 +51166,15 @@ const cn = {
   pihole_chart_height: 120,
   pihole_chart_metrics: ["cpu", "memory"],
   pihole_show_header: !0
-}, di = (e) => !!e && !["unknown", "unavailable"].includes(e.state), uu = (e, t) => {
+}, di = (e) => !!e && !["unknown", "unavailable"].includes(e.state), cu = (e, t) => {
   if (!e) return [];
   const a = t.pihole_device_ids?.length ? t.pihole_device_ids : t.entity && e.entities?.[t.entity]?.device_id ? [e.entities[t.entity].device_id] : [], i = /* @__PURE__ */ new Set([t.entity, ...t.pihole_entity_order ?? [], ...Object.values(t.pihole_metric_entities ?? {}).flat()]), n = new Set(t.pihole_hidden_entities ?? []), r = t.pihole_entity_order ?? [];
   return Object.values(e.states).filter((o) => !n.has(o.entity_id) && (i.has(o.entity_id) || a.includes(e.entities?.[o.entity_id]?.device_id || ""))).sort((o, s) => {
     const l = r.indexOf(o.entity_id), _ = r.indexOf(s.entity_id);
     return (l < 0 ? 1 / 0 : l) - (_ < 0 ? 1 / 0 : _) || o.entity_id.localeCompare(s.entity_id);
   });
-}, To = (e, t) => {
-  const a = uu(e, t), i = [...new Set(a.map((n) => e?.entities?.[n.entity_id]?.device_id || ""))];
+}, Eo = (e, t) => {
+  const a = cu(e, t), i = [...new Set(a.map((n) => e?.entities?.[n.entity_id]?.device_id || ""))];
   return Object.fromEntries(Object.entries(cn).map(([n, r]) => {
     const o = t.pihole_metric_entities?.[n], s = o !== void 0 ? o.map((l) => e?.states[l] ?? { entity_id: l, state: "unavailable", attributes: {} }) : i.flatMap((l) => {
       const _ = a.filter((c) => c.entity_id.startsWith("sensor.") && (e?.entities?.[c.entity_id]?.device_id || "") === l), d = _.find((c) => r.keys.includes(e?.entities?.[c.entity_id]?.translation_key || "")) ?? _.find((c) => r.keys.some((m) => c.entity_id.endsWith(`_${m}`)));
@@ -51182,13 +51182,13 @@ const cn = {
     });
     return [n, s];
   }));
-}, n1 = (e) => {
+}, r1 = (e) => {
   if (!di(e) || !e.state.trim()) return;
   const t = Number(e.state);
   return Number.isFinite(t) && t >= 0 ? t : void 0;
-}, r1 = (e, t, a) => {
+}, o1 = (e, t, a) => {
   const i = (o) => {
-    const s = t[o].map(n1);
+    const s = t[o].map(r1);
     return s.length && s.every((l) => l !== void 0) ? s : void 0;
   }, n = (o) => o.reduce((s, l) => s + l, 0);
   if (e === "percentage") {
@@ -51198,7 +51198,7 @@ const cn = {
   const r = i(e);
   if (r)
     return ["percentage", "cpu", "memory"].includes(e) ? r.every((o) => o <= 100) ? n(r) / r.length : void 0 : e === "temperature" ? Math.max(...r) : n(r);
-}, o1 = (e) => {
+}, s1 = (e) => {
   const t = String(e).trim().toLowerCase(), a = /^(\d+):([0-5]\d):([0-5]\d)$/.exec(t);
   if (a) {
     const r = Number(a[1]) * 3600 + Number(a[2]) * 60 + Number(a[3]);
@@ -51235,7 +51235,7 @@ let Ka = class extends ve {
     e.has("config") && (this.target = "all", this.error = void 0, this.clearTimers());
   }
   get pool() {
-    return uu(this.hass, this.config);
+    return cu(this.hass, this.config);
   }
   get switches() {
     return this.pool.filter((e) => e.entity_id.startsWith("switch."));
@@ -51245,7 +51245,7 @@ let Ka = class extends ve {
   }
   render() {
     if (!this.config) return g;
-    const e = this.config, t = this.pool, a = e.pihole_sections ?? Et.pihole_sections, i = To(this.hass, e);
+    const e = this.config, t = this.pool, a = e.pihole_sections ?? Et.pihole_sections, i = Eo(this.hass, e);
     return u`<div class="sections" style=${Oe({
       "--accent": Pe(e.pihole_accent_color, "var(--primary-color)"),
       "--columns": String(Ye(e.pihole_columns, 2, 1, 4))
@@ -51263,7 +51263,7 @@ let Ka = class extends ve {
   renderSection(e, t) {
     const a = this.config;
     if (e === "statistics") return u`<div class="statistics">${(a.pihole_metrics ?? Et.pihole_metrics).map((n) => {
-      const r = cn[n], o = r1(n, t, this.hass), s = t[n][0] || (n === "percentage" ? t.queries[0] : void 0), l = r.unit || n === "temperature" && s?.attributes.unit_of_measurement || "";
+      const r = cn[n], o = o1(n, t, this.hass), s = t[n][0] || (n === "percentage" ? t.queries[0] : void 0), l = r.unit || n === "temperature" && s?.attributes.unit_of_measurement || "";
       return u`<button class="metric" ?disabled=${!s} aria-label=${`${h(this.hass, r.name)}: ${o ?? h(this.hass, "Unavailable")}`}
         @pointerdown=${() => this.metricHold(s)} @pointerup=${this.clearHold} @pointercancel=${this.clearHold} @pointerleave=${this.clearHold}
         @click=${(_) => {
@@ -51293,7 +51293,7 @@ let Ka = class extends ve {
         </select>
         ${r ? g : u`<div class="message">${j(this.hass, "message.pause_backend")}</div>`}
         <div class="durations">${(a.pihole_pause_durations ?? Et.pihole_pause_durations).map((o) => {
-        const s = o1(o);
+        const s = s1(o);
         return u`<button class="duration" ?disabled=${!r || s === void 0} @click=${() => s && void this.pause(s)}>
             ${s === void 0 ? j(this.hass, "message.invalid_duration", { duration: o }) : s % 3600 === 0 ? `${s / 3600} h` : s % 60 === 0 ? `${s / 60} min` : `${s} s`}
           </button>`;
@@ -51311,7 +51311,7 @@ let Ka = class extends ve {
   updated() {
     const e = this.shadowRoot?.querySelector(".chart");
     if (!e || !this.hass || !this.config) return;
-    const t = To(this.hass, this.config), i = {
+    const t = Eo(this.hass, this.config), i = {
       type: "custom:mushroom-addition-mini-graph-card",
       entities: (this.config.pihole_chart_metrics ?? Et.pihole_chart_metrics).flatMap((r) => t[r].map((o) => o.entity_id)),
       hours_to_show: Ye(this.config.pihole_chart_hours, 24, 1, 168),
@@ -51423,7 +51423,7 @@ An([
 Ka = An([
   nt("mushroom-addition-pi-hole")
 ], Ka);
-const Ql = /* @__PURE__ */ new WeakMap(), s1 = (e, t) => {
+const Ql = /* @__PURE__ */ new WeakMap(), l1 = (e, t) => {
   const a = e.entities, i = e.services, n = t && a?.[t]?.device_id;
   if (!a || !i || !n) return {};
   let r = Ql.get(a);
@@ -51446,7 +51446,7 @@ const Ql = /* @__PURE__ */ new WeakMap(), s1 = (e, t) => {
     perform_action: "home_connect.start_selected_program",
     data: { device_id: n }
   }), o.set(n, l), l;
-}, l1 = [
+}, _1 = [
   { key: "program_stage_entity", domains: ["sensor", "select"], pattern: /program_stage|job_state|operation_state|machine_state|current_phase|program_phase/ },
   { key: "washer_power_entity", domains: ["sensor", "switch"], pattern: /power|consumption/, deviceClass: "power" },
   { key: "program_select_entity", domains: ["select", "input_select"], pattern: /selected_program|active_program|program/ },
@@ -51457,11 +51457,11 @@ const Ql = /* @__PURE__ */ new WeakMap(), s1 = (e, t) => {
   { key: "ulm_custom_card_washer_job_progress", domains: ["sensor"], pattern: /job_progress|program_progress|cycle_progress|progress/ },
   { key: "ulm_custom_card_washer_delayed_start", domains: ["input_boolean"], pattern: /delayed_start|delay_start/ },
   { key: "ulm_custom_card_washer_delayed_starttime", domains: ["input_datetime"], pattern: /delayed_start|delay_start/ }
-], _1 = (e, t) => {
+], d1 = (e, t) => {
   const a = e?.entities?.[t]?.device_id;
   if (!e || !a) return {};
   const i = Object.entries(e.entities ?? {}).filter(([r, o]) => o.device_id === a && e.states[r] && !["unknown", "unavailable"].includes(e.states[r].state)), n = {};
-  for (const r of l1) {
+  for (const r of _1) {
     const o = i.flatMap(([s, l]) => {
       if (!r.domains.includes(s.split(".")[0])) return [];
       const _ = [l.translation_key, l.original_name, s, e.states[s].attributes.friendly_name].filter(Boolean).join(" ").toLowerCase().replace(/[ .-]/g, "_"), d = "deviceClass" in r && e.states[s].attributes.device_class === r.deviceClass ? 4 : r.key === "program_select_entity" && /selected_program/.test(_) ? 3 : r.key === "ulm_custom_card_washer_remote_control" && /remote_control/.test(_) ? 2 : r.pattern.test(_) ? r.key === "washer_power_entity" && s.startsWith("sensor.") ? 2 : 1 : 0;
@@ -51470,12 +51470,12 @@ const Ql = /* @__PURE__ */ new WeakMap(), s1 = (e, t) => {
     o[0] && o[0].score !== o[1]?.score && (n[r.key] = o[0].id);
   }
   return n;
-}, d1 = (e, t, a) => {
+}, u1 = (e, t, a) => {
   const i = e?.formatEntityState?.({ ...t, state: a });
   if (i && i !== a) return i;
   const n = a.replace(/^.*(?:_program_|\.Program\.)/i, "").replace(/[_.]+/g, " ");
   return n.charAt(0).toUpperCase() + n.slice(1);
-}, cu = [
+}, mu = [
   { configKey: "followers_entity", domains: ["sensor"], terms: ["follower", "followers"] },
   { configKey: "following_entity", domains: ["sensor"], terms: ["following"] },
   { configKey: "friends_entity", domains: ["sensor"], terms: ["friends"] },
@@ -51489,37 +51489,37 @@ const Ql = /* @__PURE__ */ new WeakMap(), s1 = (e, t) => {
     terms: ["now_playing", "titled_hero_art", "superhero_art", "branded_key_art", "poster", "box_art"]
   },
   { configKey: "console_power_entity", domains: ["remote", "media_player", "switch"], terms: ["console", "xbox", "playstation", "ps4", "ps5", "nintendo"] }
-], Do = (e) => e.split(".", 2)[1] ?? e, mu = (e) => e.toLowerCase().replace(/[^a-z0-9]+/g, "_"), u1 = (e, t, a) => {
+], To = (e) => e.split(".", 2)[1] ?? e, pu = (e) => e.toLowerCase().replace(/[^a-z0-9]+/g, "_"), c1 = (e, t, a) => {
   const i = t.split(".", 1)[0];
   if (!a.domains.includes(i)) return !1;
-  const n = e?.states[t], r = mu([
-    Do(t),
+  const n = e?.states[t], r = pu([
+    To(t),
     n?.attributes.friendly_name
   ].filter(Boolean).join(" "));
   return a.terms.some((o) => r.includes(o));
 }, zs = (e, t, a) => {
   if (!e || !t) return {};
-  const i = e.entities?.[t]?.device_id, r = Do(t).split(/_(?:console|status|online|power)$/)[0], o = Object.keys(e.states).filter((s) => {
-    const l = i && e.entities?.[s]?.device_id === i, _ = Do(s);
+  const i = e.entities?.[t]?.device_id, r = To(t).split(/_(?:console|status|online|power)$/)[0], o = Object.keys(e.states).filter((s) => {
+    const l = i && e.entities?.[s]?.device_id === i, _ = To(s);
     return l || _ === r || _.startsWith(`${r}_`);
   });
-  return Object.fromEntries(cu.flatMap((s) => {
+  return Object.fromEntries(mu.flatMap((s) => {
     const l = a?.[s.configKey];
     if (typeof l == "string" && l.length > 0)
       return [[s.configKey, l]];
-    const _ = o.find((d) => u1(e, d, s));
+    const _ = o.find((d) => c1(e, d, s));
     return _ ? [[s.configKey, _]] : [];
   }));
-}, pu = (e, t, a) => {
+}, hu = (e, t, a) => {
   const i = a?.console_platform;
   if (i === "xbox" || i === "playstation" || i === "nintendo") return i;
-  const n = t ? e?.states[t] : void 0, r = mu([
+  const n = t ? e?.states[t] : void 0, r = pu([
     t,
     n?.attributes.friendly_name,
     t ? e?.entities?.[t]?.platform : void 0
   ].filter(Boolean).join(" "));
   return r.includes("xbox") || r.includes("gamer") ? "xbox" : r.includes("playstation") || /(?:^|_)ps[345](?:_|$)/.test(r) ? "playstation" : r.includes("nintendo") || r.includes("switch") ? "nintendo" : "generic";
-}, c1 = (e) => {
+}, m1 = (e) => {
   switch (e) {
     case "xbox":
       return { icon: "mdi:microsoft-xbox", tone: "green" };
@@ -51530,7 +51530,7 @@ const Ql = /* @__PURE__ */ new WeakMap(), s1 = (e, t) => {
     default:
       return { icon: "mdi:controller-classic", tone: "purple" };
   }
-}, m1 = [
+}, p1 = [
   {
     upstreamId: "mini_graph_card",
     sourcePath: "https://github.com/kalkih/mini-graph-card",
@@ -52798,7 +52798,7 @@ const Ql = /* @__PURE__ */ new WeakMap(), s1 = (e, t) => {
     deviations: [],
     sourceDigest: "e41b8c1f961cc37f153aa55b2401b0becc2ee49ac0b40ec19c36aaef09c8f98b"
   }
-], js = new Map(m1.map((e) => [e.upstreamId, e])), p1 = (e) => /popup|browser_mod/i.test(e), h1 = {
+], js = new Map(p1.map((e) => [e.upstreamId, e])), h1 = (e) => /popup|browser_mod/i.test(e), g1 = {
   card_room: ["ulm_input_select", "ulm_input_select_option", "input_select_entity", "input_select_option"],
   card_battery: [
     "ulm_card_battery_battery_level_danger",
@@ -52820,7 +52820,7 @@ const Ql = /* @__PURE__ */ new WeakMap(), s1 = (e, t) => {
     "ulm_custom_card_washer_machine_state",
     "ulm_custom_card_washer_power"
   ]
-}, hu = /* @__PURE__ */ new Set([
+}, gu = /* @__PURE__ */ new Set([
   "ulm_card_battery_name",
   "ulm_card_flower_name",
   "ulm_card_input_boolean_name",
@@ -52829,7 +52829,7 @@ const Ql = /* @__PURE__ */ new WeakMap(), s1 = (e, t) => {
   "ulm_card_media_player_with_controls_name",
   "ulm_card_printer_name",
   "ulm_custom_card_metrics_entitites_name"
-]), g1 = (e, t) => hu.has(t) || (h1[e.upstreamId]?.includes(t) ?? !1), y1 = {
+]), y1 = (e, t) => gu.has(t) || (g1[e.upstreamId]?.includes(t) ?? !1), b1 = {
   battery: [
     "ulm_card_battery_attribute",
     "ulm_card_battery_battery_state_entity_id",
@@ -52857,7 +52857,7 @@ const Ql = /* @__PURE__ */ new WeakMap(), s1 = (e, t) => {
     "ulm_card_media_player_force_background_color",
     "ulm_card_media_player_color"
   ]
-}, b1 = {
+}, v1 = {
   custom_card_washer: [
     "ulm_custom_card_washer_power",
     "ulm_custom_card_washer_remote_control",
@@ -52908,17 +52908,17 @@ const Ql = /* @__PURE__ */ new WeakMap(), s1 = (e, t) => {
     "ulm_custom_card_speedtest_ping_max",
     "ulm_custom_card_speedtest_round"
   ]
-}, gu = (e, t) => !p1(t) && ([e.upstreamId, ...e.sourceIds ?? []].some((a) => b1[a]?.includes(t) === !0) || y1[e.family]?.includes(t) === !0), Lr = [
+}, yu = (e, t) => !h1(t) && ([e.upstreamId, ...e.sourceIds ?? []].some((a) => v1[a]?.includes(t) === !0) || b1[e.family]?.includes(t) === !0), Lr = [
   { key: "temperature", label: "Temperature", icon: "mdi:thermometer", min: -10, max: 50 },
   { key: "humidity", label: "Humidity", icon: "mdi:water-percent", min: 0, max: 100 },
   { key: "moisture", label: "Moisture", icon: "mdi:water", min: 0, max: 100 },
   { key: "conductivity", label: "Conductivity", icon: "mdi:flash", min: 0, max: 3e3 },
   { key: "illuminance", label: "Illuminance", icon: "mdi:white-balance-sunny", min: 0, max: 1e5 },
   { key: "dli", label: "Daily light integral", icon: "mdi:leaf", min: 0, max: 30 }
-], v1 = new Set(Lr.map(({ key: e }) => e)), yu = (e) => {
+], k1 = new Set(Lr.map(({ key: e }) => e)), bu = (e) => {
   const t = e?.ulm_card_flower_show_bars;
-  return Array.isArray(t) ? [...new Set(t)].filter((a) => typeof a == "string" && v1.has(a)) : Lr.map(({ key: a }) => a);
-}, bu = (e) => `${e}_entity`, va = "mushroom-addition-energy-plan", vu = ["price", "power", "soc", "schedule"];
+  return Array.isArray(t) ? [...new Set(t)].filter((a) => typeof a == "string" && k1.has(a)) : Lr.map(({ key: a }) => a);
+}, vu = (e) => `${e}_entity`, va = "mushroom-addition-energy-plan", ku = ["price", "power", "soc", "schedule"];
 function pa(e, t = "Plan", a = "schedule", i = "value", n = "green", r = "mdi:calendar-clock") {
   return {
     id: e,
@@ -52945,7 +52945,7 @@ function pa(e, t = "Plan", a = "schedule", i = "value", n = "green", r = "mdi:ca
     zeroLabel: "Idle"
   };
 }
-function k1() {
+function f1() {
   return { name: "Energy", unit: "kWh", icon: "mdi:lightning-bolt", color: "green" };
 }
 function Ss(e) {
@@ -53012,7 +53012,7 @@ function Ct(e, t, a, i) {
 function Wt(e, t, a = !1) {
   if (typeof e != "string" || e.length > 500 || a && !e.trim()) throw new Error(`${t}: expected ${a ? "non-empty " : ""}text (maximum 500 characters).`);
 }
-function f1(e, t) {
+function w1(e, t) {
   for (const a of ["entity", "field"]) e[a] !== void 0 && Wt(e[a], `${t}.${a}`);
 }
 function Xl(e, t) {
@@ -53020,10 +53020,10 @@ function Xl(e, t) {
   e.forEach((a, i) => {
     const n = `${t}.${i}`, r = Ki(a, n);
     for (const o of ["name", "unit", "icon", "color"]) Wt(r[o], `${n}.${o}`, o !== "unit");
-    f1(r, n);
+    w1(r, n);
   });
 }
-function ku(e, t) {
+function fu(e, t) {
   const a = Ki(e, "config");
   if (a.type !== `custom:${va}`) throw new Error(`type: expected custom:${va}.`);
   a.entity !== void 0 && Wt(a.entity, "entity"), a.visibleHours !== void 0 && Ct(a.visibleHours, "visibleHours", 1, 168);
@@ -53039,7 +53039,7 @@ function ku(e, t) {
     const l = `energy_plan.rows.${s}`, _ = Ki(o, l);
     for (const d of ["id", "name", "icon", "color", "unit", "positiveLabel", "negativeLabel", "zeroLabel", "lowColor", "highColor"]) Wt(_[d], `${l}.${d}`, !["unit", "positiveLabel", "negativeLabel", "zeroLabel"].includes(d));
     if (r.has(String(_.id))) throw new Error(`${l}.id: duplicate ID.`);
-    if (r.add(String(_.id)), !vu.includes(_.kind)) throw new Error(`${l}.kind: invalid row type.`);
+    if (r.add(String(_.id)), !ku.includes(_.kind)) throw new Error(`${l}.kind: invalid row type.`);
     if (!["attribute", "state"].includes(String(_.adapter))) throw new Error(`${l}.adapter: invalid source type.`);
     if (typeof _.enabled != "boolean") throw new Error(`${l}.enabled: expected a boolean.`);
     for (const d of ["entity", "path", "startField", "endField", "durationField", "valueField", "statusField"])
@@ -53092,7 +53092,7 @@ function st(e) {
     metered: { ...t.metered, ...a?.metered }
   };
 }
-function fu(e) {
+function wu(e) {
   if (e.type !== `custom:${ka}`) throw new Error(`Expected custom:${ka}.`);
   if (e.energy_insights !== void 0 && (!e.energy_insights || typeof e.energy_insights != "object" || Array.isArray(e.energy_insights))) throw new Error("energy_insights: expected an object.");
   const t = e.energy_insights?.metered;
@@ -53164,7 +53164,7 @@ function na(e, t, a = !1) {
   if ((a || e !== void 0) && (typeof e != "string" || a && !e.trim()))
     throw new Error(`${t} must be ${a ? "non-empty " : ""}text.`);
 }
-function wu(e) {
+function zu(e) {
   if (!Qi(e)) throw new Error("Energy Log configuration must be an object.");
   if (e.type !== `custom:${ya}`) throw new Error(`Card type must be "custom:${ya}".`);
   if (!Array.isArray(e.sources) || e.sources.length === 0)
@@ -53232,7 +53232,7 @@ function ra(e, t) {
 function ii(e) {
   return typeof e == "string" || typeof e == "number" || typeof e == "boolean" ? String(e) : "";
 }
-function zu(e, t) {
+function ju(e, t) {
   const a = new Map(e.categories.map((s) => [s.id, s])), i = [], n = [];
   let r = 0;
   for (const s of e.sources) {
@@ -53324,7 +53324,7 @@ function mn(e, t = [], a = []) {
   const r = [.../* @__PURE__ */ new Set([...t, ...a, ...Object.keys(e?.states ?? {})])].find((o) => {
     const s = e?.states[o];
     if (!s || ["unknown", "unavailable"].includes(s.state)) return !1;
-    const l = zu({ ...i, sources: [{ ...i.sources[0], entity: o }] }, { [o]: s });
+    const l = ju({ ...i, sources: [{ ...i.sources[0], entity: o }] }, { [o]: s });
     return l.validSources === 1 && l.errors.length === 0;
   });
   return r && (i.sources[0].entity = r), i;
@@ -53354,16 +53354,16 @@ const oe = (e, t) => ({
   name: { ...oe("Name"), required: !0 },
   icon: { label: "Icon", selector: { icon: {} } },
   color: { label: "Color", selector: { ui_color: {} } }
-}, ju = Pn({
+}, Su = Pn({
   ...As,
   entity: pt("Source"),
   field: oe("Field"),
   unit: oe("Unit")
-}, k1()), Su = Pn({
+}, f1()), xu = Pn({
   id: { ...oe("ID"), required: !0 },
   enabled: { label: "Enabled", selector: { boolean: {} } },
   ...As,
-  kind: pn("Type", [...vu]),
+  kind: pn("Type", [...ku]),
   entity: pt("Source"),
   adapter: pn("Source type", ["attribute", "state"]),
   path: oe("Path"),
@@ -53382,14 +53382,14 @@ const oe = (e, t) => ({
   negativeLabel: oe("Negative label"),
   zeroLabel: oe("Zero label")
 }, { ...pa(""), id: void 0 });
-delete Su.id.default;
-const w1 = {
+delete xu.id.default;
+const z1 = {
   name: { ...oe("Name", "Plan"), required: !0 },
   start: gt("Start", 0, 168, 0),
   end: gt("End", 0, 168, 12),
   description: oe("Description", ""),
-  metrics: { label: "Summary", selector: Ne(ju, !0), default: [] }
-}, z1 = Pn({
+  metrics: { label: "Summary", selector: Ne(Su, !0), default: [] }
+}, j1 = Pn({
   start: pn("Start", ["now", "source"]),
   startEntity: pt("Start source"),
   startField: oe("Start field"),
@@ -53404,10 +53404,10 @@ const w1 = {
   minimumWidth: gt("Width", 400, 1600),
   axisStep: gt("Interval", 1, 24),
   maxAgeMinutes: gt("Maximum source age (minutes)", 1, 10080),
-  rows: { label: "Timeline rows", selector: Ne(Su, !0) },
-  metrics: { label: "Summary", selector: Ne(ju, !0) },
-  periods: { label: "Periods", selector: Ne(w1, !0) }
-}, Ss()), j1 = {
+  rows: { label: "Timeline rows", selector: Ne(xu, !0) },
+  metrics: { label: "Summary", selector: Ne(Su, !0) },
+  periods: { label: "Periods", selector: Ne(z1, !0) }
+}, Ss()), S1 = {
   id: { ...oe("ID"), required: !0 },
   ...As,
   entity: pt("Power sensor"),
@@ -53425,7 +53425,7 @@ const w1 = {
 }, Nn = {
   ...Qn,
   absent: { label: "Not installed", selector: { boolean: {} } }
-}, S1 = {
+}, x1 = {
   solar: { label: "Solar generated", selector: Ne(Nn) },
   gridImport: { label: "Imported", selector: Ne(Qn) },
   gridExport: { label: "Exported", selector: Ne(Nn) },
@@ -53433,7 +53433,7 @@ const w1 = {
   batteryDischarge: { label: "Battery output", selector: Ne(Nn) },
   importRate: { label: "Unit rate", selector: Ne(Qn) },
   exportRate: { label: "Export rate", selector: Ne(Qn) }
-}, x1 = [
+}, A1 = [
   "start",
   "end",
   "generated_at",
@@ -53451,7 +53451,7 @@ const w1 = {
   "interval_export_kwh",
   "interval_rate",
   "interval_export_rate"
-], A1 = [
+], P1 = [
   "start",
   "end",
   "generated_at",
@@ -53472,7 +53472,7 @@ const w1 = {
   "block_reason",
   "block_detail",
   "block_quantity_kwh"
-], P1 = {
+], M1 = {
   start: "Start",
   end: "End",
   generated_at: "Updated",
@@ -53511,24 +53511,24 @@ const w1 = {
     label: "Field mappings",
     selector: Ne(Object.fromEntries(e.map((t) => [
       t,
-      { ...oe(P1[t] ?? t), default: t.replace(/^(interval_|block_)/, "") }
+      { ...oe(M1[t] ?? t), default: t.replace(/^(interval_|block_)/, "") }
     ])))
   }
-}), M1 = Pn({
+}), C1 = Pn({
   actualSource: {
     label: "Measured source",
     description: "Optional legacy snapshot; leave empty to use the configured meter sensors.",
-    selector: Ne(e_(x1))
+    selector: Ne(e_(A1))
   },
   metered: {
     label: "Metered intervals",
     description: "Cumulative energy and timestamped price sensors; used when Measured source is empty.",
-    selector: Ne(S1)
+    selector: Ne(x1)
   },
   planSource: {
     label: "Plan source",
     description: "Supplied plan; not measured or executed.",
-    selector: Ne(e_(A1))
+    selector: Ne(e_(P1))
   },
   currency: oe("Currency code"),
   fixedExportRate: gt("Fixed export rate", -1e6, 1e6),
@@ -53547,10 +53547,10 @@ const w1 = {
   gridEntity: pt("Grid power"),
   batteryEntity: pt("Battery power"),
   selfPoweredEntity: pt("Home self-powered percentage"),
-  consumers: { label: "Consumers", selector: Ne(j1, !0) }
-}, xs()), C1 = (e) => ({
+  consumers: { label: "Consumers", selector: Ne(S1, !0) }
+}, xs()), $1 = (e) => ({
   name: e,
-  selector: Ne(e === "energy_plan" ? z1 : M1)
+  selector: Ne(e === "energy_plan" ? j1 : C1)
 }), t_ = {
   sources: "Sources",
   categories: "Categories",
@@ -53575,15 +53575,15 @@ const w1 = {
 }, { ...mn().sources[0], id: void 0, entity: void 0 });
 delete Ps.id.default;
 delete Ps.entity.default;
-const $1 = {
+const E1 = {
   id: { ...oe("ID"), required: !0 },
   label: { ...oe("Label"), required: !0 },
   color: { label: "Color", selector: { ui_color: {} } },
   icon: { label: "Icon", selector: { icon: {} } }
-}, E1 = () => [
+}, T1 = () => [
   { name: "allIcon", selector: { icon: {} } },
   { name: "sources", selector: Ne(Ps, !0) },
-  { name: "categories", selector: { object: { ...Ne($1, !0).object, label_field: "label" } } },
+  { name: "categories", selector: { object: { ...Ne(E1, !0).object, label_field: "label" } } },
   { name: "limit", selector: { number: { min: 1, max: 500, mode: "box", step: 1 } } },
   { name: "sortOrder", selector: { select: { mode: "dropdown", options: [
     { value: "newest", label: "Newest first" },
@@ -53597,7 +53597,7 @@ const $1 = {
 ], x = (e, t = "entity") => ({
   name: t,
   selector: { entity: e?.length ? { domain: e } : {} }
-}), G = (e) => ({ name: e, selector: { text: {} } }), T1 = (e) => ({ name: e, selector: { navigation: {} } }), C = (e) => ({ name: e, selector: { boolean: {} } }), R = (e, t = 1, a = 168, i) => ({
+}), G = (e) => ({ name: e, selector: { text: {} } }), D1 = (e) => ({ name: e, selector: { navigation: {} } }), C = (e) => ({ name: e, selector: { boolean: {} } }), R = (e, t = 1, a = 168, i) => ({
   name: e,
   selector: { number: { min: t, max: a, mode: "box", ...i === void 0 ? {} : { step: i } } }
 }), _o = (e) => ({
@@ -53663,28 +53663,28 @@ const $1 = {
       } : {}
     }
   }
-}), ri = (e) => ({ ...e, presentation: !0 }), D1 = (e) => ({
+}), ri = (e) => ({ ...e, presentation: !0 }), N1 = (e) => ({
   type: "grid",
   name: "",
   schema: e,
   presentation: !0
-}), N1 = /* @__PURE__ */ new Set([
+}), V1 = /* @__PURE__ */ new Set([
   "ulm_card_battery_battery_level_danger",
   "ulm_card_battery_battery_level_warning"
-]), V1 = /* @__PURE__ */ new Set([
+]), L1 = /* @__PURE__ */ new Set([
   "ulm_card_media_player_collapsible",
   "ulm_card_media_player_idle_off",
   "ulm_card_media_player_more_info",
   "ulm_card_media_player_power_button",
   "ulm_card_media_player_force_background_color"
-]), L1 = /* @__PURE__ */ new Set([
-  "ulm_card_media_player_enable_volume_adjust"
 ]), H1 = /* @__PURE__ */ new Set([
+  "ulm_card_media_player_enable_volume_adjust"
+]), I1 = /* @__PURE__ */ new Set([
   "ulm_card_input_datetime_name",
   "ulm_card_input_number_entity",
   "ulm_card_input_number_name",
   "ulm_custom_card_metrics_entitites_name"
-]), I1 = {}, pe = (e = !1) => [
+]), R1 = {}, pe = (e = !1) => [
   ri({
     name: "name",
     selector: { entity_name: {} },
@@ -53715,7 +53715,7 @@ const $1 = {
   ri(C("multiline_secondary")),
   ri(C("fill_container")),
   ri(C("card_shadow")),
-  D1([
+  N1([
     te("primary_info", [
       { value: "name", label: "Name" },
       { value: "state", label: "State" },
@@ -53741,16 +53741,16 @@ const $1 = {
       { value: "none", label: "None" }
     ])
   ])
-], R1 = /* @__PURE__ */ new Set([
+], B1 = /* @__PURE__ */ new Set([
   "card_room",
   "custom_card_welcome"
-]), xu = (e) => e.flatMap((t) => t.name === "icon" || t.name === "icon_type" ? [] : t.schema ? [{ ...t, schema: xu(t.schema) }] : [t]), B1 = (e) => {
+]), Au = (e) => e.flatMap((t) => t.name === "icon" || t.name === "icon_type" ? [] : t.schema ? [{ ...t, schema: Au(t.schema) }] : [t]), F1 = (e) => {
   if (!e.some((o) => o.presentation)) return e;
-  const t = e.filter((o) => o.presentation), a = /* @__PURE__ */ new Set(["name", "icon"]), i = e.filter((o) => !o.presentation && !a.has(o.name) && !hu.has(o.name)), n = i.findIndex((o) => o.name === "entity");
+  const t = e.filter((o) => o.presentation), a = /* @__PURE__ */ new Set(["name", "icon"]), i = e.filter((o) => !o.presentation && !a.has(o.name) && !gu.has(o.name)), n = i.findIndex((o) => o.name === "entity");
   if (n < 0) return [...t, ...i];
   const [r] = i.splice(n, 1);
   return [r, ...t, ...i];
-}, F1 = (e) => {
+}, O1 = (e) => {
   const t = { ...e };
   return delete t.presentation, t;
 }, De = (e) => [
@@ -53801,7 +53801,7 @@ const $1 = {
       label: e.variantLabels?.[t] ?? t
     })))] : [],
     ...pe(),
-    T1("navigation_path")
+    D1("navigation_path")
   ],
   text: () => [...pe(), G("secondary")],
   camera: (e) => [...De(e)],
@@ -53813,14 +53813,14 @@ const $1 = {
   "alarm-time": (e) => [...De(e), x(["input_datetime"], "datetime_entity"), C("show_controls")],
   door: (e) => [...De(e), x(["lock"], "lock_entity"), x(["sensor"], "battery_entity"), C("show_controls")],
   entity: (e) => [...De(e), G("secondary")]
-}, Au = (e, t, a) => {
+}, Pu = (e, t, a) => {
   if (e.upstreamId === "energy_log") return [
     ...De(e),
     G("secondary"),
     de("tap_action"),
     de("hold_action"),
     de("double_tap_action"),
-    ...E1()
+    ...T1()
   ];
   if (e.upstreamId === "energy_plan" || e.upstreamId === "energy_insights") return [
     ...De(e),
@@ -53829,7 +53829,7 @@ const $1 = {
     de("tap_action"),
     de("hold_action"),
     de("double_tap_action"),
-    C1(e.upstreamId)
+    $1(e.upstreamId)
   ];
   if (e.upstreamId === "todo") return [
     x(["todo"]),
@@ -53952,7 +53952,7 @@ const $1 = {
       ...pe(),
       te("upcoming_data_attribute", [.../* @__PURE__ */ new Set([
         "data",
-        ...QA(t?.entity ? a?.states[t.entity] : void 0)
+        ...XA(t?.entity ? a?.states[t.entity] : void 0)
       ])].map((s) => ({ value: s, label: s }))),
       te("upcoming_image_style", [{ value: "poster", label: "Poster beside text" }, { value: "fanart", label: "Full-width artwork" }]),
       R("upcoming_max_items", 1, 50),
@@ -54447,7 +54447,7 @@ const $1 = {
           }
         }
       },
-      ...yu(t).map((r) => x(["sensor", "number", "input_number"], bu(r))),
+      ...bu(t).map((r) => x(["sensor", "number", "input_number"], vu(r))),
       ...pe()
     ] : e.upstreamId === "custom_card_washer" ? [
       x(["sensor", "switch", "binary_sensor"]),
@@ -54573,23 +54573,23 @@ const $1 = {
       x(["sensor"], "battery_entity"),
       ...pe()
     ] : (a_[e.family] ?? a_.entity)(e, t)
-  ], n = R1.has(e.upstreamId) ? xu(i) : i;
+  ], n = B1.has(e.upstreamId) ? Au(i) : i;
   return [
-    ...B1(n).map(F1),
+    ...F1(n).map(O1),
     de("tap_action"),
     de("hold_action"),
     de("double_tap_action")
   ];
-}, O1 = (e, t) => {
+}, q1 = (e, t) => {
   const a = t?.variant ? (e.sourceIds ?? [e.upstreamId]).filter((n) => Dl(n) === t.variant || n === e.upstreamId && Dl(n) === void 0) : e.sourceIds ?? [e.upstreamId];
   return [...new Map(
     a.flatMap((n) => js.get(n)?.variables ?? []).map((n) => [n.name, n])
-  ).values()].filter((n) => gu(e, n.name)).filter((n) => !g1(e, n.name)).filter((n) => !H1.has(n.name)).map((n) => {
-    const r = I1[n.name];
+  ).values()].filter((n) => yu(e, n.name)).filter((n) => !y1(e, n.name)).filter((n) => !I1.has(n.name)).map((n) => {
+    const r = R1[n.name];
     if (r) return te(n.name, r);
-    if (V1.has(n.name)) return C(n.name);
-    if (L1.has(n.name)) return R(n.name, -1e5, 1e5);
-    if (N1.has(n.name))
+    if (L1.has(n.name)) return C(n.name);
+    if (H1.has(n.name)) return R(n.name, -1e5, 1e5);
+    if (V1.has(n.name))
       return {
         name: n.name,
         selector: { number: { min: 0, max: 100, step: 1, mode: "slider", unit_of_measurement: "%" } }
@@ -54618,10 +54618,10 @@ const $1 = {
         return G(n.name);
     }
   });
-}, Pu = (e) => new Set(e.flatMap((t) => t.schema ? [...Pu(t.schema)] : t.name ? [t.name] : [])), q1 = (e, t, a) => {
-  const i = Pu(a ?? Au(e, t));
-  return O1(e, t).filter((n) => !i.has(n.name));
-}, U1 = [
+}, Mu = (e) => new Set(e.flatMap((t) => t.schema ? [...Mu(t.schema)] : t.name ? [t.name] : [])), U1 = (e, t, a) => {
+  const i = Mu(a ?? Pu(e, t));
+  return q1(e, t).filter((n) => !i.has(n.name));
+}, K1 = [
   [/input_boolean/, "mdi:toggle-switch"],
   [/light/, "mdi:lightbulb"],
   [/fan/, "mdi:fan"],
@@ -54646,7 +54646,7 @@ const $1 = {
   [/graph|sensor|gauge|speedtest/, "mdi:chart-line"],
   [/clock|date|datetime/, "mdi:calendar-clock"],
   [/title|subtitle/, "mdi:format-title"]
-], Ms = (e, t) => e.upstreamId === "todo" ? "mdi:clipboard-check-outline" : e.upstreamId === "stock_card" ? "mdi:chart-line" : t?.attributes.icon ? t.attributes.icon : e.upstreamId === "air_quality" ? "mdi:air-filter" : e.upstreamId === "custom_card_trash" ? "mdi:trash-can-outline" : e.upstreamId === "custom_card_entity_carousel" ? "mdi:view-carousel" : e.upstreamId === "custom_card_light" ? "mdi:lightbulb" : e.upstreamId === "custom_card_sun" ? "mdi:weather-sunny" : e.upstreamId === "custom_card_speedtest_gauges" ? "mdi:speedometer" : e.upstreamId === "advanced_home_energy_management" ? "mdi:home-lightning-bolt-outline" : e.upstreamId === "advanced_energy_buy_sell" ? "mdi:chart-timeline-variant" : e.upstreamId === "advanced_energy_panel_health" ? "mdi:solar-power-variant" : e.upstreamId === "upcoming_media" ? "mdi:movie-open-outline" : e.upstreamId === "remote_card" ? "mdi:remote-tv" : e.upstreamId === "pi_hole_card" ? "mdi:pi-hole" : U1.find(([a]) => a.test(e.upstreamId))?.[1] ?? "mdi:information-outline", K1 = (e) => {
+], Ms = (e, t) => e.upstreamId === "todo" ? "mdi:clipboard-check-outline" : e.upstreamId === "stock_card" ? "mdi:chart-line" : t?.attributes.icon ? t.attributes.icon : e.upstreamId === "air_quality" ? "mdi:air-filter" : e.upstreamId === "custom_card_trash" ? "mdi:trash-can-outline" : e.upstreamId === "custom_card_entity_carousel" ? "mdi:view-carousel" : e.upstreamId === "custom_card_light" ? "mdi:lightbulb" : e.upstreamId === "custom_card_sun" ? "mdi:weather-sunny" : e.upstreamId === "custom_card_speedtest_gauges" ? "mdi:speedometer" : e.upstreamId === "advanced_home_energy_management" ? "mdi:home-lightning-bolt-outline" : e.upstreamId === "advanced_energy_buy_sell" ? "mdi:chart-timeline-variant" : e.upstreamId === "advanced_energy_panel_health" ? "mdi:solar-power-variant" : e.upstreamId === "upcoming_media" ? "mdi:movie-open-outline" : e.upstreamId === "remote_card" ? "mdi:remote-tv" : e.upstreamId === "pi_hole_card" ? "mdi:pi-hole" : K1.find(([a]) => a.test(e.upstreamId))?.[1] ?? "mdi:information-outline", W1 = (e) => {
   if (!(e === "<null>" || e === "<documented/inherited>")) {
     if (e === "true") return !0;
     if (e === "false") return !1;
@@ -54658,16 +54658,16 @@ const $1 = {
       return;
     }
   }
-}, W1 = (e) => {
+}, G1 = (e) => {
   const t = {}, a = new Set(cs(e));
   for (const i of e.sourceIds ?? [e.upstreamId])
     for (const n of js.get(i)?.variables ?? []) {
-      if (!gu(e, n.name) || a.has(n.name)) continue;
-      const r = K1(n.defaultValue);
+      if (!yu(e, n.name) || a.has(n.name)) continue;
+      const r = W1(n.defaultValue);
       r !== void 0 && (t[n.name] = r);
     }
   return t;
-}, No = (e, t, a) => {
+}, Do = (e, t, a) => {
   const i = e.upstreamId === "todo" ? { todo_show_completed: !0, todo_allow_add: !0, todo_allow_edit: !0, todo_allow_delete: !0 } : e.upstreamId === "air_quality" ? { air_quality_show_header: !0, air_quality_show_title: !0, air_quality_show_icon: !0, air_quality_show_badge: !0 } : e.upstreamId === "stock_card" ? {
     stock_source: "entity",
     stock_shares: 0,
@@ -54677,7 +54677,7 @@ const $1 = {
     stock_show_statistics: !0,
     stock_show_volume: !0,
     stock_show_trends: !0
-  } : e.upstreamId === "pi_hole_card" ? Et : e.upstreamId === "remote_card" ? yi : e.upstreamId === "upcoming_media" ? YA : e.upstreamId === "mini_graph_card" ? {
+  } : e.upstreamId === "pi_hole_card" ? Et : e.upstreamId === "remote_card" ? yi : e.upstreamId === "upcoming_media" ? JA : e.upstreamId === "mini_graph_card" ? {
     variant: "line",
     hours_to_show: 24,
     points_per_hour: 0.5,
@@ -54882,11 +54882,11 @@ const $1 = {
   } : {};
   return {
     type: `custom:${e.tag}`,
-    ...W1(e),
+    ...G1(e),
     ...i,
     entity: a,
     entities: e.upstreamId === "mini_graph_card" && a ? [a] : void 0,
-    waste_streams: e.upstreamId === "custom_card_trash" ? hh() : void 0,
+    waste_streams: e.upstreamId === "custom_card_trash" ? gh() : void 0,
     show_today: e.upstreamId === "custom_card_trash" ? !1 : void 0,
     show_tomorrow: e.upstreamId === "custom_card_trash" ? !1 : void 0,
     name: void 0,
@@ -54895,7 +54895,7 @@ const $1 = {
     show_state: e.upstreamId !== "custom_card_pollen",
     layout: "default"
   };
-}, G1 = {
+}, Z1 = {
   automation: "mdi:robot",
   button: "mdi:gesture-tap-button",
   cover: "mdi:window-shutter",
@@ -54912,12 +54912,12 @@ const $1 = {
   return {
     entity: t,
     name: a?.attributes.friendly_name,
-    icon: a?.attributes.icon ?? G1[i] ?? "mdi:gesture-tap-button",
+    icon: a?.attributes.icon ?? Z1[i] ?? "mdi:gesture-tap-button",
     icon_type: a?.attributes.entity_picture ? "entity-picture" : "icon",
     color: "purple",
     tap_action: { action: "toggle" }
   };
-}, Z1 = (e, t) => {
+}, Y1 = (e, t) => {
   if (!e) return { items: [] };
   const a = (_) => _.toLowerCase().replace(/[^\p{L}\p{N}]/gu, ""), i = (_) => {
     const d = e.entities?.[_];
@@ -54946,7 +54946,7 @@ const $1 = {
       tap_action: { action: "perform-action", perform_action: "scene.turn_on", target: { entity_id: _ } }
     }))
   } : { items: [] };
-}, Mu = (e) => {
+}, Cu = (e) => {
   if (typeof e != "number" && (typeof e != "string" || !e.trim())) return;
   const t = Number(e);
   return Number.isFinite(t) ? t : void 0;
@@ -54957,16 +54957,16 @@ const $1 = {
     a.temperature,
     a.device_temperature,
     t.entity_id.startsWith("sensor.") ? t.state : void 0
-  ].map(Mu).find((r) => r !== void 0), n = a.unit_of_measurement ?? (t.entity_id.startsWith("climate.") || a.device_class === "temperature" || a.current_temperature !== void 0 || a.device_temperature !== void 0 || a.temperature !== void 0 ? e.config?.unit_system?.temperature : void 0);
+  ].map(Cu).find((r) => r !== void 0), n = a.unit_of_measurement ?? (t.entity_id.startsWith("climate.") || a.device_class === "temperature" || a.current_temperature !== void 0 || a.device_temperature !== void 0 || a.temperature !== void 0 ? e.config?.unit_system?.temperature : void 0);
   return i !== void 0 && typeof n == "string" && ["°C", "°F", "K"].includes(n.trim()) ? `${i} ${n.trim()}` : void 0;
 }, n_ = (e) => {
   if (fa(e) || !e.entity_id.startsWith("light.")) return;
-  const t = Mu(e.attributes.brightness);
+  const t = Cu(e.attributes.brightness);
   return t !== void 0 && t >= 0 && t <= 255 ? `${Math.round(t / 255 * 100)}%` : void 0;
-}, Cu = (e, t) => {
+}, $u = (e, t) => {
   const a = e.room_light_entity || e.room_brightness_entity || (e.entity?.startsWith("light.") ? e.entity : void 0);
   return a ? t.states[a] : void 0;
-}, Y1 = (e, t) => {
+}, J1 = (e, t) => {
   const a = e.entity ? t.states[e.entity] : void 0, i = e.secondary_info;
   if (i === "none") return;
   if (i === "custom") return e.secondary || void 0;
@@ -54996,9 +54996,9 @@ const $1 = {
     return s ? u`<ha-relative-time .hass=${t} .datetime=${s}></ha-relative-time>` : h(t, i === "last-changed" ? "Last changed unavailable" : "Last updated unavailable");
   }
   if (i !== "state" && e.secondary) return e.secondary;
-  const n = e.label_use_temperature !== !1 ? i_(t, e.room_temperature_entity ? t.states[e.room_temperature_entity] : a) : void 0, r = e.label_use_brightness === !0 ? n_(Cu(e, t)) : void 0, o = [...new Set([n, r].filter((s) => !!s))];
+  const n = e.label_use_temperature !== !1 ? i_(t, e.room_temperature_entity ? t.states[e.room_temperature_entity] : a) : void 0, r = e.label_use_brightness === !0 ? n_($u(e, t)) : void 0, o = [...new Set([n, r].filter((s) => !!s))];
   return i === "state" ? [.../* @__PURE__ */ new Set([K(a, t), ...o])].join(" · ") : o.join(" · ") || K(a, t);
-}, Wi = 4, $u = ["window", "door", "motion", "water", "smoke"], Xi = (e) => {
+}, Wi = 4, Eu = ["window", "door", "motion", "water", "smoke"], Xi = (e) => {
   const t = e?.attributes.device_class;
   return t === "window" ? "window" : t === "door" || t === "garage_door" || t === "opening" ? "door" : t === "moisture" ? "water" : t === "smoke" || t === "fire" ? "smoke" : "motion";
 }, fa = (e) => !e || ["unknown", "unavailable"].includes(e.state), Cs = (e, t) => fa(e) ? !1 : {
@@ -55013,7 +55013,7 @@ const $1 = {
   motion: t ? "mdi:motion-sensor" : "mdi:motion-sensor-off",
   water: t ? "mdi:water-alert" : "mdi:water-check",
   smoke: t ? "mdi:smoke-detector-alert" : "mdi:smoke-detector"
-})[e], Eu = (e, t = "") => {
+})[e], Tu = (e, t = "") => {
   if (e?.attributes.icon) return e.attributes.icon;
   const a = String(e?.attributes.device_class ?? "");
   if (["window", "door", "garage_door", "opening", "motion", "occupancy", "presence", "moisture", "smoke", "fire"].includes(a)) {
@@ -55059,7 +55059,7 @@ const $1 = {
   const a = e?.states[t], i = t.split(".")[0], n = ["sensor", "binary_sensor", "person", "device_tracker"].includes(i);
   return {
     entity: t,
-    icon: Eu(a, t),
+    icon: Tu(a, t),
     icon_type: a?.attributes.entity_picture ? "entity-picture" : "icon",
     active_state: i === "media_player" ? "playing" : i === "cover" ? "open" : i === "person" || i === "device_tracker" ? "home" : i === "lock" ? "unlocked" : "on",
     color: "blue",
@@ -55081,10 +55081,10 @@ const $1 = {
       if (o) return o;
     }
 };
-var J1 = Object.defineProperty, Q1 = Object.getOwnPropertyDescriptor, Ja = (e, t, a, i) => {
-  for (var n = i > 1 ? void 0 : i ? Q1(t, a) : t, r = e.length - 1, o; r >= 0; r--)
+var Q1 = Object.defineProperty, X1 = Object.getOwnPropertyDescriptor, Ja = (e, t, a, i) => {
+  for (var n = i > 1 ? void 0 : i ? X1(t, a) : t, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = (i ? o(t, a, n) : o(n)) || n);
-  return i && n && J1(t, a, n), n;
+  return i && n && Q1(t, a, n), n;
 };
 const r_ = [
   { id: "context", title: "Context", icon: "mdi:shape-outline" },
@@ -55092,7 +55092,7 @@ const r_ = [
   { id: "layout", title: "Layout", icon: "mdi:view-dashboard-outline" },
   { id: "interactions", title: "Interactions", icon: "mdi:gesture-tap" },
   { id: "features", title: "Features", icon: "mdi:view-list" }
-], X1 = /* @__PURE__ */ new Set([
+], eP = /* @__PURE__ */ new Set([
   "name",
   "secondary",
   "primary_info",
@@ -55109,7 +55109,7 @@ const r_ = [
   "mini_graph_show_top_labels",
   "mini_graph_name_adaptive_color",
   "mini_graph_icon_adaptive_color"
-]), eP = /* @__PURE__ */ new Set([
+]), tP = /* @__PURE__ */ new Set([
   "visibleHours",
   "presentation",
   "layout",
@@ -55149,7 +55149,7 @@ const r_ = [
   "carousel_pagination",
   "carousel_pagination_type",
   "carousel_scrollbar"
-]), tP = /* @__PURE__ */ new Set([
+]), aP = /* @__PURE__ */ new Set([
   "tap_action",
   "hold_action",
   "double_tap_action",
@@ -55173,7 +55173,7 @@ const r_ = [
   stock_show_statistics: "Show company statistics",
   stock_show_volume: "Show trading volume",
   stock_show_trends: "Show SMA / EMA trends"
-}, l_ = (e) => e.name === "todo_entities" ? "context" : e.name === "todo_show_completed" ? "content" : e.name.startsWith("todo_allow_") ? "interactions" : e.name.startsWith("air_quality_show_") ? "content" : e.name === "stock_symbol" || e.name === "stock_source" || e.name === "pihole_device_ids" ? "context" : e.name === "pihole_show_header" ? "content" : /^pihole_(columns|accent_color|chart_height|chart_hours)$/.test(e.name) ? "layout" : /^pihole_(pause_service|pause_action|duration_field|duration_format|metric_.*_action)$/.test(e.name) ? "interactions" : ["remote_entity", "remote_media_entity", "remote_device", "remote_transport", "remote_preset"].includes(e.name) ? "context" : /^remote_(navigation|volume|button_size|touchpad_height|accent_color)$/.test(e.name) ? "layout" : /^remote_(haptics|double_tap|double_tap_command|swipe_distance)$/.test(e.name) ? "interactions" : e.name === "upcoming_data_attribute" ? "context" : /^upcoming_(title_text|line[1-4]_(text|color)|title_color|date_format|clock)$/.test(e.name) ? "content" : /^upcoming_(image_style|item_height|corner_radius|max_columns|overflow|title_size|line_size|box_shadows|text_shadows|transparency)$/.test(e.name) ? "layout" : /^upcoming_(item_behavior|item_action|url|trailers|links)$/.test(e.name) ? "interactions" : e.name === "entity" || e.name === "ulm_weather" ? "context" : e.name.startsWith("welcome_weather_") && !e.name.endsWith("_action") ? "content" : tP.has(e.name) || e.name.endsWith("_action") ? "interactions" : eP.has(e.name) || e.name.endsWith("_horizontal") || e.name.endsWith("_narrow_buttons") ? "layout" : X1.has(e.name) ? "content" : "features", aP = (e) => {
+}, l_ = (e) => e.name === "todo_entities" ? "context" : e.name === "todo_show_completed" ? "content" : e.name.startsWith("todo_allow_") ? "interactions" : e.name.startsWith("air_quality_show_") ? "content" : e.name === "stock_symbol" || e.name === "stock_source" || e.name === "pihole_device_ids" ? "context" : e.name === "pihole_show_header" ? "content" : /^pihole_(columns|accent_color|chart_height|chart_hours)$/.test(e.name) ? "layout" : /^pihole_(pause_service|pause_action|duration_field|duration_format|metric_.*_action)$/.test(e.name) ? "interactions" : ["remote_entity", "remote_media_entity", "remote_device", "remote_transport", "remote_preset"].includes(e.name) ? "context" : /^remote_(navigation|volume|button_size|touchpad_height|accent_color)$/.test(e.name) ? "layout" : /^remote_(haptics|double_tap|double_tap_command|swipe_distance)$/.test(e.name) ? "interactions" : e.name === "upcoming_data_attribute" ? "context" : /^upcoming_(title_text|line[1-4]_(text|color)|title_color|date_format|clock)$/.test(e.name) ? "content" : /^upcoming_(image_style|item_height|corner_radius|max_columns|overflow|title_size|line_size|box_shadows|text_shadows|transparency)$/.test(e.name) ? "layout" : /^upcoming_(item_behavior|item_action|url|trailers|links)$/.test(e.name) ? "interactions" : e.name === "entity" || e.name === "ulm_weather" ? "context" : e.name.startsWith("welcome_weather_") && !e.name.endsWith("_action") ? "content" : aP.has(e.name) || e.name.endsWith("_action") ? "interactions" : tP.has(e.name) || e.name.endsWith("_horizontal") || e.name.endsWith("_narrow_buttons") ? "layout" : eP.has(e.name) ? "content" : "features", iP = (e) => {
   const t = {
     context: [],
     content: [],
@@ -55204,7 +55204,7 @@ let Xt = class extends ve {
         ...t,
         ...t.price ? { entity: t.price.entity } : {}
       }, He(this, "config-changed", { config: this.config });
-    }, this.computeLabel = (e) => this.config?.type === `custom:${ya}` && e.name === "allIcon" ? `${h(this.hass, "All")}: ${h(this.hass, "Icon")}` : this.config?.type === `custom:${ya}` && t_[e.name] ? h(this.hass, t_[e.name]) : e.name === "energy_plan" || e.name === "energy_insights" ? h(this.hass, ut(this.config.type.replace(/^custom:/, ""))?.name ?? e.name) : this.config?.type.endsWith("air-quality") && e.name === "entity" ? h(this.hass, "Air quality sensor (optional; otherwise calculated from pollutants)") : Bl[e.name] ? h(this.hass, Bl[e.name]) : Il[e.name] ? h(this.hass, Il[e.name]) : jd(e.name) ? `${h(this.hass, Fa.find(([t]) => e.name.startsWith(`stock_${t}_`))[1])}: ${h(this.hass, e.name.endsWith("_entity") ? "Metric entity override" : "Metric attribute")}` : s_[e.name] ? h(this.hass, s_[e.name]) : o_[e.name] ? `${j(this.hass, "ulm_weather")}: ${j(this.hass, o_[e.name])}` : this.config?.type.endsWith("pi-hole-card") && e.name === "entity" ? j(this.hass, "editor.pihole_entity") : this.config?.type.endsWith("upcoming-media-card") && e.name === "entity" ? j(this.hass, "editor.media_entity") : this.config?.type.endsWith("remote-card") && e.name === "entity" ? j(this.hass, "editor.remote_entity") : this.config?.type.includes("custom-card-trash") && e.name === "entity" ? `${h(this.hass, "Card")}: ${j(this.hass, "entity")} (${h(this.hass, "Optional")})` : this.config?.type.includes("custom-card-washer") && e.name === "entity" ? j(this.hass, "machine_state_entity") : j(this.hass, e.name), this.remoteButtonLabel = (e) => h(this.hass, { type: "Button type", name: "Label", icon: "Icon", color: "Icon color", command: "Command code", source: "TV source", action: "Action" }[e.name] || e.name), this.computeHelper = (e) => Pd(
+    }, this.computeLabel = (e) => this.config?.type === `custom:${ya}` && e.name === "allIcon" ? `${h(this.hass, "All")}: ${h(this.hass, "Icon")}` : this.config?.type === `custom:${ya}` && t_[e.name] ? h(this.hass, t_[e.name]) : e.name === "energy_plan" || e.name === "energy_insights" ? h(this.hass, ut(this.config.type.replace(/^custom:/, ""))?.name ?? e.name) : this.config?.type.endsWith("air-quality") && e.name === "entity" ? h(this.hass, "Air quality sensor (optional; otherwise calculated from pollutants)") : Bl[e.name] ? h(this.hass, Bl[e.name]) : Il[e.name] ? h(this.hass, Il[e.name]) : Sd(e.name) ? `${h(this.hass, Fa.find(([t]) => e.name.startsWith(`stock_${t}_`))[1])}: ${h(this.hass, e.name.endsWith("_entity") ? "Metric entity override" : "Metric attribute")}` : s_[e.name] ? h(this.hass, s_[e.name]) : o_[e.name] ? `${j(this.hass, "ulm_weather")}: ${j(this.hass, o_[e.name])}` : this.config?.type.endsWith("pi-hole-card") && e.name === "entity" ? j(this.hass, "editor.pihole_entity") : this.config?.type.endsWith("upcoming-media-card") && e.name === "entity" ? j(this.hass, "editor.media_entity") : this.config?.type.endsWith("remote-card") && e.name === "entity" ? j(this.hass, "editor.remote_entity") : this.config?.type.includes("custom-card-trash") && e.name === "entity" ? `${h(this.hass, "Card")}: ${j(this.hass, "entity")} (${h(this.hass, "Optional")})` : this.config?.type.includes("custom-card-washer") && e.name === "entity" ? j(this.hass, "machine_state_entity") : j(this.hass, e.name), this.remoteButtonLabel = (e) => h(this.hass, { type: "Button type", name: "Label", icon: "Icon", color: "Icon color", command: "Command code", source: "TV source", action: "Action" }[e.name] || e.name), this.computeHelper = (e) => Md(
       this.config?.type.includes("custom-card-washer") && e.name === "entity" ? "machine_state_entity" : e.name,
       this.hass,
       this.config?.type
@@ -55244,16 +55244,16 @@ let Xt = class extends ve {
         for (const { configKey: n } of bs)
           this.config[n] === void 0 && delete i[n];
       if (this.config.type.includes("custom-card-playstation") && typeof t.entity == "string" && t.entity !== this.config.entity)
-        for (const { configKey: n } of cu)
+        for (const { configKey: n } of mu)
           this.config[n] === void 0 && delete i[n];
       if (ut(this.config.type.replace(/^custom:/, ""))?.upstreamId === "custom_card_washer" && typeof t.entity == "string" && t.entity && t.entity !== this.config.entity) {
-        const n = _1(this.hass, t.entity);
+        const n = d1(this.hass, t.entity);
         for (const [r, o] of Object.entries(n))
           (i[r] === void 0 || i[r] === "") && (i[r] = o);
       }
       if ([`custom:${va}`, `custom:${ka}`, `custom:${ya}`].includes(i.type))
         try {
-          i.type === `custom:${va}` ? ku(i) : i.type === `custom:${ya}` ? wu(i) : fu(i), this.energyError = "";
+          i.type === `custom:${va}` ? fu(i) : i.type === `custom:${ya}` ? zu(i) : wu(i), this.energyError = "";
         } catch (n) {
           if (!(n instanceof Error)) throw n;
           this.config = i, this.energyError = n.message;
@@ -55295,7 +55295,7 @@ let Xt = class extends ve {
     this.energyError = "";
     const t = e.type.replace(/^custom:/, ""), a = us.find((i) => i.tag === t);
     if (this.config = {
-      ...qd(Od(e)),
+      ...Ud(qd(e)),
       ...t === "mushroom-addition-upcoming-media-card" && e.upcoming_data_attribute === "friendly_name" ? { upcoming_data_attribute: "data" } : {},
       variant: e.variant ?? a?.variant
     }, t === va && (this.config = { ...this.config, energy_plan: ui(this.config, this.hass) }), t === ka && (this.config = { ...this.config, energy_insights: st(this.config) }), t === ya && (this.config = {
@@ -55327,7 +55327,7 @@ let Xt = class extends ve {
     const t = this.hass.language, a = this.hass.config?.time_zone, i = e.upstreamId === "upcoming_media" && this.config.entity ? this.hass.states[this.config.entity]?.attributes : void 0, n = e.upstreamId === "custom_card_welcome" ? new Intl.DateTimeFormat(t, { dateStyle: "short", timeZone: a }).format(/* @__PURE__ */ new Date()) : "";
     let r = this.preparedEditorSchema;
     if (!r || r.itemTag !== e.tag || r.config !== this.config || r.language !== t || r.timeZone !== a || r.entityAttributes !== i || r.dateLabel !== n) {
-      const c = Au(e, this.config, this.hass), m = q1(e, this.config, c).filter((y) => e.upstreamId !== "custom_card_trash" || !y.name.startsWith("ulm_card_datum_") && !y.name.includes("ophaling")), p = aP([...c, ...m]);
+      const c = Pu(e, this.config, this.hass), m = U1(e, this.config, c).filter((y) => e.upstreamId !== "custom_card_trash" || !y.name.startsWith("ulm_card_datum_") && !y.name.includes("ophaling")), p = iP([...c, ...m]);
       r = {
         itemTag: e.tag,
         config: this.config,
@@ -55341,7 +55341,7 @@ let Xt = class extends ve {
         ]))
       }, this.preparedEditorSchema = r;
     }
-    const o = No(e, this.hass, this.config.entity), s = this.config.show, l = {
+    const o = Do(e, this.hass, this.config.entity), s = this.config.show, l = {
       ...o,
       ...e.upstreamId === "stock_card" && this.config.stock_source !== "stock_market_deluxe" ? Object.fromEntries(Fa.map(([c]) => [
         `stock_${c}_attribute`,
@@ -55454,7 +55454,7 @@ let Xt = class extends ve {
     e.detail.expanded ? a.add(t) : a.delete(t), this.expandedSections = a;
   }
   renderPiHoleEditor() {
-    const e = this.config?.pihole_sections ?? Et.pihole_sections, t = this.piHoleMapping, a = To(this.hass, this.config)[t], i = this.config?.pihole_entity_order ?? [];
+    const e = this.config?.pihole_sections ?? Et.pihole_sections, t = this.piHoleMapping, a = Eo(this.hass, this.config)[t], i = this.config?.pihole_entity_order ?? [];
     return u`<section class="item-editor pi-hole-features">
       <h3>${j(this.hass, "ui.sections")}</h3><p>${j(this.hass, "editor.sections_help")}</p>
       <ha-sortable handle-selector=".handle" @item-moved=${(n) => {
@@ -55551,7 +55551,7 @@ let Xt = class extends ve {
       l.altKey && ["ArrowUp", "ArrowDown"].includes(l.key) && (l.preventDefault(), this.moveRemoteButton(s, s + (l.key === "ArrowUp" ? -1 : 1)));
     }}><ha-svg-icon .path=${Ui}></ha-svg-icon></span>
           <span class="row-label">${o.name || o.source || o.command || j(this.hass, "editor.button_number", { number: s + 1 })}</span>
-          <ha-icon-button .path=${au} .label=${j(this.hass, "editor.edit_button")} @click=${() => {
+          <ha-icon-button .path=${iu} .label=${j(this.hass, "editor.edit_button")} @click=${() => {
       this.remoteEditing = s;
     }}></ha-icon-button>
           <ha-icon-button .path=${_i} .label=${j(this.hass, "editor.remove_button")} @click=${() => {
@@ -55782,7 +55782,7 @@ let Xt = class extends ve {
           </label>
           <label class="field">
             <span>${j(this.hass, "room_status_kind")}</span>
-            <ha-selector .hass=${this.hass} .selector=${{ select: { mode: "dropdown", options: $u.map((r) => ({
+            <ha-selector .hass=${this.hass} .selector=${{ select: { mode: "dropdown", options: Eu.map((r) => ({
         value: r,
         label: j(this.hass, `room_status_${r}`)
       })) } }} .value=${n}
@@ -56261,7 +56261,7 @@ let Xt = class extends ve {
     `;
   }
   get carouselItems() {
-    return this.config?.carousel_items ? this.config.carousel_items : this.config?.type.endsWith("-custom-card-light") && this.hass ? ru(this.hass, this.config.entity) : [];
+    return this.config?.carousel_items ? this.config.carousel_items : this.config?.type.endsWith("-custom-card-light") && this.hass ? ou(this.hass, this.config.entity) : [];
   }
   renderCarouselItemEditor() {
     if (!this.config) return g;
@@ -57415,38 +57415,38 @@ const tn = (e, t) => {
     if ((t = e._$AM) === void 0) break;
     a = t._$AN, a.delete(e), e = t;
   } while (a?.size === 0);
-}, Tu = (e) => {
+}, Du = (e) => {
   for (let t; t = e._$AM; e = t) {
     let a = t._$AN;
     if (a === void 0) t._$AN = a = /* @__PURE__ */ new Set();
     else if (a.has(e)) break;
-    a.add(e), rP(t);
+    a.add(e), oP(t);
   }
 };
-function iP(e) {
-  this._$AN !== void 0 ? (mr(this), this._$AM = e, Tu(this)) : this._$AM = e;
+function nP(e) {
+  this._$AN !== void 0 ? (mr(this), this._$AM = e, Du(this)) : this._$AM = e;
 }
-function nP(e, t = !1, a = 0) {
+function rP(e, t = !1, a = 0) {
   const i = this._$AH, n = this._$AN;
   if (n !== void 0 && n.size !== 0) if (t) if (Array.isArray(i)) for (let r = a; r < i.length; r++) tn(i[r], !1), mr(i[r]);
   else i != null && (tn(i, !1), mr(i));
   else tn(this, e);
 }
-const rP = (e) => {
-  e.type == $t.CHILD && (e._$AP ??= nP, e._$AQ ??= iP);
+const oP = (e) => {
+  e.type == $t.CHILD && (e._$AP ??= rP, e._$AQ ??= nP);
 };
-class oP extends zn {
+class sP extends zn {
   constructor() {
     super(...arguments), this._$AN = void 0;
   }
   _$AT(t, a, i) {
-    super._$AT(t, a, i), Tu(this), this.isConnected = t._$AU;
+    super._$AT(t, a, i), Du(this), this.isConnected = t._$AU;
   }
   _$AO(t, a = !0) {
     t !== this.isConnected && (this.isConnected = t, t ? this.reconnected?.() : this.disconnected?.()), a && (tn(this, t), mr(this));
   }
   setValue(t) {
-    if (gd(this._$Ct)) this._$Ct._$AI(t, this);
+    if (yd(this._$Ct)) this._$Ct._$AI(t, this);
     else {
       const a = [...this._$Ct._$AH];
       a[this._$Ci] = t, this._$Ct._$AI(a, this, 0);
@@ -57457,7 +57457,7 @@ class oP extends zn {
   reconnected() {
   }
 }
-class sP extends oP {
+class lP extends sP {
   constructor(t) {
     if (super(t), this.held = !1, this.cancelled = !1, this.onEvent = (a) => {
       if (a.stopPropagation(), !this.element?.disabled)
@@ -57552,19 +57552,19 @@ class sP extends oP {
     this.listen(!0);
   }
 }
-const hn = wn(sP), ci = (e, t) => {
+const hn = wn(lP), ci = (e, t) => {
   if (!t) return;
   const a = Number.parseFloat(e.states[t]?.state ?? "");
   return Number.isFinite(a) ? a : void 0;
-}, lP = (e, t, a = "") => t ? e.states[t]?.attributes.unit_of_measurement ?? a : a, Ea = (e, t) => {
+}, _P = (e, t, a = "") => t ? e.states[t]?.attributes.unit_of_measurement ?? a : a, Ea = (e, t) => {
   const a = ci(e, t);
   if (a === void 0) return;
-  const i = lP(e, t).toLowerCase();
+  const i = _P(e, t).toLowerCase();
   return i === "mw" ? a * 1e6 : i === "kw" ? a * 1e3 : a;
 }, oa = (e) => {
   const t = Math.abs(e ?? 0);
   return t >= 1e3 ? `${(t / 1e3).toFixed(2).replace(".", ",")} kW` : `${Math.round(t).toLocaleString()} W`;
-}, Vo = (e, t, a, i = 380, n = 300) => {
+}, No = (e, t, a, i = 380, n = 300) => {
   const r = (d) => {
     const c = d * Math.PI / 180;
     return [
@@ -57573,15 +57573,15 @@ const hn = wn(sP), ci = (e, t) => {
     ];
   }, [o, s] = r(t), [l, _] = r(a);
   return `M${o.toFixed(1)} ${s.toFixed(1)}A${e} ${e} 0 ${a - t > 180 ? 1 : 0} 1 ${l.toFixed(1)} ${_.toFixed(1)}`;
-}, _P = (e, t, a, i, n = !1) => {
+}, dP = (e, t, a, i, n = !1) => {
   const r = Math.max(0, Math.min(1, i));
   if (r < 0.015) return;
   const o = (a - t) * r;
-  return n ? Vo(e, a - o, a) : Vo(e, t, t + o);
-}, dP = (e) => {
+  return n ? No(e, a - o, a) : No(e, t, t + o);
+}, uP = (e) => {
   const t = e?.attributes.raw_today;
   return Array.isArray(t) ? t : [];
-}, uP = (e, t = 0, a = 0) => dP(e).flatMap((i) => {
+}, cP = (e, t = 0, a = 0) => uP(e).flatMap((i) => {
   if (!i || typeof i != "object") return [];
   const n = i, r = new Date(String(n.start ?? "")).getTime(), o = new Date(String(n.end ?? "")).getTime(), s = Number(n.value);
   return !Number.isFinite(r) || !Number.isFinite(o) || !Number.isFinite(s) ? [] : [{
@@ -57589,22 +57589,22 @@ const hn = wn(sP), ci = (e, t) => {
     end: o,
     price: (s + t) * (1 + a / 100)
   }];
-}), cP = (e) => {
+}), mP = (e) => {
   if (typeof e == "number" && Number.isFinite(e))
     return e < 1e12 ? e * 1e3 : e;
   if (typeof e != "string" || !e.trim()) return;
   const t = Date.parse(e);
   return Number.isFinite(t) ? t : void 0;
-}, mP = (e) => {
+}, pP = (e) => {
   const t = e?.attributes.slots;
   return Array.isArray(t) ? t.flatMap((a) => {
     if (!Array.isArray(a) || a.length < 3) return [];
-    const i = cP(a[0]);
+    const i = mP(a[0]);
     if (typeof a[1] != "number" && (typeof a[1] != "string" || !a[1].trim()) || typeof a[2] != "number" && (typeof a[2] != "string" || !a[2].trim())) return [];
     const n = Number(a[1]), r = Number(a[2]);
     return i === void 0 || !Number.isFinite(n) || !Number.isInteger(r) || r < 0 || r > 3 ? [] : [{ timestamp: i, price: n, kind: r }];
   }).sort((a, i) => a.timestamp - i.timestamp) : [];
-}, pP = (e, t, a) => {
+}, hP = (e, t, a) => {
   const i = e.map(({ price: s }) => s), n = Number.isFinite(t) ? t : Math.min(0, ...i), r = Number.isFinite(a) ? a : Math.max(0, ...i);
   if (r > n) {
     const s = Number.isFinite(a) ? 0 : (r - n) * 0.06;
@@ -57612,7 +57612,7 @@ const hn = wn(sP), ci = (e, t) => {
   }
   const o = Math.max(Math.abs(n) * 0.1, 1);
   return { minimum: n - o, maximum: r + o };
-}, __ = (e, t = 2) => e.toFixed(Math.max(0, Math.min(6, Math.floor(t)))), hP = (e, t) => {
+}, __ = (e, t = 2) => e.toFixed(Math.max(0, Math.min(6, Math.floor(t)))), gP = (e, t) => {
   const { energy: a, power: i, efficiency: n, fee: r, slotMinutes: o } = t;
   if (![a, i, n, r, o].every(Number.isFinite) || a <= 0 || i <= 0 || n <= 0 || n > 100 || r < 0 || o <= 0) return { error: "Enter a positive trade size, power and slot duration, an efficiency from 1 to 100%, and a non-negative feed-in fee." };
   if (e.length === 0) return { error: "No price slots available for the buy and sell result." };
@@ -57644,20 +57644,20 @@ const hn = wn(sP), ci = (e, t) => {
       };
   }, c = d(a / (n / 100), !1), m = d(a, !0);
   return !c || !m ? { error: "Not enough separate price slots to buy and sell the configured trade size. Reduce the trade size or supply more prices." } : { buy: c, sell: m, net: c.amount + m.amount };
-}, gP = (e) => {
+}, yP = (e) => {
   const t = Number.parseFloat(e.state);
   return Number.isFinite(t) ? t : 0;
-}, yP = (e, t, a) => {
+}, bP = (e, t, a) => {
   const i = t?.length ? t : a ? [a] : Object.keys(e).filter((n) => /^sensor\.inverter_4/i.test(n));
   return [...new Set(i)].filter((n) => n.startsWith("sensor.") && e[n] !== void 0).sort((n, r) => n.localeCompare(r, void 0, { numeric: !0 })).map((n) => {
     const r = e[n];
     return {
       entity: r,
       id: n.slice(-4),
-      value: gP(r)
+      value: yP(r)
     };
   });
-}, bP = (e) => {
+}, vP = (e) => {
   const t = e.reduce((r, o) => r + o.value, 0), a = [...e].sort((r, o) => r.value - o.value || r.entity.entity_id.localeCompare(o.entity.entity_id)), i = a[0], n = a.at(-1);
   return {
     panels: [...e],
@@ -57668,19 +57668,19 @@ const hn = wn(sP), ci = (e, t) => {
     weakest: i,
     spread: n && i ? n.value - i.value : 0
   };
-}, vP = (e, t) => Math.max(0, Math.min(100, e / Math.max(1, t) * 100)), kP = (e, t, a) => {
+}, kP = (e, t) => Math.max(0, Math.min(100, e / Math.max(1, t) * 100)), fP = (e, t, a) => {
   let i = 0;
   return t.forEach((n, r) => {
     e >= n && (i = r);
   }), a[Math.min(i, a.length - 1)] ?? "var(--primary-color)";
 };
-var fP = Object.defineProperty, wP = Object.getOwnPropertyDescriptor, Qa = (e, t, a, i) => {
-  for (var n = i > 1 ? void 0 : i ? wP(t, a) : t, r = e.length - 1, o; r >= 0; r--)
+var wP = Object.defineProperty, zP = Object.getOwnPropertyDescriptor, Qa = (e, t, a, i) => {
+  for (var n = i > 1 ? void 0 : i ? zP(t, a) : t, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = (i ? o(t, a, n) : o(n)) || n);
-  return i && n && fP(t, a, n), n;
+  return i && n && wP(t, a, n), n;
 };
 const We = (e) => typeof e == "number" && Number.isFinite(e), d_ = () => document.visibilityState !== "hidden";
-function zP(e) {
+function jP(e) {
   if (!e || typeof e != "object" || !("symbol" in e) || typeof e.symbol != "string" || !("quote" in e) || !e.quote || typeof e.quote != "object")
     throw new Error("The stock integration returned an invalid response.");
   const t = { ...e.quote }, a = { ...t };
@@ -57729,11 +57729,11 @@ function u_(e, t) {
     throw new Error("Select Yahoo Finance for five-year market history, or select a shorter Stock Market Deluxe range.");
   return { symbol: i, shares: n, interval: Math.round(r), range: o };
 }
-function jP(e) {
+function SP(e) {
   const t = e.chart;
   return (t?.c ?? []).flatMap((a, i) => We(a) && We(t?.t?.[i]) ? [{ time: t.t[i], price: a, volume: We(t?.v?.[i]) ? Math.max(0, t.v[i]) : 0 }] : []);
 }
-function SP(e, t = 20) {
+function xP(e, t = 20) {
   const a = [], i = [];
   let n = 0;
   for (let r = 0; r < e.length; r++)
@@ -57784,7 +57784,7 @@ let ea = class extends ve {
         interval: a.interval
       }, n = this.hass.callWS ? await this.hass.callWS(i) : this.hass.connection ? await this.hass.connection.sendMessagePromise(i) : await Promise.reject(new Error("Home Assistant WebSocket connection is unavailable."));
       if (e !== this.generation || !this.isConnected) return;
-      const r = zP(n);
+      const r = jP(n);
       if (!We(r.quote?.regularMarketPrice)) throw new Error(`No quote found for ${a.symbol}.`);
       this.data = r, t = Math.max(
         a.interval,
@@ -57806,11 +57806,11 @@ let ea = class extends ve {
     if (!this.config) return;
     if (this.config.stock_source === "yahoo") {
       if (!this.data) return;
-      const t = lh(this.config, this.hass, this.data.quote ?? {});
+      const t = _h(this.config, this.hass, this.data.quote ?? {});
       return { ...this.data, quote: t, beta: We(t.beta) ? t.beta : void 0 };
     }
-    const e = xd(this.config, this.hass);
-    return { symbol: String(e.symbol), quote: e, beta: Sd(this.config, this.hass, "beta") };
+    const e = Ad(this.config, this.hass);
+    return { symbol: String(e.symbol), quote: e, beta: xd(this.config, this.hass, "beta") };
   }
   updated() {
     const e = this.shadowRoot?.querySelector(".entity-chart");
@@ -57843,9 +57843,9 @@ let ea = class extends ve {
     }
   }
   chart() {
-    const e = this.data ? jP(this.data) : [];
+    const e = this.data ? SP(this.data) : [];
     if (!e.length) return u`<p>${h(this.hass, "No chart history available.")}</p>`;
-    const t = e.map((c) => c.price), a = Math.min(...t), i = Math.max(...t), n = SP(t), r = (c) => e.length === 1 ? 250 : c / (e.length - 1) * 500, o = (c) => i === a ? 75 : 140 - (c - a) / (i - a) * 130, s = (c) => c.map((m, p) => `${r(p)},${o(m)}`).join(" "), l = Math.max(1, ...e.map((c) => c.volume)), _ = (c) => new Date(c * 1e3).toLocaleString(this.hass?.language), d = this.config?.stock_currency || this.data?.quote?.currency;
+    const t = e.map((c) => c.price), a = Math.min(...t), i = Math.max(...t), n = xP(t), r = (c) => e.length === 1 ? 250 : c / (e.length - 1) * 500, o = (c) => i === a ? 75 : 140 - (c - a) / (i - a) * 130, s = (c) => c.map((m, p) => `${r(p)},${o(m)}`).join(" "), l = Math.max(1, ...e.map((c) => c.volume)), _ = (c) => new Date(c * 1e3).toLocaleString(this.hass?.language), d = this.config?.stock_currency || this.data?.quote?.currency;
     return u`
       <svg viewBox="0 0 500 180" role="img" aria-label=${h(this.hass, "Stock price history")}>
         ${this.config?.stock_show_volume !== !1 ? e.map((c, m) => P`
@@ -57956,10 +57956,10 @@ Qa([
 ea = Qa([
   nt("mushroom-addition-stock")
 ], ea);
-var xP = Object.defineProperty, AP = Object.getOwnPropertyDescriptor, Xa = (e, t, a, i) => {
-  for (var n = i > 1 ? void 0 : i ? AP(t, a) : t, r = e.length - 1, o; r >= 0; r--)
+var AP = Object.defineProperty, PP = Object.getOwnPropertyDescriptor, Xa = (e, t, a, i) => {
+  for (var n = i > 1 ? void 0 : i ? PP(t, a) : t, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = (i ? o(t, a, n) : o(n)) || n);
-  return i && n && xP(t, a, n), n;
+  return i && n && AP(t, a, n), n;
 };
 let ta = class extends ve {
   constructor() {
@@ -58033,7 +58033,7 @@ Xa([
 ta = Xa([
   nt("mushroom-addition-appliance-details")
 ], ta);
-const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_morning" : t < 18 ? "ui.greeting_afternoon" : "ui.greeting_evening"), X = (e) => {
+const Z = (e, t) => e?.attributes[t], MP = (e, t) => j(e, t < 12 ? "ui.greeting_morning" : t < 18 ? "ui.greeting_afternoon" : "ui.greeting_evening"), X = (e) => {
   const t = Number(e);
   return Number.isFinite(t) ? t : void 0;
 }, Mn = (e, t, a, i, n = "") => {
@@ -58046,7 +58046,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
 }, bi = (e, t) => {
   const a = q(e, t);
   return a ? e.hass.states[a] : void 0;
-}, MP = (e, t) => {
+}, CP = (e, t) => {
   if (e === void 0) return "mdi:battery-off";
   if (e <= 0 && !t) return "mdi:battery-alert-variant-outline";
   if (e >= 100) return "mdi:battery";
@@ -58059,11 +58059,11 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
 }, q = (e, ...t) => {
   for (const a of t)
     if (e.config[a] !== void 0) return e.config[a];
-}, Du = (e, t) => e.config.icon || e.entity?.attributes.icon || Ms(e.descriptor, e.entity) || t, Ze = (e, t, a = "blue", i = "") => {
+}, Nu = (e, t) => e.config.icon || e.entity?.attributes.icon || Ms(e.descriptor, e.entity) || t, Ze = (e, t, a = "blue", i = "") => {
   if (e.config.icon_type === "none") return g;
   const n = e.config.icon_type === "entity-picture" ? Z(e.entity, "entity_picture") : void 0;
   return n ? u`<span class="ulm-icon entity-picture ${i}" style=${Oe({ backgroundImage: Nt(n) })}></span>` : u`<span class="ulm-icon tone-${a} ${i}">${Ci(e.hass, e.entity, e.config.icon, t)}</span>`;
-}, pr = (e, t) => u`<ha-relative-time .hass=${e.hass} .datetime=${t}></ha-relative-time>`, CP = (e, t) => {
+}, pr = (e, t) => u`<ha-relative-time .hass=${e.hass} .datetime=${t}></ha-relative-time>`, $P = (e, t) => {
   switch (e.config.secondary_info) {
     case "none":
       return;
@@ -58078,7 +58078,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     default:
       return e.config.secondary || t;
   }
-}, $P = (e, t) => {
+}, EP = (e, t) => {
   switch (e.config.primary_info) {
     case "none":
       return "";
@@ -58091,16 +58091,16 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     default:
       return be(e.config, e.entity, e.hass) || t || "";
   }
-}, EP = (e, t, a) => {
+}, TP = (e, t, a) => {
   e.presentation.rendered = !0;
   const i = be(e.config, e.entity, e.hass), n = e.config.name !== void 0 && typeof e.config.name != "string";
   return {
-    primary: (e.config.primary_info === void 0 ? n && i ? i : a ?? i : $P(e, a)) || void 0,
-    secondary: e.config.secondary_info === void 0 ? t : CP(e, t)
+    primary: (e.config.primary_info === void 0 ? n && i ? i : a ?? i : EP(e, a)) || void 0,
+    secondary: e.config.secondary_info === void 0 ? t : $P(e, t)
   };
 }, ze = (e, t, a) => u`
   ${(() => {
-  const i = EP(e, t, a);
+  const i = TP(e, t, a);
   return u`
   <span class="ulm-copy shared-presentation">
     ${i.primary ? u`<span class="ulm-name">${i.primary}</span>` : g}
@@ -58108,7 +58108,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
   </span>
     `;
 })()}
-`, TP = (e, t = K(e.entity, e.hass)) => u`
+`, DP = (e, t = K(e.entity, e.hass)) => u`
   <span class="value-first">${ze(e, be(e.config, e.entity, e.hass), t)}</span>
 `, ba = (e, t = K(e.entity, e.hass), a = e.descriptor.name) => u`
   <div class="card-heading">
@@ -58120,7 +58120,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     @pointerdown=${(n) => n.stopPropagation()} @click=${a}>
     <ha-icon .icon=${t}></ha-icon>
   </button>
-`, DP = (e, t, a, i, n = !1) => {
+`, NP = (e, t, a, i, n = !1) => {
   let r, o = !1;
   const s = () => {
     r !== void 0 && window.clearTimeout(r), r = void 0;
@@ -58147,7 +58147,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     config: { type: t.config.type, entity: i, tap_action: a },
     action: "tap"
   });
-}, NP = {
+}, VP = {
   "clear-night": ["mdi:weather-night", "yellow"],
   cloudy: ["mdi:weather-cloudy", "blue"],
   fog: ["mdi:weather-fog", "grey"],
@@ -58162,7 +58162,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
   sunny: ["mdi:weather-sunny", "yellow"],
   windy: ["mdi:weather-windy", "grey"],
   exceptional: ["mdi:weather-sunny-alert", "red"]
-}, VP = (e) => {
+}, LP = (e) => {
   const t = X(e.entity?.state) ?? 0, a = !!Z(e.entity, "is_charging") || String(e.entity?.state).includes("charging"), i = q(e, "ulm_card_battery_battery_level_danger") ?? 20, n = q(e, "ulm_card_battery_battery_level_warning") ?? 50, r = t < i ? "red" : t < n ? "yellow" : "green", o = q(e, "ulm_card_battery_charging_animation") === !0 && a;
   return e.actionSurface(`ulm-battery ${o ? "is-charging" : ""}`, u`
     ${Ze(e, a ? "mdi:battery-charging" : "mdi:battery", r)}
@@ -58170,7 +58170,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     <span class="battery-value">${Math.round(t)}<small>%</small></span>
     <span class="battery-track"><i style=${`width:${Math.max(0, Math.min(100, t))}%`}></i></span>
   `);
-}, LP = (e) => {
+}, HP = (e) => {
   const t = q(e, "ulm_card_battery_attribute"), a = t ? Z(e.entity, t) : e.entity?.state, i = X(a), n = bi(e, "ulm_card_battery_battery_state_entity_id"), r = bi(e, "ulm_card_battery_charger_type_entity_id"), o = n?.state.toLowerCase() === "charging", s = r?.state.toLowerCase(), l = s === "wireless" ? "-charging-wireless" : o || ["charging", "ac", "usb"].includes(s ?? "") ? "-charging" : "", _ = X(e.config.battery_warning_threshold) ?? q(e, "ulm_card_battery_battery_level_warning") ?? 50, d = X(e.config.battery_low_threshold) ?? q(e, "ulm_card_battery_battery_level_danger") ?? 20, c = X(e.config.battery_critical_threshold) ?? 10, [m, p, y] = [c, d, _].map((w) => Math.max(0, Math.min(100, w))).sort((w, f) => w - f), b = i === void 0 || i <= m ? Ge(
     e.config.battery_critical_color ?? q(e, "ulm_card_battery_color_battery_level_danger"),
     "var(--google-red, #f44336)"
@@ -58182,20 +58182,20 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     "var(--google-green, #43a047)"
   ), z = q(e, "ulm_card_battery_charging_animation") === !0 && o, v = i === void 0 ? K(e.entity, e.hass) : `${Math.round(i)}%`;
   return e.actionSurface(`ulm-row ulm-default-battery ${z ? "is-charging" : ""}`, u`
-    ${Mn(e, MP(i, l), b, !0)}
+    ${Mn(e, CP(i, l), b, !0)}
     <span class="value-first">${ze(e, be(e.config, e.entity, e.hass), v)}</span>
   `);
-}, Ge = Pe, HP = (e, t = !1, a = e.entity, i, n = i) => {
+}, Ge = Pe, IP = (e, t = !1, a = e.entity, i, n = i) => {
   const r = Array.isArray(Z(a, "history")) ? Z(a, "history").map(Number).filter(Number.isFinite).slice(-12) : [20, 28, 24, 42, 35, 52, 48, 63, 55, 70, 62, 78], o = Math.min(...r), s = Math.max(...r), l = r.map((c, m) => `${m / Math.max(1, r.length - 1) * 100},${36 - (c - o) / Math.max(1, s - o) * 32}`).join(" "), _ = `0,40 ${l} 100,40`;
   return u`<svg class="sparkline ${t ? "is-filled" : ""}" style=${""} viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true">
     ${t ? u`<polygon points=${_}></polygon>` : g}
     <polyline points=${l}></polyline>
   </svg>`;
-}, IP = (e) => e.actionSurface("ulm-metric", u`
+}, RP = (e) => e.actionSurface("ulm-metric", u`
   <div class="metric-heading">${Ze(e, e.descriptor.family === "energy" ? "mdi:flash" : "mdi:chart-line", "blue")}${ze(e, e.entity?.attributes.unit_of_measurement ? String(e.entity.attributes.unit_of_measurement) : h(e.hass, "Current value"))}<span class="metric-value">${K(e.entity, e.hass)}</span></div>
-  ${e.config.show_graph !== !1 ? HP(e) : g}
+  ${e.config.show_graph !== !1 ? IP(e) : g}
   ${Me(e, "min_entity") || Me(e, "max_entity") ? u`<div class="metric-extremes"><span>${j(e.hass, "ui.renderer.minimum_value", { value: K(Me(e, "min_entity"), e.hass) })}</span><span>${j(e.hass, "ui.renderer.maximum_value", { value: K(Me(e, "max_entity"), e.hass) })}</span></div>` : g}
-`), Nu = (e, t, a) => {
+`), Vu = (e, t, a) => {
   const i = a.navigation_path || a.nav_path;
   if (i) {
     at(e, t, { action: "navigate", navigation_path: i }, a.entity);
@@ -58212,13 +58212,13 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     option: a.state,
     ...a.service_data ?? {}
   }) : r === "script" ? t.service("script", o || "turn_on", { entity_id: a.entity, ...a.service_data ?? {} }) : t.service("homeassistant", "toggle", { entity_id: a.entity, ...a.service_data ?? {} });
-}, Vu = (e, t) => e.active_state ? t?.state === e.active_state : e.state ? t?.state === e.state : ft.has(t?.state ?? ""), RP = (e) => {
+}, Lu = (e, t) => e.active_state ? t?.state === e.active_state : e.state ? t?.state === e.state : ft.has(t?.state ?? ""), BP = (e) => {
   const t = (e.config.scene_items?.length ? e.config.scene_items : (e.config.entities?.length ? e.config.entities : e.config.entity ? [e.config.entity] : []).map((l) => ({ entity: l }))).filter((l) => l.entity), a = e.config.scene_buttons_only === !0;
   a && (e.presentation.rendered = !0);
   const i = e.descriptor.upstreamId === "card_scenes" && e.config.variant === "scene-grid", n = t, r = Math.max(1, Math.min(24, Math.floor(Number(e.config.scenes_per_row)) || (i ? 5 : 6))), o = e.config.collapse_entity ? e.hass.states[e.config.collapse_entity] : void 0, s = !a && (e.config.collapsed === !0 || o?.state === "on");
   return e.actionSurface(`ulm-scenes ${i ? "source-scene-grid" : "scene-pills"} ${e.descriptor.upstreamId === "card_scenes" ? "ulm-source-scenes" : ""} ${a ? "scene-buttons-only" : ""}`, u`
     ${s ? g : u`<div class="scene-grid" style=${`--scenes-per-row:${r}`}>${n.map((l) => {
-    const _ = e.hass.states[l.entity], d = ms(_) && !Vu(l, _), c = Ge(l.color, "rgb(var(--ulm-purple))"), m = l.icon_type === "entity-picture" ? Z(_, "entity_picture") : void 0, p = l.name || l.label || be({ entity: l.entity }, _, e.hass);
+    const _ = e.hass.states[l.entity], d = ms(_) && !Lu(l, _), c = Ge(l.color, "rgb(var(--ulm-purple))"), m = l.icon_type === "entity-picture" ? Z(_, "entity_picture") : void 0, p = l.name || l.label || be({ entity: l.entity }, _, e.hass);
     return u`
       <button aria-label=${p} title=${p} @pointerdown=${(y) => y.stopPropagation()} @click=${(y) => {
       if (y.stopPropagation(), i && !l.tap_action) {
@@ -58229,34 +58229,34 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
           { entity_id: l.entity }
         );
       } else
-        Nu(y, e, l);
+        Vu(y, e, l);
     }} style=${`--item-color:${c}`} class="scene-button ${d ? "is-off" : "is-active"}">
         <i>${m ? u`<span class="scene-entity-picture" style=${Oe({ backgroundImage: Nt(m) })}></span>` : u`<ha-icon .icon=${l.icon || _?.attributes.icon || "mdi:palette"}></ha-icon>`}</i>
         <span>${p}</span>
       </button>`;
   })}</div>`}
   `);
-}, BP = (e) => {
+}, FP = (e) => {
   const t = e.entity?.state.startsWith("armed") || e.entity?.state === "locked";
   return e.actionSurface(`ulm-security ${t ? "is-armed" : ""}`, u`
     ${Ze(e, t ? "mdi:shield-lock" : "mdi:shield-off", t ? "green" : "red")}
     ${ze(e, K(e.entity, e.hass))}
     ${e.config.show_controls ? u`<span class="security-status">${t ? h(e.hass, "Secured") : h(e.hass, "Attention")}</span>` : g}
   `);
-}, FP = (e) => e.actionSurface("ulm-navigation", u`
+}, OP = (e) => e.actionSurface("ulm-navigation", u`
   ${Ze(e, e.descriptor.upstreamId.includes("back") ? "mdi:arrow-left" : "mdi:arrow-right", "blue")}
   ${ze(e, e.config.secondary || e.config.navigation_path || h(e.hass, "Navigate"))}
   <ha-icon icon="mdi:chevron-right"></ha-icon>
-`), OP = (e, t) => {
+`), qP = (e, t) => {
   const a = e?.split(".", 1)[0] ?? "homeassistant";
   return a === "script" ? ["script", t === "on" ? "turn_on" : "turn_off"] : a === "fan" ? ["fan", t === "on" ? "turn_on" : "turn_off"] : a === "water_heater" ? ["water_heater", t === "on" ? "turn_on" : "turn_off"] : [a === "input_boolean" ? "input_boolean" : "homeassistant", t === "on" ? "turn_on" : "turn_off"];
-}, qP = (e) => {
+}, UP = (e) => {
   const t = q(
     e,
     "ulm_custom_card_washer_power",
     "ulm_card_power_outlet_entity",
     "ulm_card_power_entity"
-  ), a = e.config.entity?.split(".", 1)[0], i = t || (["switch", "input_boolean", "light", "fan", "script", "water_heater"].includes(a ?? "") ? e.config.entity : void 0), n = i ? e.hass.states[i] : void 0, r = ft.has(n?.state ?? e.entity?.state ?? ""), o = Me(e, "graph_entity"), [s, l] = OP(i, r ? "off" : "on");
+  ), a = e.config.entity?.split(".", 1)[0], i = t || (["switch", "input_boolean", "light", "fan", "script", "water_heater"].includes(a ?? "") ? e.config.entity : void 0), n = i ? e.hass.states[i] : void 0, r = ft.has(n?.state ?? e.entity?.state ?? ""), o = Me(e, "graph_entity"), [s, l] = qP(i, r ? "off" : "on");
   return e.actionSurface(`ulm-control-card ulm-row ${r ? "is-active" : ""}`, u`
     ${Ze(e, e.config.entity?.startsWith("fan.") ? "mdi:fan" : "mdi:power-socket-eu", r ? "yellow" : "grey")}
     ${ze(e, o ? `${K(e.entity, e.hass)} · ${K(o, e.hass)}` : K(e.entity, e.hass))}
@@ -58264,14 +58264,14 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     _.stopPropagation(), e.service(s, l, { entity_id: i });
   }) : g}
   `);
-}, UP = (e) => {
-  const t = (e.config.room_sensors !== void 0 ? e.config.room_sensors : (e.config.entities ?? []).map((s) => ({ entity: s }))).filter((s) => s.entity).slice(0, 4), a = Y1(e.config, e.hass), i = { ...e, config: { ...e.config, secondary_info: void 0 } }, n = Cu(e.config, e.hass), r = e.config.ulm_card_dynamic_color === !0 ? cr(e.hass, n) : void 0, o = (e.config.room_status ?? []).slice(0, Wi).filter((s) => s.entity);
+}, KP = (e) => {
+  const t = (e.config.room_sensors !== void 0 ? e.config.room_sensors : (e.config.entities ?? []).map((s) => ({ entity: s }))).filter((s) => s.entity).slice(0, 4), a = J1(e.config, e.hass), i = { ...e, config: { ...e.config, secondary_info: void 0 } }, n = $u(e.config, e.hass), r = e.config.ulm_card_dynamic_color === !0 ? cr(e.hass, n) : void 0, o = (e.config.room_status ?? []).slice(0, Wi).filter((s) => s.entity);
   return e.actionSurface(`ulm-room ulm-source-room ${r ? "dynamic-color" : ""} ${e.entity?.state === "unavailable" ? "is-unavailable" : ""}`, u`
     <div class="room-main">
       <div class="room-copy">${ze(i, a)}
       ${o.length ? u`<div class="room-status" role="group" aria-label=${j(e.hass, "room_status")}>
         ${o.map((s) => {
-    const l = e.hass.states[s.entity], _ = s.kind && $u.includes(s.kind) ? s.kind : Xi(l), d = fa(l), c = Cs(l, _), m = `${be({ entity: s.entity }, l, e.hass)} · ${j(e.hass, `room_status_${_}`)}: ${j(e.hass, d ? "room_status_unavailable" : c ? "room_status_active" : "room_status_inactive")} (${K(l, e.hass)})`;
+    const l = e.hass.states[s.entity], _ = s.kind && Eu.includes(s.kind) ? s.kind : Xi(l), d = fa(l), c = Cs(l, _), m = `${be({ entity: s.entity }, l, e.hass)} · ${j(e.hass, `room_status_${_}`)}: ${j(e.hass, d ? "room_status_unavailable" : c ? "room_status_active" : "room_status_inactive")} (${K(l, e.hass)})`;
     return u`<button class="room-status-indicator kind-${_} ${d ? "is-unavailable" : c ? "is-active" : "is-inactive"}"
             type="button" aria-label=${m} title=${m} ?disabled=${d}
             ${hn({ type: e.config.type, entity: s.entity, tap_action: { action: "more-info" } })}>
@@ -58298,13 +58298,13 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
       hold_action: s.hold_action ?? _.hold_action,
       double_tap_action: s.double_tap_action ?? _.double_tap_action
     })}
-      >${m ? u`<span class="room-sensor-picture" style=${Oe({ backgroundImage: Nt(m) })}></span>` : u`<ha-icon .icon=${s.icon || Eu(l, s.entity)}></ha-icon>`}<span class="room-sensor-label">${K(l, e.hass)}</span></button>`;
+      >${m ? u`<span class="room-sensor-picture" style=${Oe({ backgroundImage: Nt(m) })}></span>` : u`<ha-icon .icon=${s.icon || Tu(l, s.entity)}></ha-icon>`}<span class="room-sensor-label">${K(l, e.hass)}</span></button>`;
   })}</div>` : g}
   `, r ? `--room-rgb:${r.join(",")};` : "");
 }, Es = (e) => {
   const t = Object.entries(e.config).filter(([a, i]) => typeof i == "string" && i !== e.config.entity && /(_entity|_entity_id|_sensor|_power|_status|_level|_date|_time)$/i.test(a)).map(([, a]) => a);
   return [.../* @__PURE__ */ new Set([...e.config.entities ?? [], ...t])].map((a) => e.hass.states[a]).filter((a) => !!a).slice(0, 6);
-}, KP = (e, t, a = "blue") => {
+}, WP = (e, t, a = "blue") => {
   const i = Es(e);
   return e.actionSurface("ulm-detail-card", u`
     <div class="ulm-row">
@@ -58315,7 +58315,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
       <span class="metric-pill"><ha-icon .icon=${n.attributes.icon ?? "mdi:circle-small"}></ha-icon>${K(n, e.hass)}</span>
     `)}</div>` : g}
   `);
-}, WP = (e) => {
+}, GP = (e) => {
   const t = Es(e);
   return e.actionSurface("ulm-schedule-card", u`
     <div class="ulm-row">
@@ -58326,7 +58326,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
       <span><b>${be({ entity: a.entity_id }, a, e.hass)}</b><small>${K(a, e.hass)}</small></span>
     `)}</div>
   `);
-}, GP = (e) => {
+}, ZP = (e) => {
   const t = X(e.entity?.state), a = Es(e);
   return e.actionSurface("ulm-device-status", u`
     <div class="ulm-row">
@@ -58337,7 +58337,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     ${t !== void 0 ? u`<span class="device-progress"><i style=${`width:${Math.max(0, Math.min(100, t))}%`}></i></span>` : g}
     ${a.length ? u`<div class="detail-grid">${a.map((i) => u`<span class="metric-pill">${K(i, e.hass)}</span>`)}</div>` : g}
   `);
-}, ZP = (e) => {
+}, YP = (e) => {
   const t = Me(e, "datetime_entity");
   return e.actionSurface(`ulm-control-card ulm-row ${ft.has(e.entity?.state ?? "") ? "is-active" : ""}`, u`
     ${Ze(e, "mdi:alarm", ft.has(e.entity?.state ?? "") ? "yellow" : "grey")}
@@ -58349,7 +58349,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
 }, fe = (e, ...t) => {
   const a = q(e, ...t), i = typeof a == "string" ? a : a && typeof a == "object" && "entity_id" in a && typeof a.entity_id == "string" ? a.entity_id : void 0;
   return i ? e.hass.states[i] : void 0;
-}, YP = (e) => {
+}, JP = (e) => {
   const t = ha(e.config).filter((s) => s.enabled !== !1 && s.entity), a = /* @__PURE__ */ new Set([
     "",
     "unknown",
@@ -58403,12 +58403,12 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
       </span>`;
   })}</div>
   `);
-}, Lu = (e) => {
+}, Hu = (e) => {
   if (!e || e.attributes.has_time === !1) return;
   const t = /^(?:\d{4}-\d{2}-\d{2} )?([01]\d|2[0-3]):([0-5]\d)(?::[0-5]\d)?$/.exec(e.state);
   return t ? { label: `${t[1]}:${t[2]}`, minutes: Number(t[1]) * 60 + Number(t[2]) } : void 0;
-}, JP = (e) => {
-  const t = fe(e, "ulm_card_alarm_time_datetime") ?? Me(e, "datetime_entity"), a = X(q(e, "ulm_card_alarm_time_step")) ?? 15, i = Lu(t), n = (_) => {
+}, QP = (e) => {
+  const t = fe(e, "ulm_card_alarm_time_datetime") ?? Me(e, "datetime_entity"), a = X(q(e, "ulm_card_alarm_time_step")) ?? 15, i = Hu(t), n = (_) => {
     if (!i) return;
     const d = ((i.minutes + _) % 1440 + 1440) % 1440;
     e.service("input_datetime", "set_datetime", {
@@ -58434,8 +58434,8 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
   }, r)}
     </div>`}
   `);
-}, QP = (e) => {
-  const t = fe(e, "ulm_card_welcome_collapse"), a = fe(e, "ulm_weather"), i = e.config.welcome_weather_icon_type === "icon" ? e.config.welcome_weather_icon || "mdi:weather-partly-cloudy" : NP[a?.state ?? ""]?.[0] ?? "mdi:weather-partly-cloudy", n = (m) => {
+}, XP = (e) => {
+  const t = fe(e, "ulm_card_welcome_collapse"), a = fe(e, "ulm_weather"), i = e.config.welcome_weather_icon_type === "icon" ? e.config.welcome_weather_icon || "mdi:weather-partly-cloudy" : VP[a?.state ?? ""]?.[0] ?? "mdi:weather-partly-cloudy", n = (m) => {
     if (m === "none") return "";
     if (m === "date") {
       const p = e.config.welcome_weather_date_format, y = p && p !== "month_day" ? { dateStyle: p } : { month: "short", day: "numeric" };
@@ -58475,7 +58475,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
         <ha-icon icon="mdi:cog-outline"></ha-icon>
       </button>
     </div>
-    <div class="welcome-greeting">${ze(e, PP(e.hass, (/* @__PURE__ */ new Date()).getHours()))}</div>
+    <div class="welcome-greeting">${ze(e, MP(e.hass, (/* @__PURE__ */ new Date()).getHours()))}</div>
     ${c.length ? u`<div class="welcome-people">
       ${[c.filter((m) => m.state === "home"), c.filter((m) => m.state !== "home")].map((m, p) => u`
         <div class="welcome-people-group ${p ? "is-away" : "is-home"}">${m.map((y) => {
@@ -58490,23 +58490,23 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
   })}</div>`)}
     </div>` : g}
     ${l ? g : u`<div class="welcome-items" style=${`--scenes-per-row:${d}`}>${_.map((m, p) => {
-    const y = m.entity ? e.hass.states[m.entity] : void 0, b = ms(y) && !Vu(m, y), z = m.icon_type === "entity-picture" ? Z(y, "entity_picture") : void 0, v = m.name || m.label || (y ? be({ entity: m.entity }, y, e.hass) : j(e.hass, "ui.renderer.item", { number: p + 1 }));
+    const y = m.entity ? e.hass.states[m.entity] : void 0, b = ms(y) && !Lu(m, y), z = m.icon_type === "entity-picture" ? Z(y, "entity_picture") : void 0, v = m.name || m.label || (y ? be({ entity: m.entity }, y, e.hass) : j(e.hass, "ui.renderer.item", { number: p + 1 }));
     return u`
       <button class="scene-button ${b ? "is-off" : "is-active"}" style=${`--item-color:${Ge(m.color, "rgb(var(--ulm-blue))")}`}
         aria-label=${v} title=${v}
         @pointerdown=${(w) => w.stopPropagation()}
         @click=${(w) => {
-      w.stopPropagation(), Nu(w, e, m);
+      w.stopPropagation(), Vu(w, e, m);
     }}>
         <i>${z ? u`<span class="scene-entity-picture" style=${Oe({ backgroundImage: Nt(z) })}></span>` : u`<ha-icon .icon=${m.icon || y?.attributes.icon || "mdi:circle"}></ha-icon>`}</i><small>${v}</small>
       </button>
     `;
   })}</div>`}
   `);
-}, XP = (e) => e.config.carousel_items ? e.config.carousel_items : ru(e.hass, e.config.entity), e2 = (e) => {
+}, e2 = (e) => e.config.carousel_items ? e.config.carousel_items : ou(e.hass, e.config.entity), t2 = (e) => {
   const t = e.entity, a = !t || ["unavailable", "unknown"].includes(t.state), i = t?.state === "on", n = e.config.use_light_color !== !1 ? ql(Z(t, "rgb_color")) : void 0, r = Ge(e.config.icon_color, "rgb(var(--mush-rgb-state-light, var(--rgb-state-light, var(--rgb-orange, 255, 152, 0))))"), o = i ? n ? `rgb(${n.join(",")})` : r : "rgb(var(--addition-disabled-rgb))", s = Z(t, "supported_color_modes"), l = Array.isArray(s) ? s.some((D) => D !== "onoff") : Z(t, "brightness") !== void 0, _ = (...D) => Array.isArray(s) && s.some((M) => D.includes(String(M))), d = X(Z(t, "min_color_temp_kelvin")) ?? 2e3, c = X(Z(t, "max_color_temp_kelvin")) ?? 6500, m = X(Z(t, "color_temp_kelvin")) ?? Math.round((d + c) / 2), p = Z(t, "hs_color"), y = Array.isArray(p) && Number(p[0]) || 0, b = Array.isArray(p) && Number(p[1]) || 100, z = e.config.full_collapse_controls === !0 && !i, v = !z && !(e.config.collapsible_controls === !0 && !i), w = v && e.config.light_show_brightness !== !1 && l, f = v && e.config.show_color_temp_control === !0 && _("color_temp"), S = v && e.config.show_color_control === !0 && _("hs", "xy", "rgb", "rgbw", "rgbww"), H = X(Z(t, "brightness")), $ = i && H !== void 0 ? Math.max(1, Math.round(H / 255 * 100)) : 0, W = [[w, "brightness", "mdi:brightness-4", "Brightness"], [f, "temp", "mdi:thermometer", "Color temperature control"], [S, "hue", "mdi:palette", "Color control"]].filter(([D]) => D).map(([, D, M, N]) => [D, M, N]), ne = W.length, I = i && l && H !== void 0 ? `${$}%` : K(t, e.hass), T = (D) => D.stopPropagation(), U = z || e.config.light_show_members === !1 ? [] : [...new Set(
     Array.isArray(Z(t, "entity_id")) ? Z(t, "entity_id").filter((D) => typeof D == "string") : []
-  )].filter((D) => D.startsWith("light.")).flatMap((D) => e.hass.states[D] ?? []), re = Math.max(1, Math.min(12, Math.floor(Number(e.config.light_members_per_row)) || 4)), A = z || e.config.light_show_scenes === !1 ? [] : XP(e).map((D) => ({
+  )].filter((D) => D.startsWith("light.")).flatMap((D) => e.hass.states[D] ?? []), re = Math.max(1, Math.min(12, Math.floor(Number(e.config.light_members_per_row)) || 4)), A = z || e.config.light_show_scenes === !1 ? [] : e2(e).map((D) => ({
     ...D,
     tap_action: D.tap_action ?? (D.entity?.startsWith("scene.") ? { action: "perform-action", perform_action: "scene.turn_on", target: { entity_id: D.entity } } : void 0)
   })), ae = {
@@ -58613,7 +58613,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
         <mushroom-addition-entity-carousel .hass=${e.hass} .config=${ae}></mushroom-addition-entity-carousel>
       </details>` : g}
   `);
-}, t2 = (e) => {
+}, a2 = (e) => {
   const t = fe(e, "washer_power_entity") ?? fe(e, "power_entity") ?? fe(e, "ulm_custom_card_washer_power"), a = fe(e, "ulm_custom_card_washer_job_progress"), i = fe(e, "program_stage_entity") ?? fe(e, "ulm_custom_card_washer_job_state") ?? fe(e, "ulm_custom_card_washer_machine_state"), n = fe(e, "ulm_custom_card_washer_machine_state") ?? i ?? e.entity, r = fe(e, "ulm_custom_card_washer_remote_control"), o = fe(e, "ulm_custom_card_washer_delayed_start"), s = fe(e, "ulm_custom_card_washer_delayed_starttime"), l = fe(e, "door_entity"), _ = fe(e, "finished_entity"), d = fe(e, "program_select_entity"), c = Array.isArray(d?.attributes.options) ? d.attributes.options.map(String).filter((k) => !["unknown", "unavailable", ""].includes(k)) : [], m = d && !["unknown", "unavailable", ""].includes(d.state);
   m && !c.includes(d.state) && c.unshift(d.state);
   const p = fe(e, "power_switch_entity"), y = q(e, "ulm_custom_card_washer_machine_stop_state") ?? "stop", b = p ? p.state === "on" : t ? !["off", "unavailable", "unknown", "0"].includes(t.state.toLowerCase()) : n ? !["off", "unavailable", "unknown"].includes(n.state.toLowerCase()) : !0, z = !n || [y.toLowerCase(), "off", "idle", "ready", "finished", "complete", "completed", "unknown", "unavailable"].includes(n.state.toLowerCase()), v = ["true", "on", "enabled"].includes(r?.state.toLowerCase() ?? ""), w = o?.state === "on", f = a?.state.trim() ? X(a.state) : void 0, S = f === void 0 ? void 0 : Math.max(0, Math.min(100, f)), H = q(
@@ -58624,7 +58624,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     state2: { name: "wash", icon: "mdi:waves" },
     state3: { name: "rinse", icon: "mdi:water" },
     state4: { name: "spin", icon: "mdi:fan" }
-  }).filter((k) => k.name && k.icon).slice(0, 5), W = $.findIndex((k) => k.name?.toLowerCase() === i?.state.toLowerCase()), ne = b ? z ? v && w ? q(e, "ulm_custom_card_washer_label_configuring") ?? "configure" : q(e, "ulm_custom_card_washer_label_idle") ?? "idle" : q(e, "ulm_custom_card_washer_label_running") ?? "run" : q(e, "ulm_custom_card_washer_label_idle") ?? "idle", I = s1(e.hass, e.config.entity), T = (k, V) => {
+  }).filter((k) => k.name && k.icon).slice(0, 5), W = $.findIndex((k) => k.name?.toLowerCase() === i?.state.toLowerCase()), ne = b ? z ? v && w ? q(e, "ulm_custom_card_washer_label_configuring") ?? "configure" : q(e, "ulm_custom_card_washer_label_idle") ?? "idle" : q(e, "ulm_custom_card_washer_label_running") ?? "run" : q(e, "ulm_custom_card_washer_label_idle") ?? "idle", I = l1(e.hass, e.config.entity), T = (k, V) => {
     const E = q(e, k);
     return E && E.action !== "none" ? E : I[V] ?? { action: "none" };
   }, U = (k, V) => at(k, e, V, typeof V.entity == "string" ? V.entity : e.config.entity), re = s?.state.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/)?.slice(1).map(Number), A = (k, V) => {
@@ -58703,7 +58703,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
   }}>
         ${m ? g : u`<option value="" disabled selected>${K(d, e.hass)}</option>`}
         ${c.map((k) => u`
-          <option value=${k} ?selected=${k === d.state}>${d1(e.hass, d, k)}</option>
+          <option value=${k} ?selected=${k === d.state}>${u1(e.hass, d, k)}</option>
         `)}
       </select>
       ` : g}
@@ -58747,7 +58747,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
         .label=${h(e.hass, "Settings & diagnostics")}>${B}</mushroom-addition-appliance-details>
     ` : i || l || _ || r ? B : g}
   `);
-}, c_ = /* @__PURE__ */ new WeakMap(), Hu = (e) => {
+}, c_ = /* @__PURE__ */ new WeakMap(), Iu = (e) => {
   const t = c_.get(e);
   if (t) return t;
   const a = { metrics: /* @__PURE__ */ new Map() };
@@ -58757,7 +58757,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     (n === "moon" || n === "sky") && r && !a.metrics.has(r) && a.metrics.set(r, i);
   }
   return c_.set(e, a), a;
-}, Ot = (e, t, a) => bi(e, t) ?? Hu(e.hass.states).metrics.get(a), m_ = (e, t, a) => {
+}, Ot = (e, t, a) => bi(e, t) ?? Iu(e.hass.states).metrics.get(a), m_ = (e, t, a) => {
   const i = e === void 0 ? 180 : (e % 360 + 360) % 360, n = Math.max(-90, Math.min(90, t ?? 0)), r = i / 360 * 100, o = 62 / 90 * 100, s = n >= 0 ? o - n / 90 * (o - 4) : o + Math.abs(n) / 90 * (96 - o);
   return `--${a}-x:${r.toFixed(2)}%;--${a}-y:${s.toFixed(2)}%`;
 }, p_ = (e) => ({
@@ -58769,11 +58769,11 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
   waning_gibbous: "mdi:moon-waning-gibbous",
   last_quarter: "mdi:moon-last-quarter",
   waning_crescent: "mdi:moon-waning-crescent"
-})[e] ?? "mdi:moon-waning-crescent", a2 = (e) => {
+})[e] ?? "mdi:moon-waning-crescent", i2 = (e) => {
   const t = Z(e.entity, "next_rising"), a = Z(e.entity, "next_setting"), i = Z(e.entity, "next_dawn") ?? t, n = Z(e.entity, "next_noon"), r = Z(e.entity, "next_dusk") ?? a, o = q(e, "language") || e.hass.language || "en", s = q(e, "timeFormat") === "12h", l = new Intl.DateTimeFormat(o, { hour: "2-digit", minute: "2-digit", hour12: s }), _ = (A) => {
     const ae = new Date(String(A ?? ""));
     return Number.isNaN(ae.getTime()) ? "—" : l.format(ae);
-  }, d = X(Z(e.entity, "elevation")), c = X(Z(e.entity, "azimuth")), m = q(e, "title"), p = bi(e, "moon_entity") ?? e.hass.states["sensor.moon"] ?? Hu(e.hass.states).phase, y = Ot(e, "moon_altitude_entity", "altitude"), b = Ot(e, "moon_azimuth_entity", "azimuth"), z = bi(e, "moon_rising_entity") ?? Ot(e, "moon_rising_entity", "next_rising") ?? Ot(e, "moon_rising_entity", "moonrise"), v = bi(e, "moon_setting_entity") ?? Ot(e, "moon_setting_entity", "next_setting") ?? Ot(e, "moon_setting_entity", "moonset"), w = Ot(e, "moon_next_full_moon_entity", "next_full_moon"), f = Ot(e, "moon_next_new_moon_entity", "next_new_moon"), S = Ot(e, "moon_above_horizon_entity", "is_moon_above_horizon"), H = [
+  }, d = X(Z(e.entity, "elevation")), c = X(Z(e.entity, "azimuth")), m = q(e, "title"), p = bi(e, "moon_entity") ?? e.hass.states["sensor.moon"] ?? Iu(e.hass.states).phase, y = Ot(e, "moon_altitude_entity", "altitude"), b = Ot(e, "moon_azimuth_entity", "azimuth"), z = bi(e, "moon_rising_entity") ?? Ot(e, "moon_rising_entity", "next_rising") ?? Ot(e, "moon_rising_entity", "moonrise"), v = bi(e, "moon_setting_entity") ?? Ot(e, "moon_setting_entity", "next_setting") ?? Ot(e, "moon_setting_entity", "moonset"), w = Ot(e, "moon_next_full_moon_entity", "next_full_moon"), f = Ot(e, "moon_next_new_moon_entity", "next_new_moon"), S = Ot(e, "moon_above_horizon_entity", "is_moon_above_horizon"), H = [
     p,
     y,
     b,
@@ -58842,8 +58842,8 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
       </section>
     ` : g}
   `);
-}, i2 = (e) => {
-  const t = Lu(e.entity), a = !!t, i = Math.max(1, Math.min(720, Math.round(X(e.config.datetime_step) ?? 15))), n = e.config.datetime_manual_entry !== !1, r = e.config.datetime_single_row === !0, o = (p) => {
+}, n2 = (e) => {
+  const t = Hu(e.entity), a = !!t, i = Math.max(1, Math.min(720, Math.round(X(e.config.datetime_step) ?? 15))), n = e.config.datetime_manual_entry !== !1, r = e.config.datetime_single_row === !0, o = (p) => {
     const y = (p % 1440 + 1440) % 1440;
     e.service("input_datetime", "set_datetime", {
       entity_id: e.config.entity,
@@ -58857,7 +58857,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     y && o(Number(y[1]) * 60 + Number(y[2]));
   }, _ = (p) => p.stopPropagation(), d = n ? u`<input class="ulm-control datetime-input" type="time" aria-label=${t?.label ?? "Time"}
         .value=${t?.label ?? ""} ?disabled=${!a} step=${i * 60}
-        @pointerdown=${_} @click=${_} @keydown=${_} @change=${l}>` : DP(
+        @pointerdown=${_} @click=${_} @keydown=${_} @change=${l}>` : NP(
     h(e.hass, "One minute later; hold for one minute earlier"),
     u`<b>${t?.label ?? K(e.entity, e.hass)}</b>`,
     () => s(1),
@@ -58896,10 +58896,10 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     ...e.config,
     primary_info: B && !e.config.name && [void 0, "default", "name"].includes(e.config.primary_info) ? void 0 : e.config.primary_info,
     secondary_info: (B || E) && !e.config.secondary && [void 0, "default", "state"].includes(e.config.secondary_info) ? void 0 : e.config.secondary_info
-  } }, ke = ks(e.hass, e.config.entity, e.config), _e = su.flatMap((L) => {
+  } }, ke = ks(e.hass, e.config.entity, e.config), _e = lu.flatMap((L) => {
     const se = ke[L.configKey], Ve = se ? e.hass.states[se] : void 0;
     return Ve ? [{ control: L, entity: Ve }] : [];
-  }), $e = lu.flatMap((L) => {
+  }), $e = _u.flatMap((L) => {
     const se = ke[L.configKey], Ve = se ? e.hass.states[se] : void 0;
     return Ve ? [{ control: L, entity: Ve }] : [];
   }), Ee = (e.config.shortcuts?.buttons ?? []).filter((L) => typeof L.id == "string" && L.id.trim().length > 0), Fe = Math.min(8, Math.max(1, Math.round(e.config.shortcuts?.columns ?? 4))), At = q(e, "sonos_details_always_visible") === !0, Pt = u`
@@ -59028,7 +59028,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
       </div>
     ` : g}
   `);
-}, n2 = (e) => {
+}, r2 = (e) => {
   const t = [
     Me(e, "black_entity"),
     Me(e, "yellow_entity"),
@@ -59046,7 +59046,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     return u`<span style=${`--toner:${a[n]};--level:${r}%`}><i><em></em><b>${K(i, e.hass)}</b></i></span>`;
   })}</div>
   `);
-}, r2 = (e) => {
+}, o2 = (e) => {
   const t = Me(e, "disk_entity") ?? fe(e, "entity_4"), a = Me(e, "temperature_entity") ?? fe(e, "entity_1"), i = Me(e, "memory_entity") ?? fe(e, "entity_2"), n = Me(e, "cpu_entity") ?? fe(e, "entity_3"), r = !["off", "unavailable", "unknown"].includes(e.entity?.state ?? ""), o = (m, p) => Ge(
     q(e, m),
     Ge(p, p)
@@ -59091,7 +59091,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
       </svg>
     </div>
   `) : e.actionSurface("custom-nas-metrics is-off", u`<div class="nas-metrics-top">${c}</div>`);
-}, o2 = (e) => {
+}, s2 = (e) => {
   const t = Me(e, "battery_entity"), a = Math.max(0, Math.min(100, X(t?.state) ?? 0)), i = [
     ["tablet_button_usb_entity", "mdi:usb", "green", h(e.hass, "Toggle USB")],
     ["tablet_button_motion_entity", "mdi:motion-sensor", "green", h(e.hass, "Toggle motion")],
@@ -59137,11 +59137,11 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     </div>
     <div class="tablet-battery-bar"><i style=${`width:${a}%`}></i><b><span>${a}%</span></b></div>` : g}
   `);
-}, s2 = (e) => {
+}, l2 = (e) => {
   const t = e.entity?.state ?? "unknown", a = zs(e.hass, e.config.entity, e.config), i = (I) => {
     const T = a[I];
     return T ? e.hass.states[T] : void 0;
-  }, n = pu(e.hass, e.config.entity, e.config), r = c1(n), o = i("followers_entity"), s = i("following_entity"), l = i("friends_entity"), _ = i("primary_stat_entity"), d = i("secondary_stat_entity"), c = i("now_playing_entity"), m = i("gamerpic_entity"), p = i("artwork_entity"), y = i("console_power_entity"), b = Z(m, "entity_picture") ?? Z(e.entity, "entity_picture"), z = q(e, "console_show_artwork") === !1 ? void 0 : Z(p, "entity_picture") ?? Z(e.entity, "media_image_url") ?? Z(e.entity, "entity_picture"), v = !!z, w = c && !["unknown", "unavailable", "none", ""].includes(c.state.toLowerCase()) ? K(c, e.hass) : String(Z(e.entity, "media_title") ?? ""), f = be(e.config, e.entity, e.hass), S = [
+  }, n = hu(e.hass, e.config.entity, e.config), r = m1(n), o = i("followers_entity"), s = i("following_entity"), l = i("friends_entity"), _ = i("primary_stat_entity"), d = i("secondary_stat_entity"), c = i("now_playing_entity"), m = i("gamerpic_entity"), p = i("artwork_entity"), y = i("console_power_entity"), b = Z(m, "entity_picture") ?? Z(e.entity, "entity_picture"), z = q(e, "console_show_artwork") === !1 ? void 0 : Z(p, "entity_picture") ?? Z(e.entity, "media_image_url") ?? Z(e.entity, "entity_picture"), v = !!z, w = c && !["unknown", "unavailable", "none", ""].includes(c.state.toLowerCase()) ? K(c, e.hass) : String(Z(e.entity, "media_title") ?? ""), f = be(e.config, e.entity, e.hass), S = [
     { entity: o, icon: "mdi:account-arrow-left", label: h(e.hass, "Followers") },
     { entity: s, icon: "mdi:account-arrow-right", label: h(e.hass, "Following") },
     { entity: l, icon: "mdi:account-multiple", label: h(e.hass, "Friends") }
@@ -59200,7 +59200,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
       ` : g}
     </div>
   `);
-}, l2 = (e) => {
+}, _2 = (e) => {
   const t = e.config.carousel_show_header ?? [
     e.config.name,
     e.config.primary_info,
@@ -59212,7 +59212,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     <ha-card class="mushroom-addition-card entity-carousel-card">
       ${t ? u`
         <div class="metric-heading entity-carousel-presentation">
-          ${Mn(e, Du(e, "mdi:view-carousel"), "var(--primary-color)", !0)}
+          ${Mn(e, Nu(e, "mdi:view-carousel"), "var(--primary-color)", !0)}
           ${ze(e, K(e.entity, e.hass), e.config.name ? be(e.config, e.entity, e.hass) : e.descriptor.name)}
         </div>
       ` : g}
@@ -59222,7 +59222,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
       </mushroom-addition-entity-carousel>
     </ha-card>
   `;
-}, _2 = (e) => {
+}, d2 = (e) => {
   e.presentation.rendered = !0;
   const t = e.config, a = [
     t.name,
@@ -59248,11 +59248,11 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     hour: "2-digit",
     minute: "2-digit"
   }), I = (k, V, E) => P`
-    <path d=${Vo(k, V, E)} class="hems-track"></path>
+    <path d=${No(k, V, E)} class="hems-track"></path>
   `, T = (k, V, E, ee, ye, ke = !1) => {
-    const _e = _P(k, V, E, ee, ke);
+    const _e = dP(k, V, E, ee, ke);
     return _e ? P`<path d=${_e} stroke=${ye} class="hems-bar"></path>` : g;
-  }, U = t.electricity_price_entity ? e.hass.states[t.electricity_price_entity] : void 0, re = uP(
+  }, U = t.electricity_price_entity ? e.hass.states[t.electricity_price_entity] : void 0, re = cP(
     U,
     ci(e.hass, t.tariff_markup_entity) ?? 0,
     ci(e.hass, t.tariff_vat_entity) ?? 0
@@ -59361,8 +59361,8 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
   { kind: 1, fallback: "Planned grid charge" },
   { kind: 2, fallback: "Planned sell" },
   { kind: 3, fallback: "Possible sell" }
-], Iu = (e, t, a) => ba(e, a, t), d2 = (e) => {
-  const t = e.entity, a = mP(t), i = Math.max(1, X(e.config.buy_sell_graph_span) ?? 36), n = Date.now(), r = e.config.buy_sell_span_start !== "now" ? new Date(new Date(n).setHours(0, 0, 0, 0)).getTime() : n, o = r + i * 60 * 60 * 1e3, s = a.filter(({ timestamp: E }) => E >= r && E < o), l = X(e.config.buy_sell_min_value), _ = X(e.config.buy_sell_max_value), d = pP(s, l, _), c = 58, m = 700, p = 22, y = 254, b = m - c, z = y - p, v = (E) => c + (E - r) / (o - r) * b, w = (E) => y - (E - d.minimum) / (d.maximum - d.minimum) * z, f = Math.max(0, Math.min(6, Math.floor(X(e.config.buy_sell_price_decimals) ?? 3))), S = (E) => {
+], Ru = (e, t, a) => ba(e, a, t), u2 = (e) => {
+  const t = e.entity, a = pP(t), i = Math.max(1, X(e.config.buy_sell_graph_span) ?? 36), n = Date.now(), r = e.config.buy_sell_span_start !== "now" ? new Date(new Date(n).setHours(0, 0, 0, 0)).getTime() : n, o = r + i * 60 * 60 * 1e3, s = a.filter(({ timestamp: E }) => E >= r && E < o), l = X(e.config.buy_sell_min_value), _ = X(e.config.buy_sell_max_value), d = hP(s, l, _), c = 58, m = 700, p = 22, y = 254, b = m - c, z = y - p, v = (E) => c + (E - r) / (o - r) * b, w = (E) => y - (E - d.minimum) / (d.maximum - d.minimum) * z, f = Math.max(0, Math.min(6, Math.floor(X(e.config.buy_sell_price_decimals) ?? 3))), S = (E) => {
     const ee = s[E + 1]?.timestamp, ye = ee ? ee - s[E].timestamp : 1800 * 1e3;
     return Math.max(60 * 1e3, Math.min(ye, 360 * 60 * 1e3));
   }, H = Math.max(0, Math.min(6, Math.floor(X(e.config.buy_sell_axis_decimals) ?? 2))), $ = uo.map((E, ee) => Ge(q(e, [
@@ -59381,7 +59381,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     "buy_sell_charge_label",
     "buy_sell_planned_sell_label",
     "buy_sell_possible_sell_label"
-  ], re = uo.map(({ fallback: E }, ee) => String(e.config[U[ee]] || h(e.hass, E))), A = e.config.buy_sell_trade_energy_entity, ae = Number(A ? e.hass.states[A]?.state : e.config.buy_sell_trade_energy ?? 10), D = Number(e.config.buy_sell_trade_power ?? 7.2), M = Number(e.config.buy_sell_trade_efficiency ?? 86), N = Number(e.config.buy_sell_feed_in_fee ?? 0), Y = A && (!Number.isFinite(ae) || ae <= 0) ? { error: `Minimum trade size entity ${A} must provide a positive numeric kWh value.` } : hP(a, {
+  ], re = uo.map(({ fallback: E }, ee) => String(e.config[U[ee]] || h(e.hass, E))), A = e.config.buy_sell_trade_energy_entity, ae = Number(A ? e.hass.states[A]?.state : e.config.buy_sell_trade_energy ?? 10), D = Number(e.config.buy_sell_trade_power ?? 7.2), M = Number(e.config.buy_sell_trade_efficiency ?? 86), N = Number(e.config.buy_sell_feed_in_fee ?? 0), Y = A && (!Number.isFinite(ae) || ae <= 0) ? { error: `Minimum trade size entity ${A} must provide a positive numeric kWh value.` } : gP(a, {
     energy: ae,
     power: D,
     efficiency: M,
@@ -59403,7 +59403,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     </tr>
   `;
   return e.actionSurface("energy-buy-sell-card", u`
-      ${Iu(e, String(e.config.buy_sell_title || h(e.hass, "Buy and sell moments (all-in €/kWh)")), h(e.hass, "Price timeline"))}
+      ${Ru(e, String(e.config.buy_sell_title || h(e.hass, "Buy and sell moments (all-in €/kWh)")), h(e.hass, "Price timeline"))}
       <div class="energy-buy-sell-chart" style=${`height:${Math.max(120, Math.min(700, X(e.config.buy_sell_chart_height) ?? 300))}px`} role="img"
         aria-label=${j(e.hass, "ui.renderer.energy_chart", { hours: i })}>
         <svg viewBox="0 0 720 314" preserveAspectRatio="none" aria-hidden="true">
@@ -59490,12 +59490,12 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
         </details>
       ` : g}
   `);
-}, u2 = (e) => {
-  const t = Array.isArray(e.config.panel_entities) ? e.config.panel_entities : void 0, a = yP(
+}, c2 = (e) => {
+  const t = Array.isArray(e.config.panel_entities) ? e.config.panel_entities : void 0, a = bP(
     e.hass.states,
     t,
     e.config.entity
-  ), i = bP(a), n = Math.max(1, X(e.config.panel_gauge_max) ?? 350), r = [0, 1, 2, 3, 4, 5].map((b) => X(e.config[`panel_segment_${b}`]) ?? [0, 80, 150, 230, 300, n][b]), o = r.map((b, z) => Ge(q(e, `panel_color_${z}`), [
+  ), i = vP(a), n = Math.max(1, X(e.config.panel_gauge_max) ?? 350), r = [0, 1, 2, 3, 4, 5].map((b) => X(e.config[`panel_segment_${b}`]) ?? [0, 80, 150, 230, 300, n][b]), o = r.map((b, z) => Ge(q(e, `panel_color_${z}`), [
     "#b0bec5",
     "#ffa726",
     "#d4e157",
@@ -59511,7 +59511,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     [h(e.hass, "Best-to-weakest spread"), `${Math.round(i.spread)} W`]
   ];
   return e.actionSurface("panel-health-card", u`
-      ${Iu(e, String(e.config.panel_health_title || h(e.hass, "Panel health")), h(e.hass, "Solar panel output"))}
+      ${Ru(e, String(e.config.panel_health_title || h(e.hass, "Panel health")), h(e.hass, "Solar panel output"))}
       ${e.config.panel_show_summary !== !1 ? u`<div class="panel-health-summary">
         ${y.map(([b, z]) => u`
           <div class="panel-health-summary-row"><span>${b}</span><strong>${z}</strong></div>
@@ -59523,7 +59523,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
       ${a.length && e.config.panel_show_gauges !== !1 ? u`
         <div class="panel-health-gauges">
           ${a.map((b) => {
-    const z = vP(b.value, n), v = kP(b.value, r, o), w = 2 * Math.PI * 37, f = w * z / 100, S = be({
+    const z = kP(b.value, n), v = fP(b.value, r, o), w = 2 * Math.PI * 37, f = w * z / 100, S = be({
       ...e.config,
       entity: b.entity.entity_id
     }, b.entity, e.hass) || b.id;
@@ -59549,9 +59549,9 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
         <div class="energy-card-empty">${h(e.hass, "Select panel sensors in the card editor, or add sensors with entity IDs beginning with sensor.inverter_4.")}</div>
       `}
   `);
-}, c2 = (e) => {
-  const t = fe(e, "ulm_card_flower_entity") ?? e.entity, a = t?.state === "problem", i = (r) => Lr.find((o) => o.key === r), n = yu(e.config).flatMap((r) => {
-    const o = i(r), s = Z(t, r), l = typeof s == "object" && s !== null ? s : void 0, _ = fe(e, bu(r)), d = typeof l?.sensor == "string" ? l.sensor : typeof s == "string" && e.hass.states[s] ? s : void 0, c = _ ?? (d ? e.hass.states[d] : void 0), m = String(Z(t, "device_class") ?? ""), p = t?.entity_id.startsWith("sensor.") && (m === r || r === "moisture" && (!m || m === "humidity")), y = c ?? (p ? t : void 0), b = X(y?.state) ?? X(l?.current) ?? X(s);
+}, m2 = (e) => {
+  const t = fe(e, "ulm_card_flower_entity") ?? e.entity, a = t?.state === "problem", i = (r) => Lr.find((o) => o.key === r), n = bu(e.config).flatMap((r) => {
+    const o = i(r), s = Z(t, r), l = typeof s == "object" && s !== null ? s : void 0, _ = fe(e, vu(r)), d = typeof l?.sensor == "string" ? l.sensor : typeof s == "string" && e.hass.states[s] ? s : void 0, c = _ ?? (d ? e.hass.states[d] : void 0), m = String(Z(t, "device_class") ?? ""), p = t?.entity_id.startsWith("sensor.") && (m === r || r === "moisture" && (!m || m === "humidity")), y = c ?? (p ? t : void 0), b = X(y?.state) ?? X(l?.current) ?? X(s);
     if (b === void 0) return [];
     const z = X(l?.min) ?? X(Z(y, "min")) ?? o.min, v = X(l?.max) ?? X(Z(y, "max")) ?? o.max, w = Math.max(0, Math.min(100, (b - z) / Math.max(1, v - z) * 100)), f = y ? K(y, e.hass) : String(b);
     return [{ key: r, definition: o, sourceEntity: y, value: b, percent: w, display: f }];
@@ -59572,7 +59572,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
       </span>`;
   })}</div>` : g}
   `);
-}, m2 = (e) => {
+}, p2 = (e) => {
   const t = q(e, "ulm_custom_card_speedtest_round") === !0, a = (i, n, r, o, s, l, _, d, c) => {
     const m = fe(e, i) ?? fe(e, n), p = X(m?.state), y = Math.max(1, q(e, _) ?? d), b = Math.max(0, Math.min(100, (p ?? 0) / y * 100)), z = p === void 0 ? "—" : c && t ? String(Math.round(p)) : m.state, v = m?.attributes.unit_of_measurement, w = Ge(q(e, s), l);
     return u`
@@ -59621,7 +59621,7 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
   )}
     </div>
   `);
-}, p2 = (e) => {
+}, h2 = (e) => {
   const t = [
     {
       entity: Me(e, "trees_entity"),
@@ -59684,13 +59684,13 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
       </span>`;
   })}</div>` : g}
   `);
-}, h2 = (e) => {
+}, g2 = (e) => {
   const t = ft.has(e.entity?.state ?? ""), a = "rgb(var(--rgb-blue, 33, 150, 243))";
   return e.actionSurface("ulm-row", u`
-    ${Mn(e, Du(e, "mdi:information-outline"), a, t)}
-    ${TP(e)}
+    ${Mn(e, Nu(e, "mdi:information-outline"), a, t)}
+    ${DP(e)}
   `, `--source-color:${a}`);
-}, g2 = (e) => {
+}, y2 = (e) => {
   switch (e.descriptor.upstreamId) {
     case "stock_card":
       return e.actionSurface("stock-card", u`${ba(e, e.config.secondary, be(e.config, e.entity, e.hass) || e.descriptor.name)}
@@ -59704,82 +59704,82 @@ const Z = (e, t) => e?.attributes[t], PP = (e, t) => j(e, t < 12 ? "ui.greeting_
     }
     case "upcoming_media": {
       const t = Dr(e.entity, e.config.upcoming_data_attribute);
-      return e.config.upcoming_hide_empty && !t.error && !ou(t, e.config).length ? u`` : e.actionSurface("upcoming-card", u`${ba(e, K(e.entity, e.hass), be(e.config, e.entity, e.hass) || e.descriptor.name)}
+      return e.config.upcoming_hide_empty && !t.error && !su(t, e.config).length ? u`` : e.actionSurface("upcoming-card", u`${ba(e, K(e.entity, e.hass), be(e.config, e.entity, e.hass) || e.descriptor.name)}
         <mushroom-addition-upcoming-media .hass=${e.hass} .config=${e.config}></mushroom-addition-upcoming-media>`);
     }
     case "card_battery":
-      return LP(e);
+      return HP(e);
     case "custom_card_trash":
-      return YP(e);
-    case "custom_card_alarm_time":
       return JP(e);
-    case "custom_card_welcome":
+    case "custom_card_alarm_time":
       return QP(e);
+    case "custom_card_welcome":
+      return XP(e);
     case "custom_card_washer":
-      return t2(e);
-    case "custom_card_sun":
       return a2(e);
-    case "custom_card_input_datetime":
+    case "custom_card_sun":
       return i2(e);
+    case "custom_card_input_datetime":
+      return n2(e);
     case "custom_card_media_player_sonos":
       return h_(e);
     case "custom_card_printer":
-      return n2(e);
-    case "custom_card_nas_metrics":
       return r2(e);
-    case "custom_card_tablet":
+    case "custom_card_nas_metrics":
       return o2(e);
-    case "custom_card_playstation":
+    case "custom_card_tablet":
       return s2(e);
-    case "custom_card_entity_carousel":
+    case "custom_card_playstation":
       return l2(e);
-    case "custom_card_light":
-      return e2(e);
-    case "advanced_home_energy_management":
+    case "custom_card_entity_carousel":
       return _2(e);
-    case "advanced_energy_buy_sell":
+    case "custom_card_light":
+      return t2(e);
+    case "advanced_home_energy_management":
       return d2(e);
-    case "advanced_energy_panel_health":
+    case "advanced_energy_buy_sell":
       return u2(e);
-    case "custom_card_plant":
+    case "advanced_energy_panel_health":
       return c2(e);
-    case "custom_card_speedtest_gauges":
+    case "custom_card_plant":
       return m2(e);
-    case "custom_card_pollen":
+    case "custom_card_speedtest_gauges":
       return p2(e);
+    case "custom_card_pollen":
+      return h2(e);
     case "card_room":
-      return UP(e);
+      return KP(e);
   }
-  if (/trash/.test(e.descriptor.upstreamId)) return WP(e);
-  if (/printer/.test(e.descriptor.upstreamId)) return GP(e);
+  if (/trash/.test(e.descriptor.upstreamId)) return GP(e);
+  if (/printer/.test(e.descriptor.upstreamId)) return ZP(e);
   if (/plant|entity_overview/.test(e.descriptor.upstreamId))
-    return KP(e, /plant/.test(e.descriptor.upstreamId) ? "mdi:flower" : "mdi:view-grid", "purple");
+    return WP(e, /plant/.test(e.descriptor.upstreamId) ? "mdi:flower" : "mdi:view-grid", "purple");
   switch (e.descriptor.family) {
     case "scene":
-      return RP(e);
+      return BP(e);
     case "battery":
-      return VP(e);
+      return LP(e);
     case "energy":
     case "sensor":
-      return IP(e);
+      return RP(e);
     case "media":
       return h_(e);
     case "security":
-      return BP(e);
-    case "navigation":
       return FP(e);
+    case "navigation":
+      return OP(e);
     case "control":
-      return qP(e);
+      return UP(e);
     case "alarm-time":
-      return ZP(e);
+      return YP(e);
     default:
-      return h2(e);
+      return g2(e);
   }
 };
-var y2 = Object.defineProperty, Ru = (e, t, a, i) => {
+var b2 = Object.defineProperty, Bu = (e, t, a, i) => {
   for (var n = void 0, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = o(t, a, n) || n);
-  return n && y2(t, a, n), n;
+  return n && b2(t, a, n), n;
 };
 const Us = class Us extends ve {
   constructor() {
@@ -59862,7 +59862,7 @@ const Us = class Us extends ve {
         this.hass?.callService(n, r, o);
       }
     };
-    return g2(i);
+    return y2(i);
   }
   willUpdate() {
     this.toggleAttribute("dark", this.hass?.themes?.darkMode === !0);
@@ -59949,13 +59949,13 @@ const Us = class Us extends ve {
 };
 Us.styles = Hr;
 let Be = Us;
-Ru([
+Bu([
   O({ attribute: !1 })
 ], Be.prototype, "hass");
-Ru([
+Bu([
   O({ attribute: !1 })
 ], Be.prototype, "config");
-function Lo(e, t, a = {}) {
+function Vo(e, t, a = {}) {
   const i = e?.locale?.number_format, r = {
     comma_decimal: "en-US",
     decimal_comma: "de-DE",
@@ -59964,7 +59964,7 @@ function Lo(e, t, a = {}) {
   }[i ?? ""] ?? (i === "system" ? navigator.language : e?.locale?.language || Dt(e?.language));
   return new Intl.NumberFormat(r, { maximumFractionDigits: 2, ...i === "none" ? { useGrouping: !1 } : {}, ...a }).format(t);
 }
-function Bu(e, t, a = {}) {
+function Fu(e, t, a = {}) {
   return new Intl.DateTimeFormat(e?.locale?.language || Dt(e?.language), {
     hour: "2-digit",
     minute: "2-digit",
@@ -59994,7 +59994,7 @@ function Re(e) {
     if (Number.isFinite(t)) return t;
   }
 }
-function Fu(e, t, a) {
+function Ou(e, t, a) {
   const i = a !== void 0 ? a : e.attributes, n = t.path ? ge(i, t.path) : i;
   return Array.isArray(n) ? n : n && typeof n == "object" ? [n] : [];
 }
@@ -60002,14 +60002,14 @@ function lt(e, t) {
   return t ? ge(e, t) : void 0;
 }
 function Ts(e, t, a = t.valueField ?? t.priceField, i) {
-  return e ? Fu(e, t, i).flatMap((n) => {
+  return e ? Ou(e, t, i).flatMap((n) => {
     if (!n || typeof n != "object") return [];
     const r = n, o = Re(lt(r, t.startField)), s = Re(lt(r, t.endField)), l = it(lt(r, t.durationField)), _ = s ?? (o !== void 0 && l !== void 0 ? o + l * 6e4 : void 0), d = it(lt(r, a));
     return o === void 0 || _ === void 0 || _ <= o || d === void 0 ? [] : [{ start: o, end: _, value: d, source: r }];
   }) : [];
 }
-function b2(e, t) {
-  return e ? Fu(e, t).flatMap((a) => {
+function v2(e, t) {
+  return e ? Ou(e, t).flatMap((a) => {
     if (!a || typeof a != "object") return [];
     const i = Re(lt(a, t.startField)), n = it(lt(a, t.valueField));
     return i !== void 0 && n !== void 0 ? [{ time: i, value: n }] : [];
@@ -60021,14 +60021,14 @@ function gr(e, t, a) {
     return r > n ? [{ ...i, start: n, end: r }] : [];
   });
 }
-function Ou(e) {
+function qu(e) {
   const t = e.reduce((a, i) => a + i.end - i.start, 0);
   return t ? e.reduce((a, i) => a + i.value * (i.end - i.start), 0) / t : null;
 }
 function g_(e, t = "EUR/kWh", a = t) {
   return t === a ? e : t === "EUR/kWh" ? e * 100 : e / 100;
 }
-function v2(e, t) {
+function k2(e, t) {
   if (!e) return { validSource: !1, blocks: [] };
   const a = t.path ? ge(e.attributes, t.path) : e.attributes;
   if (!Array.isArray(a)) return { validSource: !1, blocks: [] };
@@ -60047,11 +60047,11 @@ function v2(e, t) {
   });
   return { validSource: a.length === 0 || i.length > 0, blocks: i };
 }
-function k2(e) {
+function f2(e) {
   const t = new Date(e);
   return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, "0")}-${String(t.getDate()).padStart(2, "0")}`;
 }
-function f2(e) {
+function w2(e) {
   const t = new Date(e);
   return t.setHours(0, 0, 0, 0), t.getTime();
 }
@@ -60063,9 +60063,9 @@ function Vn(e, t) {
   const a = new Date(e);
   return t === 24 ? (a.setDate(a.getDate() + 1), a.setHours(0, 0, 0, 0)) : a.setHours(t, 0, 0, 0), a.getTime();
 }
-function w2(e, t, a, i) {
+function z2(e, t, a, i) {
   if (a <= t) return [];
-  const n = [], r = f2(t), o = new Date(r);
+  const n = [], r = w2(t), o = new Date(r);
   o.setDate(o.getDate() - 1);
   for (const s of i.filter((l) => l.endHour <= l.startHour)) {
     const l = Vn(o.getTime(), s.startHour), _ = Vn(r, s.endHour);
@@ -60079,10 +60079,10 @@ function w2(e, t, a, i) {
   return n;
 }
 function b_(e, t, a, i, n, r) {
-  const o = Math.max(n, t), s = Math.min(r, a), l = gr(e, o, s), _ = Ou(l), d = l.reduce((m, p) => m + p.end - p.start, 0), c = Math.max(0, s - o);
+  const o = Math.max(n, t), s = Math.min(r, a), l = gr(e, o, s), _ = qu(l), d = l.reduce((m, p) => m + p.end - p.start, 0), c = Math.max(0, s - o);
   return {
     name: i.name,
-    date: k2(n),
+    date: f2(n),
     average: _,
     minimum: l.length ? Math.min(...l.map((m) => m.value)) : null,
     maximum: l.length ? Math.max(...l.map((m) => m.value)) : null,
@@ -60111,7 +60111,7 @@ function v_(e, t, a, i, n, r = 60) {
   const c = gr(d, i, n);
   return c.length ? { intervals: c } : { intervals: [], error: "No published intervals" };
 }
-function z2(e, t, a = 60) {
+function j2(e, t, a = 60) {
   const i = e?.states[t.entity || ""];
   if (!i || ["unknown", "unavailable"].includes(i.state)) return;
   const n = Re(i.last_updated);
@@ -60122,7 +60122,7 @@ function yr(e, t) {
   const a = e.statusField ? ge(t.source, e.statusField) : void 0;
   return typeof a == "string" && a.trim() ? a : t.value > 0 ? e.positiveLabel : t.value < 0 ? e.negativeLabel : e.zeroLabel;
 }
-function j2(e, t) {
+function S2(e, t) {
   const a = [];
   for (const i of t) {
     const n = a.at(-1);
@@ -60130,7 +60130,7 @@ function j2(e, t) {
   }
   return a;
 }
-function S2(e, t) {
+function x2(e, t) {
   const a = [];
   for (const i of t) {
     const n = a.at(-1), r = (o) => o <= e.low ? "low" : o >= e.high ? "high" : "middle";
@@ -60146,10 +60146,10 @@ function k_(e, t) {
 function f_(e, t, a) {
   return a <= t || e.error ? 0 : e.intervals.reduce((i, n) => i + Math.max(0, Math.min(a, n.end) - Math.max(t, n.start)), 0) / (a - t);
 }
-var x2 = Object.defineProperty, A2 = Object.getOwnPropertyDescriptor, Ds = (e, t, a, i) => {
-  for (var n = i > 1 ? void 0 : i ? A2(t, a) : t, r = e.length - 1, o; r >= 0; r--)
+var A2 = Object.defineProperty, P2 = Object.getOwnPropertyDescriptor, Ds = (e, t, a, i) => {
+  for (var n = i > 1 ? void 0 : i ? P2(t, a) : t, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = (i ? o(t, a, n) : o(n)) || n);
-  return i && n && x2(t, a, n), n;
+  return i && n && A2(t, a, n), n;
 };
 const mt = 0, sa = 848, w_ = 848, z_ = 0;
 let Wa = class extends Be {
@@ -60157,7 +60157,7 @@ let Wa = class extends Be {
     super(...arguments), this.selected = 0, this.descriptor = ut(va);
   }
   setConfig(e) {
-    const t = ku(e, this.hass);
+    const t = fu(e, this.hass);
     super.setConfig(t), this.toggleAttribute("fill-container", t.fill_container === !0), this.selected = 0;
   }
   static getStubConfig(e, t = [], a = []) {
@@ -60183,13 +60183,13 @@ let Wa = class extends Be {
     return h(this.hass, e);
   }
   time(e, t = !1) {
-    return Bu(this.hass, e, { weekday: t ? void 0 : "short" });
+    return Fu(this.hass, e, { weekday: t ? void 0 : "short" });
   }
   value(e) {
-    return Lo(this.hass, e);
+    return Vo(this.hass, e);
   }
   metric(e) {
-    const t = z2(this.hass, e, ui(this.config).maxAgeMinutes);
+    const t = j2(this.hass, e, ui(this.config).maxAgeMinutes);
     return u`<div class="metric">
       <div class="metric-heading"><ha-icon .icon=${e.icon} style=${`color:${Pe(e.color, "green")}`}></ha-icon>${e.name}</div>
       <div class="metric-value">${t === void 0 ? this.t("Source missing") : this.value(t)} <small>${t === void 0 ? "" : e.unit}</small></div>
@@ -60200,7 +60200,7 @@ let Wa = class extends Be {
     return P`<g>
       <rect class="track" x=${mt} y=${a} width=${sa - mt} height=${s} rx="8"></rect>
       ${e.kind === "power" ? P`<line class="grid" x1=${mt} x2=${sa} y1=${a + s / 2} y2=${a + s / 2}></line>` : g}
-      ${t.error ? P`<text class="empty" x=${mt + 10} y=${a + 22}>${this.t(t.error)}</text>` : (e.kind === "price" ? S2(e, t.intervals) : j2(e, t.intervals)).map((_) => {
+      ${t.error ? P`<text class="empty" x=${mt + 10} y=${a + 22}>${this.t(t.error)}</text>` : (e.kind === "price" ? x2(e, t.intervals) : S2(e, t.intervals)).map((_) => {
       const d = o(_.start), c = Math.max(0.5, o(_.end) - d - 1), m = e.kind === "price" ? Pe(_.value <= e.low ? e.lowColor : _.value >= e.high ? e.highColor : e.color, r) : r, p = `${this.time(_.start)} – ${this.time(_.end)}: ${this.value(_.minimum)}${_.minimum !== _.maximum ? ` – ${this.value(_.maximum)}` : ""} ${e.unit}`;
       if (e.kind === "power") {
         const b = a + s / 2, z = Math.min(s / 2 - 2, Math.abs(_.value) / l * (s / 2 - 2));
@@ -60379,11 +60379,11 @@ function co(e, t) {
   const a = ge(e, t);
   return typeof a == "string" ? a : ie(t);
 }
-function qu(e, t) {
+function Uu(e, t) {
   const a = e[t];
   return Array.isArray(a) && a.length <= 1e4 ? a : ie(t);
 }
-function Uu(e, t, a, i, n, r) {
+function Ku(e, t, a, i, n, r) {
   const o = e?.states[t.entity ?? ""];
   if (!o || ["unknown", "unavailable"].includes(o.state))
     return { error: `Source missing: ${i} ${t.entity || "sensor"} is missing or unavailable; select its entity and map the ${t.path} fields` };
@@ -60408,9 +60408,9 @@ function Uu(e, t, a, i, n, r) {
   }
 }
 function j_(e, t, a = Date.now()) {
-  return Uu(e, t.actualSource, t, "Measured snapshot source", a, (i, n, r, o) => {
+  return Ku(e, t.actualSource, t, "Measured snapshot source", a, (i, n, r, o) => {
     (r > a + 6e4 || r > o + 6e4 || a - r > t.maxAgeMinutes * 6e4) && ie("actual window");
-    const s = Ae(i, "home_kwh"), l = Ae(i, "solar_kwh"), _ = Ae(i, "battery_charge_kwh"), d = Ae(i, "battery_discharge_kwh"), c = qu(i, "intervals").map((f) => {
+    const s = Ae(i, "home_kwh"), l = Ae(i, "solar_kwh"), _ = Ae(i, "battery_charge_kwh"), d = Ae(i, "battery_discharge_kwh"), c = Uu(i, "intervals").map((f) => {
       const S = Tt(f, "interval");
       return {
         start: Gt(S, "start"),
@@ -60456,7 +60456,7 @@ function j_(e, t, a = Date.now()) {
     };
   });
 }
-const S_ = 900 * 1e3, Ns = 39, x_ = 5e4, A_ = 25e4, P2 = 1e5, M2 = 3600 * 1e3, mo = {
+const S_ = 900 * 1e3, Ns = 39, x_ = 5e4, A_ = 25e4, M2 = 1e5, C2 = 3600 * 1e3, mo = {
   midnight: "Midnight uses the last recorded HA state; the physical timing of the first delta is uncertain.",
   tariffs: "Costs use held midnight states and time-proportional tariff allocations; uniform energy use is assumed within split intervals.",
   endpoint: "Counters are held until the common HA snapshot endpoint; unchanged values between reports are assumed, not simultaneous physical measurements."
@@ -60474,7 +60474,7 @@ function er(e) {
     ...e.consumers.map((a) => a.energySource?.entity)
   ].filter((a) => !!a))];
 }
-function Ku(e, t) {
+function Wu(e, t) {
   const a = new Intl.DateTimeFormat("en-CA", {
     timeZone: t,
     year: "numeric",
@@ -60499,7 +60499,7 @@ function Ku(e, t) {
   }, s = r - o(e);
   return r - o(s);
 }
-function C2(e) {
+function $2(e) {
   const t = /* @__PURE__ */ new Map(), a = Array.isArray(e) ? void 0 : Object.keys(Tt(e, "history response"));
   (Array.isArray(e) ? e.length : a.length) > Ns && ie("too many history groups");
   const i = Array.isArray(e) ? e.map((r) => ["", r]) : a.map((r) => [r, e[r]]);
@@ -60531,7 +60531,7 @@ function P_(e, t, a, i, n, r = e.config?.currency) {
     c.has(m.time) && c.get(m.time).value !== m.value && ie(`${i}: conflicting readings at the same timestamp`), c.set(m.time, m);
   return [...c.values()].sort((m, p) => m.time - p.time);
 }
-function $2(e, t, a, i) {
+function E2(e, t, a, i) {
   const n = e.filter((l) => l.time <= t).at(-1);
   n || ie(`${i}: Recorder history has no cumulative reading at the start of today`);
   const r = e.filter((l) => l.time > t && l.time <= a), o = [];
@@ -60551,7 +60551,7 @@ function $2(e, t, a, i) {
   }
   return o;
 }
-function E2(e, t, a) {
+function T2(e, t, a) {
   const { start: i, end: n, quantity: r } = t;
   let o = 0, s = e.length;
   for (; o < s; ) {
@@ -60577,7 +60577,7 @@ function Ln(e, t, a, i = Date.now()) {
   try {
     const r = er(t);
     if (r.length > Ns && ie("too many history entities"), !r.length && a == null) return { error: "Source missing: select a sensor or explicitly declare equipment Not installed" };
-    const o = C2(a), s = e.config?.time_zone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC", l = Ku(i, s), _ = [], d = [], c = [], m = [], p = (k, V) => {
+    const o = $2(a), s = e.config?.time_zone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC", l = Wu(i, s), _ = [], d = [], c = [], m = [], p = (k, V) => {
       try {
         return V();
       } catch (E) {
@@ -60604,7 +60604,7 @@ function Ln(e, t, a, i = Date.now()) {
     }, b = (k, V) => p(k, () => {
       if (V.absent)
         return _.push({ id: k, end: i, absent: !0 }), { total: 0, end: i, deltas: [] };
-      const E = y(k, V, "energy"), ee = $2(E, l, i, k), ye = i, ke = e.states[V.entity], _e = Re(ke.last_updated ?? ke.last_changed);
+      const E = y(k, V, "energy"), ee = E2(E, l, i, k), ye = i, ke = e.states[V.entity], _e = Re(ke.last_updated ?? ke.last_changed);
       return _e < i && m.push(k), ee.some(($e) => $e.approximate) && c.push(`${k}: ${mo.midnight}`), _.push({ id: k, end: ye, lastUpdated: _e }), { total: ee.reduce(($e, Ee) => $e + Ee.quantity, 0), end: ye, deltas: ee };
     }), z = b("solar", t.metered.solar), v = b("gridImport", t.metered.gridImport), w = b("gridExport", t.metered.gridExport), f = b("batteryCharge", t.metered.batteryCharge), S = b("batteryDischarge", t.metered.batteryDischarge), H = z?.total, $ = v?.total, W = w?.total, ne = f?.total, I = S?.total, T = i;
     let U;
@@ -60616,8 +60616,8 @@ function Ln(e, t, a, i = Date.now()) {
       (!n || !/^[A-Z]{3}$/.test(n)) && ie(`${k}: configure an ISO currency`);
       const ke = ee === void 0 ? y(k, E, "rate") : [], _e = [];
       for (const Ee of V.deltas) {
-        const Fe = ee === void 0 ? E2(ke, Ee, k) : [{ ...Ee, rate: ee }];
-        _e.length + Fe.length > P2 && ie(`${k}: too many priced intervals`);
+        const Fe = ee === void 0 ? T2(ke, Ee, k) : [{ ...Ee, rate: ee }];
+        _e.length + Fe.length > M2 && ie(`${k}: too many priced intervals`);
         for (const At of Fe) _e.push(At);
       }
       _e.some((Ee) => Ee.approximate) && c.push(`${k}: ${mo.tariffs}`);
@@ -60666,9 +60666,9 @@ function Ln(e, t, a, i = Date.now()) {
   }
 }
 function M_(e, t, a = Date.now()) {
-  return Uu(e, t.planSource, t, "Plan source", a, (i, n, r, o) => {
+  return Ku(e, t.planSource, t, "Plan source", a, (i, n, r, o) => {
     (r - n !== 864e5 || n < o - 6e4 || r <= a) && ie("upcoming 24-hour window");
-    const s = Ae(i, "home_kwh"), l = Ae(i, "solar_kwh"), _ = t.showPlanBattery ? Ae(i, "battery_min", 0, 100) : void 0, d = t.showPlanBattery ? Ae(i, "battery_reserve", 0, 100) : void 0, c = t.showPlanEfficiency ? Ae(i, "charge_efficiency", Number.MIN_VALUE, 1) : void 0, m = qu(i, "blocks").map((y) => {
+    const s = Ae(i, "home_kwh"), l = Ae(i, "solar_kwh"), _ = t.showPlanBattery ? Ae(i, "battery_min", 0, 100) : void 0, d = t.showPlanBattery ? Ae(i, "battery_reserve", 0, 100) : void 0, c = t.showPlanEfficiency ? Ae(i, "charge_efficiency", Number.MIN_VALUE, 1) : void 0, m = Uu(i, "blocks").map((y) => {
       const b = Tt(y, "block"), z = t.showPlanAllocations ? Ae(b, "home_kwh") : void 0, v = t.showPlanAllocations ? Ae(b, "ev_kwh") : void 0, w = t.showPlanAllocations || t.showPlanEfficiency ? Ae(b, "battery_kwh") : void 0, f = t.showPlanAllocations ? z + v + w : Ae(b, "quantity_kwh"), S = Ae(b, "rate", -1e6, 1e6);
       return w !== void 0 && w > f + 1e-3 && ie("battery_kwh exceeds purchase quantity_kwh"), t.showPlanAllocations && b.quantity_kwh !== void 0 && Math.abs(Ae(b, "quantity_kwh") - f) > 1e-3 && ie("quantity_kwh does not match allocation"), {
         start: Gt(b, "start"),
@@ -60706,7 +60706,7 @@ function M_(e, t, a = Date.now()) {
     };
   });
 }
-function T2(e, t, a = Date.now(), i = 60) {
+function D2(e, t, a = Date.now(), i = 60) {
   const n = e?.states[t ?? ""];
   if (!n || ["unknown", "unavailable"].includes(n.state)) return;
   const r = Re(n.last_updated);
@@ -60714,16 +60714,16 @@ function T2(e, t, a = Date.now(), i = 60) {
   const o = it(n.state), s = n.attributes.unit_of_measurement;
   return o === void 0 ? void 0 : s === "kW" ? o * 1e3 : s === "W" ? o : void 0;
 }
-function D2(e, t, a = Date.now(), i = 60) {
+function N2(e, t, a = Date.now(), i = 60) {
   const n = e?.states[t ?? ""];
   if (!n || n.attributes.unit_of_measurement !== "%") return;
   const r = Re(n.last_updated), o = it(n.state);
   return r !== void 0 && a - r <= i * 6e4 && r <= a + 6e4 && o !== void 0 && o >= 0 && o <= 100 ? o : void 0;
 }
-var N2 = Object.defineProperty, V2 = Object.getOwnPropertyDescriptor, xa = (e, t, a, i) => {
-  for (var n = i > 1 ? void 0 : i ? V2(t, a) : t, r = e.length - 1, o; r >= 0; r--)
+var V2 = Object.defineProperty, L2 = Object.getOwnPropertyDescriptor, xa = (e, t, a, i) => {
+  for (var n = i > 1 ? void 0 : i ? L2(t, a) : t, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = (i ? o(t, a, n) : o(n)) || n);
-  return i && n && N2(t, a, n), n;
+  return i && n && V2(t, a, n), n;
 };
 let zt = class extends Be {
   constructor() {
@@ -60740,7 +60740,7 @@ let zt = class extends Be {
     };
   }
   setConfig(e) {
-    const t = fu(e);
+    const t = wu(e);
     super.setConfig(t);
     const a = st(t);
     this.sort = a.sort, this.active = a.activeOnly, this.selected = 0, this.toggleAttribute("fill-container", t.fill_container === !0);
@@ -60829,7 +60829,7 @@ let zt = class extends Be {
     this.historyPending = !0, (r || !this.measuredHistory?.value) && (this.historyResponse = void 0, this.historyLoad = void 0, this.measuredHistory = { error: "Loading measured history" });
     const s = {
       type: "history/history_during_period",
-      start_time: new Date(Ku(n, a.config?.time_zone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC") - M2).toISOString(),
+      start_time: new Date(Wu(n, a.config?.time_zone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC") - C2).toISOString(),
       end_time: new Date(n).toISOString(),
       entity_ids: t,
       minimal_response: !1,
@@ -60876,25 +60876,25 @@ let zt = class extends Be {
     return h(this.hass, e);
   }
   n(e, t = 2) {
-    return Lo(this.hass, e, { maximumFractionDigits: t });
+    return Vo(this.hass, e, { maximumFractionDigits: t });
   }
   money(e) {
     if (e === void 0) return this.t("Not supplied");
     const t = st(this.config).currency || this.hass?.config?.currency;
-    return t ? Lo(this.hass, e, { style: "currency", currency: t, minimumFractionDigits: 2, maximumFractionDigits: 2 }) : this.n(e);
+    return t ? Vo(this.hass, e, { style: "currency", currency: t, minimumFractionDigits: 2, maximumFractionDigits: 2 }) : this.n(e);
   }
   rate(e) {
     return e === void 0 ? this.t("Not supplied") : `${this.n(e, 3)} ${st(this.config).currency || this.hass?.config?.currency || this.t("Currency not configured")}/kWh`;
   }
   time(e) {
-    return Bu(this.hass, e, { month: "short", day: "numeric" });
+    return Fu(this.hass, e, { month: "short", day: "numeric" });
   }
   kwh(e, t = 2) {
     return e === void 0 ? this.t("Not supplied") : `${this.n(e, t)} kWh`;
   }
   power(e) {
     const t = st(this.config);
-    return T2(this.hass, e, Date.now(), t.maxAgeMinutes);
+    return D2(this.hass, e, Date.now(), t.maxAgeMinutes);
   }
   watts(e) {
     return e === void 0 ? this.t("Source missing") : Math.abs(e) >= 1e3 ? `${this.n(e / 1e3)} kW` : `${this.n(e, 0)} W`;
@@ -60958,7 +60958,7 @@ let zt = class extends Be {
       return r += n(_.energy), `${_.tone} ${d}% ${r}%`;
     });
     e.remainder !== void 0 && e.remainder > 0 && o.push(`var(--disabled-text-color) ${r}% 100%`);
-    const s = e.importCost !== void 0 && e.exportCredit !== void 0 ? e.importCost - e.exportCredit : void 0, l = D2(this.hass, t.selfPoweredEntity, Date.now(), t.maxAgeMinutes);
+    const s = e.importCost !== void 0 && e.exportCredit !== void 0 ? e.importCost - e.exportCredit : void 0, l = N2(this.hass, t.selfPoweredEntity, Date.now(), t.maxAgeMinutes);
     return u`
       <small class="window">${this.t("Measured window")}: ${this.time(e.start)} - ${this.time(e.end)}
         · ${this.t("Updated")}: ${this.time(e.generated)}</small>
@@ -61234,7 +61234,7 @@ xa([
 zt = xa([
   nt(ka)
 ], zt);
-const L2 = ce`
+const H2 = ce`
   :host {
     --synology-primary: #0086d6;
     --synology-accent: #0086d6;
@@ -61249,8 +61249,8 @@ const L2 = ce`
     --synology-text: var(--primary-text-color, #e1e1e6);
     --synology-subtext: var(--secondary-text-color, #8a8a93);
   }
-`, H2 = [
-  L2,
+`, I2 = [
+  H2,
   ce`
     :host {
       display: block;
@@ -61726,10 +61726,10 @@ function tr(e, t, a, i) {
   });
   return e.dispatchEvent(n), n;
 }
-const oi = /* @__PURE__ */ new WeakMap(), Wu = /* @__PURE__ */ new WeakMap();
+const oi = /* @__PURE__ */ new WeakMap(), Gu = /* @__PURE__ */ new WeakMap();
 function vr(e) {
   const t = e.connection ?? e.callWS;
-  return t ? Wu.get(t) : void 0;
+  return t ? Gu.get(t) : void 0;
 }
 const C_ = /* @__PURE__ */ new WeakMap();
 function Ir(e) {
@@ -61763,7 +61763,7 @@ function Ir(e) {
 function Cn(e, t) {
   return Ir(e).entitiesByDevice.get(t) ?? [];
 }
-async function Ho(e, t = !1) {
+async function Lo(e, t = !1) {
   if (!e.callWS) return { devices: e.devices ?? {}, entities: e.entities ?? {} };
   const a = e.connection ?? e.callWS;
   t && oi.delete(a);
@@ -61776,7 +61776,7 @@ async function Ho(e, t = !1) {
       devices: Object.fromEntries(n.map((s) => [s.id, s])),
       entities: Object.fromEntries(r.map((s) => [s.entity_id, s]))
     };
-    return oi.get(a) === i && Wu.set(a, o), o;
+    return oi.get(a) === i && Gu.set(a, o), o;
   }), oi.set(a, i), i.catch(() => {
     oi.get(a) === i && oi.delete(a);
   })), i;
@@ -61794,13 +61794,13 @@ function kr(e, t, a) {
 function fr(e, t) {
   return e.identifiers?.some(([a]) => a === t) ?? !1;
 }
-function I2(e) {
+function R2(e) {
   return Ir(e).synology;
 }
 function wr(e, t) {
-  return t === "synology_dsm" ? I2(e) : t === "qnap" ? Ir(e).qnap : [];
+  return t === "synology_dsm" ? R2(e) : t === "qnap" ? Ir(e).qnap : [];
 }
-function R2(e) {
+function B2(e) {
   return Ir(e).endpoints;
 }
 function gn(e, t) {
@@ -61821,7 +61821,7 @@ function Di(e, t) {
   const a = wr(t, Ie(e));
   return e.server ? a.find((i) => i.id === e.server) : a.length === 1 ? a[0] : void 0;
 }
-const B2 = {
+const F2 = {
   synology_dsm: {
     cpu_usage: "cpu_total_load",
     ram_usage: "memory_real_usage",
@@ -61867,7 +61867,7 @@ function Br(e, t, a) {
   }
   return n[a];
 }
-function F2(e, t, a, i, n) {
+function O2(e, t, a, i, n) {
   const r = t.entities?.[i];
   if (r) return e?.states[r];
   const o = Ie(t);
@@ -61877,7 +61877,7 @@ function F2(e, t, a, i, n) {
     const l = Br(a, s, "network"), d = (t.network_interface ? l.find((c) => c.id === t.network_interface) : l.length === 1 ? l[0] : void 0)?.entities[i];
     return d ? e?.states[d] : void 0;
   }
-  return Rr(e, a, s, B2[o][i] ?? i, n, o);
+  return Rr(e, a, s, F2[o][i] ?? i, n, o);
 }
 function Ce(e) {
   return !!e && !["unknown", "unavailable", "none", ""].includes(e.state.toLowerCase());
@@ -61887,7 +61887,7 @@ function yn(e) {
   const t = Number(e.state);
   return Number.isFinite(t) ? t : void 0;
 }
-function Gu(e, t = 0) {
+function Zu(e, t = 0) {
   const a = yn(e);
   return a === void 0 ? void 0 : Number(Math.max(0, Math.min(100, a)).toFixed(t));
 }
@@ -61921,7 +61921,7 @@ function E_(e, t) {
   const n = i.replace(/\/s$/, ""), r = Vs[n];
   return r === void 0 ? bn(e, t) : `${Je(a * r, "B", t)}/s`;
 }
-function Zu(e) {
+function Yu(e) {
   if (e)
     try {
       const t = new URL(e);
@@ -61930,7 +61930,7 @@ function Zu(e) {
       return;
     }
 }
-function Yu(e, t) {
+function Ju(e, t) {
   if (Ie(e) !== "synology_dsm") return [];
   const a = Di(e, t);
   return a ? Object.values(t.devices).filter(
@@ -61951,7 +61951,7 @@ function Ls(e, t, a) {
     usage: e?.states[n.entities.volume_percentage_used ?? ""],
     total: e?.states[n.entities.volume_size_total ?? ""],
     used: e?.states[n.entities.volume_size_used ?? ""]
-  })) : Yu(t, a).filter(
+  })) : Ju(t, a).filter(
     (n) => Cn(a, n.id).some(
       (r) => r.platform === "synology_dsm" && (gn(r, "volume_percentage_used") || r.entity_id.endsWith("_volume_percentage_used"))
     )
@@ -61967,7 +61967,7 @@ function Ls(e, t, a) {
     };
   });
 }
-function O2(e, t, a) {
+function q2(e, t, a) {
   const i = Ie(t);
   return i === "manual" ? (t.drives ?? []).map((n, r) => {
     const o = e?.states[n.model_entity ?? ""];
@@ -61984,7 +61984,7 @@ function O2(e, t, a) {
   }) : i === "qnap" ? Br(a, Di(t, a)?.id, "drives").map((n) => {
     const r = e?.states[n.entities.drive_smart_status ?? ""], o = e?.states[n.entities.drive_temp ?? ""], s = r?.attributes.Model ?? o?.attributes.Model;
     return { id: n.id, name: n.id, model: typeof s == "string" ? s : void 0, smart: r, temperature: o };
-  }) : Yu(t, a).filter(
+  }) : Ju(t, a).filter(
     (n) => Cn(a, n.id).some((r) => r.platform === "synology_dsm" && (gn(r, "disk_status") || r.entity_id.endsWith("_disk_status")))
   ).map((n) => {
     const r = (o, s = "sensor") => Rr(e, a, n.id, o, s);
@@ -62000,7 +62000,7 @@ function O2(e, t, a) {
     };
   });
 }
-function Ju(e, t, a) {
+function Qu(e, t, a) {
   const i = Ls(e, t, a), n = i.map((l) => Yt(l.total)), r = i.map((l) => Yt(l.used));
   if (!i.length || n.some((l) => l === void 0) || r.some((l) => l === void 0))
     return { total: void 0, used: void 0, percent: void 0 };
@@ -62028,7 +62028,7 @@ const rn = class rn extends ve {
   static async getStubConfig(t) {
     const a = { type: `custom:${this.editorTag.replace(/-editor$/, "")}` };
     if (t) {
-      const i = await Ho(t), n = wr(i, "synology_dsm"), r = wr(i, "qnap");
+      const i = await Lo(t), n = wr(i, "synology_dsm"), r = wr(i, "qnap");
       n.length + r.length === 1 && (a.server = (n[0] ?? r[0]).id, r.length && (a.nas_source = "qnap"));
     }
     return a;
@@ -62083,7 +62083,7 @@ const rn = class rn extends ve {
     const a = ++this.requestVersion;
     this.registryError = "";
     try {
-      const i = await Ho(this.hass, t);
+      const i = await Lo(this.hass, t);
       a === this.requestVersion && (this.registries = i);
     } catch (i) {
       a === this.requestVersion && (this.registryError = `Cannot load Home Assistant registries: ${i instanceof Error ? i.message : String(i)}`);
@@ -62096,7 +62096,7 @@ const rn = class rn extends ve {
     if (t.server !== void 0 && typeof t.server != "string") throw new Error("Select a NAS device registry ID");
     for (const a of ["name", "network_interface", "management_url"])
       if (t[a] !== void 0 && typeof t[a] != "string") throw new Error(`${a} must be a string`);
-    if (t.management_url && !Zu(t.management_url)) throw new Error("NAS management URL must use HTTP or HTTPS");
+    if (t.management_url && !Yu(t.management_url)) throw new Error("NAS management URL must use HTTP or HTTPS");
     for (const a of ["volumes", "drives"]) {
       const i = t[a];
       if (i !== void 0) {
@@ -62135,7 +62135,7 @@ const rn = class rn extends ve {
           if (o && a[r] && (!/^[a-z_]+\.[a-z0-9_]+$/.test(o) || !a[r].includes(o.split(".")[0])))
             throw new Error(`Unsupported entity for container ${r}: ${o}`);
         }
-        const n = Id(i);
+        const n = Rd(i);
         if (n.running === n.stopped)
           throw new Error("Running and stopped states must be different");
       }
@@ -62156,7 +62156,7 @@ const rn = class rn extends ve {
     return Di(this.config, this.registries);
   }
   getEntity(t, a) {
-    return F2(this.hass, this.config, this.registries, t, a);
+    return O2(this.hass, this.config, this.registries, t, a);
   }
   openMoreInfo(t) {
     tr(this, "hass-more-info", { entityId: t });
@@ -62203,7 +62203,7 @@ const rn = class rn extends ve {
     </div>${n ? u`<div class="header-actions">${n}</div>` : g}</div>`;
   }
 };
-rn.styles = H2, rn.editorTag = "", rn.properties = {
+rn.styles = I2, rn.editorTag = "", rn.properties = {
   hass: { attribute: !1 },
   config: { attribute: !1 },
   registries: { state: !0 },
@@ -62219,7 +62219,7 @@ let ja = rn;
 const bt = wn(class extends zn {
   constructor(e) {
     if (super(e), e.type !== $t.PROPERTY && e.type !== $t.ATTRIBUTE && e.type !== $t.BOOLEAN_ATTRIBUTE) throw Error("The `live` directive is not allowed on child or event bindings");
-    if (!gd(e)) throw Error("`live` bindings can only contain a single expression");
+    if (!yd(e)) throw Error("`live` bindings can only contain a single expression");
   }
   render(e) {
     return e;
@@ -62234,7 +62234,7 @@ const bt = wn(class extends zn {
     } else if (e.type === $t.ATTRIBUTE && a.getAttribute(i) === t + "") return ht;
     return os(e), t;
   }
-}), q2 = {
+}), U2 = {
   cpu_usage: "CPU usage",
   ram_usage: "Memory usage",
   system_temperature: "Temperature",
@@ -62249,7 +62249,7 @@ const bt = wn(class extends zn {
   system_status: "Status",
   model: "Model",
   software_version: "Firmware version"
-}, U2 = {
+}, K2 = {
   overview: "Overview",
   storage: "Storage Volumes & Disks",
   docker: "Docker"
@@ -62278,7 +62278,7 @@ const bt = wn(class extends zn {
     const a = ++this.requestVersion;
     this.error = "", this.loading = !0;
     try {
-      const i = await Ho(this.hass, t);
+      const i = await Lo(this.hass, t);
       a === this.requestVersion && (this.registries = i);
     } catch (i) {
       a === this.requestVersion && (this.error = `${this.t("Automatic discovery")}: ${i instanceof Error ? i.message : String(i)}`);
@@ -62382,7 +62382,7 @@ const bt = wn(class extends zn {
   }
   render() {
     if (!this._config) return u``;
-    const t = this._config, a = Ie(t), i = wr(this.registries, a), n = a === "synology_dsm" ? "Synology NAS" : "QNAP NAS", r = R2(this.registries), o = t.type.includes("dashboard"), s = t.type.includes("docker"), l = wi(t), _ = (o || s) && l !== "disabled", d = Object.entries(U2).filter(([p]) => l !== "disabled" || p !== "docker"), c = o || t.type.includes("server") ? Object.entries(q2).filter(([p]) => a === "synology_dsm" ? !["system_status", "memory_used"].includes(p) : p !== "security_status") : [], m = a === "qnap" ? Br(this.registries, Di(t, this.registries)?.id, "network") : [];
+    const t = this._config, a = Ie(t), i = wr(this.registries, a), n = a === "synology_dsm" ? "Synology NAS" : "QNAP NAS", r = B2(this.registries), o = t.type.includes("dashboard"), s = t.type.includes("docker"), l = wi(t), _ = (o || s) && l !== "disabled", d = Object.entries(K2).filter(([p]) => l !== "disabled" || p !== "docker"), c = o || t.type.includes("server") ? Object.entries(U2).filter(([p]) => a === "synology_dsm" ? !["system_status", "memory_used"].includes(p) : p !== "security_status") : [], m = a === "qnap" ? Br(this.registries, Di(t, this.registries)?.id, "network") : [];
     return u`<div class="card-config">
       ${this.error ? u`<div role="alert">${this.error}</div>` : g}
       ${s ? g : u`<label>NAS: ${this.t("System")}<select aria-label=${`NAS: ${this.t("System")}`} .value=${bt(a)}
@@ -62477,13 +62477,13 @@ xr.properties = {
     a { color:var(--primary-color,#0086d6); }
   `;
 let xi = xr;
-class K2 extends xi {
-}
 class W2 extends xi {
 }
 class G2 extends xi {
 }
 class Z2 extends xi {
+}
+class Y2 extends xi {
 }
 function Hn(e, t) {
   if (!customElements.get(e))
@@ -62500,7 +62500,7 @@ function Hn(e, t) {
 }
 function Fr(e) {
   Hn(e.tag, e.card), Hn(e.editorTag, e.editor);
-  for (const t of Hd.filter((a) => a.targetTag === e.tag)) {
+  for (const t of Id.filter((a) => a.targetTag === e.tag)) {
     const n = class n extends e.card {
     };
     n.editorTag = t.editorTag;
@@ -62540,11 +62540,11 @@ const Ks = class Ks extends ja {
     }}><span class="detail-label">${this.t(t)}</span><span class="detail-val">${a}</span></div>`;
   }
   render() {
-    const t = Ie(this.config), a = t === "synology_dsm", i = t === "manual", n = this.getActiveDevice(), r = (B, k) => a || !!k || !!this.config.entities?.[B], o = (B, k = 0) => i && B?.attributes.unit_of_measurement !== "%" ? void 0 : Gu(B, k), s = this.getEntity("cpu_usage", "sensor"), l = this.getEntity("ram_usage", "sensor"), _ = this.getEntity("system_temperature", "sensor"), d = this.getEntity("uptime", "sensor"), c = this.getEntity("security_status", "binary_sensor"), m = this.getEntity("system_status", "sensor"), p = this.getEntity("model", "sensor"), y = this.getEntity("software_version", "sensor"), b = this.getEntity("memory_total_real", "sensor"), z = this.getEntity("memory_available_real", "sensor"), v = this.getEntity("memory_used", "sensor"), w = this.getEntity("network_rx"), f = this.getEntity("network_tx"), S = Yt(b), H = Yt(z), $ = v || this.config.entities?.memory_used ? Yt(v) : S !== void 0 && H !== void 0 ? Math.max(0, S - H) : void 0, W = r("ram_usage", l) || ["memory_total_real", "memory_available_real", "memory_used"].some((B) => this.config.entities?.[B]), ne = i && !this.config.entities?.ram_usage && S !== void 0 && S > 0 && $ !== void 0 ? Math.round(Math.max(0, Math.min(100, $ / S * 100))) : o(l), I = S !== void 0 && $ !== void 0 ? `${Je($, "GB", this.hass)} / ${Je(S, "GB", this.hass)}` : a ? this.t(Se.capacity) : [
+    const t = Ie(this.config), a = t === "synology_dsm", i = t === "manual", n = this.getActiveDevice(), r = (B, k) => a || !!k || !!this.config.entities?.[B], o = (B, k = 0) => i && B?.attributes.unit_of_measurement !== "%" ? void 0 : Zu(B, k), s = this.getEntity("cpu_usage", "sensor"), l = this.getEntity("ram_usage", "sensor"), _ = this.getEntity("system_temperature", "sensor"), d = this.getEntity("uptime", "sensor"), c = this.getEntity("security_status", "binary_sensor"), m = this.getEntity("system_status", "sensor"), p = this.getEntity("model", "sensor"), y = this.getEntity("software_version", "sensor"), b = this.getEntity("memory_total_real", "sensor"), z = this.getEntity("memory_available_real", "sensor"), v = this.getEntity("memory_used", "sensor"), w = this.getEntity("network_rx"), f = this.getEntity("network_tx"), S = Yt(b), H = Yt(z), $ = v || this.config.entities?.memory_used ? Yt(v) : S !== void 0 && H !== void 0 ? Math.max(0, S - H) : void 0, W = r("ram_usage", l) || ["memory_total_real", "memory_available_real", "memory_used"].some((B) => this.config.entities?.[B]), ne = i && !this.config.entities?.ram_usage && S !== void 0 && S > 0 && $ !== void 0 ? Math.round(Math.max(0, Math.min(100, $ / S * 100))) : o(l), I = S !== void 0 && $ !== void 0 ? `${Je($, "GB", this.hass)} / ${Je(S, "GB", this.hass)}` : a ? this.t(Se.capacity) : [
       S !== void 0 ? `${this.t("Total")}: ${Je(S, "GB", this.hass)}` : "",
       H !== void 0 ? `${this.t("Free")}: ${Je(H, "GB", this.hass)}` : "",
       $ !== void 0 ? `${this.t("Used")}: ${Je($, "GB", this.hass)}` : ""
-    ].filter(Boolean).join(" • "), T = Ju(this.hass, this.config, this.registries), U = this.getEntity("storage_usage", "sensor"), re = U || this.config.entities?.storage_usage ? o(U) : T.percent, A = this.t(Ce(c) ? c.state === "off" ? "Safe" : "Attention needed" : "Unavailable"), ae = Zu(this.config.management_url || n?.configuration_url), D = this.config.entities?.model ? this.stateText(p) : n?.model, M = this.config.entities?.software_version ? this.stateText(y) : n?.sw_version, N = (B) => bn(B, this.hass), Y = a || !!U || !!this.config.entities?.storage_usage || Ls(this.hass, this.config, this.registries).some((B) => B.total || B.used) || i && this.config.volumes?.some((B) => B.total_entity || B.used_entity);
+    ].filter(Boolean).join(" • "), T = Qu(this.hass, this.config, this.registries), U = this.getEntity("storage_usage", "sensor"), re = U || this.config.entities?.storage_usage ? o(U) : T.percent, A = this.t(Ce(c) ? c.state === "off" ? "Safe" : "Attention needed" : "Unavailable"), ae = Yu(this.config.management_url || n?.configuration_url), D = this.config.entities?.model ? this.stateText(p) : n?.model, M = this.config.entities?.software_version ? this.stateText(y) : n?.sw_version, N = (B) => bn(B, this.hass), Y = a || !!U || !!this.config.entities?.storage_usage || Ls(this.hass, this.config, this.registries).some((B) => B.total || B.used) || i && this.config.volumes?.some((B) => B.total_entity || B.used_entity);
     return u`<ha-card>
       ${this.renderHeader(
       this.config.title || this.config.name || n?.name_by_user || n?.name || (a ? "Synology NAS" : t === "qnap" ? "QNAP NAS" : "NAS"),
@@ -62573,17 +62573,17 @@ const Ks = class Ks extends ja {
     </ha-card>`;
   }
 };
-Ks.editorTag = $d;
-let Io = Ks;
+Ks.editorTag = Ed;
+let Ho = Ks;
 Fr({
-  tag: Cd,
-  editorTag: $d,
-  card: Io,
-  editor: K2
+  tag: $d,
+  editorTag: Ed,
+  card: Ho,
+  editor: W2
 });
 const Ws = class Ws extends ja {
   render() {
-    const t = Ls(this.hass, this.config, this.registries), a = Ju(this.hass, this.config, this.registries), i = O2(this.hass, this.config, this.registries), n = Ie(this.config) === "synology_dsm", r = n || t.some((o) => o.total || o.used) || Ie(this.config) === "manual" && !!this.config.volumes?.some((o) => o.total_entity || o.used_entity);
+    const t = Ls(this.hass, this.config, this.registries), a = Qu(this.hass, this.config, this.registries), i = q2(this.hass, this.config, this.registries), n = Ie(this.config) === "synology_dsm", r = n || t.some((o) => o.total || o.used) || Ie(this.config) === "manual" && !!this.config.volumes?.some((o) => o.total_entity || o.used_entity);
     return u`<ha-card>
       ${this.renderHeader(
       this.config.title || this.t("Storage Volumes & Disks"),
@@ -62597,7 +62597,7 @@ const Ws = class Ws extends ja {
         <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(100, a.percent ?? 0)}%"></div></div>
       </div>` : g}
       <div class="item-list">${t.map((o, s) => {
-      const l = Yt(o.total), _ = Yt(o.used), d = Ie(this.config) === "manual" ? this.config.volumes?.[s] : void 0, c = d && o.usage?.attributes.unit_of_measurement !== "%" ? void 0 : Gu(o.usage), m = o.usage || d?.usage_entity ? c : l !== void 0 && _ !== void 0 && l > 0 ? Math.round(Math.min(100, _ / l * 100)) : void 0, p = n || o.total || o.used || d?.total_entity || d?.used_entity, y = n || o.usage || d?.usage_entity || l !== void 0 && _ !== void 0, b = o.usage ?? o.total ?? o.used ?? o.status, z = Ce(o.status) ? o.status.state : "Unavailable", v = ["normal", "healthy"].includes(z.toLowerCase()), w = d ? ["warning", "bad", "failed", "critical", "faulty", "degraded"].includes(z.toLowerCase()) : !v;
+      const l = Yt(o.total), _ = Yt(o.used), d = Ie(this.config) === "manual" ? this.config.volumes?.[s] : void 0, c = d && o.usage?.attributes.unit_of_measurement !== "%" ? void 0 : Zu(o.usage), m = o.usage || d?.usage_entity ? c : l !== void 0 && _ !== void 0 && l > 0 ? Math.round(Math.min(100, _ / l * 100)) : void 0, p = n || o.total || o.used || d?.total_entity || d?.used_entity, y = n || o.usage || d?.usage_entity || l !== void 0 && _ !== void 0, b = o.usage ?? o.total ?? o.used ?? o.status, z = Ce(o.status) ? o.status.state : "Unavailable", v = ["normal", "healthy"].includes(z.toLowerCase()), w = d ? ["warning", "bad", "failed", "critical", "faulty", "degraded"].includes(z.toLowerCase()) : !v;
       return u`<div class="list-row" style="flex-direction:column;align-items:stretch;gap:8px">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
             <button class="btn" ?disabled=${!b} @click=${() => b && this.openMoreInfo(b.entity_id)}>${Ra(Yn, 16)} ${o.device.name_by_user || o.device.name}</button>
@@ -62637,13 +62637,13 @@ const Ws = class Ws extends ja {
     </ha-card>`;
   }
 };
-Ws.editorTag = Td;
-let Ro = Ws;
+Ws.editorTag = Dd;
+let Io = Ws;
 Fr({
-  tag: Ed,
-  editorTag: Td,
-  card: Ro,
-  editor: W2
+  tag: Td,
+  editorTag: Dd,
+  card: Io,
+  editor: G2
 });
 const Ar = class Ar extends ja {
   constructor() {
@@ -62654,7 +62654,7 @@ const Ar = class Ar extends ja {
   }
   getManualContainers() {
     return (this.config.containers ?? []).filter((t) => t.status_entity).map((t, a) => {
-      const i = this.hass?.states[t.status_entity], n = Id(t), r = this.hass?.states[t.cpu_entity ?? ""], o = this.hass?.states[t.memory_entity ?? ""], s = Yt(o);
+      const i = this.hass?.states[t.status_entity], n = Rd(t), r = this.hass?.states[t.cpu_entity ?? ""], o = this.hass?.states[t.memory_entity ?? ""], s = Yt(o);
       return {
         id: `manual-${a}`,
         name: t.name || String(i?.attributes.friendly_name || t.status_entity),
@@ -62730,12 +62730,12 @@ const Ar = class Ar extends ja {
     return u`<div class="row-right" style="gap:4px">
       ${t.restartEntityId ? u`<button class=${a ? "btn-icon" : "btn"} ?disabled=${!t.available || !this.actionAvailable(t.restartEntityId)}
         title="${this.t("Restart")} ${t.name}" @click=${() => this.handleRestart(t)}>
-        ${Ra(LA, a ? 14 : 13)}${a ? g : this.t("Restart")}
+        ${Ra(HA, a ? 14 : 13)}${a ? g : this.t("Restart")}
       </button>` : g}
       ${i ? u`<button class=${a ? "btn-icon" : t.isRunning ? "btn" : "btn btn-primary"}
         ?disabled=${!t.available || !t.isRunning && !t.isStopped || !this.actionAvailable(i)} title="${this.t(t.isRunning ? "Stop" : "Start")} ${t.name}"
         @click=${() => this.handlePower(t)}>
-        ${Ra(VA, a ? 14 : 13)}${a ? g : this.t(t.isRunning ? "Stop" : "Start")}
+        ${Ra(LA, a ? 14 : 13)}${a ? g : this.t(t.isRunning ? "Stop" : "Start")}
       </button>` : g}
     </div>`;
   }
@@ -62747,7 +62747,7 @@ const Ar = class Ar extends ja {
       ${this.renderHeader(
       this.config.title || `Docker ${this.t("Containers")}`,
       `${i} ${this.t("Running")} • ${n} ${this.t("Stopped")} • ${r} ${this.t("Unavailable")}`,
-      tu,
+      au,
       u`<span class="badge ${i ? "badge-online" : "badge-standby"}">${i} ${this.t("Running")}</span>`
     )}
       ${this.renderErrors()}
@@ -62761,7 +62761,7 @@ const Ar = class Ar extends ja {
           <button class="tab-btn ${this._filter === "stopped" ? "active" : ""}" @click=${() => this._filter = "stopped"}>${this.t("Stopped")} (${n})</button>
         </div>
         <button class="btn-icon" title=${this.t("Toggle view mode")} @click=${() => this._viewMode = this._viewMode === "grid" ? "list" : "grid"}>
-          ${Ra(this._viewMode === "grid" ? IA : HA, 18)}
+          ${Ra(this._viewMode === "grid" ? RA : IA, 18)}
         </button>
       </div>
       ${this._viewMode === "grid" ? u`<div class="container-grid">${o.map((s) => u`
@@ -62787,30 +62787,30 @@ const Ar = class Ar extends ja {
     </ha-card>`;
   }
 };
-Ar.editorTag = Nd, Ar.properties = {
+Ar.editorTag = Vd, Ar.properties = {
   ...ja.properties,
   _filter: { state: !0 },
   _viewMode: { state: !0 }
 };
-let Bo = Ar;
-function Y2() {
+let Ro = Ar;
+function J2() {
   Fr({
-    tag: Dd,
-    editorTag: Nd,
-    card: Bo,
-    editor: G2
+    tag: Nd,
+    editorTag: Vd,
+    card: Ro,
+    editor: Z2
   });
 }
-const J2 = [
+const Q2 = [
   { key: "overview", label: "Overview", icon: ys },
   { key: "storage", label: "Storage Volumes & Disks", icon: Yn },
-  { key: "docker", label: "Docker", icon: tu }
+  { key: "docker", label: "Docker", icon: au }
 ], Pr = class Pr extends ja {
   constructor() {
     super(), this._activeTab = "overview";
   }
   render() {
-    const t = this.getActiveDevice(), a = J2.filter((r) => (wi(this.config) !== "disabled" || r.key !== "docker") && (!this.config.tabs || this.config.tabs.includes(r.key))), i = a.some((r) => r.key === this._activeTab) ? this._activeTab : a[0]?.key, n = (r) => ({ ...this.config, title: void 0, type: `custom:mushroom-addition-nas-${r}-card`, embedded: !0 });
+    const t = this.getActiveDevice(), a = Q2.filter((r) => (wi(this.config) !== "disabled" || r.key !== "docker") && (!this.config.tabs || this.config.tabs.includes(r.key))), i = a.some((r) => r.key === this._activeTab) ? this._activeTab : a[0]?.key, n = (r) => ({ ...this.config, title: void 0, type: `custom:mushroom-addition-nas-${r}-card`, embedded: !0 });
     return u`<ha-card style="gap:12px">
       ${this.renderHeader(this.config.title || `${this.config.name || t?.name_by_user || t?.name || (Ie(this.config) === "synology_dsm" ? "Synology NAS" : Ie(this.config) === "qnap" ? "QNAP NAS" : "NAS")}`, this.t("Overview"), ys)}
       ${this.renderErrors()}
@@ -62826,16 +62826,16 @@ const J2 = [
     </ha-card>`;
   }
 };
-Pr.editorTag = Ld, Pr.properties = { ...ja.properties, _activeTab: { state: !0 } };
-let Fo = Pr;
+Pr.editorTag = Hd, Pr.properties = { ...ja.properties, _activeTab: { state: !0 } };
+let Bo = Pr;
 Fr({
-  tag: Vd,
-  editorTag: Ld,
-  card: Fo,
-  editor: Z2
+  tag: Ld,
+  editorTag: Hd,
+  card: Bo,
+  editor: Y2
 });
-Y2();
-function Qu(e, t = [], a = []) {
+J2();
+function Xu(e, t = [], a = []) {
   const i = [.../* @__PURE__ */ new Set([...t, ...a, ...Object.keys(e?.states ?? {})])], n = (o) => o.startsWith("sensor.") && e?.states[o] && !["unknown", "unavailable"].includes(e.states[o].state), r = i.find((o) => n(o) && Array.isArray(e.states[o].attributes.prices)) ?? i.find(n) ?? "sensor.electricity_prices";
   return {
     type: "custom:mushroom-addition-smart-saving",
@@ -62852,17 +62852,17 @@ function Qu(e, t = [], a = []) {
     }
   };
 }
-var Q2 = Object.defineProperty, X2 = Object.getOwnPropertyDescriptor, $n = (e, t, a, i) => {
-  for (var n = i > 1 ? void 0 : i ? X2(t, a) : t, r = e.length - 1, o; r >= 0; r--)
+var X2 = Object.defineProperty, eM = Object.getOwnPropertyDescriptor, $n = (e, t, a, i) => {
+  for (var n = i > 1 ? void 0 : i ? eM(t, a) : t, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = (i ? o(t, a, n) : o(n)) || n);
-  return i && n && Q2(t, a, n), n;
+  return i && n && X2(t, a, n), n;
 };
-const eM = [
+const tM = [
   { name: "Morning", startHour: 6, endHour: 12 },
   { name: "Afternoon", startHour: 12, endHour: 18 },
   { name: "Evening", startHour: 18, endHour: 24 },
   { name: "Night", startHour: 0, endHour: 6 }
-], tM = 1e3, Te = 76, Ut = 986, Bi = Ut - Te, aM = [
+], aM = 1e3, Te = 76, Ut = 986, Bi = Ut - Te, iM = [
   { key: "plan", name: "Plan", color: "var(--success-color, #43a047)", kind: "schedule" },
   { key: "applied", name: "Applied sale", color: "var(--warning-color, #ef8b37)", kind: "schedule" },
   { key: "ev", name: "EV", color: "var(--info-color, #8b5cf6)", kind: "schedule" },
@@ -62871,7 +62871,7 @@ const eM = [
 function Kt(e, t) {
   return t ? e?.states[t] : void 0;
 }
-function iM(e, t) {
+function nM(e, t) {
   if (t) {
     if (t.entity) {
       const a = Kt(e, t.entity);
@@ -62882,10 +62882,10 @@ function iM(e, t) {
     return it(t.value);
   }
 }
-function nM(e, t) {
+function rM(e, t) {
   return new Intl.DateTimeFormat(Dt(t), { weekday: "short", month: "short", day: "numeric" }).format(e);
 }
-function rM(e, t) {
+function oM(e, t) {
   return new Intl.DateTimeFormat(Dt(t), { hour: "2-digit", minute: "2-digit" }).format(e);
 }
 function D_(e, t) {
@@ -62894,19 +62894,19 @@ function D_(e, t) {
 function Da(e, t) {
   return e.toFixed(t === "EUR/kWh" ? 3 : 1);
 }
-function oM(e, t) {
+function sM(e, t) {
   return !e || !t ? [] : Ts(e, t, t.valueField);
 }
 let Ga = class extends Be {
   constructor() {
-    super(...arguments), this.descriptor = ut("mushroom-addition-smart-saving"), this.configError = "", this.expanded = !1, this.dateLabel = (e) => nM(e, this.hass?.language), this.timeLabel = (e) => rM(e, this.hass?.language);
+    super(...arguments), this.descriptor = ut("mushroom-addition-smart-saving"), this.configError = "", this.expanded = !1, this.dateLabel = (e) => rM(e, this.hass?.language), this.timeLabel = (e) => oM(e, this.hass?.language);
   }
   shouldUpdate(e) {
     return e.size !== 1 || !e.has("hass") || $i(e.get("hass"), this.hass, this.config);
   }
   setConfig(e) {
     try {
-      const t = e && typeof e == "object" && "entity" in e && !("price" in e) ? { ...e, price: { entity: e.entity, path: "prices" } } : e, a = yd(t);
+      const t = e && typeof e == "object" && "entity" in e && !("price" in e) ? { ...e, price: { entity: e.entity, path: "prices" } } : e, a = bd(t);
       this.config = {
         ...Tr(a),
         ...a,
@@ -62923,13 +62923,13 @@ let Ga = class extends Be {
     return document.createElement("mushroom-addition-editor");
   }
   static getStubConfig(e, t = [], a = []) {
-    return Qu(e, t, a);
+    return Xu(e, t, a);
   }
   getCardSize() {
     return 8;
   }
   entityValue(e) {
-    return iM(this.hass, e);
+    return nM(this.hass, e);
   }
   t(e) {
     return h(this.hass, e);
@@ -62956,17 +62956,17 @@ let Ga = class extends Be {
     ) : void 0, p = Array.isArray(m) || m !== null && typeof m == "object", y = s ? !p || Array.isArray(m) && m.length > 0 && c.length === 0 ? `${this.t("Price")}: ${this.t("Invalid data source or field mapping")}` : c.length === 0 ? this.t("No published intervals") : `${this.t("Timeline")}: ${this.t("No published intervals")}` : `${this.t("Price")}: ${this.t("Source missing")}`, b = gr(c, i, r).map((Q) => ({
       ...Q,
       value: g_(Q.value, l, _)
-    })), z = Ou(b), v = Math.min(0, ...b.map((Q) => Q.value)), w = Math.max(0, ...b.map((Q) => Q.value)), f = Math.max((w - v) * 0.12, 0.01), S = v < 0 ? v - f : 0, H = w > 0 ? w + f : 0.01, $ = H - S, W = (Q) => 151 - (Q - S) / $ * 112, ne = b.length ? b.reduce((Q, Le) => Q.value <= Le.value ? Q : Le) : void 0, I = b.length ? b.reduce((Q, Le) => Q.value >= Le.value ? Q : Le) : void 0, T = e.battery?.current, U = Kt(t, T?.entity), re = T?.field ? ge(U?.attributes, T.field) : U?.state, A = T?.entity ? U ? it(re) : void 0 : it(T?.value), ae = Kt(t, e.battery?.forecast?.entity), D = b2(ae, e.battery?.forecast ?? {}), M = D.filter(
+    })), z = qu(b), v = Math.min(0, ...b.map((Q) => Q.value)), w = Math.max(0, ...b.map((Q) => Q.value)), f = Math.max((w - v) * 0.12, 0.01), S = v < 0 ? v - f : 0, H = w > 0 ? w + f : 0.01, $ = H - S, W = (Q) => 151 - (Q - S) / $ * 112, ne = b.length ? b.reduce((Q, Le) => Q.value <= Le.value ? Q : Le) : void 0, I = b.length ? b.reduce((Q, Le) => Q.value >= Le.value ? Q : Le) : void 0, T = e.battery?.current, U = Kt(t, T?.entity), re = T?.field ? ge(U?.attributes, T.field) : U?.state, A = T?.entity ? U ? it(re) : void 0 : it(T?.value), ae = Kt(t, e.battery?.forecast?.entity), D = v2(ae, e.battery?.forecast ?? {}), M = D.filter(
       (Q) => Q.time >= i && Q.time <= r
-    ), N = ae ? ge(ae.attributes, e.battery?.forecast?.path) : void 0, Y = !e.battery?.forecast?.entity || !ae ? `${this.t("Forecast")}: ${this.t("Source missing")}` : !Array.isArray(N) || N.length > 0 && D.length === 0 ? `${this.t("Forecast")}: ${this.t("Invalid data source or field mapping")}` : D.length === 0 ? `${this.t("Forecast")}: ${this.t("No data")}` : M.length === 0 ? `${this.t("Forecast")}: ${this.t("Timeline")}: ${this.t("No data")}` : "", B = this.entityValue(e.battery?.horizon), k = B !== void 0 ? a + B * 60 * 60 * 1e3 : void 0, V = k === void 0 ? void 0 : M.find((Q) => Math.abs(Q.time - k) < 6e4), E = this.entityValue(e.battery?.target), ee = aM.map((Q) => {
+    ), N = ae ? ge(ae.attributes, e.battery?.forecast?.path) : void 0, Y = !e.battery?.forecast?.entity || !ae ? `${this.t("Forecast")}: ${this.t("Source missing")}` : !Array.isArray(N) || N.length > 0 && D.length === 0 ? `${this.t("Forecast")}: ${this.t("Invalid data source or field mapping")}` : D.length === 0 ? `${this.t("Forecast")}: ${this.t("No data")}` : M.length === 0 ? `${this.t("Forecast")}: ${this.t("Timeline")}: ${this.t("No data")}` : "", B = this.entityValue(e.battery?.horizon), k = B !== void 0 ? a + B * 60 * 60 * 1e3 : void 0, V = k === void 0 ? void 0 : M.find((Q) => Math.abs(Q.time - k) < 6e4), E = this.entityValue(e.battery?.target), ee = iM.map((Q) => {
       const Le = e.tracks?.[Q.key], ai = Kt(t, Le?.entity);
       if (!Le?.entity || !ai)
         return { ...Q, status: "missing", blocks: [], solar: [], unit: Le?.unit };
       if (Q.kind === "solar") {
-        const ll = gr(oM(ai, Le), i, r), _l = ge(ai.attributes, Le.path), kc = Array.isArray(_l) && (_l.length === 0 || ll.length > 0);
-        return { ...Q, status: kc ? "valid" : "invalid", blocks: [], solar: ll, unit: Le.unit };
+        const ll = gr(sM(ai, Le), i, r), _l = ge(ai.attributes, Le.path), fc = Array.isArray(_l) && (_l.length === 0 || ll.length > 0);
+        return { ...Q, status: fc ? "valid" : "invalid", blocks: [], solar: ll, unit: Le.unit };
       }
-      const Ni = v2(ai, Le);
+      const Ni = k2(ai, Le);
       return {
         ...Q,
         status: Ni.validSource ? "valid" : "invalid",
@@ -62974,11 +62974,11 @@ let Ga = class extends Be {
         solar: [],
         unit: Le.unit
       };
-    }), ye = w2(
+    }), ye = z2(
       c.map((Q) => ({ ...Q, value: g_(Q.value, l, _) })),
       i,
       r,
-      e.periods?.length ? e.periods : eM.map((Q) => ({ ...Q, name: this.t(Q.name) }))
+      e.periods?.length ? e.periods : tM.map((Q) => ({ ...Q, name: this.t(Q.name) }))
     ).slice(0, 8), ke = this.renderTimeline({
       now: a,
       windowStart: i,
@@ -63080,7 +63080,7 @@ let Ga = class extends Be {
     for (const A = new Date(I); A.getTime() < i; A.setDate(A.getDate() + 1))
       ne.push(A.getTime());
     const T = y.map((A) => `${n(A.time).toFixed(1)},${S(A.value).toFixed(1)}`).join(" "), U = (A) => Math.max(1.5, (A.end - A.start) / (i - a) * Bi - 1), re = 390;
-    return P`<svg class="timeline" viewBox="0 0 ${tM} 536" role="img" aria-label="${this.t("Price")}, ${this.t("Battery")}, ${this.t("Energy")}: ${this.dateLabel(a)} – ${this.dateLabel(i)}">
+    return P`<svg class="timeline" viewBox="0 0 ${aM} 536" role="img" aria-label="${this.t("Price")}, ${this.t("Battery")}, ${this.t("Energy")}: ${this.dateLabel(a)} – ${this.dateLabel(i)}">
       <text x="${Te}" y="20" class="chart-title">${this.t("Published electricity prices")} · ${e.displayUnit}</text>
       ${ne.map((A) => P`<line x1="${n(A)}" x2="${n(A)}" y1="28" y2="519" class="grid-line"></line>
         <text x="${n(A) + 5}" y="39" class="day-label">${this.dateLabel(A)}</text>`)}
@@ -63221,10 +63221,10 @@ $n([
 Ga = $n([
   nt("mushroom-addition-smart-saving")
 ], Ga);
-var sM = Object.defineProperty, Xu = (e, t, a, i) => {
+var lM = Object.defineProperty, ec = (e, t, a, i) => {
   for (var n = void 0, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = o(t, a, n) || n);
-  return n && sM(t, a, n), n;
+  return n && lM(t, a, n), n;
 };
 const Gs = class Gs extends Be {
   constructor() {
@@ -63234,7 +63234,7 @@ const Gs = class Gs extends Be {
     return mn(t, a, i);
   }
   setConfig(t) {
-    const a = mn(this.hass), i = wu({
+    const a = mn(this.hass), i = zu({
       sources: a.sources,
       categories: a.categories,
       ...t
@@ -63287,7 +63287,7 @@ const Gs = class Gs extends Be {
   render() {
     const t = this.config;
     if (!t) return g;
-    const a = zu(t, this.hass?.states ?? {}), i = this.dataset.filter ?? "all", n = i === "all" || t.categories.some((c) => c.id === i) ? i : "all", r = n === "all" ? a.entries : a.entries.filter((c) => c.category.id === n), o = t.timeZone || this.hass?.config?.time_zone || Intl.DateTimeFormat().resolvedOptions().timeZone, s = /* @__PURE__ */ new Map();
+    const a = ju(t, this.hass?.states ?? {}), i = this.dataset.filter ?? "all", n = i === "all" || t.categories.some((c) => c.id === i) ? i : "all", r = n === "all" ? a.entries : a.entries.filter((c) => c.category.id === n), o = t.timeZone || this.hass?.config?.time_zone || Intl.DateTimeFormat().resolvedOptions().timeZone, s = /* @__PURE__ */ new Map();
     for (const c of r) {
       const m = this.formatDate(c.timestamp, o);
       s.set(m, [...s.get(m) ?? [], c]);
@@ -63369,10 +63369,10 @@ Gs.styles = [Be.styles, ce`
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
   `];
 let vn = Gs;
-Xu([
+ec([
   O({ attribute: !1 })
 ], vn.prototype, "hass");
-Xu([
+ec([
   O({ attribute: !1 })
 ], vn.prototype, "config");
 const N_ = (e, t, a, i = "mdi:information-outline") => {
@@ -63380,14 +63380,14 @@ const N_ = (e, t, a, i = "mdi:information-outline") => {
   return n || !t ? u`<ha-icon .icon=${n || i}></ha-icon>` : u`<ha-state-icon .hass=${e} .stateObj=${t}
     ._config=${e?.config} ._connection=${e?.connection} ._entities=${e?.entities}></ha-state-icon>`;
 };
-var lM = Object.defineProperty, Hs = (e, t, a, i) => {
+var _M = Object.defineProperty, Hs = (e, t, a, i) => {
   for (var n = void 0, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = o(t, a, n) || n);
-  return n && lM(t, a, n), n;
+  return n && _M(t, a, n), n;
 };
 const Zs = class Zs extends Be {
   constructor() {
-    super(...arguments), this.descriptor = ut(Ud);
+    super(...arguments), this.descriptor = ut(Kd);
   }
   shouldUpdate(t) {
     return t.size !== 1 || !t.has("hass") || $i(t.get("hass"), this.hass, this.config);
@@ -63400,7 +63400,7 @@ const Zs = class Zs extends Be {
   }
   setConfig(t) {
     const a = { ...t, nodes: t.nodes ?? (t.entity ? [{ id: "source", label: "Entity", entities: [{ entity: t.entity }] }] : []) };
-    xo(a), this.config = structuredClone({
+    So(a), this.config = structuredClone({
       ...Tr(a),
       ...a,
       name: t.name ?? t.title ?? "Energy Entityworkflow"
@@ -63484,7 +63484,7 @@ const Zs = class Zs extends Be {
   render() {
     if (!this.config) return g;
     const t = this.config.presentation === "graph";
-    return u`<ha-card class=${this.config.card_shadow ? "card-shadow" : ""} dir=${Ch(this.hass?.language)}>
+    return u`<ha-card class=${this.config.card_shadow ? "card-shadow" : ""} dir=${$h(this.hass?.language)}>
       ${this.renderSharedHeading()}
       <div class=${t ? "graph-scroll" : ""} tabindex=${t ? "0" : "-1"}
         role=${t ? "region" : g} aria-label=${h(this.hass, "Entity workflow")}>
@@ -63540,7 +63540,7 @@ Hs([
 Hs([
   F()
 ], Ai.prototype, "geometry");
-const _M = "0.7.6", qt = {
+const dM = "0.7.6", qt = {
   SUNRISE_START: 360,
   // 6:00
   SUNRISE_END: 480,
@@ -63549,7 +63549,7 @@ const _M = "0.7.6", qt = {
   // 18:00
   SUNSET_END: 1200
   // 20:00
-}, dM = [
+}, uM = [
   "templow",
   "temperature_low",
   "temp_low",
@@ -63577,11 +63577,11 @@ const _M = "0.7.6", qt = {
   layout: "default",
   animationQuality: "medium"
 };
-function uM() {
+function cM() {
   const e = /* @__PURE__ */ new Date(), t = e.getHours(), a = e.getMinutes(), i = t * 60 + a;
   return i >= qt.SUNRISE_START && i < qt.SUNRISE_END ? { type: "sunrise", progress: (i - qt.SUNRISE_START) / 120 } : i >= qt.SUNRISE_END && i < qt.DAY_END ? { type: "day", progress: (i - qt.SUNRISE_END) / 600 } : i >= qt.DAY_END && i < qt.SUNSET_END ? { type: "sunset", progress: (i - qt.DAY_END) / 120 } : { type: "night", progress: 0 };
 }
-function cM(e, t, a) {
+function mM(e, t, a) {
   if (e.type === "sunrise") {
     const i = e.progress;
     return {
@@ -63606,11 +63606,11 @@ function cM(e, t, a) {
       y: a * 0.3
     };
 }
-function ec(e, t, a, i) {
-  const n = cM(e, t, a), r = (o) => Math.min(100, Math.max(0, o)) / 100;
+function tc(e, t, a, i) {
+  const n = mM(e, t, a), r = (o) => Math.min(100, Math.max(0, o)) / 100;
   return typeof i?.x == "number" && (n.x = t * r(i.x)), typeof i?.y == "number" && (n.y = a * r(i.y)), n;
 }
-function mM(e) {
+function pM(e) {
   if (e.type === "sunrise") {
     const t = e.progress, a = { r: 26, g: 26, b: 46 }, i = { r: 255, g: 160, b: 122 }, n = { r: 255, g: 215, b: 0 };
     return {
@@ -63642,7 +63642,7 @@ function mM(e) {
   }
   return null;
 }
-function pM(e, t = "24h", a = "AM", i = "PM") {
+function hM(e, t = "24h", a = "AM", i = "PM") {
   if (!e) return "";
   const r = new Date(e).getHours();
   if (t === "12h") {
@@ -63651,7 +63651,7 @@ function pM(e, t = "24h", a = "AM", i = "PM") {
   }
   return `${r.toString().padStart(2, "0")}:00`;
 }
-function hM(e, t = /* @__PURE__ */ new Date()) {
+function gM(e, t = /* @__PURE__ */ new Date()) {
   let a = t.toDateString();
   return e.map((i) => {
     const n = new Date(i.datetime).toDateString(), r = n !== a;
@@ -63667,7 +63667,7 @@ function H_(e, t) {
     month: "short"
   });
 }
-function Oo(e, t = "24h", a = "AM", i = "PM") {
+function Fo(e, t = "24h", a = "AM", i = "PM") {
   if (!e) return "";
   const n = typeof e == "string" ? new Date(e) : e;
   let r = n.getHours();
@@ -63702,7 +63702,7 @@ function I_(e, t = null, a = null, i = null) {
     hasSunData: !!(n && r)
   };
 }
-const tc = 3600 * 1e3, zr = 24 * tc, tt = tc;
+const ac = 3600 * 1e3, zr = 24 * ac, tt = ac;
 function R_(e, t) {
   return e + Math.floor((t - e) / zr) * zr;
 }
@@ -63721,7 +63721,7 @@ function B_(e, t = /* @__PURE__ */ new Date()) {
     const o = i + zr;
     return a < n + tt ? { type: "sunset", progress: (a - (n - tt)) / (2 * tt) } : a >= o - tt ? { type: "sunrise", progress: (a - (o - tt)) / (2 * tt) } : { type: "night", progress: 0 };
   }
-  return uM();
+  return cM();
 }
 const F_ = {
   ms: 1,
@@ -63739,26 +63739,26 @@ function vi(e, t, a) {
   const i = (o) => o.toLowerCase().replace(/[^a-z]/g, ""), n = F_[i(t)], r = F_[i(a)];
   return !n || !r || n === r ? e : e * n / r;
 }
-const gM = ["auto", "ms", "kmh", "mph", "kn"], O_ = { ms: "m/s", kmh: "km/h", mph: "mph", kn: "kn" }, ac = (e) => e.toLowerCase().replace(/[^a-z]/g, "");
+const yM = ["auto", "ms", "kmh", "mph", "kn"], O_ = { ms: "m/s", kmh: "km/h", mph: "mph", kn: "kn" }, ic = (e) => e.toLowerCase().replace(/[^a-z]/g, "");
 function Is(e, t = "auto") {
   return t !== "auto" && O_[t] ? O_[t] : e || "m/s";
 }
-function yM(e, t) {
-  return ["kmh", "kmph", "mph", "kn", "kt", "kts", "knots"].includes(ac(t)) ? Math.round(e) : Math.round(e * 10) / 10;
+function bM(e, t) {
+  return ["kmh", "kmph", "mph", "kn", "kt", "kts", "knots"].includes(ic(t)) ? Math.round(e) : Math.round(e * 10) / 10;
 }
 function q_(e, t, a = "auto") {
   if (e == null) return null;
   const i = t.wind_speed_unit || "m/s", n = Is(i, a);
-  return yM(vi(e, i, n), n);
+  return bM(vi(e, i, n), n);
 }
-function ic(e, t) {
-  const a = ac(e);
+function nc(e, t) {
+  const a = ic(e);
   return a === "kmh" || a === "kmph" ? t("wind_unit_kmh") : a === "ms" || a === "mps" ? t("wind_unit_ms") : a === "mph" ? t("wind_unit_mph") : ["kn", "kt", "kts", "knots"].includes(a) ? t("wind_unit_knots") : a === "fts" || a === "ftps" ? t("wind_unit_fts") : e;
 }
-function bM(e, t, a) {
-  return ic(Is(e.wind_speed_unit || "m/s", t), a);
+function vM(e, t, a) {
+  return nc(Is(e.wind_speed_unit || "m/s", t), a);
 }
-function vM(e, t) {
+function kM(e, t) {
   const a = { weekday: "short", day: "numeric", month: "long" };
   try {
     return e.toLocaleDateString(t, a);
@@ -63766,7 +63766,7 @@ function vM(e, t) {
     return e.toLocaleDateString(void 0, a);
   }
 }
-function kM(e, t, a, i) {
+function fM(e, t, a, i) {
   if (t === "12h") {
     let n = e.getHours();
     const r = String(e.getMinutes()).padStart(2, "0"), o = n >= 12 ? i : a;
@@ -63776,7 +63776,7 @@ function kM(e, t, a, i) {
     return `${n}:${r}`;
   }
 }
-function nc(e, t) {
+function rc(e, t) {
   const a = e?.querySelector(t);
   if (!a) return null;
   const i = (n) => {
@@ -63785,7 +63785,7 @@ function nc(e, t) {
   };
   return a.addEventListener("wheel", i, { passive: !1 }), () => a.removeEventListener("wheel", i);
 }
-const fM = ce`
+const wM = ce`
   :host {
     display: block;
     --card-width: 100%;
@@ -64063,7 +64063,7 @@ const fM = ce`
   r: parseInt(e.slice(1, 3), 16),
   g: parseInt(e.slice(3, 5), 16),
   b: parseInt(e.slice(5, 7), 16)
-}), wM = {
+}), zM = {
   clear: {
     day: [J("#2E6FC7"), J("#8CC2EC")],
     night: [J("#060A1C"), J("#1A2546")],
@@ -64131,8 +64131,8 @@ const fM = ce`
 }, U_ = {
   sunrise: [J("#5A7BBE"), J("#F8B77E")],
   sunset: [J("#3D4E8E"), J("#F08E5C")]
-}, zM = J("#4A5366"), jM = J("#1A202C"), SM = J("#FFC9A6"), xM = J("#6F5874");
-function AM(e) {
+}, jM = J("#4A5366"), SM = J("#1A202C"), xM = J("#FFC9A6"), AM = J("#6F5874");
+function PM(e) {
   switch (e.toLowerCase()) {
     case "sunny":
     case "clear":
@@ -64173,23 +64173,23 @@ function kt(e, t) {
 }
 const K_ = (e) => e * e * (3 - 2 * e);
 function Or(e, t) {
-  const a = e.toLowerCase() === "clear-night" ? "clear" : AM(e), i = wM[a], n = Math.max(0, Math.min(1, t.progress)), r = t.type === "night" || e.toLowerCase() === "clear-night";
+  const a = e.toLowerCase() === "clear-night" ? "clear" : PM(e), i = zM[a], n = Math.max(0, Math.min(1, t.progress)), r = t.type === "night" || e.toLowerCase() === "clear-night";
   let o = 1, s = 0;
   r ? o = 0 : t.type === "sunrise" ? (o = K_(n), s = Math.sin(n * Math.PI) * i.twilight) : t.type === "sunset" && (o = K_(1 - n), s = Math.sin(n * Math.PI) * i.twilight);
-  const l = t.type === "sunrise" ? U_.sunrise : U_.sunset, _ = la(la(i.night[0], i.day[0], o), l[0], s), d = la(la(i.night[1], i.day[1], o), l[1], s), c = la(la(zM, i.cloudLight, o), SM, s * 0.6), m = la(la(jM, i.cloudShade, o), xM, s * 0.5);
+  const l = t.type === "sunrise" ? U_.sunrise : U_.sunset, _ = la(la(i.night[0], i.day[0], o), l[0], s), d = la(la(i.night[1], i.day[1], o), l[1], s), c = la(la(jM, i.cloudLight, o), xM, s * 0.6), m = la(la(SM, i.cloudShade, o), AM, s * 0.5);
   return { top: _, bottom: d, cloudLight: c, cloudShade: m, coverage: i.coverage, daylight: o };
 }
-const qo = {
+const Oo = {
   high: { fps: 60, particles: 1, cloudLayers: 3, details: !0, maxDpr: 3 },
   medium: { fps: 30, particles: 0.6, cloudLayers: 2, details: !0, maxDpr: 2 },
   low: { fps: 20, particles: 0.35, cloudLayers: 1, details: !1, maxDpr: 1 }
 };
-function rc(e = "high") {
-  return { ...qo[e] };
+function oc(e = "high") {
+  return { ...Oo[e] };
 }
 class ct {
   constructor(t) {
-    this.cloudField = null, this.quality = rc(), this.children = [], this.ctx = t;
+    this.cloudField = null, this.quality = oc(), this.children = [], this.ctx = t;
   }
   /**
    * Share the cloud field and quality settings with this animation and its nested ones
@@ -64240,7 +64240,7 @@ const W_ = [
   { base: 0.24, reach: 0.22, phase: 2.1, speed: -0.7, alpha: 0.7 },
   { base: 0.42, reach: 0.18, phase: 4.3, speed: 0.5, alpha: 0.5 }
 ];
-class PM {
+class MM {
   constructor() {
     this.ray = null;
   }
@@ -64271,18 +64271,18 @@ class PM {
     return this.ray = t, t;
   }
 }
-const MM = 29.530588853, CM = Date.UTC(2e3, 0, 6, 18, 14), ho = 22, $M = 0.9;
-function EM(e = /* @__PURE__ */ new Date()) {
-  const a = (e.getTime() - CM) / 864e5 / MM % 1;
+const CM = 29.530588853, $M = Date.UTC(2e3, 0, 6, 18, 14), ho = 22, EM = 0.9;
+function TM(e = /* @__PURE__ */ new Date()) {
+  const a = (e.getTime() - $M) / 864e5 / CM % 1;
   return a < 0 ? a + 1 : a;
 }
-function TM(e) {
+function DM(e) {
   let t = e;
   return () => (t = (t * 1664525 + 1013904223) % 4294967296, t / 4294967296);
 }
-class DM {
+class NM {
   constructor() {
-    this.stars = [], this.starsKey = "", this.moonSprite = null, this.moonKey = "", this.shootingStar = null, this.nextShootingStar = 0, this.aurora = new PM();
+    this.stars = [], this.starsKey = "", this.moonSprite = null, this.moonKey = "", this.shootingStar = null, this.nextShootingStar = 0, this.aurora = new MM();
   }
   draw(t, a, i, n, r, o, s, l = !1) {
     this.drawStars(t, a, i, n, s), l && this.aurora.draw(t, a, i, n, s), s.details && this.drawShootingStar(t, a, i, n), this.drawMoon(t, r, o, n);
@@ -64300,7 +64300,7 @@ class DM {
     t.restore();
   }
   createStars(t, a, i) {
-    const n = TM(Math.round(t) * 31 + Math.round(a)), r = Math.max(20, Math.min(260, Math.round(t * a / 1600 * i)));
+    const n = DM(Math.round(t) * 31 + Math.round(a)), r = Math.max(20, Math.min(260, Math.round(t * a / 1600 * i)));
     this.stars = [];
     for (let o = 0; o < r; o++) {
       const s = n();
@@ -64329,7 +64329,7 @@ class DM {
     }, this.nextShootingStar = a + 8 + Math.random() * 14);
     const r = this.shootingStar;
     if (!r) return;
-    const o = (a - r.start) / $M;
+    const o = (a - r.start) / EM;
     if (o >= 1) {
       this.shootingStar = null;
       return;
@@ -64369,9 +64369,9 @@ class DM {
     return c.addColorStop(0, "rgba(0, 0, 0, 0)"), c.addColorStop(1, "rgba(60, 60, 70, 0.18)"), s.fillStyle = c, s.fillRect(0, 0, r, r), s.restore(), o;
   }
 }
-let NM = class extends ct {
+let VM = class extends ct {
   constructor() {
-    super(...arguments), this.nightSky = new DM();
+    super(...arguments), this.nightSky = new NM();
   }
   /**
    * Draw sunny weather
@@ -64384,11 +64384,11 @@ let NM = class extends ct {
    * @param aurora - Northern lights in the night sky
    */
   draw(t, a, i, n, r, o, s = !1) {
-    const l = Date.now() * 1e-3, _ = ec(n, a, i, r), d = _.x, c = _.y;
+    const l = Date.now() * 1e-3, _ = tc(n, a, i, r), d = _.x, c = _.y;
     if (n.type === "day" || n.type === "sunrise" || n.type === "sunset") {
       const m = n.type !== "day";
       this.quality.details && this.drawSunRays(d, c, l, m), this.drawSun(d, c, l), this.quality.details && this.drawLensFlare(d, c, a, i, m), (n.type === "sunrise" || n.type === "sunset") && this.drawHorizonReflection(d, c, i, l);
-    } else n.type === "night" && this.nightSky.draw(this.ctx, l, a, i, _, o ?? EM(), this.quality, s);
+    } else n.type === "night" && this.nightSky.draw(this.ctx, l, a, i, _, o ?? TM(), this.quality, s);
     this.drawClouds(l, a, i, 0.3);
   }
   /**
@@ -64550,7 +64550,7 @@ const Z_ = [
   { density: 2.5, speed: [22, 34], size: [2.4, 3.6], alpha: 0.85 },
   { density: 0.9, speed: [38, 55], size: [4, 6.5], alpha: 0.95 }
 ], Fi = 32;
-let VM = class extends ct {
+let LM = class extends ct {
   constructor() {
     super(...arguments), this.snowflakes = [], this.lastTime = 0, this.flakesKey = "", this.sprite = null;
   }
@@ -64617,7 +64617,7 @@ let VM = class extends ct {
     return this.sprite = t, t;
   }
 };
-class oc extends ct {
+class sc extends ct {
   /**
    * Draw cloudy weather
    * @param time - Animation time (unused, for interface compatibility)
@@ -64635,11 +64635,11 @@ const Y_ = [
   { y: 0.58, speed: -8, alpha: 0.6, scaleY: 1.1, seed: 2 },
   { y: 0.85, speed: 12, alpha: 0.6, scaleY: 1.3, seed: 3 }
 ], si = 600, Rn = 140;
-function LM(e) {
+function HM(e) {
   let t = e * 7919;
   return () => (t = (t * 1664525 + 1013904223) % 4294967296, t / 4294967296);
 }
-let HM = class extends ct {
+let IM = class extends ct {
   constructor() {
     super(...arguments), this.sprites = [], this.spriteKey = "";
   }
@@ -64677,7 +64677,7 @@ let HM = class extends ct {
     const r = n.getContext("2d");
     if (!r) return n;
     r.scale(i, i);
-    const o = LM(t), s = 16;
+    const o = HM(t), s = 16;
     for (let l = 0; l < s; l++) {
       const _ = l / s * si + o() * 30, d = Rn * (0.35 + o() * 0.3), c = Rn * (0.2 + o() * 0.3), m = 0.25 + o() * 0.65;
       for (const p of [-si, 0, si]) {
@@ -64695,8 +64695,8 @@ const Bn = [
   { density: 1.6, speed: [280, 360], size: [1.5, 2.2], alpha: 0.6 },
   { density: 0.9, speed: [420, 520], size: [2.6, 3.4], alpha: 0.85 },
   { density: 0.4, speed: [600, 720], size: [3.8, 5.2], alpha: 1 }
-], IM = 1400, Oi = 32;
-let RM = class extends ct {
+], RM = 1400, Oi = 32;
+let BM = class extends ct {
   constructor(t) {
     super(t), this.hailStones = [], this.stonesKey = "", this.lastTime = 0, this.sprite = null, this.rainyAnimation = new Rs(t), this.children.push(this.rainyAnimation);
   }
@@ -64717,7 +64717,7 @@ let RM = class extends ct {
     const n = this.getSprite(), r = Date.now() * 1e-3, o = this.lastTime > 0 ? Math.min(r - this.lastTime, 0.1) : 1 / 60;
     this.lastTime = r, this.ctx.save();
     for (const s of this.hailStones) {
-      s.bounces > 0 && (s.vy += IM * o), s.x += s.vx * o, s.y += s.vy * o, s.y >= s.ground && s.vy > 0 && (s.bounces < 2 ? (s.y = s.ground, s.vy = -s.vy * (s.bounces === 0 ? 0.3 : 0.25), s.vx = (Math.random() - 0.5) * 60, s.bounces++) : this.resetStone(s, t, a)), s.x > t + 10 && (s.x -= t + 20), s.x < -10 && (s.x += t + 20);
+      s.bounces > 0 && (s.vy += RM * o), s.x += s.vx * o, s.y += s.vy * o, s.y >= s.ground && s.vy > 0 && (s.bounces < 2 ? (s.y = s.ground, s.vy = -s.vy * (s.bounces === 0 ? 0.3 : 0.25), s.vx = (Math.random() - 0.5) * 60, s.bounces++) : this.resetStone(s, t, a)), s.x > t + 10 && (s.x -= t + 20), s.x < -10 && (s.x += t + 20);
       const l = s.size * 2;
       this.ctx.globalAlpha = Bn[s.layer].alpha, this.ctx.drawImage(n, s.x - l / 2, s.y - l / 2, l, l);
     }
@@ -64754,7 +64754,7 @@ let RM = class extends ct {
   }
 };
 const Fn = 0.4;
-let BM = class extends ct {
+let FM = class extends ct {
   constructor(t) {
     super(t), this.bolts = [], this.flashActive = !1, this.rainyAnimation = new Rs(t), this.children.push(this.rainyAnimation);
   }
@@ -64841,7 +64841,7 @@ function Q_(e) {
   let t = e;
   return () => (t = (t * 1664525 + 1013904223) % 4294967296, t / 4294967296);
 }
-class FM {
+class OM {
   constructor() {
     this.sprites = [], this.spriteKey = "", this.clouds = [], this.cloudsSize = "", this.coverage = -1, this.targetCoverage = 0, this.light = { r: 255, g: 255, b: 255 }, this.shade = { r: 200, g: 210, b: 220 }, this.lastTime = 0, this.wind = 1, this.targetWind = 1, this.drift = Ta.map(() => 0);
   }
@@ -64928,8 +64928,8 @@ class FM {
     }), i;
   }
 }
-const OM = 16, qM = 0.8;
-class UM {
+const qM = 16, UM = 0.8;
+class KM {
   constructor() {
     this.sprite = null, this.spriteDpr = 0, this.beads = [], this.runners = [], this.size = "", this.lastTime = 0;
   }
@@ -64947,7 +64947,7 @@ class UM {
       this.runners.push(this.createRunner(i, n, _, !0));
     t.save(), this.beads = this.beads.filter((y) => (y.age += p) < y.life);
     for (const y of this.beads) {
-      const b = Math.min(1, y.age / 0.25, (y.life - y.age) / qM);
+      const b = Math.min(1, y.age / 0.25, (y.life - y.age) / UM);
       this.drawDrop(t, l, y.x, y.y, y.r, y.r, b);
     }
     for (const y of this.runners) {
@@ -64993,7 +64993,7 @@ class UM {
    */
   getSprite(t) {
     if (this.sprite && this.spriteDpr === t) return this.sprite;
-    const a = OM, i = document.createElement("canvas");
+    const a = qM, i = document.createElement("canvas");
     i.width = i.height = Math.ceil(a * 2 * t);
     const n = i.getContext("2d");
     if (this.sprite = i, this.spriteDpr = t, !n) return i;
@@ -65006,8 +65006,8 @@ class UM {
     return _.addColorStop(0, "rgba(255, 255, 255, 0.95)"), _.addColorStop(1, "rgba(255, 255, 255, 0)"), n.fillStyle = _, n.fillRect(0, 0, a * 2, a * 2), i;
   }
 }
-const KM = ["#6E9F3A", "#86B34A", "#5C8A2E"], WM = ["#D9892B", "#E3B23C", "#B8522A"];
-class GM {
+const WM = ["#6E9F3A", "#86B34A", "#5C8A2E"], GM = ["#D9892B", "#E3B23C", "#B8522A"];
+class ZM {
   constructor() {
     this.gusts = [], this.leaves = [], this.sprites = [], this.spriteKey = "", this.lastTime = 0;
   }
@@ -65077,7 +65077,7 @@ class GM {
    * Leaf sprites in the colors of the season (autumn tones from September to November)
    */
   ensureSprites(t) {
-    const a = (/* @__PURE__ */ new Date()).getMonth(), i = a >= 8 && a <= 10 ? WM : KM, n = `${i[0]}@${t}`;
+    const a = (/* @__PURE__ */ new Date()).getMonth(), i = a >= 8 && a <= 10 ? GM : WM, n = `${i[0]}@${t}`;
     n !== this.spriteKey && (this.spriteKey = n, this.sprites = i.map((r) => {
       const o = document.createElement("canvas");
       o.width = Math.ceil(24 * t), o.height = Math.ceil(12 * t);
@@ -65086,7 +65086,7 @@ class GM {
     }));
   }
 }
-class ZM extends ct {
+class YM extends ct {
   /**
    * Draw sunny weather
    * @param time - Animation time (unused, for interface compatibility)
@@ -65096,7 +65096,7 @@ class ZM extends ct {
    * @param positionOverride - Optional fixed sun/moon position (percent of width/height)
    */
   draw(t, a, i, n, r) {
-    const o = Date.now() * 1e-3, s = ec(n, a, i, r), l = s.x, _ = s.y;
+    const o = Date.now() * 1e-3, s = tc(n, a, i, r), l = s.x, _ = s.y;
     n.type === "day" || n.type === "sunrise" || n.type === "sunset" ? (this.drawSun(l, _, o), (n.type === "sunrise" || n.type === "sunset") && this.drawHorizonReflection(l, _, i, o)) : n.type === "night" && this.drawNightSky(a, i, o, s), this.drawClouds(o, a, i, 0.3);
   }
   /**
@@ -65174,7 +65174,7 @@ class ZM extends ct {
     this.ctx.globalAlpha = 0.9, this.ctx.fillStyle = "#F0F0F0", this.ctx.beginPath(), this.ctx.arc(r, o, 25, 0, Math.PI * 2), this.ctx.fill(), this.ctx.fillStyle = "#1a1a2e", this.ctx.beginPath(), this.ctx.arc(r - 8, o - 5, 22, 0, Math.PI * 2), this.ctx.fill(), this.ctx.globalAlpha = 1;
   }
 }
-class sc extends ct {
+class lc extends ct {
   constructor() {
     super(...arguments), this.rainDrops = [], this.lastTime = 0;
   }
@@ -65244,7 +65244,7 @@ class sc extends ct {
     ), this.ctx.closePath(), this.ctx.fill(), this.ctx.stroke(), this.ctx.restore();
   }
 }
-class YM extends ct {
+class JM extends ct {
   constructor() {
     super(...arguments), this.snowflakes = [], this.lastTime = 0;
   }
@@ -65312,7 +65312,7 @@ class YM extends ct {
     this.ctx.stroke(), this.ctx.restore();
   }
 }
-class JM extends ct {
+class QM extends ct {
   /**
    * Draw foggy weather
    * @param time - Animation time (unused, for interface compatibility)
@@ -65334,7 +65334,7 @@ class JM extends ct {
     }
   }
 }
-class QM extends ct {
+class XM extends ct {
   constructor() {
     super(...arguments), this.hailStones = [];
   }
@@ -65396,9 +65396,9 @@ class QM extends ct {
   }
 }
 const On = 0.4;
-class XM extends ct {
+class eC extends ct {
   constructor(t) {
-    super(t), this.bolts = [], this.flashActive = !1, this.rainyAnimation = new sc(t);
+    super(t), this.bolts = [], this.flashActive = !1, this.rainyAnimation = new lc(t);
   }
   /**
    * Draw thunderstorm weather
@@ -65474,9 +65474,9 @@ class XM extends ct {
     }
   }
 }
-class eC {
+class tC {
   constructor(t) {
-    this.sunny = new ZM(t), this.rainy = new sc(t), this.snowy = new YM(t), this.cloudy = new oc(t), this.foggy = new JM(t), this.hail = new QM(t), this.thunderstorm = new XM(t);
+    this.sunny = new YM(t), this.rainy = new lc(t), this.snowy = new JM(t), this.cloudy = new sc(t), this.foggy = new QM(t), this.hail = new XM(t), this.thunderstorm = new eC(t);
   }
   draw(t, a, i, n, r) {
     const o = Date.now();
@@ -65521,16 +65521,16 @@ class eC {
     }
   }
 }
-const tC = {
+const aC = {
   rainy: 0.6,
   rain: 0.6,
   pouring: 1,
   "lightning-rainy": 0.85,
   "snowy-rainy": 0.4
-}, aC = /* @__PURE__ */ new Set(["sunny", "clear", "clear-night", "partlycloudy", "cloudy", "windy", "windy-variant"]), X_ = 8;
-class iC {
+}, iC = /* @__PURE__ */ new Set(["sunny", "clear", "clear-night", "partlycloudy", "cloudy", "windy", "windy-variant"]), X_ = 8;
+class nC {
   constructor(t) {
-    this.canvas = null, this.ctx = null, this.animationFrame = null, this.animations = {}, this.cloudField = new FM(), this.glassDrops = new UM(), this.wind = new GM(), this.classic = null, this.resizeObserver = null, this.intersectionObserver = null, this.onScreen = !0, this.qualityName = "high", this.quality = rc("high"), this.lastFrameTime = -1 / 0, this.reducedMotion = typeof window < "u" && typeof window.matchMedia == "function" ? window.matchMedia("(prefers-reduced-motion: reduce)") : null, this.stillKey = "", this.width = 0, this.height = 0, this.container = null, this.handleVisibilityChange = () => {
+    this.canvas = null, this.ctx = null, this.animationFrame = null, this.animations = {}, this.cloudField = new OM(), this.glassDrops = new KM(), this.wind = new ZM(), this.classic = null, this.resizeObserver = null, this.intersectionObserver = null, this.onScreen = !0, this.qualityName = "high", this.quality = oc("high"), this.lastFrameTime = -1 / 0, this.reducedMotion = typeof window < "u" && typeof window.matchMedia == "function" ? window.matchMedia("(prefers-reduced-motion: reduce)") : null, this.stillKey = "", this.width = 0, this.height = 0, this.container = null, this.handleVisibilityChange = () => {
       this.updateRunning();
     }, this.handleMotionChange = () => {
       this.stillKey = "", this.stopAnimation(), this.updateRunning();
@@ -65578,19 +65578,19 @@ class iC {
     document.hidden || !this.onScreen ? this.stopAnimation() : this.startAnimation();
   }
   applyQuality(t) {
-    if (t === this.qualityName || !qo[t]) return;
+    if (t === this.qualityName || !Oo[t]) return;
     const a = this.quality.maxDpr;
-    this.qualityName = t, Object.assign(this.quality, qo[t]), this.quality.maxDpr !== a && this.resizeCanvas();
+    this.qualityName = t, Object.assign(this.quality, Oo[t]), this.quality.maxDpr !== a && this.resizeCanvas();
   }
   initializeAnimations() {
     this.ctx && (this.animations = {
-      sunny: new NM(this.ctx),
+      sunny: new VM(this.ctx),
       rainy: new Rs(this.ctx),
-      snowy: new VM(this.ctx),
-      cloudy: new oc(this.ctx),
-      foggy: new HM(this.ctx),
-      hail: new RM(this.ctx),
-      thunderstorm: new BM(this.ctx)
+      snowy: new LM(this.ctx),
+      cloudy: new sc(this.ctx),
+      foggy: new IM(this.ctx),
+      hail: new BM(this.ctx),
+      thunderstorm: new FM(this.ctx)
     }, this.classic = null, Object.values(this.animations).forEach((t) => {
       t.attach(this.cloudField, this.quality);
     }));
@@ -65626,7 +65626,7 @@ class iC {
     this.ctx.clearRect(0, 0, l, _);
     const d = i.toLowerCase();
     if (s === "classic") {
-      this.classic ??= new eC(this.ctx), this.classic.draw(d, l, _, n, r);
+      this.classic ??= new tC(this.ctx), this.classic.draw(d, l, _, n, r);
       return;
     }
     const c = d === "windy" || d === "windy-variant", m = Math.max(0, a.windSpeed ?? 0);
@@ -65672,11 +65672,11 @@ class iC {
         break;
     }
     const p = Date.now() * 1e-3, y = c ? Math.max(0.6, (m - X_) / 10) : (m - X_) / 10;
-    if (a.windEffects !== !1 && aC.has(d) && y > 0) {
+    if (a.windEffects !== !1 && iC.has(d) && y > 0) {
       const z = Or(d, n).daylight;
       this.wind.draw(this.ctx, p, l, _, Math.min(1, y), c, z, this.quality);
     }
-    const b = tC[d];
+    const b = aC[d];
     b && a.raindrops !== !1 && this.quality.details && this.glassDrops.draw(this.ctx, p, l, _, b, this.quality);
   }
 }
@@ -65684,7 +65684,7 @@ const an = (e) => {
   const t = typeof e == "string" ? parseFloat(e) : e;
   return typeof t == "number" && Number.isFinite(t) ? t : null;
 };
-function nC(e) {
+function rC(e) {
   const t = [], a = [];
   let i = 0, n = 0, r = 0;
   for (const s of e) {
@@ -65697,7 +65697,7 @@ function nC(e) {
   const o = {};
   return t.length > 0 && (o.wind_speed = Math.max(...t)), a.length > 0 && (o.wind_gust_speed = Math.max(...a)), r > 0 && (Math.abs(i) > 1e-9 || Math.abs(n) > 1e-9) && (o.wind_bearing = Math.round((Math.atan2(i, n) * 180 / Math.PI + 360) % 360)), o;
 }
-function rC(e, t, a) {
+function oC(e, t, a) {
   const i = (o) => {
     const s = an(o);
     return s === null ? null : Math.round(vi(s, t, a));
@@ -65711,7 +65711,7 @@ function rC(e, t, a) {
   };
 }
 const nn = 36e5;
-function oC(e, t = /* @__PURE__ */ new Date()) {
+function sC(e, t = /* @__PURE__ */ new Date()) {
   for (const a of e) {
     const i = a.map((s) => ({ text: s.detailed_description?.trim() ?? "", time: new Date(s.datetime).getTime() })).filter(({ time: s }) => !Number.isNaN(s)).sort((s, l) => s.time - l.time);
     if (!i.some(({ text: s }) => s)) continue;
@@ -65722,7 +65722,7 @@ function oC(e, t = /* @__PURE__ */ new Date()) {
   }
   return null;
 }
-function sC(e, t) {
+function lC(e, t) {
   if (t <= 1 || e.length === 0) return e.map(({ item: r }) => r);
   const a = e.findIndex(({ time: r }) => new Date(r).getHours() % t === 0), i = a !== -1 && e[a].time < e[0].time + t * nn ? a : 0, n = [];
   for (let r = i; r < e.length; r++)
@@ -65732,7 +65732,7 @@ function sC(e, t) {
     return l.length > 1 ? { ..._, precipitation_probability: Math.max(...l) } : _;
   });
 }
-class lC {
+class _C {
   constructor(t) {
     this.hourlyForecast = [], this.dailyForecast = [], this.twiceDailyForecast = [], this.subscriptions = [], this.generation = 0, this.retryTimers = [], this.onUpdate = t;
   }
@@ -65779,7 +65779,7 @@ class lC {
    * The provider's text forecast for the current period, when it has one
    */
   getForecastDescription(t, a = /* @__PURE__ */ new Date()) {
-    return oC(
+    return sC(
       [this.twiceDailyForecast, this.dailyForecast, this.hourlyForecast, t?.forecast ?? []],
       a
     );
@@ -65790,7 +65790,7 @@ class lC {
    */
   getHourlyForecast(t, a, i = 1) {
     const n = Math.max(1, Math.floor(Number(t ?? ue.hourlyForecastHours)) || ue.hourlyForecastHours), r = this.hourlyForecast && this.hourlyForecast.length > 0, o = r ? this.hourlyForecast : a?.forecast ?? [], s = Date.now(), l = o.map((m) => ({ item: m, time: new Date(m.datetime).getTime() })).filter(({ time: m }) => !Number.isNaN(m)).sort((m, p) => m.time - p.time).filter(({ time: m }) => m > s - nn), _ = l.length < 2 || l[1].time - l[0].time <= 3 * nn, d = r || _ ? l : l.filter(({ time: m }) => m < s + 24 * nn), c = Math.max(1, Math.floor(Number(i)) || 1);
-    return sC(d, c).slice(0, n);
+    return lC(d, c).slice(0, n);
   }
   getDailyForecast(t, a) {
     const i = Math.max(1, Math.floor(Number(t ?? ue.dailyForecastDays)));
@@ -65816,7 +65816,7 @@ class lC {
         ..._,
         temperature: Math.max(...d),
         templow: _.templow ?? _.native_templow ?? Math.min(...d),
-        ...nC(m)
+        ...rC(m)
       };
       return c.length > 0 && (p.precipitation_probability = Math.max(...c)), p;
     }).slice(0, i);
@@ -65831,7 +65831,7 @@ function vt(e, t) {
   const n = a.attributes?.unit_of_measurement;
   return { value: i, unit: typeof n == "string" ? n : null };
 }
-function _C(e, t) {
+function dC(e, t) {
   if (!e || !t) return null;
   const a = e.states[t];
   return a ? a.state : null;
@@ -65842,12 +65842,12 @@ function Na(e, t) {
   return a ? a.attributes : {};
 }
 function ed(e, t, a, i) {
-  const n = _C(e, t), r = Na(e, t), o = r.condition || n || "sunny";
+  const n = dC(e, t), r = Na(e, t), o = r.condition || n || "sunny";
   let s = null;
   if (a.templowAttribute && r[a.templowAttribute] != null)
     s = r[a.templowAttribute];
   else {
-    for (const T of dM)
+    for (const T of uM)
       if (r[T] != null) {
         s = r[T];
         break;
@@ -65870,15 +65870,15 @@ function ed(e, t, a, i) {
     dewPoint: w?.value ?? (r.dew_point != null ? r.dew_point : null),
     aqi: f?.value ?? null,
     forecast: r.forecast || r.forecast_hourly || i || [],
-    friendlyName: r.friendly_name || zA.t("weather"),
+    friendlyName: r.friendly_name || jA.t("weather"),
     templow: s,
     windSpeedUnit: $,
     precipitation: b?.value ?? null,
     precipitationUnit: b?.unit ?? null
   };
 }
-const vo = 36e5, dC = 50;
-function lc(e) {
+const vo = 36e5, uC = 50;
+function _c(e) {
   switch ((e || "").toLowerCase()) {
     case "rainy":
     case "rain":
@@ -65899,19 +65899,19 @@ function lc(e) {
   }
 }
 function td(e) {
-  const t = lc(e.condition);
-  return t || ((e.precipitation_probability ?? 0) >= dC ? "rain" : null);
+  const t = _c(e.condition);
+  return t || ((e.precipitation_probability ?? 0) >= uC ? "rain" : null);
 }
-function uC(e, t, a) {
+function cC(e, t, a) {
   const i = e.map((o) => ({ time: new Date(o.datetime), entry: o })).filter(({ time: o }) => !Number.isNaN(o.getTime())).sort((o, s) => o.time.getTime() - s.time.getTime());
   if (i.length < 2 || i[1].time.getTime() - i[0].time.getTime() > 3 * vo) return [];
   const n = t.getTime() - vo, r = t.getTime() + a * vo;
   return i.filter(({ time: o }) => o.getTime() > n && o.getTime() <= r);
 }
-function cC(e, t, a = /* @__PURE__ */ new Date(), i = 12) {
-  const n = uC(t, a, i);
+function mC(e, t, a = /* @__PURE__ */ new Date(), i = 12) {
+  const n = cC(t, a, i);
   if (n.length === 0) return null;
-  const r = lc(e);
+  const r = _c(e);
   if (r) {
     const o = n.find(({ time: s, entry: l }) => s.getTime() > a.getTime() && !td(l));
     return o ? { kind: r, type: "stop", time: o.time, hours: i } : { kind: r, type: "continues", time: null, hours: i };
@@ -65923,7 +65923,7 @@ function cC(e, t, a = /* @__PURE__ */ new Date(), i = 12) {
   }
   return null;
 }
-const mC = {
+const pC = {
   wind: P`
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="20" height="20">
       <path fill="none" stroke="currentColor" stroke-dasharray="35 22" stroke-linecap="round" stroke-miterlimit="10" stroke-width="3" d="M43.64 20a5 5 0 113.61 8.46h-35.5">
@@ -65988,11 +65988,11 @@ const mC = {
       <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="3" d="M17 47c6-9 13-16 22-21"/>
     </svg>
   `
-}, _c = (e) => P`
+}, dc = (e) => P`
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" style="transform: rotate(${e}deg); transform-origin: center;">
     <path fill="currentColor" d="M12 2L4 20L12 17L20 20L12 2Z"/>
   </svg>
-`, pC = {
+`, hC = {
   sunny: P`
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
       <g>
@@ -66315,11 +66315,11 @@ const mC = {
   `
 };
 function Va(e, ...t) {
-  const a = mC[e];
+  const a = pC[e];
   return typeof a == "function" ? a(...t) : a || "";
 }
-function Uo(e) {
-  return e && pC[e.toLowerCase()] || "";
+function qo(e) {
+  return e && hC[e.toLowerCase()] || "";
 }
 const ko = /* @__PURE__ */ new WeakMap();
 function En(e, t) {
@@ -66334,10 +66334,10 @@ function En(e, t) {
   const n = i instanceof HTMLStyleElement ? i : document.createElement("style");
   n.textContent = a, ko.set(e, n), e.appendChild(n);
 }
-var hC = Object.defineProperty, ei = (e, t, a, i) => {
+var gC = Object.defineProperty, ei = (e, t, a, i) => {
   for (var n = void 0, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = o(t, a, n) || n);
-  return n && hC(t, a, n), n;
+  return n && gC(t, a, n), n;
 };
 const Ys = class Ys extends ve {
   constructor() {
@@ -66360,7 +66360,7 @@ const Ys = class Ys extends ve {
   }
   updateTime() {
     const t = /* @__PURE__ */ new Date();
-    this.format && (this.currentTime = kM(t, this.format, this.i18n.t("am"), this.i18n.t("pm"))), this.showDate && (this.currentDate = vM(t, this.lang));
+    this.format && (this.currentTime = fM(t, this.format, this.i18n.t("am"), this.i18n.t("pm"))), this.showDate && (this.currentDate = kM(t, this.lang));
   }
   render() {
     return !this.format && !this.showDate ? u`` : u`
@@ -66444,10 +66444,10 @@ ei([
   F()
 ], Lt.prototype, "currentDate");
 customElements.define("mushroom-addition-weather-clock", Lt);
-var gC = Object.defineProperty, ti = (e, t, a, i) => {
+var yC = Object.defineProperty, ti = (e, t, a, i) => {
   for (var n = void 0, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = o(t, a, n) || n);
-  return n && gC(t, a, n), n;
+  return n && yC(t, a, n), n;
 };
 const Js = class Js extends ve {
   constructor() {
@@ -66497,16 +66497,16 @@ const Js = class Js extends ve {
     return !this.config?.showSunriseSunset || !this.sunData?.hasSunData || !this.sunData.sunrise ? u`` : u`
       <div class="info-item">
         <span class="info-icon">${Va("sunrise")}</span>
-        <span>${Oo(this.sunData.sunrise, this.config.clockFormat, this.i18n.t("am"), this.i18n.t("pm"))}</span>
+        <span>${Fo(this.sunData.sunrise, this.config.clockFormat, this.i18n.t("am"), this.i18n.t("pm"))}</span>
       </div>
     `;
   }
   renderWind() {
     if (!this.config?.showWind || this.weather?.windSpeed == null) return u``;
-    const t = this.weather.windSpeedUnit ? { ...this.entityAttributes || {}, wind_speed_unit: this.weather.windSpeedUnit } : this.entityAttributes || {}, a = q_(this.weather.windSpeed, t, this.config.windSpeedUnit), i = bM(t, this.config.windSpeedUnit, this.i18n.t.bind(this.i18n));
+    const t = this.weather.windSpeedUnit ? { ...this.entityAttributes || {}, wind_speed_unit: this.weather.windSpeedUnit } : this.entityAttributes || {}, a = q_(this.weather.windSpeed, t, this.config.windSpeedUnit), i = vM(t, this.config.windSpeedUnit, this.i18n.t.bind(this.i18n));
     let n = "";
     this.config.showWindGust && this.weather.windGust && (n = ` / ${q_(this.weather.windGust, t, this.config.windSpeedUnit)} ${i}`);
-    const r = this.config.showWindDirection && this.weather.windBearing != null ? _c(this.weather.windBearing) : Va("wind");
+    const r = this.config.showWindDirection && this.weather.windBearing != null ? dc(this.weather.windBearing) : Va("wind");
     return u`
       <div class="info-item">
         <span class="info-icon">${r}</span>
@@ -66528,7 +66528,7 @@ const Js = class Js extends ve {
     return !this.config?.showSunriseSunset || !this.sunData?.hasSunData || !this.sunData.sunset ? u`` : u`
       <div class="info-item">
         <span class="info-icon">${Va("sunset")}</span>
-        <span>${Oo(this.sunData.sunset, this.config.clockFormat, this.i18n.t("am"), this.i18n.t("pm"))}</span>
+        <span>${Fo(this.sunData.sunset, this.config.clockFormat, this.i18n.t("am"), this.i18n.t("pm"))}</span>
       </div>
     `;
   }
@@ -66636,7 +66636,7 @@ ti([
   O({ attribute: !1 })
 ], Ht.prototype, "userStyles");
 customElements.define("mushroom-addition-weather-details", Ht);
-const dc = ce`
+const uc = ce`
   :host {
     display: block;
   }
@@ -66896,19 +66896,19 @@ const dc = ce`
     background: rgba(79, 179, 255, 0.55);
   }
 `;
-function Ko(e, t) {
+function Uo(e, t) {
   if (!t) return "";
-  const a = rC(e, t.fromUnit, t.toUnit);
+  const a = oC(e, t.fromUnit, t.toUnit);
   return a ? u`
     <div class="forecast-wind">
-      ${a.bearing !== null ? u`<span class="forecast-wind-arrow">${_c(a.bearing)}</span>` : ""}
+      ${a.bearing !== null ? u`<span class="forecast-wind-arrow">${dc(a.bearing)}</span>` : ""}
       <span>${a.speed}${a.gust !== null ? u`<span class="forecast-wind-gust">/${a.gust}</span>` : ""}</span>
       <span class="forecast-wind-unit">${t.unit}</span>
     </div>
   ` : "";
 }
 const ot = (e) => Math.round(e * 100) / 100;
-function yC(e, t) {
+function bC(e, t) {
   if (e.length === 0) return [];
   const a = Math.min(...e), i = Math.max(...e), n = Math.max(i - a, t.minRange ?? 0), r = (a + i - n) / 2, o = (c) => n === 0 ? (t.top + t.bottom) / 2 : t.bottom - (c - r) / n * (t.bottom - t.top), s = e.map(o), l = s.length - 1, _ = s.map((c, m) => l === 0 ? 0 : m === 0 ? s[1] - c : m === l ? c - s[m - 1] : (s[m + 1] - s[m - 1]) / 2), d = (c) => ({
     y: (s[c] + s[c + 1]) / 2 + (_[c] - _[c + 1]) / 8,
@@ -66944,10 +66944,10 @@ function jr(e, t = "°C") {
   const n = _a.findIndex(([d]) => d > a), [r, o] = _a[n - 1], [s, l] = _a[n], _ = (a - r) / (s - r);
   return `rgb(${o.map((d, c) => Math.round(d + (l[c] - d) * _)).join(", ")})`;
 }
-var bC = Object.defineProperty, Aa = (e, t, a, i) => {
+var vC = Object.defineProperty, Aa = (e, t, a, i) => {
   for (var n = void 0, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = o(t, a, n) || n);
-  return n && bC(t, a, n), n;
+  return n && vC(t, a, n), n;
 };
 const da = { height: 84, top: 26, bottom: 60, barsTop: 66 }, Qs = class Qs extends ve {
   constructor() {
@@ -66958,7 +66958,7 @@ const da = { height: 84, top: 26, bottom: 60, barsTop: 66 }, Qs = class Qs exten
   }
   connectedCallback() {
     super.connectedCallback(), this.updateComplete.then(() => {
-      this._cleanup = nc(this.shadowRoot, ".forecast-scroll");
+      this._cleanup = rc(this.shadowRoot, ".forecast-scroll");
     });
   }
   updated(t) {
@@ -66982,10 +66982,10 @@ const da = { height: 84, top: 26, bottom: 60, barsTop: 66 }, Qs = class Qs exten
     return u`
       <div class="forecast-item ${a ? "day-start" : ""}">
         ${i ? u`<div class="forecast-day">${a ? this.getWeekday(t.datetime) : ""}</div>` : ""}
-        <div class="forecast-time">${pM(t.datetime, this.clockFormat, this.i18n.t("am"), this.i18n.t("pm"))}</div>
-        <div class="forecast-icon">${Uo(t.condition || "sunny")}</div>
+        <div class="forecast-time">${hM(t.datetime, this.clockFormat, this.i18n.t("am"), this.i18n.t("pm"))}</div>
+        <div class="forecast-icon">${qo(t.condition || "sunny")}</div>
         ${n ? this.renderChartPiece(t, n, r) : u`<div class="forecast-temp">${this.getTemperature(t)}°</div>`}
-        ${Ko(t, this.wind)}
+        ${Uo(t, this.wind)}
         ${o != null && o > 0 ? u`<div class="forecast-precipitation">${Math.round(o)}%</div>` : ""}
       </div>
     `;
@@ -67009,7 +67009,7 @@ const da = { height: 84, top: 26, bottom: 60, barsTop: 66 }, Qs = class Qs exten
   }
   render() {
     if (this.forecast.length === 0) return u``;
-    const t = hM(this.forecast), a = t.some(Boolean), i = this.forecast.map((o) => this.getTemperature(o)), n = this.temperatureUnit.includes("F") ? 10 : 6, r = this.chart ? yC(i, { top: da.top, bottom: da.bottom, minRange: n }) : null;
+    const t = gM(this.forecast), a = t.some(Boolean), i = this.forecast.map((o) => this.getTemperature(o)), n = this.temperatureUnit.includes("F") ? 10 : 6, r = this.chart ? bC(i, { top: da.top, bottom: da.bottom, minRange: n }) : null;
     return this.chartRange = { min: Math.min(...i), max: Math.max(...i) }, u`
       <div class="forecast-container">
         ${this.forecastTitle !== "" ? u`<div class="forecast-title">${this.forecastTitle ?? this.i18n.t(a ? "forecast_title_hourly" : "forecast_title")}</div>` : ""}
@@ -67020,7 +67020,7 @@ const da = { height: 84, top: 26, bottom: 60, barsTop: 66 }, Qs = class Qs exten
     `;
   }
 };
-Qs.styles = dc;
+Qs.styles = uc;
 let jt = Qs;
 Aa([
   O({ type: Array })
@@ -67047,10 +67047,10 @@ Aa([
   O({ type: String })
 ], jt.prototype, "temperatureUnit");
 customElements.define("mushroom-addition-weather-hourly", jt);
-var vC = Object.defineProperty, Pa = (e, t, a, i) => {
+var kC = Object.defineProperty, Pa = (e, t, a, i) => {
   for (var n = void 0, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = o(t, a, n) || n);
-  return n && vC(t, a, n), n;
+  return n && kC(t, a, n), n;
 };
 function ad(e) {
   return new Date(e).toDateString() === (/* @__PURE__ */ new Date()).toDateString();
@@ -67064,7 +67064,7 @@ const Xs = class Xs extends ve {
   }
   connectedCallback() {
     super.connectedCallback(), this.updateComplete.then(() => {
-      this._cleanup = nc(this.shadowRoot, ".forecast-scroll");
+      this._cleanup = rc(this.shadowRoot, ".forecast-scroll");
     });
   }
   updated(t) {
@@ -67094,14 +67094,14 @@ const Xs = class Xs extends ve {
     return u`
       <div class="forecast-item">
         <div class="forecast-time">${H_(t.datetime, this.lang)}</div>
-        <div class="forecast-icon">${Uo(t.condition || "sunny")}</div>
+        <div class="forecast-icon">${qo(t.condition || "sunny")}</div>
         <div class="forecast-temp">${i}°</div>
         <div class="temp-bar">
           <div class="temp-bar-fill" style="${_}"></div>
           ${d}
         </div>
         <div class="forecast-temp forecast-temp-low-bar">${n}°</div>
-        ${Ko(t, this.wind)}
+        ${Uo(t, this.wind)}
         ${r !== null ? u`<div class="forecast-precipitation">${r}%</div>` : ""}
       </div>
     `;
@@ -67111,11 +67111,11 @@ const Xs = class Xs extends ve {
     return u`
       <div class="forecast-item">
         <div class="forecast-time">${H_(t.datetime, this.lang)}</div>
-        <div class="forecast-icon">${Uo(t.condition || "sunny")}</div>
+        <div class="forecast-icon">${qo(t.condition || "sunny")}</div>
         <div class="forecast-temp">
           ${this.getTemperature(t)}°${a !== null ? u`<span class="forecast-temp-low">${a}°</span>` : ""}
         </div>
-        ${Ko(t, this.wind)}
+        ${Uo(t, this.wind)}
         ${i !== null ? u`<div class="forecast-precipitation">${i}%</div>` : ""}
       </div>
     `;
@@ -67141,7 +67141,7 @@ const Xs = class Xs extends ve {
     `;
   }
 };
-Xs.styles = dc;
+Xs.styles = uc;
 let St = Xs;
 Pa([
   O({ type: Array })
@@ -67168,19 +67168,19 @@ Pa([
   O({ type: String })
 ], St.prototype, "temperatureUnit");
 customElements.define("mushroom-addition-weather-daily", St);
-var kC = Object.defineProperty, Bs = (e, t, a, i) => {
+var fC = Object.defineProperty, Bs = (e, t, a, i) => {
   for (var n = void 0, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = o(t, a, n) || n);
-  return n && kC(t, a, n), n;
+  return n && fC(t, a, n), n;
 };
 class qr extends ve {
   constructor() {
-    super(), this.i18n = new Za(), this.drawParams = null, this.drawMinute = -1, this.subscriptionKey = null, this.config = {}, this.animationManager = new iC(() => this.getDrawParams()), this.forecastService = new lC(() => {
+    super(), this.i18n = new Za(), this.drawParams = null, this.drawMinute = -1, this.subscriptionKey = null, this.config = {}, this.animationManager = new nC(() => this.getDrawParams()), this.forecastService = new _C(() => {
       this.drawParams = null, this.requestUpdate();
     });
   }
   static get styles() {
-    return fM;
+    return wM;
   }
   static getConfigElement() {
     return document.createElement("mushroom-addition-editor");
@@ -67267,9 +67267,9 @@ class qr extends ve {
   }
   renderPrecipitationOutlook(t) {
     if (!this.config.showPrecipitationOutlook) return u``;
-    const a = this.forecastService.getHourlyData(), i = cC(t.condition, a.length > 0 ? a : t.forecast, this._testNow ?? /* @__PURE__ */ new Date());
+    const a = this.forecastService.getHourlyData(), i = mC(t.condition, a.length > 0 ? a : t.forecast, this._testNow ?? /* @__PURE__ */ new Date());
     if (!i) return u``;
-    const n = i.time ? Oo(i.time, this.config.clockFormat ?? "24h", this.i18n.t("am"), this.i18n.t("pm")) : "", o = this.i18n.t(`precipitation_outlook.${i.type === "start" && !i.time ? "soon" : i.type}`).replace("{kind}", this.i18n.t(`precipitation_outlook.${i.kind}`)).replace("{time}", n).replace("{hours}", String(i.hours));
+    const n = i.time ? Fo(i.time, this.config.clockFormat ?? "24h", this.i18n.t("am"), this.i18n.t("pm")) : "", o = this.i18n.t(`precipitation_outlook.${i.type === "start" && !i.time ? "soon" : i.type}`).replace("{kind}", this.i18n.t(`precipitation_outlook.${i.kind}`)).replace("{time}", n).replace("{hours}", String(i.hours));
     return u`
       <div class="precipitation-outlook">
         <span class="info-icon">${Va("precipitation")}</span>
@@ -67345,7 +67345,7 @@ class qr extends ve {
       sunPositionY: t.sun_position_y ?? ue.sunPositionY,
       textColor: t.text_color?.trim() || ue.textColor,
       language: t.language || ue.language,
-      windSpeedUnit: gM.includes(t.wind_speed_unit) ? t.wind_speed_unit : ue.windSpeedUnit,
+      windSpeedUnit: yM.includes(t.wind_speed_unit) ? t.wind_speed_unit : ue.windSpeedUnit,
       showAnimations: t.show_animations !== !1,
       layout: t.layout || ue.layout,
       visualStyle: t.visual_style === "classic" ? "classic" : "modern",
@@ -67393,7 +67393,7 @@ class qr extends ve {
     ), n = this._testTimeOfDay || B_(i), r = `weather-card ${n.type}${this.config.visualStyle === "classic" ? " classic" : ""}`, o = this.config.layout === "minimal", s = o ? "56px" : "200px", l = this.config.height ? `${this.config.height}px` : s, _ = this.config.visualStyle === "classic";
     let d;
     if (_) {
-      const U = mM(n);
+      const U = pM(n);
       d = U ? `background: linear-gradient(135deg, rgb(${U.start.r}, ${U.start.g}, ${U.start.b}), rgb(${U.end.r}, ${U.end.g}, ${U.end.b}));` : "";
     } else {
       const U = Or(t.condition, n);
@@ -67494,7 +67494,7 @@ class qr extends ve {
   getForecastWindOptions(t, a) {
     if (!this.config.showForecastWind) return null;
     const i = Na(t, this.config.entity).wind_speed_unit, n = typeof i == "string" && i ? i : "m/s", r = Is(a.windSpeedUnit ?? n, this.config.windSpeedUnit ?? ue.windSpeedUnit);
-    return { fromUnit: n, toUnit: r, unit: ic(r, this.i18n.t.bind(this.i18n)) };
+    return { fromUnit: n, toUnit: r, unit: nc(r, this.i18n.t.bind(this.i18n)) };
   }
   renderMinimal(t, a, i, n, r) {
     const o = t.temperature != null ? Math.round(t.temperature) + "°" : this.i18n.t("no_data"), s = t.templow != null ? `↓ ${Math.round(t.templow)}°` : null;
@@ -67547,13 +67547,13 @@ const el = class el extends Be {
     super(...arguments), this.descriptor = ut("mushroom-addition-weather-advanced");
   }
   static getStubConfig(t) {
-    return Gd(t);
+    return Zd(t);
   }
   setConfig(t) {
     if (!t || typeof t != "object") throw new Error("A Weather Advanced configuration is required.");
-    Wd(t.weather);
+    Gd(t.weather);
     const a = Tr(t);
-    this.toggleAttribute("fill-container", a.fill_container === !0), this.input = { ...Kd, ...a.weather, entity: a.entity ?? "weather.home" }, super.setConfig(a);
+    this.toggleAttribute("fill-container", a.fill_container === !0), this.input = { ...Wd, ...a.weather, entity: a.entity ?? "weather.home" }, super.setConfig(a);
   }
   shouldUpdate(t) {
     return t.size !== 1 || !t.has("hass") || $i(t.get("hass"), this.hass, this.config);
@@ -67582,16 +67582,16 @@ el.styles = [Be.styles, ce`
     .weather-content.layout-vertical { display: block; text-align: initial; }
     mushroom-addition-weather-scene { width: 100%; }
   `];
-let Wo = el;
+let Ko = el;
 const tl = class tl extends Be {
   constructor() {
     super(...arguments), this.descriptor = ut("mushroom-addition-air-quality");
   }
   static getStubConfig(t) {
-    return Xd(t);
+    return eu(t);
   }
   setConfig(t) {
-    Qd(t), super.setConfig(t);
+    Xd(t), super.setConfig(t);
   }
   shouldUpdate(t) {
     return t.size !== 1 || !t.has("hass") || $i(t.get("hass"), this.hass, this.config);
@@ -67604,7 +67604,7 @@ const tl = class tl extends Be {
   }
   render() {
     if (!this.config || !this.hass || !this.descriptor) return g;
-    const t = this.config, a = this.hass, i = Jd(a, t), n = (t.air_quality_sensors ?? []).filter((o) => o.enabled !== !1), r = {
+    const t = this.config, a = this.hass, i = Qd(a, t), n = (t.air_quality_sensors ?? []).filter((o) => o.enabled !== !1), r = {
       config: {
         ...t,
         secondary_info: t.secondary_info ?? "none",
@@ -67630,7 +67630,7 @@ const tl = class tl extends Be {
         </div>` : g}
       ${n.length ? u`<div class="aq-readings" style=${`--aq-columns:${Math.min(8, n.length)}`}>
         ${n.map((o) => {
-      const s = qa[o.kind], l = Zd(a, o), _ = Yd(a, o), d = _ === void 0 ? 4 : sr(o, _), c = l === void 0 ? "grey" : o.color || xA(o, _), m = o.name || h(a, s.name), p = o.kind === "mould" && _ !== void 0 ? h(a, ["Low", "Med", "High", "Sev"][d]) : l === void 0 || o.kind === "mould" ? "—" : `${new Intl.NumberFormat(a.language, { maximumFractionDigits: o.decimals ?? s.decimals }).format(l)}${o.unit ?? s.unit}`;
+      const s = qa[o.kind], l = Yd(a, o), _ = Jd(a, o), d = _ === void 0 ? 4 : sr(o, _), c = l === void 0 ? "grey" : o.color || AA(o, _), m = o.name || h(a, s.name), p = o.kind === "mould" && _ !== void 0 ? h(a, ["Low", "Med", "High", "Sev"][d]) : l === void 0 || o.kind === "mould" ? "—" : `${new Intl.NumberFormat(a.language, { maximumFractionDigits: o.decimals ?? s.decimals }).format(l)}${o.unit ?? s.unit}`;
       return u`<button class="aq-reading" title=${`${m}: ${p}`}
             aria-label=${`${m}: ${l === void 0 ? h(a, "Unavailable") : p}`}
             style=${Oe({ "--aq-color": /^(#|rgb|hsl|var\()/.test(c) ? c : `var(--${c}-color, ${c})` })}
@@ -67673,24 +67673,24 @@ tl.styles = [Be.styles, ce`
     ha-card.mushroom-addition-card.fill-container { display:flex; flex-direction:column; height:100%; }
     .fill-container .aq-readings { flex:1; }
   `];
-let Go = tl;
-var fC = Object.defineProperty, ia = (e, t, a, i) => {
+let Wo = tl;
+var wC = Object.defineProperty, ia = (e, t, a, i) => {
   for (var n = void 0, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = o(t, a, n) || n);
-  return n && fC(t, a, n), n;
+  return n && wC(t, a, n), n;
 };
 const al = class al extends Be {
   constructor() {
     super(...arguments), this.descriptor = ut("mushroom-addition-todo"), this.selected = "", this.items = [], this.loading = !1, this.busy = !1, this.loaded = !1, this.error = "", this.generation = 0, this.originalDue = "";
   }
   static getStubConfig(t, a = [], i = []) {
-    return eu(t, a, i);
+    return tu(t, a, i);
   }
   getCardSize() {
     return 2 + Math.min(this.items.length, 12);
   }
   setConfig(t) {
-    DA(t), this.invalidate(), this.selected = Fl(t)[0] ?? "", this.showCompleted = void 0, super.setConfig(t);
+    NA(t), this.invalidate(), this.selected = Fl(t)[0] ?? "", this.showCompleted = void 0, super.setConfig(t);
   }
   connectedCallback() {
     super.connectedCallback(), this.timer = setInterval(() => {
@@ -67708,7 +67708,7 @@ const al = class al extends Be {
     return !!t && !["unknown", "unavailable"].includes(t.state) && this.hass?.connection?.connected !== !1;
   }
   supports(t) {
-    return NA(this.hass?.states[this.selected], t);
+    return VA(this.hass?.states[this.selected], t);
   }
   get writable() {
     return this.available && this.loaded && !this.loading && !this.busy && !this.error;
@@ -67974,14 +67974,14 @@ ia([
 ia([
   F()
 ], yt.prototype, "deleting");
-const wC = (e, t, a = [], i = []) => {
+const zC = (e, t, a = [], i = []) => {
   const n = [...a, ...i, ...Object.keys(t?.states ?? {})], r = [...new Set(n)].filter((s) => t?.states?.[s] !== void 0), o = r.filter((s) => !["unavailable", "unknown"].includes(t?.states?.[s]?.state.toLowerCase() ?? ""));
   for (const s of e.preferredDomains ?? []) {
     const l = o.find((_) => _.startsWith(`${s}.`)) ?? r.find((_) => _.startsWith(`${s}.`));
     if (l) return l;
   }
   return o[0] ?? r[0];
-}, zC = (e) => e.name.replace(/ (Card|Chip)$/, ""), uc = (e, t = [], a = []) => {
+}, jC = (e) => e.name.replace(/ (Card|Chip)$/, ""), cc = (e, t = [], a = []) => {
   const i = [.../* @__PURE__ */ new Set([...t, ...a, ...Object.keys(e?.states ?? {})])], n = i.filter((r) => {
     const o = e?.states[r];
     return r.startsWith("sensor.") && o !== void 0 && o.state.trim() !== "" && Number.isFinite(Number(o.state));
@@ -67990,15 +67990,15 @@ const wC = (e, t, a = [], i = []) => {
     const o = e.states[r].attributes;
     return o.device_class === "temperature" || ["°C", "°F", "K"].includes(String(o.unit_of_measurement ?? ""));
   }) ?? n[0] ?? i.find((r) => (r.startsWith("sensor.") || r.startsWith("binary_sensor.")) && e?.states[r] !== void 0 && !["unknown", "unavailable", ""].includes(e.states[r].state.trim().toLowerCase()));
-}, cc = (e, t, a = [], i = []) => {
+}, mc = (e, t, a = [], i = []) => {
   if (e.upstreamId === "energy_log") return mn(t, a, i);
   if (e.upstreamId === "energy_plan") return Wa.getStubConfig(t, a, i);
   if (e.upstreamId === "energy_insights") return zt.getStubConfig(t, a, i);
-  if (e.upstreamId === "todo") return eu(t, a, i);
-  if (e.upstreamId === "air_quality") return Xd(t);
-  if (e.upstreamId === "custom_card_washer") return No(e);
-  if (e.upstreamId === "weather_advanced") return Gd(t, a, i);
-  if (e.upstreamId === "smart_saving") return Qu(t, a, i);
+  if (e.upstreamId === "todo") return tu(t, a, i);
+  if (e.upstreamId === "air_quality") return eu(t);
+  if (e.upstreamId === "custom_card_washer") return Do(e);
+  if (e.upstreamId === "weather_advanced") return Zd(t, a, i);
+  if (e.upstreamId === "smart_saving") return Xu(t, a, i);
   if (e.upstreamId === "energy_entityworkflow") return ps(t, a, i);
   if (e.upstreamId === "stock_card") return {
     type: `custom:${e.tag}`,
@@ -68046,18 +68046,18 @@ const wC = (e, t, a = [], i = []) => {
     let M = -1;
     for (const N of n) {
       if (!N.startsWith("media_player.") || !o(N).includes("sonos")) continue;
-      const Y = XA(t, N);
+      const Y = e1(t, N);
       Y > M && (z = N, M = Y);
     }
   }
-  const v = e.upstreamId === "custom_card_trash" ? gh(t, a, i) : void 0, w = e.upstreamId === "pi_hole_card" ? s(n.filter((M) => M.startsWith("switch.") && (/pi_hole/.test(t?.entities?.[M]?.platform || "") || /pi.?hole/.test(o(M)))))[0] ?? s(n.filter((M) => M.startsWith("sensor.") && /pi_hole/.test(t?.entities?.[M]?.platform || "")))[0] : e.upstreamId === "remote_card" ? s(n.filter((M) => M.startsWith("media_player.") && (t?.states[M]?.attributes.device_class === "tv" || /samsung|android|apple_tv|roku|webostv|bravia/.test(t?.entities?.[M]?.platform || ""))))[0] ?? d(["remote"], []) : e.upstreamId === "advanced_home_energy_management" ? d(["sensor"], ["hems", "house", "consumption"]) ?? d(["sensor"], ["house", "consumption"]) ?? p(["power"]) : e.upstreamId === "advanced_energy_buy_sell" ? d(["sensor"], ["hems", "price", "overview"]) ?? d(["sensor"], ["price", "overview"]) ?? d(["sensor"], ["hems", "price"]) : e.upstreamId === "advanced_energy_panel_health" ? y[0] : e.upstreamId === "mini_graph_card" ? uc(t, a, i) : e.upstreamId === "card_battery" ? c(["sensor"], ["battery", "level"], ["state", "charging"]) ?? p(["battery"], [], ["state", "charging"]) : e.upstreamId === "custom_card_pollen" ? d(["sensor"], ["pollen", "grass"]) : e.upstreamId === "custom_card_speedtest_gauges" ? d(["sensor"], ["speedtest", "download"]) ?? d(["sensor"], ["download"]) : e.upstreamId === "custom_card_tablet" ? d(["binary_sensor", "sensor", "switch"], ["tablet"]) : e.upstreamId === "custom_card_nas_metrics" ? d(["switch", "binary_sensor"], ["nas"]) ?? d(["switch", "binary_sensor"], ["status"]) : e.upstreamId === "custom_card_sun" ? d(["sun"], []) : e.upstreamId === "custom_card_media_player_sonos" ? z : e.upstreamId === "custom_card_printer" ? d(["sensor", "binary_sensor"], ["printer"]) ?? d(["sensor", "binary_sensor"], ["online"]) : e.upstreamId === "custom_card_light" ? n.find((M) => M.startsWith("light.") && l(M) && Array.isArray(t?.states[M]?.attributes.entity_id)) ?? m(["light"], []) ?? d(["light"], []) : e.upstreamId === "card_room" ? d(["light"], []) : e.upstreamId === "custom_card_plant" ? d(["plant"], []) ?? d(["sensor"], ["soil", "humidity"]) : e.upstreamId === "custom_card_playstation" ? d(["binary_sensor", "media_player", "remote", "sensor", "switch"], ["xbox"]) ?? d(["binary_sensor", "media_player", "remote", "sensor", "switch"], ["playstation"]) ?? d(["binary_sensor", "media_player", "remote", "sensor", "switch"], ["nintendo"]) ?? d(["media_player", "remote"], []) : void 0, S = (e.upstreamId === "card_scenes" ? m(["light"], []) ?? m(["climate"], []) ?? m(["sensor"], []) : void 0) ?? w ?? wC(e, t, a, i), H = e.upstreamId === "custom_card_entity_carousel" ? Z1(t, S) : void 0, $ = e.upstreamId === "upcoming_media" ? s(n.filter((M) => M.startsWith("sensor.") && !Dr(t?.states[M]).error))[0] : e.upstreamId === "custom_card_trash" ? v?.[0]?.entity : ["remote_card", "pi_hole_card"].includes(e.upstreamId) ? w : H ? H.entity : S, W = e.upstreamId === "advanced_energy_panel_health" ? y : void 0, ne = e.upstreamId === "custom_card_plant" ? {
+  const v = e.upstreamId === "custom_card_trash" ? yh(t, a, i) : void 0, w = e.upstreamId === "pi_hole_card" ? s(n.filter((M) => M.startsWith("switch.") && (/pi_hole/.test(t?.entities?.[M]?.platform || "") || /pi.?hole/.test(o(M)))))[0] ?? s(n.filter((M) => M.startsWith("sensor.") && /pi_hole/.test(t?.entities?.[M]?.platform || "")))[0] : e.upstreamId === "remote_card" ? s(n.filter((M) => M.startsWith("media_player.") && (t?.states[M]?.attributes.device_class === "tv" || /samsung|android|apple_tv|roku|webostv|bravia/.test(t?.entities?.[M]?.platform || ""))))[0] ?? d(["remote"], []) : e.upstreamId === "advanced_home_energy_management" ? d(["sensor"], ["hems", "house", "consumption"]) ?? d(["sensor"], ["house", "consumption"]) ?? p(["power"]) : e.upstreamId === "advanced_energy_buy_sell" ? d(["sensor"], ["hems", "price", "overview"]) ?? d(["sensor"], ["price", "overview"]) ?? d(["sensor"], ["hems", "price"]) : e.upstreamId === "advanced_energy_panel_health" ? y[0] : e.upstreamId === "mini_graph_card" ? cc(t, a, i) : e.upstreamId === "card_battery" ? c(["sensor"], ["battery", "level"], ["state", "charging"]) ?? p(["battery"], [], ["state", "charging"]) : e.upstreamId === "custom_card_pollen" ? d(["sensor"], ["pollen", "grass"]) : e.upstreamId === "custom_card_speedtest_gauges" ? d(["sensor"], ["speedtest", "download"]) ?? d(["sensor"], ["download"]) : e.upstreamId === "custom_card_tablet" ? d(["binary_sensor", "sensor", "switch"], ["tablet"]) : e.upstreamId === "custom_card_nas_metrics" ? d(["switch", "binary_sensor"], ["nas"]) ?? d(["switch", "binary_sensor"], ["status"]) : e.upstreamId === "custom_card_sun" ? d(["sun"], []) : e.upstreamId === "custom_card_media_player_sonos" ? z : e.upstreamId === "custom_card_printer" ? d(["sensor", "binary_sensor"], ["printer"]) ?? d(["sensor", "binary_sensor"], ["online"]) : e.upstreamId === "custom_card_light" ? n.find((M) => M.startsWith("light.") && l(M) && Array.isArray(t?.states[M]?.attributes.entity_id)) ?? m(["light"], []) ?? d(["light"], []) : e.upstreamId === "card_room" ? d(["light"], []) : e.upstreamId === "custom_card_plant" ? d(["plant"], []) ?? d(["sensor"], ["soil", "humidity"]) : e.upstreamId === "custom_card_playstation" ? d(["binary_sensor", "media_player", "remote", "sensor", "switch"], ["xbox"]) ?? d(["binary_sensor", "media_player", "remote", "sensor", "switch"], ["playstation"]) ?? d(["binary_sensor", "media_player", "remote", "sensor", "switch"], ["nintendo"]) ?? d(["media_player", "remote"], []) : void 0, S = (e.upstreamId === "card_scenes" ? m(["light"], []) ?? m(["climate"], []) ?? m(["sensor"], []) : void 0) ?? w ?? zC(e, t, a, i), H = e.upstreamId === "custom_card_entity_carousel" ? Y1(t, S) : void 0, $ = e.upstreamId === "upcoming_media" ? s(n.filter((M) => M.startsWith("sensor.") && !Dr(t?.states[M]).error))[0] : e.upstreamId === "custom_card_trash" ? v?.[0]?.entity : ["remote_card", "pi_hole_card"].includes(e.upstreamId) ? w : H ? H.entity : S, W = e.upstreamId === "advanced_energy_panel_health" ? y : void 0, ne = e.upstreamId === "custom_card_plant" ? {
     moisture_entity: ($ && t?.states[$]?.attributes.device_class === "moisture" ? $ : void 0) ?? b(["moisture"], ["soil"]) ?? b(["moisture"]),
     temperature_entity: b(["temperature"], ["soil"]) ?? b(["temperature"], ["plant"]),
     humidity_entity: b(["humidity"], ["plant"]) ?? b(["humidity"], ["soil"]),
     conductivity_entity: b(["conductivity"], ["plant"]) ?? m(["sensor"], ["conductivity"]),
     illuminance_entity: b(["illuminance"], ["plant"]) ?? m(["sensor"], ["plant", "illuminance"]),
     dli_entity: m(["sensor"], ["dli"])
-  } : {}, I = Object.entries(ne).filter(([, M]) => M).map(([M]) => M.replace(/_entity$/, "")), T = ["text", "navigation"].includes(e.family), U = e.variants?.[0], re = $?.split(".", 1)[0], A = ["light", "switch", "input_boolean", "fan"].includes(re ?? "") ? { action: "toggle" } : { action: $ ? "more-info" : "none" }, ae = pu(t, $), D = e.upstreamId === "custom_card_sun" || e.upstreamId === "custom_card_pollen" ? { action: "none" } : e.upstreamId === "custom_card_speedtest_gauges" ? {
+  } : {}, I = Object.entries(ne).filter(([, M]) => M).map(([M]) => M.replace(/_entity$/, "")), T = ["text", "navigation"].includes(e.family), U = e.variants?.[0], re = $?.split(".", 1)[0], A = ["light", "switch", "input_boolean", "fan"].includes(re ?? "") ? { action: "toggle" } : { action: $ ? "more-info" : "none" }, ae = hu(t, $), D = e.upstreamId === "custom_card_sun" || e.upstreamId === "custom_card_pollen" ? { action: "none" } : e.upstreamId === "custom_card_speedtest_gauges" ? {
     action: "perform-action",
     perform_action: "homeassistant.update_entity",
     target: {
@@ -68069,13 +68069,13 @@ const wC = (e, t, a = [], i = []) => {
     }
   } : e.upstreamId === "custom_card_playstation" ? { action: $ ? "more-info" : "none", entity: $ } : e.upstreamId === "custom_card_plant" ? { action: "more-info" } : A;
   return {
-    ...No(e, t, $),
+    ...Do(e, t, $),
     name: [
       "advanced_home_energy_management",
       "advanced_energy_buy_sell",
       "advanced_energy_panel_health",
       "custom_card_media_player_sonos"
-    ].includes(e.upstreamId) ? void 0 : $ ? t?.states[$]?.attributes.friendly_name : zC(e),
+    ].includes(e.upstreamId) ? void 0 : $ ? t?.states[$]?.attributes.friendly_name : jC(e),
     secondary: $ ? void 0 : T ? "Example" : "Preview",
     variant: U,
     tap_action: D,
@@ -68229,12 +68229,12 @@ const wC = (e, t, a = [], i = []) => {
     } : {}
   };
 };
-var jC = Object.defineProperty, Ma = (e, t, a, i) => {
+var SC = Object.defineProperty, Ma = (e, t, a, i) => {
   for (var n = void 0, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = o(t, a, n) || n);
-  return n && jC(t, a, n), n;
+  return n && SC(t, a, n), n;
 };
-const id = /* @__PURE__ */ new WeakMap(), fo = (e) => JSON.stringify(e, (t, a) => !a || typeof a != "object" || Array.isArray(a) ? a : Object.fromEntries(Object.entries(a).sort(([i], [n]) => i.localeCompare(n)))), SC = (e, t, a) => {
+const id = /* @__PURE__ */ new WeakMap(), fo = (e) => JSON.stringify(e, (t, a) => !a || typeof a != "object" || Array.isArray(a) ? a : Object.fromEntries(Object.entries(a).sort(([i], [n]) => i.localeCompare(n)))), xC = (e, t, a) => {
   let i = id.get(e);
   i || (i = /* @__PURE__ */ new Map(), id.set(e, i));
   const n = i.get(t);
@@ -68254,7 +68254,7 @@ const id = /* @__PURE__ */ new WeakMap(), fo = (e) => JSON.stringify(e, (t, a) =
 ], ar = (e) => {
   const a = (Array.isArray(e.entities) ? e.entities : []).map((i) => typeof i == "string" ? { entity: i } : { ...i });
   return !a.length && e.entity && a.push({ entity: e.entity }), a.filter((i) => !!i.entity);
-}, Zo = (e) => ({
+}, Go = (e) => ({
   name: e?.name ?? !0,
   icon: e?.icon ?? !0,
   state: e?.state ?? !0,
@@ -68282,7 +68282,7 @@ const id = /* @__PURE__ */ new WeakMap(), fo = (e) => JSON.stringify(e, (t, a) =
     aggregate_func: e.aggregate_func ?? "avg",
     group_by: e.group_by ?? "interval",
     cache: e.cache ?? !0,
-    show: Zo(e.show),
+    show: Go(e.show),
     animate: e.animate ?? !1,
     height: e.height ?? 150,
     bar_spacing: e.bar_spacing ?? 4,
@@ -68328,7 +68328,7 @@ const id = /* @__PURE__ */ new WeakMap(), fo = (e) => JSON.stringify(e, (t, a) =
     };
   const n = Number(e);
   return Number.isFinite(n) ? { value: n } : {};
-}, mc = (e, t) => {
+}, pc = (e, t) => {
   if (!e.length) return Number.NaN;
   switch (t) {
     case "median": {
@@ -68352,7 +68352,7 @@ const id = /* @__PURE__ */ new WeakMap(), fo = (e) => JSON.stringify(e, (t, a) =
     default:
       return e.reduce((a, i) => a + i, 0) / e.length;
   }
-}, xC = (e, t, a, i = Date.now()) => {
+}, AC = (e, t, a, i = Date.now()) => {
   if (!e.length) return [];
   const n = Math.max(1, Number(t.hours_to_show ?? 24)), r = Math.max(0.01, Number(t.points_per_hour ?? 0.5)), o = i - n * 36e5, s = 36e5 / r, l = /* @__PURE__ */ new Map();
   for (const _ of e) {
@@ -68362,7 +68362,7 @@ const id = /* @__PURE__ */ new WeakMap(), fo = (e) => JSON.stringify(e, (t, a) =
   }
   return [...l.entries()].map(([_, d]) => ({
     time: t.show?.graph === "bar" ? _ : d.at(-1).time,
-    value: mc(d.map((c) => c.value), a),
+    value: pc(d.map((c) => c.value), a),
     label: d.at(-1)?.label
   })).sort((_, d) => _.time - d.time);
 }, rd = (e) => {
@@ -68387,10 +68387,10 @@ const id = /* @__PURE__ */ new WeakMap(), fo = (e) => JSON.stringify(e, (t, a) =
   for (const n of t)
     n.value !== void 0 && e >= n.value && (i = n.color);
   return i;
-}, AC = (e, t) => Number.isFinite(e) ? e.toLocaleString(void 0, {
+}, PC = (e, t) => Number.isFinite(e) ? e.toLocaleString(void 0, {
   minimumFractionDigits: t,
   maximumFractionDigits: t ?? 2
-}) : "Unavailable", PC = (e, t) => {
+}) : "Unavailable", MC = (e, t) => {
   if (!e.length) return "";
   if (!t || e.length < 3)
     return e.map((i, n) => `${n ? "L" : "M"} ${i.x} ${i.y}`).join(" ");
@@ -68400,12 +68400,12 @@ const id = /* @__PURE__ */ new WeakMap(), fo = (e) => JSON.stringify(e, (t, a) =
     a += ` C ${o} ${n.y}, ${o} ${r.y}, ${r.x} ${r.y}`;
   }
   return a;
-}, MC = (e, t) => {
+}, CC = (e, t) => {
   if (typeof e == "number" && Number.isFinite(e))
     return e < 1e10 ? e * 1e3 : e;
   const a = Date.parse(String(e ?? ""));
   return Number.isFinite(a) ? a : t;
-}, CC = (e, t) => {
+}, $C = (e, t) => {
   const a = /* @__PURE__ */ new Map();
   if (Array.isArray(e))
     return e.forEach((i, n) => {
@@ -68464,7 +68464,7 @@ const id = /* @__PURE__ */ new WeakMap(), fo = (e) => JSON.stringify(e, (t, a) =
     return document.createElement("mushroom-addition-editor");
   }
   static getStubConfig(t, a = [], i = []) {
-    const n = uc(t, a, i) ?? "sensor.example";
+    const n = cc(t, a, i) ?? "sensor.example";
     return nd({
       type: "custom:mushroom-addition-mini-graph-card",
       entity: n,
@@ -68490,7 +68490,7 @@ const id = /* @__PURE__ */ new WeakMap(), fo = (e) => JSON.stringify(e, (t, a) =
     return `flex:1 1 ${this.config?.height ?? 150}px;min-height:32px`;
   }
   gridRows() {
-    const t = Zo(this.config?.show), a = t.graph === "radial" || t.graph === "pie" || t.graph === "donut", i = 24 + (t.name || t.icon ? 48 : 0) + (t.state ? 42 : 0) + (t.legend ? 24 : 0) + (t.average || t.extrema ? 24 : 0), n = Number(this.config?.height ?? 150) * (a ? 0.9 : 0.7);
+    const t = Go(this.config?.show), a = t.graph === "radial" || t.graph === "pie" || t.graph === "donut", i = 24 + (t.name || t.icon ? 48 : 0) + (t.state ? 42 : 0) + (t.legend ? 24 : 0) + (t.average || t.extrema ? 24 : 0), n = Number(this.config?.height ?? 150) * (a ? 0.9 : 0.7);
     return Math.max(2, Math.ceil((i + n) / 64));
   }
   getCardSize() {
@@ -68513,7 +68513,7 @@ const id = /* @__PURE__ */ new WeakMap(), fo = (e) => JSON.stringify(e, (t, a) =
   render() {
     if (!this.config) return g;
     if (!this.hass) return u`<ha-card><div class="loading">${h(this.hass, "Mini Graph preview")}</div></ha-card>`;
-    const t = Zo(this.config.show), a = this.series[0], i = a ? zo(
+    const t = Go(this.config.show), a = this.series[0], i = a ? zo(
       Number(a.state),
       Zi(this.config.color_thresholds ?? []),
       a.color
@@ -68802,7 +68802,7 @@ const id = /* @__PURE__ */ new WeakMap(), fo = (e) => JSON.stringify(e, (t, a) =
       `;
     }
     this.plot.push({ key: p, bar: !1, points: m });
-    const z = m.length === 1 ? [{ ...m[0], x: 0 }, { ...m[0], x: 500 }] : m, v = PC(z, t.config.smoothing ?? this.config?.smoothing ?? !0), w = m.length ? `${v} L ${z.at(-1).x} ${_} L ${z[0].x} ${_} Z` : "";
+    const z = m.length === 1 ? [{ ...m[0], x: 0 }, { ...m[0], x: 500 }] : m, v = MC(z, t.config.smoothing ?? this.config?.smoothing ?? !0), w = m.length ? `${v} L ${z.at(-1).x} ${_} L ${z[0].x} ${_} Z` : "";
     return P`
       <g class="series ${y}">
         ${o.fill && t.config.show_fill !== !1 ? P`<path class="fill ${o.fill === "fade" ? "fade" : ""}" d=${w} fill=${b}/>` : g}
@@ -68833,7 +68833,7 @@ const id = /* @__PURE__ */ new WeakMap(), fo = (e) => JSON.stringify(e, (t, a) =
   renderStatistics(t) {
     const a = this.series[0];
     if (!a || !t.average && !t.extrema || !a.points.length) return g;
-    const i = a.points.map((s) => s.value), n = mc(i, "avg"), r = Math.min(...i), o = Math.max(...i);
+    const i = a.points.map((s) => s.value), n = pc(i, "avg"), r = Math.min(...i), o = Math.max(...i);
     return u`
       <div class="statistics">
         ${t.average ? u`<span>${h(this.hass, "Average")}<b>${this.stateLabel(n)} ${a.unit}</b></span>` : g}
@@ -68847,7 +68847,7 @@ const id = /* @__PURE__ */ new WeakMap(), fo = (e) => JSON.stringify(e, (t, a) =
   stateLabel(t, a) {
     if (a) return a;
     const i = this.config?.state_map?.[Math.round(t)];
-    return i && Math.abs(t - Math.round(t)) < Number.EPSILON ? i.label ?? i.value : AC(t, this.config?.decimals);
+    return i && Math.abs(t - Math.round(t)) < Number.EPSILON ? i.label ?? i.value : PC(t, this.config?.decimals);
   }
   tooltip(t, a, i) {
     const n = new Date(i).toLocaleString(this.hass?.language, {
@@ -68930,19 +68930,19 @@ const id = /* @__PURE__ */ new WeakMap(), fo = (e) => JSON.stringify(e, (t, a) =
       no_attributes: !1,
       minimal_response: !1,
       significant_changes_only: !1
-    }, d = await SC(
+    }, d = await xC(
       this.hass.connection,
       fo({
         entityIds: [...l].sort(),
         hours: this.config?.hours_to_show
       }),
       _
-    ), c = CC(d, s);
+    ), c = $C(d, s);
     if (r !== this.historyGeneration) return o;
     for (const m of s) {
       const y = (c.get(m.entity) ?? []).flatMap((b) => {
         if (!b || typeof b != "object") return [];
-        const z = b, v = z.state ?? z.s, w = z.attributes ?? z.a ?? {}, f = m.attribute ? m.attribute.split(".").reduce(($, W) => $ && typeof $ == "object" ? $[W] : void 0, w) : v, S = qn(f, this.config?.state_map ?? []), H = MC(
+        const z = b, v = z.state ?? z.s, w = z.attributes ?? z.a ?? {}, f = m.attribute ? m.attribute.split(".").reduce(($, W) => $ && typeof $ == "object" ? $[W] : void 0, w) : v, S = qn(f, this.config?.state_map ?? []), H = CC(
           z.last_updated ?? z.last_changed ?? z.lu ?? z.lc,
           i
         );
@@ -68972,7 +68972,7 @@ const id = /* @__PURE__ */ new WeakMap(), fo = (e) => JSON.stringify(e, (t, a) =
     const o = this.hass?.states[t.entity], s = qn(wo(o, t.attribute), this.config?.state_map ?? []), l = 10 ** Number(this.config?.value_factor ?? 0), _ = Date.parse(o?.last_updated ?? o?.last_changed ?? "") || r, d = s.value === void 0 ? i : [
       ...i.filter((b) => b.time !== _),
       { time: _, value: s.value, label: s.label }
-    ], m = (t.fixed_value && s.value !== void 0 ? [{ time: n, value: s.value }, { time: r, value: s.value }] : d).map((b) => ({ ...b, value: b.value * l })), p = xC(
+    ], m = (t.fixed_value && s.value !== void 0 ? [{ time: n, value: s.value }, { time: r, value: s.value }] : d).map((b) => ({ ...b, value: b.value * l })), p = AC(
       m,
       this.config ?? {},
       t.aggregate_func ?? this.config?.aggregate_func ?? "avg",
@@ -69146,7 +69146,7 @@ Ma([
 Ma([
   F()
 ], xt.prototype, "active");
-const sd = ["helpers", "unavailable", "timeout", "initialize", "schema", "template"], $C = {
+const sd = ["helpers", "unavailable", "timeout", "initialize", "schema", "template"], EC = {
   en: "Home Assistant card helpers are unavailable. Open this card in Home Assistant and retry.|The required native component ({component}) is unavailable. Update Home Assistant and retry.|The native component ({component}) took too long to load. Retry.|The native component ({component}) could not be initialized. Retry.|This Home Assistant frontend cannot extend the Area editor Content schema.|Template error: {error}",
   ar: "أدوات مساعدة بطاقات Home Assistant غير متاحة. افتح هذه البطاقة في Home Assistant وحاول مجددًا.|المكوّن الأصلي المطلوب ({component}) غير متاح. حدّث Home Assistant وحاول مجددًا.|استغرق تحميل المكوّن الأصلي ({component}) وقتًا طويلًا. حاول مجددًا.|تعذرت تهيئة المكوّن الأصلي ({component}). حاول مجددًا.|لا تستطيع واجهة Home Assistant هذه توسيع مخطط المحتوى في محرر المنطقة.|خطأ في القالب: {error}",
   bg: "Помощните инструменти за карти на Home Assistant не са налични. Отворете картата в Home Assistant и опитайте отново.|Необходимият вграден компонент ({component}) не е наличен. Обновете Home Assistant и опитайте отново.|Зареждането на вградения компонент ({component}) отне твърде дълго. Опитайте отново.|Вграденият компонент ({component}) не може да се инициализира. Опитайте отново.|Този интерфейс на Home Assistant не може да разшири схемата за съдържание на редактора за зона.|Грешка в шаблона: {error}",
@@ -69180,8 +69180,8 @@ const sd = ["helpers", "unavailable", "timeout", "initialize", "schema", "templa
   vi: "Các công cụ hỗ trợ thẻ Home Assistant không khả dụng. Hãy mở thẻ này trong Home Assistant rồi thử lại.|Thành phần tích hợp cần thiết ({component}) không khả dụng. Hãy cập nhật Home Assistant rồi thử lại.|Thành phần tích hợp ({component}) tải quá lâu. Hãy thử lại.|Không thể khởi tạo thành phần tích hợp ({component}). Hãy thử lại.|Giao diện Home Assistant này không thể mở rộng lược đồ nội dung của trình chỉnh sửa khu vực.|Lỗi mẫu: {error}",
   "zh-Hans": "Home Assistant 卡片辅助工具不可用。请在 Home Assistant 中打开此卡片并重试。|所需的原生组件（{component}）不可用。请更新 Home Assistant 并重试。|原生组件（{component}）加载超时。请重试。|无法初始化原生组件（{component}）。请重试。|此 Home Assistant 前端无法扩展区域编辑器的内容架构。|模板错误：{error}",
   "zh-Hant": "Home Assistant 卡片輔助工具無法使用。請在 Home Assistant 中開啟此卡片並重試。|所需的原生元件（{component}）無法使用。請更新 Home Assistant 並重試。|原生元件（{component}）載入逾時。請重試。|無法初始化原生元件（{component}）。請重試。|此 Home Assistant 前端無法擴充區域編輯器的內容結構。|範本錯誤：{error}"
-}, EC = Object.fromEntries(
-  Object.entries($C).map(([e, t]) => {
+}, TC = Object.fromEntries(
+  Object.entries(EC).map(([e, t]) => {
     const a = t.split("|");
     if (a.length !== sd.length) throw new Error(`Invalid native diagnostic count for ${e}`);
     return [e, Object.fromEntries(sd.map((i, n) => [i, a[n]]))];
@@ -69206,13 +69206,13 @@ const sd = ["helpers", "unavailable", "timeout", "initialize", "schema", "templa
   "This frontend does not provide the native conditions editor.": ["unavailable", "hui-conditions-editor"],
   "This Home Assistant frontend cannot extend the Area editor Content schema.": ["schema"]
 }, ki = (e, t) => {
-  const a = EC[Dt(e?.language)], i = "Template error: ";
+  const a = TC[Dt(e?.language)], i = "Template error: ";
   if (t.startsWith(i))
     return a.template.replace("{error}", () => t.slice(i.length));
   const n = ld[t] ?? (t.startsWith("Error: ") ? ld[t.slice(7)] : void 0);
   return n ? a[n[0]].replace("{component}", () => n[1] ?? "") : t;
 }, Fs = ["alert_color", "sensor_wrap", "sensor_icons", "use_light_color", "light_entity", "camera_privacy_entity", "status_air_quality_entity", "status_light_entity", "area_buttons_per_row"], Os = (e) => !e || ["default", "state"].includes(e) ? void 0 : /^(#|rgb|hsl|var\(|color\()/.test(e) ? e : `var(--${e}-color, ${e})`;
-function TC(e, t) {
+function DC(e, t) {
   const a = e.shadowRoot;
   if (!a) return;
   const i = e.hass, n = e._config?.area;
@@ -69260,8 +69260,8 @@ function TC(e, t) {
   let _ = l?.querySelector(":scope > .addition-area-status");
   if (l && i && (t.status_air_quality_entity || t.status_light_entity)) {
     _ || (_ = document.createElement("div"), _.className = "addition-area-status", l.prepend(_));
-    const f = t.status_air_quality_entity ? Jd(i, { entity: t.status_air_quality_entity }) : void 0, S = t.status_light_entity ? i.states[t.status_light_entity] : void 0, H = S?.state === "on" && typeof S.attributes.brightness == "number" && S.attributes.brightness >= 0 && S.attributes.brightness <= 255 ? `${Math.round(S.attributes.brightness / 255 * 100)}%` : void 0, $ = cr(i, S), W = S?.state !== "on" ? "var(--secondary-text-color)" : $ ? `rgb(${$.join(",")})` : "var(--state-light-active-color, var(--amber-color, orange))";
-    So(u`${f ? u`<span title=${h(i, "Air Quality")}
+    const f = t.status_air_quality_entity ? Qd(i, { entity: t.status_air_quality_entity }) : void 0, S = t.status_light_entity ? i.states[t.status_light_entity] : void 0, H = S?.state === "on" && typeof S.attributes.brightness == "number" && S.attributes.brightness >= 0 && S.attributes.brightness <= 255 ? `${Math.round(S.attributes.brightness / 255 * 100)}%` : void 0, $ = cr(i, S), W = S?.state !== "on" ? "var(--secondary-text-color)" : $ ? `rgb(${$.join(",")})` : "var(--state-light-active-color, var(--amber-color, orange))";
+    jo(u`${f ? u`<span title=${h(i, "Air Quality")}
       style=${`--status-color:var(--${f.color}-color, ${f.color})`}>
       <ha-icon .icon=${f.icon}></ha-icon>${h(i, f.name)}</span>` : ""}
       ${t.status_light_entity ? u`<span title=${h(i, "Brightness")}
@@ -69297,7 +69297,7 @@ function TC(e, t) {
     const T = I?.entity_id.startsWith("sensor.") ? I : { entity_id: `sensor.area_${f}`, state: H, attributes: { device_class: f } };
     return [{ sensorClass: f, value: H, stateObj: T }];
   });
-  m || (m = document.createElement("div"), m.slot = "secondary", m.className = "addition-sensors", d.append(m)), m.classList.toggle("wrap", !!t.sensor_wrap), So(u`${w.map(({ sensorClass: f, value: S, stateObj: H }) => u`
+  m || (m = document.createElement("div"), m.slot = "secondary", m.className = "addition-sensors", d.append(m)), m.classList.toggle("wrap", !!t.sensor_wrap), jo(u`${w.map(({ sensorClass: f, value: S, stateObj: H }) => u`
     <span class="addition-sensor" title=${f.replaceAll("_", " ")}>
       ${t.sensor_icons ? u`<ha-state-icon .hass=${i} .stateObj=${H}
         ._config=${i.config} ._connection=${i.connection} ._entities=${i.entities}></ha-state-icon>` : ""}
@@ -69347,10 +69347,10 @@ function _d(e, t, a = 6) {
     --control-button-background-color: color-mix(in srgb, var(--primary-text-color) 13%, var(--card-background-color));
   }`, n.append(o);
 }
-var DC = Object.defineProperty, qe = (e, t, a, i) => {
+var NC = Object.defineProperty, qe = (e, t, a, i) => {
   for (var n = void 0, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (n = o(t, a, n) || n);
-  return n && DC(t, a, n), n;
+  return n && NC(t, a, n), n;
 };
 const kn = "mushroom-addition-area-card-advanced", fn = "mushroom-addition-area-controls-advanced", qs = (e) => typeof e != "string" && [
   "domain",
@@ -69364,7 +69364,7 @@ const kn = "mushroom-addition-area-card-advanced", fn = "mushroom-addition-area-
   "tap_action",
   "hold_action",
   "double_tap_action"
-].some((t) => t in e), Yo = (e) => typeof e != "string" && e.type && e.type !== "entity", pc = /* @__PURE__ */ new WeakMap(), hc = /* @__PURE__ */ new WeakMap(), gc = /* @__PURE__ */ new WeakMap(), yc = (e) => {
+].some((t) => t in e), Zo = (e) => typeof e != "string" && e.type && e.type !== "entity", hc = /* @__PURE__ */ new WeakMap(), gc = /* @__PURE__ */ new WeakMap(), yc = /* @__PURE__ */ new WeakMap(), bc = (e) => {
   if (!qs(e)) return e;
   const t = { ...e };
   for (const a of [
@@ -69385,7 +69385,7 @@ const kn = "mushroom-addition-area-card-advanced", fn = "mushroom-addition-area-
   ]) delete t[a];
   return e.domain ?? t;
 };
-function Jo(e, t = !1) {
+function Yo(e, t = !1) {
   const a = { ...e };
   for (const i of Fs) delete a[i];
   return {
@@ -69394,11 +69394,11 @@ function Jo(e, t = !1) {
     ...e.features ? { features: e.features.map((i) => {
       if (i.type !== "area-controls") return i;
       if (t) {
-        const n = { ...i, ...i.controls ? { controls: i.controls.filter((r) => !Yo(r)).map((r) => {
-          const o = yc(r);
-          return typeof o == "object" && typeof r == "object" && gc.set(o, r), o;
+        const n = { ...i, ...i.controls ? { controls: i.controls.filter((r) => !Zo(r)).map((r) => {
+          const o = bc(r);
+          return typeof o == "object" && typeof r == "object" && yc.set(o, r), o;
         }) } : {} };
-        return pc.set(n, i), n.controls && hc.set(n.controls, i), n;
+        return hc.set(n, i), n.controls && gc.set(n.controls, i), n;
       }
       return {
         ...i,
@@ -69408,7 +69408,11 @@ function Jo(e, t = !1) {
     }) } : {}
   };
 }
-const Sr = (e) => typeof e == "string" || e.domain ? !1 : e.type === "conditional" ? !!(e.control && Sr(e.control)) : e.type === "template" ? !!(e.content || e.name) : (e.content_info ?? (e.name ? "name" : e.content ? "custom" : "none")) !== "none", jo = (e) => e?.features?.some((t) => t.type === "area-controls" && t.controls?.some(Sr)) ?? !1;
+const Sr = (e) => typeof e == "string" || e.domain ? !1 : e.type === "conditional" ? !!(e.control && Sr(e.control)) : e.type === "template" ? !!(e.content || e.name) : (e.content_info ?? (e.name ? "name" : e.content ? "custom" : "none")) !== "none", Jo = (e) => e?.features?.some((t) => t.type === "area-controls" && t.controls?.some(Sr)) ?? !1, dd = (e) => {
+  if (!e) return 0;
+  const t = Number(e.area_buttons_per_row), a = Number.isInteger(t) && t >= 1 && t <= 24 ? t : 6, i = (e.features ?? []).reduce((n, r) => n + (r.type === "area-controls" && r.controls ? Math.max(0, Math.ceil(r.controls.length / a) - 1) : 0), 0);
+  return Number(Jo(e)) + i + +!!(e.status_air_quality_entity || e.status_light_entity) + Number(Jo(e) && e.display_type === "camera");
+};
 function Jt(e, t) {
   return new Promise((a, i) => {
     const n = window.setTimeout(() => i(new Error(t)), 8e3);
@@ -69422,7 +69426,7 @@ function Jt(e, t) {
     );
   });
 }
-async function bc(e) {
+async function vc(e) {
   const t = window.loadCardHelpers;
   if (!t) throw new Error("Home Assistant card helpers are unavailable. Open this card in Home Assistant, then retry.");
   const a = await Jt(t(), "Home Assistant card helpers timed out. Retry."), i = await Jt(Promise.resolve(a.createCardElement(e)), "Native Area card timed out. Retry.");
@@ -69443,7 +69447,7 @@ const nl = class nl extends ve {
     return !!(t && this.hass?.states[t]?.state !== "off");
   }
   runtimeConfig(t = !1) {
-    const a = Jo(this.config, t);
+    const a = Yo(this.config, t);
     return this.cameraPrivate() ? { ...a, display_type: "compact" } : a;
   }
   static async getConfigElement() {
@@ -69459,17 +69463,17 @@ const nl = class nl extends ve {
     super.connectedCallback(), this.syncedConfig = void 0, this.requestUpdate();
   }
   getCardSize() {
-    const t = this.card?.getCardSize?.() ?? 3;
-    return jo(this.config) ? typeof t == "number" ? t + 1 : t.then((a) => a + 1) : t;
+    const t = this.card?.getCardSize?.() ?? 3, a = dd(this.config);
+    return a ? typeof t == "number" ? t + a : t.then((i) => i + a) : t;
   }
   getGridOptions() {
-    const t = this.card?.getGridOptions?.() ?? { columns: 12, rows: 3 };
-    if (!jo(this.config) || !t || typeof t != "object") return t;
-    const a = t;
+    const t = this.card?.getGridOptions?.() ?? { columns: 12, rows: 3 }, a = dd(this.config);
+    if (!a || !t || typeof t != "object") return t;
+    const i = t;
     return {
-      ...a,
-      ...typeof a.rows == "number" ? { rows: a.rows + 1 } : {},
-      ...typeof a.min_rows == "number" ? { min_rows: a.min_rows + 1 } : {}
+      ...i,
+      ...typeof i.rows == "number" ? { rows: i.rows + a } : {},
+      ...typeof i.min_rows == "number" ? { min_rows: i.min_rows + a } : {}
     };
   }
   async load() {
@@ -69484,7 +69488,7 @@ const nl = class nl extends ve {
       const i = a.features?.some((n) => n.type === `custom:${fn}`) && !customElements.get("hui-area-controls-card-feature");
       if (this.card) this.card.setConfig(i ? this.runtimeConfig(!0) : a);
       else {
-        const n = await bc(i ? this.runtimeConfig(!0) : a);
+        const n = await vc(i ? this.runtimeConfig(!0) : a);
         if (t !== this.revision) return;
         this.card = n, this.card.setConfig(this.runtimeConfig(!!i));
       }
@@ -69524,10 +69528,10 @@ const nl = class nl extends ve {
       t !== this.syncedPrivacy && (this.card.setConfig(this.runtimeConfig(this.loadingControls)), this.syncedPrivacy = t);
       const a = this.relevantHassChanged(this.card.hass);
       if (!a && this.card.layout === this.layout && this.syncedConfig === this.config && this.syncedCard === this.card) return;
-      a && (this.card.hass = this.hass), this.card.layout = this.layout, this.syncedConfig = this.config, this.syncedCard = this.card, jo(this.config) ? this.card.style.setProperty("--feature-height", "64px") : this.card.style.removeProperty("--feature-height");
+      a && (this.card.hass = this.hass), this.card.layout = this.layout, this.syncedConfig = this.config, this.syncedCard = this.card, Jo(this.config) ? this.card.style.setProperty("--feature-height", "64px") : this.card.style.removeProperty("--feature-height");
       const i = this.card, n = this.config;
       Promise.resolve(i.updateComplete).then(async () => {
-        i !== this.card || n !== this.config || !this.isConnected || (TC(i, n ?? {}), await this.applyPresentation(i));
+        i !== this.card || n !== this.config || !this.isConnected || (DC(i, n ?? {}), await this.applyPresentation(i));
       }).catch((r) => {
         i === this.card && n === this.config && (this.error = r instanceof Error ? r.message : String(r));
       });
@@ -69779,12 +69783,12 @@ qe([
   F()
 ], Rt.prototype, "ready");
 const qi = (e) => {
-  const t = yc(e);
+  const t = bc(e);
   return typeof t == "string" ? `domain:${t}` : `entity:${t.entity_id}`;
 }, Un = (e) => JSON.stringify(Object.fromEntries(
   Object.entries(e).filter(([t]) => t !== "controls").sort(([t], [a]) => t.localeCompare(a))
 ));
-function NC(e, t) {
+function VC(e, t) {
   const a = [...e.features ?? []];
   return {
     ...t,
@@ -69792,19 +69796,19 @@ function NC(e, t) {
     type: e.type,
     ...t.features ? { features: t.features.map((i) => {
       if (i.type !== "area-controls") return i;
-      const n = pc.get(i) ?? (i.controls && hc.get(i.controls)), r = a.map((d, c) => ({ item: d, index: c })).filter(({ item: d }) => d.type === i.type), o = (i.controls ?? []).map(qi);
+      const n = hc.get(i) ?? (i.controls && gc.get(i.controls)), r = a.map((d, c) => ({ item: d, index: c })).filter(({ item: d }) => d.type === i.type), o = (i.controls ?? []).map(qi);
       r.sort((d, c) => +(Un(c.item) === Un(i)) - +(Un(d.item) === Un(i)) || o.filter((m) => c.item.controls?.some((p) => qi(p) === m)).length - o.filter((m) => d.item.controls?.some((p) => qi(p) === m)).length);
       const s = r.find(({ item: d }) => d === n) ?? r[0];
       if (!s) return i;
       a.splice(s.index, 1);
-      const l = [...s.item.controls ?? []].filter((d) => !Yo(d)), _ = i.controls?.map((d) => {
-        const c = typeof d == "object" ? gc.get(d) : void 0, m = c ? l.indexOf(c) : -1, p = m >= 0 ? m : l.findIndex((b) => qi(b) === qi(d));
+      const l = [...s.item.controls ?? []].filter((d) => !Zo(d)), _ = i.controls?.map((d) => {
+        const c = typeof d == "object" ? yc.get(d) : void 0, m = c ? l.indexOf(c) : -1, p = m >= 0 ? m : l.findIndex((b) => qi(b) === qi(d));
         if (p < 0) return d;
         const y = l.splice(p, 1)[0];
         return typeof y == "object" && qs(y) ? { ...y, ...typeof d == "object" ? d : {} } : d;
       });
       for (const [d, c] of (s.item.controls ?? []).entries())
-        Yo(c) && _?.splice(Math.min(d, _.length), 0, c);
+        Zo(c) && _?.splice(Math.min(d, _.length), 0, c);
       return { ...i, ..._ ? { controls: _ } : {} };
     }) } : {}
   };
@@ -69818,7 +69822,7 @@ const ol = class ol extends ve {
   }
   configureEditor() {
     if (!this.editor || !this.config) return;
-    this.editor.setConfig(Jo(this.config, !0));
+    this.editor.setConfig(Yo(this.config, !0));
     const t = this.editor;
     t._config && Object.assign(
       t._config,
@@ -69832,14 +69836,14 @@ const ol = class ol extends ve {
     if (!(this.loading || !this.config)) {
       this.loading = !0;
       try {
-        await bc(Jo(this.config, !0));
+        await vc(Yo(this.config, !0));
         const t = customElements.get("hui-area-card");
         if (!t.getConfigElement) throw new Error("The installed native Area editor is unavailable.");
         const a = await Jt(Promise.resolve(t.getConfigElement()), "Native Area editor timed out. Retry.");
         this.installContentEditor(a), this.editor = a, this.configureEditor(), a.hass = this.hass, a.addEventListener("config-changed", (i) => {
           i.stopPropagation();
           const n = i.detail.config;
-          this.selected = void 0, this.commit(NC(this.config, n), !1);
+          this.selected = void 0, this.commit(VC(this.config, n), !1);
         }), this.editor = a, this.error = void 0;
       } catch (t) {
         this.error = String(t instanceof Error ? t.message : t);
@@ -70052,7 +70056,7 @@ const ol = class ol extends ve {
         _.altKey && ["ArrowUp", "ArrowDown"].includes(_.key) && (_.preventDefault(), this.move(a, n, n + (_.key === "ArrowUp" ? -1 : 1)));
       }}><ha-svg-icon .path=${Ui}></ha-svg-icon></div>
               <div class="row-label"><strong>${s}</strong><span>${l}</span></div>
-              <ha-icon-button class="edit-icon" aria-label="${h(this.hass, "Edit button")}" .label=${h(this.hass, "Edit button")} .path=${au} @click=${() => {
+              <ha-icon-button class="edit-icon" aria-label="${h(this.hass, "Edit button")}" .label=${h(this.hass, "Edit button")} .path=${iu} @click=${() => {
         this.selected = { feature: a, index: n, depth: 0 }, o.type === "conditional" && this.ensureConditions();
       }}></ha-icon-button>
               <ha-icon-button class="remove-icon" aria-label="${h(this.hass, "Remove control")}" .label=${h(this.hass, "Remove control")} .path=${_i} @click=${() => {
@@ -70116,7 +70120,7 @@ qe([
 ], aa.prototype, "conditionsError");
 customElements.get(fn) || customElements.define(fn, Rt);
 customElements.get(`${kn}-editor`) || customElements.define(`${kn}-editor`, aa);
-const VC = "mushroom-addition-area-card-mushroom", LC = {
+const LC = "mushroom-addition-area-card-mushroom", HC = {
   "hui-area-card": `
     :host([data-area-mushroom]) {
       --ha-card-border-radius: var(--mush-card-border-radius, 12px);
@@ -70170,12 +70174,12 @@ const VC = "mushroom-addition-area-card-mushroom", LC = {
       font-weight: var(--mush-card-secondary-font-weight, 400); }
   `
 };
-async function vc(e, t) {
+async function kc(e, t) {
   await e.updateComplete;
   const a = e.shadowRoot;
   if (!a || !e.isConnected) return;
   t?.observe(a, { childList: !0, subtree: !0 });
-  const i = LC[e.localName];
+  const i = HC[e.localName];
   if (i && !a.querySelector("style[data-area-mushroom]")) {
     e.dataset.areaMushroom = "";
     const n = document.createElement("style");
@@ -70183,17 +70187,17 @@ async function vc(e, t) {
   }
   await Promise.all([...a.querySelectorAll(
     "ha-tile-container, ha-tile-info, ha-tile-icon, hui-card-features, hui-card-feature, hui-area-controls-card-feature, mushroom-addition-area-controls-advanced, hui-conditional-card"
-  )].map((n) => vc(n, t)));
+  )].map((n) => kc(n, t)));
 }
 const sl = class sl extends It {
   static getStubConfig(t) {
-    return { ...super.getStubConfig(t), type: `custom:${VC}`, display_type: "compact" };
+    return { ...super.getStubConfig(t), type: `custom:${LC}`, display_type: "compact" };
   }
   setConfig(t) {
     super.setConfig({ display_type: "compact", ...t });
   }
   applyPresentation(t) {
-    return this.presentationObserver ??= new MutationObserver(() => this.requestUpdate()), vc(t, this.presentationObserver);
+    return this.presentationObserver ??= new MutationObserver(() => this.requestUpdate()), kc(t, this.presentationObserver);
   }
   connectedCallback() {
     super.connectedCallback(), this.requestUpdate();
@@ -70218,11 +70222,11 @@ for (const e of dn)
       continue;
     }
     if (e.upstreamId === "air_quality") {
-      customElements.define(e.tag, Go);
+      customElements.define(e.tag, Wo);
       continue;
     }
     if (e.upstreamId === "weather_advanced") {
-      customElements.define(e.tag, Wo);
+      customElements.define(e.tag, Ko);
       continue;
     }
     if (e.upstreamId === "energy_entityworkflow") {
@@ -70247,7 +70251,7 @@ for (const e of dn)
         super(...arguments), this.descriptor = t;
       }
       static getStubConfig(n, r = [], o = []) {
-        return cc(t, n, r, o);
+        return mc(t, n, r, o);
       }
     }
     customElements.define(e.tag, a);
@@ -70262,7 +70266,7 @@ for (const e of us) {
       super(...arguments), this.descriptor = a;
     }
     static getStubConfig(o, s = [], l = []) {
-      const _ = cc(a, o, s, l);
+      const _ = mc(a, o, s, l);
       return i === "divider-title" ? {
         ..._,
         type: `custom:${e.tag}`,
@@ -70292,9 +70296,9 @@ for (const e of us) {
   customElements.define(e.tag, n);
 }
 window.customCards = window.customCards || [];
-const HC = new Set(window.customCards.map((e) => e.type));
+const IC = new Set(window.customCards.map((e) => e.type));
 for (const e of dn)
-  HC.has(e.tag) || window.customCards.push({
+  IC.has(e.tag) || window.customCards.push({
     type: e.tag,
     name: `Mushroom Addition: ${e.name}`,
     description: e.description,
@@ -70302,7 +70306,7 @@ for (const e of dn)
     documentationURL: "https://github.com/snfx-johaver/mushroom-addition"
   });
 console.info(
-  `%c MUSHROOM ADDITION %c ${_M} · ${dn.length} components `,
+  `%c MUSHROOM ADDITION %c ${dM} · ${dn.length} components `,
   "color: white; background: #03a9f4; font-weight: 700;",
   "color: #03a9f4; background: white; font-weight: 700;"
 );

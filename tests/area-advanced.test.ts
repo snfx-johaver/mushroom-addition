@@ -247,6 +247,20 @@ describe("native Area card delegation", () => {
     expect(editor.features![0]).not.toHaveProperty("addition_per_row");
     expect(mergeNativeAreaEdit(config, editor).area_buttons_per_row).toBe(2);
   });
+  it("reserves grid height for status, wrapped buttons and camera content", async () => {
+    const card = document.createElement(AREA_TAG) as MushroomAreaAdvancedCard;
+    card.hass = hass;
+    card.setConfig({ ...base, display_type: "camera", status_light_entity: "light.test", area_buttons_per_row: 2,
+      features: [{ type: "area-controls", controls: [
+        { type: "entity", entity_id: "light.test", name: "One" },
+        { type: "entity", entity_id: "light.test", name: "Two" },
+        { type: "entity", entity_id: "light.test", name: "Three" },
+      ] }] });
+    document.body.append(card);
+    await settle(card);
+    expect(card.getGridOptions()).toMatchObject({ rows: 8, min_rows: 8 });
+    expect(await card.getCardSize()).toBe(8);
+  });
   it("wraps custom buttons at the configured maximum without changing button shape", async () => {
     const element = document.createElement(AREA_FEATURE_TAG) as MushroomAreaControlsAdvanced;
     element.hass = hass;
