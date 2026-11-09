@@ -342,11 +342,12 @@ describe("native Area card delegation", () => {
     };
     const card = document.createElement(AREA_TAG) as MushroomAreaAdvancedCard;
     card.hass = initial;
-    card.setConfig({ ...base, features: [{ type: "area-controls", controls: ["switch.remote", { entity_id: "sensor.external" }] }] });
+    card.setConfig({ ...base, status_motion_entities: ["binary_sensor.remote_motion"],
+      features: [{ type: "area-controls", controls: ["switch.remote", { entity_id: "sensor.external" }] }] });
     document.body.append(card);
     await settle(card);
     const native = card.shadowRoot!.querySelector("hui-area-card") as NativeArea;
-    for (const id of ["sensor.external", "switch.remote", "sensor.external_temperature", "sensor.not_yet_loaded"]) {
+    for (const id of ["sensor.external", "switch.remote", "sensor.external_temperature", "sensor.not_yet_loaded", "binary_sensor.remote_motion"]) {
       const next: HomeAssistant = { ...card.hass!, states: { ...card.hass!.states,
         [id]: { entity_id: id, state: "42", attributes: {} },
       } };
@@ -438,6 +439,14 @@ describe("native Area card delegation", () => {
       "status", "sensor_classes", "alert_color", "sensor_wrap", "sensor_icons", "use_light_color", "camera_privacy_entity", "area_buttons_per_row",
     ]);
     expect(form.schema[0].schema[0]).toMatchObject({ name: "status", type: "expandable", flatten: true });
+    expect(form.schema[0].schema[0]).toMatchObject({ schema: expect.arrayContaining([
+      { name: "status_motion_entities", selector: { entity: {
+        domain: ["binary_sensor"], device_class: ["motion", "occupancy", "presence"], multiple: true,
+      } } },
+    ]) });
+    expect(form.schema[1]).toMatchObject({ name: "layout", type: "expandable", flatten: true,
+      schema: [{ name: "area_button_shadow", selector: { boolean: {} } }] });
+    expect(form.data.area_button_shadow).toBe(true);
     expect(form.data).toMatchObject({ alert_color: "red", sensor_wrap: true, sensor_icons: true });
     expect(form.computeLabel({ name: "alert_color" })).toBe("Alert icon color");
     expect(form.computeLabel({ name: "camera_privacy_entity" })).toBe("Camera privacy entity");
@@ -453,11 +462,16 @@ describe("native Area card delegation", () => {
     expect(native.config).not.toHaveProperty("alert_color");
     const events = vi.fn(); editor.addEventListener("config-changed", events);
     native.dispatchEvent(new CustomEvent("config-changed", { detail: {
-      config: { ...native.config, alert_color: "blue", sensor_wrap: false, sensor_icons: true },
+      config: { ...native.config, alert_color: "blue", sensor_wrap: false, sensor_icons: true, area_button_shadow: false },
     }, bubbles: true, composed: true }));
     expect((events.mock.calls[0][0] as CustomEvent).detail.config).toMatchObject({
       alert_color: "blue", sensor_wrap: false, sensor_icons: true, camera_privacy_entity: "switch.camera_privacy",
+      area_button_shadow: false,
     });
+    editor.setConfig({ ...config, area_button_shadow: false });
+    await settle(editor);
+    void native.updateComplete;
+    expect(form.data.area_button_shadow).toBe(false);
   });
   it("shows an explicit missing-helper error and can retry", async () => {
     delete areaWindow.loadCardHelpers;
@@ -598,7 +612,8 @@ describe("advanced controls inside the native feature position", () => {
     expect(formatEntityState).toHaveBeenCalledWith(element.hass.states["sensor.test"]);
     const styles = MushroomAreaControlsAdvanced.styles.cssText;
     expect(styles).toContain("flex-direction: column");
-    expect(styles).toContain("margin-top: auto");
+    expect(styles).toContain("grid-template-rows:minmax(24px, 1fr) auto; justify-items:center");
+    expect(styles).toContain("flex:none; align-items: center; justify-content: center");
     expect(styles).toContain("min-height: 64px; height:auto; padding:4px; gap:0");
     expect(styles).toContain(":host([named]) .button-icon, :host([named]) .button-label { flex-shrink:0; }");
     expect(styles).toContain("background: var(--mush-control-bg, rgba(var(--rgb-primary-text-color, 128,128,128), .05))");

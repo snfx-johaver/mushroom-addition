@@ -159,6 +159,14 @@ sensor and a light's brightness. The quality icon and color use the Air Quality
 card's status mapping; the brightness icon follows the selected light's RGB color.
 The indicators appear to the right of the room title; on narrow cards the
 air-quality label is hidden while its icon remains visible.
+Select **Motion / occupancy sensors** in the same section to add sensor icons
+with Home Assistant's localized relative last-change time, such as "yesterday"
+or "an hour ago". Active sensors are highlighted; unavailable sensors show
+their status rather than an old timestamp. These times describe the last state
+change, not a stored history of the last motion detection.
+**Layout → Button shadows** toggles elevation for all Area control buttons
+(enabled by default), including native and conditional controls. Buttons retain
+their rounded-rectangle shape and use the same 8px gap as the light card controls.
 The maximum number of area-control buttons per row can be configured in Content.
 Existing button shapes and actions are retained.
 

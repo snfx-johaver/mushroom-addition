@@ -4,6 +4,10 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Add optional motion and occupancy status icons with localized relative
+  last-change times to Area cards, configurable in Content > Status.
+- Center Area button icons without compressing their backgrounds and add a
+  Layout button-shadow toggle, preserving button shapes and 8px control spacing.
 - Use the thermostat-style theme-aware control background for Area buttons,
   including dark mode.
 - Avoid reserving fixed grid height for compact Area cards and restore spacing

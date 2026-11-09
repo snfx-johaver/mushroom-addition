@@ -27,6 +27,70 @@ customElements.define("test-area-content", ContentCard);
 afterEach(() => document.body.replaceChildren());
 
 describe("Area native content enhancements", () => {
+  it("inherits one shadow setting through all native and custom control descendants", () => {
+    const card = document.createElement("test-area-content") as ContentCard;
+    for (const enabled of [undefined, false, true]) {
+      const options = { area_button_shadow: enabled };
+      applyAreaContent(card, options);
+      expect(card.style.getPropertyValue("--addition-area-button-shadow")).toBe(
+        enabled === false ? "none" : "var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12))");
+      const config = { type: "custom:area", ...options };
+      expect(nativeAreaConfig(config)).not.toHaveProperty("area_button_shadow");
+      expect(mergeNativeAreaEdit(config, nativeAreaConfig(config, true)).area_button_shadow).toBe(enabled);
+    }
+  });
+  it("shows motion and occupancy icons with live relative last-change times and clears unavailable values", () => {
+    const card = document.createElement("test-area-content") as ContentCard;
+    const motion = "binary_sensor.motion";
+    const occupancy = "binary_sensor.occupancy";
+    card.hass = { ...hass, states: { ...hass.states,
+      [motion]: { entity_id: motion, state: "off", last_changed: "2026-11-08T10:00:00Z",
+        attributes: { device_class: "motion", friendly_name: "Motion" } },
+      [occupancy]: { entity_id: occupancy, state: "on", last_changed: "2026-11-09T10:00:00Z",
+        attributes: { device_class: "occupancy" } },
+    } };
+    const options = { status_motion_entities: [motion, occupancy, motion] };
+    applyAreaContent(card, options);
+    const container = card.shadowRoot!.querySelector("ha-tile-container")!;
+    const status = card.shadowRoot!.querySelector(".addition-area-status")!;
+    expect(container.hasAttribute("data-area-activity")).toBe(true);
+    expect(status.querySelectorAll(".status-motion")).toHaveLength(2);
+    const relative = status.querySelector("ha-relative-time") as HTMLElement & { hass: HomeAssistant; datetime: string };
+    expect(relative.hass).toBe(card.hass);
+    expect(relative.datetime).toBe("2026-11-08T10:00:00Z");
+    expect(relative.childNodes).toHaveLength(0);
+    const icons = [...status.querySelectorAll("ha-icon")] as (HTMLElement & { icon: string })[];
+    expect(icons.map(icon => icon.icon)).toEqual(["mdi:motion-sensor-off", "mdi:home-account"]);
+    expect(status.querySelectorAll(".status-motion")[0].getAttribute("style")).toContain("secondary-text-color");
+    expect(status.querySelectorAll(".status-motion")[1].getAttribute("style")).toContain("active-color");
+    relative.textContent = "yesterday";
+    card.hass = { ...card.hass, states: { ...card.hass.states,
+      [motion]: { ...card.hass.states[motion], state: "on", last_changed: "2026-11-09T11:00:00Z" },
+    } };
+    applyAreaContent(card, options);
+    expect(relative.datetime).toBe("2026-11-09T11:00:00Z");
+    expect(icons[0].icon).toBe("mdi:motion-sensor");
+    for (const state of ["unavailable", "unknown", "off"]) {
+      card.hass = { ...card.hass, states: { ...card.hass.states,
+        [motion]: { ...card.hass.states[motion], state, last_changed: "invalid" },
+      } };
+      applyAreaContent(card, options);
+      const indicator = status.querySelector(".status-motion")!;
+      expect(indicator.textContent?.toLowerCase()).toContain(state === "unavailable" ? "unavailable" : "unknown");
+      expect(indicator.querySelector("ha-relative-time")).toBeNull();
+    }
+    card.hass = { ...card.hass, states: {} };
+    applyAreaContent(card, options);
+    expect(status.querySelectorAll("ha-relative-time")).toHaveLength(0);
+    expect(card.hass.callService).not.toHaveBeenCalled();
+    applyAreaContent(card, { status_motion_entities: [] });
+    expect(container.hasAttribute("data-area-activity")).toBe(false);
+    expect(container.hasAttribute("data-area-status")).toBe(false);
+    expect(card.shadowRoot!.querySelector(".addition-area-status")).toBeNull();
+    const config = { type: "custom:area", ...options };
+    expect(nativeAreaConfig(config, true)).not.toHaveProperty("status_motion_entities");
+    expect(mergeNativeAreaEdit(config, nativeAreaConfig(config, true))).toMatchObject(options);
+  });
   it("shows selected air quality and brightness with shared status colors and clears stale values", () => {
     const card = document.createElement("test-area-content") as ContentCard;
     card.shadowRoot!.querySelector("ha-tile-container")!.outerHTML =

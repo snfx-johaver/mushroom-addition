@@ -3,13 +3,16 @@ import type { HassEntity, HomeAssistant } from "./types";
 import { roomLightRgb } from "./room";
 import { airQualityStatus } from "./air-quality";
 import { localizeText } from "./localize";
+import { stateLabel } from "./helpers";
 
-export const AREA_CONTENT_KEYS = ["alert_color", "sensor_wrap", "sensor_icons", "use_light_color", "light_entity", "camera_privacy_entity", "status_air_quality_entity", "status_light_entity", "area_buttons_per_row"] as const;
+export const AREA_CONTENT_KEYS = ["alert_color", "sensor_wrap", "sensor_icons", "use_light_color", "light_entity", "camera_privacy_entity", "status_air_quality_entity", "status_light_entity", "status_motion_entities", "area_buttons_per_row", "area_button_shadow"] as const;
 export interface AreaContentOptions {
   camera_privacy_entity?: string;
   status_air_quality_entity?: string;
   status_light_entity?: string;
+  status_motion_entities?: string[];
   area_buttons_per_row?: number;
+  area_button_shadow?: boolean;
   alert_color?: string;
   sensor_wrap?: boolean;
   sensor_icons?: boolean;
@@ -34,6 +37,8 @@ export function applyAreaContent(card: NativeContentCard, options: AreaContentOp
   const root = card.shadowRoot;
   if (!root) return;
   const hass = card.hass;
+  card.style.setProperty("--addition-area-button-shadow", options.area_button_shadow === false
+    ? "none" : "var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12))");
   const area = card._config?.area;
   let rgb: number[] | undefined;
   if (options.use_light_color && hass && typeof area === "string") {
@@ -85,7 +90,7 @@ export function applyAreaContent(card: NativeContentCard, options: AreaContentOp
       ha-tile-container > hui-card-features[slot="features"] { box-sizing:border-box; padding-top:8px; }
       ha-tile-container[data-area-status] { position:relative; container-type:inline-size; }
       ha-tile-container[data-area-status] ha-tile-info { position:static !important; }
-      ha-tile-container[data-area-status] ha-tile-info > [slot="primary"]:not(.addition-area-status) {
+      ha-tile-container[data-area-status]:not([data-area-activity]) ha-tile-info > [slot="primary"]:not(.addition-area-status) {
         max-width:min(100%, max(0px, calc(100cqw - 224px))); }
       ha-tile-container[data-area-status] > hui-card-features[slot="features-inline"] {
         box-sizing:border-box; padding-top:24px; }
@@ -97,6 +102,17 @@ export function applyAreaContent(card: NativeContentCard, options: AreaContentOp
       .addition-area-status > .status-quality { flex:0 1 auto; }
       .addition-area-status .status-label { overflow:hidden; text-overflow:ellipsis; }
       .addition-area-status ha-icon { flex:none; --mdc-icon-size:14px; color:var(--status-color); }
+      ha-tile-container[data-area-activity] ha-tile-info > [slot="primary"]:not(.addition-area-status) {
+        max-width:min(100%, max(40px, calc(100cqw - 294px))); }
+      [data-area-activity] .addition-area-status {
+        max-width:min(220px, max(0px, calc(100cqw - 150px))); }
+      .addition-area-status > .status-motion { flex:0 1 auto; overflow:hidden; }
+      .status-motion ha-relative-time { overflow:hidden; text-overflow:ellipsis; }
+      @container (max-width:400px) {
+        ha-tile-container[data-area-activity] ha-tile-info > [slot="primary"]:not(.addition-area-status) {
+          max-width:min(100%, max(0px, calc(100cqw - 250px))); }
+        [data-area-activity] .addition-area-status .status-quality .status-label { display:none; }
+      }
       @container (max-width:260px) {
         ha-tile-container[data-area-status] ha-tile-info > [slot="primary"]:not(.addition-area-status) {
           max-width:min(100%, max(0px, calc(100cqw - 140px))); }
@@ -109,8 +125,10 @@ export function applyAreaContent(card: NativeContentCard, options: AreaContentOp
   surface?.toggleAttribute("data-area-compact", card._config?.display_type === "compact");
   const info = root.querySelector("ha-tile-info");
   const container = root.querySelector("ha-tile-container") as (HTMLElement & { fixedInfoHeight: boolean }) | null;
-  const showStatus = Boolean(info && hass && (options.status_air_quality_entity || options.status_light_entity));
+  const motionIds = [...new Set(options.status_motion_entities ?? [])];
+  const showStatus = Boolean(info && hass && (options.status_air_quality_entity || options.status_light_entity || motionIds.length));
   container?.toggleAttribute("data-area-status", showStatus);
+  container?.toggleAttribute("data-area-activity", Boolean(showStatus && motionIds.length));
   if (container?.shadowRoot && !container.shadowRoot.querySelector("style[data-area-status-layout]")) {
     const layoutStyle = document.createElement("style");
     layoutStyle.dataset.areaStatusLayout = "";
@@ -137,7 +155,23 @@ export function applyAreaContent(card: NativeContentCard, options: AreaContentOp
     const lightColor = roomLightRgb(hass, light);
     const lightIconColor = light?.state !== "on" ? "var(--secondary-text-color)"
       : lightColor ? `rgb(${lightColor.join(",")})` : "var(--state-light-active-color, var(--amber-color, orange))";
-    render(html`${quality ? html`<span class="status-quality" title=${`${localizeText(hass, "Air Quality")}: ${localizeText(hass, quality.name)}`}
+    render(html`${motionIds.map(id => {
+      const sensor = hass.states[id];
+      const available = sensor && ["on", "off"].includes(sensor.state);
+      const timestamp = available && sensor.last_changed && Number.isFinite(Date.parse(sensor.last_changed))
+        ? sensor.last_changed : undefined;
+      const active = available && sensor.state === "on";
+      const occupancy = ["occupancy", "presence"].includes(String(sensor?.attributes.device_class));
+      const icon = typeof sensor?.attributes.icon === "string" ? sensor.attributes.icon
+        : occupancy ? active ? "mdi:home-account" : "mdi:home-outline"
+          : active ? "mdi:motion-sensor" : "mdi:motion-sensor-off";
+      const label = sensor?.attributes.friendly_name ?? id;
+      return html`<span class="status-motion" title=${`${label}: ${stateLabel(sensor, hass)}`}
+        style=${`--status-color:${active ? "var(--state-binary_sensor-active-color, var(--amber-color, orange))" : "var(--secondary-text-color)"}`}>
+        <ha-icon .icon=${icon}></ha-icon>${timestamp
+          ? html`<ha-relative-time .hass=${hass} .datetime=${timestamp}></ha-relative-time>`
+          : html`<span class="status-label">${stateLabel(available ? { ...sensor, state: "unknown" } : sensor, hass)}</span>`}</span>`;
+    })}${quality ? html`<span class="status-quality" title=${`${localizeText(hass, "Air Quality")}: ${localizeText(hass, quality.name)}`}
       style=${`--status-color:var(--${quality.color}-color, ${quality.color})`}>
       <ha-icon .icon=${quality.icon}></ha-icon><span class="status-label">${localizeText(hass, quality.name)}</span></span>` : ""}
       ${options.status_light_entity ? html`<span class="status-light" title=${localizeText(hass, "Brightness")}
@@ -233,7 +267,7 @@ export function applyNativeControlColor(group: HTMLElement, color?: string, perR
     --control-button-background-opacity: 1;
     --control-button-border-radius: var(--ha-card-border-radius, 12px);
     border-radius: var(--ha-card-border-radius, 12px);
-    box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
+    box-shadow: var(--addition-area-button-shadow, var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12)));
   }
   ha-control-button:not(.active) {
     --control-button-icon-color: var(--secondary-text-color);

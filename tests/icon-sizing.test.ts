@@ -160,7 +160,9 @@ describe("default Mushroom icon sizing", () => {
     const source = readFileSync(join(process.cwd(), "src", file), "utf8");
     const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const rule = source.match(new RegExp(`${escaped}\\s*\\{([^}]+)\\}`))?.[1];
-    expect(rule).toContain("box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12))");
+    expect(rule).toContain(file === "area-advanced.ts"
+      ? "box-shadow: var(--addition-area-button-shadow, var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12)))"
+      : "box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12))");
   });
   it("reserves bottom shadow space inside Welcome navigation and scrolls narrow rows instead of clipping", () => {
     expect(ruleFor(".welcome-items")).toContain("padding: 4px 4px 10px");

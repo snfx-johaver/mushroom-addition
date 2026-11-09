@@ -543,23 +543,26 @@ export class MushroomAreaControlsAdvanced extends LitElement {
     hui-area-controls-card-feature { flex: 1; min-width: 0; }
     hui-conditional-card { flex: 1; min-width: 0; }
     hui-conditional-card[hidden] { display: none !important; }
-    .entity { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 42px;
-      box-shadow: var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12));
+    .entity { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 0;
+      box-shadow: var(--addition-area-button-shadow, var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12)));
       box-sizing: border-box; height:var(--feature-height, 42px);
-      padding: 6px 4px; gap: 4px; border: 0; border-radius: var(--ha-card-border-radius, 12px); font: inherit;
+      padding: 0 4px; gap: 4px; border: 0; border-radius: var(--ha-card-border-radius, 12px); font: inherit;
       background: var(--mush-control-bg, rgba(var(--rgb-primary-text-color, 128,128,128), .05)); cursor: pointer;
       color: var(--control-icon-color); --mdc-icon-size: 24px; }
     .entity:hover:not(:disabled) { background: color-mix(in srgb, var(--primary-text-color) 13%, transparent); }
     .entity:disabled { color: var(--disabled-text-color, var(--secondary-text-color)); cursor: default; }
     .entity:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
-    :host([named]) .entity { min-height: 64px; height:auto; padding:4px; gap:0; }
+    :host([named]) .entity { display:grid; grid-template-rows:minmax(24px, 1fr) auto; justify-items:center;
+      min-height: 64px; height:auto; padding:4px; gap:0; }
     :host([named]) .button-icon { width:24px; height:24px; }
     :host([named]) .button-icon, :host([named]) .button-label { flex-shrink:0; }
-    .button-icon { display: flex; align-items: center; justify-content: center; width:var(--mush-icon-size, 36px);
-      height:var(--mush-icon-size, 36px); border-radius:50%; background:color-mix(in srgb, var(--control-icon-color) 18%, transparent); }
+    .button-icon { display: flex; flex:none; align-items: center; justify-content: center; width:var(--mush-icon-size, 36px);
+      height:var(--mush-icon-size, 36px); line-height:0; border-radius:50%; background:color-mix(in srgb, var(--control-icon-color) 18%, transparent); }
+    .button-icon ha-icon, .button-icon ha-state-icon { display:flex; align-items:center; justify-content:center;
+      width:24px; height:24px; }
     .entity.is-off .button-icon { background:rgba(158,158,158,.18); color:rgb(158,158,158); }
     .button-icon img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
-    .button-label { margin-top: auto; display:-webkit-box; width:100%; overflow:hidden; overflow-wrap:anywhere; white-space:normal;
+    .button-label { display:-webkit-box; width:100%; overflow:hidden; overflow-wrap:anywhere; white-space:normal;
       -webkit-box-orient:vertical; -webkit-line-clamp:2; color:var(--mush-card-secondary-color, var(--secondary-text-color));
       font-size:var(--mush-card-secondary-font-size, 12px); line-height:var(--mush-card-secondary-line-height, 16px); }
   `;
@@ -625,7 +628,8 @@ export class MushroomAreaAdvancedEditor extends LitElement {
     this.editor.setConfig(nativeAreaConfig(this.config, true));
     const editor = this.editor as NativeAreaEditor;
     if (editor._config) Object.assign(editor._config,
-      Object.fromEntries(AREA_CONTENT_KEYS.map(key => [key, this.config![key]])));
+      Object.fromEntries(AREA_CONTENT_KEYS.map(key => [key, this.config![key]])),
+      { area_button_shadow: this.config.area_button_shadow !== false });
   }
   public setConfig(config: AreaAdvancedConfig) {
     this.config = config;
@@ -795,7 +799,9 @@ export class MushroomAreaAdvancedEditor extends LitElement {
     if (!editor._schema) throw new Error("This Home Assistant frontend cannot extend the Area editor Content schema.");
     const labels: Record<string, string> = { alert_color: "Alert icon color",
       status_air_quality_entity: "Air Quality", status_light_entity: "Brightness",
+      status_motion_entities: "Motion / occupancy sensors",
       area_buttons_per_row: "Buttons per row", status: "Status",
+      layout: "Layout", area_button_shadow: "Button shadows",
       camera_privacy_entity: "Camera privacy entity",
       sensor_wrap: "Wrap sensor values onto additional lines", sensor_icons: "Show small grey entity icons beside sensor values",
       use_light_color: "Use the light color as the room accent" };
@@ -812,10 +818,13 @@ export class MushroomAreaAdvancedEditor extends LitElement {
       const base = schema(...args);
       let extended = cache.get(base);
       if (!extended) {
-        extended = base.map(field => field.name !== "content" ? field : { ...field, schema: [
+        extended = base.flatMap(field => field.name !== "content" ? [field] : [{ ...field, schema: [
         { name: "status", type: "expandable", flatten: true, schema: [
           { name: "status_air_quality_entity", selector: { entity: { domain: ["sensor"] } } },
           { name: "status_light_entity", selector: { entity: { domain: ["light"] } } },
+          { name: "status_motion_entities", selector: { entity: {
+            domain: ["binary_sensor"], device_class: ["motion", "occupancy", "presence"], multiple: true,
+          } } },
         ] },
         ...field.schema ?? [],
         { name: "alert_color", selector: { ui_color: {} } },
@@ -824,7 +833,9 @@ export class MushroomAreaAdvancedEditor extends LitElement {
         { name: "use_light_color", selector: { boolean: {} } },
         { name: "camera_privacy_entity", selector: { entity: { domain: ["switch", "input_boolean", "binary_sensor"] } } },
         { name: "area_buttons_per_row", selector: { number: { min: 1, max: 24, mode: "box", step: 1 } } },
-      ] });
+      ] }, { name: "layout", type: "expandable", flatten: true, schema: [
+        { name: "area_button_shadow", selector: { boolean: {} } },
+      ] }]);
         cache.set(base, extended);
       }
       return extended;
