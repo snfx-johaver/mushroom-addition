@@ -4,6 +4,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Avoid reserving fixed grid height for compact Area cards and restore spacing
+  above their lower controls.
+
 ## 0.7.6 - 2026-11-09
 
 - Fix Area Advanced status selectors, compact card spacing, and clipped

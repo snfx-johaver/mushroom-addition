@@ -189,14 +189,19 @@ export class MushroomAreaAdvancedCard extends LitElement {
   }
   public getCardSize() {
     const size = this.card?.getCardSize?.() ?? 3;
-    const extra = extraAreaRows(this.config);
+    const config = this.config && this.cameraPrivate() ? { ...this.config, display_type: "compact" } : this.config;
+    const extra = extraAreaRows(config);
     return extra ? (typeof size === "number" ? size + extra : size.then((value) => value + extra)) : size;
   }
   public getGridOptions() {
     const options = this.card?.getGridOptions?.() ?? { columns: 12, rows: 3 };
-    const extra = extraAreaRows(this.config);
-    if (!extra || !options || typeof options !== "object") return options;
+    if (!options || typeof options !== "object") return options;
     const grid = options as Record<string, unknown>;
+    if (this.config && (this.config.display_type === "compact" || this.cameraPrivate())) {
+      return { ...grid, rows: "auto", min_rows: 1 };
+    }
+    const extra = extraAreaRows(this.config);
+    if (!extra) return options;
     return { ...grid, ...(typeof grid.rows === "number" ? { rows: grid.rows + extra } : {}),
       ...(typeof grid.min_rows === "number" ? { min_rows: grid.min_rows + extra } : {}) };
   }

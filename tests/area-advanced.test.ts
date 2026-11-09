@@ -261,6 +261,27 @@ describe("native Area card delegation", () => {
     expect(card.getGridOptions()).toMatchObject({ rows: 7, min_rows: 7 });
     expect(await card.getCardSize()).toBe(7);
   });
+  it("uses automatic grid height for compact and privacy-hidden camera cards", async () => {
+    const card = document.createElement(AREA_TAG) as MushroomAreaAdvancedCard;
+    card.hass = { ...hass, states: { ...hass.states, "switch.privacy": {
+      entity_id: "switch.privacy", state: "on", attributes: {},
+    } } };
+    const config: AreaAdvancedConfig = { ...base, display_type: "camera", camera_privacy_entity: "switch.privacy",
+      features: [{ type: "area-controls", controls: [{ entity_id: "light.test", name: "One" }] }] };
+    card.setConfig(config);
+    document.body.append(card);
+    await settle(card);
+    expect(card.getGridOptions()).toMatchObject({ rows: "auto", min_rows: 1 });
+    expect(card.getCardSize()).toBe(5);
+    card.setConfig({ ...config, display_type: "compact", camera_privacy_entity: undefined });
+    await settle(card);
+    expect(card.getGridOptions()).toMatchObject({ rows: "auto", min_rows: 1 });
+    expect(card.getCardSize()).toBe(5);
+    card.setConfig({ ...config, camera_privacy_entity: undefined });
+    await settle(card);
+    expect(card.getGridOptions()).toMatchObject({ rows: 6, min_rows: 6 });
+    expect(card.getCardSize()).toBe(6);
+  });
   it("wraps custom buttons at the configured maximum without changing button shape", async () => {
     const element = document.createElement(AREA_FEATURE_TAG) as MushroomAreaControlsAdvanced;
     element.hass = hass;

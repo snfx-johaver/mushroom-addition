@@ -82,6 +82,7 @@ export function applyAreaContent(card: NativeContentCard, options: AreaContentOp
         color:var(--secondary-text-color); }
       ha-card[data-area-compact] { height:auto !important; justify-content:flex-start; }
       ha-card[data-area-compact] ha-tile-container { height:auto !important; }
+      ha-tile-container > hui-card-features[slot="features"] { box-sizing:border-box; padding-top:8px; }
       ha-tile-container[data-area-status] { position:relative; container-type:inline-size; }
       ha-tile-container[data-area-status] ha-tile-info { position:static !important; }
       ha-tile-container[data-area-status] ha-tile-info > [slot="primary"]:not(.addition-area-status) {

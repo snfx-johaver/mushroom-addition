@@ -69252,6 +69252,7 @@ function DC(e, t) {
         color:var(--secondary-text-color); }
       ha-card[data-area-compact] { height:auto !important; justify-content:flex-start; }
       ha-card[data-area-compact] ha-tile-container { height:auto !important; }
+      ha-tile-container > hui-card-features[slot="features"] { box-sizing:border-box; padding-top:8px; }
       ha-tile-container[data-area-status] { position:relative; container-type:inline-size; }
       ha-tile-container[data-area-status] ha-tile-info { position:static !important; }
       ha-tile-container[data-area-status] ha-tile-info > [slot="primary"]:not(.addition-area-status) {
@@ -69484,18 +69485,21 @@ const nl = class nl extends ve {
     super.connectedCallback(), this.syncedConfig = void 0, this.requestUpdate();
   }
   getCardSize() {
-    const t = this.card?.getCardSize?.() ?? 3, a = dd(this.config);
-    return a ? typeof t == "number" ? t + a : t.then((i) => i + a) : t;
+    const t = this.card?.getCardSize?.() ?? 3, a = this.config && this.cameraPrivate() ? { ...this.config, display_type: "compact" } : this.config, i = dd(a);
+    return i ? typeof t == "number" ? t + i : t.then((n) => n + i) : t;
   }
   getGridOptions() {
-    const t = this.card?.getGridOptions?.() ?? { columns: 12, rows: 3 }, a = dd(this.config);
-    if (!a || !t || typeof t != "object") return t;
-    const i = t;
-    return {
-      ...i,
-      ...typeof i.rows == "number" ? { rows: i.rows + a } : {},
-      ...typeof i.min_rows == "number" ? { min_rows: i.min_rows + a } : {}
-    };
+    const t = this.card?.getGridOptions?.() ?? { columns: 12, rows: 3 };
+    if (!t || typeof t != "object") return t;
+    const a = t;
+    if (this.config && (this.config.display_type === "compact" || this.cameraPrivate()))
+      return { ...a, rows: "auto", min_rows: 1 };
+    const i = dd(this.config);
+    return i ? {
+      ...a,
+      ...typeof a.rows == "number" ? { rows: a.rows + i } : {},
+      ...typeof a.min_rows == "number" ? { min_rows: a.min_rows + i } : {}
+    } : t;
   }
   async load() {
     if (!this.config) return;

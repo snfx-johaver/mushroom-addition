@@ -48,6 +48,8 @@ describe("Area native content enhancements", () => {
     expect(status.getAttribute("slot")).toBe("primary");
     expect(surface.hasAttribute("data-area-compact")).toBe(true);
     expect(card.shadowRoot!.querySelector("style[data-area-content]")!.textContent).toContain("position:absolute");
+    expect(card.shadowRoot!.querySelector("style[data-area-content]")!.textContent)
+      .toContain('hui-card-features[slot="features"] { box-sizing:border-box; padding-top:8px; }');
     expect(tile.shadowRoot!.querySelector("style[data-area-status-layout]")!.textContent).toContain("padding-top:10px");
     expect(status.textContent).toContain("Poor");
     expect(status.textContent).toContain("60%");
