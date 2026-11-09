@@ -8,6 +8,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 - Fix Area Advanced status selectors, compact card spacing, and clipped
   multi-line control labels.
+- Place Area Advanced air-quality and brightness status to the right of the
+  room title, rather than above the card, and restore the content's top margin.
 - Add optional air-quality and light-brightness status to Area Advanced cards,
   plus scene-style button states and configurable buttons per row while
   retaining the existing button shape.

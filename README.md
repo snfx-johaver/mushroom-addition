@@ -157,6 +157,8 @@ guard; it does not change the camera's own recording or privacy settings.
 Their Content editor also offers a **Status** section for an air-quality status
 sensor and a light's brightness. The quality icon and color use the Air Quality
 card's status mapping; the brightness icon follows the selected light's RGB color.
+The indicators appear to the right of the room title; on narrow cards the
+air-quality label is hidden while its icon remains visible.
 The maximum number of area-control buttons per row can be configured in Content.
 Existing button shapes and actions are retained.
 

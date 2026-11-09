@@ -35,30 +35,39 @@ describe("Area native content enhancements", () => {
       "sensor.quality": { entity_id: "sensor.quality", state: "poor", attributes: {} },
       "light.room": { entity_id: "light.room", state: "on", attributes: { brightness: 153, rgb_color: [12, 34, 56] } },
     } };
+    const tile = card.shadowRoot!.querySelector("ha-tile-container")!;
+    tile.attachShadow({ mode: "open" });
     const options = { status_air_quality_entity: "sensor.quality", status_light_entity: "light.room" };
     applyAreaContent(card, options);
     const status = card.shadowRoot!.querySelector(".addition-area-status")!;
     const surface = card.shadowRoot!.querySelector("ha-card")!;
-    expect(surface.hasAttribute("data-area-status")).toBe(true);
+    const container = card.shadowRoot!.querySelector("ha-tile-container")!;
+    const info = card.shadowRoot!.querySelector("ha-tile-info")!;
+    expect(container.hasAttribute("data-area-status")).toBe(true);
+    expect(status.parentElement).toBe(info);
+    expect(status.getAttribute("slot")).toBe("primary");
     expect(surface.hasAttribute("data-area-compact")).toBe(true);
     expect(card.shadowRoot!.querySelector("style[data-area-content]")!.textContent).toContain("position:absolute");
+    expect(tile.shadowRoot!.querySelector("style[data-area-status-layout]")!.textContent).toContain("padding-top:10px");
     expect(status.textContent).toContain("Poor");
     expect(status.textContent).toContain("60%");
     expect(status.querySelectorAll("ha-icon")).toHaveLength(2);
     expect((status.querySelector("ha-icon") as HTMLElement & { icon: string }).icon).toBe("mdi:emoticon-sad-outline");
-    expect(status.querySelectorAll("span")[0].getAttribute("style")).toContain("orange");
-    expect(status.querySelectorAll("span")[1].getAttribute("style")).toContain("rgb(12,34,56)");
+    expect(status.querySelector(".status-quality")!.getAttribute("style")).toContain("orange");
+    expect(status.querySelector(".status-light")!.getAttribute("style")).toContain("rgb(12,34,56)");
     card.hass = { ...card.hass, states: { ...card.hass.states,
       "light.room": { entity_id: "light.room", state: "off", attributes: {} },
       "sensor.quality": { entity_id: "sensor.quality", state: "unavailable", attributes: {} },
     } };
     applyAreaContent(card, options);
+    expect(tile.shadowRoot!.querySelectorAll("style[data-area-status-layout]")).toHaveLength(1);
+    expect(info.querySelectorAll(".addition-area-status")).toHaveLength(1);
     expect(status.textContent).toContain("Unknown");
     expect(status.textContent).toContain("—");
-    expect(status.querySelectorAll("span")[1].getAttribute("style")).toContain("secondary-text-color");
+    expect(status.querySelector(".status-light")!.getAttribute("style")).toContain("secondary-text-color");
     applyAreaContent(card, {});
     expect(card.shadowRoot!.querySelector(".addition-area-status")).toBeNull();
-    expect(surface.hasAttribute("data-area-status")).toBe(false);
+    expect(container.hasAttribute("data-area-status")).toBe(false);
     expect(card.hass.callService).not.toHaveBeenCalled();
   });
   it("derives the active area's light group RGB without a selector and clears stale accents", () => {

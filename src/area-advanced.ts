@@ -122,7 +122,6 @@ const extraAreaRows = (config?: AreaAdvancedConfig): number => {
     total + (feature.type === "area-controls" && feature.controls
       ? Math.max(0, Math.ceil(feature.controls.length / perRow) - 1) : 0), 0);
   return Number(namedFeatures(config)) + wrappedRows
-    + Number(Boolean(config.status_air_quality_entity || config.status_light_entity))
     + Number(namedFeatures(config) && config.display_type === "camera");
 };
 

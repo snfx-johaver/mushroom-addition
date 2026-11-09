@@ -82,24 +82,50 @@ export function applyAreaContent(card: NativeContentCard, options: AreaContentOp
         color:var(--secondary-text-color); }
       ha-card[data-area-compact] { height:auto !important; justify-content:flex-start; }
       ha-card[data-area-compact] ha-tile-container { height:auto !important; }
-      ha-card[data-area-status] { position:relative; box-sizing:border-box; padding-top:24px; }
+      ha-tile-container[data-area-status] { position:relative; container-type:inline-size; }
+      ha-tile-container[data-area-status] ha-tile-info { position:static !important; }
+      ha-tile-container[data-area-status] ha-tile-info > [slot="primary"]:not(.addition-area-status) {
+        max-width:min(100%, max(0px, calc(100cqw - 224px))); }
+      ha-tile-container[data-area-status] > hui-card-features[slot="features-inline"] {
+        box-sizing:border-box; padding-top:24px; }
       .addition-area-status { display:flex; align-items:center; gap:8px; overflow:hidden; white-space:nowrap;
-        position:absolute; top:6px; left:12px; right:12px; color:var(--secondary-text-color);
+        position:absolute; top:auto; left:auto; right:10px; width:auto;
+        max-width:min(150px, max(0px, calc(100cqw - 90px))); padding:0; color:var(--secondary-text-color);
         font-size:var(--mush-card-secondary-font-size, 12px); line-height:16px; }
-      .addition-area-status span { display:inline-flex; align-items:center; gap:4px; }
-      .addition-area-status ha-icon { --mdc-icon-size:14px; color:var(--status-color); }
+      .addition-area-status > span { display:inline-flex; align-items:center; gap:4px; flex:none; min-width:0; }
+      .addition-area-status > .status-quality { flex:0 1 auto; }
+      .addition-area-status .status-label { overflow:hidden; text-overflow:ellipsis; }
+      .addition-area-status ha-icon { flex:none; --mdc-icon-size:14px; color:var(--status-color); }
+      @container (max-width:260px) {
+        ha-tile-container[data-area-status] ha-tile-info > [slot="primary"]:not(.addition-area-status) {
+          max-width:min(100%, max(0px, calc(100cqw - 140px))); }
+        .addition-area-status .status-quality .status-label { display:none; }
+      }
     `;
     root.append(style);
   }
   const surface = root.querySelector("ha-card");
   surface?.toggleAttribute("data-area-compact", card._config?.display_type === "compact");
-  surface?.toggleAttribute("data-area-status", Boolean(hass && (options.status_air_quality_entity || options.status_light_entity)));
-  let status = surface?.querySelector<HTMLDivElement>(":scope > .addition-area-status");
-  if (surface && hass && (options.status_air_quality_entity || options.status_light_entity)) {
+  const info = root.querySelector("ha-tile-info");
+  const container = root.querySelector("ha-tile-container") as (HTMLElement & { fixedInfoHeight: boolean }) | null;
+  const showStatus = Boolean(info && hass && (options.status_air_quality_entity || options.status_light_entity));
+  container?.toggleAttribute("data-area-status", showStatus);
+  if (container?.shadowRoot && !container.shadowRoot.querySelector("style[data-area-status-layout]")) {
+    const layoutStyle = document.createElement("style");
+    layoutStyle.dataset.areaStatusLayout = "";
+    layoutStyle.textContent = `
+      :host .container { box-sizing:border-box; padding-top:10px; }
+      :host([data-area-status]) .content { position:static !important; align-items:flex-start !important; }
+    `;
+    container.shadowRoot.append(layoutStyle);
+  }
+  let status = info?.querySelector<HTMLDivElement>(":scope > .addition-area-status");
+  if (info && hass && showStatus) {
     if (!status) {
       status = document.createElement("div");
       status.className = "addition-area-status";
-      surface.prepend(status);
+      status.slot = "primary";
+      info.append(status);
     }
     const quality = options.status_air_quality_entity
       ? airQualityStatus(hass, { type: "", entity: options.status_air_quality_entity }) : undefined;
@@ -110,16 +136,14 @@ export function applyAreaContent(card: NativeContentCard, options: AreaContentOp
     const lightColor = roomLightRgb(hass, light);
     const lightIconColor = light?.state !== "on" ? "var(--secondary-text-color)"
       : lightColor ? `rgb(${lightColor.join(",")})` : "var(--state-light-active-color, var(--amber-color, orange))";
-    render(html`${quality ? html`<span title=${localizeText(hass, "Air Quality")}
+    render(html`${quality ? html`<span class="status-quality" title=${`${localizeText(hass, "Air Quality")}: ${localizeText(hass, quality.name)}`}
       style=${`--status-color:var(--${quality.color}-color, ${quality.color})`}>
-      <ha-icon .icon=${quality.icon}></ha-icon>${localizeText(hass, quality.name)}</span>` : ""}
-      ${options.status_light_entity ? html`<span title=${localizeText(hass, "Brightness")}
+      <ha-icon .icon=${quality.icon}></ha-icon><span class="status-label">${localizeText(hass, quality.name)}</span></span>` : ""}
+      ${options.status_light_entity ? html`<span class="status-light" title=${localizeText(hass, "Brightness")}
         style=${`--status-color:${lightIconColor}`}>
         <ha-icon .icon=${"mdi:lightbulb-on"}></ha-icon>${brightness ?? "—"}</span>` : ""}`, status);
   } else status?.remove();
-  const info = root.querySelector("ha-tile-info");
   if (!info) return;
-  const container = root.querySelector("ha-tile-container") as (HTMLElement & { fixedInfoHeight: boolean }) | null;
   if (container) {
     const config = card._config;
     container.fixedInfoHeight = !options.sensor_wrap && config?.display_type === "compact"
