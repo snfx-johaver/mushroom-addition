@@ -80,7 +80,7 @@ describe("default Mushroom icon sizing", () => {
       expect(source).toContain("background: var(--addition-neutral-background");
     }
     const area = readFileSync(join(process.cwd(), "src", "area-advanced.ts"), "utf8");
-    expect(area).toContain("background: var(--addition-raised-background");
+    expect(area).toContain("background: var(--mush-control-bg, rgba(var(--rgb-primary-text-color");
     expect(area).toContain(".entity.is-off .button-icon");
   });
   it("uses Mushroom typography and icon sizes throughout NAS metrics without narrow-screen downscaling", () => {
