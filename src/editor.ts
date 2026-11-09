@@ -113,7 +113,7 @@ const stockLabels: Record<string, string> = {
 
 const sectionForField = (field: EditorField): EditorSectionId => {
   if (field.name === "todo_entities") return "context";
-  if (field.name === "todo_show_completed") return "content";
+  if (field.name === "todo_show_completed" || field.name === "todo_sort") return "content";
   if (field.name.startsWith("todo_allow_")) return "interactions";
   if (field.name.startsWith("air_quality_show_")) return "content";
   if (field.name === "stock_symbol" || field.name === "stock_source") return "context";

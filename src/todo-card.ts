@@ -4,7 +4,7 @@ import { MushroomAdditionCard } from "./card";
 import { getCatalogItem } from "./catalog";
 import { localizeText } from "./localize";
 import { renderAutomaticPresentation, type RenderContext } from "./renderers";
-import { readTodo, safeTodoUid, TODO_FEATURE, todoEntities, todoStub, todoSupports, validateTodo, type TodoItem } from "./todo";
+import { readTodo, safeTodoUid, sortTodo, TODO_FEATURE, TODO_SORT_OPTIONS, todoEntities, todoStub, todoSupports, validateTodo, type TodoChecklistItem, type TodoItem, type TodoSort } from "./todo";
 import type { AdditionConfig, HomeAssistant } from "./types";
 
 type Draft = { uid?: string; summary: string; description: string; due: string; dueType: "date" | "datetime" };
@@ -18,7 +18,7 @@ export class MushroomTodoCard extends MushroomAdditionCard {
   @state() private loaded = false;
   @state() private error = "";
   @state() private draft?: Draft;
-  @state() private showCompleted?: boolean;
+  @state() private sort?: TodoSort;
   @state() private deleting?: string;
   private generation = 0;
   private timer?: ReturnType<typeof setInterval>;
@@ -45,26 +45,33 @@ export class MushroomTodoCard extends MushroomAdditionCard {
       outline:2px solid var(--primary-color); outline-offset:2px; }
     ul { list-style:none; margin:0; padding:0; }
     li { display:flex; align-items:flex-start; gap:8px; padding-block:8px; border-bottom:1px solid var(--divider-color,rgba(127,127,127,.2)); }
-    .task { flex:1; min-width:0; padding-block:6px; overflow-wrap:anywhere; }
+    .task { flex:1; min-width:0; padding-block:6px; overflow-wrap:anywhere; line-height:20px; }
     .task b { font-size:var(--mush-card-primary-font-size,14px); font-weight:500; }
     .completed b { text-decoration:line-through; color:var(--secondary-text-color); }
-    .description { white-space:pre-wrap; margin-block:4px; font-size:12px; color:var(--secondary-text-color); }
+    .description { white-space:pre-wrap; margin:4px 0 0; font-size:12px; color:var(--secondary-text-color); }
     time, .hint, .status { font-size:12px; color:var(--secondary-text-color); overflow-wrap:anywhere; }
     .status { padding-block:10px; }
     [role=alert] { color:var(--error-color); }
-    .icon-button { padding:8px; min-width:40px; flex-shrink:0; }
-    ha-icon { --mdc-icon-size:20px; }
+    .icon-button { display:inline-flex; align-items:center; justify-content:center;
+      padding:8px; min-width:40px; height:40px; flex-shrink:0; }
+    ha-icon { --mdc-icon-size:15px; }
     .row-actions { display:flex; flex-wrap:wrap; gap:4px; }
     .row-actions:empty { display:none; }
     form { display:grid; gap:10px; padding:12px; margin-block:10px; border-radius:12px; background:var(--secondary-background-color,var(--addition-neutral-background)); }
     label { display:grid; gap:5px; font-size:13px; }
     input, textarea, select { box-sizing:border-box; width:100%; min-width:0; border:1px solid var(--divider-color,rgba(127,127,127,.3));
       border-radius:8px; padding:10px; background:var(--card-background-color); }
-    input[type=checkbox] { width:20px; height:20px; accent-color:var(--primary-color); }
-    .completed-toggle { display:flex; align-items:center; gap:6px; }
+    .sort { display:flex; gap:6px; align-items:center; min-width:0; }
+    .sort select { width:auto; padding:8px; }
+    .completed-group { margin-top:8px; }
+    .completed-group > summary { cursor:pointer; padding-block:8px; font-size:13px; color:var(--secondary-text-color); }
+    .checklist { margin-top:4px; }
+    .checklist li { align-items:center; padding-block:2px; border:0; }
+    .checklist span { font-size:12px; line-height:18px; }
+    .checklist .checked { text-decoration:line-through; color:var(--secondary-text-color); }
     .confirmation { display:flex; gap:6px; flex-wrap:wrap; margin-block:6px; }
     @container (max-width:360px) {
-      li { flex-wrap:wrap; }
+      .task-row { flex-wrap:wrap; }
       .row-actions { margin-inline-start:48px; flex-basis:calc(100% - 48px); }
     }
     :host { container-type:inline-size; }
@@ -80,7 +87,7 @@ export class MushroomTodoCard extends MushroomAdditionCard {
     validateTodo(config);
     this.invalidate();
     this.selected = todoEntities(config)[0] ?? "";
-    this.showCompleted = undefined;
+    this.sort = undefined;
     super.setConfig(config);
   }
   public connectedCallback(): void {
@@ -210,6 +217,44 @@ export class MushroomTodoCard extends MushroomAdditionCard {
       if (generation === this.generation) this.busy = false;
     }
   }
+  private canUpdateChecklist(item: TodoItem): boolean {
+    return this.writable && this.config?.todo_allow_edit !== false && safeTodoUid(item, this.items) &&
+      this.supports(TODO_FEATURE.update) && Boolean(this.hass?.services?.ms365_todo?.update_todo_checklist_item);
+  }
+  private async toggleChecklist(item: TodoItem, step: TodoChecklistItem): Promise<void> {
+    if (!this.canUpdateChecklist(item) || !this.hass) return;
+    const generation = ++this.generation, entity = this.selected, hass = this.hass;
+    this.busy = true;
+    let written = false;
+    try {
+      const latest = await readTodo(hass, entity);
+      if (!this.current(generation, entity)) return;
+      const parent = latest.find(row => row.uid === item.uid);
+      const currentStep = parent?.checklist?.find(row => row.id === step.id);
+      if (!parent || !safeTodoUid(parent, latest) || parent.status !== item.status || !currentStep ||
+        currentStep.name !== step.name || currentStep.checked !== step.checked) {
+        this.items = latest;
+        this.error = "Task changed or has no safe UID. Refresh before editing.";
+        return;
+      }
+      if (this.config?.todo_allow_edit === false || !this.supports(TODO_FEATURE.update) ||
+        !this.hass?.services?.ms365_todo?.update_todo_checklist_item) throw new Error("Unsupported action");
+      await hass.callService("ms365_todo", "update_todo_checklist_item", {
+        entity_id: entity, todo_id: item.uid, checklist_item_id: step.id,
+        status: step.checked ? "needs_action" : "completed",
+      });
+      written = true;
+      if (!this.current(generation, entity)) return;
+      const refreshed = await readTodo(this.hass, entity);
+      if (this.current(generation, entity)) { this.items = refreshed; this.loaded = true; }
+    } catch {
+      if (this.current(generation, entity)) this.error = written
+        ? "Change sent. Refresh to verify the task list."
+        : "Unable to change task. Check connection and permissions, then refresh before retrying.";
+    } finally {
+      if (generation === this.generation) this.busy = false;
+    }
+  }
   private save(event: SubmitEvent): void {
     event.preventDefault();
     const draft = this.draft;
@@ -242,8 +287,9 @@ export class MushroomTodoCard extends MushroomAdditionCard {
     if (!this.config || !this.hass || !this.descriptor) return nothing;
     const t = (text: string) => localizeText(this.hass, text);
     const ids = todoEntities(this.config), entity = this.hass.states[this.selected];
-    const completed = this.showCompleted ?? this.config.todo_show_completed !== false;
-    const visible = this.items.filter(item => completed || item.status !== "completed");
+    const sorted = sortTodo(this.items, this.sort ?? this.config.todo_sort ?? "list", this.hass.language);
+    const active = sorted.filter(item => item.status !== "completed");
+    const completed = sorted.filter(item => item.status === "completed");
     const context: RenderContext = {
       config: { ...this.config, entity: this.selected,
         secondary_info: this.config.secondary_info ?? "none" },
@@ -261,28 +307,50 @@ export class MushroomTodoCard extends MushroomAdditionCard {
       ${!ids.length ? html`<p class="status">${t("Select to-do lists in the card editor.")}</p>` :
         !this.available ? html`<p class="status" role="alert">${t("Unavailable")}</p>` : html`
         <div class="toolbar">
-          <label class="completed-toggle"><input type="checkbox" .checked=${completed}
-            @change=${(event: Event) => { this.showCompleted = (event.target as HTMLInputElement).checked; }}>${t("Show completed tasks")}</label>
+          <label class="sort">${t("Sort tasks")}<select .value=${this.sort ?? this.config.todo_sort ?? "list"}
+            @change=${(event: Event) => { this.sort = (event.target as HTMLSelectElement).value as TodoSort; }}>
+            ${TODO_SORT_OPTIONS.map(option => html`<option value=${option.value}>${t(option.label)}</option>`)}
+          </select></label>
           <div class="actions">
-            <button ?disabled=${this.loading || this.busy} @click=${() => void this.refresh()}>${t("Refresh")}</button>
+            <button class="icon-button refresh" aria-label=${t("Refresh")} title=${t("Refresh")}
+              ?disabled=${this.loading || this.busy} @click=${() => void this.refresh()}><ha-icon .icon=${"mdi:refresh"}></ha-icon></button>
             ${this.supports(TODO_FEATURE.create) && this.config.todo_allow_add !== false ? html`
-              <button class="primary" ?disabled=${!this.writable} @click=${() => this.openDraft()}>${t("Add task")}</button>` : nothing}
+              <button class="icon-button primary add" aria-label=${t("Add task")} title=${t("Add task")}
+                ?disabled=${!this.writable} @click=${() => this.openDraft()}><ha-icon .icon=${"mdi:plus"}></ha-icon></button>` : nothing}
           </div>
         </div>
         ${this.loading || this.busy ? html`<p role="status" class="status">${t(this.busy ? "Saving task…" : "Loading tasks…")}</p>` : nothing}
         ${this.error ? html`<p role="alert" class="status">${t(this.error)}</p>` : nothing}
         ${this.draft ? this.renderForm() : nothing}
-        ${this.loaded && !visible.length ? html`<p class="status">${t("No tasks to show.")}</p>` : nothing}
-        <ul aria-label=${entity?.attributes.friendly_name ?? t("To-do")}>${visible.map(item => {
-          const safe = safeTodoUid(item, this.items);
-          return html`<li class=${item.status === "completed" ? "completed" : ""}>
+        ${this.loaded && !active.length ? html`<p class="status">${t("No tasks to show.")}</p>` : nothing}
+        <ul aria-label=${entity?.attributes.friendly_name ?? t("To-do")}>${active.map(item => this.renderItem(item))}</ul>
+        ${this.loaded && this.config.todo_show_completed !== false ? html`
+          <details class="completed-group"><summary>${t("Completed tasks")} (${completed.length})</summary>
+            ${completed.length ? html`<ul aria-label=${t("Completed tasks")}>${completed.map(item => this.renderItem(item))}</ul>`
+              : html`<p class="hint">${t("No completed tasks supplied by this list.")}</p>`}
+          </details>` : nothing}`}
+    </ha-card>`;
+  }
+  private renderItem(item: TodoItem) {
+    const t = (text: string) => localizeText(this.hass, text);
+    const safe = safeTodoUid(item, this.items);
+    return html`<li class=${`task-row${item.status === "completed" ? " completed" : ""}`}>
             <button class="icon-button complete" aria-label=${`${t(item.status === "completed" ? "Mark incomplete" : "Complete task")}: ${item.summary}`}
               aria-pressed=${item.status === "completed"} ?disabled=${!this.writable || !safe || !this.supports(TODO_FEATURE.update)}
               @click=${() => void this.mutate("update_item", { status: item.status === "completed" ? "needs_action" : "completed" }, item)}>
               <ha-icon .icon=${item.status === "completed" ? "mdi:checkbox-marked-circle" : "mdi:checkbox-blank-circle-outline"}></ha-icon></button>
             <div class="task"><b>${item.summary}</b>
-              ${item.description ? html`<p class="description">${item.description}</p>` : nothing}
+              ${item.description?.trim() ? html`<p class="description">${item.description.trim()}</p>` : nothing}
               ${item.due ? html`<time datetime=${item.due}>${t("Due")}: ${this.dueLabel(item.due)}</time>` : nothing}
+              ${item.checklist?.length ? html`<ul class="checklist" aria-label=${t("Subtasks")}>
+                ${item.checklist.map(step => html`<li>
+                  <button class="icon-button checklist-complete" aria-label=${`${t(step.checked ? "Mark incomplete" : "Complete task")}: ${step.name}`}
+                    aria-pressed=${step.checked} ?disabled=${!this.canUpdateChecklist(item)}
+                    @click=${() => void this.toggleChecklist(item, step)}>
+                    <ha-icon .icon=${step.checked ? "mdi:checkbox-marked" : "mdi:checkbox-blank-outline"}></ha-icon>
+                  </button><span class=${step.checked ? "checked" : ""}>${step.name}</span>
+                </li>`)}
+              </ul>` : nothing}
               ${!safe ? html`<div class="hint">${t("Task changed or has no safe UID. Refresh before editing.")}</div>` : nothing}
               ${this.deleting !== undefined && this.deleting === item.uid ? html`<div class="confirmation">
                 <span>${t("Delete this task?")}</span>
@@ -299,8 +367,6 @@ export class MushroomTodoCard extends MushroomAdditionCard {
                 <ha-icon .icon=${"mdi:delete-outline"}></ha-icon></button>` : nothing}
             </div>
           </li>`;
-        })}</ul>`}
-    </ha-card>`;
   }
   private renderForm() {
     const draft = this.draft!, t = (text: string) => localizeText(this.hass, text);

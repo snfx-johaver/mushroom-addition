@@ -21,6 +21,7 @@ todo_entities:
   - todo.shopping
 name: My tasks
 todo_show_completed: true
+todo_sort: due
 todo_allow_add: true
 todo_allow_edit: true
 todo_allow_delete: true
@@ -28,7 +29,7 @@ card_shadow: true
 ```
 
 `entity` is optional if `todo_entities` is supplied. Duplicate entity IDs are
-merged in order. All five `todo_*` settings are available in the shared graphical
+merged in order. All `todo_*` settings are available in the shared graphical
 editor; the four boolean settings default to `true`. `todo_entities` defaults
 to no additional lists. The normal Mushroom **Content**, **Layout**, and
 **Interactions** controls are reused, including icon, name, primary/secondary
@@ -42,7 +43,13 @@ its navigation button; a custom card name is not translated.
 - Add tasks, complete/reopen tasks, edit their title, and confirm deletion.
 - View descriptions and due dates; set/edit/clear descriptions and date or
   date/time fields only when the entity advertises those capabilities.
-- Hide completed tasks with a local display toggle (does not delete them).
+- Completed tasks are grouped in a collapsed section at the bottom, with a count.
+  Expand it to reopen or edit them; `todo_show_completed: false` hides the section
+  without deleting anything.
+- Sort each group by list order (default), due date (earliest first, undated last),
+  or locale-aware alphabetical order. Set the default in **Content → Sort tasks**
+  or change it temporarily using the card's selector. Sorting is display-only.
+- Refresh and add use labeled icon buttons; task icons are 25% smaller.
 - Switch lists without combining task identifiers across entities.
 - Refresh manually, after mutations and relevant entity/connection changes,
   and every 30 seconds while attached. Polling also catches edits that leave
@@ -68,6 +75,25 @@ Controls follow HA's `TodoListEntityFeature` bitmask, not the integration name:
 | 16 | Due date | Date input |
 | 32 | Due datetime | Local date/time input |
 | 64 | Description | Description input |
+
+MS365-ToDo lists additionally expose existing subtasks through the entity's
+`all_todos[].checklist_items` attribute. The card matches parents by unique task UID,
+shows their subtasks underneath, and enables completion/reopening only when the
+integration's `ms365_todo.update_todo_checklist_item` service and editing capability
+are available. Subtask writes check the parent and step before sending their IDs.
+No Microsoft API calls, tokens, or backend installation are involved.
+
+**Completed Microsoft tasks:** enable `show_completed` for the list in the
+MS365-ToDo integration's UI list settings. Its default is false: the integration
+then excludes completed tasks before Home Assistant or any frontend can see them.
+The card shows an explicit empty-group message when none are supplied. It does
+not modify integration settings automatically.
+
+**Importance and creation dates:** the current generic HA item contract and
+MS365-ToDo attributes do not expose these fields, and the installed update
+services have no importance parameter. The card cannot display/change the
+Microsoft star or sort by importance/creation date; it does not invent local
+stars or treat provider order as creation order.
 
 Microsoft To Do entities with `supported_features: 119` advertise all listed
 capabilities except move. They use the same code as other integrations: no
@@ -108,9 +134,10 @@ Cloud-provider sync timing is controlled by the integration, not the card.
 ## Deliberately absent
 
 There are no Home Tasks-specific rewards, points, family assignment, task
-templates, recurrence scheduling, subtasks, notifications, attachments, calendar
+templates, recurrence scheduling, subtask creation/deletion, notifications, attachments, calendar
 automation, backend history or custom services. These are not part of the generic
 HA to-do contract, so the interface does not advertise non-working controls.
+Existing MS365 subtasks are the explicitly supported provider extension above.
 There is no bulk deletion, drag sorting, direct Microsoft API access or hidden
 backend installation. This is a task-list frontend, not a replacement for the
 Home Tasks server.

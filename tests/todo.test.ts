@@ -7,8 +7,8 @@ import { createStubConfig } from "../src/stub";
 import { editorSchemaFor, type EditorField } from "../src/editor-schema";
 import { populatedDefaultsFor } from "../src/defaults";
 import { localizeText, SUPPORTED_LOCALES } from "../src/localize";
-import { todoGuidanceTranslations, todoTranslations } from "../src/translations/todo";
-import { readTodo, safeTodoUid, TODO_FEATURE, TODO_TYPE, todoStub, todoSupports, validateTodo, type TodoItem } from "../src/todo";
+import { todoGuidanceTranslations, todoListTranslations, todoTranslations } from "../src/translations/todo";
+import { readTodo, safeTodoUid, sortTodo, TODO_FEATURE, TODO_TYPE, todoStub, todoSupports, validateTodo, type TodoItem } from "../src/todo";
 
 const task = (extra: Partial<TodoItem> = {}): TodoItem => ({ uid: "uid-1", summary: "Task one", status: "needs_action", ...extra });
 const source = (features = 119, rows: TodoItem[] = [task()]): HomeAssistant => ({
@@ -29,7 +29,7 @@ async function mount(hass = source(), extra: Partial<AdditionConfig> = {}) {
   await settle(card); return card;
 }
 const button = (card: MushroomTodoCard, label: string) => [...card.shadowRoot!.querySelectorAll<HTMLButtonElement>("button")]
-  .find(node => node.textContent!.trim() === label)!;
+  .find(node => node.textContent!.trim() === label || node.getAttribute("aria-label") === label)!;
 async function input(card: MushroomTodoCard, name: string, value: string) {
   const node = card.shadowRoot!.querySelector<HTMLInputElement>(`[name="${name}"]`)!;
   node.value = value; node.dispatchEvent(new Event("input", { bubbles: true })); await settle(card);
@@ -57,12 +57,13 @@ describe("to-do API, capabilities and picker", () => {
     const names = rows.map(row => row.name);
     expect(new Set(names).size).toBe(names.length);
     for (const name of ["entity", "todo_entities", "card_shadow", "layout", "icon_type", "primary_info", "todo_show_completed",
-      "todo_allow_add", "todo_allow_edit", "todo_allow_delete"]) expect(names).toContain(name);
+      "todo_allow_add", "todo_allow_edit", "todo_allow_delete", "todo_sort"]) expect(names).toContain(name);
     expect(rows.find(row => row.name === "todo_entities")?.selector).toEqual({ entity: { domain: ["todo"], multiple: true } });
     expect(populatedDefaultsFor(descriptor).todo_allow_add).toBe(true);
     expect(() => validateTodo(config({ entity: "sensor.no" }))).toThrow();
     expect(() => validateTodo(config({ todo_entities: ["todo.valid", "sensor.no"] }))).toThrow();
     expect(() => validateTodo(config({ todo_allow_add: "true" as unknown as boolean }))).toThrow();
+    expect(() => validateTodo(config({ todo_sort: "created" as AdditionConfig["todo_sort"] }))).toThrow();
   });
   it("reads exact HA websocket API and never falls back to task titles", async () => {
     const hass = source(); await readTodo(hass, "todo.microsoft");
@@ -88,11 +89,106 @@ describe("to-do API, capabilities and picker", () => {
       for (const text of Object.values(todoTranslations[locale])) expect(text.trim()).not.toBe("");
       expect(localizeText({ language: locale } as HomeAssistant, "Add task")).toBe(todoTranslations[locale]["ui.release.Add task"]);
       expect(Object.keys(todoGuidanceTranslations[locale])).toEqual(Object.keys(todoGuidanceTranslations.en));
+      expect(Object.keys(todoListTranslations[locale])).toEqual(Object.keys(todoListTranslations.en));
+      for (const [key, text] of Object.entries(todoListTranslations[locale])) {
+        expect(localizeText({ language: locale } as HomeAssistant, todoListTranslations.en[key])).toBe(text);
+      }
     }
   });
 });
 
 describe("Microsoft To Do operations", () => {
+  const checklistSource = () => {
+    const hass = source();
+    hass.states["todo.microsoft"].attributes.all_todos = [{
+      todo_id: "uid-1", subject: "Task one", checklist_items: [
+        { id: "step-1", name: "First step", is_checked: false },
+        { id: "step-2", name: "Done step", is_checked: true },
+      ],
+    }];
+    hass.services = { ms365_todo: { update_todo_checklist_item: { fields: {} } } };
+    return hass;
+  };
+  it("matches subitems by UID and toggles only the selected step using the existing MS365 service", async () => {
+    const hass = checklistSource(), card = await mount(hass);
+    const steps = card.shadowRoot!.querySelectorAll<HTMLButtonElement>(".checklist-complete");
+    expect(steps).toHaveLength(2);
+    expect(card.shadowRoot!.querySelector(".checklist .checked")?.textContent).toBe("Done step");
+    expect(steps[0].disabled).toBe(false);
+    steps[0].click(); await settle(card);
+    expect(hass.callService).toHaveBeenLastCalledWith("ms365_todo", "update_todo_checklist_item", {
+      entity_id: "todo.microsoft", todo_id: "uid-1", checklist_item_id: "step-1", status: "completed",
+    });
+    card.shadowRoot!.querySelectorAll<HTMLButtonElement>(".checklist-complete")[1].click(); await settle(card);
+    expect(hass.callService).toHaveBeenLastCalledWith("ms365_todo", "update_todo_checklist_item", {
+      entity_id: "todo.microsoft", todo_id: "uid-1", checklist_item_id: "step-2", status: "needs_action",
+    });
+  });
+  it("shows steps read-only without the provider service or edit capability", async () => {
+    const hass = checklistSource();
+    hass.services = {};
+    const card = await mount(hass);
+    expect(card.shadowRoot!.querySelector(".checklist")?.textContent).toContain("First step");
+    expect(card.shadowRoot!.querySelector<HTMLButtonElement>(".checklist-complete")!.disabled).toBe(true);
+    hass.services = { ms365_todo: { update_todo_checklist_item: { fields: {} } } };
+    card.setConfig(config({ todo_allow_edit: false })); await settle(card);
+    expect(card.shadowRoot!.querySelector<HTMLButtonElement>(".checklist-complete")!.disabled).toBe(true);
+    expect(hass.callService).not.toHaveBeenCalled();
+  });
+  it("refuses ambiguous metadata, invalid steps, and stale step updates", async () => {
+    const hass = checklistSource();
+    const metadata = hass.states["todo.microsoft"].attributes.all_todos as { checklist_items: { id: string; name: string; is_checked: boolean }[] }[];
+    hass.states["todo.microsoft"].attributes.all_todos = [metadata[0], metadata[0]];
+    expect((await readTodo(hass, "todo.microsoft"))[0].checklist).toBeUndefined();
+    hass.states["todo.microsoft"].attributes.all_todos = metadata;
+    metadata[0].checklist_items[1].id = "step-1";
+    await expect(readTodo(hass, "todo.microsoft")).rejects.toThrow("Invalid to-do checklist");
+    metadata[0].checklist_items[1].id = "step-2";
+    const card = await mount(hass);
+    metadata[0].checklist_items[0].is_checked = true;
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".checklist-complete")!.click(); await settle(card);
+    expect(hass.callService).not.toHaveBeenCalled();
+    expect(card.shadowRoot!.querySelector("[role=alert]")?.textContent).toContain("Task changed");
+  });
+  it("reports step write errors without exposing provider text", async () => {
+    const hass = checklistSource(), card = await mount(hass);
+    vi.mocked(hass.callService).mockRejectedValue(new Error("private provider text"));
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".checklist-complete")!.click(); await settle(card);
+    expect(card.shadowRoot!.querySelector("[role=alert]")?.textContent).toContain("Unable to change");
+    expect(card.shadowRoot!.textContent).not.toContain("private provider");
+  });
+  it("sorts active/completed groups independently without changing the provider list", async () => {
+    const rows = [
+      task({ uid: "z", summary: "Zulu", due: "2026-11-12" }),
+      task({ uid: "c", summary: "Completed", status: "completed", due: "2026-11-01" }),
+      task({ uid: "a", summary: "Alpha", due: "2026-11-11" }),
+      task({ uid: "b", summary: "Beta" }),
+    ];
+    expect(sortTodo(rows, "due").map(r => r.uid)).toEqual(["c", "a", "z", "b"]);
+    expect(sortTodo([...rows, task({ uid: "bad", due: "invalid" })], "due").at(-1)?.uid).toBe("bad");
+    expect(sortTodo(rows, "list")).toEqual(rows);
+    const hass = source(119, rows), card = await mount(hass, { todo_sort: "due" });
+    const activeNames = () => [...card.shadowRoot!.querySelectorAll("ha-card > ul > li .task > b")].map(e => e.textContent);
+    expect(activeNames()).toEqual(["Alpha", "Zulu", "Beta"]);
+    const select = card.shadowRoot!.querySelector<HTMLSelectElement>(".sort select")!;
+    select.value = "summary"; select.dispatchEvent(new Event("change")); await settle(card);
+    expect(activeNames()).toEqual(["Alpha", "Beta", "Zulu"]);
+    expect(card.shadowRoot!.querySelector(".completed-group ul b")?.textContent).toBe("Completed");
+    expect(rows[0].summary).toBe("Zulu");
+    expect(hass.callService).not.toHaveBeenCalled();
+  });
+  it("removes whitespace-only descriptions, offers icon actions, and explains missing completed tasks", async () => {
+    const card = await mount(source(119, [task({ description: " \n\n " })]));
+    expect(card.shadowRoot!.querySelector(".description")).toBeNull();
+    for (const [label, icon] of [["Refresh", "mdi:refresh"], ["Add task", "mdi:plus"]]) {
+      expect(button(card, label).title).toBe(label);
+      expect((button(card, label).querySelector("ha-icon") as HTMLElement & { icon: string }).icon).toBe(icon);
+    }
+    expect(card.shadowRoot!.querySelector(".completed-group .hint")?.textContent).toContain("No completed tasks supplied");
+    const styles = String((customElements.get(TODO_TYPE.slice(7)) as typeof import("../src/todo-card").MushroomTodoCard).styles.at(-1));
+    expect(styles).toContain("--mdc-icon-size:15px");
+    expect(styles).toContain("padding-block:8px");
+  });
   it("renders a responsive readable list, completion state, description and due date", async () => {
     const card = await mount(source(119, [task({ description: "<script>private</script>\nDetails", due: "2026-11-09" }), task({ uid: "uid-2", status: "completed" })]), { card_shadow: true });
     expect(card.shadowRoot!.querySelectorAll("li")).toHaveLength(2);
@@ -100,8 +196,15 @@ describe("Microsoft To Do operations", () => {
     expect(card.shadowRoot!.querySelector("time")?.getAttribute("datetime")).toBe("2026-11-09");
     expect(card.shadowRoot!.querySelector("ha-card")?.classList.contains("card-shadow")).toBe(true);
     expect(card.shadowRoot!.querySelector(".completed")).not.toBeNull();
-    const toggle = card.shadowRoot!.querySelector<HTMLInputElement>(".completed-toggle input")!;
-    toggle.checked = false; toggle.dispatchEvent(new Event("change")); await settle(card);
+    const group = card.shadowRoot!.querySelector<HTMLDetailsElement>(".completed-group")!;
+    expect(group.open).toBe(false);
+    expect(group.querySelector("summary")?.textContent).toContain("(1)");
+    expect(group.querySelectorAll("li")).toHaveLength(1);
+    group.open = true;
+    button(card, "Refresh").click(); await settle(card);
+    expect(group.open).toBe(true);
+    card.setConfig(config({ todo_show_completed: false })); await settle(card);
+    expect(card.shadowRoot!.querySelector(".completed-group")).toBeNull();
     expect(card.shadowRoot!.querySelectorAll("li")).toHaveLength(1);
   });
   it("adds a task with supported description and date, and waits for authoritative refresh", async () => {

@@ -6,7 +6,16 @@ export interface TodoItem {
   status: "needs_action" | "completed";
   description?: string | null;
   due?: string | null;
+  checklist?: TodoChecklistItem[];
 }
+
+export interface TodoChecklistItem { id: string; name: string; checked: boolean }
+export const TODO_SORT_OPTIONS = [
+  { value: "list", label: "List order" },
+  { value: "due", label: "Due" },
+  { value: "summary", label: "Alphabetically" },
+] as const;
+export type TodoSort = typeof TODO_SORT_OPTIONS[number]["value"];
 
 export const TODO_FEATURE = { create: 1, delete: 2, update: 4, date: 16, datetime: 32, description: 64 } as const;
 export const TODO_TYPE = "custom:mushroom-addition-todo";
@@ -16,6 +25,7 @@ export const todoLabels: Record<string, string> = {
   todo_allow_add: "Allow adding tasks",
   todo_allow_edit: "Allow editing tasks",
   todo_allow_delete: "Allow deleting tasks",
+  todo_sort: "Sort tasks",
 };
 
 export function todoEntities(config?: AdditionConfig): string[] {
@@ -31,6 +41,35 @@ export function validateTodo(config: AdditionConfig): void {
   for (const key of ["todo_show_completed", "todo_allow_add", "todo_allow_edit", "todo_allow_delete"] as const) {
     if (config[key] !== undefined && typeof config[key] !== "boolean") throw new Error(`${key} must be a boolean.`);
   }
+  if (config.todo_sort !== undefined && !TODO_SORT_OPTIONS.some(option => option.value === config.todo_sort)) {
+    throw new Error("Invalid task sort order.");
+  }
+}
+
+export function sortTodo(items: TodoItem[], order: TodoSort, language?: string): TodoItem[] {
+  const timestamp = (item: TodoItem) => {
+    const time = item.due ? new Date(/^\d{4}-\d{2}-\d{2}$/.test(item.due) ? `${item.due}T00:00:00` : item.due).getTime() : NaN;
+    return Number.isFinite(time) ? time : Infinity;
+  };
+  return [...items].sort((a, b) => order === "summary"
+    ? a.summary.localeCompare(b.summary, language, { numeric: true, sensitivity: "base" })
+    : order === "due" ? (timestamp(a) === timestamp(b) ? 0 : timestamp(a) < timestamp(b) ? -1 : 1) : 0);
+}
+
+function todoChecklist(item: TodoItem, entity?: HassEntity): TodoChecklistItem[] | undefined {
+  const rows: unknown = entity?.attributes.all_todos;
+  if (!item.uid || !Array.isArray(rows)) return undefined;
+  const matches = rows.filter((row): row is Record<string, unknown> =>
+    !!row && typeof row === "object" && row.todo_id === item.uid);
+  if (matches.length !== 1) return undefined;
+  const checklist: unknown = matches[0].checklist_items;
+  if (checklist == null) return undefined;
+  if (!Array.isArray(checklist) || checklist.some(row => !row || typeof row.id !== "string" || !row.id ||
+    typeof row.name !== "string" || typeof row.is_checked !== "boolean") ||
+    new Set(checklist.map(row => row.id)).size !== checklist.length) {
+    throw new Error("Invalid to-do checklist response.");
+  }
+  return checklist.map(row => ({ id: row.id, name: row.name, checked: row.is_checked }));
 }
 
 export function todoStub(hass?: HomeAssistant, entities: string[] = [], fallback: string[] = []): AdditionConfig {
@@ -63,5 +102,5 @@ export async function readTodo(hass: HomeAssistant, entity: string): Promise<Tod
     (item.uid != null && typeof item.uid !== "string") ||
     (item.description != null && typeof item.description !== "string") ||
     (item.due != null && typeof item.due !== "string"))) throw new Error("Invalid to-do response.");
-  return result.items;
+  return result.items.map(item => ({ ...item, checklist: todoChecklist(item, hass.states[entity]) }));
 }

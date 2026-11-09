@@ -4,6 +4,10 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- To-do: show existing MS365 subtasks with supported completion controls, group
+  completed tasks in a collapsible bottom section, and add UI-configurable
+  alphabetical/due-date sorting. Use compact icon actions and hide whitespace-only
+  descriptions to remove unnecessary row height.
 - Remove circular icon backgrounds from Area control buttons while retaining
   their button surfaces, centering, and active/inactive icon colors.
 - Add optional motion and occupancy status icons with localized relative

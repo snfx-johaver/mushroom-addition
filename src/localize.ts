@@ -9,7 +9,7 @@ import { mediaLabelTranslations } from "./translations/media-labels";
 import { editorControlTranslations } from "./translations/editor-controls";
 import { airQualityTranslations } from "./translations/air-quality";
 import { areaStatusTranslations } from "./translations/area-status";
-import { todoGuidanceTranslations, todoTranslations } from "./translations/todo";
+import { todoGuidanceTranslations, todoListTranslations, todoTranslations } from "./translations/todo";
 import { releaseGuidanceTranslations } from "./translations/release-guidance";
 import { workflowTranslations } from "./translations/workflow";
 import { stockTranslations } from "./translations/stock";
@@ -660,6 +660,7 @@ export const translationCatalogs: Record<string, Record<string, string>> = Objec
     ...airQualityTranslations[locale],
     ...todoTranslations[locale],
     ...todoGuidanceTranslations[locale],
+    ...todoListTranslations[locale],
     ...releaseGuidanceTranslations[locale],
     ...workflowTranslations[locale],
     ...stockTranslations[locale],
@@ -1356,6 +1357,7 @@ export const helperCatalogs: Record<string, Record<string, string>> = {
 export const editorHelper = (key: string, hass?: HomeAssistant, cardType?: string): string | undefined => {
   if (key === "todo_entities") return localizeText(hass, "Additional lists are shown separately; tasks are not moved between lists.");
   if (key === "todo_show_completed") return localizeText(hass, "Display only; completed tasks are not deleted.");
+  if (key === "todo_sort") return ["List order", "Due", "Alphabetically"].map(label => localizeText(hass, label)).join(" / ");
   if (/^todo_allow_(add|edit|delete)$/.test(key)) return localizeText(hass, "Only actions supported by the selected list are offered. Home Assistant enforces permissions.");
   const logHelp: Record<string, string[]> = {
     allIcon: ["All", "Icon"],

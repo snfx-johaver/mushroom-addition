@@ -1,5 +1,42 @@
 import { translationTable } from "./table";
 
+export const todoListTranslations = translationTable([
+  "Sort tasks", "List order", "Alphabetically", "Completed tasks", "No completed tasks supplied by this list.", "Subtasks",
+], {
+  ar: "ترتيب المهام|ترتيب القائمة|أبجديًا|المهام المكتملة|لا توفر هذه القائمة مهام مكتملة.|المهام الفرعية",
+  bg: "Сортиране на задачите|Ред в списъка|По азбучен ред|Завършени задачи|Този списък не предоставя завършени задачи.|Подзадачи",
+  ca: "Ordena les tasques|Ordre de la llista|Alfabèticament|Tasques completades|Aquesta llista no proporciona tasques completades.|Subtasques",
+  cs: "Řazení úkolů|Pořadí seznamu|Abecedně|Dokončené úkoly|Tento seznam neposkytuje dokončené úkoly.|Dílčí úkoly",
+  da: "Sortér opgaver|Listerækkefølge|Alfabetisk|Fuldførte opgaver|Denne liste leverer ingen fuldførte opgaver.|Underopgaver",
+  de: "Aufgaben sortieren|Listenreihenfolge|Alphabetisch|Erledigte Aufgaben|Diese Liste liefert keine erledigten Aufgaben.|Unteraufgaben",
+  el: "Ταξινόμηση εργασιών|Σειρά λίστας|Αλφαβητικά|Ολοκληρωμένες εργασίες|Αυτή η λίστα δεν παρέχει ολοκληρωμένες εργασίες.|Υποεργασίες",
+  es: "Ordenar tareas|Orden de la lista|Alfabéticamente|Tareas completadas|Esta lista no proporciona tareas completadas.|Subtareas",
+  fi: "Järjestä tehtävät|Listan järjestys|Aakkosjärjestyksessä|Valmiit tehtävät|Tämä lista ei toimita valmiita tehtäviä.|Alitehtävät",
+  fr: "Trier les tâches|Ordre de la liste|Par ordre alphabétique|Tâches terminées|Cette liste ne fournit aucune tâche terminée.|Sous-tâches",
+  he: "מיון משימות|סדר הרשימה|לפי האלפבית|משימות שהושלמו|רשימה זו אינה מספקת משימות שהושלמו.|משימות משנה",
+  hu: "Feladatok rendezése|Lista sorrendje|Ábécérendben|Befejezett feladatok|Ez a lista nem szolgáltat befejezett feladatokat.|Részfeladatok",
+  id: "Urutkan tugas|Urutan daftar|Menurut abjad|Tugas selesai|Daftar ini tidak menyediakan tugas selesai.|Subtugas",
+  it: "Ordina attività|Ordine dell’elenco|Alfabeticamente|Attività completate|Questo elenco non fornisce attività completate.|Sottoattività",
+  "ko-KR": "작업 정렬|목록 순서|가나다순|완료된 작업|이 목록에서 제공하는 완료된 작업이 없습니다.|하위 작업",
+  nb: "Sorter oppgaver|Listerekkefølge|Alfabetisk|Fullførte oppgaver|Denne listen leverer ingen fullførte oppgaver.|Underoppgaver",
+  nl: "Taken sorteren|Lijstvolgorde|Alfabetisch|Voltooide taken|Deze lijst levert geen voltooide taken aan.|Subtaken",
+  pl: "Sortuj zadania|Kolejność listy|Alfabetycznie|Ukończone zadania|Ta lista nie udostępnia ukończonych zadań.|Podzadania",
+  "pt-BR": "Ordenar tarefas|Ordem da lista|Alfabeticamente|Tarefas concluídas|Esta lista não fornece tarefas concluídas.|Subtarefas",
+  "pt-PT": "Ordenar tarefas|Ordem da lista|Alfabeticamente|Tarefas concluídas|Esta lista não fornece tarefas concluídas.|Subtarefas",
+  ro: "Sortează sarcinile|Ordinea listei|Alfabetic|Sarcini finalizate|Această listă nu furnizează sarcini finalizate.|Subsarcini",
+  ru: "Сортировка задач|Порядок списка|По алфавиту|Выполненные задачи|Этот список не предоставляет выполненные задачи.|Подзадачи",
+  sk: "Zoradenie úloh|Poradie zoznamu|Abecedne|Dokončené úlohy|Tento zoznam neposkytuje dokončené úlohy.|Podúlohy",
+  sl: "Razvrsti opravila|Vrstni red seznama|Po abecedi|Dokončana opravila|Ta seznam ne posreduje dokončanih opravil.|Podopravila",
+  "sr-Latn": "Sortiraj zadatke|Redosled liste|Abecedno|Završeni zadaci|Ova lista ne pruža završene zadatke.|Podzadaci",
+  sr: "Сортирај задатке|Редослед листе|По азбучном реду|Завршени задаци|Ова листа не пружа завршене задатке.|Подзадаци",
+  sv: "Sortera uppgifter|Listordning|Alfabetiskt|Slutförda uppgifter|Den här listan tillhandahåller inga slutförda uppgifter.|Deluppgifter",
+  tr: "Görevleri sırala|Liste sırası|Alfabetik|Tamamlanan görevler|Bu liste tamamlanan görevleri sağlamıyor.|Alt görevler",
+  uk: "Сортування завдань|Порядок списку|За абеткою|Виконані завдання|Цей список не надає виконаних завдань.|Підзавдання",
+  vi: "Sắp xếp tác vụ|Thứ tự danh sách|Theo bảng chữ cái|Tác vụ đã hoàn thành|Danh sách này không cung cấp tác vụ đã hoàn thành.|Tác vụ con",
+  "zh-Hans": "任务排序|列表顺序|按字母顺序|已完成任务|此列表未提供已完成任务。|子任务",
+  "zh-Hant": "工作排序|清單順序|依字母順序|已完成工作|此清單未提供已完成工作。|子工作",
+});
+
 export const todoTranslations = translationTable([
   "To-do", "To-do lists", "Show completed tasks", "Allow adding tasks", "Allow editing tasks", "Allow deleting tasks",
   "Select to-do lists in the card editor.", "Loading tasks…", "Saving task…",

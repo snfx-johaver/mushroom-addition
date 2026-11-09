@@ -8,6 +8,7 @@ import { REMOTE_KEYS } from "./remote-card";
 import { PIHOLE_METRICS, PIHOLE_SECTIONS } from "./pi-hole";
 import { STOCK_METRICS, STOCK_RANGES, stockUsesBackend } from "./stock-data";
 import { energyFeatureField, energyLogFeatureFields } from "./energy-editor-schema";
+import { TODO_SORT_OPTIONS } from "./todo";
 
 export interface EditorField {
   name: string;
@@ -300,6 +301,7 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
     ...presentation(),
     { name: "todo_entities", selector: { entity: { domain: ["todo"], multiple: true } } },
     toggle("todo_show_completed"), toggle("todo_allow_add"), toggle("todo_allow_edit"), toggle("todo_allow_delete"),
+    { name: "todo_sort", selector: { select: { options: [...TODO_SORT_OPTIONS] } } },
     action("tap_action"), action("hold_action"), action("double_tap_action"),
   ];
   if (item.upstreamId === "air_quality") return [
