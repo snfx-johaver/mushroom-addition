@@ -69250,13 +69250,17 @@ function DC(e, t) {
       .addition-sensor .value { overflow-wrap:anywhere; }
       .addition-sensor ha-state-icon { flex:none; --mdc-icon-size:14px;
         color:var(--secondary-text-color); }
-      .addition-area-status { display:flex; flex-wrap:wrap; align-items:center; gap:8px;
-        padding:8px 12px 0; color:var(--secondary-text-color);
+      ha-card[data-area-compact] { height:auto !important; justify-content:flex-start; }
+      ha-card[data-area-compact] ha-tile-container { height:auto !important; }
+      ha-card[data-area-status] { position:relative; box-sizing:border-box; padding-top:24px; }
+      .addition-area-status { display:flex; align-items:center; gap:8px; overflow:hidden; white-space:nowrap;
+        position:absolute; top:6px; left:12px; right:12px; color:var(--secondary-text-color);
         font-size:var(--mush-card-secondary-font-size, 12px); line-height:16px; }
       .addition-area-status span { display:inline-flex; align-items:center; gap:4px; }
       .addition-area-status ha-icon { --mdc-icon-size:14px; color:var(--status-color); }
     `, a.append(s));
   const l = a.querySelector("ha-card");
+  l?.toggleAttribute("data-area-compact", e._config?.display_type === "compact"), l?.toggleAttribute("data-area-status", !!(i && (t.status_air_quality_entity || t.status_light_entity)));
   let _ = l?.querySelector(":scope > .addition-area-status");
   if (l && i && (t.status_air_quality_entity || t.status_light_entity)) {
     _ || (_ = document.createElement("div"), _.className = "addition-area-status", l.prepend(_));
@@ -69751,7 +69755,9 @@ rl.styles = ce`
     .entity:hover:not(:disabled) { background: color-mix(in srgb, var(--primary-text-color) 13%, transparent); }
     .entity:disabled { color: var(--disabled-text-color, var(--secondary-text-color)); cursor: default; }
     .entity:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
-    :host([named]) .entity { height: 64px; }
+    :host([named]) .entity { min-height: 64px; height:auto; padding:4px; gap:0; }
+    :host([named]) .button-icon { width:24px; height:24px; }
+    :host([named]) .button-icon, :host([named]) .button-label { flex-shrink:0; }
     .button-icon { display: flex; align-items: center; justify-content: center; width:var(--mush-icon-size, 36px);
       height:var(--mush-icon-size, 36px); border-radius:50%; background:color-mix(in srgb, var(--control-icon-color) 18%, transparent); }
     .entity.is-off .button-icon { background:rgba(158,158,158,.18); color:rgb(158,158,158); }
@@ -70018,7 +70024,7 @@ const ol = class ol extends ve {
       const _ = n(...l);
       let d = r.get(_);
       return d || (d = _.map((c) => c.name !== "content" ? c : { ...c, schema: [
-        { name: "status", type: "expandable", schema: [
+        { name: "status", type: "expandable", flatten: !0, schema: [
           { name: "status_air_quality_entity", selector: { entity: { domain: ["sensor"] } } },
           { name: "status_light_entity", selector: { entity: { domain: ["light"] } } }
         ] },
