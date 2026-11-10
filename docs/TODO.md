@@ -51,6 +51,11 @@ its navigation button; a custom card name is not translated.
   or change it temporarily using the card's selector. Sorting is display-only.
 - Refresh and add use labeled icon buttons; task icons are 25% smaller and their
   button boxes are 20% smaller (32 by 32 pixels).
+- Click a task title or row to open its editor; the completion button remains
+  separate. Subtask expansion is an icon beside Edit, with a small completed/total
+  count below the title.
+- A bottom input adds tasks directly with Enter or its plus button. It stays
+  outside the list's bounded scrolling region, so scrolling never hides it.
 - Switch lists without combining task identifiers across entities.
 - Refresh manually, after mutations and relevant entity/connection changes,
   and every 30 seconds while attached. Polling also catches edits that leave
@@ -79,12 +84,20 @@ Controls follow HA's `TodoListEntityFeature` bitmask, not the integration name:
 
 MS365-ToDo lists additionally expose existing subtasks through the entity's
 `all_todos[].checklist_items` attribute. The card matches parents by unique task UID,
-shows their subtasks underneath, collapsed by default with a **Subtasks** button
-and count to expand or hide them. Expansion is retained across refreshes and sorting
+shows their subtasks underneath, collapsed by default with an expand icon beside
+Edit. A small completed/total count appears below the title. Expansion is retained across refreshes and sorting
 until the list or card configuration changes. Completion/reopening is enabled only when the
 integration's `ms365_todo.update_todo_checklist_item` service and editing capability
 are available. Subtask writes check the parent and step before sending their IDs.
 No Microsoft API calls, tokens, or backend installation are involved.
+
+The task editor also exposes existing subtask completion/reopening, addition
+(`new_todo_checklist_item`) and confirmed deletion (`delete_todo_checklist_item`)
+when those services and the corresponding card/provider capabilities are available.
+Subtask changes save immediately, independently of the parent task's Save/Cancel;
+unsaved parent edits are retained. The installed integration cannot rename existing
+subtasks: its update service accepts only status. The editor explains this rather
+than deleting/recreating subtasks behind the user's back.
 
 **Completed Microsoft tasks:** enable `show_completed` for the list in the
 MS365-ToDo integration's UI list settings. Its default is false: the integration
@@ -137,7 +150,7 @@ Cloud-provider sync timing is controlled by the integration, not the card.
 ## Deliberately absent
 
 There are no Home Tasks-specific rewards, points, family assignment, task
-templates, recurrence scheduling, subtask creation/deletion, notifications, attachments, calendar
+templates, recurrence scheduling, notifications, attachments, calendar
 automation, backend history or custom services. These are not part of the generic
 HA to-do contract, so the interface does not advertise non-working controls.
 Existing MS365 subtasks are the explicitly supported provider extension above.

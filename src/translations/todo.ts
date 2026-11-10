@@ -1,5 +1,42 @@
 import { translationTable } from "./table";
 
+export const todoDetailTranslations = translationTable([
+  "{completed} of {total}", "Subtask changes are saved immediately.", "This integration cannot rename existing subtasks.",
+], {
+  ar: "{completed} من {total}|يتم حفظ تغييرات المهام الفرعية فورًا.|لا يمكن لهذا التكامل إعادة تسمية المهام الفرعية الحالية.",
+  bg: "{completed} от {total}|Промените в подзадачите се запазват веднага.|Тази интеграция не може да преименува съществуващи подзадачи.",
+  ca: "{completed} de {total}|Els canvis a les subtasques es desen immediatament.|Aquesta integració no pot canviar el nom de les subtasques existents.",
+  cs: "{completed} z {total}|Změny dílčích úkolů se ukládají okamžitě.|Tato integrace nemůže přejmenovat existující dílčí úkoly.",
+  da: "{completed} af {total}|Ændringer af underopgaver gemmes med det samme.|Denne integration kan ikke omdøbe eksisterende underopgaver.",
+  de: "{completed} von {total}|Änderungen an Unteraufgaben werden sofort gespeichert.|Diese Integration kann vorhandene Unteraufgaben nicht umbenennen.",
+  el: "{completed} από {total}|Οι αλλαγές υποεργασιών αποθηκεύονται αμέσως.|Αυτή η ενσωμάτωση δεν μπορεί να μετονομάσει υπάρχουσες υποεργασίες.",
+  es: "{completed} de {total}|Los cambios en las subtareas se guardan inmediatamente.|Esta integración no puede renombrar subtareas existentes.",
+  fi: "{completed}/{total}|Alitehtävien muutokset tallennetaan heti.|Tämä integraatio ei voi nimetä olemassa olevia alitehtäviä uudelleen.",
+  fr: "{completed} sur {total}|Les modifications des sous-tâches sont enregistrées immédiatement.|Cette intégration ne peut pas renommer les sous-tâches existantes.",
+  he: "{completed} מתוך {total}|שינויים במשימות משנה נשמרים מיד.|שילוב זה אינו יכול לשנות שמות של משימות משנה קיימות.",
+  hu: "{completed} / {total}|A részfeladatok módosításai azonnal mentésre kerülnek.|Ez az integráció nem tudja átnevezni a meglévő részfeladatokat.",
+  id: "{completed} dari {total}|Perubahan subtugas langsung disimpan.|Integrasi ini tidak dapat mengganti nama subtugas yang ada.",
+  it: "{completed} di {total}|Le modifiche alle sottoattività vengono salvate immediatamente.|Questa integrazione non può rinominare le sottoattività esistenti.",
+  "ko-KR": "{total}개 중 {completed}개|하위 작업 변경 사항은 즉시 저장됩니다.|이 통합은 기존 하위 작업의 이름을 변경할 수 없습니다.",
+  nb: "{completed} av {total}|Endringer i underoppgaver lagres umiddelbart.|Denne integrasjonen kan ikke gi eksisterende underoppgaver nytt navn.",
+  nl: "{completed} van {total}|Wijzigingen aan subtaken worden direct opgeslagen.|Deze integratie kan bestaande subtaken niet hernoemen.",
+  pl: "{completed} z {total}|Zmiany podzadań są zapisywane natychmiast.|Ta integracja nie może zmieniać nazw istniejących podzadań.",
+  "pt-BR": "{completed} de {total}|As alterações nas subtarefas são salvas imediatamente.|Esta integração não pode renomear subtarefas existentes.",
+  "pt-PT": "{completed} de {total}|As alterações nas subtarefas são guardadas imediatamente.|Esta integração não pode mudar o nome de subtarefas existentes.",
+  ro: "{completed} din {total}|Modificările subsarcinilor sunt salvate imediat.|Această integrare nu poate redenumi subsarcinile existente.",
+  ru: "{completed} из {total}|Изменения подзадач сохраняются сразу.|Эта интеграция не может переименовывать существующие подзадачи.",
+  sk: "{completed} z {total}|Zmeny podúloh sa ukladajú okamžite.|Táto integrácia nemôže premenovať existujúce podúlohy.",
+  sl: "{completed} od {total}|Spremembe podopravil se shranijo takoj.|Ta integracija ne more preimenovati obstoječih podopravil.",
+  "sr-Latn": "{completed} od {total}|Promene podzadataka se odmah čuvaju.|Ova integracija ne može da preimenuje postojeće podzadatke.",
+  sr: "{completed} од {total}|Промене подзадатака се одмах чувају.|Ова интеграција не може да преименује постојеће подзадатке.",
+  sv: "{completed} av {total}|Ändringar i deluppgifter sparas direkt.|Den här integrationen kan inte byta namn på befintliga deluppgifter.",
+  tr: "{total} öğeden {completed}|Alt görev değişiklikleri hemen kaydedilir.|Bu entegrasyon mevcut alt görevleri yeniden adlandıramaz.",
+  uk: "{completed} із {total}|Зміни підзавдань зберігаються негайно.|Ця інтеграція не може перейменовувати наявні підзавдання.",
+  vi: "{completed} trên {total}|Thay đổi tác vụ con được lưu ngay lập tức.|Tích hợp này không thể đổi tên tác vụ con hiện có.",
+  "zh-Hans": "{completed} 项，共 {total} 项|子任务更改会立即保存。|此集成无法重命名现有子任务。",
+  "zh-Hant": "{completed} 項，共 {total} 項|子工作變更會立即儲存。|此整合無法重新命名現有子工作。",
+});
+
 export const todoListTranslations = translationTable([
   "Sort tasks", "List order", "Alphabetically", "Completed tasks", "No completed tasks supplied by this list.", "Subtasks",
 ], {

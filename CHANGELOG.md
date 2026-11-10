@@ -4,6 +4,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- To-do: open tasks by clicking the row/title, move subtask expansion beside Edit,
+  show a compact completed/total count, expose supported subtask operations in the
+  editor, and keep a quick-add input below the scrollable list.
 - Collapse To-do subtasks by default, with a per-task expand/collapse button and count.
 - Reduce To-do icon-button boxes by 20%, retaining the smaller icons.
 - To-do: show existing MS365 subtasks with supported completion controls, group

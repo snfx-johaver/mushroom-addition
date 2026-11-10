@@ -7,7 +7,7 @@ import { createStubConfig } from "../src/stub";
 import { editorSchemaFor, type EditorField } from "../src/editor-schema";
 import { populatedDefaultsFor } from "../src/defaults";
 import { localizeText, SUPPORTED_LOCALES } from "../src/localize";
-import { todoGuidanceTranslations, todoListTranslations, todoTranslations } from "../src/translations/todo";
+import { todoDetailTranslations, todoGuidanceTranslations, todoListTranslations, todoTranslations } from "../src/translations/todo";
 import { readTodo, safeTodoUid, sortTodo, TODO_FEATURE, TODO_TYPE, todoStub, todoSupports, validateTodo, type TodoItem } from "../src/todo";
 
 const task = (extra: Partial<TodoItem> = {}): TodoItem => ({ uid: "uid-1", summary: "Task one", status: "needs_action", ...extra });
@@ -90,6 +90,10 @@ describe("to-do API, capabilities and picker", () => {
       expect(localizeText({ language: locale } as HomeAssistant, "Add task")).toBe(todoTranslations[locale]["ui.release.Add task"]);
       expect(Object.keys(todoGuidanceTranslations[locale])).toEqual(Object.keys(todoGuidanceTranslations.en));
       expect(Object.keys(todoListTranslations[locale])).toEqual(Object.keys(todoListTranslations.en));
+      expect(Object.keys(todoDetailTranslations[locale])).toEqual(Object.keys(todoDetailTranslations.en));
+      for (const [key, text] of Object.entries(todoDetailTranslations[locale])) {
+        expect(localizeText({ language: locale } as HomeAssistant, todoDetailTranslations.en[key])).toBe(text);
+      }
       for (const [key, text] of Object.entries(todoListTranslations[locale])) {
         expect(localizeText({ language: locale } as HomeAssistant, todoListTranslations.en[key])).toBe(text);
       }
@@ -106,7 +110,11 @@ describe("Microsoft To Do operations", () => {
         { id: "step-2", name: "Done step", is_checked: true },
       ],
     }];
-    hass.services = { ms365_todo: { update_todo_checklist_item: { fields: {} } } };
+    hass.services = { ms365_todo: {
+      update_todo_checklist_item: { fields: {} },
+      new_todo_checklist_item: { fields: {} },
+      delete_todo_checklist_item: { fields: {} },
+    } };
     return hass;
   };
   it("matches subitems by UID and toggles only the selected step using the existing MS365 service", async () => {
@@ -129,7 +137,8 @@ describe("Microsoft To Do operations", () => {
     const hass = checklistSource(), card = await mount(hass);
     const toggle = () => card.shadowRoot!.querySelector<HTMLButtonElement>(".checklist-toggle")!;
     const list = () => card.shadowRoot!.querySelector<HTMLUListElement>(".checklist")!;
-    expect(toggle().textContent).toContain("Subtasks (2)");
+    expect(toggle().closest(".row-actions")?.querySelector(".edit")).not.toBeNull();
+    expect(card.shadowRoot!.querySelector(".checklist-count")?.textContent).toBe("1 of 2");
     expect(toggle().getAttribute("aria-expanded")).toBe("false");
     expect(toggle().getAttribute("aria-controls")).toBe(list().id);
     expect(list().hidden).toBe(true);
@@ -155,6 +164,67 @@ describe("Microsoft To Do operations", () => {
     card.setConfig(config({ todo_allow_edit: false })); await settle(card);
     expect(card.shadowRoot!.querySelector<HTMLButtonElement>(".checklist-complete")!.disabled).toBe(true);
     expect(hass.callService).not.toHaveBeenCalled();
+  });
+  it("opens the editor from a title or row without completing the task or intercepting controls", async () => {
+    const hass = checklistSource(), card = await mount(hass);
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".task-title")!.click(); await settle(card);
+    expect(card.shadowRoot!.querySelector<HTMLInputElement>("[name=summary]")?.value).toBe("Task one");
+    expect(card.shadowRoot!.querySelector(".step-editor")?.textContent).toContain("First step");
+    button(card, "Cancel").click(); await settle(card);
+    card.shadowRoot!.querySelector<HTMLElement>(".task-row")!.click(); await settle(card);
+    expect(card.shadowRoot!.querySelector("[name=summary]")).not.toBeNull();
+    button(card, "Cancel").click(); await settle(card);
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".checklist-toggle")!.click(); await settle(card);
+    expect(card.shadowRoot!.querySelector("[name=summary]")).toBeNull();
+    expect(hass.callService).not.toHaveBeenCalled();
+  });
+  it("adds and confirms deletion of subtasks in the task editor using exact provider IDs", async () => {
+    const hass = checklistSource(), card = await mount(hass);
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".edit")!.click(); await settle(card);
+    await input(card, "summary", "Unsaved parent edit");
+    await input(card, "new-checklist", "  New step  ");
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".step-add-button")!.click(); await settle(card);
+    expect(hass.callService).toHaveBeenLastCalledWith("ms365_todo", "new_todo_checklist_item",
+      { entity_id: "todo.microsoft", todo_id: "uid-1", name: "New step" });
+    expect(card.shadowRoot!.querySelector<HTMLInputElement>("[name=new-checklist]")!.value).toBe("");
+    expect(card.shadowRoot!.querySelector<HTMLInputElement>("[name=summary]")!.value).toBe("Unsaved parent edit");
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".step-delete")!.click(); await settle(card);
+    expect(hass.callService).toHaveBeenCalledTimes(1);
+    button(card, "Delete").click(); await settle(card);
+    expect(hass.callService).toHaveBeenLastCalledWith("ms365_todo", "delete_todo_checklist_item",
+      { entity_id: "todo.microsoft", todo_id: "uid-1", checklist_item_id: "step-1" });
+    expect(card.shadowRoot!.querySelector(".step-editor")?.textContent).toContain("cannot rename existing subtasks");
+  });
+  it("gates subtask creation and deletion and rejects stale subtask deletion", async () => {
+    const hass = checklistSource(), card = await mount(hass, { todo_allow_add: false, todo_allow_delete: false });
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".edit")!.click(); await settle(card);
+    await input(card, "new-checklist", "New");
+    expect(card.shadowRoot!.querySelector<HTMLButtonElement>(".step-add-button")!.disabled).toBe(true);
+    expect(card.shadowRoot!.querySelector<HTMLButtonElement>(".step-delete")!.disabled).toBe(true);
+    card.setConfig(config()); await settle(card);
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".edit")!.click(); await settle(card);
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".step-delete")!.click(); await settle(card);
+    const metadata = hass.states["todo.microsoft"].attributes.all_todos as { checklist_items: { name: string }[] }[];
+    metadata[0].checklist_items[0].name = "Changed remotely";
+    button(card, "Delete").click(); await settle(card);
+    expect(hass.callService).not.toHaveBeenCalled();
+    expect(card.shadowRoot!.querySelector("[role=alert]")?.textContent).toContain("Task changed");
+  });
+  it("keeps the bottom quick-add input outside the scrolling list and retains failed input", async () => {
+    const hass = source(), card = await mount(hass);
+    const form = card.shadowRoot!.querySelector<HTMLFormElement>("form.quick-add")!;
+    expect(form.closest(".task-list")).toBeNull();
+    expect(form.previousElementSibling?.classList.contains("task-list")).toBe(true);
+    await input(card, "quick-task", "  Quick task  ");
+    vi.mocked(hass.callService).mockRejectedValueOnce(new Error("denied"));
+    form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })); await settle(card);
+    expect(card.shadowRoot!.querySelector<HTMLInputElement>("[name=quick-task]")!.value).toBe("  Quick task  ");
+    expect(card.shadowRoot!.querySelector("[role=alert]")?.textContent).toContain("Unable to change");
+    button(card, "Refresh").click(); await settle(card);
+    form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })); await settle(card);
+    expect(hass.callService).toHaveBeenLastCalledWith("todo", "add_item",
+      { entity_id: "todo.microsoft", item: "Quick task" });
+    expect(card.shadowRoot!.querySelector<HTMLInputElement>("[name=quick-task]")!.value).toBe("");
   });
   it("refuses ambiguous metadata, invalid steps, and stale step updates", async () => {
     const hass = checklistSource();
@@ -189,7 +259,7 @@ describe("Microsoft To Do operations", () => {
     expect(sortTodo([...rows, task({ uid: "bad", due: "invalid" })], "due").at(-1)?.uid).toBe("bad");
     expect(sortTodo(rows, "list")).toEqual(rows);
     const hass = source(119, rows), card = await mount(hass, { todo_sort: "due" });
-    const activeNames = () => [...card.shadowRoot!.querySelectorAll("ha-card > ul > li .task > b")].map(e => e.textContent);
+    const activeNames = () => [...card.shadowRoot!.querySelectorAll(".task-list > ul > li .task > b")].map(e => e.textContent);
     expect(activeNames()).toEqual(["Alpha", "Zulu", "Beta"]);
     const select = card.shadowRoot!.querySelector<HTMLSelectElement>(".sort select")!;
     select.value = "summary"; select.dispatchEvent(new Event("change")); await settle(card);
@@ -236,7 +306,7 @@ describe("Microsoft To Do operations", () => {
     await input(card, "due", "2026-11-10"); await submit(card);
     expect(hass.callService).toHaveBeenCalledExactlyOnceWith("todo", "add_item",
       { entity_id: "todo.microsoft", item: "New task", description: "Details", due_date: "2026-11-10" });
-    expect(card.shadowRoot!.querySelector("form")).toBeNull();
+    expect(card.shadowRoot!.querySelector("form:not(.quick-add)")).toBeNull();
     // The test provider still returns the old task: no optimistic/phantom item.
     expect(card.shadowRoot!.querySelectorAll("li")).toHaveLength(1);
     expect(hass.callWS).toHaveBeenCalledTimes(3);
