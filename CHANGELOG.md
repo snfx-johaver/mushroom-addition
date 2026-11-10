@@ -2,7 +2,7 @@
 
 Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
-## Unreleased
+## 0.8.0 - 2026-11-10
 
 - Default Area control-button shadows to off, keeping the Layout toggle available.
 - Remove the duplicate Area Advanced comparison picker entry, retaining saved

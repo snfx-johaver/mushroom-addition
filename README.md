@@ -40,7 +40,13 @@ These are real setups, not mockups; some cards are only partially configured.
 The NAS image is from the earlier dashboard whose layouts are now included.
 Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all cards.
 
-## What's new in 0.7
+## What's new in 0.8
+
+- **To-do improvements:** collapsible subtasks and completed tasks, quick-add,
+  provider-supported subtask renaming and importance stars, and task sorting.
+- **Area controls:** configurable buttons per row, improved spacing and status
+  indicators, and button shadows off by default. Area Advanced now has one picker
+  entry; existing saved configurations remain supported.
 
 - **[To-do](docs/TODO.md) (0.7.6):** a frontend-only task card using standard
   Home Assistant `todo` entities, including Microsoft To Do. Add, complete, edit
@@ -66,7 +72,7 @@ Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all card
   visual additional pollen sensors, and dropdowns that follow light/dark themes.
 
 Existing dashboard card types and configurations remain supported. Install
-**v0.7.6** through HACS, then reload every dashboard browser. If you have been
+**v0.8.0** through HACS, then reload every dashboard browser. If you have been
 using an unreleased hotfix, return to the single HACS-managed resource after the
 update; do not load both bundles.
 

@@ -63692,7 +63692,7 @@ Fs([
 Fs([
   R()
 ], Pi.prototype, "geometry");
-const vM = "0.7.6", Ut = {
+const vM = "0.8.0", Ut = {
   SUNRISE_START: 360,
   // 6:00
   SUNRISE_END: 480,
