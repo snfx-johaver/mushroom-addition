@@ -5,7 +5,7 @@ registrations. It is generated from `src/catalog.ts`; CI rejects duplicate
 IDs, missing source paths, invalid namespaces, or broken popup mappings.
 
 **Coverage:** 19 documented upstream card sources map to
-41 public card components.
+40 public card components.
 Equivalent aliases and size/layout alternatives are exposed as variants instead
 of duplicate picker entries. 0 popup templates and
 1 implementation helpers are inventoried but are not
@@ -48,12 +48,11 @@ without instantiating every custom card.
 | Upcoming Media | `upcoming_media` | custom-card | `custom:mushroom-addition-upcoming-media-card` | media | default | `upcoming_media` |
 | Remote | `remote_card` | custom-card | `custom:mushroom-addition-remote-card` | media | default | `remote_card` |
 | Area Advanced | `area_card_advanced` | custom-card | `custom:mushroom-addition-area-card-advanced` | presence | default | `area_card_advanced` |
-| Area Advanced - Mushroom | `area_card_mushroom` | custom-card | `custom:mushroom-addition-area-card-mushroom` | presence | default | `area_card_mushroom` |
 | Carousel Slider | `custom_card_entity_carousel` | custom-card | `custom:mushroom-addition-custom-card-entity-carousel` | sensor | default | `custom_card_entity_carousel` |
 | Light Area Card | `custom_card_light` | custom-card | `custom:mushroom-addition-custom-card-light` | light | default | `custom_card_light` |
-| Energy - Home Energy Management | `advanced_home_energy_management` | custom-card | `custom:mushroom-addition-advanced-home-energy-management` | energy | default | `advanced_home_energy_management` |
-| Energy - Buy and Sell | `advanced_energy_buy_sell` | custom-card | `custom:mushroom-addition-advanced-energy-buy-and-sell` | energy | default | `advanced_energy_buy_sell` |
-| Energy - Solar Panel Health | `advanced_energy_panel_health` | custom-card | `custom:mushroom-addition-advanced-energy-panel-health` | energy | default | `advanced_energy_panel_health` |
+| Energy Home Energy Management | `advanced_home_energy_management` | custom-card | `custom:mushroom-addition-advanced-home-energy-management` | energy | default | `advanced_home_energy_management` |
+| Energy Buy and Sell | `advanced_energy_buy_sell` | custom-card | `custom:mushroom-addition-advanced-energy-buy-and-sell` | energy | default | `advanced_energy_buy_sell` |
+| Energy Solar Panel Health | `advanced_energy_panel_health` | custom-card | `custom:mushroom-addition-advanced-energy-panel-health` | energy | default | `advanced_energy_panel_health` |
 | NAS - Server Overview | `nas_server` | custom-card | `custom:mushroom-addition-nas-server-card` | nas-dashboard | default | `nas_server` |
 | NAS - Storage and Disks | `nas_storage` | custom-card | `custom:mushroom-addition-nas-storage-card` | nas-dashboard | default | `nas_storage` |
 | NAS - Docker Containers | `nas_docker` | custom-card | `custom:mushroom-addition-nas-docker-card` | nas-dashboard | default | `nas_docker` |

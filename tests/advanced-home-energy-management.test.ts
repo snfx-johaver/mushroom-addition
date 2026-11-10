@@ -132,13 +132,13 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
-describe("Advanced Energy - Home Energy Management", () => {
+describe("Advanced Energy Home Energy Management", () => {
   it("registers as a native picker card with a complete graphical editor", () => {
     const item = CATALOG.find((candidate) =>
       candidate.upstreamId === "advanced_home_energy_management")!;
     expect(item).toMatchObject({
       tag: "mushroom-addition-advanced-home-energy-management",
-      name: "Energy - Home Energy Management",
+      name: "Energy Home Energy Management",
       family: "energy",
     });
     const fields = editorSchemaFor(item).flatMap((field) => field.schema ?? [field]);

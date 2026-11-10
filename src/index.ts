@@ -13,7 +13,7 @@ import { CATALOG, LEGACY_ALIASES, PUBLIC_CATALOG } from "./catalog";
 import { MushroomAdditionCard } from "./card";
 import { MushroomMiniGraphCard } from "./mini-graph";
 import { MushroomAreaAdvancedCard } from "./area-advanced";
-import { MushroomAreaCard } from "./area-mushroom";
+import { MUSHROOM_AREA_TAG, MushroomAreaCard } from "./area-mushroom";
 import type { AdditionConfig, CatalogItem, HomeAssistant } from "./types";
 import { createStubConfig } from "./stub";
 import { version as VERSION } from "../package.json";
@@ -44,10 +44,6 @@ for (const item of CATALOG) {
       customElements.define(item.tag, MushroomAreaAdvancedCard);
       continue;
     }
-    if (item.upstreamId === "area_card_mushroom") {
-      customElements.define(item.tag, MushroomAreaCard);
-      continue;
-    }
     if (item.upstreamId === "mini_graph_card") {
       customElements.define(item.tag, MushroomMiniGraphCard);
       continue;
@@ -67,6 +63,9 @@ for (const item of CATALOG) {
     customElements.define(item.tag, RegisteredAdditionCard);
   }
 }
+
+// Keep saved configurations working without offering a second Area card.
+if (!customElements.get(MUSHROOM_AREA_TAG)) customElements.define(MUSHROOM_AREA_TAG, MushroomAreaCard);
 
 for (const alias of LEGACY_ALIASES) {
   if (customElements.get(alias.tag)) continue;
@@ -121,7 +120,7 @@ for (const alias of LEGACY_ALIASES) {
   customElements.define(alias.tag, LegacyAdditionAlias);
 }
 
-window.customCards = window.customCards || [];
+window.customCards = (window.customCards || []).filter(card => card.type !== MUSHROOM_AREA_TAG);
 const existing = new Set(window.customCards.map((card) => card.type));
 for (const item of CATALOG) {
   if (existing.has(item.tag)) continue;

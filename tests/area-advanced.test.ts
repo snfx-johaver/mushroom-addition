@@ -118,10 +118,12 @@ describe("native Area card delegation", () => {
     expect(native.config?.display_type).toBe("camera");
   });
 
-  it("keeps the Mushroom comparison card separate and preserves its type in the shared editor", async () => {
+  it("keeps saved Mushroom Area configurations working without a second picker entry", async () => {
     await import("../src/index");
     expect(customElements.get(MUSHROOM_AREA_TAG)).toBe(MushroomAreaCard);
     expect(customElements.get(AREA_TAG)).toBe(MushroomAreaAdvancedCard);
+    expect(window.customCards?.filter(card => card.type === MUSHROOM_AREA_TAG)).toHaveLength(0);
+    expect(window.customCards?.filter(card => card.type === AREA_TAG)).toHaveLength(1);
     const stub = MushroomAreaCard.getStubConfig(hass);
     expect(stub).toEqual({ ...base, type: `custom:${MUSHROOM_AREA_TAG}`, display_type: "compact" });
     expect(MushroomAreaAdvancedCard.getStubConfig(hass)).toEqual(base);

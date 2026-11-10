@@ -103,15 +103,10 @@ toggles. The sensor secondary slot preserves native class values and formatting;
 scoped styles change presentation only. Aggregate control colors override native
 button CSS without replacing native membership, state or click handling.
 
-**Area Advanced - Mushroom** is a separate picker entry for comparison with
-**Area Advanced**. Its default is the compact layout with 12px padding/gaps,
-36px icon bubbles, 14px/500 primary text and 12px/400 secondary text, using the
-corresponding Mushroom theme variables. Both entries share the full visual
-editor, native area aggregation, camera/picture layouts, controls and actions.
-Only the comparison instance receives the scoped presentation overrides.
-To compare an existing configuration, duplicate it and change its type to
-`custom:mushroom-addition-area-card-mushroom`; retain the original configuration
-unchanged. Other explicit layout and behavior options remain supported.
+**Area Advanced** is the only Area Advanced picker entry. The previously offered
+Mushroom comparison type remains registered only for existing dashboard
+configurations, preserving its scoped styling and native visual editor without
+advertising a duplicate card.
 
 Game Console, Upcoming Media, NAS, Tablet, Speedtest, Pollen and Pi-hole use the
 same Mushroom primary/secondary typography and themed 42px/12px controls.

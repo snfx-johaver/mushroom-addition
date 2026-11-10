@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Remove the duplicate Area Advanced comparison picker entry, retaining saved
+  configurations, and simplify the three advanced Energy display names.
 - To-do: support provider-advertised subtask renaming, show Microsoft importance
   stars beside Edit (writable only with a supported update field), add starred-first
   sorting, and move task deletion into the editor's bottom-right action row.

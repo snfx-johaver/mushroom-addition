@@ -49,7 +49,7 @@ describe("catalog coverage", () => {
       UPSTREAM_CATALOG.filter((item) => item.category === category).length;
     expect(sourceCount("default-card")).toBe(3);
     expect(sourceCount("custom-card")).toBe(16);
-    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(38);
+    expect(PUBLIC_CATALOG.filter((item) => item.category === "custom-card")).toHaveLength(37);
   });
 
   it("keeps removed contributor names out of renamed public card metadata", () => {
@@ -73,12 +73,12 @@ describe("catalog coverage", () => {
   });
 
   it("uses the exact requested names without changing public card type IDs", () => {
-    expect(PUBLIC_CATALOG.filter(item => item.upstreamId !== "area_card_mushroom").map(item => item.name)).toEqual([
+    expect(PUBLIC_CATALOG.map(item => item.name)).toEqual([
       "Battery", "Room", "Scenes", "Trash", "Alarm Time", "Welcome", "Washer-Dryer",
       "Astronomy", "Input Datetime", "Media Player Advanced", "Printer", "NAS", "Tablet",
       "Game Console", "Flower", "Speedtest", "Pollen", "Graph Advanced", "Energy Log", "Energy Plan", "Energy Insights & Purchases", "Weather Advanced", "Smart Saving", "Energy Entityworkflow", "Air Quality", "To-do", "Stock Card", "Pi-hole",
       "Upcoming Media", "Remote", "Area Advanced", "Carousel Slider", "Light Area Card",
-      "Energy - Home Energy Management", "Energy - Buy and Sell", "Energy - Solar Panel Health",
+      "Energy Home Energy Management", "Energy Buy and Sell", "Energy Solar Panel Health",
       "NAS - Server Overview", "NAS - Storage and Disks", "NAS - Docker Containers", "NAS - Unified Dashboard",
     ]);
   });
