@@ -1,5 +1,42 @@
 import { translationTable } from "./table";
 
+export const todoImportanceTranslations = translationTable([
+  "Important", "Importance is read-only in this integration.",
+], {
+  ar: "مهم|الأهمية للقراءة فقط في هذا التكامل.",
+  bg: "Важно|Важността е само за четене в тази интеграция.",
+  ca: "Important|La importància és de només lectura en aquesta integració.",
+  cs: "Důležité|Důležitost je v této integraci pouze ke čtení.",
+  da: "Vigtig|Vigtighed er skrivebeskyttet i denne integration.",
+  de: "Wichtig|Die Wichtigkeit ist in dieser Integration schreibgeschützt.",
+  el: "Σημαντικό|Η σημασία είναι μόνο για ανάγνωση σε αυτή την ενσωμάτωση.",
+  es: "Importante|La importancia es de solo lectura en esta integración.",
+  fi: "Tärkeä|Tärkeyttä voi vain lukea tässä integraatiossa.",
+  fr: "Important|L’importance est en lecture seule dans cette intégration.",
+  he: "חשוב|החשיבות היא לקריאה בלבד בשילוב זה.",
+  hu: "Fontos|A fontosság ebben az integrációban csak olvasható.",
+  id: "Penting|Prioritas hanya dapat dibaca dalam integrasi ini.",
+  it: "Importante|L’importanza è di sola lettura in questa integrazione.",
+  "ko-KR": "중요|이 통합에서 중요도는 읽기 전용입니다.",
+  nb: "Viktig|Viktighet er skrivebeskyttet i denne integrasjonen.",
+  nl: "Belangrijk|Belangrijkheid is alleen-lezen in deze integratie.",
+  pl: "Ważne|Ważność jest tylko do odczytu w tej integracji.",
+  "pt-BR": "Importante|A importância é somente leitura nesta integração.",
+  "pt-PT": "Importante|A importância é só de leitura nesta integração.",
+  ro: "Important|Importanța este doar pentru citire în această integrare.",
+  ru: "Важно|Важность доступна только для чтения в этой интеграции.",
+  sk: "Dôležité|Dôležitosť je v tejto integrácii iba na čítanie.",
+  sl: "Pomembno|Pomembnost je v tej integraciji samo za branje.",
+  "sr-Latn": "Važno|Važnost je samo za čitanje u ovoj integraciji.",
+  sr: "Важно|Важност је само за читање у овој интеграцији.",
+  sv: "Viktigt|Viktighet är skrivskyddad i den här integrationen.",
+  tr: "Önemli|Bu entegrasyonda önem durumu salt okunurdur.",
+  uk: "Важливо|Важливість доступна лише для читання в цій інтеграції.",
+  vi: "Quan trọng|Mức độ quan trọng chỉ đọc trong tích hợp này.",
+  "zh-Hans": "重要|此集成中的重要性为只读。",
+  "zh-Hant": "重要|此整合中的重要性為唯讀。",
+});
+
 export const todoDetailTranslations = translationTable([
   "{completed} of {total}", "Subtask changes are saved immediately.", "This integration cannot rename existing subtasks.",
 ], {

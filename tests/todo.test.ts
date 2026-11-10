@@ -7,7 +7,7 @@ import { createStubConfig } from "../src/stub";
 import { editorSchemaFor, type EditorField } from "../src/editor-schema";
 import { populatedDefaultsFor } from "../src/defaults";
 import { localizeText, SUPPORTED_LOCALES } from "../src/localize";
-import { todoDetailTranslations, todoGuidanceTranslations, todoListTranslations, todoTranslations } from "../src/translations/todo";
+import { todoDetailTranslations, todoGuidanceTranslations, todoImportanceTranslations, todoListTranslations, todoTranslations } from "../src/translations/todo";
 import { readTodo, safeTodoUid, sortTodo, TODO_FEATURE, TODO_TYPE, todoStub, todoSupports, validateTodo, type TodoItem } from "../src/todo";
 
 const task = (extra: Partial<TodoItem> = {}): TodoItem => ({ uid: "uid-1", summary: "Task one", status: "needs_action", ...extra });
@@ -28,8 +28,11 @@ async function mount(hass = source(), extra: Partial<AdditionConfig> = {}) {
   card.setConfig(config(extra)); card.hass = hass; document.body.append(card);
   await settle(card); return card;
 }
-const button = (card: MushroomTodoCard, label: string) => [...card.shadowRoot!.querySelectorAll<HTMLButtonElement>("button")]
-  .find(node => node.textContent!.trim() === label || node.getAttribute("aria-label") === label)!;
+const button = (card: MushroomTodoCard, label: string) => {
+  const buttons = [...card.shadowRoot!.querySelectorAll<HTMLButtonElement>("button")];
+  return (buttons.find(node => node.textContent!.trim() === label) ??
+    buttons.find(node => node.getAttribute("aria-label") === label))!;
+};
 async function input(card: MushroomTodoCard, name: string, value: string) {
   const node = card.shadowRoot!.querySelector<HTMLInputElement>(`[name="${name}"]`)!;
   node.value = value; node.dispatchEvent(new Event("input", { bubbles: true })); await settle(card);
@@ -91,6 +94,10 @@ describe("to-do API, capabilities and picker", () => {
       expect(Object.keys(todoGuidanceTranslations[locale])).toEqual(Object.keys(todoGuidanceTranslations.en));
       expect(Object.keys(todoListTranslations[locale])).toEqual(Object.keys(todoListTranslations.en));
       expect(Object.keys(todoDetailTranslations[locale])).toEqual(Object.keys(todoDetailTranslations.en));
+      expect(Object.keys(todoImportanceTranslations[locale])).toEqual(Object.keys(todoImportanceTranslations.en));
+      for (const [key, text] of Object.entries(todoImportanceTranslations[locale])) {
+        expect(localizeText({ language: locale } as HomeAssistant, todoImportanceTranslations.en[key])).toBe(text);
+      }
       for (const [key, text] of Object.entries(todoDetailTranslations[locale])) {
         expect(localizeText({ language: locale } as HomeAssistant, todoDetailTranslations.en[key])).toBe(text);
       }
@@ -209,6 +216,74 @@ describe("Microsoft To Do operations", () => {
     button(card, "Delete").click(); await settle(card);
     expect(hass.callService).not.toHaveBeenCalled();
     expect(card.shadowRoot!.querySelector("[role=alert]")?.textContent).toContain("Task changed");
+  });
+  it("renames a subtask only when the update service advertises name, preserving parent edits", async () => {
+    const hass = checklistSource();
+    hass.services!.ms365_todo.update_todo_checklist_item = { fields: { name: {} } };
+    const card = await mount(hass);
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".edit")!.click(); await settle(card);
+    expect(card.shadowRoot!.querySelector(".step-editor")?.textContent).not.toContain("cannot rename");
+    await input(card, "summary", "Unsaved parent");
+    await input(card, "step-step-1", " Renamed step ");
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".step-save")!.click(); await settle(card);
+    expect(hass.callService).toHaveBeenLastCalledWith("ms365_todo", "update_todo_checklist_item", {
+      entity_id: "todo.microsoft", todo_id: "uid-1", checklist_item_id: "step-1", name: "Renamed step",
+    });
+    expect(card.shadowRoot!.querySelector<HTMLInputElement>("[name=summary]")!.value).toBe("Unsaved parent");
+    expect(card.shadowRoot!.querySelector(".step-editor")).not.toBeNull();
+  });
+  it("refuses renamed or removed steps and revoked rename capabilities before writing", async () => {
+    const hass = checklistSource();
+    hass.services!.ms365_todo.update_todo_checklist_item = { fields: { name: {} } };
+    const card = await mount(hass);
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".edit")!.click(); await settle(card);
+    await input(card, "step-step-1", "Local name");
+    const metadata = hass.states["todo.microsoft"].attributes.all_todos as { checklist_items: { name: string }[] }[];
+    metadata[0].checklist_items[0].name = "Remote name";
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".step-save")!.click(); await settle(card);
+    expect(hass.callService).not.toHaveBeenCalled();
+    expect(card.shadowRoot!.querySelector("[role=alert]")?.textContent).toContain("Task changed");
+    button(card, "Refresh").click(); await settle(card);
+    hass.services!.ms365_todo.update_todo_checklist_item = { fields: {} };
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".step-save")!.click(); await settle(card);
+    expect(hass.callService).not.toHaveBeenCalled();
+    expect(card.shadowRoot!.querySelector("[role=alert]")?.textContent).toContain("Unable to change");
+  });
+  it("reads exact importance metadata and shows a read-only star beside Edit without a write field", async () => {
+    const hass = checklistSource();
+    const metadata = hass.states["todo.microsoft"].attributes.all_todos as Record<string, unknown>[];
+    metadata[0].is_important = true;
+    expect((await readTodo(hass, "todo.microsoft"))[0].important).toBe(true);
+    const card = await mount(hass);
+    const star = card.shadowRoot!.querySelector(".row-actions .edit + .importance")!;
+    expect(star.localName).toBe("span");
+    expect(star.classList.contains("important")).toBe(true);
+    expect((star.querySelector("ha-icon") as HTMLElement & { icon: string }).icon).toBe("mdi:star");
+    expect(star.getAttribute("title")).toContain("read-only");
+    expect(hass.callService).not.toHaveBeenCalled();
+    metadata[0].is_important = "true";
+    await expect(readTodo(hass, "todo.microsoft")).rejects.toThrow("importance");
+    hass.states["todo.microsoft"].attributes.all_todos = [metadata[0], metadata[0]];
+    expect((await readTodo(hass, "todo.microsoft"))[0].important).toBeUndefined();
+  });
+  it("toggles real importance only with an advertised field and rejects changed importance", async () => {
+    const hass = checklistSource();
+    const metadata = hass.states["todo.microsoft"].attributes.all_todos as Record<string, unknown>[];
+    metadata[0].is_important = false;
+    hass.services!.ms365_todo.update_todo = { fields: { is_important: {} } };
+    const card = await mount(hass);
+    const star = () => card.shadowRoot!.querySelector<HTMLButtonElement>(".row-actions button.importance")!;
+    expect(star().getAttribute("aria-pressed")).toBe("false");
+    star().click(); await settle(card);
+    expect(hass.callService).toHaveBeenLastCalledWith("ms365_todo", "update_todo",
+      { entity_id: "todo.microsoft", todo_id: "uid-1", is_important: true });
+    expect(star().getAttribute("aria-pressed")).toBe("false");
+    metadata[0].is_important = true;
+    star().click(); await settle(card);
+    expect(hass.callService).toHaveBeenCalledTimes(1);
+    expect(card.shadowRoot!.querySelector("[role=alert]")?.textContent).toContain("Task changed");
+    expect(sortTodo([task({ uid: "a" }), task({ uid: "b", important: true }), task({ uid: "c", important: false })],
+      "important").map(item => item.uid)).toEqual(["b", "a", "c"]);
   });
   it("keeps the bottom quick-add input outside the scrolling list and retains failed input", async () => {
     const hass = source(), card = await mount(hass);
@@ -356,6 +431,9 @@ describe("Microsoft To Do operations", () => {
   });
   it("requires explicit deletion confirmation and targets only the UID", async () => {
     const hass = source(), card = await mount(hass);
+    expect(card.shadowRoot!.querySelector(".row-actions .delete")).toBeNull();
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".edit")!.click(); await settle(card);
+    expect(card.shadowRoot!.querySelector(".editor-actions")?.lastElementChild?.classList.contains("delete")).toBe(true);
     card.shadowRoot!.querySelector<HTMLButtonElement>(".delete")!.click(); await settle(card);
     expect(hass.callService).not.toHaveBeenCalled();
     button(card, "Delete").click(); await settle(card);
@@ -368,8 +446,14 @@ describe("capability gating and failures", () => {
     const card = await mount(source(flags));
     expect(!!button(card, "Add task")).toBe(!!(flags & 1));
     expect(!!card.shadowRoot!.querySelector(".edit")).toBe(!!(flags & 4));
-    expect(!!card.shadowRoot!.querySelector(".delete")).toBe(!!(flags & 2));
+    expect(card.shadowRoot!.querySelector(".row-actions .delete")).toBeNull();
     expect(card.shadowRoot!.querySelector<HTMLButtonElement>(".complete")!.disabled).toBe(!(flags & 4));
+    if (flags & 2) {
+      card.shadowRoot!.querySelector<HTMLButtonElement>(".task-title")!.click(); await settle(card);
+      expect(card.shadowRoot!.querySelector(".editor-actions .delete")).not.toBeNull();
+      expect(button(card, "Save").disabled).toBe(!(flags & 4));
+      button(card, "Cancel").click(); await settle(card);
+    }
     if (flags & 1) {
       button(card, "Add task").click(); await settle(card);
       expect(!!card.shadowRoot!.querySelector("[name=description]")).toBe(!!(flags & 64));
@@ -409,6 +493,7 @@ describe("capability gating and failures", () => {
     expect(hass.callService).not.toHaveBeenCalled();
     expect(card.shadowRoot!.querySelector("[role=alert]")?.textContent).toContain("Task changed");
     button(card, "Refresh").click(); await settle(card);
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".edit")!.click(); await settle(card);
     card.shadowRoot!.querySelector<HTMLButtonElement>(".delete")!.click(); await settle(card);
     vi.mocked(hass.callWS!).mockResolvedValue({ items: [task({ summary: "Another remote edit" })] });
     button(card, "Refresh").click(); await settle(card);

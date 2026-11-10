@@ -4,7 +4,7 @@ import { MushroomAdditionCard } from "./card";
 import { getCatalogItem } from "./catalog";
 import { localize, localizeText } from "./localize";
 import { renderAutomaticPresentation, type RenderContext } from "./renderers";
-import { readTodo, safeTodoUid, sortTodo, TODO_FEATURE, TODO_SORT_OPTIONS, todoEntities, todoStub, todoSupports, validateTodo, type TodoChecklistItem, type TodoItem, type TodoSort } from "./todo";
+import { readTodo, safeTodoUid, sortTodo, TODO_FEATURE, TODO_SORT_OPTIONS, todoEntities, todoServiceField, todoStub, todoSupports, validateTodo, type TodoChecklistItem, type TodoItem, type TodoSort } from "./todo";
 import type { AdditionConfig, HomeAssistant } from "./types";
 
 type Draft = { uid?: string; summary: string; description: string; due: string; dueType: "date" | "datetime" };
@@ -23,6 +23,7 @@ export class MushroomTodoCard extends MushroomAdditionCard {
   @state() private quickTask = "";
   @state() private newStep = "";
   @state() private deletingStep?: string;
+  @state() private stepNames: Record<string, string> = {};
   @state() private deleting?: string;
   private generation = 0;
   private timer?: ReturnType<typeof setInterval>;
@@ -78,10 +79,15 @@ export class MushroomTodoCard extends MushroomAdditionCard {
     form.quick-add { display:flex; align-items:center; gap:8px; margin:8px 0 0; padding:8px; }
     .quick-add input { flex:1; }
     .step-editor { min-width:0; margin:0; border:1px solid var(--divider-color); border-radius:8px; padding:8px; }
-    .step-editor li { align-items:center; }
+    .step-editor li { align-items:center; flex-wrap:wrap; }
     .step-editor li > span { flex:1; min-width:0; overflow-wrap:anywhere; }
     .step-add { display:flex; gap:8px; align-items:center; margin-top:8px; }
     .editor-header { display:flex; justify-content:flex-end; }
+    .editor-actions { display:flex; align-items:center; gap:8px; }
+    .editor-actions .delete { margin-inline-start:auto; }
+    .importance { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; flex-shrink:0; color:var(--secondary-text-color); }
+    .importance[aria-pressed=true], .importance.important { color:var(--primary-color); }
+    .step-name { flex:1; min-width:80px; width:auto; }
     .checklist li { align-items:center; padding-block:2px; border:0; }
     .checklist span { font-size:12px; line-height:18px; }
     .checklist .checked { text-decoration:line-through; color:var(--secondary-text-color); }
@@ -124,6 +130,7 @@ export class MushroomTodoCard extends MushroomAdditionCard {
     this.quickTask = "";
     this.newStep = "";
     this.deletingStep = undefined;
+    this.stepNames = {};
     this.loaded = false;
     this.loading = false;
     this.busy = false;
@@ -185,6 +192,9 @@ export class MushroomTodoCard extends MushroomAdditionCard {
   private openDraft(item?: TodoItem): void {
     this.newStep = "";
     this.deletingStep = undefined;
+    this.deleting = undefined;
+    this.deleteBase = undefined;
+    this.stepNames = {};
     this.draftBase = item ? { ...item } : undefined;
     const dueType = item?.due?.includes("T") ? "datetime" : "date";
     let due = item?.due ?? "";
@@ -254,6 +264,7 @@ export class MushroomTodoCard extends MushroomAdditionCard {
     return this.writable && this.config?.todo_allow_edit !== false && safeTodoUid(item, this.items) &&
       this.supports(TODO_FEATURE.update) && Array.isArray(this.hass?.states[this.selected]?.attributes.all_todos) &&
       Boolean(this.hass?.services?.ms365_todo?.[service]) &&
+      (service !== "update_todo" || typeof item.important === "boolean" && todoServiceField(this.hass, service, "is_important")) &&
       (service !== "new_todo_checklist_item" || this.config?.todo_allow_add !== false && this.supports(TODO_FEATURE.create)) &&
       (service !== "delete_todo_checklist_item" || this.config?.todo_allow_delete !== false && this.supports(TODO_FEATURE.delete));
   }
@@ -262,7 +273,7 @@ export class MushroomTodoCard extends MushroomAdditionCard {
       { status: step.checked ? "needs_action" : "completed" }, step);
   }
   private async changeChecklist(item: TodoItem,
-    service: "update_todo_checklist_item" | "new_todo_checklist_item" | "delete_todo_checklist_item",
+    service: "update_todo_checklist_item" | "new_todo_checklist_item" | "delete_todo_checklist_item" | "update_todo",
     data: Record<string, unknown>, step?: TodoChecklistItem): Promise<void> {
     if (!this.canChangeChecklist(item, service) || !this.hass) return;
     const generation = ++this.generation, entity = this.selected, hass = this.hass;
@@ -274,6 +285,7 @@ export class MushroomTodoCard extends MushroomAdditionCard {
       const parent = latest.find(row => row.uid === item.uid);
       const currentStep = step && parent?.checklist?.find(row => row.id === step.id);
       if (!parent || !safeTodoUid(parent, latest) || parent.status !== item.status ||
+        service === "update_todo" && parent.important !== item.important ||
         step && (!currentStep || currentStep.name !== step.name || currentStep.checked !== step.checked)) {
         this.items = latest;
         this.error = "Task changed or has no safe UID. Refresh before editing.";
@@ -281,6 +293,8 @@ export class MushroomTodoCard extends MushroomAdditionCard {
       }
       if (this.config?.todo_allow_edit === false || !this.supports(TODO_FEATURE.update) ||
         !this.hass?.services?.ms365_todo?.[service] ||
+        "name" in data && service === "update_todo_checklist_item" && !todoServiceField(this.hass, service, "name") ||
+        service === "update_todo" && !todoServiceField(this.hass, service, "is_important") ||
         service === "new_todo_checklist_item" && (this.config?.todo_allow_add === false || !this.supports(TODO_FEATURE.create)) ||
         service === "delete_todo_checklist_item" && (this.config?.todo_allow_delete === false || !this.supports(TODO_FEATURE.delete))) throw new Error("Unsupported action");
       await hass.callService("ms365_todo", service, {
@@ -289,6 +303,11 @@ export class MushroomTodoCard extends MushroomAdditionCard {
       written = true;
       if (!this.current(generation, entity)) return;
       if (service === "new_todo_checklist_item") this.newStep = "";
+      if (step && "name" in data) {
+        const next = { ...this.stepNames };
+        delete next[step.id];
+        this.stepNames = next;
+      }
       this.deletingStep = undefined;
       const refreshed = await readTodo(this.hass, entity);
       if (this.current(generation, entity)) { this.items = refreshed; this.loaded = true; }
@@ -394,7 +413,8 @@ export class MushroomTodoCard extends MushroomAdditionCard {
     const checklistKey = safe ? `uid:${item.uid}` : `index:${this.items.indexOf(item)}`;
     const checklistId = `checklist-${this.items.indexOf(item)}`;
     const expanded = this.expandedChecklists.has(checklistKey);
-    const editable = this.supports(TODO_FEATURE.update) && this.config!.todo_allow_edit !== false && this.writable && safe;
+    const editable = (this.supports(TODO_FEATURE.update) && this.config!.todo_allow_edit !== false ||
+      this.supports(TODO_FEATURE.delete) && this.config!.todo_allow_delete !== false) && this.writable && safe;
     return html`<li class=${`task-row${item.status === "completed" ? " completed" : ""}`}
       @click=${(event: MouseEvent) => {
         if (editable && !event.composedPath().some(node => node instanceof Element &&
@@ -421,11 +441,6 @@ export class MushroomTodoCard extends MushroomAdditionCard {
                 </li>`)}
               </ul>` : nothing}
               ${!safe ? html`<div class="hint">${t("Task changed or has no safe UID. Refresh before editing.")}</div>` : nothing}
-              ${this.deleting !== undefined && this.deleting === item.uid ? html`<div class="confirmation">
-                <span>${t("Delete this task?")}</span>
-                <button ?disabled=${!this.writable} @click=${() => void this.mutate("remove_item", {}, this.deleteBase)}>${t("Delete")}</button>
-                <button ?disabled=${this.busy} @click=${() => { this.deleting = undefined; }}>${t("Cancel")}</button>
-              </div>` : nothing}
             </div>
             <div class="row-actions">
               ${item.checklist?.length ? html`
@@ -439,14 +454,14 @@ export class MushroomTodoCard extends MushroomAdditionCard {
               ${this.supports(TODO_FEATURE.update) && this.config!.todo_allow_edit !== false ? html`<button class="icon-button edit"
                 aria-label=${`${t("Edit")}: ${item.summary}`} ?disabled=${!this.writable || !safe} @click=${() => this.openDraft(item)}>
                 <ha-icon .icon=${"mdi:pencil-outline"}></ha-icon></button>` : nothing}
-              ${this.supports(TODO_FEATURE.delete) && this.config!.todo_allow_delete !== false ? html`<button class="icon-button delete"
-                aria-label=${`${t("Delete")}: ${item.summary}`} ?disabled=${!this.writable || !safe} @click=${() => { this.deleting = item.uid; this.deleteBase = { ...item }; }}>
-                <ha-icon .icon=${"mdi:delete-outline"}></ha-icon></button>` : nothing}
+              ${this.renderImportance(item)}
             </div>
           </li>`;
   }
   private renderForm() {
     const draft = this.draft!, t = (text: string) => localizeText(this.hass, text);
+    const canEdit = this.draftBase ? this.supports(TODO_FEATURE.update) && this.config?.todo_allow_edit !== false
+      : this.supports(TODO_FEATURE.create) && this.config?.todo_allow_add !== false;
     const field = (key: keyof Draft, event: Event) => {
       this.draft = { ...draft, [key]: (event.target as HTMLInputElement).value };
     };
@@ -454,34 +469,71 @@ export class MushroomTodoCard extends MushroomAdditionCard {
       <div class="editor-header"><button type="button" class="icon-button editor-close"
         aria-label=${t("Cancel")} title=${t("Cancel")} ?disabled=${this.busy}
         @click=${() => { this.draft = undefined; }}><ha-icon .icon=${"mdi:close"}></ha-icon></button></div>
-      <label>${t("Task")}<input name="summary" required .value=${draft.summary} ?disabled=${this.busy}
+      <label>${t("Task")}<input name="summary" required .value=${draft.summary} ?disabled=${this.busy || !canEdit}
         @input=${(event: Event) => field("summary", event)}></label>
       ${this.supports(TODO_FEATURE.description) ? html`<label>${t("Description")}<textarea name="description"
-        .value=${draft.description} ?disabled=${this.busy} @input=${(event: Event) => field("description", event)}></textarea></label>` : nothing}
+        .value=${draft.description} ?disabled=${this.busy || !canEdit} @input=${(event: Event) => field("description", event)}></textarea></label>` : nothing}
       ${this.supports(TODO_FEATURE.date) || this.supports(TODO_FEATURE.datetime) ? html`
         ${this.supports(TODO_FEATURE.date) && this.supports(TODO_FEATURE.datetime) ? html`<label>${t("Due")}
-          <select .value=${draft.dueType} ?disabled=${this.busy} @change=${(event: Event) => {
+          <select .value=${draft.dueType} ?disabled=${this.busy || !canEdit} @change=${(event: Event) => {
             this.draft = { ...draft, due: "", dueType: (event.target as HTMLSelectElement).value as Draft["dueType"] };
           }}><option value="date">${t("Date")}</option><option value="datetime">${t("Date and time")}</option></select></label>` : nothing}
         <label>${t(draft.dueType === "date" ? "Date" : "Date and time")}<input name="due"
-          type=${draft.dueType === "date" ? "date" : "datetime-local"} .value=${draft.due} ?disabled=${this.busy}
+          type=${draft.dueType === "date" ? "date" : "datetime-local"} .value=${draft.due} ?disabled=${this.busy || !canEdit}
           @input=${(event: Event) => field("due", event)}></label>` : nothing}
       ${this.draftBase ? this.renderStepEditor(this.items.find(item => item.uid === this.draftBase?.uid) ?? this.draftBase) : nothing}
-      <div class="actions"><button type="submit" class="primary" ?disabled=${!this.writable || !draft.summary.trim()}>${t("Save")}</button>
-        <button type="button" ?disabled=${this.busy} @click=${() => { this.draft = undefined; }}>${t("Cancel")}</button></div>
+      ${this.draftBase ? this.renderImportance(this.items.find(item => item.uid === this.draftBase?.uid) ?? this.draftBase) : nothing}
+      ${this.deleting !== undefined && this.deleting === this.draftBase?.uid ? html`<div class="confirmation">
+        <span>${t("Delete this task?")}</span>
+        <button type="button" class="confirm-delete" ?disabled=${!this.writable}
+          @click=${() => void this.mutate("remove_item", {}, this.deleteBase)}>${t("Delete")}</button>
+        <button type="button" ?disabled=${this.busy} @click=${() => { this.deleting = undefined; }}>${t("Cancel")}</button>
+      </div>` : nothing}
+      <div class="editor-actions"><button type="submit" class="primary" ?disabled=${!this.writable || !canEdit || !draft.summary.trim()}>${t("Save")}</button>
+        <button type="button" ?disabled=${this.busy} @click=${() => { this.draft = undefined; }}>${t("Cancel")}</button>
+        ${this.draftBase && this.supports(TODO_FEATURE.delete) && this.config!.todo_allow_delete !== false ? html`
+          <button type="button" class="icon-button delete" aria-label=${t("Delete")} title=${t("Delete")}
+            ?disabled=${!this.writable || !safeTodoUid(this.draftBase, this.items)}
+            @click=${() => { this.deleting = this.draftBase!.uid; this.deleteBase = { ...this.draftBase! }; }}>
+            <ha-icon .icon=${"mdi:delete-outline"}></ha-icon></button>` : nothing}</div>
     </form>`;
+  }
+  private renderImportance(item: TodoItem) {
+    if (typeof item.important !== "boolean") return nothing;
+    const label = localizeText(this.hass, "Important");
+    const icon = html`<ha-icon .icon=${item.important ? "mdi:star" : "mdi:star-outline"}></ha-icon>`;
+    return todoServiceField(this.hass, "update_todo", "is_important") ? html`
+      <button type="button" class="icon-button importance" aria-label=${`${label}: ${item.summary}`} title=${label}
+        aria-pressed=${item.important} ?disabled=${!this.canChangeChecklist(item, "update_todo")}
+        @click=${() => void this.changeChecklist(item, "update_todo", { is_important: !item.important })}>${icon}</button>`
+      : html`<span class=${`importance${item.important ? " important" : ""}`} role="img"
+          aria-label=${`${label}: ${item.important}`} title=${localizeText(this.hass, "Importance is read-only in this integration.")}>${icon}</span>`;
   }
   private renderStepEditor(item: TodoItem) {
     const t = (text: string) => localizeText(this.hass, text);
     if (!Array.isArray(this.hass?.states[this.selected]?.attributes.all_todos) && !item.checklist?.length) return nothing;
     return html`<fieldset class="step-editor"><legend>${t("Subtasks")}</legend>
       <p class="hint">${t("Subtask changes are saved immediately.")}</p>
-      ${item.checklist?.length ? html`<p class="hint">${t("This integration cannot rename existing subtasks.")}</p>` : nothing}
+      ${item.checklist?.length && !todoServiceField(this.hass, "update_todo_checklist_item", "name") ? html`<p class="hint">${t("This integration cannot rename existing subtasks.")}</p>` : nothing}
       <ul>${item.checklist?.map(step => html`<li>
         <button type="button" class="icon-button step-complete" aria-label=${`${t(step.checked ? "Mark incomplete" : "Complete task")}: ${step.name}`}
           aria-pressed=${step.checked} ?disabled=${!this.canUpdateChecklist(item)} @click=${() => void this.toggleChecklist(item, step)}>
           <ha-icon .icon=${step.checked ? "mdi:checkbox-marked" : "mdi:checkbox-blank-outline"}></ha-icon></button>
-        <span>${step.name}</span>
+        ${todoServiceField(this.hass, "update_todo_checklist_item", "name") ? html`
+          <input class="step-name" name=${`step-${step.id}`} aria-label=${`${t("Edit")}: ${step.name}`}
+            .value=${this.stepNames[step.id] ?? step.name} ?disabled=${!this.canUpdateChecklist(item)}
+            @input=${(event: Event) => { this.stepNames = { ...this.stepNames, [step.id]: (event.target as HTMLInputElement).value }; }}
+            @keydown=${(event: KeyboardEvent) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                const name = this.stepNames[step.id]?.trim();
+                if (name && name !== step.name) void this.changeChecklist(item, "update_todo_checklist_item", { name }, step);
+              }
+            }}>
+          <button type="button" class="icon-button step-save" aria-label=${`${t("Save")}: ${step.name}`} title=${t("Save")}
+            ?disabled=${!this.canUpdateChecklist(item) || !this.stepNames[step.id]?.trim() || this.stepNames[step.id].trim() === step.name}
+            @click=${() => void this.changeChecklist(item, "update_todo_checklist_item", { name: this.stepNames[step.id].trim() }, step)}>
+            <ha-icon .icon=${"mdi:content-save-outline"}></ha-icon></button>` : html`<span>${step.name}</span>`}
         ${this.deletingStep === step.id ? html`<div class="confirmation"><span>${t("Delete this task?")}</span>
           <button type="button" ?disabled=${!this.canChangeChecklist(item, "delete_todo_checklist_item")}
             @click=${() => void this.changeChecklist(item, "delete_todo_checklist_item", {}, step)}>${t("Delete")}</button>

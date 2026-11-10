@@ -273,7 +273,7 @@ export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, P
   todo_allow_add?: boolean;
   todo_allow_edit?: boolean;
   todo_allow_delete?: boolean;
-  todo_sort?: "list" | "due" | "summary";
+  todo_sort?: "list" | "due" | "summary" | "important";
   energy_plan?: import("./energy-plan/config").EnergyPlanOptions;
   energy_insights?: import("./energy-insights/config").EnergyInsightsOptions;
   weather?: import("./weather-advanced/config").WeatherAdvancedOptions;

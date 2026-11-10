@@ -47,7 +47,7 @@ its navigation button; a custom card name is not translated.
   Expand it to reopen or edit them; `todo_show_completed: false` hides the section
   without deleting anything.
 - Sort each group by list order (default), due date (earliest first, undated last),
-  or locale-aware alphabetical order. Set the default in **Content → Sort tasks**
+  importance (starred first, when supplied), or locale-aware alphabetical order. Set the default in **Content → Sort tasks**
   or change it temporarily using the card's selector. Sorting is display-only.
 - Refresh and add use labeled icon buttons; task icons are 25% smaller and their
   button boxes are 20% smaller (32 by 32 pixels).
@@ -56,6 +56,8 @@ its navigation button; a custom card name is not translated.
   edits, like Cancel; already-saved subtask changes remain saved.
   Subtask expansion is an icon beside Edit, with a small completed/total
   count below the title.
+- Task deletion is in the editor's bottom-right corner, on the Save/Cancel row,
+  with confirmation. There is no task-delete button in the list rows.
 - A bottom input adds tasks directly with Enter or its plus button. It stays
   outside the list's bounded scrolling region, so scrolling never hides it.
 - Switch lists without combining task identifiers across entities.
@@ -77,7 +79,7 @@ Controls follow HA's `TodoListEntityFeature` bitmask, not the integration name:
 | Bit | Capability | Card behavior |
 |---|---|---|
 | 1 | Create | Add-task form |
-| 2 | Delete | Delete button with inline confirmation |
+| 2 | Delete | Editor footer delete button with confirmation |
 | 4 | Update | Complete/reopen and edit |
 | 8 | Move | Not exposed; this card intentionally does not reorder tasks |
 | 16 | Due date | Date input |
@@ -97,9 +99,10 @@ The task editor also exposes existing subtask completion/reopening, addition
 (`new_todo_checklist_item`) and confirmed deletion (`delete_todo_checklist_item`)
 when those services and the corresponding card/provider capabilities are available.
 Subtask changes save immediately, independently of the parent task's Save/Cancel;
-unsaved parent edits are retained. The installed integration cannot rename existing
-subtasks: its update service accepts only status. The editor explains this rather
-than deleting/recreating subtasks behind the user's back.
+unsaved parent edits are retained. When `update_todo_checklist_item` advertises a
+`name` field, each subtask has an editable name and a Save icon (Enter also saves).
+Without that field, names remain read-only and the editor explains the limitation.
+Renaming updates the existing step ID; it never deletes/recreates the step.
 
 **Completed Microsoft tasks:** enable `show_completed` for the list in the
 MS365-ToDo integration's UI list settings. Its default is false: the integration
@@ -107,11 +110,17 @@ then excludes completed tasks before Home Assistant or any frontend can see them
 The card shows an explicit empty-group message when none are supplied. It does
 not modify integration settings automatically.
 
-**Importance and creation dates:** the current generic HA item contract and
-MS365-ToDo attributes do not expose these fields, and the installed update
-services have no importance parameter. The card cannot display/change the
-Microsoft star or sort by importance/creation date; it does not invent local
-stars or treat provider order as creation order.
+**Importance:** when the integration supplies `all_todos[].is_important` as a
+boolean, a filled/outline star beside Edit reflects that value, and sorting by
+importance puts starred tasks first. If `ms365_todo.update_todo` advertises
+`is_important`, the star is a button that updates the real task by UID. Otherwise
+it is a read-only indicator with an explanatory tooltip. Importance changes
+save immediately and retain unsaved parent edits, like subtask changes.
+The card never invents local importance or sends unsupported fields.
+
+**Creation dates:** the generic item contract and current metadata do not
+expose these, so creation-date sorting remains unavailable. Provider order is
+not treated as creation order.
 
 Microsoft To Do entities with `supported_features: 119` advertise all listed
 capabilities except move. They use the same code as other integrations: no

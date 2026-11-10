@@ -7,6 +7,7 @@ export interface TodoItem {
   description?: string | null;
   due?: string | null;
   checklist?: TodoChecklistItem[];
+  important?: boolean;
 }
 
 export interface TodoChecklistItem { id: string; name: string; checked: boolean }
@@ -14,6 +15,7 @@ export const TODO_SORT_OPTIONS = [
   { value: "list", label: "List order" },
   { value: "due", label: "Due" },
   { value: "summary", label: "Alphabetically" },
+  { value: "important", label: "Important" },
 ] as const;
 export type TodoSort = typeof TODO_SORT_OPTIONS[number]["value"];
 
@@ -53,16 +55,21 @@ export function sortTodo(items: TodoItem[], order: TodoSort, language?: string):
   };
   return [...items].sort((a, b) => order === "summary"
     ? a.summary.localeCompare(b.summary, language, { numeric: true, sensitivity: "base" })
-    : order === "due" ? (timestamp(a) === timestamp(b) ? 0 : timestamp(a) < timestamp(b) ? -1 : 1) : 0);
+    : order === "due" ? (timestamp(a) === timestamp(b) ? 0 : timestamp(a) < timestamp(b) ? -1 : 1)
+    : order === "important" ? Number(b.important === true) - Number(a.important === true) : 0);
 }
 
-function todoChecklist(item: TodoItem, entity?: HassEntity): TodoChecklistItem[] | undefined {
+function todoMetadata(item: TodoItem, entity?: HassEntity): Record<string, unknown> | undefined {
   const rows: unknown = entity?.attributes.all_todos;
   if (!item.uid || !Array.isArray(rows)) return undefined;
   const matches = rows.filter((row): row is Record<string, unknown> =>
     !!row && typeof row === "object" && row.todo_id === item.uid);
   if (matches.length !== 1) return undefined;
-  const checklist: unknown = matches[0].checklist_items;
+  return matches[0];
+}
+
+function todoChecklist(metadata?: Record<string, unknown>): TodoChecklistItem[] | undefined {
+  const checklist: unknown = metadata?.checklist_items;
   if (checklist == null) return undefined;
   if (!Array.isArray(checklist) || checklist.some(row => !row || typeof row.id !== "string" || !row.id ||
     typeof row.name !== "string" || typeof row.is_checked !== "boolean") ||
@@ -102,5 +109,19 @@ export async function readTodo(hass: HomeAssistant, entity: string): Promise<Tod
     (item.uid != null && typeof item.uid !== "string") ||
     (item.description != null && typeof item.description !== "string") ||
     (item.due != null && typeof item.due !== "string"))) throw new Error("Invalid to-do response.");
-  return result.items.map(item => ({ ...item, checklist: todoChecklist(item, hass.states[entity]) }));
+  return result.items.map(item => {
+    const metadata = todoMetadata(item, hass.states[entity]);
+    if (metadata?.is_important != null && typeof metadata.is_important !== "boolean") {
+      throw new Error("Invalid to-do importance response.");
+    }
+    return { ...item, checklist: todoChecklist(metadata),
+      important: typeof metadata?.is_important === "boolean" ? metadata.is_important : undefined };
+  });
+}
+
+export function todoServiceField(hass: HomeAssistant | undefined, service: string, field: string): boolean {
+  const definition = hass?.services?.ms365_todo?.[service];
+  if (!definition || typeof definition !== "object" || !("fields" in definition)) return false;
+  const fields = definition.fields;
+  return !!fields && typeof fields === "object" && Object.hasOwn(fields, field);
 }
