@@ -127,7 +127,7 @@ describe("native energy configuration", () => {
         expect(names.filter(value => value === name), `${id}: ${name}`).toHaveLength(1);
       }
     }
-    expect(CATALOG).toHaveLength(41);
+    expect(CATALOG).toHaveLength(40);
     expect(new Set(CATALOG.map(item => item.tag)).size).toBe(CATALOG.length);
     expect(customElements.get("mushroom-addition-smart-saving")).toBeDefined();
     expect(customElements.get("mushroom-addition-energy-entityworkflow")).toBeDefined();
