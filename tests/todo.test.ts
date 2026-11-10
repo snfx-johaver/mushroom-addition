@@ -311,6 +311,21 @@ describe("Microsoft To Do operations", () => {
     expect(card.shadowRoot!.querySelectorAll("li")).toHaveLength(1);
     expect(hass.callWS).toHaveBeenCalledTimes(3);
   });
+  it("closes the task editor from the top icon without submitting or saving", async () => {
+    const hass = source(), card = await mount(hass);
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".edit")!.click(); await settle(card);
+    await input(card, "summary", "Unsaved change");
+    const close = card.shadowRoot!.querySelector<HTMLButtonElement>(".editor-close")!;
+    expect(close.type).toBe("button");
+    expect(close.getAttribute("aria-label")).toBe("Cancel");
+    expect((close.querySelector("ha-icon") as HTMLElement & { icon: string }).icon).toBe("mdi:close");
+    expect(close.closest("form")!.firstElementChild?.contains(close)).toBe(true);
+    close.click(); await settle(card);
+    expect(card.shadowRoot!.querySelector("[name=summary]")).toBeNull();
+    expect(hass.callService).not.toHaveBeenCalled();
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".edit")!.click(); await settle(card);
+    expect(card.shadowRoot!.querySelector<HTMLInputElement>("[name=summary]")!.value).toBe("Task one");
+  });
   it("completes and reopens by UID despite duplicate summaries", async () => {
     const hass = source(119, [task(), task({ uid: "uid-2", status: "completed" })]);
     const card = await mount(hass);

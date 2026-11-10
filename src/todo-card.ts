@@ -81,6 +81,7 @@ export class MushroomTodoCard extends MushroomAdditionCard {
     .step-editor li { align-items:center; }
     .step-editor li > span { flex:1; min-width:0; overflow-wrap:anywhere; }
     .step-add { display:flex; gap:8px; align-items:center; margin-top:8px; }
+    .editor-header { display:flex; justify-content:flex-end; }
     .checklist li { align-items:center; padding-block:2px; border:0; }
     .checklist span { font-size:12px; line-height:18px; }
     .checklist .checked { text-decoration:line-through; color:var(--secondary-text-color); }
@@ -450,6 +451,9 @@ export class MushroomTodoCard extends MushroomAdditionCard {
       this.draft = { ...draft, [key]: (event.target as HTMLInputElement).value };
     };
     return html`<form @submit=${(event: SubmitEvent) => this.save(event)}>
+      <div class="editor-header"><button type="button" class="icon-button editor-close"
+        aria-label=${t("Cancel")} title=${t("Cancel")} ?disabled=${this.busy}
+        @click=${() => { this.draft = undefined; }}><ha-icon .icon=${"mdi:close"}></ha-icon></button></div>
       <label>${t("Task")}<input name="summary" required .value=${draft.summary} ?disabled=${this.busy}
         @input=${(event: Event) => field("summary", event)}></label>
       ${this.supports(TODO_FEATURE.description) ? html`<label>${t("Description")}<textarea name="description"

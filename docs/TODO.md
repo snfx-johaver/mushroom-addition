@@ -52,7 +52,9 @@ its navigation button; a custom card name is not translated.
 - Refresh and add use labeled icon buttons; task icons are 25% smaller and their
   button boxes are 20% smaller (32 by 32 pixels).
 - Click a task title or row to open its editor; the completion button remains
-  separate. Subtask expansion is an icon beside Edit, with a small completed/total
+  separate. A top-right close icon dismisses the editor without saving parent
+  edits, like Cancel; already-saved subtask changes remain saved.
+  Subtask expansion is an icon beside Edit, with a small completed/total
   count below the title.
 - A bottom input adds tasks directly with Enter or its plus button. It stays
   outside the list's bounded scrolling region, so scrolling never hides it.

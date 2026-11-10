@@ -4,6 +4,7 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Add a top-right close icon to the To-do task editor.
 - To-do: open tasks by clicking the row/title, move subtask expansion beside Edit,
   show a compact completed/total count, expose supported subtask operations in the
   editor, and keep a quick-add input below the scrollable list.

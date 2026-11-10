@@ -68091,6 +68091,11 @@ const nl = class nl extends Fe {
       this.draft = { ...t, [n]: r.target.value };
     };
     return u`<form @submit=${(n) => this.save(n)}>
+      <div class="editor-header"><button type="button" class="icon-button editor-close"
+        aria-label=${a("Cancel")} title=${a("Cancel")} ?disabled=${this.busy}
+        @click=${() => {
+      this.draft = void 0;
+    }}><ha-icon .icon=${"mdi:close"}></ha-icon></button></div>
       <label>${a("Task")}<input name="summary" required .value=${t.summary} ?disabled=${this.busy}
         @input=${(n) => i("summary", n)}></label>
       ${this.supports(ze.description) ? u`<label>${a("Description")}<textarea name="description"
@@ -68201,6 +68206,7 @@ nl.styles = [Fe.styles, ce`
     .step-editor li { align-items:center; }
     .step-editor li > span { flex:1; min-width:0; overflow-wrap:anywhere; }
     .step-add { display:flex; gap:8px; align-items:center; margin-top:8px; }
+    .editor-header { display:flex; justify-content:flex-end; }
     .checklist li { align-items:center; padding-block:2px; border:0; }
     .checklist span { font-size:12px; line-height:18px; }
     .checklist .checked { text-decoration:line-through; color:var(--secondary-text-color); }
