@@ -544,7 +544,7 @@ export class MushroomAreaControlsAdvanced extends LitElement {
     hui-conditional-card { flex: 1; min-width: 0; }
     hui-conditional-card[hidden] { display: none !important; }
     .entity { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 0;
-      box-shadow: var(--addition-area-button-shadow, var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12)));
+      box-shadow: var(--addition-area-button-shadow, none);
       box-sizing: border-box; height:var(--feature-height, 42px);
       padding: 0 4px; gap: 4px; border: 0; border-radius: var(--ha-card-border-radius, 12px); font: inherit;
       background: var(--mush-control-bg, rgba(var(--rgb-primary-text-color, 128,128,128), .05)); cursor: pointer;
@@ -629,7 +629,7 @@ export class MushroomAreaAdvancedEditor extends LitElement {
     const editor = this.editor as NativeAreaEditor;
     if (editor._config) Object.assign(editor._config,
       Object.fromEntries(AREA_CONTENT_KEYS.map(key => [key, this.config![key]])),
-      { area_button_shadow: this.config.area_button_shadow !== false });
+      { area_button_shadow: this.config.area_button_shadow === true });
   }
   public setConfig(config: AreaAdvancedConfig) {
     this.config = config;

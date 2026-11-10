@@ -4,6 +4,7 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## Unreleased
 
+- Default Area control-button shadows to off, keeping the Layout toggle available.
 - Remove the duplicate Area Advanced comparison picker entry, retaining saved
   configurations, and simplify the three advanced Energy display names.
 - To-do: support provider-advertised subtask renaming, show Microsoft importance

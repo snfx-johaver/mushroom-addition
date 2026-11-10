@@ -69592,7 +69592,7 @@ function OC(e, t) {
   const a = e.shadowRoot;
   if (!a) return;
   const i = e.hass;
-  e.style.setProperty("--addition-area-button-shadow", t.area_button_shadow === !1 ? "none" : "var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12))");
+  e.style.setProperty("--addition-area-button-shadow", t.area_button_shadow !== !0 ? "none" : "var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12))");
   const n = e._config?.area;
   let r;
   if (t.use_light_color && i && typeof n == "string") {
@@ -69747,7 +69747,7 @@ function c_(e, t, a = 6) {
     --control-button-background-opacity: 1;
     --control-button-border-radius: var(--ha-card-border-radius, 12px);
     border-radius: var(--ha-card-border-radius, 12px);
-    box-shadow: var(--addition-area-button-shadow, var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12)));
+    box-shadow: var(--addition-area-button-shadow, none);
   }
   ha-control-button:not(.active) {
     --control-button-icon-color: var(--secondary-text-color);
@@ -70161,7 +70161,7 @@ dl.styles = ce`
     hui-conditional-card { flex: 1; min-width: 0; }
     hui-conditional-card[hidden] { display: none !important; }
     .entity { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 0;
-      box-shadow: var(--addition-area-button-shadow, var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12)));
+      box-shadow: var(--addition-area-button-shadow, none);
       box-sizing: border-box; height:var(--feature-height, 42px);
       padding: 0 4px; gap: 4px; border: 0; border-radius: var(--ha-card-border-radius, 12px); font: inherit;
       background: var(--mush-control-bg, rgba(var(--rgb-primary-text-color, 128,128,128), .05)); cursor: pointer;
@@ -70250,7 +70250,7 @@ const _l = class _l extends fe {
     t._config && Object.assign(
       t._config,
       Object.fromEntries(Ks.map((a) => [a, this.config[a]])),
-      { area_button_shadow: this.config.area_button_shadow !== !1 }
+      { area_button_shadow: this.config.area_button_shadow === !0 }
     );
   }
   setConfig(t) {

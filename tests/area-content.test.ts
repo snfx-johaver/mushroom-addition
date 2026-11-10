@@ -33,7 +33,7 @@ describe("Area native content enhancements", () => {
       const options = { area_button_shadow: enabled };
       applyAreaContent(card, options);
       expect(card.style.getPropertyValue("--addition-area-button-shadow")).toBe(
-        enabled === false ? "none" : "var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12))");
+        enabled === true ? "var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12))" : "none");
       const config = { type: "custom:area", ...options };
       expect(nativeAreaConfig(config)).not.toHaveProperty("area_button_shadow");
       expect(mergeNativeAreaEdit(config, nativeAreaConfig(config, true)).area_button_shadow).toBe(enabled);

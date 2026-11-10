@@ -448,7 +448,7 @@ describe("native Area card delegation", () => {
     ]) });
     expect(form.schema[1]).toMatchObject({ name: "layout", type: "expandable", flatten: true,
       schema: [{ name: "area_button_shadow", selector: { boolean: {} } }] });
-    expect(form.data.area_button_shadow).toBe(true);
+    expect(form.data.area_button_shadow).toBe(false);
     expect(form.data).toMatchObject({ alert_color: "red", sensor_wrap: true, sensor_icons: true });
     expect(form.computeLabel({ name: "alert_color" })).toBe("Alert icon color");
     expect(form.computeLabel({ name: "camera_privacy_entity" })).toBe("Camera privacy entity");
@@ -474,6 +474,10 @@ describe("native Area card delegation", () => {
     await settle(editor);
     void native.updateComplete;
     expect(form.data.area_button_shadow).toBe(false);
+    editor.setConfig({ ...config, area_button_shadow: true });
+    await settle(editor);
+    void native.updateComplete;
+    expect(form.data.area_button_shadow).toBe(true);
   });
   it("shows an explicit missing-helper error and can retry", async () => {
     delete areaWindow.loadCardHelpers;

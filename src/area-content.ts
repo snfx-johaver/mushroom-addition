@@ -37,7 +37,7 @@ export function applyAreaContent(card: NativeContentCard, options: AreaContentOp
   const root = card.shadowRoot;
   if (!root) return;
   const hass = card.hass;
-  card.style.setProperty("--addition-area-button-shadow", options.area_button_shadow === false
+  card.style.setProperty("--addition-area-button-shadow", options.area_button_shadow !== true
     ? "none" : "var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12))");
   const area = card._config?.area;
   let rgb: number[] | undefined;
@@ -267,7 +267,7 @@ export function applyNativeControlColor(group: HTMLElement, color?: string, perR
     --control-button-background-opacity: 1;
     --control-button-border-radius: var(--ha-card-border-radius, 12px);
     border-radius: var(--ha-card-border-radius, 12px);
-    box-shadow: var(--addition-area-button-shadow, var(--addition-raised-shadow, 0 2px 7px rgba(0,0,0,.12)));
+    box-shadow: var(--addition-area-button-shadow, none);
   }
   ha-control-button:not(.active) {
     --control-button-icon-color: var(--secondary-text-color);

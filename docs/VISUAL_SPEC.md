@@ -108,6 +108,9 @@ Mushroom comparison type remains registered only for existing dashboard
 configurations, preserving its scoped styling and native visual editor without
 advertising a duplicate card.
 
+Area control-button shadows default to off. **Layout > Button shadows**
+(`area_button_shadow: true`) explicitly enables them for native and custom buttons.
+
 Game Console, Upcoming Media, NAS, Tablet, Speedtest, Pollen and Pi-hole use the
 same Mushroom primary/secondary typography and themed 42px/12px controls.
 Their artwork, utilization rings, domain-specific controls and existing raised
