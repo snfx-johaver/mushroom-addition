@@ -5,7 +5,7 @@ card picker. The card is in the existing bundle; no separate resource or data
 service is installed. Defaults contain no entities or invented readings.
 
 The card preserves the concept's two distinct reporting surfaces: measured
-actuals (for example 00:00–12:00) and an independent supplied upcoming 24-hour
+actuals (for example 00:00–12:00) and an independent supplied upcoming, at-most-24-hour
 purchase plan. It is a viewer and accounting surface, not an optimizer, device
 controller or recorder integration. Actuals can use either a legacy measured
 snapshot or user-selected cumulative meters and timestamped price sensors.
@@ -45,9 +45,13 @@ All settings below live under `energy_insights`:
 | --- | --- |
 | `actualSource`, `planSource` | Optional legacy measured snapshot and supplied plan; each has a sensor `entity`, attribute-object `path`, and structured `fields` mappings |
 | `metered` | Solar, grid import/export, battery charge/discharge and import-rate sensor selectors, with optional attribute-field mappings; export rate is optional |
+| `metered.home`, `homeBoundary` | Optional independent cumulative household meter. Set `homeBoundary: excludes_battery_charging` only after verifying its physical measurement boundary. |
+| `forecastKind` | `unspecified` (default), `estimate` or `interval`; identifies the supplied plan's basis, not its accuracy |
 | `currency` | Optional ISO currency code; otherwise use Home Assistant's currency |
 | `fixedExportRate` | Optional fixed feed-in rate in the configured currency/kWh; mutually exclusive with an export-rate sensor |
 | `maxAgeMinutes` | Maximum snapshot/live/history-refresh age, 1–10080 minutes; default 60 |
+| `maxContentWidth` | Centred content limit, default 1200 px; 400–2400, or 0 for unlimited; narrow containers retain the mobile layout |
+| `purchaseScope` | `all` (default): all supplied grid purchases; `battery`: supplied battery-charging purchases only, with scope-specific labels and validation |
 | `activeThreshold` | Active consumer threshold in W; default 50, strictly greater than |
 | `sort` | `energy` (default) or `power` |
 | `activeOnly` | Initial active-only filter; default false |
@@ -64,6 +68,10 @@ wrong-unit values are explicitly unavailable. No history is inferred from power.
 The self-powered indicator is source-backed too: net grid power alone cannot
 identify which imported energy feeds the home versus battery charging, so this
 percentage is never guessed from those power readings.
+When unconfigured, the self-powered indicator is hidden. A configured invalid
+source stays explicitly unavailable with a diagnostic. Grid and battery power
+show Import/Export and Charging/Discharging directions with absolute magnitudes;
+values rounding to zero do not show negative zero.
 
 When `actualSource.entity` is not set, **Metered intervals** supplies today's
 measured data. Select cumulative energy sensors for solar production, grid
@@ -131,13 +139,14 @@ boundaries and redundant equal-rate observations require no estimated allocation
 Negative and zero rates are supported. The optional feed-in rate sensor follows
 the same rules.
 Fixed rates are explicitly assumed constant over the measured day.
-An always-visible **Approximate accounting** notice explains affected sources and
-assumptions; affected interval rows carry `≈`. Midnight timing uncertainty propagates to
+An always-visible compact **Approximate accounting** notice identifies estimates;
+expanded source diagnostics explain affected sources and assumptions. Affected
+interval rows carry `≈`. Midnight timing uncertainty propagates to
 energy totals, household shares and affected costs. Aligned cumulative endpoints
 and constant tariffs require no allocation estimate, but carry-forward endpoint
 assumptions are still labeled independently.
 Accounting notices, their assumption explanations, last-state-update labels and
-table-limit notices are translated in all 33 supported languages. Changing the UI
+table navigation are translated in all 33 supported languages. Changing the UI
 language also updates cached accounting explanations without another history
 request; technical source IDs and measured values are preserved.
 
@@ -159,10 +168,28 @@ those failures; this is not billing-grade accounting.
 The measured import/export chart uses interval quantities in kWh (not inferred
 instantaneous power), with import above and export below zero. It draws at most
 96 groups per direction, summing consecutive measurements for dense histories.
+The compact chart panel has a shared positive/negative scale, subtle grid lines,
+a distinct zero baseline, and a colour legend. Time and scale labels are HTML
+outside the SVG, keeping text readable without stretching. Five time labels
+reduce to three on narrow cards; the plot fits its container without requiring
+horizontal scrolling. Both directions use the same scale, so a small export stays
+visibly smaller than a large import. Bars retain source interval grouping rather
+than resampling energy into invented hourly readings.
 Tooltips identify each group's quantity and start/end. Interval and rate tables
-render at most the first 200 rows each, with a visible truncation note; **all**
-accepted rows still contribute to totals, rate buckets and the chart. Source mappings stay in the editor and collapsed
+are collapsed initially and their rows are created only when expanded. Each
+shows 100 rows per page with Previous/Next controls, so every accepted row remains
+accessible without populating a large table on initial display. **All** accepted
+rows contribute to totals, rate buckets and the chart, regardless of the current
+page. The price distribution also includes every bucket in at most 96 visual
+groups. Source mappings stay in the editor and collapsed
 diagnostics rather than a large everyday dashboard panel.
+
+The measured tab shows Complete, Partial or Stale data source status and a shortcut
+to diagnostics. Missing readings leave affected totals Not supplied, not zero;
+invalid history diagnostics identify the first gap and recovery timestamps so
+the configured source can be corrected. An empty consumer configuration shows a
+compact setup hint rather than an empty consumption ring. A ring is not drawn
+when the household balance is unavailable.
 
 History is fetched outside rendering. On initial load, source-mapping changes,
 and replacement of the Home Assistant connection, the card batches the unique configured entity IDs into one
@@ -172,7 +199,7 @@ immediate batched refresh. Source-health changes revalidate cached history
 without advancing the cached endpoint or requesting it again. Each request starts
 one hour before local midnight, allowing actual pre-midnight readings to bracket
 the day boundary. The largest usual DST window is 26 elapsed hours. The batch is
-capped at 39 entities (seven base sensors plus up to 32 consumer meters), 50,000
+capped at 40 entities (seven base sensors, one optional household meter and up to 32 consumer meters), 50,000
 states per entity, and 250,000 states across the response. Per-source overflow
 invalidates that source; aggregate overflow rejects the response. Pricing is also
 capped at 100,000 allocated intervals per direction. No downsampling discards
@@ -206,6 +233,71 @@ Names and source-provided text are escaped by Lit and are never translated.
 Built-in labels, explanations and native field labels use the repository's
 33-locale translation catalogs. Source mapping paths remain unchanged. Numbers, currency and
 time respect Home Assistant locale preferences and timezone.
+
+## Source quality and independent household measurement
+
+Every cumulative energy mapping (including consumers and the optional household
+meter) supports `sourceType`: `unspecified` (default), `hardware`, or
+`integrated_power`. Choose the type after verifying how the sensor is produced:
+`total_increasing` alone does not establish that it is a hardware lifetime counter.
+Use non-resetting Wh, kWh or MWh counters; instantaneous W/kW and energy sensors
+explicitly marked `state_class: measurement` are rejected. Counters with missing
+state-class metadata remain compatible but still require correct source selection.
+Diagnostics identify the configured type; HA's power-integration `source`
+attribute conservatively identifies an integrated-power source.
+
+Unavailable history is rejected by default for **all** types. A verified hardware
+counter may explicitly enable `recoverGaps: true`. This uses the cumulative
+difference between valid recorded readings on either side of an outage; it does
+not assume zero consumption or reconstruct individual readings. The baseline and
+recorded recovery must exist, timestamps and units must be valid, and counters
+must not decrease or report changed reset metadata. Trailing outages without a
+recorded recovery, unavailable baselines, malformed values and conflicting
+readings remain invalid. Recovery preserves the cumulative delta, but interval
+timing and any time-proportional tariff split remain uncertain. The visible
+Approximate accounting notice and diagnostics disclose the assumption that no
+hidden reset occurred. Even a monotonic recovered counter cannot prove the absence
+of a reset that recovered between observations.
+
+Never enable recovery for energy calculated by integrating power: a recovered
+integral may omit physical energy from the outage. This is rejected for configured
+integrated-power sources and sources exposing HA's integration `source` metadata,
+even if they were mistakenly labelled hardware. Fix the upstream power collection
+or select independent hardware energy counters. The card cannot repair Recorder,
+recover unmeasured energy, or detect all incorrectly classified third-party sensors.
+
+If a trustworthy household energy counter is available, select it under
+**Household energy sensor** and explicitly confirm **Measurement boundary →
+Excludes battery charging**. This switches household consumption and consumer
+shares to that meter over the same midnight-to-snapshot window, independently of
+battery, solar or grid failures. Battery quantities and unrelated failures remain
+visible as unavailable; they are not replaced with zero. When configured, a failed
+household meter does not silently fall back to the balance calculation. When all
+balance meters are valid, disagreement with the direct meter triggers a diagnostic
+using the snapshot balance tolerance (0.01 kWh or 1%).
+
+Confirm that the direct meter covers the whole household, excludes battery
+charging and is not just grid import, a circuit, or a duplicate measurement.
+The card cannot infer this electrical boundary from an entity name. Consumer
+meters must use that same boundary and must not overlap. These settings apply to
+standalone metered accounting; legacy snapshots retain their existing contract.
+
+For example, the following **fictional** mappings illustrate the optional settings:
+
+```yaml
+energy_insights:
+  homeBoundary: excludes_battery_charging
+  metered:
+    home:
+      entity: sensor.example_household_lifetime
+      sourceType: hardware
+    batteryCharge:
+      entity: sensor.example_charge_integral
+      sourceType: integrated_power
+```
+
+Configure the other required sources in the visual editor. Nothing in this example
+creates sensors or changes their recording.
 
 ## Measured snapshot contract
 
@@ -252,12 +344,13 @@ The default plan path is `plan`. Its independent snapshot requires:
 
 | Field | Meaning |
 | --- | --- |
-| `start`, `end`, `generated_at` | Upcoming horizon, exactly 24 elapsed hours, plus snapshot time |
+| `start`, `end`, `generated_at` | Upcoming horizon, greater than zero and at most 24 elapsed hours, plus snapshot time |
 | `home_kwh`, `solar_kwh` | Supplied forecasts for that same horizon |
 | `battery_min`, `battery_reserve` | Required with `showPlanBattery`; supplied minimum SoC and reserve, both 0–100% |
 | `charge_efficiency` | Required with `showPlanEfficiency`; supplied AC-to-stored charging efficiency, greater than zero and at most one |
 | `blocks` | Ordered non-overlapping planned purchase windows; an empty list means no planned purchases |
 | `currency` | Optional source currency assertion |
+| `forecast_method` | Optional source-supplied explanatory text, also configurable through Field mappings |
 
 Each block always requires `start`, `end`, and `rate`. With
 `showPlanAllocations`, it also requires `home_kwh`, `ev_kwh`, and `battery_kwh`;
@@ -271,6 +364,18 @@ Cost is quantity × rate.
 Stored energy is battery AC input × charge efficiency. Windows must be inside
 the horizon, non-overlapping and have positive total quantity. Gaps between
 purchases are normal and are not interpreted as missing measured coverage.
+All displayed forecast window labels use the supplied start/end, including
+shorter horizons. An empty purchase list hides unused tables and allocations
+and states that there are no purchases within that supplied horizon and scope,
+not that no purchases will ever occur. With `purchaseScope: battery`, home and
+EV allocations must be zero and any supplied battery allocation must equal the
+purchase quantity; contradictory blocks are rejected. This setting labels and
+validates the supplied source; it does not filter or optimize a mixed plan.
+`forecastKind` labels supplied estimates versus interval forecasts without inferring
+either from the interval count. Missing provenance is shown as Not specified.
+Optional `forecast_method` text is escaped and displayed as source information;
+the card does not convert an estimated solar profile into an independently
+measured or detailed weather forecast.
 
 The home forecast includes EV demand but excludes home-battery charging.
 Configured consumer forecasts may not exceed it. The card does not simulate

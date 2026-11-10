@@ -6,13 +6,13 @@ import { sharedStyles } from "../styles";
 import { resolveColor } from "../colors";
 import { localizeText, normalizeLocale } from "../localize";
 import { energyNumber, energyTime } from "../energy-format";
-import { timestamp, readPath } from "../energy-cards/data";
+import { clipIntervals, timestamp, readPath } from "../energy-cards/data";
 import { relevantHassChanged } from "../energy-cards/helpers";
 import type { HomeAssistant } from "../types";
 import { ENERGY_PLAN_TAG, planOptions, validatePlan, type EnergyPlanConfig, type PlanMetric, type PlanRow } from "./config";
-import { displayIntervals, displayPowerScale, displayPriceIntervals, intervalLabel, metricValue, rowCoverage, rowData, type RowData } from "./data";
+import { displayIntervals, displayPowerScale, displayPriceIntervals, intervalLabel, metricValue, publishedWindow, rowCoverage, rowData, unpublishedIntervals, type RowData } from "./data";
 
-const LEFT = 0, RIGHT = 848, WIDTH = 848, TOP = 0;
+const LEFT = 0, TOP = 0;
 
 @customElement(ENERGY_PLAN_TAG)
 export class EnergyPlanCard extends MushroomAdditionCard {
@@ -20,10 +20,13 @@ export class EnergyPlanCard extends MushroomAdditionCard {
   @state() private selected = 0;
   protected descriptor = getCatalogItem(ENERGY_PLAN_TAG);
   private refresh?: number;
+  @state() private chartWidth = 848;
+  private chartObserver?: ResizeObserver;
+  private observedChart?: Element;
 
   static styles = [sharedStyles, css`
     :host([fill-container]), :host([fill-container]) ha-card { height: 100%; }
-    .content { padding: 16px; }
+    .content { padding: 16px; box-sizing: border-box; margin-inline: auto; container-type: inline-size; }
     .energy-heading { border: 0; background: none; color: inherit; padding: 0; width: 100%; text-align: start; }
     .overview { margin-top: 16px; }
     h3 { font-size: 13px; font-weight: 500; margin: 0 0 8px; }
@@ -41,11 +44,13 @@ export class EnergyPlanCard extends MushroomAdditionCard {
     .timeline-axis, .axis-corner { position: sticky; top: 0; background: var(--ha-card-background, var(--card-background-color)); z-index: 2; }
     .axis-corner { left: 0; z-index: 4; }
     .timeline-labels { position: sticky; left: 0; background: var(--ha-card-background, var(--card-background-color)); z-index: 3; }
-    .row-label { display: flex; flex-direction: column; justify-content: center; font-size: 12px; padding-inline-end: 8px; color: var(--secondary-text-color); }
+    .row-label { display: flex; flex-direction: column; justify-content: center; font-size: 12px; padding-inline-end: 8px; color: var(--secondary-text-color); overflow-wrap: anywhere; }
     .row-label span { display: flex; align-items: center; gap: 7px; }
     .row-label small, .status { font-size: 10px; color: var(--secondary-text-color); }
     .status { margin: 8px 0; }
     .timeline:focus-visible { outline: 2px solid var(--primary-color); outline-offset: -2px; }
+    .details { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; font-size: 12px; }
+    .periods { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 16px; }
     @container (max-width: 620px) {
       .content { padding: 12px; }
       .timeline-layout { grid-template-columns: 128px minmax(540px, 1fr); }
@@ -72,8 +77,11 @@ export class EnergyPlanCard extends MushroomAdditionCard {
     .inspector { border: 1px solid var(--ha-card-border-color, var(--divider-color)); border-radius: 12px; margin-top: 14px; padding: 12px; }
     .inspector label { display: flex; justify-content: space-between; font-size: 12px; }
     input { display: block; width: 100%; margin: 12px 0; accent-color: var(--primary-color); }
-    .details { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 12px; }
-    .periods { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 16px; }
+    .details > span { padding: 10px; background: var(--addition-neutral-background); border-radius: 8px; }
+    .details b { display: block; margin-top: 6px; }
+    details { margin-top: 12px; font-size: 12px; }
+    summary { cursor: pointer; min-height: 44px; align-content: center; }
+    .unpublished { fill: var(--secondary-text-color); fill-opacity: .12; stroke: var(--divider-color); stroke-dasharray: 3 3; }
     .period .metrics { margin-bottom: 0; }
     .legend { margin: 14px 0 0; }
     .error { color: var(--error-color); font-size: 12px; padding: 12px; }
@@ -103,16 +111,34 @@ export class EnergyPlanCard extends MushroomAdditionCard {
 
   public connectedCallback(): void {
     super.connectedCallback();
+    this.requestUpdate();
     this.refresh = window.setInterval(() => this.requestUpdate(), 60_000);
   }
   public disconnectedCallback(): void {
     window.clearInterval(this.refresh);
     this.refresh = undefined;
+    this.chartObserver?.disconnect();
+    this.chartObserver = undefined;
+    this.observedChart = undefined;
     super.disconnectedCallback();
   }
   protected shouldUpdate(changed: PropertyValues): boolean {
     return changed.size !== 1 || !changed.has("hass") ||
       relevantHassChanged(changed.get("hass") as HomeAssistant | undefined, this.hass, this.config);
+  }
+  protected updated(): void {
+    super.updated();
+    if (!this.isConnected) return;
+    const chart = this.shadowRoot?.querySelector(".timeline-body");
+    if (chart === this.observedChart) return;
+    this.chartObserver?.disconnect();
+    this.observedChart = chart ?? undefined;
+    if (!chart) return;
+    this.chartObserver = new ResizeObserver(entries => {
+      const width = Math.round(entries[0].contentRect.width);
+      if (width > 0 && width !== this.chartWidth) this.chartWidth = width;
+    });
+    this.chartObserver.observe(chart);
   }
 
   private t(value: string): string { return localizeText(this.hass, value); }
@@ -122,21 +148,26 @@ export class EnergyPlanCard extends MushroomAdditionCard {
   private value(value: number): string {
     return energyNumber(this.hass, value);
   }
-  private metric(metric: PlanMetric) {
+  private metric(metric: PlanMetric, start: number, end: number) {
     const value = metricValue(this.hass, metric, planOptions(this.config!).maxAgeMinutes);
+    const row = planOptions(this.config!).rows.find(row => row.id === metric.rowId);
+    const source = row ? rowData(this.hass, row, this.config?.entity, start, end, planOptions(this.config!).maxAgeMinutes) : undefined;
+    const endpoint = source?.publishedEnd;
     return html`<div class="metric">
       <div class="metric-heading"><ha-icon .icon=${metric.icon} style=${`color:${resolveColor(metric.color, "green")}`}></ha-icon>${metric.name}</div>
       <div class="metric-value">${value === undefined ? this.t("Source missing") : this.value(value)} <small>${value === undefined ? "" : metric.unit}</small></div>
+      ${metric.rowId ? html`<small>${this.t("Published end")}: ${endpoint === undefined ? this.t("Not supplied") : this.time(endpoint)}</small>` : nothing}
     </div>`;
   }
   private track(row: PlanRow, data: RowData, y: number, start: number, end: number) {
     const color = resolveColor(row.color, "green");
-    const x = (time: number) => LEFT + (time - start) / (end - start) * (RIGHT - LEFT);
+    const x = (time: number) => (time - start) / (end - start) * this.chartWidth;
     const height = planOptions(this.config!).rowHeight - 12;
     const scale = displayPowerScale(row, data.intervals);
     return svg`<g>
-      <rect class="track" x=${LEFT} y=${y} width=${RIGHT - LEFT} height=${height} rx="8"></rect>
-      ${row.kind === "power" ? svg`<line class="grid" x1=${LEFT} x2=${RIGHT} y1=${y + height / 2} y2=${y + height / 2}></line>` : nothing}
+      <rect class="track" x=${LEFT} y=${y} width=${this.chartWidth} height=${height} rx="8"></rect>
+      ${unpublishedIntervals(data, start, end).map(gap => svg`<rect class="unpublished" x=${x(gap.start)} y=${y} width=${x(gap.end) - x(gap.start)} height=${height}><title>${this.t("No published forecast")}: ${this.time(gap.start)} – ${this.time(gap.end)}</title></rect>`)}
+      ${row.kind === "power" ? svg`<line class="grid" x1=${LEFT} x2=${this.chartWidth} y1=${y + height / 2} y2=${y + height / 2}></line>` : nothing}
       ${data.error ? svg`<text class="empty" x=${LEFT + 10} y=${y + 22}>${this.t(data.error)}</text>` : (row.kind === "price"
         ? displayPriceIntervals(row, data.intervals) : displayIntervals(row, data.intervals)).map(item => {
         const left = x(item.start), width = Math.max(.5, x(item.end) - left - 1);
@@ -177,20 +208,28 @@ export class EnergyPlanCard extends MushroomAdditionCard {
 
   protected render() {
     if (!this.config) return nothing;
-    const options = planOptions(this.config), duration = (this.config.visibleHours ?? 24) * 3600000;
+    const options = planOptions(this.config);
+    let duration = (this.config.visibleHours ?? 24) * 3600000;
     const startSource = this.hass?.states[options.startEntity || this.config.entity || ""];
-    const start = options.start === "now" ? Date.now() : timestamp(options.startField ? readPath(startSource?.attributes, options.startField) : startSource?.state);
+    const requestedStart = options.start === "now" ? Date.now() : timestamp(options.startField ? readPath(startSource?.attributes, options.startField) : startSource?.state);
     const updated = timestamp(startSource?.last_updated);
     const stale = options.start === "source" && startSource && (updated === undefined || Date.now() - updated > options.maxAgeMinutes * 60000 || updated > Date.now() + 60000);
-    if (start === undefined || !Number.isFinite(new Date(start + duration).getTime()) || stale) return html`<ha-card class=${`mushroom-addition-card${this.config.card_shadow ? " card-shadow" : ""}`}><div class="content">${options.showHeader ? this.renderSharedHeading() : nothing}<p class="error" role="alert">${this.t(stale ? "Stale data source" : "Source missing")}: ${this.t("Start")}</p></div></ha-card>`;
-    const end = start + duration;
+    if (requestedStart === undefined || !Number.isFinite(new Date(requestedStart + duration).getTime()) || stale) return html`<ha-card class=${`mushroom-addition-card${this.config.card_shadow ? " card-shadow" : ""}`}><div class="content">${options.showHeader ? this.renderSharedHeading() : nothing}<p class="error" role="alert">${this.t(stale ? "Stale data source" : "Source missing")}: ${this.t("Start")}</p></div></ha-card>`;
+    const origin = requestedStart;
+    let end = requestedStart + duration;
     const rows = options.rows.filter(row => row.enabled);
-    const data = rows.map(row => rowData(this.hass, row, this.config?.entity, start, end, options.maxAgeMinutes));
+    let data = rows.map(row => rowData(this.hass, row, this.config?.entity, requestedStart, end, options.maxAgeMinutes));
+    const window = options.horizon === "published" ? publishedWindow(data, requestedStart, end) : { start: requestedStart, end };
+    const start = window.start;
+    end = window.end;
+    duration = end - start;
+    data = data.map(row => ({ ...row, intervals: clipIntervals(row.intervals, start, end) }));
+    const method = options.forecastMethodField ? readPath(startSource?.attributes, options.forecastMethodField) : undefined;
     const chartHeight = TOP + rows.length * options.rowHeight;
-    const ticks = Math.ceil((this.config.visibleHours ?? 24) / options.axisStep);
+    const ticks = Math.ceil(duration / 3600000 / options.axisStep);
     const labelStep = Math.max(1, Math.ceil(ticks / 6));
     const instant = start + this.selected / 1000 * duration;
-    const selectedX = LEFT + this.selected / 1000 * (RIGHT - LEFT);
+    const selectedX = this.selected / 1000 * this.chartWidth;
     const sourceTimes = rows.map(row => timestamp(this.hass?.states[row.entity || this.config?.entity || ""]?.last_updated))
       .filter((time): time is number => time !== undefined);
     const oldest = sourceTimes.length ? Math.min(...sourceTimes) : undefined;
@@ -200,22 +239,25 @@ export class EnergyPlanCard extends MushroomAdditionCard {
       return { row, interval: intervals.find(item => item.value === minimum) };
     });
     return html`<ha-card class=${`mushroom-addition-card${this.config.card_shadow ? " card-shadow" : ""}`}>
-      <div class="content">
+      <div class="content" style=${`max-width:${options.maxContentWidth ? `${options.maxContentWidth}px` : "none"}`}>
         ${options.showHeader ? this.renderSharedHeading() : nothing}
         ${options.showOverview ? html`<div class="overview"><h3>${options.overview}</h3><p>${options.description}</p></div>` : nothing}
-        ${options.showMetrics && options.metrics.length ? html`<div class="metrics">${options.metrics.map(metric => this.metric(metric))}</div>` : nothing}
+        ${options.showMetrics && options.metrics.length ? html`<div class="metrics">${options.metrics.map(metric => this.metric(metric, start, end))}</div>` : nothing}
         <h3>${options.timelineTitle}</h3>
         <p class="status">${this.t("Supplied plan; not measured or executed.")}<br>
+          ${this.t("Forecast basis")}: ${this.t(options.forecastKind === "estimate" ? "Estimated forecast" : options.forecastKind === "interval" ? "Interval forecast" : "Not specified")}
+          ${options.forecastMethodField ? html` · ${this.t("Forecast method")}: ${typeof method === "string" && method.trim() ? method : this.t("Not supplied")}` : nothing}<br>
           ${this.time(start)} - ${this.time(end)} · ${this.t("Updated")}: ${oldest === undefined ? this.t("Not supplied") : this.time(oldest)}
           ${cheapest.map(({ row, interval }) => interval ? html`<br>${row.name} · ${this.t("Low")}: ${this.value(interval.value)} ${row.unit} · ${this.time(interval.start)} - ${this.time(interval.end)}` : nothing)}
+          ${rows.some((_, index) => rowCoverage(data[index], start, end) < 1) ? html`<br>${this.t("Partial")} · ${this.t("No published forecast")}` : nothing}
         </p>
         ${rows.length ? html`<div class="chart-scroll">
           <div class="timeline-layout" style=${`min-width:${options.minimumWidth}px`}>
           <div class="axis-corner"></div>
-          ${svg`<svg class="timeline timeline-axis" height="52" viewBox=${`0 0 ${WIDTH} 52`} preserveAspectRatio="none" aria-hidden="true">
+          ${svg`<svg class="timeline timeline-axis" height="52" viewBox=${`0 0 ${this.chartWidth} 52`} preserveAspectRatio="none" aria-hidden="true">
             ${Array.from({ length: ticks + 1 }, (_, index) => {
               const time = Math.min(end, start + index * options.axisStep * 3600000);
-              const x = LEFT + (time - start) / duration * (RIGHT - LEFT);
+              const x = (time - start) / duration * this.chartWidth;
               const showLabel = index === 0 || index === ticks || index % labelStep === 0 && ticks - index >= labelStep;
               const day = new Intl.DateTimeFormat(normalizeLocale(this.hass?.language), {
                 weekday: "short", timeZone: this.hass?.config?.time_zone,
@@ -230,18 +272,18 @@ export class EnergyPlanCard extends MushroomAdditionCard {
             ${row.kind === "price" ? html`<small>${row.unit}</small>` : nothing}
             ${row.kind === "power" ? html`<small>±${this.value(displayPowerScale(row, data[index].intervals))} ${row.unit}${["grid", "battery"].includes(row.id) ? ` · ↑${row.positiveLabel} ↓${row.negativeLabel}` : ""}</small>` : nothing}
             ${row.kind === "schedule" && ["grid", "battery"].includes(row.id) ? html`<small>+ → ${row.positiveLabel} · − ← ${row.negativeLabel}</small>` : nothing}
-            ${rowCoverage(data[index], start, end) < 1 ? html`<small>${this.t(data[index].error ?? "No published intervals")} · ${this.value(rowCoverage(data[index], start, end) * 100)}%</small>` : nothing}
+            ${rowCoverage(data[index], start, end) < 1 ? html`<small>${this.t(data[index].error ?? "Partial")} · ${this.value(rowCoverage(data[index], start, end) * 100)}%</small>` : nothing}
           </div>`)}</div>
-          ${svg`<svg class="timeline timeline-body" height=${chartHeight} viewBox=${`0 0 ${WIDTH} ${chartHeight}`} preserveAspectRatio="none"
+          ${svg`<svg class="timeline timeline-body" height=${chartHeight} viewBox=${`0 0 ${this.chartWidth} ${chartHeight}`} preserveAspectRatio="none"
             role=${options.showInspector ? "slider" : "img"} tabindex=${options.showInspector ? "0" : "-1"}
             aria-label=${this.t("Timeline")} aria-valuemin="0" aria-valuemax="999" aria-valuenow=${this.selected} aria-valuetext=${this.time(instant)}
             @pointerdown=${options.showInspector ? this.selectTime : nothing} @keydown=${options.showInspector ? this.timelineKey : nothing}>
             ${Array.from({ length: ticks + 1 }, (_, index) => {
-              const x = LEFT + Math.min(duration, index * options.axisStep * 3600000) / duration * (RIGHT - LEFT);
+              const x = Math.min(duration, index * options.axisStep * 3600000) / duration * this.chartWidth;
               return svg`<line class="grid" x1=${x} x2=${x} y1="0" y2=${chartHeight}></line>`;
             })}
             ${rows.map((row, index) => this.track(row, data[index], TOP + index * options.rowHeight, start, end))}
-            ${Date.now() >= start && Date.now() < end ? svg`<line stroke=${resolveColor("green", "green")} x1=${(Date.now() - start) / duration * RIGHT} x2=${(Date.now() - start) / duration * RIGHT} y1="0" y2=${chartHeight}><title>${this.t("Now")}</title></line>` : nothing}
+            ${Date.now() >= start && Date.now() < end ? svg`<line stroke=${resolveColor("green", "green")} x1=${(Date.now() - start) / duration * this.chartWidth} x2=${(Date.now() - start) / duration * this.chartWidth} y1="0" y2=${chartHeight}><title>${this.t("Now")}</title></line>` : nothing}
             ${options.showInspector ? svg`<line class="cursor" x1=${selectedX} x2=${selectedX} y1="0" y2=${chartHeight}></line>` : nothing}
           </svg>`}
           </div>
@@ -253,10 +295,12 @@ export class EnergyPlanCard extends MushroomAdditionCard {
             const item = data[index].intervals.find(interval => interval.start <= instant && instant < interval.end);
             return html`<span>${row.name}: <b>${item ? `${this.value(item.value)} ${row.unit}${row.kind === "schedule" ? ` · ${intervalLabel(row, item)}` : ""}` : this.t(data[index].error ?? "No published intervals")}</b></span>`;
           })}</div></div>` : nothing}
-        ${options.showPeriods && options.periods.length ? html`<div class="periods">${options.periods.filter(period => period.start < duration / 3600000).map(period => html`
-          <div class="period"><h3>${period.name}</h3><p>${this.time(start + period.start * 3600000)} – ${this.time(Math.min(end, start + period.end * 3600000))}</p>
-            <p>${period.description}</p>${period.metrics.length ? html`<div class="metrics">${period.metrics.map(metric => this.metric(metric))}</div>` : nothing}</div>`)}</div>` : nothing}
+        ${options.showPeriods && options.periods.length || options.showLegend ? html`<details class="plan-assumptions"><summary>${this.t("Plan assumptions")}</summary>
+        ${options.showPeriods && options.periods.length ? html`<div class="periods">${options.periods.filter(period => origin + period.start * 3600000 < end && origin + period.end * 3600000 > start).map(period => html`
+          <div class="period"><h3>${period.name}</h3><p>${this.time(Math.max(start, origin + period.start * 3600000))} – ${this.time(Math.min(end, origin + period.end * 3600000))}</p>
+            <p>${period.description}</p>${period.metrics.length ? html`<div class="metrics">${period.metrics.map(metric => this.metric(metric, start, end))}</div>` : nothing}</div>`)}</div>` : nothing}
         ${options.showLegend ? html`<p class="legend">${this.t("Plan values come from entities. This card does not calculate plans or infer future battery levels.")}</p>` : nothing}
+        </details>` : nothing}
       </div>
     </ha-card>`;
   }

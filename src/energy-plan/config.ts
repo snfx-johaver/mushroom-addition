@@ -17,6 +17,8 @@ export interface PlanRow extends FieldMapping {
   adapter: "attribute" | "state";
   unit: string;
   scale: number;
+  autoScale?: boolean;
+  priceTolerance?: number;
   low: number;
   high: number;
   lowColor: string;
@@ -30,6 +32,7 @@ export interface PlanMetric {
   name: string;
   entity?: string;
   field?: string;
+  rowId?: string;
   unit: string;
   icon: string;
   color: string;
@@ -47,6 +50,9 @@ export interface EnergyPlanOptions {
   start: "now" | "source";
   startEntity?: string;
   startField?: string;
+  horizon: "configured" | "published";
+  forecastKind: "unspecified" | "estimate" | "interval";
+  forecastMethodField?: string;
   showHeader: boolean;
   showOverview: boolean;
   showMetrics: boolean;
@@ -58,6 +64,7 @@ export interface EnergyPlanOptions {
   timelineTitle: string;
   rowHeight: number;
   minimumWidth: number;
+  maxContentWidth: number;
   axisStep: number;
   maxAgeMinutes: number;
   rows: PlanRow[];
@@ -86,10 +93,10 @@ export function newMetric(): PlanMetric {
 
 export function planDefaults(hass?: HomeAssistant): EnergyPlanOptions {
   const defaults: EnergyPlanOptions = {
-    start: "now", showHeader: true, showOverview: true, showMetrics: true,
+    start: "now", horizon: "configured", forecastKind: "unspecified", showHeader: true, showOverview: true, showMetrics: true,
     showInspector: true, showPeriods: true, showLegend: true,
     overview: "Plan", description: "", timelineTitle: "Timeline",
-    rowHeight: 48, minimumWidth: 720, axisStep: 3, maxAgeMinutes: 60,
+    rowHeight: 56, minimumWidth: 720, maxContentWidth: 1200, axisStep: 3, maxAgeMinutes: 60,
     rows: [
       newRow("price", "Prices", "price", "price", "amber", "mdi:currency-eur"),
       newRow("solar", "Solar", "power", "solar", "amber", "mdi:white-balance-sunny"),
@@ -139,6 +146,7 @@ function metrics(value: unknown, path: string): void {
     const p = `${path}.${index}`, metric = object(item, p);
     for (const key of ["name", "unit", "icon", "color"]) text(metric[key], `${p}.${key}`, key !== "unit");
     source(metric, p);
+    if (metric.rowId !== undefined) text(metric.rowId, `${p}.rowId`, true);
   });
 }
 
@@ -149,6 +157,9 @@ export function validatePlan(raw: unknown, hass?: HomeAssistant): EnergyPlanConf
   if (config.visibleHours !== undefined) number(config.visibleHours, "visibleHours", 1, 168);
   const options = object(config.energy_plan ?? {}, "energy_plan");
   const merged = { ...planDefaults(hass), ...options };
+  if (!["configured", "published"].includes(merged.horizon)) throw new Error("energy_plan.horizon: expected configured or published.");
+  if (!["unspecified", "estimate", "interval"].includes(merged.forecastKind)) throw new Error("energy_plan.forecastKind: expected unspecified, estimate or interval.");
+  if (merged.forecastMethodField !== undefined) text(merged.forecastMethodField, "energy_plan.forecastMethodField");
   if (!["now", "source"].includes(merged.start)) throw new Error("energy_plan.start: expected now or source.");
   for (const key of ["startEntity", "startField"]) if (options[key] !== undefined) text(options[key], `energy_plan.${key}`);
   for (const key of ["showHeader", "showOverview", "showMetrics", "showInspector", "showPeriods", "showLegend"] as const) {
@@ -157,6 +168,8 @@ export function validatePlan(raw: unknown, hass?: HomeAssistant): EnergyPlanConf
   for (const key of ["overview", "description", "timelineTitle"] as const) text(merged[key], `energy_plan.${key}`);
   number(merged.rowHeight, "energy_plan.rowHeight", 36, 80);
   number(merged.minimumWidth, "energy_plan.minimumWidth", 400, 1600);
+  number(merged.maxContentWidth, "energy_plan.maxContentWidth", 0, 2400);
+  if (merged.maxContentWidth > 0 && merged.maxContentWidth < 400) throw new Error("energy_plan.maxContentWidth: expected zero or 400–2400.");
   number(merged.axisStep, "energy_plan.axisStep", 1, 24);
   number(merged.maxAgeMinutes, "energy_plan.maxAgeMinutes", 1, 10080);
   if (!Array.isArray(merged.rows) || merged.rows.length > 16) throw new Error("energy_plan.rows: expected up to 16 rows.");
@@ -174,6 +187,8 @@ export function validatePlan(raw: unknown, hass?: HomeAssistant): EnergyPlanConf
     }
     if (!row.startField || !row.valueField || !row.endField && !row.durationField) throw new Error(`${p}: start, value and end or duration fields are required.`);
     number(row.scale, `${p}.scale`, .001, 1000000);
+    if (row.autoScale !== undefined && typeof row.autoScale !== "boolean") throw new Error(`${p}.autoScale: expected a boolean.`);
+    if (row.priceTolerance !== undefined) number(row.priceTolerance, `${p}.priceTolerance`, 0, 1000000);
     number(row.low, `${p}.low`, -1000000, 1000000);
     number(row.high, `${p}.high`, -1000000, 1000000);
     if (Number(row.low) > Number(row.high)) throw new Error(`${p}: low threshold must not exceed high threshold.`);
@@ -181,6 +196,9 @@ export function validatePlan(raw: unknown, hass?: HomeAssistant): EnergyPlanConf
     if (row.kind === "soc" && row.unit !== "%") throw new Error(`${p}.unit: battery level requires %.`);
   });
   metrics(merged.metrics, "energy_plan.metrics");
+  for (const metric of merged.metrics) {
+    if (metric.rowId !== undefined && (!ids.has(metric.rowId) || !metric.rowId)) throw new Error("energy_plan.metrics.rowId: select an existing timeline row.");
+  }
   if (!Array.isArray(merged.periods) || merged.periods.length > 12) throw new Error("energy_plan.periods: expected up to 12 periods.");
   merged.periods.forEach((value, index) => {
     const p = `energy_plan.periods.${index}`, period = object(value, p);
@@ -190,6 +208,9 @@ export function validatePlan(raw: unknown, hass?: HomeAssistant): EnergyPlanConf
     number(period.end, `${p}.end`, 0, 168);
     if (Number(period.end) <= Number(period.start)) throw new Error(`${p}: end must follow start.`);
     metrics(period.metrics, `${p}.metrics`);
+    for (const metric of period.metrics as PlanMetric[]) {
+      if (metric.rowId !== undefined && !ids.has(metric.rowId)) throw new Error(`${p}.metrics.rowId: select an existing timeline row.`);
+    }
   });
   return { ...config, energy_plan: merged } as EnergyPlanConfig;
 }

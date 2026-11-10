@@ -5,6 +5,7 @@ import type { PlanMetric, PlanRow } from "./config";
 
 export interface RowData {
   intervals: TimeInterval[];
+  publishedEnd?: number;
   error?: "Source missing" | "Invalid data source or field mapping" | "No published intervals" | "Stale data source";
 }
 
@@ -31,7 +32,8 @@ export function rowData(hass: HomeAssistant | undefined, row: PlanRow, entityId:
     return { intervals: [], error: "Invalid data source or field mapping" };
   }
   const visible = clipIntervals(intervals, start, end);
-  return visible.length ? { intervals: visible } : { intervals: [], error: "No published intervals" };
+  const published = { publishedEnd: intervals.at(-1)?.end };
+  return visible.length ? { intervals: visible, ...published } : { intervals: [], error: "No published intervals", ...published };
 }
 
 export function metricValue(hass: HomeAssistant | undefined, metric: PlanMetric, maxAgeMinutes = 60): number | undefined {
@@ -70,7 +72,8 @@ export function displayPriceIntervals(row: PlanRow, intervals: TimeInterval[]): 
   for (const item of intervals) {
     const previous = result.at(-1);
     const band = (value: number) => value <= row.low ? "low" : value >= row.high ? "high" : "middle";
-    if (previous && previous.end === item.start && band(previous.value) === band(item.value)) {
+    if (previous && previous.end === item.start && band(previous.value) === band(item.value) &&
+      Math.max(previous.maximum, item.value) - Math.min(previous.minimum, item.value) <= (row.priceTolerance ?? 0)) {
       previous.end = item.end;
       previous.minimum = Math.min(previous.minimum, item.value);
       previous.maximum = Math.max(previous.maximum, item.value);
@@ -80,7 +83,7 @@ export function displayPriceIntervals(row: PlanRow, intervals: TimeInterval[]): 
 }
 
 export function displayPowerScale(row: PlanRow, intervals: TimeInterval[]): number {
-  if (row.id !== "solar" || row.kind !== "power") return row.scale;
+  if (row.kind !== "power" || !(row.autoScale ?? row.id === "solar")) return row.scale;
   const maximum = intervals.reduce((value, item) => Math.max(value, Math.abs(item.value)), 0);
   return maximum > 0 ? maximum : row.scale;
 }
@@ -88,4 +91,24 @@ export function displayPowerScale(row: PlanRow, intervals: TimeInterval[]): numb
 export function rowCoverage(data: RowData, start: number, end: number): number {
   if (end <= start || data.error) return 0;
   return data.intervals.reduce((sum, item) => sum + Math.max(0, Math.min(end, item.end) - Math.max(start, item.start)), 0) / (end - start);
+}
+
+export function publishedWindow(rows: RowData[], start: number, end: number): { start: number; end: number } {
+  const intervals = rows.filter(row => !row.error).flatMap(row => row.intervals);
+  if (!intervals.length) return { start, end };
+  return {
+    start: Math.max(start, intervals.reduce((value, interval) => Math.min(value, interval.start), end)),
+    end: Math.min(end, intervals.reduce((value, interval) => Math.max(value, interval.end), start)),
+  };
+}
+
+export function unpublishedIntervals(data: RowData, start: number, end: number): Array<{ start: number; end: number }> {
+  const gaps: Array<{ start: number; end: number }> = [];
+  let cursor = start;
+  for (const interval of data.intervals) {
+    if (interval.start > cursor) gaps.push({ start: cursor, end: interval.start });
+    cursor = Math.max(cursor, interval.end);
+  }
+  if (cursor < end) gaps.push({ start: cursor, end });
+  return gaps;
 }

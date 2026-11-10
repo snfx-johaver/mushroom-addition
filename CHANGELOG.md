@@ -2,6 +2,93 @@
 
 Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
+## Unreleased
+
+### New energy monitoring cards
+
+- Add Plan vs Actual, Battery Activity, Electricity Cost Timeline and Live
+  Energy Flow to the existing bundle and picker, bringing the public catalog to
+  44 cards while preserving the current To-do and consolidated Area cards.
+- Use shared Mushroom headings, header actions, theme-aware styling, card-shadow
+  controls and native structured source selectors in the five editor sections.
+  Electrical roles remain explicit rather than inferred from the Context entity.
+- Plan vs Actual compares an externally retained forecast generated at or before
+  local midnight with cumulative measured energy over matching intervals only.
+  Show planned/measured energy, difference, matched/missing durations and baseline
+  generation time; reject missing, revised, malformed or overlapping baselines.
+- Battery Activity combines signed charging/discharging power bars and a stepped
+  state-of-charge line in one chart with a shared time axis and independent
+  kW/% scales. Preserve separate source gaps and direction changes; daily charged
+  and discharged energy require their own cumulative counters.
+- Electricity Cost Timeline shows recorded import costs and export credits using
+  cumulative meters and tariffs. Preserve negative-rate behavior, independent
+  tariff gaps and optional fixed export rates; do not invent missing credits.
+- Live Energy Flow adds a bundled, original 3D-rendered house/grid/solar/EV/battery
+  scene with shaded cables connected to the house's electrical cabinet.
+  Animate measured flow direction with power-dependent speed, reverse grid export
+  and battery charging, and stop movement for zero, stale or invalid sources.
+- Add optional dedicated solar-to-EV and battery-to-EV sensor mappings with their
+  own measured readouts and status. Hide unconfigured routes, never infer source
+  allocations, and never add EV submeasurements to household/site totals.
+- Respect reduced-motion preferences and keep source readings readable below
+  the scene on narrow cards. The scene image is embedded in the existing bundle,
+  with no additional runtime image host or frontend dependency.
+- Bound Recorder requests and cache refreshes, handle timeouts and stale
+  responses, expose Retry and source diagnostics, and load paginated interval
+  details only when expanded.
+
+### Energy Plan and Energy Insights & Purchases
+
+- Balance wide layouts with configurable centered content limits, pixel-scaled
+  forecast text, aligned inspection tiles and narrow-container layouts.
+- Mark unpublished forecast gaps and optional metric endpoints. Support fixed
+  or automatic power scales and tolerance-limited price grouping without
+  extending or interpolating unpublished data.
+- Add optional published-horizon fitting and supplied forecast-basis/method
+  labels, with native editor controls and localized guidance.
+- Redesign metered intervals as a compact signed import/export chart with
+  balanced scales, readable time labels, grid lines and a mobile-friendly plot,
+  without changing interval totals.
+- Distinguish hardware counters from integrated-power energy sources. Allow
+  explicit conservative hardware-gap recovery and disclose midnight carry,
+  endpoint-hold and duration-based allocation assumptions.
+- Support an independently metered household total with a verified measurement
+  boundary. Preserve battery/source failures, report balance mismatches and keep
+  valid independent totals visible when another source or its pricing fails.
+- Add compact measured-data status, directional live-power labels, actionable
+  diagnostics and useful empty states without empty consumer rings.
+- Load price and interval tables only when expanded, retain complete paginated
+  access, and respect supplied purchase horizons and battery-only scopes.
+
+### Smart Saving
+
+- Use fixed-height responsive plots, a shared time axis, published-coverage
+  shading, disconnected forecast gaps and optional schedule tracks.
+- Add one shared time inspector with aligned selection markers, pointer/touch
+  inspection and keyboard controls. Identify the selected supplied forecast point
+  rather than interpolating a battery reading.
+- Show published/missing durations and distinguish the requested horizon from
+  the source's actual final forecast point. Optionally fit the published horizon.
+- Support independent source-age limits and relative update ages for prices,
+  current battery, forecasts and schedules.
+- Distinguish supplied schedules from explicitly confirmed actions and support
+  declared numeric power/energy units without claiming execution.
+- Use Home Assistant's time zone for periods and midnight/DST boundaries, reject
+  malformed or overlapping sources explicitly, and keep valid sources visible.
+- Add lazy paginated details, localized timeline controls and an interactive
+  synthetic showcase with stale-source and missing-coverage scenarios.
+
+### Documentation and compatibility
+
+- Document source contracts, measurement boundaries, data-quality states and
+  configuration examples for all affected energy cards.
+- Provide fictional local showcases and regression coverage for chart gaps,
+  Recorder failures, retained baselines, source mappings and live-flow direction.
+- Localize new display/editor labels across all 33 supported language catalogs.
+  Preserve existing card types, saved configurations and the single resource.
+- Keep supplied plans, measured history and live power separate; these cards do
+  not generate forecasts, optimize schedules or execute energy-device actions.
+
 ## 0.8.0 - 2026-11-10
 
 - Default Area control-button shadows to off, keeping the Layout toggle available.

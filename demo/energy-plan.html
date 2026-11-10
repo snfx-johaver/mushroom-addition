@@ -24,7 +24,19 @@
     <h1 style="margin-top:32px">Energy Insights &amp; Purchases</h1>
     <p>All values below are synthetic, including the measured-history example and supplied planner outputs.</p>
     <button id="insights-mode">Switch snapshot / individual-meter example</button>
+    <button id="insights-gap">Show independent household meter with a battery gap</button>
     <div class="workspace"><div id="insights-preview"></div><aside><h2>Shared card editor (demo selector shims)</h2><div id="insights-editor"></div></aside></div>
+    <section id="smart-saving" style="margin-top:32px;scroll-margin-top:16px">
+      <h1>Smart Saving</h1>
+      <p>Synthetic prices and supplied schedules only. Gaps intentionally demonstrate unpublished price intervals and disconnected battery forecasts. Times use UTC.</p>
+      <div id="smart-controls" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px"></div>
+      <div id="smart-preview" style="width:100%;max-width:100%"></div>
+    </section>
+    <section id="energy-monitors" style="margin-top:32px;scroll-margin-top:16px">
+      <h1>Energy monitoring cards</h1>
+      <p>Synthetic Recorder responses and an externally retained forecast baseline. No live instance data. Times use UTC.</p>
+      <div id="monitor-controls" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+    </section>
     <p id="notice">Synthetic showcase only. Changes update real registered cards and are saved locally in this browser. Only fictional demo sensors are accepted. No live accounts, external data requests or device control. These lightweight selector shims exercise configuration, but are not a real Home Assistant editor test. Production uses native structured object selectors (verified against Home Assistant 2026.11).</p>
     <button id="reset">Reset synthetic example</button>
     <p id="saved" role="status"></p>

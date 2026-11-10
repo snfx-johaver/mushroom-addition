@@ -21,6 +21,10 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
   @state() private sort: "energy" | "power" = "energy";
   @state() private active = false;
   @state() private selected = 0;
+  @state() private ratesOpen = false;
+  @state() private intervalsOpen = false;
+  @state() private ratePage = 0;
+  @state() private intervalPage = 0;
   @state() private measuredHistory?: SourceResult<Actuals>;
   protected descriptor = getCatalogItem(ENERGY_INSIGHTS_TAG);
   private refresh?: number;
@@ -39,6 +43,11 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
     :host { container-type: inline-size; display: block; min-width: 0; }
     :host([fill-container]), :host([fill-container]) ha-card { height: 100%; }
     ha-card { overflow: hidden; }
+    .content { margin-inline: auto; container-type: inline-size; }
+    .pager { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-block: 10px; }
+    .pager button { min-height: 44px; padding: 8px 12px; border: 1px solid var(--divider-color); border-radius: 8px; background: var(--addition-neutral-background); }
+    .quality { font-size: 12px; margin-bottom: 12px; }
+    .quality button { background: none; color: var(--primary-color); border: 0; min-height: 44px; padding: 4px; }
     .energy-heading { padding: 18px 24px; }
     .tabs { display: flex; gap: 24px; padding: 0 24px; border-block: 1px solid var(--divider-color); }
     button, select { font: inherit; color: var(--primary-text-color); cursor: pointer; }
@@ -102,10 +111,20 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
     .allocation-metrics strong { display: block; font-size: 17px; }
     .forecast strong { font-size: 20px; font-weight: 500; }
     .error { color: var(--error-color); padding: 12px; font-size: 12px; }
-    .measured-chart { display: block; width: 100%; height: 140px; }
-    .chart-scroll { overflow-x: auto; }
+    .metered-section { padding: 16px; border: 1px solid var(--divider-color); border-radius: 12px; }
+    .metered-heading { display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 8px 16px; }
+    .metered-heading .legend { margin: 0 0 12px; font-size: 11px; }
+    .metered-plot { display: grid; grid-template-columns: max-content minmax(0, 1fr); column-gap: 10px; }
+    .metered-scale { display: flex; flex-direction: column; justify-content: space-between; height: 160px; font-size: 10px; color: var(--secondary-text-color); text-align: end; font-variant-numeric: tabular-nums; }
+    .metered-scale span { line-height: 12px; }
+    .measured-chart { display: block; width: 100%; height: 160px; overflow: hidden; }
+    .metered-times { grid-column: 2; position: relative; height: 24px; margin-top: 8px; color: var(--secondary-text-color); font-size: 10px; font-variant-numeric: tabular-nums; }
+    .metered-times span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+    .metered-times span:first-child { transform: none; }
+    .metered-times span:last-child { transform: translateX(-100%); }
+    .metered-missing { margin-bottom: 0; }
+    .chart-scroll { min-width: 0; }
     .chart-scroll:focus-visible, .table-scroll:focus-visible { outline: 2px solid var(--primary-color); outline-offset: -2px; }
-    .measured-chart text { fill: var(--secondary-text-color); font: 11px sans-serif; }
     .diagnostics { overflow-wrap: anywhere; }
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
     @container (max-width: 950px) { .consumer-layout { grid-template-columns: 1fr; } .usage-card { display: grid; grid-template-columns: 1fr 1fr; align-items: center; } .usage-card .legend { grid-column: 1 / -1; grid-template-columns: repeat(3, 1fr); } }
@@ -143,7 +162,8 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
       .variance { grid-area: variance; text-align: start; }
       .usage-card .legend { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .forecasts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .measured-chart { min-width: 620px; }
+      .metered-section { padding: 12px; }
+      .metered-times span:nth-child(even) { display: none; }
       .allocation-metrics { gap: 6px; } .allocation-metrics strong { font-size: 14px; } th, td { padding: 9px 8px; }
     }
     @container (max-width: 480px) {
@@ -174,6 +194,8 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
     super.setConfig(valid);
     const options = insightsOptions(valid);
     this.sort = options.sort; this.active = options.activeOnly; this.selected = 0;
+    this.ratePage = this.intervalPage = 0;
+    this.ratesOpen = this.intervalsOpen = false;
     this.toggleAttribute("fill-container", valid.fill_container === true);
   }
   public getCardSize(): number { return 12; }
@@ -371,7 +393,21 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
     return livePower(this.hass, entity, Date.now(), options.maxAgeMinutes);
   }
   private watts(value: number | undefined): string {
-    return value === undefined ? this.t("Source missing") : Math.abs(value) >= 1000 ? `${this.n(value / 1000)} kW` : `${this.n(value, 0)} W`;
+    return value === undefined ? this.t("Source missing") : Math.abs(value) >= 1000 ? `${this.n(value / 1000)} kW` : `${this.n(Math.abs(value) < .5 ? 0 : value, 0)} W`;
+  }
+  private flowPower(label: string, value: number | undefined): string {
+    if (value === undefined || Math.abs(value) < .5 || !["Grid", "Battery"].includes(label)) return this.watts(value);
+    const direction = label === "Grid" ? value > 0 ? "Import" : "Export" : value > 0 ? "Charging" : "Discharging";
+    return `${this.t(direction)} · ${this.watts(Math.abs(value))}`;
+  }
+  private pages(count: number, kind: "rates" | "intervals") {
+    const pages = Math.ceil(count / 100), page = Math.min(kind === "rates" ? this.ratePage : this.intervalPage, Math.max(0, pages - 1));
+    const change = (next: number) => { if (kind === "rates") this.ratePage = next; else this.intervalPage = next; };
+    return pages > 1 ? html`<nav class="pager" aria-label=${this.t(kind === "rates" ? "Price breakdown" : "Metered intervals")}>
+      <button ?disabled=${page === 0} @click=${() => change(page - 1)}>${this.t("Previous")}</button>
+      <span>${this.n(page + 1, 0)} / ${this.n(pages, 0)}</span>
+      <button ?disabled=${page + 1 >= pages} @click=${() => change(page + 1)}>${this.t("Next")}</button>
+    </nav>` : nothing;
   }
   private kpi(label: string, value: string, note: string, icon = "mdi:transmission-tower", color = "purple") {
     return html`<div class="kpi" style=${`--tone:${resolveColor(color, "green")}`}><div class="kpi-label"><ha-icon .icon=${icon}></ha-icon>${this.t(label)}</div><div class="kpi-value">${value}</div><div class="kpi-note">${note}</div></div>`;
@@ -401,25 +437,39 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
       });
     };
     const intervals = [...bars("imported"), ...bars("exported")];
-    const maximum = Math.max(.001, ...intervals.map(item => item.quantity));
-    const x = (time: number) => 45 + (time - data.start) / (data.end - data.start) * 700;
-    return html`<section class="section"><h3>${this.t("Metered intervals")}</h3>
-      <p>${this.t("Imported")} ↑ · ${this.t("Exported")} ↓ · kWh</p>
+    const largest = intervals.reduce((maximum, item) => Math.max(maximum, item.quantity), 0);
+    const magnitude = 10 ** Math.floor(Math.log10(largest || 1));
+    const maximum = largest ? Math.ceil(largest / magnitude / .5) * magnitude * .5 : 1;
+    const scaleLabel = energyNumber(this.hass, maximum, { maximumSignificantDigits: 3 });
+    const x = (time: number) => (time - data.start) / (data.end - data.start) * 1000;
+    const importedColor = resolveColor("purple", "green"), exportedColor = resolveColor("orange", "green");
+    const ticks = Array.from({ length: 5 }, (_, index) => data.start + (data.end - data.start) * index / 4);
+    return html`<section class="section metered-section">
+      <div class="metered-heading"><h3>${this.t("Metered intervals")}</h3>
+        <div class="legend"><span><i class="swatch" style=${`--tone:${importedColor}`}></i>${this.t("Imported")} ↑</span>
+          <span><i class="swatch" style=${`--tone:${exportedColor}`}></i>${this.t("Exported")} ↓</span><span>kWh</span></div>
+      </div>
       <div class="chart-scroll" tabindex="0" role="region" aria-label=${this.t("Metered intervals")}>
-      <svg class="measured-chart" viewBox="0 0 790 140" role="img" aria-label=${this.t("Metered intervals")}>
-        <line x1="45" x2="745" y1="63" y2="63" stroke="var(--divider-color)"></line>
-        <text x="0" y="18">${this.n(maximum)} kWh</text>
-        <text x="45" y="135">${this.time(data.start)}</text><text x="745" y="135" text-anchor="end">${this.time(data.end)}</text>
+      <div class="metered-plot">
+      <div class="metered-scale" aria-hidden="true"><span>${scaleLabel}</span><span>0</span><span>−${scaleLabel}</span></div>
+      <svg class="measured-chart" viewBox="0 0 1000 160" preserveAspectRatio="none" role="img"
+        aria-label=${`${this.t("Metered intervals")} · ${this.time(data.start)} – ${this.time(data.end)} · ±${scaleLabel} kWh`}>
+        ${[8, 44, 116, 152].map(y => svg`<line x1="0" x2="1000" y1=${y} y2=${y} stroke="var(--divider-color)" stroke-opacity=".5" stroke-dasharray="3 5" vector-effect="non-scaling-stroke"></line>`)}
+        ${ticks.map(time => svg`<line x1=${x(time)} x2=${x(time)} y1="8" y2="152" stroke="var(--divider-color)" stroke-opacity=".4" vector-effect="non-scaling-stroke"></line>`)}
+        <line x1="0" x2="1000" y1="80" y2="80" stroke="var(--secondary-text-color)" stroke-opacity=".6" vector-effect="non-scaling-stroke"></line>
         ${intervals.map(item => {
-          const height = item.quantity / maximum * 45;
-          return svg`<rect x=${x(item.start)} y=${item.direction === "imported" ? 63 - height : 65}
-            width=${Math.max(1, x(item.end) - x(item.start) - 1)} height=${height}
-            fill=${resolveColor(item.direction === "imported" ? "purple" : "orange", "green")}>
+          const height = Math.max(.75, item.quantity / maximum * 72);
+          return svg`<rect x=${x(item.start)} y=${item.direction === "imported" ? 80 - height : 80}
+            width=${Math.max(.5, x(item.end) - x(item.start) - 1.5)} height=${height} rx="1.5"
+            fill=${item.direction === "imported" ? importedColor : exportedColor} fill-opacity=".85">
             <title>${this.t(item.direction === "imported" ? "Imported" : "Exported")}: ${this.kwh(item.quantity, 3)} · ${this.time(item.start)} - ${this.time(item.end)}</title>
           </rect>`;
         })}
       </svg>
+      <div class="metered-times" aria-hidden="true">${ticks.map((time, index) => html`<span style=${`left:${index * 25}%`}>${energyTime(this.hass, time)}</span>`)}</div>
       </div>
+      </div>
+      ${data.imported === undefined || data.exported === undefined ? html`<p class="metered-missing">${this.t(data.imported === undefined ? "Imported" : "Exported")}: ${this.t("Not supplied")}</p>` : nothing}
     </section>`;
   }
   private actual(data: Actuals) {
@@ -440,32 +490,43 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
     const net = data.importCost !== undefined && data.exportCredit !== undefined
       ? data.importCost - data.exportCredit : undefined;
     const self = livePercentage(this.hass, options.selfPoweredEntity, Date.now(), options.maxAgeMinutes);
+    const selfMissing = Boolean(options.selfPoweredEntity && self === undefined);
+    const issueCount = (data.warnings?.length ?? 0) + (selfMissing ? 1 : 0);
+    const stale = Date.now() - data.generated > options.maxAgeMinutes * 60000 ||
+      data.coverage?.some(source => source.end !== undefined && Date.now() - source.end > options.maxAgeMinutes * 60000);
+    const partial = issueCount || data.approximations?.length ||
+      [data.home, data.solar, data.imported, data.exported, data.batteryCharge, data.batteryDischarge].some(value => value === undefined) ||
+      data.importCost === undefined || (data.exported !== 0 && data.exportCredit === undefined);
+    const ratePage = Math.min(this.ratePage, Math.max(0, Math.ceil(data.buckets.length / 100) - 1));
+    const intervalPage = Math.min(this.intervalPage, Math.max(0, Math.ceil(data.intervals.length / 100) - 1));
+    const mixStep = Math.max(1, Math.ceil(data.buckets.length / 96));
+    const mix = Array.from({ length: Math.ceil(data.buckets.length / mixStep) }, (_, index) =>
+      data.buckets.slice(index * mixStep, (index + 1) * mixStep).reduce((sum, bucket) => sum + bucket.quantity, 0));
     return html`
       <small class="window">${this.t("Measured window")}: ${this.time(data.start)} - ${this.time(data.end)}
         · ${this.t("Updated")}: ${this.time(data.generated)}</small>
-      ${Date.now() - data.generated > options.maxAgeMinutes * 60000 ||
-        data.coverage?.some(source => source.end !== undefined && Date.now() - source.end > options.maxAgeMinutes * 60000)
-        ? this.error("Stale data source") : nothing}
-      ${data.warnings?.map(warning => this.error(warning))}
+      <p class="quality" role="status">${this.t(stale ? "Stale data source" : partial ? "Partial" : "Complete")} ·
+        <button @click=${() => {
+          const details = this.shadowRoot?.querySelector<HTMLDetailsElement>(".diagnostics");
+          if (details) { details.open = true; details.scrollIntoView({ block: "nearest" }); }
+        }}>${this.t("Measured source")} (${this.n(issueCount, 0)})</button></p>
       ${data.approximations?.length ? html`<p class="approximation" role="note"><strong>${this.t("Approximate accounting")}</strong>:
-        ${data.approximations.map(message => {
-          const separator = message.indexOf(": ");
-          return separator < 0 ? this.t(message) : `${message.slice(0, separator)}: ${this.t(message.slice(separator + 2))}`;
-        }).join(" ")} ${this.t("Affected totals, household shares and costs are estimates, not exact measurements.")}</p>` : nothing}
+        ${this.t("Affected totals, household shares and costs are estimates, not exact measurements.")}</p>` : nothing}
       <div class="kpis">
         ${this.kpi("Imported", this.kwh(data.imported), `${this.t("Cost")} ${this.money(data.importCost)} · ${this.t("Weighted average")} ${data.imported && data.importCost !== undefined ? this.rate(data.importCost / data.imported) : this.t("Not supplied")}`)}
         ${this.kpi("Exported", this.kwh(data.exported), `${this.t("Credit")} ${this.money(data.exportCredit)} · ${data.exported && data.exportCredit !== undefined ? this.rate(data.exportCredit / data.exported) : this.t("Not supplied")}`, "mdi:transmission-tower", "orange")}
         ${this.kpi("Solar generated", this.kwh(data.solar), this.t("Measured production"), "mdi:white-balance-sunny", "amber")}
-        ${this.kpi("Home consumption", this.kwh(data.home), this.t("Excludes battery charging"), "mdi:home", "blue")}
+        ${this.kpi("Home consumption", this.kwh(data.home), `${this.t("Excludes battery charging")}${data.homeSource === "direct" ? ` · ${this.t("Household energy sensor")}` : ""}`, "mdi:home", "blue")}
       </div>
       ${options.showFlow ? html`<div class="flow">
         ${([["Solar", options.solarEntity, "mdi:white-balance-sunny", "amber"], ["Home", options.homeEntity, "mdi:home", "blue"], ["Grid", options.gridEntity, "mdi:transmission-tower", "purple"], ["Battery", options.batteryEntity, "mdi:battery", "green"]] as const).map(([label, entity, icon, color]) =>
-          html`<span class="flow-item" style=${`--tone:${resolveColor(color, "green")}`}><ha-icon .icon=${icon}></ha-icon>${this.t(label)} <strong>${this.watts(this.power(entity))}</strong></span>`)}
-        <span class="self-powered">${this.t("Home self-powered now")} <strong>${self === undefined ? this.t("Source missing") : `${this.n(self, 0)}%`}</strong>
+          html`<span class="flow-item" style=${`--tone:${resolveColor(color, "green")}`}><ha-icon .icon=${icon}></ha-icon>${this.t(label)} <strong>${this.flowPower(label, this.power(entity))}</strong></span>`)}
+        ${options.selfPoweredEntity ? html`<span class="self-powered">${this.t("Home self-powered now")} <strong>${self === undefined ? this.t("Source missing") : `${this.n(self, 0)}%`}</strong>
           ${self === undefined ? nothing : html`<span class="bar" role="meter" aria-label=${this.t("Home self-powered now")} aria-valuenow=${self} aria-valuemin="0" aria-valuemax="100"><i style=${`width:${self}%`}></i></span>`}
-        </span>
+        </span>` : nothing}
       </div>` : nothing}
-      ${options.showConsumers ? html`<section class="section">
+      ${options.showConsumers && !consumers.length ? html`<p class="consumer-setup">${this.t("Configure consumer energy sensors in the visual editor.")}</p>` : nothing}
+      ${options.showConsumers && consumers.length ? html`<section class="section">
         <div class="section-top"><h3>${this.t("Where your energy goes")}</h3>
           <div class="controls"><label class="sr-only" for="sort">${this.t("Sort consumers")}</label>
             <select id="sort" .value=${this.sort} @change=${(event: Event) => { this.sort = (event.target as HTMLSelectElement).value as "energy" | "power"; }}>
@@ -482,43 +543,52 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
             <div class="consumer-energy">${item.energy === undefined ? this.t("Not supplied") : this.kwh(item.energy)}<small>${item.energy === undefined || data.home === undefined ? this.t("Not supplied") : `${this.n(share(item.energy), 0)}% ${this.t("of home")}`}</small><div class="bar"><i style=${`width:${share(item.energy)}%`}></i></div></div>
             <div class="variance" style=${`color:${item.energy === undefined || item.baseline === undefined || Math.abs(item.energy - item.baseline) < .005 ? "var(--secondary-text-color)" : resolveColor(item.energy > item.baseline ? "orange" : "green", "green")}`}>${item.energy === undefined ? this.t("Not supplied") : item.baseline === undefined ? this.t("Comparison not configured") : Math.abs(item.energy - item.baseline) < .005 ? this.t("On plan") : `${item.energy - item.baseline > 0 ? "+" : ""}${this.kwh(item.energy - item.baseline)}`}<small>${this.t("Same-window plan")}</small></div>
           </div>`) : html`<p>${this.t("No consumers to display")}</p>`}
-        </div><aside class="usage-card"><div><h3>${this.t("Home consumption")}</h3><strong>${this.kwh(data.home)}</strong></div>
+        </div>${data.home !== undefined && data.remainder !== undefined ? html`<aside class="usage-card"><div><h3>${this.t("Home consumption")}</h3><strong>${this.kwh(data.home)}</strong></div>
           <div class="ring" role="img" aria-label=${this.t("Consumer share")} style=${`background:${stops.length ? `conic-gradient(${stops.join(",")})` : "var(--divider-color)"}`}>
             <div class="ring-hole">${data.home === undefined || data.remainder === undefined ? this.t("Not supplied") :
               data.home ? `${this.n(100 - share(data.remainder), 0)}%` : this.t("Not applicable")}<small>${this.t("Configured consumers")}</small></div>
           </div>
           <div class="legend">${consumers.map(item => html`<span><i class="swatch" style=${`--tone:${item.tone}`}></i>${item.name}: ${item.energy === undefined || data.home === undefined ? this.t("Not supplied") : `${this.n(share(item.energy), 0)}%`}</span>`)}
             <span>${this.t("Unallocated home")}: ${this.kwh(data.remainder)}</span></div>
-        </aside></div>
+        </aside>` : html`<p>${this.t("Home consumption")}: ${this.t("Not supplied")} · ${this.t("Measured source")}</p>`}</div>
         <p>${this.t("Consumer totals exclude battery charging. Device costs are not estimated.")}</p>
       </section>` : nothing}
       ${options.showPurchases ? this.measuredChart(data) : nothing}
       ${options.showPurchases ? html`<section class="section"><h3>${this.t("What you bought, at what price")}</h3>
-        <div class="price-mix" aria-hidden="true">${data.buckets.slice(0, 200).map((bucket, index) => html`<i style=${`width:${data.imported ? bucket.quantity / data.imported * 100 : 0}%;--tone:${resolveColor(["green", "amber", "orange"][index % 3], "green")}`}></i>`)}</div>
-        <div class="table-scroll"><table><caption class="sr-only">${this.t("Measured purchases")}</caption>
+        <div class="price-mix" aria-hidden="true">${mix.map((quantity, index) => html`<i style=${`width:${data.imported ? quantity / data.imported * 100 : 0}%;--tone:${resolveColor(["green", "amber", "orange"][index % 3], "green")}`}></i>`)}</div>
+        <p>${this.t("Total imported")}: ${this.kwh(data.imported)} · ${this.t("Weighted average")}: ${data.imported && data.importCost !== undefined ? this.rate(data.importCost / data.imported) : this.t("Not applicable")}</p>
+        <details class="rate-details" @toggle=${(event: Event) => { this.ratesOpen = (event.currentTarget as HTMLDetailsElement).open; }}>
+        <summary>${this.t("Price breakdown")} (${this.n(data.buckets.length, 0)})</summary>
+        ${this.ratesOpen ? html`${this.pages(data.buckets.length, "rates")}<div class="table-scroll"><table><caption class="sr-only">${this.t("Measured purchases")}</caption>
           <thead><tr>${["Unit rate", "Energy bought", "Share of import", "Cost"].map(label => html`<th scope="col">${this.t(label)}</th>`)}</tr></thead>
-          <tbody>${data.buckets.slice(0, 200).map(bucket => html`<tr><td>${this.rate(bucket.rate)}</td><td>${this.kwh(bucket.quantity)}</td><td>${data.imported ? `${this.n(bucket.quantity / data.imported * 100, 0)}%` : this.t("Not applicable")}</td><td>${this.money(bucket.cost)}</td></tr>`)}</tbody>
+          <tbody>${data.buckets.slice(ratePage * 100, (ratePage + 1) * 100).map(bucket => html`<tr><td>${this.rate(bucket.rate)}</td><td>${this.kwh(bucket.quantity)}</td><td>${data.imported ? `${this.n(bucket.quantity / data.imported * 100, 0)}%` : this.t("Not applicable")}</td><td>${this.money(bucket.cost)}</td></tr>`)}</tbody>
           <tfoot><tr><td>${this.t("Total imported")}</td><td>${this.kwh(data.imported)}</td><td>${data.imported ? "100%" : this.t("Not applicable")}</td><td>${this.money(data.importCost)}</td></tr></tfoot>
-        </table></div>
-        ${data.buckets.length > 200 ? html`<p>${this.t("Only the first 200 rate buckets are shown; totals include all {count} buckets.").replace("{count}", this.n(data.buckets.length, 0))}</p>` : nothing}
-        <details><summary>${this.t("Metered intervals")} (${data.intervals.length})</summary>
-          ${data.intervals.length > 200 ? html`<p>${this.t("Only the first 200 intervals are shown; totals and chart include all {count} intervals.").replace("{count}", this.n(data.intervals.length, 0))}</p>` : nothing}
-          <div class="table-scroll"><table>
+        </table></div>` : nothing}</details>
+        <details class="interval-details" @toggle=${(event: Event) => { this.intervalsOpen = (event.currentTarget as HTMLDetailsElement).open; }}><summary>${this.t("Metered intervals")} (${data.intervals.length})</summary>
+          ${this.intervalsOpen ? html`${this.pages(data.intervals.length, "intervals")}<div class="table-scroll"><table>
           <thead><tr>${["Time", "Import", "Export", "Unit rate", "Export rate", "Cost", "Credit"].map(label => html`<th scope="col">${this.t(label)}</th>`)}</tr></thead>
-          <tbody>${data.intervals.slice(0, 200).map(item => html`<tr><td>${item.approximate ? "≈ " : ""}${this.time(item.start)} - ${this.time(item.end)}</td><td>${this.kwh(item.imported, 3)}</td><td>${this.kwh(item.exported, 3)}</td><td>${item.imported ? this.rate(item.rate) : "-"}</td><td>${item.exported ? this.rate(item.exportRate) : "-"}</td><td>${this.money(item.rate === undefined ? undefined : item.imported * item.rate)}</td><td>${this.money(item.exportRate === undefined ? undefined : item.exported * item.exportRate)}</td></tr>`)}</tbody>
-        </table></div></details>
+          <tbody>${data.intervals.slice(intervalPage * 100, (intervalPage + 1) * 100).map(item => html`<tr><td>${item.approximate ? "≈ " : ""}${this.time(item.start)} - ${this.time(item.end)}</td><td>${this.kwh(item.imported, 3)}</td><td>${this.kwh(item.exported, 3)}</td><td>${item.imported ? this.rate(item.rate) : "-"}</td><td>${item.exported ? this.rate(item.exportRate) : "-"}</td><td>${this.money(item.rate === undefined ? undefined : item.imported * item.rate)}</td><td>${this.money(item.exportRate === undefined ? undefined : item.exported * item.exportRate)}</td></tr>`)}</tbody>
+        </table></div>` : nothing}</details>
         <div class="spend-note"><strong>${this.money(data.exportRateConfigured ? net : data.importCost)} ${this.t(data.exportRateConfigured ? "Net variable grid spend" : "Import cost")}</strong><br>
           ${this.money(data.importCost)} ${this.t("Import cost")} - ${data.exportRateConfigured ? this.money(data.exportCredit) : this.t("Not supplied")} ${this.t("Export credit")}
           <p>${this.t("Fixed charges excluded. Totals use unrounded interval values.")}</p>
           ${this.t("Battery input")}: ${this.kwh(data.batteryCharge)} · ${this.t("Battery output")}: ${this.kwh(data.batteryDischarge)}
         </div>
       </section>` : nothing}
-      ${data.coverage ? html`<details class="diagnostics"><summary>${this.t("Measured source")} · ${this.t("Updated")}</summary>
-        ${data.coverage.map(item => html`<p>${item.id}: ${item.absent ? this.t("Not installed") :
+      <details class="diagnostics"><summary>${this.t("Measured source")} · ${this.t("Updated")} · ${this.n(issueCount, 0)}</summary>
+        ${data.warnings?.map(warning => this.error(warning))}
+        ${data.approximations?.map(message => {
+          const separator = message.indexOf(": ");
+          return html`<p>${separator < 0 ? this.t(message) : `${message.slice(0, separator)}: ${this.t(message.slice(separator + 2))}`}</p>`;
+        })}
+        ${options.selfPoweredEntity && self === undefined ? this.error("Source missing: selfPoweredEntity requires a fresh percentage sensor") : nothing}
+        ${!options.selfPoweredEntity ? html`<p>${this.t("Home self-powered percentage")}: ${this.t("Not supplied")} · ${this.t("Source")}</p>` : nothing}
+        ${data.coverage?.map(item => html`<p>${item.id}: ${item.absent ? this.t("Not installed") :
           item.error ?? (item.end === undefined ? this.t("Not supplied") : this.time(item.end))}
+          ${item.sourceType ? html` · ${this.t("Counter type")}: ${this.t(item.sourceType === "hardware" ? "Hardware counter" : item.sourceType === "integrated_power" ? "Integrated power" : "Not specified")}` : nothing}
           ${item.lastUpdated === undefined ? nothing : html` · ${this.t("Last state update")}: ${this.time(item.lastUpdated)}`}</p>`)}
         ${this.historyLoad ? html`<p>${this.historyLoad.entities} ${this.t("Sources")} · ${this.historyLoad.states} ${this.t("State")} · ${this.n(this.historyLoad.duration, 0)} ms</p>` : nothing}
-      </details>` : nothing}`;
+      </details>`;
   }
   private allocation(block: PurchaseBlock) {
     return html`<div class="allocation" aria-hidden="true">${([["home", "blue"], ["ev", "purple"], ["battery", "green"]] as const).map(([key, color]) =>
@@ -529,29 +599,31 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
     const selected = Math.min(this.selected, data.blocks.length - 1), block = data.blocks[selected];
     return html`
       <small class="window">${this.t("Upcoming plan")}: ${this.time(data.start)} - ${this.time(data.end)} · ${this.t("Snapshot")}: ${this.time(data.generated)}</small>
+      <p class="forecast-basis">${this.t("Forecast basis")}: ${this.t(options.forecastKind === "estimate" ? "Estimated forecast" : options.forecastKind === "interval" ? "Interval forecast" : "Not specified")}
+        ${data.forecastMethod !== undefined || options.planSource.fields?.forecast_method ? html` · ${this.t("Forecast method")}: ${data.forecastMethod?.trim() ? data.forecastMethod : this.t("Not supplied")}` : nothing}</p>
       <div class="kpis">
-        ${this.kpi("Planned grid purchase", this.kwh(data.quantity), `${this.t("Estimated cost")} ${this.money(data.cost)} · ${data.quantity ? this.rate(data.cost / data.quantity) : this.t("Not applicable")}`)}
+        ${this.kpi(options.purchaseScope === "battery" ? "Battery input (AC)" : "Planned grid purchase", this.kwh(data.quantity), `${this.t("Estimated cost")} ${this.money(data.cost)} · ${data.quantity ? this.rate(data.cost / data.quantity) : this.t("Not applicable")}`)}
         ${this.kpi("Home demand forecast", this.kwh(data.home), this.t("Includes EV; excludes home-battery charging"), "mdi:home", "blue")}
-        ${this.kpi("Solar forecast", this.kwh(data.solar), this.t("Upcoming 24 hours"), "mdi:white-balance-sunny", "amber")}
+        ${this.kpi("Solar forecast", this.kwh(data.solar), `${this.time(data.start)} – ${this.time(data.end)}`, "mdi:white-balance-sunny", "amber")}
         ${data.batteryMin !== undefined && data.reserve !== undefined ? this.kpi("Minimum planned battery", `${this.n(data.batteryMin, 0)}%`, `${this.t("Reserve")} ${this.n(data.reserve, 0)}% · ${this.t("Headroom")} ${this.n(data.batteryMin - data.reserve, 0)} pp`, "mdi:battery", "green") : nothing}
       </div>
-      <section class="section"><h3>${this.t("Upcoming grid purchases")}</h3><p>${this.t("Supplied plan; not measured or executed.")}</p>
-        ${options.showPlanAllocations ? html`<div class="legend">${["Direct home use", "EV input (AC)", "Battery input (AC)"].map((label, index) => html`<span><i class="swatch" style=${`--tone:${resolveColor(["blue", "purple", "green"][index], "green")}`}></i>${this.t(label)}</span>`)}</div>` : nothing}
-        <div class="table-scroll"><table><caption class="sr-only">${this.t("Upcoming grid purchases")}</caption>
+      <section class="section"><h3>${this.t(options.purchaseScope === "battery" ? "Battery input (AC)" : "Upcoming grid purchases")}</h3><p>${this.t("Supplied plan; not measured or executed.")}</p>
+        ${options.showPlanAllocations && data.blocks.length ? html`<div class="legend">${["Direct home use", "EV input (AC)", "Battery input (AC)"].map((label, index) => html`<span><i class="swatch" style=${`--tone:${resolveColor(["blue", "purple", "green"][index], "green")}`}></i>${this.t(label)}</span>`)}</div>` : nothing}
+        ${data.blocks.length ? html`<div class="table-scroll"><table><caption class="sr-only">${this.t("Upcoming grid purchases")}</caption>
           <thead><tr>${["Window", "Energy & purpose", "Unit rate", "Estimated cost", ...(options.showPlanBattery ? ["Battery target"] : [])].map(label => html`<th scope="col">${this.t(label)}</th>`)}</tr></thead>
           <tbody>${data.blocks.map((item, index) => html`<tr class=${index === selected ? "selected" : ""}><td><button class="block-button" aria-pressed=${index === selected} aria-controls="block-detail" @click=${() => { this.selected = index; }}>${this.time(item.start)}<br>${this.time(item.end)}</button></td><td>${this.kwh(item.quantity)}${options.showPlanAllocations ? this.allocation(item) : nothing}</td><td>${this.rate(item.rate)}</td><td>${this.money(item.cost)}</td>${options.showPlanBattery ? html`<td>${item.target === undefined ? this.t("Not supplied") : `${this.n(item.target, 0)}%`}</td>` : nothing}</tr>`)}</tbody>
           <tfoot><tr><td>${data.blocks.length} ${this.t("Planned blocks")}</td><td>${this.kwh(data.quantity)}</td><td>${data.quantity ? this.rate(data.cost / data.quantity) : this.t("Not applicable")}</td><td>${this.money(data.cost)}</td>${options.showPlanBattery ? html`<td>${this.t("Not executed")}</td>` : nothing}</tr></tfoot>
-        </table></div>
+        </table></div>` : nothing}
         ${block ? html`<div class="block-detail" id="block-detail" aria-live="polite">
           <h3>${this.time(block.start)} - ${this.time(block.end)}</h3><p>${block.reason}</p>
           ${options.showPlanAllocations ? html`<div class="allocation-metrics">${([["home", "Direct home use", "blue"], ["ev", "EV input (AC)", "purple"], ["battery", "Battery input (AC)", "green"]] as const).map(([key, label, color]) =>
             html`<div style=${`--tone:${resolveColor(color, "green")}`}><strong>${this.kwh(block[key])}</strong><small>${this.t(label)}</small></div>`)}</div>` : nothing}
           <p>${this.kwh(block.quantity)} × ${this.rate(block.rate)} = ${this.money(block.cost)}</p><p>${block.detail}</p>
           ${data.efficiency !== undefined && block.battery !== undefined ? html`<p>${this.t("Charge efficiency")}: ${this.n(data.efficiency * 100, 0)}% · ${this.t("Stored battery energy")}: ${this.kwh(block.battery * data.efficiency)}</p>` : nothing}
-        </div>` : html`<p>${this.t("No planned purchases")}</p>`}
+        </div>` : html`<p class="empty-plan">${this.t(options.purchaseScope === "battery" ? "No battery charging purchases in the supplied horizon." : "No grid purchases in the supplied horizon.")} ${this.time(data.start)} – ${this.time(data.end)}</p>`}
         <details><summary>${this.t("Plan assumptions")}</summary><p>${this.t("AC input includes charging losses. Forecasts are not measured totals.")}</p><p>${this.t("Plan values come from entities. This card does not calculate plans or infer future battery levels.")}</p></details>
       </section>
-      ${options.showForecasts ? html`<section class="section"><h3>${this.t("How consumers fit the plan")}</h3><div class="forecasts">
+      ${options.showForecasts && options.consumers.length ? html`<section class="section"><h3>${this.t("How consumers fit the plan")}</h3><div class="forecasts">
         ${options.consumers.map((consumer, index) => html`<div class="forecast"><h3>${consumer.name}</h3><strong>${data.consumers[index].energy === undefined ? this.t("Not supplied") : this.kwh(data.consumers[index].energy!)}</strong><small> ${this.t("Forecast")}</small><p>${data.consumers[index].strategy ?? this.t("Not supplied")}</p></div>`)}
       </div></section>` : nothing}`;
   }
@@ -563,6 +635,7 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
     const plan: SourceResult<PurchasePlan> = options.planSource.entity ? readPurchasePlan(this.hass, options) :
       { error: "Source missing: select the plan source sensor and map the required upcoming-plan fields" };
     return html`<ha-card class=${`mushroom-addition-card${this.config.card_shadow ? " card-shadow" : ""}`}>
+      <div class="content" style=${`max-width:${options.maxContentWidth ? `${options.maxContentWidth}px` : "none"}`}>
       ${options.showHeader ? this.renderSharedHeading() : nothing}
       <div class="tabs" role="tablist" aria-label=${this.t("Energy reporting window")}>
         ${(["actual", "plan"] as const).map(tab => html`<button id=${`${tab}-tab`} role="tab" aria-selected=${tab === this.tab} aria-controls=${`${tab}-panel`} tabindex=${tab === this.tab ? 0 : -1}
@@ -574,6 +647,7 @@ export class EnergyInsightsCard extends MushroomAdditionCard {
       <section id="plan-panel" role="tabpanel" aria-labelledby="plan-tab" ?hidden=${this.tab !== "plan"}>
         ${plan.value ? this.plan(plan.value) : this.error(plan.error)}
       </section>
+      </div>
     </ha-card>`;
   }
 }

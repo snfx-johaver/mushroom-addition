@@ -7,6 +7,7 @@ import type {
   TimeInterval,
   TimePoint,
 } from "./types";
+import { calendarDate, calendarDay, calendarHour } from "./calendar";
 
 export function readPath(value: unknown, path?: string): unknown {
   if (!path) return value;
@@ -141,58 +142,32 @@ export function parseBlocks(
   return { validSource: root.length === 0 || blocks.length > 0, blocks };
 }
 
-function localDateKey(time: number): string {
-  const date = new Date(time);
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-}
-
-function localDayStart(time: number): number {
-  const date = new Date(time);
-  date.setHours(0, 0, 0, 0);
-  return date.getTime();
-}
-
-function addLocalDay(time: number): number {
-  const date = new Date(time);
-  date.setDate(date.getDate() + 1);
-  return date.getTime();
-}
-
-function localHour(day: number, hour: number): number {
-  const date = new Date(day);
-  if (hour === 24) {
-    date.setDate(date.getDate() + 1);
-    date.setHours(0, 0, 0, 0);
-  } else {
-    date.setHours(hour, 0, 0, 0);
-  }
-  return date.getTime();
-}
-
 export function buildPeriodAverages(
   intervals: TimeInterval[],
   windowStart: number,
   windowEnd: number,
   periods: PeriodConfig[],
+  timeZone?: string,
 ): PeriodAverage[] {
   if (windowEnd <= windowStart) return [];
   const results: PeriodAverage[] = [];
-  const firstDay = localDayStart(windowStart);
-  const previousDay = new Date(firstDay);
-  previousDay.setDate(previousDay.getDate() - 1);
+  const firstDay = calendarDay(windowStart, 0, timeZone);
+  const previousDay = calendarDay(firstDay, -1, timeZone);
   for (const period of periods.filter((item) => item.endHour <= item.startHour)) {
-    const start = localHour(previousDay.getTime(), period.startHour);
-    const end = localHour(firstDay, period.endHour);
+    const start = calendarHour(previousDay, period.startHour, timeZone);
+    const end = calendarHour(firstDay, period.endHour, timeZone);
     if (end > windowStart && start < windowEnd) {
-      results.push(createPeriodAverage(intervals, windowStart, windowEnd, period, start, end));
+      results.push(createPeriodAverage(intervals, windowStart, windowEnd, period, start, end, timeZone));
     }
   }
-  for (let day = firstDay; day < windowEnd; day = addLocalDay(day)) {
+  for (let day = firstDay; day < windowEnd; day = calendarDay(day, 1, timeZone)) {
     for (const period of periods) {
-      const start = localHour(day, period.startHour);
-      const endDay = period.endHour <= period.startHour ? addLocalDay(day) : day;
-      const end = localHour(endDay, period.endHour);
-      results.push(createPeriodAverage(intervals, windowStart, windowEnd, period, start, end));
+      const start = calendarHour(day, period.startHour, timeZone);
+      const endDay = period.endHour <= period.startHour ? calendarDay(day, 1, timeZone) : day;
+      const end = calendarHour(endDay, period.endHour, timeZone);
+      if (end > windowStart && start < windowEnd) {
+        results.push(createPeriodAverage(intervals, windowStart, windowEnd, period, start, end, timeZone));
+      }
     }
   }
   return results;
@@ -205,6 +180,7 @@ function createPeriodAverage(
   period: PeriodConfig,
   start: number,
   end: number,
+  timeZone?: string,
 ): PeriodAverage {
   const visibleStart = Math.max(start, windowStart);
   const visibleEnd = Math.min(end, windowEnd);
@@ -214,7 +190,7 @@ function createPeriodAverage(
   const expectedMs = Math.max(0, visibleEnd - visibleStart);
   return {
     name: period.name,
-    date: localDateKey(start),
+    date: calendarDate(start, timeZone),
     average,
     minimum: relevant.length ? Math.min(...relevant.map((item) => item.value)) : null,
     maximum: relevant.length ? Math.max(...relevant.map((item) => item.value)) : null,
