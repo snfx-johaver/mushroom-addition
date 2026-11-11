@@ -4,6 +4,7 @@ import { repeat } from "lit/directives/repeat.js";
 import "./energy-cards/editor";
 import "./energy-cards/workflow-editor";
 import "./weather-advanced/editor";
+import "./car-advanced/editor";
 import { airQualityLabels } from "./air-quality-editor";
 import { todoLabels } from "./todo";
 import { workflowStub } from "./energy-cards/workflow-config";
@@ -374,6 +375,9 @@ export class MushroomAdditionEditor extends LitElement {
         : this.config.layout ?? populatedDefaults.layout,
     };
     const customFeatures = !this.expandedSections.has("features") ? nothing
+      : item.upstreamId === "car_advanced"
+      ? html`<mushroom-addition-car-options .hass=${this.hass} .config=${this.config}
+          @config-changed=${this.energyConfigChanged}></mushroom-addition-car-options>`
       : monitorKind(this.config.type)
       ? this.renderMonitorFeatures(preparedSchema.localized.features)
       : item.upstreamId === "air_quality"
@@ -415,6 +419,7 @@ export class MushroomAdditionEditor extends LitElement {
           ? html`${this.renderItemEditor("room_sensors", localize(this.hass, "room_buttons"))}${this.renderRoomStatusEditor()}`
           : nothing;
     const hasCustomFeatures = Boolean(monitorKind(this.config.type)) ||
+      item.upstreamId === "car_advanced" ||
       item.upstreamId === "mini_graph_card" ||
       item.upstreamId === "air_quality" ||
       item.upstreamId === "weather_advanced" ||
@@ -440,6 +445,9 @@ export class MushroomAdditionEditor extends LitElement {
             : preparedSchema.localized[section.id],
           formData,
           section.id === "features" && hasCustomFeatures ? customFeatures
+            : section.id === "layout" && item.upstreamId === "car_advanced" && this.expandedSections.has("layout")
+            ? html`<mushroom-addition-car-options .hass=${this.hass} .config=${this.config}
+                section="layout" @config-changed=${this.energyConfigChanged}></mushroom-addition-car-options>`
             : section.id === "layout" && item.upstreamId === "weather_advanced" && this.expandedSections.has("layout")
             ? html`<mushroom-addition-weather-options .hass=${this.hass} .config=${this.config}
                 section="layout" @config-changed=${this.energyConfigChanged}></mushroom-addition-weather-options>`
@@ -452,6 +460,7 @@ export class MushroomAdditionEditor extends LitElement {
             `
             : section.id === "content" && this.expandedSections.has("content") && item.upstreamId === "card_room" ? this.renderRoomSecondaryEditor() : nothing,
           section.id === "features" && hasCustomFeatures ||
+            section.id === "layout" && item.upstreamId === "car_advanced" ||
             section.id === "layout" && item.upstreamId === "weather_advanced" ||
             section.id === "content" && item.upstreamId === "card_room" && this.config?.secondary_info === "composed",
         ))}

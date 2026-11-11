@@ -3,7 +3,7 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist/**", "coverage/**", ".tmp-reference-catalog/**", ".market-venv/**"] },
+  { ignores: ["dist/**", "coverage/**", ".tmp-reference-catalog/**", ".market-venv/**", "src/car-advanced/vendor/**"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

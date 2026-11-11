@@ -9,6 +9,9 @@ const notices = [
   "licenses/Lit-LICENSE",
   "licenses/Energy-cards-LICENSE",
   "licenses/Dynamic-weather-LICENSE",
+  "src/car-advanced/vendor/LICENSE",
+  "src/car-advanced/vendor/LICENSE-EXTRA-MAP",
+  "src/car-advanced/vendor/LICENSE-RTL",
 ].map((path) => readFileSync(new URL(path, import.meta.url), "utf8").trim()).join("\n\n");
 
 export default defineConfig({
@@ -24,7 +27,7 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       external: [],
-      output: { banner: `/*!\n${notices}\n*/` },
+      output: { banner: `/*!\n${notices}\n*/`, inlineDynamicImports: true },
     },
   },
 });

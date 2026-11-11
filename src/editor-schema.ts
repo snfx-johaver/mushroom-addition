@@ -285,6 +285,10 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
 };
 
 export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass?: HomeAssistant): EditorField[] => {
+  if (item.upstreamId === "car_advanced") return [
+    ...common(item), text("secondary"),
+    action("tap_action"), action("hold_action"), action("double_tap_action"),
+  ];
   const monitor = monitorKind(`custom:${item.tag}`);
   if (monitor) return [
     ...common(item), text("secondary"),

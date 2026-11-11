@@ -24,6 +24,7 @@ import { energyInsightsDetails } from "./translations/energy-insights-details";
 import { energyInsightsAccounting } from "./translations/energy-insights-accounting";
 import { energyLayout } from "./translations/energy-layout";
 import { energyMonitorGuidance, energyMonitorLabels, energyMonitorSources } from "./translations/energy-monitor";
+import { carPanelTranslations, carStatusTranslations } from "./translations/car";
 import { energyDirectRoutes, energyFlowScene } from "./translations/energy-flow-scene";
 import { energySourceQuality } from "./translations/energy-source-quality";
 import { smartSavingDetails, smartSavingGuidance } from "./translations/smart-saving";
@@ -683,6 +684,8 @@ export const translationCatalogs: Record<string, Record<string, string>> = Objec
     ...energyInsightsAccounting[locale],
     ...energyLayout[locale],
     ...energyMonitorLabels[locale],
+    ...carPanelTranslations[locale],
+    ...carStatusTranslations[locale],
     ...energyMonitorSources[locale],
     ...energyFlowScene[locale],
     ...energyDirectRoutes[locale],

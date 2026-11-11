@@ -198,6 +198,13 @@ export const UPSTREAM_CATALOG: readonly CatalogItem[] = [
 ] as const;
 
 export const NATIVE_CATALOG: readonly CatalogItem[] = [
+  {
+    upstreamId: "car_advanced", sourcePath: "src/car-advanced/card.ts", kind: "card",
+    category: "custom-card", family: "presence", tag: "mushroom-addition-car-advanced",
+    name: "Car Advanced",
+    description: "Vehicle indicators, charging and range bars, image slideshows, location maps and interactive detail panels.",
+    preferredDomains: ["device_tracker", "sensor"],
+  },
   ...MONITOR_CARDS.map(card => ({
     upstreamId: card.id, sourcePath: "src/energy-monitor/card.ts", kind: "card" as const,
     category: "custom-card" as const, family: "energy", tag: card.tag,

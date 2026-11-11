@@ -4,6 +4,12 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## 0.9.0 - 2026-11-11
 
+- Add Car Advanced with a bundled MIT vehicle engine, Mushroom presentation and
+  five-section visual editor. Preserve indicator groups, charging templates,
+  range targets, image slideshows, maps, custom detail cards and tire pressure
+  views. The public catalog now has 45 cards; no separate vehicle resource is
+  required. This is a same-version addition to 0.9.0.
+
 - Fix missing picker entries by preserving Home Assistant's shared registration
   array, and expose Energy monitoring settings directly in the Features editor.
 

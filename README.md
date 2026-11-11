@@ -5,7 +5,7 @@
 
 Your dashboard called. It wants fewer YAML headaches and a little more fun(gus).
 
-**44 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
+**45 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
 Air quality, animated weather, lights, appliances, energy, media, rooms, NAS and more.
 Pick a card, pick your entities, enjoy your dashboard.
 YAML is still welcome; it just isn't compulsory.
@@ -41,6 +41,10 @@ The NAS image is from the earlier dashboard whose layouts are now included.
 Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all cards.
 
 ## What's new in 0.9
+
+- **[Car Advanced](docs/CAR_ADVANCED.md):** vehicle indicators, charging and range,
+  images, maps and custom detail panels with a bundled engine and visual editor.
+  Added to the existing 0.9.0 release without a version bump.
 
 The four new monitoring cards are now included in the 0.9.0 release. See the
 [complete changelog](CHANGELOG.md#090---2026-11-11) for details.
@@ -214,7 +218,9 @@ Cards use your Home Assistant theme and language. Your custom names, entity IDs
 and action values stay untouched. Some cards need their corresponding sensors
 or integrations; installing a card does not install its data source.
 
-All 44 cards and their visual editors use the 33 Mushroom language catalogs.
+All 45 cards use the 33 Mushroom language catalogs for shared presentation and
+editor controls. Car Advanced's inherited vehicle-specific feature labels
+remain in English; native Home Assistant selectors follow your language.
 This includes stock-specific labels, the four NAS cards, Smart Saving and
 Weather Advanced. Language and script variants follow Home Assistant; saved
 custom names and entity values are preserved. Technical identifiers, brands,

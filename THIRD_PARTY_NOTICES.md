@@ -1,5 +1,21 @@
 # Third-Party Notices
 
+## Car Advanced vehicle engine (MIT)
+
+`src/car-advanced/vendor/vehicle-engine.js` incorporates Vehicle Status Card
+v1.26.1 from https://github.com/ngocjohn/vehicle-status-card.
+Copyright (c) 2024 Viet Ngoc. The complete MIT license is preserved in
+`src/car-advanced/vendor/LICENSE` and included in the distributed bundle.
+
+Adaptations: private component and event namespaces, lazy initialization,
+Car Advanced registration, shared Mushroom presentation and actions, and
+embedded visual configuration panels in the standard editor sections.
+The vehicle engine is bundled; the original frontend resource is not required.
+Its optional MapTiler engine and RTL text plugin are also bundled privately.
+Their complete notices are preserved in
+`src/car-advanced/vendor/LICENSE-EXTRA-MAP` and
+`src/car-advanced/vendor/LICENSE-RTL` and included in the distribution banner.
+
 ## Animated weather (MIT)
 
 `src/weather-advanced/` incorporates Dynamic Weather Card from

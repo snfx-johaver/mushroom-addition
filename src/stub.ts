@@ -3,6 +3,7 @@ import { workflowStub } from "./energy-cards/workflow-config";
 import { weatherStub } from "./weather-advanced/config";
 import { airQualityStub } from "./air-quality";
 import { todoStub } from "./todo";
+import { carStub } from "./car-advanced/config";
 import type { AdditionConfig, CatalogItem, HomeAssistant } from "./types";
 import { populatedDefaultsFor } from "./defaults";
 import { roomLightingSceneExample, sceneItemDefaultsFor } from "./scene-item-defaults";
@@ -64,6 +65,7 @@ export const createStubConfig = (
   entities: string[] = [],
   entitiesFallback: string[] = [],
 ): AdditionConfig => {
+  if (descriptor.upstreamId === "car_advanced") return carStub(hass, [...entities, ...entitiesFallback]);
   const monitor = monitorKind(`custom:${descriptor.tag}`);
   if (monitor) return monitorStub(monitor, hass, [...entities, ...entitiesFallback]);
   if (descriptor.upstreamId === "energy_log") return energyLogStub(hass, entities, entitiesFallback);
