@@ -22,6 +22,11 @@ import { energyPlanCardTranslations } from "./translations/energy-plan-card";
 import { energyInsightsTranslations, energyInsightsSetup } from "./translations/energy-insights";
 import { energyInsightsDetails } from "./translations/energy-insights-details";
 import { energyInsightsAccounting } from "./translations/energy-insights-accounting";
+import { energyLayout } from "./translations/energy-layout";
+import { energyMonitorGuidance, energyMonitorLabels, energyMonitorSources } from "./translations/energy-monitor";
+import { energyDirectRoutes, energyFlowScene } from "./translations/energy-flow-scene";
+import { energySourceQuality } from "./translations/energy-source-quality";
+import { smartSavingDetails, smartSavingGuidance } from "./translations/smart-saving";
 import { energyNativeFields, energySourceLabels } from "./translations/energy-native-fields";
 import { energyLogTranslations } from "./translations/energy-log";
 import { energyFieldTranslations } from "./translations/energy-fields";
@@ -676,6 +681,15 @@ export const translationCatalogs: Record<string, Record<string, string>> = Objec
     ...energyInsightsSetup[locale],
     ...energyInsightsDetails[locale],
     ...energyInsightsAccounting[locale],
+    ...energyLayout[locale],
+    ...energyMonitorLabels[locale],
+    ...energyMonitorSources[locale],
+    ...energyFlowScene[locale],
+    ...energyDirectRoutes[locale],
+    ...energyMonitorGuidance[locale],
+    ...energySourceQuality[locale],
+    ...smartSavingGuidance[locale],
+    ...smartSavingDetails[locale],
     ...energyNativeFields[locale],
     ...energySourceLabels[locale],
     ...energyLogTranslations[locale],
@@ -1372,6 +1386,7 @@ export const editorHelper = (key: string, hass?: HomeAssistant, cardType?: strin
   if (cardType === "custom:mushroom-addition-energy-log" && logHelp[key]) return logHelp[key].map(label => localizeText(hass, label)).join(" / ");
   if (key === "energy_plan") return ["Source", "Timeline", "Summary", "Periods"].map(label => localizeText(hass, label)).join(" / ");
   if (key === "energy_insights") return ["Source", "Consumers", "Prices", "Plan"].map(label => localizeText(hass, label)).join(" / ");
+  if (key === "energy_monitor") return ["Source", "Measured", "Retained baseline", "Data quality"].map(label => localizeText(hass, label)).join(" / ");
   if (key === "washer_details_entities") return localizeText(hass, "Select settings and diagnostics from the same appliance. Expand them with the status-row chevron.");
   const airQualityHelp: Record<string, string> = {
     air_quality_show_header: "Show the Mushroom heading; the quality indicator is independent.",

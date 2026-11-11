@@ -9,10 +9,14 @@ function validateMapping(label: string, value: unknown): void {
   if (!isRecord(value)) throw new Error(`${label} must be an object.`);
   for (const field of [
     "entity", "path", "startField", "endField", "durationField", "valueField",
-    "priceField", "powerField", "energyField", "statusField", "unit", "field",
+    "priceField", "powerField", "energyField", "statusField", "unit", "field", "powerUnit", "energyUnit",
   ]) {
     if (value[field] !== undefined && typeof value[field] !== "string") {
       throw new Error(`${label}.${field} must be text.`);
+    }
+    if (value.maxSourceAgeMinutes !== undefined && (typeof value.maxSourceAgeMinutes !== "number"
+      || !Number.isFinite(value.maxSourceAgeMinutes) || value.maxSourceAgeMinutes < 1 || value.maxSourceAgeMinutes > 10080)) {
+      throw new Error(`${label}.maxSourceAgeMinutes must be 1–10080 minutes.`);
     }
   }
 }
@@ -41,6 +45,19 @@ export function validateConfig(value: unknown): SmartSavingConfig {
   }
   if (!Number.isFinite(config.visibleHours ?? 36) || (config.visibleHours ?? 36) <= 0 || (config.visibleHours ?? 36) > 168) {
     throw new Error("visibleHours must be a number greater than 0 and no more than 168.");
+  }
+  for (const [name, fallback, min, max] of [
+    ["maxContentWidth", 1200, 400, 2400],
+    ["maxSourceAgeMinutes", 1440, 1, 10080],
+    ["forecastGapMinutes", 60, 1, 1440],
+  ] as const) {
+    const current = config[name] ?? fallback;
+    if (!Number.isFinite(current) || (name === "maxContentWidth" && current === 0 ? false : current < min || current > max)) {
+      throw new Error(`${name} must be ${min}–${max}${name === "maxContentWidth" ? " or 0 (unlimited)" : ""}.`);
+    }
+  }
+  if (config.horizon !== undefined && !["configured", "published"].includes(config.horizon)) {
+    throw new Error('horizon must be "configured" or "published".');
   }
   if (config.periods !== undefined && !Array.isArray(config.periods)) {
     throw new Error("periods must be an array of named time windows.");
@@ -92,6 +109,9 @@ export function validateConfig(value: unknown): SmartSavingConfig {
   }
   for (const [name, track] of Object.entries(config.tracks ?? {})) {
     validateMapping(`tracks.${name}`, track);
+    if (track.meaning !== undefined && !["supplied", "confirmed"].includes(track.meaning)) {
+      throw new Error(`tracks.${name}.meaning must be "supplied" or "confirmed".`);
+    }
   }
   for (const [name, entity] of [
     ["statusEntity", config.statusEntity],

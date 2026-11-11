@@ -37,6 +37,10 @@ describe("release translation integration", () => {
     await editor.updateComplete;
     await editor.updateComplete;
     await plan.updateComplete;
+    const periods = plan.shadowRoot!.querySelector<HTMLDetailsElement>(".period-details")!;
+    periods.open = true;
+    periods.dispatchEvent(new Event("toggle"));
+    await plan.updateComplete;
     expect(server.shadowRoot!.textContent).toContain(localizeText(hass, "CPU usage"));
     expect(server.shadowRoot!.textContent).toContain("My storage");
     expect(editor.shadowRoot!.textContent).toContain(localizeText(hass, "Entity mappings"));

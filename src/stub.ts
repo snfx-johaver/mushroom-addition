@@ -14,6 +14,7 @@ import { wasteStreamExamples } from "./waste-streams";
 import { EnergyPlanCard } from "./energy-plan/card";
 import { EnergyInsightsCard } from "./energy-insights/card";
 import { energyLogStub } from "./energy-cards/energy-log-config";
+import { monitorKind, monitorStub } from "./energy-monitor/config";
 
 const firstMatchingEntity = (
   descriptor: CatalogItem,
@@ -63,6 +64,8 @@ export const createStubConfig = (
   entities: string[] = [],
   entitiesFallback: string[] = [],
 ): AdditionConfig => {
+  const monitor = monitorKind(`custom:${descriptor.tag}`);
+  if (monitor) return monitorStub(monitor, hass, [...entities, ...entitiesFallback]);
   if (descriptor.upstreamId === "energy_log") return energyLogStub(hass, entities, entitiesFallback);
   if (descriptor.upstreamId === "energy_plan") return EnergyPlanCard.getStubConfig(hass, entities, entitiesFallback);
   if (descriptor.upstreamId === "energy_insights") return EnergyInsightsCard.getStubConfig(hass, entities, entitiesFallback);

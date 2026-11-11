@@ -59,10 +59,12 @@ Every item needs:
 Unconfigured, unavailable and malformed sources have explicit row messages.
 Malformed entries, overlaps and battery percentages outside 0–100 reject the
 whole source row rather than hiding corrupt entries. Empty arrays and intervals
-outside the visible window display “No published intervals”. Gaps remain blank:
-there is no interpolation, extrapolation or assumed zero. Adjacent price
-intervals in the same configured low/mid/high color band and adjacent matching
-schedule modes are grouped visually only. Price tooltips retain the source range;
+outside the visible window display “No published intervals”. Unpublished gaps
+are shaded, including time before and after the supplied forecast; they are
+never interpolated, extrapolated or treated as zero. Adjacent price intervals
+are grouped only when they share the configured low/mid/high color band and
+their combined price range fits `priceTolerance` (default zero: equal prices).
+Adjacent matching schedule modes are grouped visually only. Price tooltips retain the source range;
 the inspector still reads the original individual interval values.
 
 ## Feature options
@@ -73,10 +75,14 @@ the inspector still reads the original individual interval values.
 | --- | --- |
 | `start` | `now` (default) or `source` |
 | `startEntity`, `startField` | Source timestamp from a sensor state or attribute; empty entity inherits Context |
+| `horizon` | `configured` (default): retain the visible-hours window; `published`: fit to the union of valid enabled rows inside that window |
+| `forecastKind` | `unspecified` (default), `estimate` or `interval`; describes the supplied forecast basis, not its accuracy |
+| `forecastMethodField` | Optional dot-separated attribute path on the start source (or Context entity) containing the source's forecast-method explanation |
 | `showHeader`, `showOverview`, `showMetrics`, `showInspector`, `showPeriods`, `showLegend` | Independent section visibility, all enabled by default |
 | `overview`, `description`, `timelineTitle` | Editable user text |
-| `rowHeight` | 36–80 SVG units; default 48 |
+| `rowHeight` | 36–80 pixels; default 56 |
 | `minimumWidth` | 400–1600 px; default 720; narrow cards scroll horizontally |
+| `maxContentWidth` | Centred content limit, default 1200 px; 400–2400, or 0 for unlimited. The card background still fills its section. |
 | `axisStep` | 1–24 hours between timeline grid ticks; default 3. Dense axes automatically show fewer time labels to avoid overlap. |
 | `maxAgeMinutes` | Maximum source age in minutes, 1–10080; default 60 |
 | `rows`, `metrics`, `periods` | Repeatable lists described below |
@@ -88,7 +94,8 @@ Only relevant entity, theme, timezone and locale changes rebuild the card.
 In Home Assistant sections, the card requests the full 12-column width so timeline
 labels and price blocks have room to remain legible. The built-in solar row scales
 its bars to the largest absolute solar value in the visible forecast, making small
-but meaningful solar values visible; other power rows use their configured `scale`.
+but meaningful solar values visible; other power rows use their configured `scale`
+unless `autoScale` is enabled. Set `autoScale: false` to keep solar on a fixed scale.
 Every power row displays its full positive/negative scale next to its name, so
 auto-scaled solar magnitude is not confused with a fixed battery or home scale.
 Power tracks have a zero baseline; battery/grid sign labels explain the source's
@@ -109,7 +116,26 @@ Above the timeline, the card identifies the supplied-plan horizon and the oldest
 row-source update. Each row reports published interval coverage; gaps stay blank,
 not zero. The lowest published price and its first source interval are listed
 as a factual summary, not a charging recommendation. Grouped price blocks show
-a rate range when their source intervals differ.
+a rate range when their source intervals differ. Chart coordinates follow the
+rendered pixel width, keeping typography and row heights stable on wide cards.
+Inspector values use aligned tiles; explanations and the legend are collapsed
+under Plan assumptions.
+
+**Published horizon** trims leading and trailing unpublished space to the union of
+the enabled rows' valid intervals, within the requested start and visible-hours
+limit. It never stretches a shorter row to match another: internal gaps and
+row-specific gaps remain shaded and retain their coverage labels. If no valid
+intervals exist, the requested window and explicit source errors remain visible.
+Period offsets still refer to the originally requested start and their displayed
+times are clipped to the fitted window. Metric values are never recalculated.
+Choose Configured horizon to retain a fixed comparison window.
+
+The status names the configured forecast basis and optionally displays escaped
+method text from the source. Estimates and interval forecasts are labelled
+explicitly; missing provenance is Not specified. The card does not infer a method
+from an integration name or convert a supplied estimate into a detailed forecast.
+Fitting the horizon fixes misleading empty space, not upstream missing forecasts;
+a full rolling forecast still requires publication by the planner.
 
 ## Rows
 
@@ -128,6 +154,8 @@ not automatic integration-specific entity mappings.
 | `startField`, `endField`, `durationField`, `valueField`, `statusField` | Interval field mappings |
 | `unit` | Source/display unit; no implicit numeric conversion |
 | `scale` | Positive power magnitude at the full bar half-height, in the configured unit |
+| `autoScale` | Scale power to the largest absolute visible value; defaults on for the solar row, off for other rows |
+| `priceTolerance` | Maximum combined rate spread allowed in a grouped price block; default 0, in the price row's unit |
 | `low`, `high`, `lowColor`, `highColor` | Price color thresholds in the configured price unit; low must not exceed high |
 | `positiveLabel`, `negativeLabel`, `zeroLabel` | Schedule labels when no mapped textual status is supplied |
 
@@ -149,6 +177,11 @@ Summary metrics are deliberately source-backed rather than inferred from tracks.
 Each has editable `name`, `entity`, optional attribute `field`, `unit`, `icon`
 and `color`. Missing numeric data displays “Source missing”; zero is preserved.
 Units are labels and must match the source. Up to 12 metrics are supported.
+An optional `rowId` (Published end in the visual editor) links a metric to a
+timeline row's source endpoint, displayed alongside its value. This does not
+recalculate the supplied metric. For example, name a battery metric “Battery at
+published end” and link it to `soc` when its sensor describes that row's final
+published interval, rather than implying it covers the entire visible horizon.
 Rows and metrics check the entity's Home Assistant `last_updated` timestamp
 against `maxAgeMinutes`. Stale or missing timestamps do not produce valid values.
 

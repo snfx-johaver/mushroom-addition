@@ -2,6 +2,7 @@ import type { AdditionConfig } from "../types";
 export type { HassEntity, HomeAssistant } from "../types";
 
 export interface FieldMapping {
+  maxSourceAgeMinutes?: number;
   path?: string;
   startField?: string;
   endField?: string;
@@ -11,6 +12,8 @@ export interface FieldMapping {
   powerField?: string;
   energyField?: string;
   statusField?: string;
+  powerUnit?: string;
+  energyUnit?: string;
   unit?: string;
 }
 
@@ -26,6 +29,7 @@ export interface ForecastConfig extends FieldMapping {
 }
 
 export interface ValueSource {
+  maxSourceAgeMinutes?: number;
   entity?: string;
   value?: number;
   field?: string;
@@ -39,6 +43,7 @@ export interface BatteryConfig {
 }
 
 export interface TrackConfig extends FieldMapping {
+  meaning?: "supplied" | "confirmed";
   entity?: string;
   path?: string;
   kind?: "schedule" | "solar";
@@ -57,6 +62,10 @@ export interface SmartSavingConfig extends AdditionConfig {
   subtitle?: string;
   statusEntity?: string;
   visibleHours?: number;
+  maxContentWidth?: number;
+  horizon?: "configured" | "published";
+  maxSourceAgeMinutes?: number;
+  forecastGapMinutes?: number;
   price?: PriceConfig;
   battery?: BatteryConfig;
   tracks?: {

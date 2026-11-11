@@ -35,6 +35,7 @@ export function mountInsightsDemo(base: HomeAssistant): { theme: (dark: boolean)
   const source = "sensor.example_insights";
   const planStart = now, planEnd = now + 86400000;
   const plan = {
+    forecast_method: "Synthetic interval estimates for demonstration only.",
     start: planStart, end: planEnd, generated_at: now, currency: "EUR", home_kwh: 28.6, solar_kwh: 13.6,
     battery_min: 29, battery_reserve: 25, charge_efficiency: .94,
     consumers: Object.fromEntries(devices.map(device => [device.id, { energy: device.forecast, strategy: "Synthetic supplied forecast; not a recommendation or a device schedule." }])),
@@ -68,6 +69,8 @@ export function mountInsightsDemo(base: HomeAssistant): { theme: (dark: boolean)
     snapshot(id, String(value), { unit_of_measurement: unit });
   };
   const totals = Array.from({ length: 5 + devices.length }, () => 0);
+  let measuredHome = 0;
+  record("home_meter", 0, midnight.getTime());
   [...meterNames, ...devices.map(device => `${device.id}_meter`)].forEach(name => record(name, 0, midnight.getTime()));
   for (let time = midnight.getTime(); time < now; time += 900000) {
     const until = Math.min(now, time + 900000), hours = (until - time) / 3600000;
@@ -80,6 +83,8 @@ export function mountInsightsDemo(base: HomeAssistant): { theme: (dark: boolean)
     const discharge = solar === 0 ? .1 : 0;
     const grid = home + charge - solar - discharge;
     const power = [solar, Math.max(0, grid), Math.max(0, -grid), charge, discharge, ...loads];
+    measuredHome += home * hours;
+    record("home_meter", measuredHome, until);
     [...meterNames, ...devices.map(device => `${device.id}_meter`)].forEach((name, index) => {
       totals[index] += power[index] * hours;
       record(name, totals[index], until);
@@ -87,18 +92,26 @@ export function mountInsightsDemo(base: HomeAssistant): { theme: (dark: boolean)
     record("import_rate", hour < 5 ? .16 : hour < 9 ? .27 : .22, time, "EUR/kWh");
     record("export_rate", .075, time, "EUR/kWh");
   }
+  let sourceGapExample = false;
   base.callWS = async <T>(message: Record<string, unknown>) => {
     if (message.type !== "history/history_during_period" || !Array.isArray(message.entity_ids) ||
       message.entity_ids.some(id => typeof id !== "string" || !id.startsWith("sensor.example_"))) {
       throw new Error("Only synthetic example history requests are supported.");
     }
-    return Object.fromEntries(message.entity_ids.map(id => [String(id), history[String(id)] ?? []])) as T;
+    return Object.fromEntries(message.entity_ids.map(id => {
+      const rows = [...(history[String(id)] ?? [])];
+      if (sourceGapExample && id === "sensor.example_charge_meter" && rows.length > 1) {
+        const time = (Date.parse(rows[0].last_updated) + Date.parse(rows[1].last_updated)) / 2;
+        rows.splice(1, 0, { state: "unavailable", last_updated: new Date(time).toISOString(), attributes: { unit_of_measurement: "kWh" } });
+      }
+      return [String(id), rows];
+    })) as T;
   };
   const initial: EnergyInsightsConfig = {
     type: "custom:mushroom-addition-energy-insights", name: "Energy Insights & Purchases",
     secondary: "Synthetic snapshot - no live connections", icon: "mdi:lightning-bolt",
     tap_action: { action: "none" },
-    energy_insights: { ...insightsDefaults(), currency: "EUR", maxAgeMinutes: 1440,
+    energy_insights: { ...insightsDefaults(), currency: "EUR", maxAgeMinutes: 1440, forecastKind: "estimate",
       actualSource: { entity: source, path: "actuals" }, planSource: { entity: source, path: "plan" },
       homeEntity: "sensor.example_home_power", solarEntity: "sensor.example_solar_power",
       gridEntity: "sensor.example_grid_power", batteryEntity: "sensor.example_battery_power",
@@ -143,13 +156,14 @@ export function mountInsightsDemo(base: HomeAssistant): { theme: (dark: boolean)
     } catch (error) { if (!(error instanceof Error)) throw error; status.textContent = `Configuration rejected: ${error.message}`; }
   });
   document.querySelector("#insights-mode")?.addEventListener("click", () => {
+    sourceGapExample = false;
     const metered = {
       ...initial.energy_insights!,
       actualSource: { path: "actuals" },
       metered: {
         solar: { entity: "sensor.example_solar_meter" }, gridImport: { entity: "sensor.example_import_meter" },
-        gridExport: { entity: "sensor.example_export_meter" }, batteryCharge: { entity: "sensor.example_charge_meter" },
-        batteryDischarge: { entity: "sensor.example_discharge_meter" }, importRate: { entity: "sensor.example_import_rate" },
+        gridExport: { entity: "sensor.example_export_meter" }, batteryCharge: { entity: "sensor.example_charge_meter", sourceType: "integrated_power" as const },
+        batteryDischarge: { entity: "sensor.example_discharge_meter", sourceType: "integrated_power" as const }, importRate: { entity: "sensor.example_import_rate" },
         exportRate: { entity: "sensor.example_export_rate" },
       },
       consumers: initial.energy_insights!.consumers.map(consumer => ({
@@ -161,8 +175,19 @@ export function mountInsightsDemo(base: HomeAssistant): { theme: (dark: boolean)
     status.textContent = config.energy_insights?.actualSource.entity
       ? "Synthetic legacy snapshot example." : "Synthetic individual-meter example. Recorder is simulated locally.";
   });
+  document.querySelector("#insights-gap")?.addEventListener("click", () => {
+    if (config.energy_insights?.actualSource.entity) document.querySelector<HTMLButtonElement>("#insights-mode")!.click();
+    sourceGapExample = true;
+    const options = config.energy_insights!;
+    config = { ...config, energy_insights: {
+      ...options, metered: { ...options.metered, home: { entity: "sensor.example_home_meter", sourceType: "hardware" } },
+      homeBoundary: "excludes_battery_charging",
+    } };
+    card.setConfig(config); editor.setConfig(config);
+    status.textContent = "Synthetic source-gap example: household energy remains measured independently; battery charge stays unavailable.";
+  });
   return {
     theme: dark => { card.hass = editor.hass = { ...base, themes: { darkMode: dark } }; },
-    reset: () => { localStorage.removeItem(key); card.setConfig(initial); editor.setConfig(initial); },
+    reset: () => { localStorage.removeItem(key); config = initial; sourceGapExample = false; card.setConfig(initial); editor.setConfig(initial); },
   };
 }

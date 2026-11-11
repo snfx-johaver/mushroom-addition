@@ -43,6 +43,7 @@ import { planOptions, validatePlan, ENERGY_PLAN_TAG } from "./energy-plan/config
 import { insightsOptions, validateInsights, ENERGY_INSIGHTS_TAG } from "./energy-insights/config";
 import { energyLogStub, validateEnergyLogConfig, ENERGY_LOG_TAG } from "./energy-cards/energy-log-config";
 import { ENERGY_LOG_LABELS } from "./energy-editor-schema";
+import { monitorKind, monitorOptions, validateMonitor } from "./energy-monitor/config";
 import { ROOM_STATUS_KINDS, ROOM_STATUS_LIMIT, roomItemDefaultsFor, roomStatusKind, roomStatusIcon, roomStatusActive } from "./room";
 import type {
   MiniGraphEntityConfig,
@@ -214,6 +215,7 @@ export class MushroomAdditionEditor extends LitElement {
     };
     if (tag === ENERGY_PLAN_TAG) this.config = { ...this.config, energy_plan: planOptions(this.config, this.hass) };
     if (tag === ENERGY_INSIGHTS_TAG) this.config = { ...this.config, energy_insights: insightsOptions(this.config) };
+    if (monitorKind(this.config.type)) this.config = { ...this.config, energy_monitor: monitorOptions(this.config) };
     if (tag === ENERGY_LOG_TAG) this.config = {
       ...energyLogStub(this.hass), ...this.config, name: config.name ?? config.title,
       secondary: config.secondary ?? config.subtitle,
@@ -511,7 +513,7 @@ export class MushroomAdditionEditor extends LitElement {
       ? `${localizeText(this.hass, "All")}: ${localizeText(this.hass, "Icon")}`
     : this.config?.type === `custom:${ENERGY_LOG_TAG}` && ENERGY_LOG_LABELS[schema.name]
       ? localizeText(this.hass, ENERGY_LOG_LABELS[schema.name])
-    : schema.name === "energy_plan" || schema.name === "energy_insights"
+    : schema.name === "energy_plan" || schema.name === "energy_insights" || schema.name === "energy_monitor"
       ? localizeText(this.hass, getCatalogItem(this.config!.type.replace(/^custom:/, ""))?.name ?? schema.name)
     : this.config?.type.endsWith("air-quality") && schema.name === "entity"
       ? localizeText(this.hass, "Air quality sensor (optional; otherwise calculated from pollutants)")
@@ -811,9 +813,10 @@ export class MushroomAdditionEditor extends LitElement {
         if (next[key] === undefined || next[key] === "") next[key] = id;
       }
     }
-    if ([`custom:${ENERGY_PLAN_TAG}`, `custom:${ENERGY_INSIGHTS_TAG}`, `custom:${ENERGY_LOG_TAG}`].includes(next.type)) {
+    if (monitorKind(next.type) || [`custom:${ENERGY_PLAN_TAG}`, `custom:${ENERGY_INSIGHTS_TAG}`, `custom:${ENERGY_LOG_TAG}`].includes(next.type)) {
       try {
-        if (next.type === `custom:${ENERGY_PLAN_TAG}`) validatePlan(next);
+        if (monitorKind(next.type)) validateMonitor(next);
+        else if (next.type === `custom:${ENERGY_PLAN_TAG}`) validatePlan(next);
         else if (next.type === `custom:${ENERGY_LOG_TAG}`) validateEnergyLogConfig(next);
         else validateInsights(next);
         this.energyError = "";

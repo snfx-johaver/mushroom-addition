@@ -25,9 +25,12 @@ export interface MeterSource {
   entity?: string;
   field?: string;
   absent?: boolean;
+  sourceType?: "unspecified" | "hardware" | "integrated_power";
+  recoverGaps?: boolean;
 }
 
 export interface MeteredActualSources {
+  home?: MeterSource;
   solar: MeterSource;
   gridImport: MeterSource;
   gridExport: MeterSource;
@@ -41,9 +44,13 @@ export interface EnergyInsightsOptions {
   actualSource: InsightsSource;
   metered: MeteredActualSources;
   planSource: InsightsSource;
+  purchaseScope: "all" | "battery";
+  homeBoundary?: "excludes_battery_charging";
+  forecastKind: "unspecified" | "estimate" | "interval";
   currency?: string;
   fixedExportRate?: number;
   maxAgeMinutes: number;
+  maxContentWidth: number;
   activeThreshold: number;
   sort: "energy" | "power";
   activeOnly: boolean;
@@ -69,12 +76,12 @@ export interface EnergyInsightsConfig extends AdditionConfig {
 
 export function insightsDefaults(): EnergyInsightsOptions {
   return {
-    actualSource: { path: "actuals" }, planSource: { path: "plan" },
+    actualSource: { path: "actuals" }, planSource: { path: "plan" }, purchaseScope: "all", forecastKind: "unspecified",
     metered: {
       solar: {}, gridImport: {}, gridExport: {}, batteryCharge: {},
       batteryDischarge: {}, importRate: {}, exportRate: {},
     },
-    maxAgeMinutes: 60, activeThreshold: 50, sort: "energy", activeOnly: false,
+    maxAgeMinutes: 60, maxContentWidth: 1200, activeThreshold: 50, sort: "energy", activeOnly: false,
     showHeader: true, showFlow: true, showConsumers: true, showPurchases: true,
     showForecasts: true, consumers: [],
     showPlanBattery: true, showPlanAllocations: true, showPlanEfficiency: true,
@@ -87,6 +94,14 @@ export function insightsOptions(config: EnergyInsightsConfig): EnergyInsightsOpt
     ...defaults, ...saved,
     metered: { ...defaults.metered, ...saved?.metered },
   };
+}
+
+function validateMeterType(source: MeterSource, path: string): void {
+  if (source.sourceType !== undefined && !["unspecified", "hardware", "integrated_power"].includes(source.sourceType)) {
+    throw new Error(`${path}.sourceType: expected unspecified, hardware or integrated_power.`);
+  }
+  if (source.recoverGaps !== undefined && typeof source.recoverGaps !== "boolean") throw new Error(`${path}.recoverGaps: expected a boolean.`);
+  if (source.recoverGaps && source.sourceType !== "hardware") throw new Error(`${path}.recoverGaps: recovery requires an explicitly verified hardware counter, never integrated power.`);
 }
 
 export function validateInsights(raw: AdditionConfig): EnergyInsightsConfig {
@@ -107,19 +122,25 @@ export function validateInsights(raw: AdditionConfig): EnergyInsightsConfig {
   if (!options.metered || typeof options.metered !== "object" || Array.isArray(options.metered)) {
     throw new Error("metered: expected source mappings.");
   }
-  for (const key of ["solar", "gridImport", "gridExport", "batteryCharge", "batteryDischarge", "importRate", "exportRate"] as const) {
+  for (const key of ["home", "solar", "gridImport", "gridExport", "batteryCharge", "batteryDischarge", "importRate", "exportRate"] as const) {
     const source = options.metered[key];
+    if (key === "home" && source === undefined) continue;
     if (!source || typeof source !== "object" || Array.isArray(source) ||
       source.entity !== undefined && typeof source.entity !== "string" ||
       source.field !== undefined && typeof source.field !== "string") {
       throw new Error(`metered.${key}: expected a sensor and optional attribute field.`);
     }
     if (source.absent !== undefined && typeof source.absent !== "boolean") throw new Error(`metered.${key}.absent: expected a boolean.`);
-    if (source.absent && (source.entity || source.field || key === "gridImport" || key.endsWith("Rate"))) {
+    if (source.absent && (source.entity || source.field || key === "home" || key === "gridImport" || key.endsWith("Rate"))) {
       throw new Error(`metered.${key}: Not installed is only valid for unconfigured solar, battery or export meters.`);
     }
     if (!source.entity && source.field) throw new Error(`metered.${key}.field: select a sensor before mapping a field.`);
+    validateMeterType(source, `metered.${key}`);
+    if (key.endsWith("Rate") && (source.sourceType !== undefined || source.recoverGaps !== undefined)) throw new Error(`metered.${key}: counter options apply only to energy meters.`);
   }
+  if (options.homeBoundary !== undefined && options.homeBoundary !== "excludes_battery_charging") throw new Error("homeBoundary: expected excludes_battery_charging.");
+  if (options.metered.home?.entity && options.homeBoundary !== "excludes_battery_charging") throw new Error("homeBoundary: verify that the household meter excludes battery charging before selecting it.");
+  if (!["unspecified", "estimate", "interval"].includes(options.forecastKind)) throw new Error("forecastKind: expected unspecified, estimate or interval.");
   if (options.fixedExportRate !== undefined && (!Number.isFinite(options.fixedExportRate) || Math.abs(options.fixedExportRate) > 1000000)) {
     throw new Error("fixedExportRate: expected a finite rate in currency/kWh.");
   }
@@ -130,6 +151,11 @@ export function validateInsights(raw: AdditionConfig): EnergyInsightsConfig {
     if (!Number.isFinite(options[key]) || options[key] < min || options[key] > max) throw new Error(`${key}: expected ${min}-${max}.`);
   }
   if (!["energy", "power"].includes(options.sort)) throw new Error("sort: expected energy or power.");
+  if (!["all", "battery"].includes(options.purchaseScope)) throw new Error("purchaseScope: expected all or battery.");
+  if (!Number.isFinite(options.maxContentWidth) || options.maxContentWidth < 0 ||
+    options.maxContentWidth > 2400 || options.maxContentWidth > 0 && options.maxContentWidth < 400) {
+    throw new Error("maxContentWidth: expected zero or 400–2400.");
+  }
   for (const key of ["activeOnly", "showHeader", "showFlow", "showConsumers", "showPurchases", "showForecasts",
     "showPlanBattery", "showPlanAllocations", "showPlanEfficiency"] as const) {
     if (typeof options[key] !== "boolean") throw new Error(`${key}: expected a boolean.`);
@@ -156,6 +182,7 @@ export function validateInsights(raw: AdditionConfig): EnergyInsightsConfig {
         throw new Error("consumer.energySource: expected a cumulative energy sensor and optional attribute.");
       }
       if (meter.field && !meter.entity) throw new Error("consumer.energySource.field: select a sensor first.");
+      validateMeterType(meter, "consumer.energySource");
     }
     if (ids.has(consumer.id)) throw new Error("consumer.id: duplicate ID.");
     ids.add(consumer.id);

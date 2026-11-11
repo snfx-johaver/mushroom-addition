@@ -5,7 +5,7 @@
 
 Your dashboard called. It wants fewer YAML headaches and a little more fun(gus).
 
-**41 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
+**44 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
 Air quality, animated weather, lights, appliances, energy, media, rooms, NAS and more.
 Pick a card, pick your entities, enjoy your dashboard.
 YAML is still welcome; it just isn't compulsory.
@@ -39,6 +39,31 @@ Click a screenshot for a closer look.
 These are real setups, not mockups; some cards are only partially configured.
 The NAS image is from the earlier dashboard whose layouts are now included.
 Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all cards.
+
+## Upcoming energy improvements
+
+The changes below are **unreleased**; installing the current HACS release does
+not yet add the four new monitoring cards. See the
+[complete upcoming changelog](CHANGELOG.md#unreleased) for details.
+
+- **Four monitoring cards:** [Energy Plan vs Actual](docs/ENERGY_MONITORING.md#energy-plan-vs-actual),
+  [Energy Battery Activity](docs/ENERGY_MONITORING.md#energy-battery-activity),
+  [Energy Electricity Cost Timeline](docs/ENERGY_MONITORING.md#energy-electricity-cost-timeline)
+  and [Energy Live Energy Flow](docs/ENERGY_MONITORING.md#energy-live-energy-flow).
+- **Realistic live flow:** a bundled 3D-rendered house, grid, solar panels,
+  battery and EV with shaded cables and measured directional animation.
+  Optional solar-to-EV and battery-to-EV routes require dedicated sensors.
+- **Clearer charts:** battery power and SoC share one chart; metered purchases
+  have a compact signed chart; Smart Saving adds a shared time inspector,
+  published-coverage indicators and independent source-age controls.
+- **Explicit data boundaries:** compare only retained pre-period forecasts with
+  matching measurements, distinguish hardware counters from integrated power,
+  and keep missing sources, tariff gaps and accounting assumptions visible.
+
+All four cards use the existing bundle, native visual editor and 33 supported
+language catalogs. Examples and the local showcase use fictional entities and
+synthetic readings. The generated scene is illustrative, not a reconstruction
+of a household. No additional image host or frontend dependency is needed.
 
 ## What's new in 0.8
 
@@ -76,7 +101,8 @@ Existing dashboard card types and configurations remain supported. Install
 using an unreleased hotfix, return to the single HACS-managed resource after the
 update; do not load both bundles.
 
-See the [changelog](CHANGELOG.md#072---2026-11-06) for the new energy cards,
+See the [0.8.0 changelog](CHANGELOG.md#080---2026-11-10),
+[original energy update](CHANGELOG.md#072---2026-11-06),
 [translation update](CHANGELOG.md#071---2026-11-02) and
 [0.7.0 release details](CHANGELOG.md#070---2026-11-02).
 
@@ -188,7 +214,7 @@ Cards use your Home Assistant theme and language. Your custom names, entity IDs
 and action values stay untouched. Some cards need their corresponding sensors
 or integrations; installing a card does not install its data source.
 
-All 40 cards and their visual editors use the 33 Mushroom language catalogs.
+All 44 cards and their visual editors use the 33 Mushroom language catalogs.
 This includes stock-specific labels, the four NAS cards, Smart Saving and
 Weather Advanced. Language and script variants follow Home Assistant; saved
 custom names and entity values are preserved. Technical identifiers, brands,
@@ -316,16 +342,21 @@ Please keep household screenshots and personal information out of reports.
 
 ## Energy cards
 
-Three additional energy cards are included in the existing bundle and card
-picker; no additional resource is needed.
+The energy cards share the existing bundle and card picker; no additional
+resource is needed. The four monitoring cards below are part of the upcoming
+update, not the current HACS release.
 
 | Card | Configuration type | Purpose |
 | --- | --- | --- |
 | [Energy Plan](docs/ENERGY_PLAN.md) | `custom:mushroom-addition-energy-plan` | Configurable aligned timeline for supplied prices, solar, battery, grid and consumer forecasts. |
 | [Energy Insights & Purchases](docs/ENERGY_INSIGHTS.md) | `custom:mushroom-addition-energy-insights` | Measured consumption and interval-priced purchases, with a separate view for supplied future purchase allocations. |
+| [Energy Plan vs Actual](docs/ENERGY_MONITORING.md#energy-plan-vs-actual) | `custom:mushroom-addition-energy-plan-actual` | An externally retained pre-period forecast compared with matching measured energy. |
+| [Energy Battery Activity](docs/ENERGY_MONITORING.md#energy-battery-activity) | `custom:mushroom-addition-battery-activity` | Recorded power and SoC, with daily charge/discharge totals from configured counters. |
+| [Energy Electricity Cost Timeline](docs/ENERGY_MONITORING.md#energy-electricity-cost-timeline) | `custom:mushroom-addition-electricity-cost-timeline` | Recorded import costs and export credits, with honest tariff gaps and negative-rate handling. |
+| [Energy Live Energy Flow](docs/ENERGY_MONITORING.md#energy-live-energy-flow) | `custom:mushroom-addition-live-energy-flow` | House-centered 3D power flows with optional separately measured solar/battery-to-EV routes. |
 | [Energy Log](docs/ENERGY_LOG.md) | `custom:mushroom-addition-energy-log` | Entity-backed events with category filters, date grouping and source details. |
 
-All three use the shared Mushroom presentation, theme-aware colors, shadow
+These cards use the shared Mushroom presentation, theme-aware colors, shadow
 option, header actions and Context, Content, Layout, Interactions and Features
 editor sections. Repeatable rows, metrics, periods, consumers, sources, categories
 and field mappings use Home Assistant's native structured object selectors.
@@ -337,6 +368,18 @@ The cards display supplied data; they do not generate forecasts, optimize
 schedules or control devices. Missing, invalid and stale sources are shown
 explicitly. Picker defaults select compatible sources when available; otherwise
 configure sources using the contracts in each card's documentation.
+
+For the four monitoring cards, electrical roles are always assigned explicitly
+in **Features**; a Context entity changes the heading but never identifies a
+solar, grid, battery or EV boundary. Energy Plan vs Actual requires an externally
+retained forecast, not the latest revised plan. History cards require access to
+Home Assistant Recorder; Energy Live Energy Flow uses current source states only.
+Missing data is never substituted with a zero reading or an invented forecast.
+
+Live flow animation stops for zero, stale or invalid readings and respects
+reduced-motion preferences. Direct EV submeasurements are never added to the
+home total. See [source contracts and examples](docs/ENERGY_MONITORING.md)
+before mapping sensors, especially when home consumption includes EV charging.
 
 **Existing cards are preserved.** Energy Plan overlaps with Smart Saving's
 forecast display, but has a different configuration and a customizable aligned
@@ -358,6 +401,15 @@ It never synthesizes missing prices or forecasts and does not execute plans.
 Select the price sensor in Context, the visible horizon in Layout, and source
 attribute/JSON mappings, battery, tracks, summary and periods in Features.
 Only EUR/kWh and ct/kWh conversions are supported.
+Its compact chart keeps labels readable on phones and caps wide-card content,
+marks unpublished coverage, and separates measured SoC from forecast segments.
+All time labels and price periods follow Home Assistant's configured timezone.
+Tap or drag any plot, or use the keyboard-accessible slider, to inspect one time
+across prices, supplied battery points and schedules. A shared time axis,
+published/missing durations and independent source-age limits keep the view
+compact without hiding gaps or stale data.
+See [Smart Saving configuration and data requirements](docs/SMART_SAVING.md)
+for source validation, freshness warnings and optional published-horizon fitting.
 
 ```yaml
 type: custom:mushroom-addition-smart-saving

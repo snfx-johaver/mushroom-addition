@@ -285,6 +285,12 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
 };
 
 export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass?: HomeAssistant): EditorField[] => {
+  const monitor = monitorKind(`custom:${item.tag}`);
+  if (monitor) return [
+    ...common(item), text("secondary"),
+    action("tap_action"), action("hold_action"), action("double_tap_action"),
+    monitorFeature(monitor),
+  ];
   if (item.upstreamId === "energy_log") return [
     ...common(item), text("secondary"),
     action("tap_action"), action("hold_action"), action("double_tap_action"),
@@ -1115,3 +1121,5 @@ export const additionalEditorSchemaFor = (
   return upstreamEditorSchemaFor(item, config)
     .filter((field) => !configuredFields.has(field.name));
 };
+import { monitorKind } from "./energy-monitor/config";
+import { monitorFeature } from "./energy-monitor/schema";

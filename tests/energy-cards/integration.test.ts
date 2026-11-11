@@ -4,6 +4,7 @@ import type { AdditionConfig, HomeAssistant } from "../../src/types";
 import type { MushroomAdditionEditor } from "../../src/editor";
 import type { SmartSavingPlanCardEditor } from "../../src/energy-cards/editor";
 import { SmartSavingPlanCard } from "../../src/energy-cards/card";
+import type { SmartSavingConfig } from "../../src/energy-cards/types";
 import { MushroomWorkflowCard } from "../../src/energy-cards/workflow";
 import { createStubConfig } from "../../src/stub";
 import { CATALOG } from "../../src/catalog";
@@ -127,6 +128,42 @@ describe("integrated energy editor and presentation", () => {
     await features.updateComplete;
     expect(saved).not.toHaveBeenCalled();
     expect(features.shadowRoot!.querySelector("[role=alert]")?.textContent).toContain("battery.horizon.value");
+  });
+
+  it("edits source-specific freshness and schedule meaning without dropping nested configuration", async () => {
+    const features = document.createElement("mushroom-addition-smart-saving-features") as SmartSavingPlanCardEditor;
+    features.hass = hass();
+    features.setConfig({
+      type: "custom:mushroom-addition-smart-saving",
+      price: { entity: "sensor.prices", maxSourceAgeMinutes: 1440 },
+      battery: {
+        current: { entity: "sensor.battery", maxSourceAgeMinutes: 5 },
+        forecast: { entity: "sensor.example_forecast", maxSourceAgeMinutes: 60 },
+        target: { value: 80, maxSourceAgeMinutes: 120 },
+        horizon: { value: 24, maxSourceAgeMinutes: 120 },
+      },
+      tracks: { applied: { entity: "sensor.example_sale", meaning: "confirmed", powerUnit: "kW", energyUnit: "kWh", maxSourceAgeMinutes: 30 } },
+    });
+    document.body.append(features);
+    await features.updateComplete;
+    const configs: SmartSavingConfig[] = [];
+    features.addEventListener("config-changed", event => configs.push((event as CustomEvent<{ config: SmartSavingConfig }>).detail.config));
+    type Form = HTMLElement & { data: Record<string, unknown>; schema: Array<{ name: string }> };
+    const forms = [...features.shadowRoot!.querySelectorAll<Form>("ha-form")];
+    const battery = forms.find(form => form.schema.some(field => field.name === "currentAgeMinutes"))!;
+    battery.dispatchEvent(new CustomEvent("value-changed", { detail: { value: { ...battery.data, currentAgeMinutes: 10, forecastAgeMinutes: 90 } } }));
+    await features.updateComplete;
+    expect(configs.at(-1)?.battery?.current?.maxSourceAgeMinutes).toBe(10);
+    expect(configs.at(-1)?.battery?.forecast?.maxSourceAgeMinutes).toBe(90);
+    expect(configs.at(-1)?.battery?.target?.maxSourceAgeMinutes).toBe(120);
+    const sale = [...features.shadowRoot!.querySelectorAll<Form>("ha-form")].find(form => form.data.entity === "sensor.example_sale")!;
+    sale.dispatchEvent(new CustomEvent("value-changed", { detail: { value: { ...sale.data, meaning: "supplied", maxSourceAgeMinutes: 45 } } }));
+    await features.updateComplete;
+    expect(configs.at(-1)?.tracks?.applied).toMatchObject({ meaning: "supplied", powerUnit: "kW", energyUnit: "kWh", maxSourceAgeMinutes: 45 });
+    const price = [...features.shadowRoot!.querySelectorAll<Form>("ha-form")].find(form => form.schema.some(field => field.name === "sourceUnit"))!;
+    price.dispatchEvent(new CustomEvent("value-changed", { detail: { value: { ...price.data, maxSourceAgeMinutes: "" } } }));
+    await features.updateComplete;
+    expect(configs.at(-1)?.price?.maxSourceAgeMinutes).toBeUndefined();
   });
 
   it.each(tags)("retains selector schemas while forwarding fresh hass to %s controls", async tag => {

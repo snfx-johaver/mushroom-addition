@@ -20,7 +20,11 @@ const number = (label: string, min: number, max: number, value?: number): Native
 });
 const select = (label: string, options: string[], value?: string): NativeObjectField => ({
   label, selector: { select: { mode: "dropdown", options: options.map(value => ({
-    value, label: ({ price: "Prices", power: "Power magnitude", soc: "Battery level", schedule: "Plan", attribute: "Attributes", state: "State", now: "Now", source: "Source", energy: "Energy" } as Record<string, string>)[value] ?? value,
+    value, label: ({ price: "Prices", power: "Power magnitude", soc: "Battery level", schedule: "Plan", attribute: "Attributes", state: "State", now: "Now", source: "Source", energy: "Energy",
+      unspecified: "Not specified", hardware: "Hardware counter", integrated_power: "Integrated power",
+      excludes_battery_charging: "Excludes battery charging", estimate: "Estimated forecast", interval: "Interval forecast",
+      configured: "Configured horizon", published: "Published horizon",
+    } as Record<string, string>)[value] ?? value,
   })) } }, ...(value === undefined ? {} : { default: value }),
 });
 export const nativeObject = (fields: NativeFields, multiple = false): Record<string, unknown> => ({
@@ -38,6 +42,7 @@ const appearance: NativeFields = {
 };
 export const PLAN_METRIC_FIELDS = defaults({
   ...appearance, entity: entity("Source"), field: text("Field"), unit: text("Unit"),
+  rowId: { ...text("Published end"), description: "Timeline rows" },
 }, newMetric());
 export const PLAN_ROW_FIELDS = defaults({
   id: { ...text("ID"), required: true },
@@ -48,6 +53,8 @@ export const PLAN_ROW_FIELDS = defaults({
   path: text("Path"), startField: text("Start field"), endField: text("End field"),
   durationField: text("Duration field"), valueField: text("Value field"), statusField: text("Status field"),
   unit: text("Unit"), scale: number("Power magnitude", .001, 1000000),
+  autoScale: { label: "Automatic", selector: { boolean: {} } },
+  priceTolerance: number("Price grouping tolerance", 0, 1000000, 0),
   low: number("Low", -1000000, 1000000), high: number("High", -1000000, 1000000),
   lowColor: { label: "Low color", selector: { ui_color: {} } },
   highColor: { label: "High color", selector: { ui_color: {} } },
@@ -62,33 +69,47 @@ export const PLAN_PERIOD_FIELDS: NativeFields = {
 };
 export const PLAN_FIELDS = defaults({
   start: select("Start", ["now", "source"]), startEntity: entity("Start source"), startField: text("Start field"),
+  horizon: select("Timeline horizon", ["configured", "published"]),
+  forecastKind: select("Forecast basis", ["unspecified", "estimate", "interval"]),
+  forecastMethodField: text("Forecast method"),
   ...Object.fromEntries(["showHeader", "showOverview", "showMetrics", "showInspector", "showPeriods", "showLegend"].map((key, index) => [
     key, { label: ["Show header", "Show overview", "Show metrics", "Show inspector", "Show periods", "Show legend"][index], selector: { boolean: {} } },
   ])),
   overview: text("Summary"), description: text("Description"), timelineTitle: text("Timeline"),
   rowHeight: number("Height", 36, 80), minimumWidth: number("Width", 400, 1600), axisStep: number("Interval", 1, 24),
+  maxContentWidth: number("Maximum content width", 0, 2400),
   maxAgeMinutes: number("Maximum source age (minutes)", 1, 10080),
   rows: { label: "Timeline rows", selector: nativeObject(PLAN_ROW_FIELDS, true) },
   metrics: { label: "Summary", selector: nativeObject(PLAN_METRIC_FIELDS, true) },
   periods: { label: "Periods", selector: nativeObject(PLAN_PERIOD_FIELDS, true) },
 }, planDefaults());
+const COUNTER_FIELDS: NativeFields = {
+  sourceType: select("Counter type", ["unspecified", "hardware", "integrated_power"]),
+  recoverGaps: {
+    label: "Recover counter gaps",
+    description: "Hardware-counter recovery assumes no hidden reset during the outage; interval timing is uncertain.",
+    selector: { boolean: {} },
+  },
+};
 export const INSIGHTS_CONSUMER_FIELDS: NativeFields = {
   id: { ...text("ID"), required: true }, ...appearance,
   entity: entity("Power sensor"), energyField: text("Measured energy field"),
   energySource: { label: "Consumer energy sensor", selector: nativeObject({
-    entity: entity("Source"), field: text("Field"),
+    entity: entity("Source"), field: text("Field"), ...COUNTER_FIELDS,
   }) },
   baselineField: text("Same-window plan field"), forecastField: text("Forecast energy field"), strategyField: text("Strategy field"),
 };
 const METER_SOURCE_FIELDS: NativeFields = {
   entity: entity("Source"), field: text("Field"),
 };
+const ENERGY_SOURCE_FIELDS: NativeFields = { ...METER_SOURCE_FIELDS, ...COUNTER_FIELDS };
 const EQUIPMENT_SOURCE_FIELDS: NativeFields = {
-  ...METER_SOURCE_FIELDS, absent: { label: "Not installed", selector: { boolean: {} } },
+  ...ENERGY_SOURCE_FIELDS, absent: { label: "Not installed", selector: { boolean: {} } },
 };
 const METERED_SOURCE_FIELDS: NativeFields = {
+  home: { label: "Household energy sensor", selector: nativeObject(ENERGY_SOURCE_FIELDS) },
   solar: { label: "Solar generated", selector: nativeObject(EQUIPMENT_SOURCE_FIELDS) },
-  gridImport: { label: "Imported", selector: nativeObject(METER_SOURCE_FIELDS) },
+  gridImport: { label: "Imported", selector: nativeObject(ENERGY_SOURCE_FIELDS) },
   gridExport: { label: "Exported", selector: nativeObject(EQUIPMENT_SOURCE_FIELDS) },
   batteryCharge: { label: "Battery input", selector: nativeObject(EQUIPMENT_SOURCE_FIELDS) },
   batteryDischarge: { label: "Battery output", selector: nativeObject(EQUIPMENT_SOURCE_FIELDS) },
@@ -103,9 +124,10 @@ export const ACTUAL_FIELD_NAMES = [
 export const PURCHASE_FIELD_NAMES = [
   "start", "end", "generated_at", "currency", "home_kwh", "solar_kwh", "battery_min", "battery_reserve", "charge_efficiency",
   "blocks", "block_start", "block_end", "block_home_kwh", "block_ev_kwh", "block_battery_kwh", "block_rate",
-  "block_target", "block_reason", "block_detail", "block_quantity_kwh",
+  "block_target", "block_reason", "block_detail", "block_quantity_kwh", "forecast_method",
 ] as const;
 const sourceLabels: Record<string, string> = {
+  forecast_method: "Forecast method",
   start: "Start", end: "End", generated_at: "Updated", currency: "Currency code",
   home_kwh: "Home consumption", solar_kwh: "Solar generated",
   battery_charge_kwh: "Battery input", battery_discharge_kwh: "Battery output",
@@ -127,6 +149,8 @@ const sourceFields = (fields: readonly string[]): NativeFields => ({
   },
 });
 export const INSIGHTS_FIELDS = defaults({
+  homeBoundary: select("Measurement boundary", ["excludes_battery_charging"]),
+  forecastKind: select("Forecast basis", ["unspecified", "estimate", "interval"]),
   actualSource: {
     label: "Measured source", description: "Optional legacy snapshot; leave empty to use the configured meter sensors.",
     selector: nativeObject(sourceFields(ACTUAL_FIELD_NAMES)),
@@ -141,6 +165,10 @@ export const INSIGHTS_FIELDS = defaults({
     selector: nativeObject(sourceFields(PURCHASE_FIELD_NAMES)),
   },
   currency: text("Currency code"),
+  purchaseScope: { label: "Purchase scope", selector: { select: { options: [
+    { value: "all", label: "Planned grid purchase" }, { value: "battery", label: "Battery input (AC)" },
+  ] } } },
+  maxContentWidth: number("Maximum content width", 0, 2400),
   fixedExportRate: number("Fixed export rate", -1000000, 1000000),
   showPlanBattery: { label: "Show planned battery details", selector: { boolean: {} } },
   showPlanAllocations: { label: "Show purchase allocations", selector: { boolean: {} } },
