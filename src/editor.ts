@@ -42,7 +42,7 @@ import { sceneItemDefaultsFor } from "./scene-item-defaults";
 import { planOptions, validatePlan, ENERGY_PLAN_TAG } from "./energy-plan/config";
 import { insightsOptions, validateInsights, ENERGY_INSIGHTS_TAG } from "./energy-insights/config";
 import { energyLogStub, validateEnergyLogConfig, ENERGY_LOG_TAG } from "./energy-cards/energy-log-config";
-import { ENERGY_LOG_LABELS } from "./energy-editor-schema";
+import { ENERGY_LOG_LABELS, type NativeFields } from "./energy-editor-schema";
 import { monitorKind, monitorOptions, validateMonitor } from "./energy-monitor/config";
 import { ROOM_STATUS_KINDS, ROOM_STATUS_LIMIT, roomItemDefaultsFor, roomStatusKind, roomStatusIcon, roomStatusActive } from "./room";
 import type {
@@ -374,6 +374,8 @@ export class MushroomAdditionEditor extends LitElement {
         : this.config.layout ?? populatedDefaults.layout,
     };
     const customFeatures = !this.expandedSections.has("features") ? nothing
+      : monitorKind(this.config.type)
+      ? this.renderMonitorFeatures(preparedSchema.localized.features)
       : item.upstreamId === "air_quality"
       ? html`<mushroom-addition-air-quality-options .hass=${this.hass} .config=${this.config}
           @config-changed=${this.energyConfigChanged}></mushroom-addition-air-quality-options>`
@@ -412,7 +414,8 @@ export class MushroomAdditionEditor extends LitElement {
         : item.upstreamId === "card_room"
           ? html`${this.renderItemEditor("room_sensors", localize(this.hass, "room_buttons"))}${this.renderRoomStatusEditor()}`
           : nothing;
-    const hasCustomFeatures = item.upstreamId === "mini_graph_card" ||
+    const hasCustomFeatures = Boolean(monitorKind(this.config.type)) ||
+      item.upstreamId === "mini_graph_card" ||
       item.upstreamId === "air_quality" ||
       item.upstreamId === "weather_advanced" ||
       item.upstreamId === "smart_saving" ||
@@ -432,7 +435,9 @@ export class MushroomAdditionEditor extends LitElement {
         ${this.energyError ? html`<ha-alert alert-type="error" role="alert">${localizeText(this.hass, "Invalid data source or field mapping")}: ${this.energyError}</ha-alert>` : nothing}
         ${editorSections.map((section) => this.renderEditorSection(
           section,
-          preparedSchema.localized[section.id],
+          section.id === "features" && monitorKind(this.config!.type)
+            ? preparedSchema.localized[section.id].filter(field => field.name !== "energy_monitor")
+            : preparedSchema.localized[section.id],
           formData,
           section.id === "features" && hasCustomFeatures ? customFeatures
             : section.id === "layout" && item.upstreamId === "weather_advanced" && this.expandedSections.has("layout")
@@ -452,6 +457,27 @@ export class MushroomAdditionEditor extends LitElement {
         ))}
       </div>
     `;
+  }
+
+  private renderMonitorFeatures(schema: EditorField[]): TemplateResult | typeof nothing {
+    const selector = schema.find(field => field.name === "energy_monitor")?.selector?.object as {
+      fields: NativeFields;
+    } | undefined;
+    if (!selector?.fields) return nothing;
+    const fields = selector.fields;
+    return html`<ha-form
+      .hass=${this.hass}
+      .data=${this.config!.energy_monitor}
+      .schema=${Object.entries(fields).map(([name, field]) => ({ name, selector: field.selector }))}
+      .computeLabel=${(field: { name: string }) => fields[field.name]?.label ?? field.name}
+      .computeHelper=${(field: { name: string }) => fields[field.name]?.description}
+      @value-changed=${(event: CustomEvent<{ value: AdditionConfig["energy_monitor"] }>) => {
+        event.stopPropagation();
+        this.valueChanged(new CustomEvent("value-changed", {
+          detail: { value: { ...this.config, energy_monitor: event.detail.value } },
+        }));
+      }}
+    ></ha-form>`;
   }
 
   private renderEditorSection(

@@ -480,17 +480,39 @@ describe("Mushroom monitor integration", () => {
     const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
     editor.hass = hass(); editor.setConfig({ type: type("live-energy-flow") });
     document.body.append(editor); await openEditorSections(editor);
-    const form = [...editor.shadowRoot!.querySelectorAll<HTMLElement & { data: MonitorConfig; schema: Array<{ name: string }> }>("ha-form")]
-      .find(form => form.schema.some(field => field.name === "energy_monitor"))!;
-    expect(form.data.energy_monitor?.maxAgeMinutes).toBe(15);
+    const form = [...editor.shadowRoot!.querySelectorAll<HTMLElement & { data: MonitorConfig["energy_monitor"]; schema: Array<{ name: string }> }>("ha-form")]
+      .find(form => form.schema.some(field => field.name === "deriveHome"))!;
+    expect(form.data?.maxAgeMinutes).toBe(15);
     const changed = vi.fn(); editor.addEventListener("config-changed", changed);
-    form.dispatchEvent(new CustomEvent("value-changed", { detail: { value: { ...form.data, energy_monitor: { ...form.data.energy_monitor, deriveHome: true } } } }));
+    form.dispatchEvent(new CustomEvent("value-changed", { detail: { value: { ...form.data, deriveHome: true } } }));
     await editor.updateComplete;
     expect(changed).not.toHaveBeenCalled();
     expect(editor.shadowRoot?.textContent).toContain("boundary");
-    form.dispatchEvent(new CustomEvent("value-changed", { detail: { value: { ...form.data, energy_monitor: { ...form.data.energy_monitor, deriveHome: true, homeBoundary: "excludes_battery_charging" } } } }));
+    form.dispatchEvent(new CustomEvent("value-changed", { detail: { value: { ...form.data, deriveHome: true, homeBoundary: "excludes_battery_charging" } } }));
     await editor.updateComplete;
     expect(changed).toHaveBeenCalledTimes(1);
+  });
+  it.each(MONITOR_CARDS)("exposes $name feature fields directly and preserves the card configuration on edits", async definition => {
+    const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
+    editor.hass = hass();
+    editor.setConfig({ type: `custom:${definition.tag}`, name: "Custom heading", energy_monitor: { maxContentWidth: 1000 } });
+    document.body.append(editor); await openEditorSections(editor);
+    const forms = [...editor.shadowRoot!.querySelectorAll<HTMLElement & {
+      data: MonitorConfig["energy_monitor"]; schema: Array<{ name: string }>;
+      computeLabel: (field: { name: string }) => string;
+    }>("ha-form")];
+    expect(forms.some(form => form.schema.some(field => field.name === "energy_monitor"))).toBe(false);
+    const features = forms.find(form => form.schema.some(field => field.name === "maxContentWidth"))!;
+    expect(features.schema.map(field => field.name)).toEqual(Object.keys(monitorFields(definition.id)));
+    const sourceField = features.schema.find(field => !field.name.startsWith("max"))!;
+    expect(features.computeLabel(sourceField)).toBe(monitorFields(definition.id)[sourceField.name].label);
+    const changed = vi.fn(); editor.addEventListener("config-changed", changed);
+    features.dispatchEvent(new CustomEvent("value-changed", { detail: { value: { ...features.data, maxContentWidth: 900 } } }));
+    await editor.updateComplete;
+    expect(changed).toHaveBeenCalledTimes(1);
+    expect(changed.mock.calls[0][0].detail.config).toMatchObject({
+      type: `custom:${definition.tag}`, name: "Custom heading", energy_monitor: { maxContentWidth: 900 },
+    });
   });
   it("does not render a missing export tariff as a zero-valued credit series", async () => {
     vi.useFakeTimers(); vi.setSystemTime(end);

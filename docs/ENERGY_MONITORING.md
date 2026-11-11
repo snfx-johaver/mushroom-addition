@@ -14,7 +14,8 @@ repair missing Recorder data.
 Use the standard **Context**, **Content**, **Layout**, **Interactions** and
 **Features** editor sections. The shared Name, Primary information, Secondary
 information, icon and header actions work like other Mushroom Addition cards.
-Electrical mappings are nested native object selectors under **Features**;
+Settings are shown directly under **Features**, with labelled native object
+selectors for each electrical mapping; use its pencil button to edit the source.
 select the entity and, only if needed, a dotted attribute `field`. A Context
 entity changes the header, not its electrical role. Picker stubs intentionally
 leave electrical roles unassigned rather than guessing from entity names.

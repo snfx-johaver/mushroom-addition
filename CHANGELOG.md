@@ -4,6 +4,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## 0.9.0 - 2026-11-11
 
+- Fix missing picker entries by preserving Home Assistant's shared registration
+  array, and expose Energy monitoring settings directly in the Features editor.
+
 ### New energy monitoring cards
 
 - Add Energy Plan vs Actual, Energy Battery Activity, Energy Electricity Cost

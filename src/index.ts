@@ -121,7 +121,11 @@ for (const alias of LEGACY_ALIASES) {
   customElements.define(alias.tag, LegacyAdditionAlias);
 }
 
-window.customCards = (window.customCards || []).filter(card => card.type !== MUSHROOM_AREA_TAG);
+window.customCards = window.customCards || [];
+// Home Assistant retains this array when its picker module loads.
+for (let index = window.customCards.length - 1; index >= 0; index--) {
+  if (window.customCards[index].type === MUSHROOM_AREA_TAG) window.customCards.splice(index, 1);
+}
 const existing = new Set(window.customCards.map((card) => card.type));
 for (const item of CATALOG) {
   if (existing.has(item.tag)) continue;
