@@ -47072,13 +47072,13 @@ for (const o of oS) {
     !s[g] && j && (s[g] = j);
   }
 }
-const na = (o, s, d = {}) => {
+const aa = (o, s, d = {}) => {
   if (s === "car_show_header") return Se(o, "Show card header");
-  if (s === "scene_label_font_size") return Se(o, "Label text size");
+  if (s === "scene_label_font_size") return `${Se(o, "Label")}: ${aa(o, "upcoming_line_size")}`;
   const g = s.match(/^washer_button_([123])_(entity|name|icon|action)$/);
   if (g) {
     const I = g[2] === "action" ? "tap_action" : g[2];
-    return `${Se(o, "Custom button")} ${g[1]}: ${na(o, I)}`;
+    return `${Se(o, "Custom button")} ${g[1]}: ${aa(o, I)}`;
   }
   const p = Jg(o?.language);
   return (RX[p]?.[s] ?? jA[p]?.[s] ?? jA.en[s] ?? s.replace(/^ulm_(?:custom_)?card_/, "").replace(/^(?:custom_)?card_/, "").replace(/^ulm_/, "").replaceAll("_", " ").replace(/\b\w/g, (I) => I.toUpperCase())).replace(/\{(\w+)\}/g, (I, V) => Object.hasOwn(d, V) ? String(d[V]) : I);
@@ -47688,6 +47688,7 @@ const na = (o, s, d = {}) => {
   en: ZX
 }, KX = (o, s, d) => {
   if (o === "car_show_header") return ["Name", "Icon", "Primary information", "Secondary information"].map((ie) => Se(s, ie)).join(" / ");
+  if (o === "scene_label_font_size") return `${aa(s, "upcoming_line_size")} (8–24 px)`;
   if (o === "todo_entities") return Se(s, "Additional lists are shown separately; tasks are not moved between lists.");
   if (o === "todo_show_completed") return Se(s, "Display only; completed tasks are not deleted.");
   if (o === "todo_sort") return ["List order", "Due", "Alphabetically"].map((ie) => Se(s, ie)).join(" / ");
@@ -47722,7 +47723,7 @@ const na = (o, s, d = {}) => {
   if (j) return j;
   const I = KPe(o);
   if (I) return Se(s, I);
-  if (o === "welcome_weather_date_format") return na(s, "upcoming_date_format");
+  if (o === "welcome_weather_date_format") return aa(s, "upcoming_date_format");
   if (o === "welcome_weather_icon_type")
     return ["Automatic", "Icon", "None"].map((ie) => Se(s, ie)).join(" / ");
   const X = {
@@ -47741,7 +47742,7 @@ const na = (o, s, d = {}) => {
   ].map(([o, s]) => [s, o])
 ), Se = (o, s) => {
   const d = JPe.get(s);
-  return d ? na(o, d) : s;
+  return d ? aa(o, d) : s;
 };
 class QX {
   constructor() {
@@ -48946,9 +48947,9 @@ let eb = class extends eo {
   }
   controls(o, s, d, g, p) {
     return se`<div class="controls">
-      <button type="button" ?disabled=${o === 0} aria-label=${na(this.hass, "ui.release.Move {name} up", { name: d })} @click=${() => g(-1)}>↑</button>
-      <button type="button" ?disabled=${o === s - 1} aria-label=${na(this.hass, "ui.release.Move {name} down", { name: d })} @click=${() => g(1)}>↓</button>
-      <button type="button" aria-label=${na(this.hass, "editor.remove", { name: d })} @click=${p}>${Se(this.hass, "Remove")}</button>
+      <button type="button" ?disabled=${o === 0} aria-label=${aa(this.hass, "ui.release.Move {name} up", { name: d })} @click=${() => g(-1)}>↑</button>
+      <button type="button" ?disabled=${o === s - 1} aria-label=${aa(this.hass, "ui.release.Move {name} down", { name: d })} @click=${() => g(1)}>↓</button>
+      <button type="button" aria-label=${aa(this.hass, "editor.remove", { name: d })} @click=${p}>${Se(this.hass, "Remove")}</button>
     </div>`;
   }
   rows(o, s) {
@@ -51582,18 +51583,18 @@ const WLe = {
 }, ZLe = (o) => typeof o == "object" && o !== null && !Array.isArray(o), Hd = (o) => Array.isArray(o) ? o.map(Hd).filter(Boolean).join(", ") : ["string", "number", "boolean"].includes(typeof o) ? String(o) : "", MI = (o) => o.flag === !0 || o.flag === 1 || o.flag === "1" || typeof o.flag == "string" && o.flag.toLowerCase() === "true", Du = (o, s, d, g) => typeof o == "number" && Number.isFinite(o) ? Math.min(g, Math.max(d, o)) : s, F4 = (o, s = "data", d) => {
   s === "friendly_name" && (s = "data");
   const g = { items: [], defaults: {} };
-  if (!o) return { ...g, error: na(d, "message.choose_media") };
-  if (["unknown", "unavailable"].includes(o.state)) return { ...g, error: na(d, "message.media_unavailable") };
+  if (!o) return { ...g, error: aa(d, "message.choose_media") };
+  if (["unknown", "unavailable"].includes(o.state)) return { ...g, error: aa(d, "message.media_unavailable") };
   let p = o.attributes[s];
-  if (p == null) return { ...g, error: na(d, "message.missing_attribute", { attribute: s }) };
+  if (p == null) return { ...g, error: aa(d, "message.missing_attribute", { attribute: s }) };
   if (typeof p == "string")
     try {
       p = JSON.parse(p);
     } catch {
-      return { ...g, error: na(d, "message.invalid_json", { attribute: s }) };
+      return { ...g, error: aa(d, "message.invalid_json", { attribute: s }) };
     }
   if (!Array.isArray(p) || p.some((V) => !ZLe(V)))
-    return { ...g, error: na(d, "message.media_list", { attribute: s }) };
+    return { ...g, error: aa(d, "message.media_list", { attribute: s }) };
   const j = {}, I = [];
   for (const V of p) {
     const X = Object.keys(V).filter((ie) => /^(title|line[1-4])_default$/.test(ie));
@@ -51692,7 +51693,7 @@ let zh = class extends eo {
       Math.floor(this.width / 230)
     )) : 1, X = Math.min(window.innerHeight - 32, window.innerHeight - Math.max(0, this.getBoundingClientRect().top) - 24), ie = Math.max(1, Math.min(j.length, Math.max(Math.ceil(j.length / V), Math.floor(X / (I + 12))))), he = o.upcoming_overflow ? Math.max(1, Math.ceil(j.length / ie)) : 1;
     return se`<div @click=${this.stop} @dblclick=${this.stop} @pointerdown=${this.stop} @keydown=${this.stop}>
-      ${s.error ? se`<div class="message" role="alert">${s.error}</div>` : d.length ? Be : se`<div class="message">${na(this.hass, "message.empty_media")}</div>`}
+      ${s.error ? se`<div class="message" role="alert">${s.error}</div>` : d.length ? Be : se`<div class="message">${aa(this.hass, "message.empty_media")}</div>`}
       ${this.actionError ? se`<div class="message" role="alert">${this.actionError}</div>` : Be}
       <div class="items" style=${ql({
       "--item-height": `${I}px`,
@@ -51709,16 +51710,16 @@ let zh = class extends eo {
       </div>
       ${p < d.length ? se`<button class="more" @click=${() => {
       this.expanded = !this.expanded;
-    }} aria-expanded=${this.expanded}>${na(this.hass, this.expanded ? "ui.show_less" : "ui.show_more", { count: d.length - p })}</button>` : Be}
-      ${this.trailer ? se`<dialog aria-label=${na(this.hass, "ui.trailer")} @close=${() => {
+    }} aria-expanded=${this.expanded}>${aa(this.hass, this.expanded ? "ui.show_less" : "ui.show_more", { count: d.length - p })}</button>` : Be}
+      ${this.trailer ? se`<dialog aria-label=${aa(this.hass, "ui.trailer")} @close=${() => {
       this.trailer = void 0;
     }} @cancel=${() => {
       this.trailer = void 0;
     }}>
         <button class="close" @click=${() => {
       this.trailer = void 0;
-    }}>${na(this.hass, "ui.close_trailer")}</button>
-        <iframe title=${na(this.hass, "ui.trailer")} src=${this.trailer} allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+    }}>${aa(this.hass, "ui.close_trailer")}</button>
+        <iframe title=${aa(this.hass, "ui.trailer")} src=${this.trailer} allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
       </dialog>` : Be}
       ${this.tooltip ? se`<div class="tooltip" popover="manual" role="tooltip" style=${ql({ left: `${this.tooltip.left}px`, top: `${this.tooltip.top}px` })}>${this.tooltip.text}</div>` : Be}
     </div>`;
@@ -51732,7 +51733,7 @@ let zh = class extends eo {
     ));
     return se`<div class="entry">
       <button class="item ${p ? "fanart" : ""} ${d.upcoming_transparency ? "transparent" : ""} ${d.upcoming_box_shadows !== !1 ? "shadow" : ""} ${d.upcoming_text_shadows !== !1 ? "text-shadow" : ""}"
-        aria-label=${g || Hd(o.title) || na(this.hass, "ui.media_item")} aria-description=${I}
+        aria-label=${g || Hd(o.title) || aa(this.hass, "ui.media_item")} aria-description=${I}
         ?disabled=${d.upcoming_item_behavior === "none"}
         @click=${() => this.activate(o)}
         @pointerenter=${(X) => this.showTooltip(X, I)}
@@ -51740,7 +51741,7 @@ let zh = class extends eo {
         @focusout=${this.hideTooltip}>
         <span class="art"><ha-icon .icon=${"mdi:movie-open-outline"}></ha-icon>${j ? GLe(j, se`<img src=${j} alt="" loading="lazy" @error=${(X) => {
       const ie = X.currentTarget;
-      ie.hidden = !0, ie.parentElement?.setAttribute("title", na(this.hass, "message.artwork_unavailable"));
+      ie.hidden = !0, ie.parentElement?.setAttribute("title", aa(this.hass, "message.artwork_unavailable"));
     }} @load=${(X) => {
       const ie = X.currentTarget;
       ie.hidden = !1, ie.parentElement?.removeAttribute("title");
@@ -51748,7 +51749,7 @@ let zh = class extends eo {
         <span class="copy"><span class="title">${g}</span>
           ${V.map((X, ie) => X ? se`<span class="line" style=${ql({ color: typeof d[`upcoming_line${ie + 1}_color`] == "string" ? Ic(String(d[`upcoming_line${ie + 1}_color`]), "inherit") : void 0 })}>${X}</span>` : Be)}
         </span>
-        ${d.upcoming_show_flag !== !1 && MI(o) ? se`<span class="flag" title=${d.upcoming_flag_label || na(this.hass, "ui.unwatched")}><ha-icon .icon=${d.upcoming_flag_icon || "mdi:eye-off-outline"}></ha-icon></span>` : Be}
+        ${d.upcoming_show_flag !== !1 && MI(o) ? se`<span class="flag" title=${d.upcoming_flag_label || aa(this.hass, "ui.unwatched")}><ha-icon .icon=${d.upcoming_flag_icon || "mdi:eye-off-outline"}></ha-icon></span>` : Be}
       </button>
     </div>`;
   }
@@ -51763,7 +51764,7 @@ let zh = class extends eo {
       if (!s.upcoming_item_behavior || s.upcoming_item_behavior === "automatic") {
         const d = s.upcoming_url?.replace(/\$([a-z][a-z0-9_]*)/gi, (j, I) => encodeURIComponent(Hd(o[I])));
         if (d && !fz(d)) {
-          this.actionError = na(this.hass, "message.invalid_media_url");
+          this.actionError = aa(this.hass, "message.invalid_media_url");
           return;
         }
         const g = s.upcoming_trailers !== !1 ? fz(o.trailer) : void 0, p = fz(d) || g || (s.upcoming_links !== !1 ? fz(o.deep_link) : void 0);
@@ -52099,7 +52100,7 @@ let Uw = class extends eo {
       "--button-size": o.remote_button_size === void 0 ? "var(--mush-control-height, 42px)" : `${Du(o.remote_button_size, 42, 32, 64)}px`,
       "--pad-height": `${Du(o.remote_touchpad_height, 144, 80, 280)}px`
     })} @pointerdown=${this.stop} @click=${this.stop} @dblclick=${this.stop} @keydown=${this.stop}>
-      ${!this.canSend && s.some((d) => ["navigation", "channels", "keypad"].includes(d)) ? se`<div class="message">${na(this.hass, "message.remote_navigation")}</div>` : Be}
+      ${!this.canSend && s.some((d) => ["navigation", "channels", "keypad"].includes(d)) ? se`<div class="message">${aa(this.hass, "message.remote_navigation")}</div>` : Be}
       ${this.error ? se`<div role="alert" class="message">${this.error}</div>` : Be}
       ${s.map((d) => this.renderSection(d))}
     </div>`;
@@ -52112,19 +52113,19 @@ let Uw = class extends eo {
     if (o === "keypad") return se`<div class="keypad">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((d) => this.button(String(d)))}</div>`;
     if (o === "shortcuts") return se`<div class="row">${(s.remote_buttons ?? []).map((d) => se`
       <button class="shortcut" style=${ql({ "--accent": d.color ? Ic(d.color, "inherit") : void 0 })}
-        aria-label=${d.name || d.source || d.command || na(this.hass, "ui.custom_button")}
+        aria-label=${d.name || d.source || d.command || aa(this.hass, "ui.custom_button")}
         ?disabled=${d.type === "action" ? !d.action : d.type === "source" ? !this.supports(2048) : !this.canSend}
         @click=${() => this.shortcut(d)}>
-        <ha-icon .icon=${d.icon || "mdi:remote"}></ha-icon><span>${d.name || d.source || d.command || na(this.hass, "ui.custom_button")}</span>
+        <ha-icon .icon=${d.icon || "mdi:remote"}></ha-icon><span>${d.name || d.source || d.command || aa(this.hass, "ui.custom_button")}</span>
       </button>
     `)}</div>`;
     if (o === "source") {
       const d = this.entities.media, g = Array.isArray(d?.attributes.source_list) ? d.attributes.source_list.filter((p) => typeof p == "string") : [];
-      return se`<select class="mushroom-select" style=${`color-scheme: ${this.hass?.themes?.darkMode ? "dark" : "light"}`} aria-label=${na(this.hass, "ui.source")} ?disabled=${!this.supports(2048) || !g.length} .value=${String(d?.attributes.source || "")}
+      return se`<select class="mushroom-select" style=${`color-scheme: ${this.hass?.themes?.darkMode ? "dark" : "light"}`} aria-label=${aa(this.hass, "ui.source")} ?disabled=${!this.supports(2048) || !g.length} .value=${String(d?.attributes.source || "")}
         @change=${(p) => {
         this.call("media_player", "select_source", { entity_id: d?.entity_id, source: p.target.value });
       }}>
-        <option value="" disabled>${na(this.hass, g.length ? "ui.choose_source" : "ui.no_sources")}</option>
+        <option value="" disabled>${aa(this.hass, g.length ? "ui.choose_source" : "ui.no_sources")}</option>
         ${g.map((p) => se`<option value=${p}>${p}</option>`)}
       </select>`;
     }
@@ -52145,11 +52146,11 @@ let Uw = class extends eo {
     }
     if (o === "navigation") {
       const d = s.remote_navigation || "touchpad";
-      return se`${d !== "buttons" ? se`<div class="pad" tabindex="0" role="group" aria-label=${na(this.hass, "message.touchpad")}
+      return se`${d !== "buttons" ? se`<div class="pad" tabindex="0" role="group" aria-label=${aa(this.hass, "message.touchpad")}
         aria-disabled=${!this.canSend} @pointerdown=${this.pointerDown} @pointermove=${this.pointerMove}
         @pointerup=${this.pointerUp} @pointercancel=${this.pointerCancel} @lostpointercapture=${this.pointerCancel} @keydown=${this.padKeydown}>
-        <span class="pad-content"><ha-icon .icon=${"mdi:gesture-swipe"}></ha-icon><span>${na(this.hass, "message.swipe")}</span>
-          ${s.remote_double_tap !== "disabled" ? se`<span>${na(this.hass, "message.double_tap", {
+        <span class="pad-content"><ha-icon .icon=${"mdi:gesture-swipe"}></ha-icon><span>${aa(this.hass, "message.swipe")}</span>
+          ${s.remote_double_tap !== "disabled" ? se`<span>${aa(this.hass, "message.double_tap", {
         action: this.hass?.language && this.hass.language !== "en" ? Se(this.hass, d4[s.remote_double_tap || "back"]?.[0] || s.remote_double_tap || "back") : s.remote_double_tap || "back"
       })}</span>` : Be}
         </span>
@@ -52193,11 +52194,11 @@ let Uw = class extends eo {
   }
   async send(o) {
     if (!o.trim()) {
-      this.error = na(this.hass, "message.empty_command");
+      this.error = aa(this.hass, "message.empty_command");
       return;
     }
     if (!this.canSend) {
-      this.error = na(this.hass, "message.remote_unavailable");
+      this.error = aa(this.hass, "message.remote_unavailable");
       return;
     }
     this.transport === "remote" ? await this.call("remote", "send_command", {
@@ -52215,7 +52216,7 @@ let Uw = class extends eo {
       try {
         await this.hass.callService(o, s, d);
       } catch (g) {
-        this.error = na(this.hass, "message.remote_failed", { error: g instanceof Error ? g.message : String(g) }), console.warn("Mushroom Addition: remote command failed", g);
+        this.error = aa(this.hass, "message.remote_failed", { error: g instanceof Error ? g.message : String(g) }), console.warn("Mushroom Addition: remote command failed", g);
       }
     }
   }
@@ -52390,7 +52391,7 @@ let IA = class extends eo {
       "--accent": Ic(o.pihole_accent_color, "var(--primary-color)"),
       "--columns": String(Du(o.pihole_columns, 2, 1, 4))
     })} @click=${this.stop} @dblclick=${this.stop} @pointerdown=${this.stop} @keydown=${this.stop}>
-      ${s.length ? Be : se`<div class="message" role="alert">${na(this.hass, "message.choose_pihole")}</div>`}
+      ${s.length ? Be : se`<div class="message" role="alert">${aa(this.hass, "message.choose_pihole")}</div>`}
       ${this.error ? se`<div class="message" role="alert">${this.error}</div>` : Be}
       ${d.map((p) => {
       const j = this.renderSection(p, g);
@@ -52414,28 +52415,28 @@ let IA = class extends eo {
       </button>`;
     })}</div>`;
     if (o === "blocking") return this.switches.length ? se`<div class="list">${this.switches.map((p) => se`
-      <button class="entity ${p.state === "on" ? "active" : ""}" ?disabled=${!Sw(p)} aria-label=${na(this.hass, "ui.toggle", { name: p.attributes.friendly_name || p.entity_id })}
+      <button class="entity ${p.state === "on" ? "active" : ""}" ?disabled=${!Sw(p)} aria-label=${aa(this.hass, "ui.toggle", { name: p.attributes.friendly_name || p.entity_id })}
         @click=${() => {
       this.call("switch", p.state === "on" ? "turn_off" : "turn_on", { entity_id: p.entity_id });
     }}>
         <ha-icon .icon=${p.state === "on" ? "mdi:shield-check" : "mdi:shield-off-outline"}></ha-icon>
-        <span class="name">${p.attributes.friendly_name || p.entity_id}</span><span class="state">${na(this.hass, Sw(p) ? p.state === "on" ? "ui.blocking" : "ui.paused" : "ui.unavailable")}</span>
+        <span class="name">${p.attributes.friendly_name || p.entity_id}</span><span class="state">${aa(this.hass, Sw(p) ? p.state === "on" ? "ui.blocking" : "ui.paused" : "ui.unavailable")}</span>
       </button>`)}</div>` : Be;
     if (o === "pause") {
       if (!this.switches.length) return Be;
       const p = this.targets, j = p.length > 0 && p.every((I) => !!zQ(this.hass, d, I));
       return se`<div class="pause">
-        <select class="mushroom-select" style=${`color-scheme: ${this.hass?.themes?.darkMode ? "dark" : "light"}`} aria-label=${na(this.hass, "message.pause_target")} .value=${this.target} @change=${(I) => {
+        <select class="mushroom-select" style=${`color-scheme: ${this.hass?.themes?.darkMode ? "dark" : "light"}`} aria-label=${aa(this.hass, "message.pause_target")} .value=${this.target} @change=${(I) => {
         this.target = I.target.value;
       }}>
-          <option value="all">${na(this.hass, "message.all_switches")}</option>
+          <option value="all">${aa(this.hass, "message.all_switches")}</option>
           ${this.switches.map((I) => se`<option value=${I.entity_id} ?disabled=${!Sw(I)}>${I.attributes.friendly_name || I.entity_id}</option>`)}
         </select>
-        ${j ? Be : se`<div class="message">${na(this.hass, "message.pause_backend")}</div>`}
+        ${j ? Be : se`<div class="message">${aa(this.hass, "message.pause_backend")}</div>`}
         <div class="durations">${(d.pihole_pause_durations ?? Ah.pihole_pause_durations).map((I) => {
         const V = aOe(I);
         return se`<button class="duration" ?disabled=${!j || V === void 0} @click=${() => V && void this.pause(V)}>
-            ${V === void 0 ? na(this.hass, "message.invalid_duration", { duration: I }) : V % 3600 === 0 ? `${V / 3600} h` : V % 60 === 0 ? `${V / 60} min` : `${V} s`}
+            ${V === void 0 ? aa(this.hass, "message.invalid_duration", { duration: I }) : V % 3600 === 0 ? `${V / 3600} h` : V % 60 === 0 ? `${V / 60} min` : `${V} s`}
           </button>`;
       })}</div>
       </div>`;
@@ -52445,7 +52446,7 @@ let IA = class extends eo {
       <button class="entity" ?disabled=${p.entity_id.startsWith("button.") ? p.state === "unavailable" : !Sw(p)} @click=${() => this.entityAction(p)}>
         <ha-icon .icon=${p.attributes.icon || (o === "controls" ? "mdi:tools" : o === "versions" ? "mdi:update" : "mdi:information-outline")}></ha-icon>
         <span class="name">${p.attributes.friendly_name || p.entity_id}</span>
-        <span class="state">${o === "controls" ? na(this.hass, "ui.run") : o === "versions" ? String(p.attributes.installed_version || p.state) : `${p.state}${p.attributes.unit_of_measurement || ""}`}</span>
+        <span class="state">${o === "controls" ? aa(this.hass, "ui.run") : o === "versions" ? String(p.attributes.installed_version || p.state) : `${p.state}${p.attributes.unit_of_measurement || ""}`}</span>
       </button>`)}</div>` : Be : o === "chart" && (d.pihole_chart_metrics ?? Ah.pihole_chart_metrics).flatMap((j) => s[j]).length ? se`<div class="chart"></div>` : Be;
   }
   updated() {
@@ -52466,7 +52467,7 @@ let IA = class extends eo {
     for (const s of this.targets) {
       const d = zQ(this.hass, this.config, s);
       if (!d) {
-        this.error = na(this.hass, "message.pause_service");
+        this.error = aa(this.hass, "message.pause_service");
         return;
       }
       if (d === "custom") {
@@ -52487,11 +52488,11 @@ let IA = class extends eo {
     try {
       return await this.hass.callService(o, s, d), !0;
     } catch (g) {
-      return this.error = na(this.hass, "message.pihole_failed", { error: g instanceof Error ? g.message : String(g) }), console.warn("Mushroom Addition: Pi-hole action failed", g), !1;
+      return this.error = aa(this.hass, "message.pihole_failed", { error: g instanceof Error ? g.message : String(g) }), console.warn("Mushroom Addition: Pi-hole action failed", g), !1;
     }
   }
   entityAction(o) {
-    Qg(this, { ...this.config, entity: o.entity_id, tap_action: o.entity_id.startsWith("button.") ? { action: "perform-action", perform_action: "button.press", target: { entity_id: o.entity_id }, confirmation: { text: na(this.hass, "ui.confirm_run", { name: o.attributes.friendly_name || o.entity_id }) } } : { action: "more-info" } }, "tap");
+    Qg(this, { ...this.config, entity: o.entity_id, tap_action: o.entity_id.startsWith("button.") ? { action: "perform-action", perform_action: "button.press", target: { entity_id: o.entity_id }, confirmation: { text: aa(this.hass, "ui.confirm_run", { name: o.attributes.friendly_name || o.entity_id }) } } : { action: "more-info" } }, "tap");
   }
   metricAction(o, s) {
     if (!o) return;
@@ -56388,7 +56389,7 @@ let tf = class extends eo {
         ...s,
         ...s.price ? { entity: s.price.entity } : {}
       }, Al(this, "config-changed", { config: this.config });
-    }, this.computeLabel = (o) => this.config?.type === `custom:${Xy}` && o.name === "allIcon" ? `${Se(this.hass, "All")}: ${Se(this.hass, "Icon")}` : this.config?.type === `custom:${Xy}` && CQ[o.name] ? Se(this.hass, CQ[o.name]) : o.name === "energy_plan" || o.name === "energy_insights" || o.name === "energy_monitor" ? Se(this.hass, Lu(this.config.type.replace(/^custom:/, ""))?.name ?? o.name) : this.config?.type.endsWith("air-quality") && o.name === "entity" ? Se(this.hass, "Air quality sensor (optional; otherwise calculated from pollutants)") : hQ[o.name] ? Se(this.hass, hQ[o.name]) : _Q[o.name] ? Se(this.hass, _Q[o.name]) : UX(o.name) ? `${Se(this.hass, EA.find(([s]) => o.name.startsWith(`stock_${s}_`))[1])}: ${Se(this.hass, o.name.endsWith("_entity") ? "Metric entity override" : "Metric attribute")}` : LQ[o.name] ? Se(this.hass, LQ[o.name]) : DQ[o.name] ? `${na(this.hass, "ulm_weather")}: ${na(this.hass, DQ[o.name])}` : this.config?.type.endsWith("pi-hole-card") && o.name === "entity" ? na(this.hass, "editor.pihole_entity") : this.config?.type.endsWith("upcoming-media-card") && o.name === "entity" ? na(this.hass, "editor.media_entity") : this.config?.type.endsWith("remote-card") && o.name === "entity" ? na(this.hass, "editor.remote_entity") : this.config?.type.includes("custom-card-trash") && o.name === "entity" ? `${Se(this.hass, "Card")}: ${na(this.hass, "entity")} (${Se(this.hass, "Optional")})` : this.config?.type.includes("custom-card-washer") && o.name === "entity" ? na(this.hass, "machine_state_entity") : na(this.hass, o.name), this.remoteButtonLabel = (o) => Se(this.hass, { type: "Button type", name: "Label", icon: "Icon", color: "Icon color", command: "Command code", source: "TV source", action: "Action" }[o.name] || o.name), this.computeHelper = (o) => KX(
+    }, this.computeLabel = (o) => this.config?.type === `custom:${Xy}` && o.name === "allIcon" ? `${Se(this.hass, "All")}: ${Se(this.hass, "Icon")}` : this.config?.type === `custom:${Xy}` && CQ[o.name] ? Se(this.hass, CQ[o.name]) : o.name === "energy_plan" || o.name === "energy_insights" || o.name === "energy_monitor" ? Se(this.hass, Lu(this.config.type.replace(/^custom:/, ""))?.name ?? o.name) : this.config?.type.endsWith("air-quality") && o.name === "entity" ? Se(this.hass, "Air quality sensor (optional; otherwise calculated from pollutants)") : hQ[o.name] ? Se(this.hass, hQ[o.name]) : _Q[o.name] ? Se(this.hass, _Q[o.name]) : UX(o.name) ? `${Se(this.hass, EA.find(([s]) => o.name.startsWith(`stock_${s}_`))[1])}: ${Se(this.hass, o.name.endsWith("_entity") ? "Metric entity override" : "Metric attribute")}` : LQ[o.name] ? Se(this.hass, LQ[o.name]) : DQ[o.name] ? `${aa(this.hass, "ulm_weather")}: ${aa(this.hass, DQ[o.name])}` : this.config?.type.endsWith("pi-hole-card") && o.name === "entity" ? aa(this.hass, "editor.pihole_entity") : this.config?.type.endsWith("upcoming-media-card") && o.name === "entity" ? aa(this.hass, "editor.media_entity") : this.config?.type.endsWith("remote-card") && o.name === "entity" ? aa(this.hass, "editor.remote_entity") : this.config?.type.includes("custom-card-trash") && o.name === "entity" ? `${Se(this.hass, "Card")}: ${aa(this.hass, "entity")} (${Se(this.hass, "Optional")})` : this.config?.type.includes("custom-card-washer") && o.name === "entity" ? aa(this.hass, "machine_state_entity") : aa(this.hass, o.name), this.remoteButtonLabel = (o) => Se(this.hass, { type: "Button type", name: "Label", icon: "Icon", color: "Icon color", command: "Command code", source: "TV source", action: "Action" }[o.name] || o.name), this.computeHelper = (o) => KX(
       this.config?.type.includes("custom-card-washer") && o.name === "entity" ? "machine_state_entity" : o.name,
       this.hass,
       this.config?.type
@@ -56458,7 +56459,7 @@ let tf = class extends eo {
     }, this.addWasteStream = () => {
       this.config && this.updateWasteStreams([
         ...Ky(this.config),
-        { enabled: !0, entity: "", label: na(this.hass, "ui.renderer.waste_number", { number: Ky(this.config).length + 1 }), icon: "mdi:trash-can", color: "#43a047" }
+        { enabled: !0, entity: "", label: aa(this.hass, "ui.renderer.waste_number", { number: Ky(this.config).length + 1 }), icon: "mdi:trash-can", color: "#43a047" }
       ]);
     }, this.addCarouselItem = () => {
       this.config && this.updateCarouselItems([
@@ -56588,7 +56589,7 @@ let tf = class extends eo {
           .embedded=${!0} @config-changed=${this.energyConfigChanged}></mushroom-addition-energy-workflow-features>` : o.upstreamId === "mini_graph_card" ? this.renderMiniGraphEditors() : o.upstreamId === "remote_card" ? this.renderRemoteEditor() : o.upstreamId === "pi_hole_card" ? this.renderPiHoleEditor() : o.upstreamId === "custom_card_trash" ? this.renderWasteStreamEditor() : o.upstreamId === "custom_card_pollen" ? this.config.show_extra_pollen === !0 ? this.renderPollenExtraEditor() : Be : o.upstreamId === "custom_card_media_player_sonos" ? this.renderSonosShortcutEditor() : o.upstreamId === "custom_card_entity_carousel" ? this.renderCarouselItemEditor() : o.upstreamId === "custom_card_light" ? this.config.light_show_scenes === !1 ? Be : this.renderCarouselItemEditor() : o.family === "scene" ? this.renderItemEditor(
       "scene_items",
       Se(this.hass, "Scene buttons")
-    ) : o.upstreamId === "custom_card_welcome" ? this.renderItemEditor("scene_items", Se(this.hass, "Scene buttons")) : o.upstreamId === "card_room" ? se`${this.renderItemEditor("room_sensors", na(this.hass, "room_buttons"))}${this.renderRoomStatusEditor()}` : Be : Be, he = !!vh(this.config.type) || o.upstreamId === "car_advanced" || o.upstreamId === "mini_graph_card" || o.upstreamId === "air_quality" || o.upstreamId === "weather_advanced" || o.upstreamId === "smart_saving" || o.upstreamId === "energy_entityworkflow" || o.upstreamId === "remote_card" || o.upstreamId === "pi_hole_card" || o.upstreamId === "custom_card_trash" || o.upstreamId === "custom_card_pollen" || o.upstreamId === "custom_card_media_player_sonos" || o.upstreamId === "custom_card_entity_carousel" || o.upstreamId === "custom_card_light" || o.family === "scene" || o.upstreamId === "custom_card_welcome" || o.upstreamId === "card_room";
+    ) : o.upstreamId === "custom_card_welcome" ? this.renderItemEditor("scene_items", Se(this.hass, "Scene buttons")) : o.upstreamId === "card_room" ? se`${this.renderItemEditor("room_sensors", aa(this.hass, "room_buttons"))}${this.renderRoomStatusEditor()}` : Be : Be, he = !!vh(this.config.type) || o.upstreamId === "car_advanced" || o.upstreamId === "mini_graph_card" || o.upstreamId === "air_quality" || o.upstreamId === "weather_advanced" || o.upstreamId === "smart_saving" || o.upstreamId === "energy_entityworkflow" || o.upstreamId === "remote_card" || o.upstreamId === "pi_hole_card" || o.upstreamId === "custom_card_trash" || o.upstreamId === "custom_card_pollen" || o.upstreamId === "custom_card_media_player_sonos" || o.upstreamId === "custom_card_entity_carousel" || o.upstreamId === "custom_card_light" || o.family === "scene" || o.upstreamId === "custom_card_welcome" || o.upstreamId === "card_room";
     return se`
       <div class="editor-sections">
         ${this.energyError ? se`<ha-alert alert-type="error" role="alert">${Se(this.hass, "Invalid data source or field mapping")}: ${this.energyError}</ha-alert>` : Be}
@@ -56659,38 +56660,38 @@ let tf = class extends eo {
   renderPiHoleEditor() {
     const o = this.config?.pihole_sections ?? Ah.pihole_sections, s = this.piHoleMapping, d = II(this.hass, this.config)[s], g = this.config?.pihole_entity_order ?? [];
     return se`<section class="item-editor pi-hole-features">
-      <h3>${na(this.hass, "ui.sections")}</h3><p>${na(this.hass, "editor.sections_help")}</p>
+      <h3>${aa(this.hass, "ui.sections")}</h3><p>${aa(this.hass, "editor.sections_help")}</p>
       <ha-sortable handle-selector=".handle" @item-moved=${(p) => {
       p.stopPropagation(), this.movePiHoleSection(p.detail.oldIndex, p.detail.newIndex);
     }}><div class="compact-controls">${Mw(o, (p) => p, (p, j) => se`<div class="compact-control">
-        <span class="handle" role="button" tabindex="0" aria-label=${na(this.hass, "editor.reorder", { name: Se(this.hass, Ew[p]) })} @keydown=${(I) => {
+        <span class="handle" role="button" tabindex="0" aria-label=${aa(this.hass, "editor.reorder", { name: Se(this.hass, Ew[p]) })} @keydown=${(I) => {
       I.altKey && ["ArrowUp", "ArrowDown"].includes(I.key) && (I.preventDefault(), this.movePiHoleSection(j, j + (I.key === "ArrowUp" ? -1 : 1)));
     }}><ha-svg-icon .path=${Az}></ha-svg-icon></span>
         <span class="row-label">${Se(this.hass, Ew[p])}</span>
-        <ha-icon-button .path=${zw} .label=${na(this.hass, "editor.remove", { name: Se(this.hass, Ew[p]) })} @click=${() => this.saveRemote({ pihole_sections: o.filter((I, V) => V !== j) })}></ha-icon-button>
+        <ha-icon-button .path=${zw} .label=${aa(this.hass, "editor.remove", { name: Se(this.hass, Ew[p]) })} @click=${() => this.saveRemote({ pihole_sections: o.filter((I, V) => V !== j) })}></ha-icon-button>
       </div>`)}</div></ha-sortable>
-      <ha-selector aria-label=${na(this.hass, "editor.add_section", { name: "Pi-hole" })} .hass=${this.hass} .value=${""}
+      <ha-selector aria-label=${aa(this.hass, "editor.add_section", { name: "Pi-hole" })} .hass=${this.hass} .value=${""}
         .selector=${{ select: { mode: "dropdown", options: Object.entries(Ew).filter(([p]) => !o.includes(p)).map(([p, j]) => ({ value: p, label: Se(this.hass, j) })) } }}
         @value-changed=${(p) => {
       p.stopPropagation(), p.detail.value && !o.includes(p.detail.value) && this.saveRemote({ pihole_sections: [...o, p.detail.value] });
     }}></ha-selector>
-      <details><summary>${na(this.hass, "editor.mapping")}</summary><div class="section-body">
-        <p>${na(this.hass, "editor.mapping_help")}</p>
-        <ha-selector aria-label=${na(this.hass, "editor.metric")} .hass=${this.hass} .value=${s}
+      <details><summary>${aa(this.hass, "editor.mapping")}</summary><div class="section-body">
+        <p>${aa(this.hass, "editor.mapping_help")}</p>
+        <ha-selector aria-label=${aa(this.hass, "editor.metric")} .hass=${this.hass} .value=${s}
           .selector=${{ select: { mode: "dropdown", options: Object.entries(Zz).map(([p, j]) => ({ value: p, label: Se(this.hass, j.name) })) } }}
           @value-changed=${(p) => {
       p.stopPropagation(), this.piHoleMapping = p.detail.value;
     }}></ha-selector>
-        <p>${d.length ? na(this.hass, "editor.mapped", { entities: d.map((p) => p.attributes.friendly_name || p.entity_id).join(", ") }) : na(this.hass, "editor.no_sensor")}</p>
-        <ha-selector aria-label=${na(this.hass, "editor.sensor_override", { name: Se(this.hass, Zz[s].name) })} .hass=${this.hass}
+        <p>${d.length ? aa(this.hass, "editor.mapped", { entities: d.map((p) => p.attributes.friendly_name || p.entity_id).join(", ") }) : aa(this.hass, "editor.no_sensor")}</p>
+        <ha-selector aria-label=${aa(this.hass, "editor.sensor_override", { name: Se(this.hass, Zz[s].name) })} .hass=${this.hass}
           .selector=${{ entity: { domain: "sensor", multiple: !0 } }} .value=${this.config?.pihole_metric_entities?.[s] ?? []}
           @value-changed=${(p) => {
       p.stopPropagation();
       const j = { ...this.config?.pihole_metric_entities };
       p.detail.value?.length ? j[s] = p.detail.value : delete j[s], this.saveRemote({ pihole_metric_entities: j });
     }}></ha-selector>
-        <p>${na(this.hass, "editor.order_help")}</p>
-        <ha-selector aria-label=${na(this.hass, "editor.priority_entities")} .hass=${this.hass}
+        <p>${aa(this.hass, "editor.order_help")}</p>
+        <ha-selector aria-label=${aa(this.hass, "editor.priority_entities")} .hass=${this.hass}
           .selector=${{ entity: { multiple: !0 } }} .value=${g} @value-changed=${(p) => {
       p.stopPropagation(), this.saveRemote({ pihole_entity_order: p.detail.value || [] });
     }}></ha-selector>
@@ -56701,7 +56702,7 @@ let tf = class extends eo {
     }}><div class="compact-controls">${Mw(g, (p) => p, (p) => se`<div class="compact-control">
           <span class="handle"><ha-svg-icon .path=${Az}></ha-svg-icon></span>
           <span class="row-label">${this.hass?.states[p]?.attributes.friendly_name || p}</span>
-          <ha-icon-button .path=${zw} .label=${na(this.hass, "editor.restore_order")} @click=${() => this.saveRemote({ pihole_entity_order: g.filter((j) => j !== p) })}></ha-icon-button>
+          <ha-icon-button .path=${zw} .label=${aa(this.hass, "editor.restore_order")} @click=${() => this.saveRemote({ pihole_entity_order: g.filter((j) => j !== p) })}></ha-icon-button>
         </div>`)}</div></ha-sortable>
       </div></details>
     </section>`;
@@ -56713,25 +56714,25 @@ let tf = class extends eo {
   renderRemoteEditor() {
     const o = this.config?.remote_sections ?? Dw.remote_sections, s = this.config?.remote_buttons ?? [], d = this.remoteEditing === void 0 ? void 0 : s[this.remoteEditing], g = H4(this.hass, this.config).media?.attributes.source_list, p = Array.isArray(g) ? g.filter((I) => typeof I == "string") : [], j = Object.entries(this.config?.remote_commands ?? {});
     return se`<section class="item-editor remote-features">
-      <h3>${na(this.hass, "editor.remote_sections")}</h3><p>${na(this.hass, "editor.remote_sections_help")}</p>
+      <h3>${aa(this.hass, "editor.remote_sections")}</h3><p>${aa(this.hass, "editor.remote_sections_help")}</p>
       <ha-sortable handle-selector=".handle" @item-moved=${(I) => {
       I.stopPropagation(), this.moveRemoteSection(I.detail.oldIndex, I.detail.newIndex);
     }}><div class="compact-controls">${Mw(o, (I) => I, (I, V) => se`
         <div class="compact-control">
-          <span class="handle" role="button" tabindex="0" aria-label=${na(this.hass, "editor.reorder", { name: Se(this.hass, I3[I]) })}
+          <span class="handle" role="button" tabindex="0" aria-label=${aa(this.hass, "editor.reorder", { name: Se(this.hass, I3[I]) })}
             @keydown=${(X) => {
       X.altKey && ["ArrowUp", "ArrowDown"].includes(X.key) && (X.preventDefault(), this.moveRemoteSection(V, V + (X.key === "ArrowUp" ? -1 : 1)));
     }}><ha-svg-icon .path=${Az}></ha-svg-icon></span>
           <span class="row-label">${Se(this.hass, I3[I])}</span>
-          <ha-icon-button .path=${zw} .label=${na(this.hass, "editor.remove", { name: Se(this.hass, I3[I]) })} @click=${() => this.saveRemote({ remote_sections: o.filter((X, ie) => ie !== V) })}></ha-icon-button>
+          <ha-icon-button .path=${zw} .label=${aa(this.hass, "editor.remove", { name: Se(this.hass, I3[I]) })} @click=${() => this.saveRemote({ remote_sections: o.filter((X, ie) => ie !== V) })}></ha-icon-button>
         </div>`)}
       </div></ha-sortable>
-      <ha-selector aria-label=${na(this.hass, "editor.add_remote_section")} .hass=${this.hass} .value=${""}
+      <ha-selector aria-label=${aa(this.hass, "editor.add_remote_section")} .hass=${this.hass} .value=${""}
         .selector=${{ select: { mode: "dropdown", options: Object.entries(I3).filter(([I]) => !o.includes(I)).map(([I, V]) => ({ value: I, label: Se(this.hass, V) })) } }}
         @value-changed=${(I) => {
       I.stopPropagation(), I.detail.value && !o.includes(I.detail.value) && this.saveRemote({ remote_sections: [...o, I.detail.value] });
     }}></ha-selector>
-      <h3>${na(this.hass, "ui.custom_buttons")}</h3><p>${na(this.hass, "editor.buttons_help")}</p>
+      <h3>${aa(this.hass, "ui.custom_buttons")}</h3><p>${aa(this.hass, "editor.buttons_help")}</p>
       ${d ? se`<div class="remote-detail"><ha-form .hass=${this.hass} .data=${d}
         .computeLabel=${this.remoteButtonLabel} .schema=${Gw(this.hass, [
       { name: "type", selector: { select: { mode: "dropdown", options: [{ value: "command", label: "Remote command" }, { value: "source", label: "TV source" }, { value: "action", label: "Home Assistant action" }] } } },
@@ -56744,20 +56745,20 @@ let tf = class extends eo {
       V[this.remoteEditing] = { ...d, ...I.detail.value }, this.saveRemote({ remote_buttons: V });
     }}></ha-form><button @click=${() => {
       this.remoteEditing = void 0;
-    }}>${na(this.hass, "ui.done")}</button></div>` : Be}
+    }}>${aa(this.hass, "ui.done")}</button></div>` : Be}
       <ha-sortable handle-selector=".handle" @item-moved=${(I) => {
       I.stopPropagation(), this.moveRemoteButton(I.detail.oldIndex, I.detail.newIndex);
     }}><div class="compact-controls">${s.map((I, V) => se`
         <div class="compact-control">
-          <span class="handle" role="button" tabindex="0" aria-label=${na(this.hass, "editor.reorder_button")}
+          <span class="handle" role="button" tabindex="0" aria-label=${aa(this.hass, "editor.reorder_button")}
             @keydown=${(X) => {
       X.altKey && ["ArrowUp", "ArrowDown"].includes(X.key) && (X.preventDefault(), this.moveRemoteButton(V, V + (X.key === "ArrowUp" ? -1 : 1)));
     }}><ha-svg-icon .path=${Az}></ha-svg-icon></span>
-          <span class="row-label">${I.name || I.source || I.command || na(this.hass, "editor.button_number", { number: V + 1 })}</span>
-          <ha-icon-button .path=${CY} .label=${na(this.hass, "editor.edit_button")} @click=${() => {
+          <span class="row-label">${I.name || I.source || I.command || aa(this.hass, "editor.button_number", { number: V + 1 })}</span>
+          <ha-icon-button .path=${CY} .label=${aa(this.hass, "editor.edit_button")} @click=${() => {
       this.remoteEditing = V;
     }}></ha-icon-button>
-          <ha-icon-button .path=${zw} .label=${na(this.hass, "editor.remove_button")} @click=${() => {
+          <ha-icon-button .path=${zw} .label=${aa(this.hass, "editor.remove_button")} @click=${() => {
       this.remoteEditing = void 0, this.saveRemote({ remote_buttons: s.filter((X, ie) => ie !== V) });
     }}></ha-icon-button>
         </div>`)}
@@ -56767,19 +56768,19 @@ let tf = class extends eo {
         remote_buttons: [...s, { type: "command", name: "", icon: "mdi:remote", command: "" }],
         remote_sections: o.includes("shortcuts") ? o : [...o, "shortcuts"]
       });
-    }}>${na(this.hass, "editor.add_button")}</button>
-      <h3>${na(this.hass, "editor.key_mappings")}</h3><p>${na(this.hass, "editor.commands_help")}</p>
+    }}>${aa(this.hass, "editor.add_button")}</button>
+      <h3>${aa(this.hass, "editor.key_mappings")}</h3><p>${aa(this.hass, "editor.commands_help")}</p>
       ${j.map(([I, V]) => se`<div class="compact-control">
         <span class="row-label">${Se(this.hass, m4.find((X) => X.value === I)?.label || I)}</span>
         <ha-selector .hass=${this.hass} .selector=${{ text: {} }} .value=${V} @value-changed=${(X) => {
       X.stopPropagation(), this.saveRemote({ remote_commands: { ...this.config?.remote_commands, [I]: X.detail.value } });
     }}></ha-selector>
-        <ha-icon-button .path=${zw} .label=${na(this.hass, "editor.restore_command")} @click=${() => {
+        <ha-icon-button .path=${zw} .label=${aa(this.hass, "editor.restore_command")} @click=${() => {
       const X = { ...this.config?.remote_commands };
       delete X[I], this.saveRemote({ remote_commands: X });
     }}></ha-icon-button>
       </div>`)}
-      <ha-selector aria-label=${na(this.hass, "editor.override_command")} .hass=${this.hass} .value=${""}
+      <ha-selector aria-label=${aa(this.hass, "editor.override_command")} .hass=${this.hass} .value=${""}
         .selector=${{ select: { mode: "dropdown", options: [...m4, ...Array.from({ length: 10 }, (I, V) => ({ value: String(V), label: String(V) }))].filter((I) => !Object.hasOwn(this.config?.remote_commands ?? {}, I.value)).map((I) => ({ ...I, label: Se(this.hass, I.label) })) } }}
         @value-changed=${(I) => {
       I.stopPropagation(), I.detail.value && this.saveRemote({ remote_commands: { ...this.config?.remote_commands, [I.detail.value]: "" } });
@@ -56805,7 +56806,7 @@ let tf = class extends eo {
     return se`
       <section class="item-editor">
         <h3>${s}</h3>
-        <p>${o === "scene_items" ? Se(this.hass, "Each button starts with sensible values from its entity. You can override every value, including its name.") : na(this.hass, "room_buttons_help")}</p>
+        <p>${o === "scene_items" ? Se(this.hass, "Each button starts with sensible values from its entity. You can override every value, including its name.") : aa(this.hass, "room_buttons_help")}</p>
         ${p.map((j, I) => se`
           <div class="item-row">
             <label class="field wide">
@@ -56880,14 +56881,14 @@ let tf = class extends eo {
             ` : Be}
             ${o === "room_sensors" ? se`
               <label class="field">
-                <span>${na(this.hass, "active_state")}</span>
+                <span>${aa(this.hass, "active_state")}</span>
                 <ha-selector .hass=${this.hass} .selector=${{ text: {} }} .value=${j.active_state}
                   @value-changed=${(V) => this.updateItem(o, I, "active_state", V.detail.value)}></ha-selector>
-                <small>${na(this.hass, "room_active_state_help")}</small>
+                <small>${aa(this.hass, "room_active_state_help")}</small>
               </label>
               ${["hold_action", "double_tap_action"].map((V) => se`
                 <label class="field">
-                  <span>${na(this.hass, V)}</span>
+                  <span>${aa(this.hass, V)}</span>
                   <ha-selector .hass=${this.hass} .selector=${{ ui_action: {} }} .value=${j[V]}
                     @value-changed=${(X) => this.updateItem(o, I, V, X.detail.value)}></ha-selector>
                 </label>
@@ -56901,14 +56902,14 @@ let tf = class extends eo {
                 .value=${j.tap_action}
                 @value-changed=${(V) => this.updateItem(o, I, "tap_action", V.detail.value)}
               ></ha-selector>
-              <small>${o === "scene_items" ? "Defaults to activating scenes and toggling other supported entities." : na(this.hass, "room_button_action_help")}</small>
+              <small>${o === "scene_items" ? "Defaults to activating scenes and toggling other supported entities." : aa(this.hass, "room_button_action_help")}</small>
             </label>
             <div class="item-actions wide">
               ${o === "room_sensors" ? se`
                 <button class="move-up" ?disabled=${I === 0}
-                  @click=${() => this.moveRoomSensor(I, -1)}>${na(this.hass, "room_move_up")}</button>
+                  @click=${() => this.moveRoomSensor(I, -1)}>${aa(this.hass, "room_move_up")}</button>
                 <button class="move-down" ?disabled=${I === p.length - 1}
-                  @click=${() => this.moveRoomSensor(I, 1)}>${na(this.hass, "room_move_down")}</button>
+                  @click=${() => this.moveRoomSensor(I, 1)}>${aa(this.hass, "room_move_down")}</button>
               ` : Be}
               <button @click=${() => this.removeItem(o, I)}>${Se(this.hass, "Remove")}</button>
             </div>
@@ -56922,20 +56923,20 @@ let tf = class extends eo {
     if (this.config?.secondary_info !== "composed") return Be;
     const o = this.config.room_secondary_parts ?? [], s = ["text", "name", "state", "brightness", "temperature", "attribute"];
     return se`<section class="item-editor room-secondary-editor">
-      <p>${na(this.hass, "room_secondary_help")}</p>
+      <p>${aa(this.hass, "room_secondary_help")}</p>
       ${o.map((d, g) => se`<div class="item-row">
         <label class="field">
-          <span>${na(this.hass, "room_secondary_value")}</span>
+          <span>${aa(this.hass, "room_secondary_value")}</span>
           <ha-selector .hass=${this.hass} .selector=${{ select: { mode: "dropdown", options: s.map((p) => ({
       value: p,
-      label: na(this.hass, `room_part_${p}`)
+      label: aa(this.hass, `room_part_${p}`)
     })) } }} .value=${d.type}
             @value-changed=${(p) => {
       s.includes(p.detail.value) && this.updateRoomSecondaryPart(g, { type: p.detail.value });
     }}></ha-selector>
         </label>
         ${d.type === "text" || d.type === "attribute" ? se`<label class="field">
-          <span>${na(this.hass, `room_part_${d.type}`)}</span>
+          <span>${aa(this.hass, `room_part_${d.type}`)}</span>
           <ha-selector .hass=${this.hass}
             .selector=${d.type === "attribute" ? { attribute: { entity_id: this.config?.entity } } : { text: {} }}
             .value=${d.type === "text" ? d.text ?? "" : d.attribute ?? ""}
@@ -56945,13 +56946,13 @@ let tf = class extends eo {
         </label>` : Be}
         <div class="item-actions wide">
           <button class="move-up" ?disabled=${g === 0}
-            @click=${() => this.moveRoomSecondary(g, -1)}>${na(this.hass, "room_move_up")}</button>
+            @click=${() => this.moveRoomSecondary(g, -1)}>${aa(this.hass, "room_move_up")}</button>
           <button class="move-down" ?disabled=${g === o.length - 1}
-            @click=${() => this.moveRoomSecondary(g, 1)}>${na(this.hass, "room_move_down")}</button>
-          <button class="remove" @click=${() => this.saveRoomSecondary((this.config?.room_secondary_parts ?? []).filter((p, j) => j !== g))}>${na(this.hass, "room_part_remove")}</button>
+            @click=${() => this.moveRoomSecondary(g, 1)}>${aa(this.hass, "room_move_down")}</button>
+          <button class="remove" @click=${() => this.saveRoomSecondary((this.config?.room_secondary_parts ?? []).filter((p, j) => j !== g))}>${aa(this.hass, "room_part_remove")}</button>
         </div>
       </div>`)}
-      <button class="add" @click=${() => this.saveRoomSecondary([...this.config?.room_secondary_parts ?? [], { type: "state" }])}>${na(this.hass, "room_part_add")}</button>
+      <button class="add" @click=${() => this.saveRoomSecondary([...this.config?.room_secondary_parts ?? [], { type: "state" }])}>${aa(this.hass, "room_part_add")}</button>
     </section>`;
   }
   saveRoomSecondary(o) {
@@ -56973,33 +56974,33 @@ let tf = class extends eo {
   renderRoomStatusEditor() {
     const o = (this.config?.room_status ?? []).slice(0, wz);
     return se`<section class="item-editor room-status-editor">
-      <h3>${na(this.hass, "room_status")}</h3>
-      <p>${na(this.hass, "room_status_help")}</p>
+      <h3>${aa(this.hass, "room_status")}</h3>
+      <p>${aa(this.hass, "room_status_help")}</p>
       ${o.map((s, d) => {
       const g = this.hass?.states[s.entity], p = s.kind ?? Iz(g);
       return se`<div class="item-row">
           <label class="field">
-            <span>${na(this.hass, "entity")}</span>
+            <span>${aa(this.hass, "entity")}</span>
             <ha-selector .hass=${this.hass} .selector=${{ entity: {} }} .value=${s.entity}
               @value-changed=${(j) => this.updateRoomStatus(d, "entity", j.detail.value)}></ha-selector>
           </label>
           <label class="field">
-            <span>${na(this.hass, "room_status_kind")}</span>
+            <span>${aa(this.hass, "room_status_kind")}</span>
             <ha-selector .hass=${this.hass} .selector=${{ select: { mode: "dropdown", options: oJ.map((j) => ({
         value: j,
-        label: na(this.hass, `room_status_${j}`)
+        label: aa(this.hass, `room_status_${j}`)
       })) } }} .value=${p}
               @value-changed=${(j) => this.updateRoomStatus(d, "kind", j.detail.value)}></ha-selector>
           </label>
-          <span class="room-status-preview wide" aria-label=${na(this.hass, "room_status_preview")}>
+          <span class="room-status-preview wide" aria-label=${aa(this.hass, "room_status_preview")}>
             <ha-icon .icon=${g?.attributes.icon || VD(p, ND(g, p))}></ha-icon>
-            ${g?.attributes.friendly_name || s.entity || na(this.hass, "room_status_choose_entity")}
+            ${g?.attributes.friendly_name || s.entity || aa(this.hass, "room_status_choose_entity")}
           </span>
-          <div class="item-actions wide"><button @click=${() => this.removeRoomStatus(d)}>${na(this.hass, "room_status_remove")}</button></div>
+          <div class="item-actions wide"><button @click=${() => this.removeRoomStatus(d)}>${aa(this.hass, "room_status_remove")}</button></div>
         </div>`;
     })}
       <button class="add" ?disabled=${o.length >= wz}
-        @click=${() => this.saveRoomStatus([...o, { entity: "", kind: "window" }])}>${na(this.hass, "room_status_add")}</button>
+        @click=${() => this.saveRoomStatus([...o, { entity: "", kind: "window" }])}>${aa(this.hass, "room_status_add")}</button>
     </section>`;
   }
   updateRoomStatus(o, s, d) {
@@ -57060,7 +57061,7 @@ let tf = class extends eo {
         <p>${Se(this.hass, "Entities are rendered in this order. Every series can override aggregation, axis, color, visibility, attributes, and smoothing.")}</p>
         ${o.map((j, I) => se`
           <div class="item-row mini-graph-entity-row" data-entity-index=${I}>
-            <h4>${j.name || j.entity || na(this.hass, "ui.renderer.entity_number", { number: I + 1 })}</h4>
+            <h4>${j.name || j.entity || aa(this.hass, "ui.renderer.entity_number", { number: I + 1 })}</h4>
             <label class="field wide">
               <span>${Se(this.hass, "Entity")}</span>
               <ha-selector
@@ -57158,7 +57159,7 @@ let tf = class extends eo {
         <p>${Se(this.hass, "Ordered value stops color the graph. Leave intermediate values empty to interpolate them between surrounding stops.")}</p>
         ${s.map((j, I) => se`
           <div class="item-row mini-graph-threshold-row" data-threshold-index=${I}>
-            <h4>${na(this.hass, "ui.renderer.threshold_number", { number: I + 1 })}</h4>
+            <h4>${aa(this.hass, "ui.renderer.threshold_number", { number: I + 1 })}</h4>
             <label class="field">
               <span>${Se(this.hass, "Value")}</span>
               <ha-selector
@@ -57192,7 +57193,7 @@ let tf = class extends eo {
         <p>${Se(this.hass, "Map non-numeric states to ordered graph levels. Row order defines each state's numeric position.")}</p>
         ${d.map((j, I) => se`
           <div class="item-row mini-graph-state-row" data-state-index=${I}>
-            <h4>${na(this.hass, "ui.renderer.state_number", { number: I + 1 })}</h4>
+            <h4>${aa(this.hass, "ui.renderer.state_number", { number: I + 1 })}</h4>
             <label class="field">
               <span>${Se(this.hass, "Entity state")}</span>
               <ha-selector
@@ -57287,7 +57288,7 @@ let tf = class extends eo {
         <p>${Se(this.hass, "Each enabled row uses its own sensor or calendar entity. Empty or disabled rows are omitted from the card.")}</p>
         ${o.map((s, d) => se`
           <div class="item-row waste-stream-row" data-stream-index=${d}>
-            <h4>${s.label || na(this.hass, "ui.renderer.waste_number", { number: d + 1 })}</h4>
+            <h4>${s.label || aa(this.hass, "ui.renderer.waste_number", { number: d + 1 })}</h4>
             <label class="field">
               <span>${Se(this.hass, "Show this waste stream")}</span>
               <ha-selector
@@ -57411,7 +57412,7 @@ let tf = class extends eo {
         </div>
         ${o.map((d, g) => se`
           <div class="item-row sonos-shortcut-row" data-shortcut-index=${g}>
-            <h4>${d.name || na(this.hass, "ui.renderer.shortcut_number", { number: g + 1 })}</h4>
+            <h4>${d.name || aa(this.hass, "ui.renderer.shortcut_number", { number: g + 1 })}</h4>
             <label class="field">
               <span>${Se(this.hass, "Label")}</span>
               <ha-selector
@@ -57449,7 +57450,7 @@ let tf = class extends eo {
                 .value=${d.id ?? ""}
                 @value-changed=${(p) => this.updateSonosShortcut(g, "id", p.detail.value)}
               ></ha-selector>
-              <small>${na(this.hass, "ui.renderer.example", { value: "spotify:playlist:PLAYLIST_ID" })}</small>
+              <small>${aa(this.hass, "ui.renderer.example", { value: "spotify:playlist:PLAYLIST_ID" })}</small>
             </label>
             <div class="item-actions wide">
               <button ?disabled=${g === 0} @click=${() => this.moveSonosShortcut(g, -1)}>${Se(this.hass, "Move up")}</button>
@@ -57475,7 +57476,7 @@ let tf = class extends eo {
         <p>${Se(this.hass, "Add entity-aware icon buttons. Swipe or scroll to move through them; tap the centered item to run its action.")}</p>
         ${o.map((s, d) => se`
           <div class="item-row carousel-item-row" data-carousel-index=${d}>
-            <h4>${s.name || s.entity || na(this.hass, "ui.renderer.item", { number: d + 1 })}</h4>
+            <h4>${s.name || s.entity || aa(this.hass, "ui.renderer.item", { number: d + 1 })}</h4>
             <label class="field wide">
               <span>${Se(this.hass, "Entity")}</span>
               <ha-selector
@@ -59236,7 +59237,7 @@ HA([
 nf = HA([
   Lc("mushroom-addition-appliance-details")
 ], nf);
-const en = (o, s) => o?.attributes[s], CFe = (o, s) => na(o, s < 12 ? "ui.greeting_morning" : s < 18 ? "ui.greeting_afternoon" : "ui.greeting_evening"), gn = (o) => {
+const en = (o, s) => o?.attributes[s], CFe = (o, s) => aa(o, s < 12 ? "ui.greeting_morning" : s < 18 ? "ui.greeting_afternoon" : "ui.greeting_evening"), gn = (o) => {
   const s = Number(o);
   return Number.isFinite(s) ? s : void 0;
 }, dS = (o, s, d, g, p = "") => {
@@ -59397,7 +59398,7 @@ const en = (o, s) => o?.attributes[s], CFe = (o, s) => na(o, s < 12 ? "ui.greeti
 }, HFe = (o) => o.actionSurface("ulm-metric", se`
   <div class="metric-heading">${bu(o, o.descriptor.family === "energy" ? "mdi:flash" : "mdi:chart-line", "blue")}${Mo(o, o.entity?.attributes.unit_of_measurement ? String(o.entity.attributes.unit_of_measurement) : Se(o.hass, "Current value"))}<span class="metric-value">${ji(o.entity, o.hass)}</span></div>
   ${o.config.show_graph !== !1 ? RFe(o) : Be}
-  ${ls(o, "min_entity") || ls(o, "max_entity") ? se`<div class="metric-extremes"><span>${na(o.hass, "ui.renderer.minimum_value", { value: ji(ls(o, "min_entity"), o.hass) })}</span><span>${na(o.hass, "ui.renderer.maximum_value", { value: ji(ls(o, "max_entity"), o.hass) })}</span></div>` : Be}
+  ${ls(o, "min_entity") || ls(o, "max_entity") ? se`<div class="metric-extremes"><span>${aa(o.hass, "ui.renderer.minimum_value", { value: ji(ls(o, "min_entity"), o.hass) })}</span><span>${aa(o.hass, "ui.renderer.maximum_value", { value: ji(ls(o, "max_entity"), o.hass) })}</span></div>` : Be}
 `), cJ = (o, s, d) => {
   const g = d.navigation_path || d.nav_path;
   if (g) {
@@ -59475,9 +59476,9 @@ const en = (o, s) => o?.attributes[s], CFe = (o, s) => na(o, s < 12 ? "ui.greeti
   return o.actionSurface(`ulm-room ulm-source-room ${j ? "dynamic-color" : ""} ${o.entity?.state === "unavailable" ? "is-unavailable" : ""}`, se`
     <div class="room-main">
       <div class="room-copy">${Mo(g, d)}
-      ${I.length ? se`<div class="room-status" role="group" aria-label=${na(o.hass, "room_status")}>
+      ${I.length ? se`<div class="room-status" role="group" aria-label=${aa(o.hass, "room_status")}>
         ${I.map((V) => {
-    const X = o.hass.states[V.entity], ie = V.kind && oJ.includes(V.kind) ? V.kind : Iz(X), he = $y(X), pe = ND(X, ie), De = `${co({ entity: V.entity }, X, o.hass)} · ${na(o.hass, `room_status_${ie}`)}: ${na(o.hass, he ? "room_status_unavailable" : pe ? "room_status_active" : "room_status_inactive")} (${ji(X, o.hass)})`;
+    const X = o.hass.states[V.entity], ie = V.kind && oJ.includes(V.kind) ? V.kind : Iz(X), he = $y(X), pe = ND(X, ie), De = `${co({ entity: V.entity }, X, o.hass)} · ${aa(o.hass, `room_status_${ie}`)}: ${aa(o.hass, he ? "room_status_unavailable" : pe ? "room_status_active" : "room_status_inactive")} (${ji(X, o.hass)})`;
     return se`<button class="room-status-indicator kind-${ie} ${he ? "is-unavailable" : pe ? "is-active" : "is-inactive"}"
             type="button" aria-label=${De} title=${De} ?disabled=${he}
             ${Qz({ type: o.config.type, entity: V.entity, tap_action: { action: "more-info" } })}>
@@ -59598,7 +59599,7 @@ const en = (o, s) => o?.attributes[s], CFe = (o, s) => na(o, s < 12 ? "ui.greeti
   return o.actionSurface("custom-waste-card", se`
     <div class="custom-card-heading">
       ${bu(o, "mdi:trash-can-outline", "green")}
-      ${Mo(o, Si(o, "ulm_volgende_ophaling") || [p ? na(o.hass, "ui.renderer.today", { value: p }) : "", j ? na(o.hass, "ui.renderer.tomorrow", { value: j }) : ""].filter(Boolean).join(" · ") || void 0, Se(o.hass, "Next collections"))}
+      ${Mo(o, Si(o, "ulm_volgende_ophaling") || [p ? aa(o.hass, "ui.renderer.today", { value: p }) : "", j ? aa(o.hass, "ui.renderer.tomorrow", { value: j }) : ""].filter(Boolean).join(" · ") || void 0, Se(o.hass, "Next collections"))}
     </div>
     <div class="waste-grid">${s.map((V) => {
     const X = V.entity ? o.hass.states[V.entity] : void 0, ie = I(X);
@@ -59631,11 +59632,11 @@ const en = (o, s) => o?.attributes[s], CFe = (o, s) => na(o, s < 12 ? "ui.greeti
       ${Mo(o, ji(o.entity, o.hass))}
     </div>
     ${I ? Be : se`<div class="alarm-time-controls">
-      ${Rd(na(o.hass, "ui.renderer.earlier", { minutes: d }), "mdi:minus", (ie) => {
+      ${Rd(aa(o.hass, "ui.renderer.earlier", { minutes: d }), "mdi:minus", (ie) => {
     ie.stopPropagation(), p(-d);
   }, j)}
       <b>${g?.label ?? ji(s, o.hass)}</b>
-      ${Rd(na(o.hass, "ui.renderer.later", { minutes: d }), "mdi:plus", (ie) => {
+      ${Rd(aa(o.hass, "ui.renderer.later", { minutes: d }), "mdi:plus", (ie) => {
     ie.stopPropagation(), p(d);
   }, j)}
     </div>`}
@@ -59696,7 +59697,7 @@ const en = (o, s) => o?.attributes[s], CFe = (o, s) => na(o, s < 12 ? "ui.greeti
   })}</div>`)}
     </div>` : Be}
     ${X ? Be : se`<div class="welcome-items" style=${`--scenes-per-row:${he}${mJ(o.config)}`}>${ie.map((De, Ie) => {
-    const Ue = De.entity ? o.hass.states[De.entity] : void 0, kt = xD(Ue) && !dJ(De, Ue), Jt = De.icon_type === "entity-picture" ? en(Ue, "entity_picture") : void 0, ha = De.name || De.label || (Ue ? co({ entity: De.entity }, Ue, o.hass) : na(o.hass, "ui.renderer.item", { number: Ie + 1 }));
+    const Ue = De.entity ? o.hass.states[De.entity] : void 0, kt = xD(Ue) && !dJ(De, Ue), Jt = De.icon_type === "entity-picture" ? en(Ue, "entity_picture") : void 0, ha = De.name || De.label || (Ue ? co({ entity: De.entity }, Ue, o.hass) : aa(o.hass, "ui.renderer.item", { number: Ie + 1 }));
     return se`
       <button class="scene-button ${kt ? "is-off" : "is-active"}" style=${`--item-color:${fu(De.color, "rgb(var(--ulm-blue))")}`}
         aria-label=${ha} title=${ha}
@@ -59790,7 +59791,7 @@ const en = (o, s) => o?.attributes[s], CFe = (o, s) => na(o, s < 12 ? "ui.greeti
       <details class="light-pulldown" ?open=${o.config.light_members_expanded === !0}
         @pointerdown=${ei} @pointerup=${ei} @click=${ei} @dblclick=${ei} @keydown=${ei}>
         <summary>
-          <span>${na(o.hass, "lights_in_group")} (${mi.filter((ci) => ci.state === "on").length}/${mi.length})</span>
+          <span>${aa(o.hass, "lights_in_group")} (${mi.filter((ci) => ci.state === "on").length}/${mi.length})</span>
           <ha-icon icon="mdi:chevron-down"></ha-icon>
         </summary>
         <div class="light-members" style=${`--light-members-per-row:${In}`}>
@@ -60169,7 +60170,7 @@ const en = (o, s) => o?.attributes[s], CFe = (o, s) => na(o, s < 12 ? "ui.greeti
         ${Ga}
         ${De.includes("next") && he($r.next) ? Ue(Se(o.hass, "Next track"), "mdi:skip-next", "media_next_track") : Be}
         ${De.includes("repeat") && he($r.repeat) ? Ue(
-    na(o.hass, "ui.renderer.repeat", { mode: Se(o.hass, gi === "off" ? "Off" : gi === "one" ? "One" : "All") }),
+    aa(o.hass, "ui.renderer.repeat", { mode: Se(o.hass, gi === "off" ? "Off" : gi === "one" ? "One" : "All") }),
     gi === "one" ? "mdi:repeat-once" : gi === "off" ? "mdi:repeat-off" : "mdi:repeat",
     "repeat_set",
     { repeat: ei }
@@ -60217,7 +60218,7 @@ const en = (o, s) => o?.attributes[s], CFe = (o, s) => na(o, s < 12 ? "ui.greeti
         @click=${X} @dblclick=${X} @keydown=${X} @keyup=${X}>
         ${J_.map((Ui, jr) => se`
           <button
-            aria-label=${Ui.name || na(o.hass, "ui.renderer.shortcut", { number: jr + 1 })}
+            aria-label=${Ui.name || aa(o.hass, "ui.renderer.shortcut", { number: jr + 1 })}
             title=${Ui.name || Ui.id || ""}
             ?disabled=${d}
             @click=${(mo) => {
@@ -60611,7 +60612,7 @@ const en = (o, s) => o?.attributes[s], CFe = (o, s) => na(o, s < 12 ? "ui.greeti
   return o.actionSurface("energy-buy-sell-card", se`
       ${hJ(o, String(o.config.buy_sell_title || Se(o.hass, "Buy and sell moments (all-in €/kWh)")), Se(o.hass, "Price timeline"))}
       <div class="energy-buy-sell-chart" style=${`height:${Math.max(120, Math.min(700, gn(o.config.buy_sell_chart_height) ?? 300))}px`} role="img"
-        aria-label=${na(o.hass, "ui.renderer.energy_chart", { hours: g })}>
+        aria-label=${aa(o.hass, "ui.renderer.energy_chart", { hours: g })}>
         <svg viewBox="0 0 720 314" preserveAspectRatio="none" aria-hidden="true">
           ${Array.from({ length: 5 }, (ti, yn) => {
     const Jo = he.maximum - (he.maximum - he.minimum) * yn / 4, Bo = Ie + Jt * yn / 4;
@@ -60681,7 +60682,7 @@ const en = (o, s) => o?.attributes[s], CFe = (o, s) => na(o, s < 12 ? "ui.greeti
                 <tbody>${wi(Se(o.hass, "Buy"), un.buy, Ea[1])}${wi(Se(o.hass, "Sell"), un.sell, Ea[2])}</tbody>
               </table>
             </div>
-            <p class="energy-result-net">${na(o.hass, "ui.renderer.net_result", { energy: Number(dn.toFixed(2)), net: Ii(un.net) })}</p>
+            <p class="energy-result-net">${aa(o.hass, "ui.renderer.net_result", { energy: Number(dn.toFixed(2)), net: Ii(un.net) })}</p>
             <p class="energy-result-note">
               Calculated for the minimum trade size (${Number(dn.toFixed(2))} kWh):
               the cheapest slots to buy and the most expensive remaining slots to sell,
@@ -60708,7 +60709,7 @@ const en = (o, s) => o?.attributes[s], CFe = (o, s) => na(o, s < 12 ? "ui.greeti
     "#66bb6a",
     "#2e7d32",
     "#2e7d32"
-  ][Jt])), V = gn(o.config.panel_warning_average_min) ?? 30, X = (gn(o.config.panel_low_output_percent) ?? 60) / 100, ie = g.averageOutput > V && !!g.weakest && g.weakest.value < g.averageOutput * X, he = g.activeCount < d.length, pe = d.length === 0 ? Se(o.hass, "No panel sensors are selected.") : ie ? na(o.hass, "ui.renderer.weak_panel", { panel: g.weakest.id, percent: Math.round(X * 100) }) : he ? na(o.hass, "ui.renderer.inactive_panels", { count: d.length - g.activeCount }) : Se(o.hass, "All panels are within the expected range of each other."), De = d.length === 0 ? "mdi:information-outline" : ie || he ? "mdi:alert-circle-outline" : "mdi:check-circle-outline", Ie = ie ? "warning" : he || d.length === 0 ? "muted" : "success", Ue = [
+  ][Jt])), V = gn(o.config.panel_warning_average_min) ?? 30, X = (gn(o.config.panel_low_output_percent) ?? 60) / 100, ie = g.averageOutput > V && !!g.weakest && g.weakest.value < g.averageOutput * X, he = g.activeCount < d.length, pe = d.length === 0 ? Se(o.hass, "No panel sensors are selected.") : ie ? aa(o.hass, "ui.renderer.weak_panel", { panel: g.weakest.id, percent: Math.round(X * 100) }) : he ? aa(o.hass, "ui.renderer.inactive_panels", { count: d.length - g.activeCount }) : Se(o.hass, "All panels are within the expected range of each other."), De = d.length === 0 ? "mdi:information-outline" : ie || he ? "mdi:alert-circle-outline" : "mdi:check-circle-outline", Ie = ie ? "warning" : he || d.length === 0 ? "muted" : "success", Ue = [
     [Se(o.hass, "Panels reporting"), `${g.activeCount} / ${d.length}`],
     [Se(o.hass, "Combined output"), `${Math.round(g.totalOutput)} W`],
     [Se(o.hass, "Average per panel"), `${Math.round(g.averageOutput)} W`],
@@ -60735,7 +60736,7 @@ const en = (o, s) => o?.attributes[s], CFe = (o, s) => na(o, s < 12 ? "ui.greeti
     }, kt.entity, o.hass) || kt.id;
     return se`
               <button class="panel-health-gauge" type="button"
-                aria-label=${na(o.hass, "ui.renderer.panel_watts", { name: ui, value: Math.round(kt.value) })}
+                aria-label=${aa(o.hass, "ui.renderer.panel_watts", { name: ui, value: Math.round(kt.value) })}
                 @click=${(ya) => Dc(ya, o, { action: "more-info" }, kt.entity.entity_id)}>
                 <svg viewBox="0 0 100 100" aria-hidden="true">
                   <circle cx="50" cy="46" r="37" class="panel-health-gauge-track"></circle>
@@ -60860,7 +60861,7 @@ const en = (o, s) => o?.attributes[s], CFe = (o, s) => na(o, s < 12 ? "ui.greeti
       very_high: "rgba(var(--color-pink, 233, 30, 99), 1)"
     };
     return {
-      label: na(o.hass, `ui.pollen_${Object.hasOwn(I, j) ? j : "none"}`),
+      label: aa(o.hass, `ui.pollen_${Object.hasOwn(I, j) ? j : "none"}`),
       color: I[j] ?? I.none,
       extreme: j === "very_high"
     };
@@ -60868,7 +60869,7 @@ const en = (o, s) => o?.attributes[s], CFe = (o, s) => na(o, s < 12 ? "ui.greeti
   return o.actionSurface("custom-pollen", se`
     <div class="pollen-heading">${Yy(o)}</div>
     ${s.map((p) => {
-    const j = d(p.entity?.state), I = p.name || p.entity?.attributes.friendly_name || na(o.hass, `ui.pollen_${p.kind}`), V = p.icon || p.entity?.attributes.icon || p.fallbackIcon;
+    const j = d(p.entity?.state), I = p.name || p.entity?.attributes.friendly_name || aa(o.hass, `ui.pollen_${p.kind}`), V = p.icon || p.entity?.attributes.icon || p.fallbackIcon;
     return se`<button class="pollen-item" style=${`--pollen:${j.color}`}
         ?disabled=${!p.entity}
         @pointerdown=${(X) => X.stopPropagation()}
@@ -62856,7 +62857,7 @@ const Rz = class Rz extends eo {
     return Se(this.hass, s);
   }
   message(s, d) {
-    return na(this.hass, `ui.release.${s}`, d);
+    return aa(this.hass, `ui.release.${s}`, d);
   }
   stateText(s) {
     return s && !["unknown", "unavailable"].includes(s.state) ? this.hass?.formatEntityState?.(s) ?? s.state : this.t("Unavailable");
@@ -68709,7 +68710,7 @@ const _7 = class _7 extends Ns {
               <ha-icon .icon=${s.status === "completed" ? "mdi:checkbox-marked-circle" : "mdi:checkbox-blank-circle-outline"}></ha-icon></button>
             <div class="task"><b><button type="button" class="task-title" ?disabled=${!V}
               @click=${() => this.openDraft(s)}>${s.summary}</button></b>
-              ${s.checklist?.length ? se`<span class="checklist-count">${na(
+              ${s.checklist?.length ? se`<span class="checklist-count">${aa(
       this.hass,
       "ui.release.{completed} of {total}",
       { completed: s.checklist.filter((X) => X.checked).length, total: s.checklist.length }
@@ -70884,7 +70885,7 @@ const g7 = class g7 extends eo {
       }, De = j.icon_color, Ie = De && !["default", "state"].includes(De) ? /^(#|rgb|hsl|var\(|color\()/.test(De) ? De : `var(--${De}-color, ${De})` : ie ? this.color ?? "var(--state-active-color, var(--primary-color))" : "var(--state-icon-color)", Ue = Object.entries(j).find(([, ha]) => typeof ha == "string" && ha.startsWith("Template error:"));
       if (Ue) return se`<ha-alert alert-type="error">${Rw(this.hass, String(Ue[1]))}</ha-alert>`;
       const kt = j.use_entity_picture && typeof V?.attributes.entity_picture == "string" ? V.attributes.entity_picture : void 0, Jt = this.label(j);
-      return se`<button class=${`entity ${he ? "is-off" : "is-active"}`} ?disabled=${X} aria-label=${String((j.name ?? V?.attributes.friendly_name ?? I) || na(this.hass, "ui.area.area_action"))}
+      return se`<button class=${`entity ${he ? "is-off" : "is-active"}`} ?disabled=${X} aria-label=${String((j.name ?? V?.attributes.friendly_name ?? I) || aa(this.hass, "ui.area.area_action"))}
         aria-pressed=${!!ie} style=${`--control-icon-color:${Ie}`}
         ${Qz(pe)}>
         <span class="button-icon">${kt ? se`<img src=${kt} alt="">` : j.icon || !I ? se`<ha-icon .icon=${j.icon || "mdi:gesture-tap-button"}></ha-icon>` : se`<ha-state-icon .hass=${this.hass} .stateObj=${V}
@@ -71074,7 +71075,7 @@ const f7 = class f7 extends eo {
       <button @click=${() => {
       this.selected = void 0;
     }}>${Se(this.hass, "← Back to buttons")}</button>
-      <h4>${na(this.hass, "ui.area.native_group", { domain: s.domain })}</h4>
+      <h4>${aa(this.hass, "ui.area.native_group", { domain: s.domain })}</h4>
       <p>${Se(this.hass, "Group membership, icon and actions stay native. Add an entity button for a custom icon, name or action.")}</p>
       <ha-form .hass=${this.hass} .data=${s} .schema=${[{ name: "icon_color", selector: { ui_color: {} } }]}
         .computeLabel=${() => Se(this.hass, "Icon color")}
@@ -71118,11 +71119,11 @@ const f7 = class f7 extends eo {
       tap_action: "Tap behavior",
       hold_action: "Hold behavior",
       double_tap_action: "Double-tap behavior"
-    }, j = na(this.hass, `ui.area.${d}_button`);
-    return se`<section class="detail" aria-label=${na(this.hass, `ui.area.edit_${d}`)}>
+    }, j = aa(this.hass, `ui.area.${d}_button`);
+    return se`<section class="detail" aria-label=${aa(this.hass, `ui.area.edit_${d}`)}>
       <button @click=${() => {
       this.selected.depth ? this.selected = { ...this.selected, depth: this.selected.depth - 1 } : this.selected = void 0;
-    }}>${this.selected.depth ? na(this.hass, "ui.area.back_conditional") : Se(this.hass, "← Back to buttons")}</button>
+    }}>${this.selected.depth ? aa(this.hass, "ui.area.back_conditional") : Se(this.hass, "← Back to buttons")}</button>
       <h4>${j}</h4>
       ${d === "conditional" ? se`
         ${this.conditionsError ? se`<ha-alert alert-type="error">${Rw(this.hass, this.conditionsError)}<button @click=${() => {
@@ -71135,12 +71136,12 @@ const f7 = class f7 extends eo {
         <p>${Se(this.hass, "Conditions use Home Assistant's native conditional card, including nested conditions.")}</p>
         <button @click=${() => {
       this.selected = { ...this.selected, depth: this.selected.depth + 1 };
-    }}>${na(this.hass, "ui.area.edit_nested", { type: na(this.hass, `ui.area.${s.control?.type ?? "entity"}_button`) })}</button>
+    }}>${aa(this.hass, "ui.area.edit_nested", { type: aa(this.hass, `ui.area.${s.control?.type ?? "entity"}_button`) })}</button>
         <label>${Se(this.hass, "Nested button type")}<select aria-label="${Se(this.hass, "Nested button type")}" .value=${s.control?.type ?? "entity"}
           @change=${(I) => {
       const V = I.target.value;
       this.changeControl({ ...s, control: this.newControl(V) });
-    }}>${["entity", "action", "template", "conditional"].map((I) => se`<option value=${I}>${na(this.hass, `ui.area.${I}_button`)}</option>`)}</select></label>
+    }}>${["entity", "action", "template", "conditional"].map((I) => se`<option value=${I}>${aa(this.hass, `ui.area.${I}_button`)}</option>`)}</select></label>
       ` : se`
         ${d === "template" ? se`<p>${Se(this.hass, "Content, name, icon and icon color accept Home Assistant Jinja templates. Templates run in Home Assistant, not in the browser. Errors are shown on the button preview.")}</p>` : Be}
         <ha-form .hass=${this.hass} .data=${{
@@ -71150,7 +71151,7 @@ const f7 = class f7 extends eo {
       hold_action: s.hold_action ?? { action: "none" },
       double_tap_action: s.double_tap_action ?? { action: "none" }
     }} .schema=${Gw(this.hass, g)} .computeLabel=${(I) => Se(this.hass, p[I.name] ?? I.name)}
-          .computeHelper=${(I) => I.name === "attribute" ? na(this.hass, "ui.area.attribute_help") : I.name === "content" && d !== "template" ? na(this.hass, "ui.area.content_help") : void 0}
+          .computeHelper=${(I) => I.name === "attribute" ? aa(this.hass, "ui.area.attribute_help") : I.name === "content" && d !== "template" ? aa(this.hass, "ui.area.content_help") : void 0}
           @value-changed=${(I) => {
       I.stopPropagation();
       const V = { ...s, ...I.detail.value };
@@ -71213,18 +71214,18 @@ const f7 = class f7 extends eo {
   render() {
     return this.config ? se`${this.error ? se`<ha-alert alert-type="error">${Rw(this.hass, this.error)}<button @click=${() => {
       this.load();
-    }}>${Se(this.hass, "Retry")}</button></ha-alert>` : this.editor ?? se`${na(this.hass, "ui.area.loading_editor")}`}
+    }}>${Se(this.hass, "Retry")}</button></ha-alert>` : this.editor ?? se`${aa(this.hass, "ui.area.loading_editor")}`}
       <h3>${Se(this.hass, "Advanced area controls")}</h3>
       <p>${Se(this.hass, "Use the native editor above for area, appearance, features and standard domain groups. Edit advanced buttons below. Action, template and conditional buttons are intentionally hidden from native control lists. Names and content appear below icons, aligned to the button bottom. Empty controls show no controls; automatic controls retain Home Assistant defaults.")}</p>
       ${this.selected ? this.detail() : Be}
       ${(this.config.features ?? []).map((s, d) => s.type !== "area-controls" ? Be : se`
-        <fieldset><legend>${na(this.hass, "ui.area.feature", { number: d + 1 })}</legend>
+        <fieldset><legend>${aa(this.hass, "ui.area.feature", { number: d + 1 })}</legend>
           ${s.controls === void 0 ? se`<p>${Se(this.hass, "Automatic native domain controls")}</p>` : Be}
           <ha-sortable handle-selector=".handle" @item-moved=${(g) => {
       g.stopPropagation(), this.move(d, g.detail.oldIndex, g.detail.newIndex);
     }}><div class="controls">
           ${Mw(s.controls ?? [], (g, p) => typeof g == "string" ? `native:${g}:${p}` : (this.controlKeys.has(g) || this.controlKeys.set(g, String(++this.nextControlKey)), this.controlKeys.get(g)), (g, p) => {
-      const j = typeof g == "string" ? g : g.domain, I = typeof g == "string" ? {} : g, V = j ? na(this.hass, "ui.area.native_group", { domain: j }) : na(this.hass, `ui.area.kind_${I.type ?? "entity"}`), X = I.name ?? this.hass?.states[I.entity_id ?? ""]?.attributes.friendly_name ?? I.entity_id ?? (I.type === "conditional" ? na(this.hass, `ui.area.${I.control?.type ?? "entity"}_button`) : I.content ?? "");
+      const j = typeof g == "string" ? g : g.domain, I = typeof g == "string" ? {} : g, V = j ? aa(this.hass, "ui.area.native_group", { domain: j }) : aa(this.hass, `ui.area.kind_${I.type ?? "entity"}`), X = I.name ?? this.hass?.states[I.entity_id ?? ""]?.attributes.friendly_name ?? I.entity_id ?? (I.type === "conditional" ? aa(this.hass, `ui.area.${I.control?.type ?? "entity"}_button`) : I.content ?? "");
       return se`<div class="control" role="listitem" data-feature=${d} data-index=${p}>
               <div class="handle drag" role="button" tabindex="0" aria-label="${Se(this.hass, "Drag to reorder; Alt plus arrow keys to move")}"
                 title="${Se(this.hass, "Drag up or down to reorder. Keyboard: Alt + Up or Down.")}"
@@ -71240,13 +71241,13 @@ const f7 = class f7 extends eo {
       }}></ha-icon-button>
             </div>`;
     })}</div></ha-sortable>
-          <label>${s.controls === void 0 ? na(this.hass, "ui.area.replace_automatic") : Se(this.hass, "Add button")}
+          <label>${s.controls === void 0 ? aa(this.hass, "ui.area.replace_automatic") : Se(this.hass, "Add button")}
             <select aria-label="${Se(this.hass, "Add button type")}" .value=${""} @change=${(g) => {
       const p = g.target, j = this.newControl(p.value), I = [...s.controls ?? [], j];
       this.controls(d, I), this.selected = { feature: d, index: I.length - 1, depth: 0 }, p.value = "", j.type === "conditional" && this.ensureConditions();
     }}>
               <option value="" disabled selected>${Se(this.hass, "Add button…")}</option>
-              ${["entity", "action", "conditional", "template"].map((g) => se`<option value=${g}>${na(this.hass, `ui.area.kind_${g}`)}</option>`)}
+              ${["entity", "action", "conditional", "template"].map((g) => se`<option value=${g}>${aa(this.hass, `ui.area.kind_${g}`)}</option>`)}
             </select>
           </label>
           <button @click=${() => {
@@ -97449,7 +97450,7 @@ ${Ne.shaderPreludeCode.vertexSource}`, define: Ne.shaderDefine }, defaultProject
           return S.style.backgroundRepeat = "no-repeat", S.style.cursor = "pointer", S.style.display = "block", S.style.height = "23px", S.style.margin = "0 0 -4px -4px", S.style.overflow = "hidden", S.style.width = "88px", S.style.backgroundImage = `url(${this.logoURL})`, S.style.backgroundSize = "100px 30px", S.style.width = "100px", S.style.height = "30px", S.target = "_blank", S.rel = "noopener", S.href = this.linkURL, S.setAttribute("aria-label", "MapTiler logo"), S.setAttribute("rel", "noopener"), this._container.appendChild(S), this._container.style.display = "block", this._map.on("resize", this._updateCompact), this._updateCompact(), this._container;
         }
       }
-      var A = 8, L = { version: { required: !0, type: "enum", values: [8] }, name: { type: "string" }, metadata: { type: "*" }, center: { type: "array", value: "number" }, centerAltitude: { type: "number" }, zoom: { type: "number" }, bearing: { type: "number", default: 0, period: 360, units: "degrees" }, pitch: { type: "number", default: 0, units: "degrees" }, roll: { type: "number", default: 0, units: "degrees" }, light: { type: "light" }, sky: { type: "sky" }, projection: { type: "projection" }, terrain: { type: "terrain" }, sources: { required: !0, type: "sources" }, sprite: { type: "sprite" }, glyphs: { type: "string" }, transition: { type: "transition" }, layers: { required: !0, type: "array", value: "layer" } }, Q = { "*": { type: "source" } }, ue = ["source_vector", "source_raster", "source_raster_dem", "source_geojson", "source_video", "source_image"], ve = { type: { required: !0, type: "enum", values: { vector: {} } }, url: { type: "string" }, tiles: { type: "array", value: "string" }, bounds: { type: "array", value: "number", length: 4, default: [-180, -85.051129, 180, 85.051129] }, scheme: { type: "enum", values: { xyz: {}, tms: {} }, default: "xyz" }, minzoom: { type: "number", default: 0 }, maxzoom: { type: "number", default: 22 }, attribution: { type: "string" }, promoteId: { type: "promoteId" }, volatile: { type: "boolean", default: !1 }, "*": { type: "*" } }, Xe = { type: { required: !0, type: "enum", values: { raster: {} } }, url: { type: "string" }, tiles: { type: "array", value: "string" }, bounds: { type: "array", value: "number", length: 4, default: [-180, -85.051129, 180, 85.051129] }, minzoom: { type: "number", default: 0 }, maxzoom: { type: "number", default: 22 }, tileSize: { type: "number", default: 512, units: "pixels" }, scheme: { type: "enum", values: { xyz: {}, tms: {} }, default: "xyz" }, attribution: { type: "string" }, volatile: { type: "boolean", default: !1 }, "*": { type: "*" } }, zt = { type: { required: !0, type: "enum", values: { "raster-dem": {} } }, url: { type: "string" }, tiles: { type: "array", value: "string" }, bounds: { type: "array", value: "number", length: 4, default: [-180, -85.051129, 180, 85.051129] }, minzoom: { type: "number", default: 0 }, maxzoom: { type: "number", default: 22 }, tileSize: { type: "number", default: 512, units: "pixels" }, attribution: { type: "string" }, encoding: { type: "enum", values: { terrarium: {}, mapbox: {}, custom: {} }, default: "mapbox" }, redFactor: { type: "number", default: 1 }, blueFactor: { type: "number", default: 1 }, greenFactor: { type: "number", default: 1 }, baseShift: { type: "number", default: 0 }, volatile: { type: "boolean", default: !1 }, "*": { type: "*" } }, ia = { type: { required: !0, type: "enum", values: { geojson: {} } }, data: { required: !0, type: "*" }, maxzoom: { type: "number", default: 18 }, attribution: { type: "string" }, buffer: { type: "number", default: 128, maximum: 512, minimum: 0 }, filter: { type: "*" }, tolerance: { type: "number", default: 0.375 }, cluster: { type: "boolean", default: !1 }, clusterRadius: { type: "number", default: 50, minimum: 0 }, clusterMaxZoom: { type: "number" }, clusterMinPoints: { type: "number" }, clusterProperties: { type: "*" }, lineMetrics: { type: "boolean", default: !1 }, generateId: { type: "boolean", default: !1 }, promoteId: { type: "promoteId" } }, ma = { type: { required: !0, type: "enum", values: { video: {} } }, urls: { required: !0, type: "array", value: "string" }, coordinates: { required: !0, type: "array", length: 4, value: { type: "array", length: 2, value: "number" } } }, Ja = { type: { required: !0, type: "enum", values: { image: {} } }, url: { required: !0, type: "string" }, coordinates: { required: !0, type: "array", length: 4, value: { type: "array", length: 2, value: "number" } } }, Ei = { id: { type: "string", required: !0 }, type: { type: "enum", values: { fill: {}, line: {}, symbol: {}, circle: {}, heatmap: {}, "fill-extrusion": {}, raster: {}, hillshade: {}, background: {} }, required: !0 }, metadata: { type: "*" }, source: { type: "string" }, "source-layer": { type: "string" }, minzoom: { type: "number", minimum: 0, maximum: 24 }, maxzoom: { type: "number", minimum: 0, maximum: 24 }, filter: { type: "filter" }, layout: { type: "layout" }, paint: { type: "paint" } }, pn = ["layout_fill", "layout_line", "layout_circle", "layout_heatmap", "layout_fill-extrusion", "layout_symbol", "layout_raster", "layout_hillshade", "layout_background"], fr = { visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", "property-type": "constant" } }, hs = { "fill-sort-key": { type: "number", expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", "property-type": "constant" } }, ou = { "circle-sort-key": { type: "number", expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", "property-type": "constant" } }, mm = { visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", "property-type": "constant" } }, ud = { "line-cap": { type: "enum", values: { butt: {}, round: {}, square: {} }, default: "butt", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "line-join": { type: "enum", values: { bevel: {}, round: {}, miter: {} }, default: "miter", expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "line-miter-limit": { type: "number", default: 2, requires: [{ "line-join": "miter" }], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "line-round-limit": { type: "number", default: 1.05, requires: [{ "line-join": "round" }], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "line-sort-key": { type: "number", expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", "property-type": "constant" } }, gx = { "symbol-placement": { type: "enum", values: { point: {}, line: {}, "line-center": {} }, default: "point", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "symbol-spacing": { type: "number", default: 250, minimum: 1, units: "pixels", requires: [{ "symbol-placement": "line" }], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "symbol-avoid-edges": { type: "boolean", default: !1, expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "symbol-sort-key": { type: "number", expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "symbol-z-order": { type: "enum", values: { auto: {}, "viewport-y": {}, source: {} }, default: "auto", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-allow-overlap": { type: "boolean", default: !1, requires: ["icon-image", { "!": "icon-overlap" }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-overlap": { type: "enum", values: { never: {}, always: {}, cooperative: {} }, requires: ["icon-image"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-ignore-placement": { type: "boolean", default: !1, requires: ["icon-image"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-optional": { type: "boolean", default: !1, requires: ["icon-image", "text-field"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-rotation-alignment": { type: "enum", values: { map: {}, viewport: {}, auto: {} }, default: "auto", requires: ["icon-image"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-size": { type: "number", default: 1, minimum: 0, units: "factor of the original icon size", requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "icon-text-fit": { type: "enum", values: { none: {}, width: {}, height: {}, both: {} }, default: "none", requires: ["icon-image", "text-field"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-text-fit-padding": { type: "array", value: "number", length: 4, default: [0, 0, 0, 0], units: "pixels", requires: ["icon-image", "text-field", { "icon-text-fit": ["both", "width", "height"] }], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-image": { type: "resolvedImage", tokens: !0, expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "icon-rotate": { type: "number", default: 0, period: 360, units: "degrees", requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "icon-padding": { type: "padding", default: [2], units: "pixels", requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "icon-keep-upright": { type: "boolean", default: !1, requires: ["icon-image", { "icon-rotation-alignment": "map" }, { "symbol-placement": ["line", "line-center"] }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-offset": { type: "array", value: "number", length: 2, default: [0, 0], requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "icon-anchor": { type: "enum", values: { center: {}, left: {}, right: {}, top: {}, bottom: {}, "top-left": {}, "top-right": {}, "bottom-left": {}, "bottom-right": {} }, default: "center", requires: ["icon-image"], expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "icon-pitch-alignment": { type: "enum", values: { map: {}, viewport: {}, auto: {} }, default: "auto", requires: ["icon-image"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-pitch-alignment": { type: "enum", values: { map: {}, viewport: {}, auto: {} }, default: "auto", requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-rotation-alignment": { type: "enum", values: { map: {}, viewport: {}, "viewport-glyph": {}, auto: {} }, default: "auto", requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-field": { type: "formatted", default: "", tokens: !0, expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-font": { type: "array", value: "string", default: ["Open Sans Regular", "Arial Unicode MS Regular"], requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-size": { type: "number", default: 16, minimum: 0, units: "pixels", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-max-width": { type: "number", default: 10, minimum: 0, units: "ems", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-line-height": { type: "number", default: 1.2, units: "ems", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-letter-spacing": { type: "number", default: 0, units: "ems", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-justify": { type: "enum", values: { auto: {}, left: {}, center: {}, right: {} }, default: "center", requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-radial-offset": { type: "number", units: "ems", default: 0, requires: ["text-field"], "property-type": "data-driven", expression: { interpolated: !0, parameters: ["zoom", "feature"] } }, "text-variable-anchor": { type: "array", value: "enum", values: { center: {}, left: {}, right: {}, top: {}, bottom: {}, "top-left": {}, "top-right": {}, "bottom-left": {}, "bottom-right": {} }, requires: ["text-field", { "symbol-placement": ["point"] }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-variable-anchor-offset": { type: "variableAnchorOffsetCollection", requires: ["text-field", { "symbol-placement": ["point"] }], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-anchor": { type: "enum", values: { center: {}, left: {}, right: {}, top: {}, bottom: {}, "top-left": {}, "top-right": {}, "bottom-left": {}, "bottom-right": {} }, default: "center", requires: ["text-field", { "!": "text-variable-anchor" }], expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-max-angle": { type: "number", default: 45, units: "degrees", requires: ["text-field", { "symbol-placement": ["line", "line-center"] }], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-writing-mode": { type: "array", value: "enum", values: { horizontal: {}, vertical: {} }, requires: ["text-field", { "symbol-placement": ["point"] }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-rotate": { type: "number", default: 0, period: 360, units: "degrees", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-padding": { type: "number", default: 2, minimum: 0, units: "pixels", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-keep-upright": { type: "boolean", default: !0, requires: ["text-field", { "text-rotation-alignment": "map" }, { "symbol-placement": ["line", "line-center"] }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-transform": { type: "enum", values: { none: {}, uppercase: {}, lowercase: {} }, default: "none", requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-offset": { type: "array", value: "number", units: "ems", length: 2, default: [0, 0], requires: ["text-field", { "!": "text-radial-offset" }], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-allow-overlap": { type: "boolean", default: !1, requires: ["text-field", { "!": "text-overlap" }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-overlap": { type: "enum", values: { never: {}, always: {}, cooperative: {} }, requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-ignore-placement": { type: "boolean", default: !1, requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-optional": { type: "boolean", default: !1, requires: ["text-field", "icon-image"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", "property-type": "constant" } }, t6 = { visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", "property-type": "constant" } }, a6 = { visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", "property-type": "constant" } }, i6 = { type: "array", value: "*" }, SP = { type: "enum", values: { "==": {}, "!=": {}, ">": {}, ">=": {}, "<": {}, "<=": {}, in: {}, "!in": {}, all: {}, any: {}, none: {}, has: {}, "!has": {} } }, n6 = { type: "enum", values: { Point: {}, LineString: {}, Polygon: {} } }, jP = { type: "array", minimum: 0, maximum: 24, value: ["number", "color"], length: 2 }, gs = { type: "array", value: "*", minimum: 1 }, ty = { anchor: { type: "enum", default: "viewport", values: { map: {}, viewport: {} }, "property-type": "data-constant", transition: !1, expression: { interpolated: !1, parameters: ["zoom"] } }, position: { type: "array", default: [1.15, 210, 30], length: 3, value: "number", "property-type": "data-constant", transition: !0, expression: { interpolated: !0, parameters: ["zoom"] } }, color: { type: "color", "property-type": "data-constant", default: "#ffffff", expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, intensity: { type: "number", "property-type": "data-constant", default: 0.5, minimum: 0, maximum: 1, expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 } }, PP = { "sky-color": { type: "color", "property-type": "data-constant", default: "#88C6FC", expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, "horizon-color": { type: "color", "property-type": "data-constant", default: "#ffffff", expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, "fog-color": { type: "color", "property-type": "data-constant", default: "#ffffff", expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, "fog-ground-blend": { type: "number", "property-type": "data-constant", default: 0.5, minimum: 0, maximum: 1, expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, "horizon-fog-blend": { type: "number", "property-type": "data-constant", default: 0.8, minimum: 0, maximum: 1, expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, "sky-horizon-blend": { type: "number", "property-type": "data-constant", default: 0.8, minimum: 0, maximum: 1, expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, "atmosphere-blend": { type: "number", "property-type": "data-constant", default: 0.8, minimum: 0, maximum: 1, expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 } }, l1e = { source: { type: "string", required: !0 }, exaggeration: { type: "number", minimum: 0, default: 1 } }, u1e = { type: { type: "projectionDefinition", default: "mercator", "property-type": "data-constant", transition: !1, expression: { interpolated: !0, parameters: ["zoom"] } } }, c1e = ["paint_fill", "paint_line", "paint_circle", "paint_heatmap", "paint_fill-extrusion", "paint_symbol", "paint_raster", "paint_hillshade", "paint_background"], d1e = { "fill-antialias": { type: "boolean", default: !0, expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "fill-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "fill-color": { type: "color", default: "#000000", transition: !0, requires: [{ "!": "fill-pattern" }], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "fill-outline-color": { type: "color", transition: !0, requires: [{ "!": "fill-pattern" }, { "fill-antialias": !0 }], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "fill-translate": { type: "array", value: "number", length: 2, default: [0, 0], transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "fill-translate-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "map", requires: ["fill-translate"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "fill-pattern": { type: "resolvedImage", transition: !0, expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "cross-faded-data-driven" } }, m1e = { "line-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "line-color": { type: "color", default: "#000000", transition: !0, requires: [{ "!": "line-pattern" }], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "line-translate": { type: "array", value: "number", length: 2, default: [0, 0], transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "line-translate-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "map", requires: ["line-translate"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "line-width": { type: "number", default: 1, minimum: 0, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "line-gap-width": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "line-offset": { type: "number", default: 0, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "line-blur": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "line-dasharray": { type: "array", value: "number", minimum: 0, transition: !0, units: "line widths", requires: [{ "!": "line-pattern" }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "cross-faded" }, "line-pattern": { type: "resolvedImage", transition: !0, expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "cross-faded-data-driven" }, "line-gradient": { type: "color", transition: !1, requires: [{ "!": "line-dasharray" }, { "!": "line-pattern" }, { source: "geojson", has: { lineMetrics: !0 } }], expression: { interpolated: !0, parameters: ["line-progress"] }, "property-type": "color-ramp" } }, _1e = { "circle-radius": { type: "number", default: 5, minimum: 0, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "circle-color": { type: "color", default: "#000000", transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "circle-blur": { type: "number", default: 0, transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "circle-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "circle-translate": { type: "array", value: "number", length: 2, default: [0, 0], transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "circle-translate-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "map", requires: ["circle-translate"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "circle-pitch-scale": { type: "enum", values: { map: {}, viewport: {} }, default: "map", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "circle-pitch-alignment": { type: "enum", values: { map: {}, viewport: {} }, default: "viewport", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "circle-stroke-width": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "circle-stroke-color": { type: "color", default: "#000000", transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "circle-stroke-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" } }, p1e = { "heatmap-radius": { type: "number", default: 30, minimum: 1, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "heatmap-weight": { type: "number", default: 1, minimum: 0, transition: !1, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "heatmap-intensity": { type: "number", default: 1, minimum: 0, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "heatmap-color": { type: "color", default: ["interpolate", ["linear"], ["heatmap-density"], 0, "rgba(0, 0, 255, 0)", 0.1, "royalblue", 0.3, "cyan", 0.5, "lime", 0.7, "yellow", 1, "red"], transition: !1, expression: { interpolated: !0, parameters: ["heatmap-density"] }, "property-type": "color-ramp" }, "heatmap-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" } }, h1e = { "icon-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "icon-color": { type: "color", default: "#000000", transition: !0, requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "icon-halo-color": { type: "color", default: "rgba(0, 0, 0, 0)", transition: !0, requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "icon-halo-width": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "icon-halo-blur": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "icon-translate": { type: "array", value: "number", length: 2, default: [0, 0], transition: !0, units: "pixels", requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-translate-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "map", requires: ["icon-image", "icon-translate"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "text-color": { type: "color", default: "#000000", transition: !0, overridable: !0, requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "text-halo-color": { type: "color", default: "rgba(0, 0, 0, 0)", transition: !0, requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "text-halo-width": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "text-halo-blur": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "text-translate": { type: "array", value: "number", length: 2, default: [0, 0], transition: !0, units: "pixels", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-translate-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "map", requires: ["text-field", "text-translate"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" } }, g1e = { "raster-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-hue-rotate": { type: "number", default: 0, period: 360, transition: !0, units: "degrees", expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-brightness-min": { type: "number", default: 0, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-brightness-max": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-saturation": { type: "number", default: 0, minimum: -1, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-contrast": { type: "number", default: 0, minimum: -1, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-resampling": { type: "enum", values: { linear: {}, nearest: {} }, default: "linear", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-fade-duration": { type: "number", default: 300, minimum: 0, transition: !1, units: "milliseconds", expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" } }, f1e = { "hillshade-illumination-direction": { type: "number", default: 335, minimum: 0, maximum: 359, transition: !1, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "hillshade-illumination-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "viewport", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "hillshade-exaggeration": { type: "number", default: 0.5, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "hillshade-shadow-color": { type: "color", default: "#000000", transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "hillshade-highlight-color": { type: "color", default: "#FFFFFF", transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "hillshade-accent-color": { type: "color", default: "#000000", transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" } }, y1e = { "background-color": { type: "color", default: "#000000", transition: !0, requires: [{ "!": "background-pattern" }], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "background-pattern": { type: "resolvedImage", transition: !0, expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "cross-faded" }, "background-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" } }, b1e = { duration: { type: "number", default: 300, minimum: 0, units: "milliseconds" }, delay: { type: "number", default: 0, minimum: 0, units: "milliseconds" } }, v1e = { "*": { type: "string" } }, A1e = { $version: A, $root: L, sources: Q, source: ue, source_vector: ve, source_raster: Xe, source_raster_dem: zt, source_geojson: ia, source_video: ma, source_image: Ja, layer: Ei, layout: pn, layout_background: fr, layout_fill: hs, layout_circle: ou, layout_heatmap: mm, "layout_fill-extrusion": { visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", "property-type": "constant" } }, layout_line: ud, layout_symbol: gx, layout_raster: t6, layout_hillshade: a6, filter: i6, filter_operator: SP, geometry_type: n6, function: { expression: { type: "expression" }, stops: { type: "array", value: "function_stop" }, base: { type: "number", default: 1, minimum: 0 }, property: { type: "string", default: "$zoom" }, type: { type: "enum", values: { identity: {}, exponential: {}, interval: {}, categorical: {} }, default: "exponential" }, colorSpace: { type: "enum", values: { rgb: {}, lab: {}, hcl: {} }, default: "rgb" }, default: { type: "*", required: !1 } }, function_stop: jP, expression: gs, light: ty, sky: PP, terrain: l1e, projection: u1e, paint: c1e, paint_fill: d1e, "paint_fill-extrusion": { "fill-extrusion-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "fill-extrusion-color": { type: "color", default: "#000000", transition: !0, requires: [{ "!": "fill-extrusion-pattern" }], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "fill-extrusion-translate": { type: "array", value: "number", length: 2, default: [0, 0], transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "fill-extrusion-translate-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "map", requires: ["fill-extrusion-translate"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "fill-extrusion-pattern": { type: "resolvedImage", transition: !0, expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "cross-faded-data-driven" }, "fill-extrusion-height": { type: "number", default: 0, minimum: 0, units: "meters", transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "fill-extrusion-base": { type: "number", default: 0, minimum: 0, units: "meters", transition: !0, requires: ["fill-extrusion-height"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "fill-extrusion-vertical-gradient": { type: "boolean", default: !0, transition: !1, expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" } }, paint_line: m1e, paint_circle: _1e, paint_heatmap: p1e, paint_symbol: h1e, paint_raster: g1e, paint_hillshade: f1e, paint_background: y1e, transition: b1e, "property-type": { "data-driven": { type: "property-type" }, "cross-faded": { type: "property-type" }, "cross-faded-data-driven": { type: "property-type" }, "color-ramp": { type: "property-type" }, "data-constant": { type: "property-type" }, constant: { type: "property-type" } }, promoteId: v1e };
+      var A = 8, L = { version: { required: !0, type: "enum", values: [8] }, name: { type: "string" }, metadata: { type: "*" }, center: { type: "array", value: "number" }, centerAltitude: { type: "number" }, zoom: { type: "number" }, bearing: { type: "number", default: 0, period: 360, units: "degrees" }, pitch: { type: "number", default: 0, units: "degrees" }, roll: { type: "number", default: 0, units: "degrees" }, light: { type: "light" }, sky: { type: "sky" }, projection: { type: "projection" }, terrain: { type: "terrain" }, sources: { required: !0, type: "sources" }, sprite: { type: "sprite" }, glyphs: { type: "string" }, transition: { type: "transition" }, layers: { required: !0, type: "array", value: "layer" } }, Q = { "*": { type: "source" } }, ue = ["source_vector", "source_raster", "source_raster_dem", "source_geojson", "source_video", "source_image"], ve = { type: { required: !0, type: "enum", values: { vector: {} } }, url: { type: "string" }, tiles: { type: "array", value: "string" }, bounds: { type: "array", value: "number", length: 4, default: [-180, -85.051129, 180, 85.051129] }, scheme: { type: "enum", values: { xyz: {}, tms: {} }, default: "xyz" }, minzoom: { type: "number", default: 0 }, maxzoom: { type: "number", default: 22 }, attribution: { type: "string" }, promoteId: { type: "promoteId" }, volatile: { type: "boolean", default: !1 }, "*": { type: "*" } }, Xe = { type: { required: !0, type: "enum", values: { raster: {} } }, url: { type: "string" }, tiles: { type: "array", value: "string" }, bounds: { type: "array", value: "number", length: 4, default: [-180, -85.051129, 180, 85.051129] }, minzoom: { type: "number", default: 0 }, maxzoom: { type: "number", default: 22 }, tileSize: { type: "number", default: 512, units: "pixels" }, scheme: { type: "enum", values: { xyz: {}, tms: {} }, default: "xyz" }, attribution: { type: "string" }, volatile: { type: "boolean", default: !1 }, "*": { type: "*" } }, zt = { type: { required: !0, type: "enum", values: { "raster-dem": {} } }, url: { type: "string" }, tiles: { type: "array", value: "string" }, bounds: { type: "array", value: "number", length: 4, default: [-180, -85.051129, 180, 85.051129] }, minzoom: { type: "number", default: 0 }, maxzoom: { type: "number", default: 22 }, tileSize: { type: "number", default: 512, units: "pixels" }, attribution: { type: "string" }, encoding: { type: "enum", values: { terrarium: {}, mapbox: {}, custom: {} }, default: "mapbox" }, redFactor: { type: "number", default: 1 }, blueFactor: { type: "number", default: 1 }, greenFactor: { type: "number", default: 1 }, baseShift: { type: "number", default: 0 }, volatile: { type: "boolean", default: !1 }, "*": { type: "*" } }, na = { type: { required: !0, type: "enum", values: { geojson: {} } }, data: { required: !0, type: "*" }, maxzoom: { type: "number", default: 18 }, attribution: { type: "string" }, buffer: { type: "number", default: 128, maximum: 512, minimum: 0 }, filter: { type: "*" }, tolerance: { type: "number", default: 0.375 }, cluster: { type: "boolean", default: !1 }, clusterRadius: { type: "number", default: 50, minimum: 0 }, clusterMaxZoom: { type: "number" }, clusterMinPoints: { type: "number" }, clusterProperties: { type: "*" }, lineMetrics: { type: "boolean", default: !1 }, generateId: { type: "boolean", default: !1 }, promoteId: { type: "promoteId" } }, ma = { type: { required: !0, type: "enum", values: { video: {} } }, urls: { required: !0, type: "array", value: "string" }, coordinates: { required: !0, type: "array", length: 4, value: { type: "array", length: 2, value: "number" } } }, Ja = { type: { required: !0, type: "enum", values: { image: {} } }, url: { required: !0, type: "string" }, coordinates: { required: !0, type: "array", length: 4, value: { type: "array", length: 2, value: "number" } } }, Ei = { id: { type: "string", required: !0 }, type: { type: "enum", values: { fill: {}, line: {}, symbol: {}, circle: {}, heatmap: {}, "fill-extrusion": {}, raster: {}, hillshade: {}, background: {} }, required: !0 }, metadata: { type: "*" }, source: { type: "string" }, "source-layer": { type: "string" }, minzoom: { type: "number", minimum: 0, maximum: 24 }, maxzoom: { type: "number", minimum: 0, maximum: 24 }, filter: { type: "filter" }, layout: { type: "layout" }, paint: { type: "paint" } }, pn = ["layout_fill", "layout_line", "layout_circle", "layout_heatmap", "layout_fill-extrusion", "layout_symbol", "layout_raster", "layout_hillshade", "layout_background"], fr = { visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", "property-type": "constant" } }, hs = { "fill-sort-key": { type: "number", expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", "property-type": "constant" } }, ou = { "circle-sort-key": { type: "number", expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", "property-type": "constant" } }, mm = { visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", "property-type": "constant" } }, ud = { "line-cap": { type: "enum", values: { butt: {}, round: {}, square: {} }, default: "butt", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "line-join": { type: "enum", values: { bevel: {}, round: {}, miter: {} }, default: "miter", expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "line-miter-limit": { type: "number", default: 2, requires: [{ "line-join": "miter" }], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "line-round-limit": { type: "number", default: 1.05, requires: [{ "line-join": "round" }], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "line-sort-key": { type: "number", expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", "property-type": "constant" } }, gx = { "symbol-placement": { type: "enum", values: { point: {}, line: {}, "line-center": {} }, default: "point", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "symbol-spacing": { type: "number", default: 250, minimum: 1, units: "pixels", requires: [{ "symbol-placement": "line" }], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "symbol-avoid-edges": { type: "boolean", default: !1, expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "symbol-sort-key": { type: "number", expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "symbol-z-order": { type: "enum", values: { auto: {}, "viewport-y": {}, source: {} }, default: "auto", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-allow-overlap": { type: "boolean", default: !1, requires: ["icon-image", { "!": "icon-overlap" }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-overlap": { type: "enum", values: { never: {}, always: {}, cooperative: {} }, requires: ["icon-image"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-ignore-placement": { type: "boolean", default: !1, requires: ["icon-image"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-optional": { type: "boolean", default: !1, requires: ["icon-image", "text-field"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-rotation-alignment": { type: "enum", values: { map: {}, viewport: {}, auto: {} }, default: "auto", requires: ["icon-image"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-size": { type: "number", default: 1, minimum: 0, units: "factor of the original icon size", requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "icon-text-fit": { type: "enum", values: { none: {}, width: {}, height: {}, both: {} }, default: "none", requires: ["icon-image", "text-field"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-text-fit-padding": { type: "array", value: "number", length: 4, default: [0, 0, 0, 0], units: "pixels", requires: ["icon-image", "text-field", { "icon-text-fit": ["both", "width", "height"] }], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-image": { type: "resolvedImage", tokens: !0, expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "icon-rotate": { type: "number", default: 0, period: 360, units: "degrees", requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "icon-padding": { type: "padding", default: [2], units: "pixels", requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "icon-keep-upright": { type: "boolean", default: !1, requires: ["icon-image", { "icon-rotation-alignment": "map" }, { "symbol-placement": ["line", "line-center"] }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-offset": { type: "array", value: "number", length: 2, default: [0, 0], requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "icon-anchor": { type: "enum", values: { center: {}, left: {}, right: {}, top: {}, bottom: {}, "top-left": {}, "top-right": {}, "bottom-left": {}, "bottom-right": {} }, default: "center", requires: ["icon-image"], expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "icon-pitch-alignment": { type: "enum", values: { map: {}, viewport: {}, auto: {} }, default: "auto", requires: ["icon-image"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-pitch-alignment": { type: "enum", values: { map: {}, viewport: {}, auto: {} }, default: "auto", requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-rotation-alignment": { type: "enum", values: { map: {}, viewport: {}, "viewport-glyph": {}, auto: {} }, default: "auto", requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-field": { type: "formatted", default: "", tokens: !0, expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-font": { type: "array", value: "string", default: ["Open Sans Regular", "Arial Unicode MS Regular"], requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-size": { type: "number", default: 16, minimum: 0, units: "pixels", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-max-width": { type: "number", default: 10, minimum: 0, units: "ems", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-line-height": { type: "number", default: 1.2, units: "ems", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-letter-spacing": { type: "number", default: 0, units: "ems", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-justify": { type: "enum", values: { auto: {}, left: {}, center: {}, right: {} }, default: "center", requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-radial-offset": { type: "number", units: "ems", default: 0, requires: ["text-field"], "property-type": "data-driven", expression: { interpolated: !0, parameters: ["zoom", "feature"] } }, "text-variable-anchor": { type: "array", value: "enum", values: { center: {}, left: {}, right: {}, top: {}, bottom: {}, "top-left": {}, "top-right": {}, "bottom-left": {}, "bottom-right": {} }, requires: ["text-field", { "symbol-placement": ["point"] }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-variable-anchor-offset": { type: "variableAnchorOffsetCollection", requires: ["text-field", { "symbol-placement": ["point"] }], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-anchor": { type: "enum", values: { center: {}, left: {}, right: {}, top: {}, bottom: {}, "top-left": {}, "top-right": {}, "bottom-left": {}, "bottom-right": {} }, default: "center", requires: ["text-field", { "!": "text-variable-anchor" }], expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-max-angle": { type: "number", default: 45, units: "degrees", requires: ["text-field", { "symbol-placement": ["line", "line-center"] }], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-writing-mode": { type: "array", value: "enum", values: { horizontal: {}, vertical: {} }, requires: ["text-field", { "symbol-placement": ["point"] }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-rotate": { type: "number", default: 0, period: 360, units: "degrees", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-padding": { type: "number", default: 2, minimum: 0, units: "pixels", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-keep-upright": { type: "boolean", default: !0, requires: ["text-field", { "text-rotation-alignment": "map" }, { "symbol-placement": ["line", "line-center"] }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-transform": { type: "enum", values: { none: {}, uppercase: {}, lowercase: {} }, default: "none", requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-offset": { type: "array", value: "number", units: "ems", length: 2, default: [0, 0], requires: ["text-field", { "!": "text-radial-offset" }], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-allow-overlap": { type: "boolean", default: !1, requires: ["text-field", { "!": "text-overlap" }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-overlap": { type: "enum", values: { never: {}, always: {}, cooperative: {} }, requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-ignore-placement": { type: "boolean", default: !1, requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-optional": { type: "boolean", default: !1, requires: ["text-field", "icon-image"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", "property-type": "constant" } }, t6 = { visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", "property-type": "constant" } }, a6 = { visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", "property-type": "constant" } }, i6 = { type: "array", value: "*" }, SP = { type: "enum", values: { "==": {}, "!=": {}, ">": {}, ">=": {}, "<": {}, "<=": {}, in: {}, "!in": {}, all: {}, any: {}, none: {}, has: {}, "!has": {} } }, n6 = { type: "enum", values: { Point: {}, LineString: {}, Polygon: {} } }, jP = { type: "array", minimum: 0, maximum: 24, value: ["number", "color"], length: 2 }, gs = { type: "array", value: "*", minimum: 1 }, ty = { anchor: { type: "enum", default: "viewport", values: { map: {}, viewport: {} }, "property-type": "data-constant", transition: !1, expression: { interpolated: !1, parameters: ["zoom"] } }, position: { type: "array", default: [1.15, 210, 30], length: 3, value: "number", "property-type": "data-constant", transition: !0, expression: { interpolated: !0, parameters: ["zoom"] } }, color: { type: "color", "property-type": "data-constant", default: "#ffffff", expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, intensity: { type: "number", "property-type": "data-constant", default: 0.5, minimum: 0, maximum: 1, expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 } }, PP = { "sky-color": { type: "color", "property-type": "data-constant", default: "#88C6FC", expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, "horizon-color": { type: "color", "property-type": "data-constant", default: "#ffffff", expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, "fog-color": { type: "color", "property-type": "data-constant", default: "#ffffff", expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, "fog-ground-blend": { type: "number", "property-type": "data-constant", default: 0.5, minimum: 0, maximum: 1, expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, "horizon-fog-blend": { type: "number", "property-type": "data-constant", default: 0.8, minimum: 0, maximum: 1, expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, "sky-horizon-blend": { type: "number", "property-type": "data-constant", default: 0.8, minimum: 0, maximum: 1, expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, "atmosphere-blend": { type: "number", "property-type": "data-constant", default: 0.8, minimum: 0, maximum: 1, expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 } }, l1e = { source: { type: "string", required: !0 }, exaggeration: { type: "number", minimum: 0, default: 1 } }, u1e = { type: { type: "projectionDefinition", default: "mercator", "property-type": "data-constant", transition: !1, expression: { interpolated: !0, parameters: ["zoom"] } } }, c1e = ["paint_fill", "paint_line", "paint_circle", "paint_heatmap", "paint_fill-extrusion", "paint_symbol", "paint_raster", "paint_hillshade", "paint_background"], d1e = { "fill-antialias": { type: "boolean", default: !0, expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "fill-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "fill-color": { type: "color", default: "#000000", transition: !0, requires: [{ "!": "fill-pattern" }], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "fill-outline-color": { type: "color", transition: !0, requires: [{ "!": "fill-pattern" }, { "fill-antialias": !0 }], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "fill-translate": { type: "array", value: "number", length: 2, default: [0, 0], transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "fill-translate-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "map", requires: ["fill-translate"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "fill-pattern": { type: "resolvedImage", transition: !0, expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "cross-faded-data-driven" } }, m1e = { "line-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "line-color": { type: "color", default: "#000000", transition: !0, requires: [{ "!": "line-pattern" }], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "line-translate": { type: "array", value: "number", length: 2, default: [0, 0], transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "line-translate-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "map", requires: ["line-translate"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "line-width": { type: "number", default: 1, minimum: 0, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "line-gap-width": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "line-offset": { type: "number", default: 0, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "line-blur": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "line-dasharray": { type: "array", value: "number", minimum: 0, transition: !0, units: "line widths", requires: [{ "!": "line-pattern" }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "cross-faded" }, "line-pattern": { type: "resolvedImage", transition: !0, expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "cross-faded-data-driven" }, "line-gradient": { type: "color", transition: !1, requires: [{ "!": "line-dasharray" }, { "!": "line-pattern" }, { source: "geojson", has: { lineMetrics: !0 } }], expression: { interpolated: !0, parameters: ["line-progress"] }, "property-type": "color-ramp" } }, _1e = { "circle-radius": { type: "number", default: 5, minimum: 0, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "circle-color": { type: "color", default: "#000000", transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "circle-blur": { type: "number", default: 0, transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "circle-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "circle-translate": { type: "array", value: "number", length: 2, default: [0, 0], transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "circle-translate-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "map", requires: ["circle-translate"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "circle-pitch-scale": { type: "enum", values: { map: {}, viewport: {} }, default: "map", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "circle-pitch-alignment": { type: "enum", values: { map: {}, viewport: {} }, default: "viewport", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "circle-stroke-width": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "circle-stroke-color": { type: "color", default: "#000000", transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "circle-stroke-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" } }, p1e = { "heatmap-radius": { type: "number", default: 30, minimum: 1, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "heatmap-weight": { type: "number", default: 1, minimum: 0, transition: !1, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "heatmap-intensity": { type: "number", default: 1, minimum: 0, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "heatmap-color": { type: "color", default: ["interpolate", ["linear"], ["heatmap-density"], 0, "rgba(0, 0, 255, 0)", 0.1, "royalblue", 0.3, "cyan", 0.5, "lime", 0.7, "yellow", 1, "red"], transition: !1, expression: { interpolated: !0, parameters: ["heatmap-density"] }, "property-type": "color-ramp" }, "heatmap-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" } }, h1e = { "icon-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "icon-color": { type: "color", default: "#000000", transition: !0, requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "icon-halo-color": { type: "color", default: "rgba(0, 0, 0, 0)", transition: !0, requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "icon-halo-width": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "icon-halo-blur": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "icon-translate": { type: "array", value: "number", length: 2, default: [0, 0], transition: !0, units: "pixels", requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-translate-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "map", requires: ["icon-image", "icon-translate"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "text-color": { type: "color", default: "#000000", transition: !0, overridable: !0, requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "text-halo-color": { type: "color", default: "rgba(0, 0, 0, 0)", transition: !0, requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "text-halo-width": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "text-halo-blur": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "text-translate": { type: "array", value: "number", length: 2, default: [0, 0], transition: !0, units: "pixels", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-translate-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "map", requires: ["text-field", "text-translate"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" } }, g1e = { "raster-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-hue-rotate": { type: "number", default: 0, period: 360, transition: !0, units: "degrees", expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-brightness-min": { type: "number", default: 0, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-brightness-max": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-saturation": { type: "number", default: 0, minimum: -1, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-contrast": { type: "number", default: 0, minimum: -1, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-resampling": { type: "enum", values: { linear: {}, nearest: {} }, default: "linear", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-fade-duration": { type: "number", default: 300, minimum: 0, transition: !1, units: "milliseconds", expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" } }, f1e = { "hillshade-illumination-direction": { type: "number", default: 335, minimum: 0, maximum: 359, transition: !1, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "hillshade-illumination-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "viewport", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "hillshade-exaggeration": { type: "number", default: 0.5, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "hillshade-shadow-color": { type: "color", default: "#000000", transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "hillshade-highlight-color": { type: "color", default: "#FFFFFF", transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "hillshade-accent-color": { type: "color", default: "#000000", transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" } }, y1e = { "background-color": { type: "color", default: "#000000", transition: !0, requires: [{ "!": "background-pattern" }], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "background-pattern": { type: "resolvedImage", transition: !0, expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "cross-faded" }, "background-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" } }, b1e = { duration: { type: "number", default: 300, minimum: 0, units: "milliseconds" }, delay: { type: "number", default: 0, minimum: 0, units: "milliseconds" } }, v1e = { "*": { type: "string" } }, A1e = { $version: A, $root: L, sources: Q, source: ue, source_vector: ve, source_raster: Xe, source_raster_dem: zt, source_geojson: na, source_video: ma, source_image: Ja, layer: Ei, layout: pn, layout_background: fr, layout_fill: hs, layout_circle: ou, layout_heatmap: mm, "layout_fill-extrusion": { visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", "property-type": "constant" } }, layout_line: ud, layout_symbol: gx, layout_raster: t6, layout_hillshade: a6, filter: i6, filter_operator: SP, geometry_type: n6, function: { expression: { type: "expression" }, stops: { type: "array", value: "function_stop" }, base: { type: "number", default: 1, minimum: 0 }, property: { type: "string", default: "$zoom" }, type: { type: "enum", values: { identity: {}, exponential: {}, interval: {}, categorical: {} }, default: "exponential" }, colorSpace: { type: "enum", values: { rgb: {}, lab: {}, hcl: {} }, default: "rgb" }, default: { type: "*", required: !1 } }, function_stop: jP, expression: gs, light: ty, sky: PP, terrain: l1e, projection: u1e, paint: c1e, paint_fill: d1e, "paint_fill-extrusion": { "fill-extrusion-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "fill-extrusion-color": { type: "color", default: "#000000", transition: !0, requires: [{ "!": "fill-extrusion-pattern" }], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "fill-extrusion-translate": { type: "array", value: "number", length: 2, default: [0, 0], transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "fill-extrusion-translate-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "map", requires: ["fill-extrusion-translate"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "fill-extrusion-pattern": { type: "resolvedImage", transition: !0, expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "cross-faded-data-driven" }, "fill-extrusion-height": { type: "number", default: 0, minimum: 0, units: "meters", transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "fill-extrusion-base": { type: "number", default: 0, minimum: 0, units: "meters", transition: !0, requires: ["fill-extrusion-height"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "fill-extrusion-vertical-gradient": { type: "boolean", default: !0, transition: !1, expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" } }, paint_line: m1e, paint_circle: _1e, paint_heatmap: p1e, paint_symbol: h1e, paint_raster: g1e, paint_hillshade: f1e, paint_background: y1e, transition: b1e, "property-type": { "data-driven": { type: "property-type" }, "cross-faded": { type: "property-type" }, "cross-faded-data-driven": { type: "property-type" }, "color-ramp": { type: "property-type" }, "data-constant": { type: "property-type" }, constant: { type: "property-type" } }, promoteId: v1e };
       class $a {
         constructor(y, S, M, v) {
           this.message = (y ? `${y}: ` : "") + M, v && (this.identifier = v), S != null && S.__line__ && (this.line = S.__line__);
@@ -109185,8 +109186,8 @@ dialog::backdrop {
           if (this._events && (ue = this._events[A])) if (arguments.length !== 1) if (typeof L == "function") {
             var zt = this._listens(A, L, Q);
             if (zt !== !1) {
-              var ia = ue[zt];
-              this._firingCount && (ia.fn = k, this._events[A] = ue = ue.slice()), ue.splice(zt, 1);
+              var na = ue[zt];
+              this._firingCount && (na.fn = k, this._events[A] = ue = ue.slice()), ue.splice(zt, 1);
             }
           } else console.warn("wrong listener type: " + typeof L);
           else {
@@ -109201,8 +109202,8 @@ dialog::backdrop {
             if (ve) {
               this._firingCount = this._firingCount + 1 || 1;
               for (var Xe = 0, zt = ve.length; Xe < zt; Xe++) {
-                var ia = ve[Xe], ma = ia.fn;
-                ia.once && this.off(A, ma, ia.ctx), ma.call(ia.ctx || this, ue);
+                var na = ve[Xe], ma = na.fn;
+                na.once && this.off(A, ma, na.ctx), ma.call(na.ctx || this, ue);
               }
               this._firingCount--;
             }
@@ -109437,7 +109438,7 @@ dialog::backdrop {
           var Xe = A.getSouthWest(), zt = A.getNorthEast();
           return new $n(new Pi(Xe.lat - ue, Xe.lng - ve), new Pi(zt.lat - ue, zt.lng - ve));
         } }, Zn = a({}, Fr, { wrapLng: [-180, 180], R: 6371e3, distance: function(A, L) {
-          var Q = Math.PI / 180, ue = A.lat * Q, ve = L.lat * Q, Xe = Math.sin((L.lat - A.lat) * Q / 2), zt = Math.sin((L.lng - A.lng) * Q / 2), ia = Xe * Xe + Math.cos(ue) * Math.cos(ve) * zt * zt, ma = 2 * Math.atan2(Math.sqrt(ia), Math.sqrt(1 - ia));
+          var Q = Math.PI / 180, ue = A.lat * Q, ve = L.lat * Q, Xe = Math.sin((L.lat - A.lat) * Q / 2), zt = Math.sin((L.lng - A.lng) * Q / 2), na = Xe * Xe + Math.cos(ue) * Math.cos(ve) * zt * zt, ma = 2 * Math.atan2(Math.sqrt(na), Math.sqrt(1 - na));
           return this.R * ma;
         } }), jo = 6378137, oo = { R: jo, MAX_LATITUDE: 85.0511287798, project: function(A) {
           var L = Math.PI / 180, Q = this.MAX_LATITUDE, ue = Math.max(Math.min(Q, A.lat), -Q), ve = Math.sin(ue * L);
@@ -109471,9 +109472,9 @@ dialog::backdrop {
           return document.createElementNS("http://www.w3.org/2000/svg", A);
         }
         function Xh(A, L) {
-          var Q, ue, ve, Xe, zt, ia, ma = "";
+          var Q, ue, ve, Xe, zt, na, ma = "";
           for (Q = 0, ve = A.length; Q < ve; Q++) {
-            for (ue = 0, Xe = (zt = A[Q]).length; ue < Xe; ue++) ma += (ue ? "L" : "M") + (ia = zt[ue]).x + " " + ia.y;
+            for (ue = 0, Xe = (zt = A[Q]).length; ue < Xe; ue++) ma += (ue ? "L" : "M") + (na = zt[ue]).x + " " + na.y;
             ma += L ? Ki.svg ? "z" : "x" : "";
           }
           return ma || "M0 0";
@@ -109547,8 +109548,8 @@ dialog::backdrop {
                 }) || zt.some(function(ma) {
                   return ma instanceof HTMLInputElement || ma instanceof HTMLSelectElement;
                 })) {
-                  var ia = Date.now();
-                  ia - ue <= zM ? ++Q === 2 && L(nP(Xe)) : Q = 1, ue = ia;
+                  var na = Date.now();
+                  na - ue <= zM ? ++Q === 2 && L(nP(Xe)) : Q = 1, ue = na;
                 }
               }
             } else Q = Xe.detail;
@@ -109689,8 +109690,8 @@ dialog::backdrop {
         function Kr(A, L, Q, ue) {
           if (arguments.length === 1) Kf(A), delete A[ad];
           else if (L && typeof L == "object") for (var ve in L) id(A, ve, L[ve], Q);
-          else if (L = U(L), arguments.length === 2) Kf(A, function(ia) {
-            return ze(L, ia) !== -1;
+          else if (L = U(L), arguments.length === 2) Kf(A, function(na) {
+            return ze(L, na) !== -1;
           });
           else for (var Xe = 0, zt = L.length; Xe < zt; Xe++) id(A, L[Xe], Q, ue);
           return this;
@@ -109705,11 +109706,11 @@ dialog::backdrop {
         function $2(A, L, Q, ue) {
           var ve = L + c(Q) + (ue ? "_" + c(ue) : "");
           if (A[ad] && A[ad][ve]) return this;
-          var Xe = function(ia) {
-            return Q.call(ue || A, ia || window.event);
+          var Xe = function(na) {
+            return Q.call(ue || A, na || window.event);
           }, zt = Xe;
-          !Ki.touchNative && Ki.pointer && L.indexOf("touch") === 0 ? Xe = AM(A, L, Xe) : Ki.touch && L === "dblclick" ? Xe = SM(A, Xe) : "addEventListener" in A ? L === "touchstart" || L === "touchmove" || L === "wheel" || L === "mousewheel" ? A.addEventListener(J2[L] || L, Xe, !!Ki.passiveEvents && { passive: !1 }) : L === "mouseenter" || L === "mouseleave" ? (Xe = function(ia) {
-            ia = ia || window.event, tx(A, ia) && zt(ia);
+          !Ki.touchNative && Ki.pointer && L.indexOf("touch") === 0 ? Xe = AM(A, L, Xe) : Ki.touch && L === "dblclick" ? Xe = SM(A, Xe) : "addEventListener" in A ? L === "touchstart" || L === "touchmove" || L === "wheel" || L === "mousewheel" ? A.addEventListener(J2[L] || L, Xe, !!Ki.passiveEvents && { passive: !1 }) : L === "mouseenter" || L === "mouseleave" ? (Xe = function(na) {
+            na = na || window.event, tx(A, na) && zt(na);
           }, A.addEventListener(J2[L], Xe, !1)) : A.addEventListener(L, zt, !1) : A.attachEvent("on" + L, Xe), A[ad] = A[ad] || {}, A[ad][ve] = Xe;
         }
         function id(A, L, Q, ue, ve) {
@@ -109790,8 +109791,8 @@ dialog::backdrop {
           L = L || {}, A = A.getBounds ? A.getBounds() : bn(A);
           var Q = It(L.paddingTopLeft || L.padding || [0, 0]), ue = It(L.paddingBottomRight || L.padding || [0, 0]), ve = this.getBoundsZoom(A, !1, Q.add(ue));
           if ((ve = typeof L.maxZoom == "number" ? Math.min(L.maxZoom, ve) : ve) === 1 / 0) return { center: A.getCenter(), zoom: ve };
-          var Xe = ue.subtract(Q).divideBy(2), zt = this.project(A.getSouthWest(), ve), ia = this.project(A.getNorthEast(), ve);
-          return { center: this.unproject(zt.add(ia).divideBy(2).add(Xe), ve), zoom: ve };
+          var Xe = ue.subtract(Q).divideBy(2), zt = this.project(A.getSouthWest(), ve), na = this.project(A.getNorthEast(), ve);
+          return { center: this.unproject(zt.add(na).divideBy(2).add(Xe), ve), zoom: ve };
         }, fitBounds: function(A, L) {
           if (!(A = bn(A)).isValid()) throw new Error("Bounds are not valid.");
           var Q = this._getBoundsCenterZoom(A, L);
@@ -109814,9 +109815,9 @@ dialog::backdrop {
           this._stop();
           var ue = this.project(this.getCenter()), ve = this.project(A), Xe = this.getSize(), zt = this._zoom;
           A = Hi(A), L = L === void 0 ? zt : L;
-          var ia = Math.max(Xe.x, Xe.y), ma = ia * this.getZoomScale(zt, L), Ja = ve.distanceTo(ue) || 1, Ei = 1.42, pn = Ei * Ei;
+          var na = Math.max(Xe.x, Xe.y), ma = na * this.getZoomScale(zt, L), Ja = ve.distanceTo(ue) || 1, Ei = 1.42, pn = Ei * Ei;
           function fr(gs) {
-            var ty = (ma * ma - ia * ia + (gs ? -1 : 1) * pn * pn * Ja * Ja) / (2 * (gs ? ma : ia) * pn * Ja), PP = Math.sqrt(ty * ty + 1) - ty;
+            var ty = (ma * ma - na * na + (gs ? -1 : 1) * pn * pn * Ja * Ja) / (2 * (gs ? ma : na) * pn * Ja), PP = Math.sqrt(ty * ty + 1) - ty;
             return PP < 1e-9 ? -18 : Math.log(PP);
           }
           function hs(gs) {
@@ -109830,10 +109831,10 @@ dialog::backdrop {
           }
           var ud = fr(0);
           function gx(gs) {
-            return ia * (ou(ud) / ou(ud + Ei * gs));
+            return na * (ou(ud) / ou(ud + Ei * gs));
           }
           function t6(gs) {
-            return ia * (ou(ud) * mm(ud + Ei * gs) - hs(ud)) / pn;
+            return na * (ou(ud) * mm(ud + Ei * gs) - hs(ud)) / pn;
           }
           function a6(gs) {
             return 1 - Math.pow(1 - gs, 1.5);
@@ -109841,7 +109842,7 @@ dialog::backdrop {
           var i6 = Date.now(), SP = (fr(1) - ud) / Ei, n6 = Q.duration ? 1e3 * Q.duration : 1e3 * SP * 0.8;
           function jP() {
             var gs = (Date.now() - i6) / n6, ty = a6(gs) * SP;
-            gs <= 1 ? (this._flyToFrame = Ct(jP, this), this._move(this.unproject(ue.add(ve.subtract(ue).multiplyBy(t6(ty) / Ja)), zt), this.getScaleZoom(ia / gx(ty), zt), { flyTo: !0 })) : this._move(A, L)._moveEnd(!0);
+            gs <= 1 ? (this._flyToFrame = Ct(jP, this), this._move(this.unproject(ue.add(ve.subtract(ue).multiplyBy(t6(ty) / Ja)), zt), this.getScaleZoom(na / gx(ty), zt), { flyTo: !0 })) : this._move(A, L)._moveEnd(!0);
           }
           return this._moveStart(!0, Q.noMoveStart), jP.call(this), this;
         }, flyToBounds: function(A, L) {
@@ -109860,10 +109861,10 @@ dialog::backdrop {
           var Q = this.getCenter(), ue = this._limitCenter(Q, this._zoom, bn(A));
           return Q.equals(ue) || this.panTo(ue, L), this._enforcingBounds = !1, this;
         }, panInside: function(A, L) {
-          var Q = It((L = L || {}).paddingTopLeft || L.padding || [0, 0]), ue = It(L.paddingBottomRight || L.padding || [0, 0]), ve = this.project(this.getCenter()), Xe = this.project(A), zt = this.getPixelBounds(), ia = Ti([zt.min.add(Q), zt.max.subtract(ue)]), ma = ia.getSize();
-          if (!ia.contains(Xe)) {
+          var Q = It((L = L || {}).paddingTopLeft || L.padding || [0, 0]), ue = It(L.paddingBottomRight || L.padding || [0, 0]), ve = this.project(this.getCenter()), Xe = this.project(A), zt = this.getPixelBounds(), na = Ti([zt.min.add(Q), zt.max.subtract(ue)]), ma = na.getSize();
+          if (!na.contains(Xe)) {
             this._enforcingBounds = !0;
-            var Ja = Xe.subtract(ia.getCenter()), Ei = ia.extend(Xe).getSize().subtract(ma);
+            var Ja = Xe.subtract(na.getCenter()), Ei = na.extend(Xe).getSize().subtract(ma);
             ve.x += Ja.x < 0 ? -Ei.x : Ei.x, ve.y += Ja.y < 0 ? -Ei.y : Ei.y, this.panTo(this.unproject(ve), L), this._enforcingBounds = !1;
           }
           return this;
@@ -109929,7 +109930,7 @@ dialog::backdrop {
           return this.options.maxZoom === void 0 ? this._layersMaxZoom === void 0 ? 1 / 0 : this._layersMaxZoom : this.options.maxZoom;
         }, getBoundsZoom: function(A, L, Q) {
           A = bn(A), Q = It(Q || [0, 0]);
-          var ue = this.getZoom() || 0, ve = this.getMinZoom(), Xe = this.getMaxZoom(), zt = A.getNorthWest(), ia = A.getSouthEast(), ma = this.getSize().subtract(Q), Ja = Ti(this.project(ia, ue), this.project(zt, ue)).getSize(), Ei = Ki.any3d ? this.options.zoomSnap : 1, pn = ma.x / Ja.x, fr = ma.y / Ja.y, hs = L ? Math.max(pn, fr) : Math.min(pn, fr);
+          var ue = this.getZoom() || 0, ve = this.getMinZoom(), Xe = this.getMaxZoom(), zt = A.getNorthWest(), na = A.getSouthEast(), ma = this.getSize().subtract(Q), Ja = Ti(this.project(na, ue), this.project(zt, ue)).getSize(), Ei = Ki.any3d ? this.options.zoomSnap : 1, pn = ma.x / Ja.x, fr = ma.y / Ja.y, hs = L ? Math.max(pn, fr) : Math.min(pn, fr);
           return ue = this.getScaleZoom(hs, ue), Ei && (ue = Math.round(ue / (Ei / 100)) * (Ei / 100), ue = L ? Math.ceil(ue / Ei) * Ei : Math.floor(ue / Ei) * Ei), Math.max(ve, Math.min(Xe, ue));
         }, getSize: function() {
           return this._size && !this._sizeChanged || (this._size = new $t(this._container.clientWidth || 0, this._container.clientHeight || 0), this._sizeChanged = !1), this._size.clone();
@@ -110067,10 +110068,10 @@ dialog::backdrop {
           }
           if (ve.length) {
             L === "contextmenu" && cl(A);
-            var ia = ve[0], ma = { originalEvent: A };
+            var na = ve[0], ma = { originalEvent: A };
             if (A.type !== "keypress" && A.type !== "keydown" && A.type !== "keyup") {
-              var Ja = ia.getLatLng && (!ia._radius || ia._radius <= 10);
-              ma.containerPoint = Ja ? this.latLngToContainerPoint(ia.getLatLng()) : this.mouseEventToContainerPoint(A), ma.layerPoint = this.containerPointToLayerPoint(ma.containerPoint), ma.latlng = Ja ? ia.getLatLng() : this.layerPointToLatLng(ma.layerPoint);
+              var Ja = na.getLatLng && (!na._radius || na._radius <= 10);
+              ma.containerPoint = Ja ? this.latLngToContainerPoint(na.getLatLng()) : this.mouseEventToContainerPoint(A), ma.layerPoint = this.containerPointToLayerPoint(ma.containerPoint), ma.latlng = Ja ? na.getLatLng() : this.layerPointToLatLng(ma.layerPoint);
             }
             for (zt = 0; zt < ve.length; zt++) if (ve[zt].fire(L, ma, !0), ma.originalEvent._stopped || ve[zt].options.bubblingMouseEvents === !1 && ze(this._mouseEvents, L) !== -1) return;
           }
@@ -110403,16 +110404,16 @@ dialog::backdrop {
           this._moving = !1, um._dragging = !1, L && this.fire("dragend", { noInertia: A, distance: this._newPos.distanceTo(this._startPos) });
         } });
         function hv(A, L, Q) {
-          var ue, ve, Xe, zt, ia, ma, Ja, Ei, pn, fr = [1, 4, 2, 8];
+          var ue, ve, Xe, zt, na, ma, Ja, Ei, pn, fr = [1, 4, 2, 8];
           for (ve = 0, Ja = A.length; ve < Ja; ve++) A[ve]._code = Sp(A[ve], L);
           for (zt = 0; zt < 4; zt++) {
-            for (Ei = fr[zt], ue = [], ve = 0, Xe = (Ja = A.length) - 1; ve < Ja; Xe = ve++) ia = A[ve], ma = A[Xe], ia._code & Ei ? ma._code & Ei || ((pn = gv(ma, ia, Ei, L, Q))._code = Sp(pn, L), ue.push(pn)) : (ma._code & Ei && ((pn = gv(ma, ia, Ei, L, Q))._code = Sp(pn, L), ue.push(pn)), ue.push(ia));
+            for (Ei = fr[zt], ue = [], ve = 0, Xe = (Ja = A.length) - 1; ve < Ja; Xe = ve++) na = A[ve], ma = A[Xe], na._code & Ei ? ma._code & Ei || ((pn = gv(ma, na, Ei, L, Q))._code = Sp(pn, L), ue.push(pn)) : (ma._code & Ei && ((pn = gv(ma, na, Ei, L, Q))._code = Sp(pn, L), ue.push(pn)), ue.push(na));
             A = ue;
           }
           return A;
         }
         function hP(A, L) {
-          var Q, ue, ve, Xe, zt, ia, ma, Ja, Ei;
+          var Q, ue, ve, Xe, zt, na, ma, Ja, Ei;
           if (!A || A.length === 0) throw new Error("latlngs not passed");
           Su(A) || (console.warn("latlngs are not flat! Only the first ring will be used"), A = A[0]);
           var pn = Hi([0, 0]), fr = bn(A);
@@ -110422,8 +110423,8 @@ dialog::backdrop {
             var mm = Hi(A[Q]);
             ou.push(L.project(Hi([mm.lat - pn.lat, mm.lng - pn.lng])));
           }
-          for (ia = ma = Ja = 0, Q = 0, ue = hs - 1; Q < hs; ue = Q++) ve = ou[Q], Xe = ou[ue], zt = ve.y * Xe.x - Xe.y * ve.x, ma += (ve.x + Xe.x) * zt, Ja += (ve.y + Xe.y) * zt, ia += 3 * zt;
-          Ei = ia === 0 ? ou[0] : [ma / ia, Ja / ia];
+          for (na = ma = Ja = 0, Q = 0, ue = hs - 1; Q < hs; ue = Q++) ve = ou[Q], Xe = ou[ue], zt = ve.y * Xe.x - Xe.y * ve.x, ma += (ve.x + Xe.x) * zt, Ja += (ve.y + Xe.y) * zt, na += 3 * zt;
+          Ei = na === 0 ? ou[0] : [ma / na, Ja / na];
           var ud = L.unproject(It(Ei));
           return Hi([ud.lat + pn.lat, ud.lng + pn.lng]);
         }
@@ -110454,8 +110455,8 @@ dialog::backdrop {
           return Xe;
         }
         function ok(A, L, Q, ue, ve) {
-          var Xe, zt, ia, ma = 0;
-          for (zt = ue + 1; zt <= ve - 1; zt++) (ia = Xf(A[zt], A[ue], A[ve], !0)) > ma && (Xe = zt, ma = ia);
+          var Xe, zt, na, ma = 0;
+          for (zt = ue + 1; zt <= ve - 1; zt++) (na = Xf(A[zt], A[ue], A[ve], !0)) > ma && (Xe = zt, ma = na);
           ma > Q && (L[Xe] = 1, ok(A, L, Q, ue, Xe), ok(A, L, Q, Xe, ve));
         }
         function fP(A, L) {
@@ -110463,16 +110464,16 @@ dialog::backdrop {
           return ve < Xe - 1 && Q.push(A[Xe - 1]), Q;
         }
         function sk(A, L, Q, ue, ve) {
-          var Xe, zt, ia, ma = ue ? ox : Sp(A, Q), Ja = Sp(L, Q);
+          var Xe, zt, na, ma = ue ? ox : Sp(A, Q), Ja = Sp(L, Q);
           for (ox = Ja; ; ) {
             if (!(ma | Ja)) return [A, L];
             if (ma & Ja) return !1;
-            ia = Sp(zt = gv(A, L, Xe = ma || Ja, Q, ve), Q), Xe === ma ? (A = zt, ma = ia) : (L = zt, Ja = ia);
+            na = Sp(zt = gv(A, L, Xe = ma || Ja, Q, ve), Q), Xe === ma ? (A = zt, ma = na) : (L = zt, Ja = na);
           }
         }
         function gv(A, L, Q, ue, ve) {
-          var Xe, zt, ia = L.x - A.x, ma = L.y - A.y, Ja = ue.min, Ei = ue.max;
-          return 8 & Q ? (Xe = A.x + ia * (Ei.y - A.y) / ma, zt = Ei.y) : 4 & Q ? (Xe = A.x + ia * (Ja.y - A.y) / ma, zt = Ja.y) : 2 & Q ? (Xe = Ei.x, zt = A.y + ma * (Ei.x - A.x) / ia) : 1 & Q && (Xe = Ja.x, zt = A.y + ma * (Ja.x - A.x) / ia), new $t(Xe, zt, ve);
+          var Xe, zt, na = L.x - A.x, ma = L.y - A.y, Ja = ue.min, Ei = ue.max;
+          return 8 & Q ? (Xe = A.x + na * (Ei.y - A.y) / ma, zt = Ei.y) : 4 & Q ? (Xe = A.x + na * (Ja.y - A.y) / ma, zt = Ja.y) : 2 & Q ? (Xe = Ei.x, zt = A.y + ma * (Ei.x - A.x) / na) : 1 & Q && (Xe = Ja.x, zt = A.y + ma * (Ja.x - A.x) / na), new $t(Xe, zt, ve);
         }
         function Sp(A, L) {
           var Q = 0;
@@ -110483,8 +110484,8 @@ dialog::backdrop {
           return Q * Q + ue * ue;
         }
         function Xf(A, L, Q, ue) {
-          var ve, Xe = L.x, zt = L.y, ia = Q.x - Xe, ma = Q.y - zt, Ja = ia * ia + ma * ma;
-          return Ja > 0 && ((ve = ((A.x - Xe) * ia + (A.y - zt) * ma) / Ja) > 1 ? (Xe = Q.x, zt = Q.y) : ve > 0 && (Xe += ia * ve, zt += ma * ve)), ia = A.x - Xe, ma = A.y - zt, ue ? ia * ia + ma * ma : new $t(Xe, zt);
+          var ve, Xe = L.x, zt = L.y, na = Q.x - Xe, ma = Q.y - zt, Ja = na * na + ma * ma;
+          return Ja > 0 && ((ve = ((A.x - Xe) * na + (A.y - zt) * ma) / Ja) > 1 ? (Xe = Q.x, zt = Q.y) : ve > 0 && (Xe += na * ve, zt += ma * ve)), na = A.x - Xe, ma = A.y - zt, ue ? na * na + ma * ma : new $t(Xe, zt);
         }
         function Su(A) {
           return !ye(A[0]) || typeof A[0][0] != "object" && A[0][0] !== void 0;
@@ -110493,7 +110494,7 @@ dialog::backdrop {
           return console.warn("Deprecated use of _flat, please use L.LineUtil.isFlat instead."), Su(A);
         }
         function lx(A, L) {
-          var Q, ue, ve, Xe, zt, ia, ma, Ja;
+          var Q, ue, ve, Xe, zt, na, ma, Ja;
           if (!A || A.length === 0) throw new Error("latlngs not passed");
           Su(A) || (console.warn("latlngs are not flat! Only the first ring will be used"), A = A[0]);
           var Ei = Hi([0, 0]), pn = bn(A);
@@ -110505,8 +110506,8 @@ dialog::backdrop {
           }
           for (Q = 0, ue = 0; Q < fr - 1; Q++) ue += hs[Q].distanceTo(hs[Q + 1]) / 2;
           if (ue === 0) Ja = hs[0];
-          else for (Q = 0, Xe = 0; Q < fr - 1; Q++) if (zt = hs[Q], ia = hs[Q + 1], (Xe += ve = zt.distanceTo(ia)) > ue) {
-            ma = (Xe - ue) / ve, Ja = [ia.x - ma * (ia.x - zt.x), ia.y - ma * (ia.y - zt.y)];
+          else for (Q = 0, Xe = 0; Q < fr - 1; Q++) if (zt = hs[Q], na = hs[Q + 1], (Xe += ve = zt.distanceTo(na)) > ue) {
+            ma = (Xe - ue) / ve, Ja = [na.x - ma * (na.x - zt.x), na.y - ma * (na.y - zt.y)];
             break;
           }
           var mm = L.unproject(It(Ja));
@@ -110517,11 +110518,11 @@ dialog::backdrop {
         }, unproject: function(A) {
           return new Pi(A.y, A.x);
         }, bounds: new Ra([-180, -90], [180, 90]) }, ux = { R: 6378137, R_MINOR: 6356752314245179e-9, bounds: new Ra([-2003750834279e-5, -1549657073972e-5], [2003750834279e-5, 1876465623138e-5]), project: function(A) {
-          var L = Math.PI / 180, Q = this.R, ue = A.lat * L, ve = this.R_MINOR / Q, Xe = Math.sqrt(1 - ve * ve), zt = Xe * Math.sin(ue), ia = Math.tan(Math.PI / 4 - ue / 2) / Math.pow((1 - zt) / (1 + zt), Xe / 2);
-          return ue = -Q * Math.log(Math.max(ia, 1e-10)), new $t(A.lng * L * Q, ue);
+          var L = Math.PI / 180, Q = this.R, ue = A.lat * L, ve = this.R_MINOR / Q, Xe = Math.sqrt(1 - ve * ve), zt = Xe * Math.sin(ue), na = Math.tan(Math.PI / 4 - ue / 2) / Math.pow((1 - zt) / (1 + zt), Xe / 2);
+          return ue = -Q * Math.log(Math.max(na, 1e-10)), new $t(A.lng * L * Q, ue);
         }, unproject: function(A) {
-          for (var L, Q = 180 / Math.PI, ue = this.R, ve = this.R_MINOR / ue, Xe = Math.sqrt(1 - ve * ve), zt = Math.exp(-A.y / ue), ia = Math.PI / 2 - 2 * Math.atan(zt), ma = 0, Ja = 0.1; ma < 15 && Math.abs(Ja) > 1e-7; ma++) L = Xe * Math.sin(ia), L = Math.pow((1 - L) / (1 + L), Xe / 2), ia += Ja = Math.PI / 2 - 2 * Math.atan(zt * L) - ia;
-          return new Pi(ia * Q, A.x * Q / ue);
+          for (var L, Q = 180 / Math.PI, ue = this.R, ve = this.R_MINOR / ue, Xe = Math.sqrt(1 - ve * ve), zt = Math.exp(-A.y / ue), na = Math.PI / 2 - 2 * Math.atan(zt), ma = 0, Ja = 0.1; ma < 15 && Math.abs(Ja) > 1e-7; ma++) L = Xe * Math.sin(na), L = Math.pow((1 - L) / (1 + L), Xe / 2), na += Ja = Math.PI / 2 - 2 * Math.atan(zt * L) - na;
+          return new Pi(na * Q, A.x * Q / ue);
         } }, MM = { __proto__: null, LonLat: lk, Mercator: ux, SphericalMercator: oo }, BM = a({}, Zn, { code: "EPSG:3395", projection: ux, transformation: (function() {
           var A = 0.5 / (Math.PI * ux.R);
           return Tl(A, 0.5, -A, 0.5);
@@ -110691,7 +110692,7 @@ dialog::backdrop {
         }, moved: function() {
           return this._draggable && this._draggable._moved;
         }, _adjustPan: function(A) {
-          var L = this._marker, Q = L._map, ue = this._marker.options.autoPanSpeed, ve = this._marker.options.autoPanPadding, Xe = o_(L._icon), zt = Q.getPixelBounds(), ia = Q.getPixelOrigin(), ma = Ti(zt.min._subtract(ia).add(ve), zt.max._subtract(ia).subtract(ve));
+          var L = this._marker, Q = L._map, ue = this._marker.options.autoPanSpeed, ve = this._marker.options.autoPanPadding, Xe = o_(L._icon), zt = Q.getPixelBounds(), na = Q.getPixelOrigin(), ma = Ti(zt.min._subtract(na).add(ve), zt.max._subtract(na).subtract(ve));
           if (!ma.contains(Xe)) {
             var Ja = It((Math.max(ma.max.x, Xe.x) - ma.max.x) / (zt.max.x - ma.max.x) - (Math.min(ma.min.x, Xe.x) - ma.min.x) / (zt.min.x - ma.min.x), (Math.max(ma.max.y, Xe.y) - ma.max.y) / (zt.max.y - ma.max.y) - (Math.min(ma.min.y, Xe.y) - ma.min.y) / (zt.min.y - ma.min.y)).multiplyBy(ue);
             Q.panBy(Ja, { animate: !1 }), this._draggable._newPos._add(Ja), this._draggable._startPos._add(Ja), qo(L._icon, this._draggable._newPos), this._onDrag(A), this._panRequest = Ct(this._adjustPan.bind(this, A));
@@ -110840,7 +110841,7 @@ dialog::backdrop {
         }, setStyle: cm.prototype.setStyle, _project: function() {
           var A = this._latlng.lng, L = this._latlng.lat, Q = this._map, ue = Q.options.crs;
           if (ue.distance === Zn.distance) {
-            var ve = Math.PI / 180, Xe = this._mRadius / Zn.R / ve, zt = Q.project([L + Xe, A]), ia = Q.project([L - Xe, A]), ma = zt.add(ia).divideBy(2), Ja = Q.unproject(ma).lat, Ei = Math.acos((Math.cos(Xe * ve) - Math.sin(L * ve) * Math.sin(Ja * ve)) / (Math.cos(L * ve) * Math.cos(Ja * ve))) / ve;
+            var ve = Math.PI / 180, Xe = this._mRadius / Zn.R / ve, zt = Q.project([L + Xe, A]), na = Q.project([L - Xe, A]), ma = zt.add(na).divideBy(2), Ja = Q.unproject(ma).lat, Ei = Math.acos((Math.cos(Xe * ve) - Math.sin(L * ve) * Math.sin(Ja * ve)) / (Math.cos(L * ve) * Math.cos(Ja * ve))) / ve;
             (isNaN(Ei) || Ei === 0) && (Ei = Xe / Math.cos(Math.PI / 180 * L)), this._point = ma.subtract(Q.getPixelOrigin()), this._radius = isNaN(Ei) ? 0 : ma.x - Q.project([Ja, A - Ei]).x, this._radiusY = ma.y - zt.y;
           } else {
             var pn = ue.unproject(ue.project(this._latlng).subtract([this._mRadius, 0]));
@@ -110860,7 +110861,7 @@ dialog::backdrop {
         }, isEmpty: function() {
           return !this._latlngs.length;
         }, closestLayerPoint: function(A) {
-          for (var L, Q, ue = 1 / 0, ve = null, Xe = Xf, zt = 0, ia = this._parts.length; zt < ia; zt++) for (var ma = this._parts[zt], Ja = 1, Ei = ma.length; Ja < Ei; Ja++) {
+          for (var L, Q, ue = 1 / 0, ve = null, Xe = Xf, zt = 0, na = this._parts.length; zt < na; zt++) for (var ma = this._parts[zt], Ja = 1, Ei = ma.length; Ja < Ei; Ja++) {
             var pn = Xe(A, L = ma[Ja - 1], Q = ma[Ja], !0);
             pn < ue && (ue = pn, ve = Xe(A, L, Q));
           }
@@ -110895,8 +110896,8 @@ dialog::backdrop {
           var A = this._renderer._bounds;
           if (this._parts = [], this._pxBounds && this._pxBounds.intersects(A)) if (this.options.noClip) this._parts = this._rings;
           else {
-            var L, Q, ue, ve, Xe, zt, ia, ma = this._parts;
-            for (L = 0, ue = 0, ve = this._rings.length; L < ve; L++) for (Q = 0, Xe = (ia = this._rings[L]).length; Q < Xe - 1; Q++) (zt = sk(ia[Q], ia[Q + 1], A, Q, !0)) && (ma[ue] = ma[ue] || [], ma[ue].push(zt[0]), zt[1] === ia[Q + 1] && Q !== Xe - 2 || (ma[ue].push(zt[1]), ue++));
+            var L, Q, ue, ve, Xe, zt, na, ma = this._parts;
+            for (L = 0, ue = 0, ve = this._rings.length; L < ve; L++) for (Q = 0, Xe = (na = this._rings[L]).length; Q < Xe - 1; Q++) (zt = sk(na[Q], na[Q + 1], A, Q, !0)) && (ma[ue] = ma[ue] || [], ma[ue].push(zt[0]), zt[1] === na[Q + 1] && Q !== Xe - 2 || (ma[ue].push(zt[1]), ue++));
           }
         }, _simplifyPoints: function() {
           for (var A = this._parts, L = this.options.smoothFactor, Q = 0, ue = A.length; Q < ue; Q++) A[Q] = rg(A[Q], L);
@@ -110905,9 +110906,9 @@ dialog::backdrop {
         }, _updatePath: function() {
           this._renderer._updatePoly(this);
         }, _containsPoint: function(A, L) {
-          var Q, ue, ve, Xe, zt, ia, ma = this._clickTolerance();
+          var Q, ue, ve, Xe, zt, na, ma = this._clickTolerance();
           if (!this._pxBounds || !this._pxBounds.contains(A)) return !1;
-          for (Q = 0, Xe = this._parts.length; Q < Xe; Q++) for (ue = 0, ve = (zt = (ia = this._parts[Q]).length) - 1; ue < zt; ve = ue++) if ((L || ue !== 0) && sx(A, ia[ve], ia[ue]) <= ma) return !0;
+          for (Q = 0, Xe = this._parts.length; Q < Xe; Q++) for (ue = 0, ve = (zt = (na = this._parts[Q]).length) - 1; ue < zt; ve = ue++) if ((L || ue !== 0) && sx(A, na[ve], na[ue]) <= ma) return !0;
           return !1;
         } });
         function LM(A, L) {
@@ -110933,9 +110934,9 @@ dialog::backdrop {
         }, _updatePath: function() {
           this._renderer._updatePoly(this, !0);
         }, _containsPoint: function(A) {
-          var L, Q, ue, ve, Xe, zt, ia, ma, Ja = !1;
+          var L, Q, ue, ve, Xe, zt, na, ma, Ja = !1;
           if (!this._pxBounds || !this._pxBounds.contains(A)) return !1;
-          for (ve = 0, ia = this._parts.length; ve < ia; ve++) for (Xe = 0, zt = (ma = (L = this._parts[ve]).length) - 1; Xe < ma; zt = Xe++) Q = L[Xe], ue = L[zt], Q.y > A.y != ue.y > A.y && A.x < (ue.x - Q.x) * (A.y - Q.y) / (ue.y - Q.y) + Q.x && (Ja = !Ja);
+          for (ve = 0, na = this._parts.length; ve < na; ve++) for (Xe = 0, zt = (ma = (L = this._parts[ve]).length) - 1; Xe < ma; zt = Xe++) Q = L[Xe], ue = L[zt], Q.y > A.y != ue.y > A.y && A.x < (ue.x - Q.x) * (A.y - Q.y) / (ue.y - Q.y) + Q.x && (Ja = !Ja);
           return Ja || od.prototype._containsPoint.call(this, A, !0);
         } });
         function OM(A, L) {
@@ -110963,20 +110964,20 @@ dialog::backdrop {
           A.setStyle && (typeof L == "function" && (L = L(A.feature)), A.setStyle(L));
         } });
         function dk(A, L) {
-          var Q, ue, ve, Xe, zt = A.type === "Feature" ? A.geometry : A, ia = zt ? zt.coordinates : null, ma = [], Ja = L && L.pointToLayer, Ei = L && L.coordsToLatLng || _k;
-          if (!ia && !zt) return null;
+          var Q, ue, ve, Xe, zt = A.type === "Feature" ? A.geometry : A, na = zt ? zt.coordinates : null, ma = [], Ja = L && L.pointToLayer, Ei = L && L.coordsToLatLng || _k;
+          if (!na && !zt) return null;
           switch (zt.type) {
             case "Point":
-              return mk(Ja, A, Q = Ei(ia), L);
+              return mk(Ja, A, Q = Ei(na), L);
             case "MultiPoint":
-              for (ve = 0, Xe = ia.length; ve < Xe; ve++) Q = Ei(ia[ve]), ma.push(mk(Ja, A, Q, L));
+              for (ve = 0, Xe = na.length; ve < Xe; ve++) Q = Ei(na[ve]), ma.push(mk(Ja, A, Q, L));
               return new nu(ma);
             case "LineString":
             case "MultiLineString":
-              return ue = bv(ia, zt.type === "LineString" ? 0 : 1, Ei), new od(ue, L);
+              return ue = bv(na, zt.type === "LineString" ? 0 : 1, Ei), new od(ue, L);
             case "Polygon":
             case "MultiPolygon":
-              return ue = bv(ia, zt.type === "Polygon" ? 1 : 2, Ei), new Jf(ue, L);
+              return ue = bv(na, zt.type === "Polygon" ? 1 : 2, Ei), new Jf(ue, L);
             case "GeometryCollection":
               for (ve = 0, Xe = zt.geometries.length; ve < Xe; ve++) {
                 var pn = dk({ geometry: zt.geometries[ve], type: "Feature", properties: A.properties }, L);
@@ -111231,8 +111232,8 @@ dialog::backdrop {
           else {
             var A = this._map, L = parseInt(wp(this._container, "marginBottom"), 10) || 0, Q = this._container.offsetHeight + L, ue = this._containerWidth, ve = new $t(this._containerLeft, -Q - this._containerBottom);
             ve._add(o_(this._container));
-            var Xe = A.layerPointToContainerPoint(ve), zt = It(this.options.autoPanPadding), ia = It(this.options.autoPanPaddingTopLeft || zt), ma = It(this.options.autoPanPaddingBottomRight || zt), Ja = A.getSize(), Ei = 0, pn = 0;
-            Xe.x + ue + ma.x > Ja.x && (Ei = Xe.x + ue - Ja.x + ma.x), Xe.x - Ei - ia.x < 0 && (Ei = Xe.x - ia.x), Xe.y + Q + ma.y > Ja.y && (pn = Xe.y + Q - Ja.y + ma.y), Xe.y - pn - ia.y < 0 && (pn = Xe.y - ia.y), (Ei || pn) && (this.options.keepInView && (this._autopanning = !0), A.fire("autopanstart").panBy([Ei, pn]));
+            var Xe = A.layerPointToContainerPoint(ve), zt = It(this.options.autoPanPadding), na = It(this.options.autoPanPaddingTopLeft || zt), ma = It(this.options.autoPanPaddingBottomRight || zt), Ja = A.getSize(), Ei = 0, pn = 0;
+            Xe.x + ue + ma.x > Ja.x && (Ei = Xe.x + ue - Ja.x + ma.x), Xe.x - Ei - na.x < 0 && (Ei = Xe.x - na.x), Xe.y + Q + ma.y > Ja.y && (pn = Xe.y + Q - Ja.y + ma.y), Xe.y - pn - na.y < 0 && (pn = Xe.y - na.y), (Ei || pn) && (this.options.keepInView && (this._autopanning = !0), A.fire("autopanstart").panBy([Ei, pn]));
           }
         }, _getAnchor: function() {
           return It(this._source && this._source._getPopupAnchor ? this._source._getPopupAnchor() : [0, 0]);
@@ -111283,8 +111284,8 @@ dialog::backdrop {
         }, _updateLayout: function() {
         }, _adjustPan: function() {
         }, _setPosition: function(A) {
-          var L, Q, ue = this._map, ve = this._container, Xe = ue.latLngToContainerPoint(ue.getCenter()), zt = ue.layerPointToContainerPoint(A), ia = this.options.direction, ma = ve.offsetWidth, Ja = ve.offsetHeight, Ei = It(this.options.offset), pn = this._getAnchor();
-          ia === "top" ? (L = ma / 2, Q = Ja) : ia === "bottom" ? (L = ma / 2, Q = 0) : ia === "center" ? (L = ma / 2, Q = Ja / 2) : ia === "right" ? (L = 0, Q = Ja / 2) : ia === "left" ? (L = ma, Q = Ja / 2) : zt.x < Xe.x ? (ia = "right", L = 0, Q = Ja / 2) : (ia = "left", L = ma + 2 * (Ei.x + pn.x), Q = Ja / 2), A = A.subtract(It(L, Q, !0)).add(Ei).add(pn), as(ve, "leaflet-tooltip-right"), as(ve, "leaflet-tooltip-left"), as(ve, "leaflet-tooltip-top"), as(ve, "leaflet-tooltip-bottom"), Ha(ve, "leaflet-tooltip-" + ia), qo(ve, A);
+          var L, Q, ue = this._map, ve = this._container, Xe = ue.latLngToContainerPoint(ue.getCenter()), zt = ue.layerPointToContainerPoint(A), na = this.options.direction, ma = ve.offsetWidth, Ja = ve.offsetHeight, Ei = It(this.options.offset), pn = this._getAnchor();
+          na === "top" ? (L = ma / 2, Q = Ja) : na === "bottom" ? (L = ma / 2, Q = 0) : na === "center" ? (L = ma / 2, Q = Ja / 2) : na === "right" ? (L = 0, Q = Ja / 2) : na === "left" ? (L = ma, Q = Ja / 2) : zt.x < Xe.x ? (na = "right", L = 0, Q = Ja / 2) : (na = "left", L = ma + 2 * (Ei.x + pn.x), Q = Ja / 2), A = A.subtract(It(L, Q, !0)).add(Ei).add(pn), as(ve, "leaflet-tooltip-right"), as(ve, "leaflet-tooltip-left"), as(ve, "leaflet-tooltip-top"), as(ve, "leaflet-tooltip-bottom"), Ha(ve, "leaflet-tooltip-" + na), qo(ve, A);
         }, _updatePosition: function() {
           var A = this._map.latLngToLayerPoint(this._latlng);
           this._setPosition(A);
@@ -111442,15 +111443,15 @@ dialog::backdrop {
           for (var A in this._levels) go(this._levels[A].el), this._onRemoveLevel(Number(A)), delete this._levels[A];
           this._removeAllTiles(), this._tileZoom = void 0;
         }, _retainParent: function(A, L, Q, ue) {
-          var ve = Math.floor(A / 2), Xe = Math.floor(L / 2), zt = Q - 1, ia = new $t(+ve, +Xe);
-          ia.z = +zt;
-          var ma = this._tileCoordsToKey(ia), Ja = this._tiles[ma];
+          var ve = Math.floor(A / 2), Xe = Math.floor(L / 2), zt = Q - 1, na = new $t(+ve, +Xe);
+          na.z = +zt;
+          var ma = this._tileCoordsToKey(na), Ja = this._tiles[ma];
           return Ja && Ja.active ? (Ja.retain = !0, !0) : (Ja && Ja.loaded && (Ja.retain = !0), zt > ue && this._retainParent(ve, Xe, zt, ue));
         }, _retainChildren: function(A, L, Q, ue) {
           for (var ve = 2 * A; ve < 2 * A + 2; ve++) for (var Xe = 2 * L; Xe < 2 * L + 2; Xe++) {
             var zt = new $t(ve, Xe);
             zt.z = Q + 1;
-            var ia = this._tileCoordsToKey(zt), ma = this._tiles[ia];
+            var na = this._tileCoordsToKey(zt), ma = this._tiles[na];
             ma && ma.active ? ma.retain = !0 : (ma && ma.loaded && (ma.retain = !0), Q + 1 < ue && this._retainChildren(ve, Xe, Q + 1, ue));
           }
         }, _resetView: function(A) {
@@ -111484,7 +111485,7 @@ dialog::backdrop {
           if (L) {
             var Q = this._clampZoom(L.getZoom());
             if (A === void 0 && (A = L.getCenter()), this._tileZoom !== void 0) {
-              var ue = this._getTiledPixelBounds(A), ve = this._pxBoundsToTileRange(ue), Xe = ve.getCenter(), zt = [], ia = this.options.keepBuffer, ma = new Ra(ve.getBottomLeft().subtract([ia, -ia]), ve.getTopRight().add([ia, -ia]));
+              var ue = this._getTiledPixelBounds(A), ve = this._pxBoundsToTileRange(ue), Xe = ve.getCenter(), zt = [], na = this.options.keepBuffer, ma = new Ra(ve.getBottomLeft().subtract([na, -na]), ve.getTopRight().add([na, -na]));
               if (!(isFinite(ve.min.x) && isFinite(ve.min.y) && isFinite(ve.max.x) && isFinite(ve.max.y))) throw new Error("Attempted to load an infinite number of tiles");
               for (var Ja in this._tiles) {
                 var Ei = this._tiles[Ja].coords;
@@ -111615,8 +111616,8 @@ dialog::backdrop {
           var L = this._wmsVersion >= 1.3 ? "crs" : "srs";
           this.wmsParams[L] = this._crs.code, kv.prototype.onAdd.call(this, A);
         }, getTileUrl: function(A) {
-          var L = this._tileCoordsToNwSe(A), Q = this._crs, ue = Ti(Q.project(L[0]), Q.project(L[1])), ve = ue.min, Xe = ue.max, zt = (this._wmsVersion >= 1.3 && this._crs === cx ? [ve.y, ve.x, Xe.y, Xe.x] : [ve.x, ve.y, Xe.x, Xe.y]).join(","), ia = kv.prototype.getTileUrl.call(this, A);
-          return ia + J(this.wmsParams, ia, this.options.uppercase) + (this.options.uppercase ? "&BBOX=" : "&bbox=") + zt;
+          var L = this._tileCoordsToNwSe(A), Q = this._crs, ue = Ti(Q.project(L[0]), Q.project(L[1])), ve = ue.min, Xe = ue.max, zt = (this._wmsVersion >= 1.3 && this._crs === cx ? [ve.y, ve.x, Xe.y, Xe.x] : [ve.x, ve.y, Xe.x, Xe.y]).join(","), na = kv.prototype.getTileUrl.call(this, A);
+          return na + J(this.wmsParams, na, this.options.uppercase) + (this.options.uppercase ? "&BBOX=" : "&bbox=") + zt;
         }, setParams: function(A, L) {
           return a(this.wmsParams, A), L || this.redraw(), this;
         } });
@@ -111722,9 +111723,9 @@ dialog::backdrop {
           this._drawing = !1, this._ctx.restore();
         }, _updatePoly: function(A, L) {
           if (this._drawing) {
-            var Q, ue, ve, Xe, zt = A._parts, ia = zt.length, ma = this._ctx;
-            if (ia) {
-              for (ma.beginPath(), Q = 0; Q < ia; Q++) {
+            var Q, ue, ve, Xe, zt = A._parts, na = zt.length, ma = this._ctx;
+            if (na) {
+              for (ma.beginPath(), Q = 0; Q < na; Q++) {
                 for (ue = 0, ve = zt[Q].length; ue < ve; ue++) Xe = zt[Q][ue], ma[ue ? "lineTo" : "moveTo"](Xe.x, Xe.y);
                 L && ma.closePath();
               }
@@ -111955,7 +111956,7 @@ dialog::backdrop {
           if (L.fire("dragend", A), ue) L.fire("moveend");
           else {
             this._prunePositions(+/* @__PURE__ */ new Date());
-            var ve = this._lastPos.subtract(this._positions[0]), Xe = (this._lastTime - this._times[0]) / 1e3, zt = Q.easeLinearity, ia = ve.multiplyBy(zt / Xe), ma = ia.distanceTo([0, 0]), Ja = Math.min(Q.inertiaMaxSpeed, ma), Ei = ia.multiplyBy(Ja / ma), pn = Ja / (Q.inertiaDeceleration * zt), fr = Ei.multiplyBy(-pn / 2).round();
+            var ve = this._lastPos.subtract(this._positions[0]), Xe = (this._lastTime - this._times[0]) / 1e3, zt = Q.easeLinearity, na = ve.multiplyBy(zt / Xe), ma = na.distanceTo([0, 0]), Ja = Math.min(Q.inertiaMaxSpeed, ma), Ei = na.multiplyBy(Ja / ma), pn = Ja / (Q.inertiaDeceleration * zt), fr = Ei.multiplyBy(-pn / 2).round();
             fr.x || fr.y ? (fr = L._limitOffset(fr, L.options.maxBounds), Ct(function() {
               L.panBy(fr, { duration: pn, easeLinearity: zt, noMoveStart: !0, animate: !0 });
             })) : L.fire("moveend");
@@ -112897,7 +112898,7 @@ dialog::backdrop {
         return this._eventedParent = e, this._eventedParentData = t, this;
       }
     }, jO = { $version: 8, $root: { version: { required: !0, type: "enum", values: [8] }, name: { type: "string" }, metadata: { type: "*" }, center: { type: "array", value: "number", length: 2 }, centerAltitude: { type: "number" }, zoom: { type: "number" }, bearing: { type: "number", default: 0, period: 360, units: "degrees" }, pitch: { type: "number", default: 0, units: "degrees" }, roll: { type: "number", default: 0, units: "degrees" }, state: { type: "state", default: {} }, light: { type: "light" }, sky: { type: "sky" }, projection: { type: "projection" }, terrain: { type: "terrain" }, sources: { required: !0, type: "sources" }, sprite: { type: "sprite" }, glyphs: { type: "string" }, "font-faces": { type: "fontFaces" }, transition: { type: "transition" }, layers: { required: !0, type: "array", value: "layer" } }, sources: { "*": { type: "source" } }, source: ["source_vector", "source_raster", "source_raster_dem", "source_geojson", "source_video", "source_image"], source_vector: { type: { required: !0, type: "enum", values: { vector: {} } }, url: { type: "string" }, tiles: { type: "array", value: "string" }, bounds: { type: "array", value: "number", length: 4, default: [-180, -85.051129, 180, 85.051129] }, scheme: { type: "enum", values: { xyz: {}, tms: {} }, default: "xyz" }, minzoom: { type: "number", default: 0 }, maxzoom: { type: "number", default: 22 }, attribution: { type: "string" }, promoteId: { type: "promoteId" }, volatile: { type: "boolean", default: !1 }, encoding: { type: "enum", values: { mvt: {}, mlt: {} }, default: "mvt" }, "*": { type: "*" } }, source_raster: { type: { required: !0, type: "enum", values: { raster: {} } }, url: { type: "string" }, tiles: { type: "array", value: "string" }, bounds: { type: "array", value: "number", length: 4, default: [-180, -85.051129, 180, 85.051129] }, minzoom: { type: "number", default: 0 }, maxzoom: { type: "number", default: 22 }, tileSize: { type: "number", default: 512, units: "pixels" }, scheme: { type: "enum", values: { xyz: {}, tms: {} }, default: "xyz" }, attribution: { type: "string" }, volatile: { type: "boolean", default: !1 }, "*": { type: "*" } }, source_raster_dem: { type: { required: !0, type: "enum", values: { "raster-dem": {} } }, url: { type: "string" }, tiles: { type: "array", value: "string" }, bounds: { type: "array", value: "number", length: 4, default: [-180, -85.051129, 180, 85.051129] }, minzoom: { type: "number", default: 0 }, maxzoom: { type: "number", default: 22 }, tileSize: { type: "number", default: 512, units: "pixels" }, attribution: { type: "string" }, encoding: { type: "enum", values: { terrarium: {}, mapbox: {}, custom: {} }, default: "mapbox" }, redFactor: { type: "number", default: 1 }, blueFactor: { type: "number", default: 1 }, greenFactor: { type: "number", default: 1 }, baseShift: { type: "number", default: 0 }, volatile: { type: "boolean", default: !1 }, "*": { type: "*" } }, source_geojson: { type: { required: !0, type: "enum", values: { geojson: {} } }, data: { required: !0, type: "*" }, maxzoom: { type: "number", default: 18 }, attribution: { type: "string" }, buffer: { type: "number", default: 128, maximum: 512, minimum: 0 }, filter: { type: "filter" }, tolerance: { type: "number", default: 0.375 }, cluster: { type: "boolean", default: !1 }, clusterRadius: { type: "number", default: 50, minimum: 0 }, clusterMaxZoom: { type: "number" }, clusterMinPoints: { type: "number" }, clusterProperties: { type: "*" }, lineMetrics: { type: "boolean", default: !1 }, generateId: { type: "boolean", default: !1 }, promoteId: { type: "promoteId" } }, source_video: { type: { required: !0, type: "enum", values: { video: {} } }, urls: { required: !0, type: "array", value: "string" }, coordinates: { required: !0, type: "array", length: 4, value: { type: "array", length: 2, value: "number" } } }, source_image: { type: { required: !0, type: "enum", values: { image: {} } }, url: { type: "string" }, coordinates: { required: !0, type: "array", length: 4, value: { type: "array", length: 2, value: "number" } } }, layer: { id: { type: "string", required: !0 }, type: { type: "enum", values: { fill: {}, line: {}, symbol: {}, circle: {}, heatmap: {}, "fill-extrusion": {}, raster: {}, hillshade: {}, "color-relief": {}, background: {} }, required: !0 }, metadata: { type: "*" }, source: { type: "string" }, "source-layer": { type: "string" }, minzoom: { type: "number", minimum: 0, maximum: 24 }, maxzoom: { type: "number", minimum: 0, maximum: 24 }, filter: { type: "filter" }, layout: { type: "layout" }, paint: { type: "paint" } }, layout: ["layout_fill", "layout_line", "layout_circle", "layout_heatmap", "layout_fill-extrusion", "layout_symbol", "layout_raster", "layout_hillshade", "layout_color-relief", "layout_background"], layout_background: { visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", expression: { interpolated: !1, parameters: ["global-state"] }, "property-type": "data-constant" } }, layout_fill: { "fill-sort-key": { type: "number", expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", expression: { interpolated: !1, parameters: ["global-state"] }, "property-type": "data-constant" } }, layout_circle: { "circle-sort-key": { type: "number", expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", expression: { interpolated: !1, parameters: ["global-state"] }, "property-type": "data-constant" } }, layout_heatmap: { visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", expression: { interpolated: !1, parameters: ["global-state"] }, "property-type": "data-constant" } }, "layout_fill-extrusion": { visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", expression: { interpolated: !1, parameters: ["global-state"] }, "property-type": "data-constant" }, "fill-extrusion-rounded-corner-distance": { type: "number", default: 0, minimum: 0, units: "meters", "property-type": "constant" } }, layout_line: { "line-cap": { type: "enum", values: { butt: {}, round: {}, square: {} }, default: "butt", expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "line-join": { type: "enum", values: { bevel: {}, round: {}, miter: {} }, default: "miter", expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "line-miter-limit": { type: "number", default: 2, requires: [{ "line-join": "miter" }], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "line-round-limit": { type: "number", default: 1.05, requires: [{ "line-join": "round" }], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "line-sort-key": { type: "number", expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", expression: { interpolated: !1, parameters: ["global-state"] }, "property-type": "data-constant" } }, layout_symbol: { "symbol-placement": { type: "enum", values: { point: {}, line: {}, "line-center": {} }, default: "point", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "symbol-spacing": { type: "number", default: 250, minimum: 1, units: "pixels", requires: [{ "symbol-placement": "line" }], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "symbol-avoid-edges": { type: "boolean", default: !1, expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "symbol-sort-key": { type: "number", expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "symbol-z-order": { type: "enum", values: { auto: {}, "viewport-y": {}, source: {} }, default: "auto", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-allow-overlap": { type: "boolean", default: !1, requires: ["icon-image", { "!": "icon-overlap" }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-overlap": { type: "enum", values: { never: {}, always: {}, cooperative: {} }, requires: ["icon-image"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-ignore-placement": { type: "boolean", default: !1, requires: ["icon-image"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-optional": { type: "boolean", default: !1, requires: ["icon-image", "text-field"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-rotation-alignment": { type: "enum", values: { map: {}, viewport: {}, auto: {} }, default: "auto", requires: ["icon-image"], expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "icon-size": { type: "number", default: 1, minimum: 0, units: "factor of the original icon size", requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "icon-text-fit": { type: "enum", values: { none: {}, width: {}, height: {}, both: {} }, default: "none", requires: ["icon-image", "text-field"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-text-fit-padding": { type: "array", value: "number", length: 4, default: [0, 0, 0, 0], units: "pixels", requires: ["icon-image", "text-field", { "icon-text-fit": ["both", "width", "height"] }], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-image": { type: "resolvedImage", tokens: !0, expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "icon-rotate": { type: "number", default: 0, period: 360, units: "degrees", requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "icon-padding": { type: "padding", default: [2], units: "pixels", requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "icon-keep-upright": { type: "boolean", default: !1, requires: ["icon-image", { "icon-rotation-alignment": "map" }, { "symbol-placement": ["line", "line-center"] }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-offset": { type: "array", value: "number", length: 2, default: [0, 0], requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "icon-anchor": { type: "enum", values: { center: {}, left: {}, right: {}, top: {}, bottom: {}, "top-left": {}, "top-right": {}, "bottom-left": {}, "bottom-right": {} }, default: "center", requires: ["icon-image"], expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "icon-pitch-alignment": { type: "enum", values: { map: {}, viewport: {}, auto: {} }, default: "auto", requires: ["icon-image"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-pitch-alignment": { type: "enum", values: { map: {}, viewport: {}, auto: {} }, default: "auto", requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-rotation-alignment": { type: "enum", values: { map: {}, viewport: {}, "viewport-glyph": {}, auto: {} }, default: "auto", requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-field": { type: "formatted", default: "", tokens: !0, expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-font": { type: "array", value: "string", default: ["Open Sans Regular", "Arial Unicode MS Regular"], requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-size": { type: "number", default: 16, minimum: 0, units: "pixels", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-max-width": { type: "number", default: 10, minimum: 0, units: "ems", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-line-height": { type: "number", default: 1.2, units: "ems", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-letter-spacing": { type: "number", default: 0, units: "ems", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-justify": { type: "enum", values: { auto: {}, left: {}, center: {}, right: {} }, default: "center", requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-radial-offset": { type: "number", units: "ems", default: 0, requires: ["text-field"], "property-type": "data-driven", expression: { interpolated: !0, parameters: ["zoom", "feature"] } }, "text-variable-anchor": { type: "array", value: "enum", values: { center: {}, left: {}, right: {}, top: {}, bottom: {}, "top-left": {}, "top-right": {}, "bottom-left": {}, "bottom-right": {} }, requires: ["text-field", { "symbol-placement": ["point"] }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-variable-anchor-offset": { type: "variableAnchorOffsetCollection", requires: ["text-field", { "symbol-placement": ["point"] }], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-anchor": { type: "enum", values: { center: {}, left: {}, right: {}, top: {}, bottom: {}, "top-left": {}, "top-right": {}, "bottom-left": {}, "bottom-right": {} }, default: "center", requires: ["text-field", { "!": "text-variable-anchor" }], expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-max-angle": { type: "number", default: 45, units: "degrees", requires: ["text-field", { "symbol-placement": ["line", "line-center"] }], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-writing-mode": { type: "array", value: "enum", values: { horizontal: {}, vertical: {} }, requires: ["text-field", { "symbol-placement": ["point"] }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-rotate": { type: "number", default: 0, period: 360, units: "degrees", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-padding": { type: "number", default: 2, minimum: 0, units: "pixels", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-keep-upright": { type: "boolean", default: !0, requires: ["text-field", { "text-rotation-alignment": "map" }, { "symbol-placement": ["line", "line-center"] }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-transform": { type: "enum", values: { none: {}, uppercase: {}, lowercase: {} }, default: "none", requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-offset": { type: "array", value: "number", units: "ems", length: 2, default: [0, 0], requires: ["text-field", { "!": "text-radial-offset" }], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "text-allow-overlap": { type: "boolean", default: !1, requires: ["text-field", { "!": "text-overlap" }], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-overlap": { type: "enum", values: { never: {}, always: {}, cooperative: {} }, requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-ignore-placement": { type: "boolean", default: !1, requires: ["text-field"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-optional": { type: "boolean", default: !1, requires: ["text-field", "icon-image"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "symbol-height-offset": { type: "number", default: 0, units: "meters", requires: [{ "symbol-placement": ["point"] }], expression: { interpolated: !0, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, "symbol-height-anchor": { type: "enum", values: { ground: {}, absolute: {} }, default: "ground", requires: ["symbol-height-offset"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", expression: { interpolated: !1, parameters: ["global-state"] }, "property-type": "data-constant" } }, layout_raster: { visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", expression: { interpolated: !1, parameters: ["global-state"] }, "property-type": "data-constant" } }, layout_hillshade: { visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", expression: { interpolated: !1, parameters: ["global-state"] }, "property-type": "data-constant" } }, "layout_color-relief": { visibility: { type: "enum", values: { visible: {}, none: {} }, default: "visible", expression: { interpolated: !1, parameters: ["global-state"] }, "property-type": "data-constant" } }, filter: { type: "boolean", expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "data-driven" }, filter_operator: { type: "enum", values: { "==": {}, "!=": {}, ">": {}, ">=": {}, "<": {}, "<=": {}, in: {}, "!in": {}, all: {}, any: {}, none: {}, has: {}, "!has": {} } }, geometry_type: { type: "enum", values: { Point: {}, LineString: {}, Polygon: {} } }, function: { expression: { type: "expression" }, stops: { type: "array", value: "function_stop" }, base: { type: "number", default: 1, minimum: 0 }, property: { type: "string", default: "$zoom" }, type: { type: "enum", values: { identity: {}, exponential: {}, interval: {}, categorical: {} }, default: "exponential" }, colorSpace: { type: "enum", values: { rgb: {}, lab: {}, hcl: {} }, default: "rgb" }, default: { type: "*", required: !1 } }, function_stop: { type: "array", minimum: 0, maximum: 24, value: ["number", "color"], length: 2 }, expression: { type: "array", value: "expression_name", minimum: 1 }, light: { anchor: { type: "enum", default: "viewport", values: { map: {}, viewport: {} }, "property-type": "data-constant", transition: !1, expression: { interpolated: !1, parameters: ["zoom"] } }, position: { type: "array", default: [1.15, 210, 30], length: 3, value: "number", "property-type": "data-constant", transition: !0, expression: { interpolated: !0, parameters: ["zoom"] } }, color: { type: "color", "property-type": "data-constant", default: "#ffffff", expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, intensity: { type: "number", "property-type": "data-constant", default: 0.5, minimum: 0, maximum: 1, expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 } }, sky: { "sky-color": { type: "color", "property-type": "data-constant", default: "#88C6FC", expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, "horizon-color": { type: "color", "property-type": "data-constant", default: "#ffffff", expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, "fog-color": { type: "color", "property-type": "data-constant", default: "#ffffff", expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, "fog-ground-blend": { type: "number", "property-type": "data-constant", default: 0.5, minimum: 0, maximum: 1, expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, "horizon-fog-blend": { type: "number", "property-type": "data-constant", default: 0.8, minimum: 0, maximum: 1, expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, "sky-horizon-blend": { type: "number", "property-type": "data-constant", default: 0.8, minimum: 0, maximum: 1, expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 }, "atmosphere-blend": { type: "number", "property-type": "data-constant", default: 0.8, minimum: 0, maximum: 1, expression: { interpolated: !0, parameters: ["zoom"] }, transition: !0 } }, terrain: { source: { type: "string", required: !0 }, exaggeration: { type: "number", minimum: 0, default: 1 } }, projection: { type: { type: "projectionDefinition", default: "mercator", "property-type": "data-constant", transition: !1, expression: { interpolated: !0, parameters: ["zoom"] } } }, paint: ["paint_fill", "paint_line", "paint_circle", "paint_heatmap", "paint_fill-extrusion", "paint_symbol", "paint_raster", "paint_hillshade", "paint_color-relief", "paint_background"], paint_fill: { "fill-antialias": { type: "boolean", default: !0, expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "fill-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "fill-layer-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom", "global-state"] }, "property-type": "data-constant" }, "fill-color": { type: "color", default: "#000000", transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "fill-outline-color": { type: "color", transition: !0, requires: [{ "!": "fill-pattern" }, { "fill-antialias": !0 }], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "fill-translate": { type: "array", value: "number", length: 2, default: [0, 0], transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "fill-translate-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "map", requires: ["fill-translate"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "fill-pattern": { type: "resolvedImage", transition: !0, expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "cross-faded-data-driven" } }, "paint_fill-extrusion": { "fill-extrusion-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "fill-extrusion-color": { type: "color", default: "#000000", transition: !0, requires: [{ "!": "fill-extrusion-pattern" }], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "fill-extrusion-translate": { type: "array", value: "number", length: 2, default: [0, 0], transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "fill-extrusion-translate-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "map", requires: ["fill-extrusion-translate"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "fill-extrusion-pattern": { type: "resolvedImage", transition: !0, expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "cross-faded-data-driven" }, "fill-extrusion-height": { type: "number", default: 0, minimum: 0, units: "meters", transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "fill-extrusion-base": { type: "number", default: 0, minimum: 0, units: "meters", transition: !0, requires: ["fill-extrusion-height"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "fill-extrusion-vertical-gradient": { type: "boolean", default: !0, transition: !1, expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" } }, paint_line: { "line-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "line-layer-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom", "global-state"] }, "property-type": "data-constant" }, "line-color": { type: "color", default: "#000000", transition: !0, requires: [{ "!": "line-pattern" }], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "line-translate": { type: "array", value: "number", length: 2, default: [0, 0], transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "line-translate-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "map", requires: ["line-translate"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "line-width": { type: "number", default: 1, minimum: 0, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "line-gap-width": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "line-offset": { type: "number", default: 0, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "line-blur": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "line-dasharray": { type: "array", value: "number", minimum: 0, transition: !0, units: "line widths", requires: [{ "!": "line-pattern" }], expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "cross-faded-data-driven" }, "line-pattern": { type: "resolvedImage", transition: !0, expression: { interpolated: !1, parameters: ["zoom", "feature"] }, "property-type": "cross-faded-data-driven" }, "line-gradient": { type: "color", transition: !1, requires: [{ "!": "line-dasharray" }, { "!": "line-pattern" }, { source: "geojson", has: { lineMetrics: !0 } }], expression: { interpolated: !0, parameters: ["line-progress"] }, "property-type": "color-ramp" } }, paint_circle: { "circle-radius": { type: "number", default: 5, minimum: 0, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "circle-color": { type: "color", default: "#000000", transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "circle-blur": { type: "number", default: 0, transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "circle-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "circle-translate": { type: "array", value: "number", length: 2, default: [0, 0], transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "circle-translate-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "map", requires: ["circle-translate"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "circle-pitch-scale": { type: "enum", values: { map: {}, viewport: {} }, default: "map", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "circle-pitch-alignment": { type: "enum", values: { map: {}, viewport: {} }, default: "viewport", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "circle-stroke-width": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "circle-stroke-color": { type: "color", default: "#000000", transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "circle-stroke-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" } }, paint_heatmap: { "heatmap-radius": { type: "number", default: 30, minimum: 1, transition: !0, units: "pixels", expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "heatmap-weight": { type: "number", default: 1, minimum: 0, transition: !1, expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "heatmap-intensity": { type: "number", default: 1, minimum: 0, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "heatmap-color": { type: "color", default: ["interpolate", ["linear"], ["heatmap-density"], 0, "rgba(0, 0, 255, 0)", 0.1, "royalblue", 0.3, "cyan", 0.5, "lime", 0.7, "yellow", 1, "red"], transition: !1, expression: { interpolated: !0, parameters: ["heatmap-density"] }, "property-type": "color-ramp" }, "heatmap-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" } }, paint_symbol: { "icon-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "icon-color": { type: "color", default: "#000000", transition: !0, requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "icon-halo-color": { type: "color", default: "rgba(0, 0, 0, 0)", transition: !0, requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "icon-halo-width": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "icon-halo-blur": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "icon-translate": { type: "array", value: "number", length: 2, default: [0, 0], transition: !0, units: "pixels", requires: ["icon-image"], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "icon-translate-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "map", requires: ["icon-image", "icon-translate"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "text-color": { type: "color", default: "#000000", transition: !0, overridable: !0, requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "text-halo-color": { type: "color", default: "rgba(0, 0, 0, 0)", transition: !0, requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "text-halo-width": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "text-halo-blur": { type: "number", default: 0, minimum: 0, transition: !0, units: "pixels", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom", "feature", "feature-state"] }, "property-type": "data-driven" }, "text-translate": { type: "array", value: "number", length: 2, default: [0, 0], transition: !0, units: "pixels", requires: ["text-field"], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "text-translate-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "map", requires: ["text-field", "text-translate"], expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" } }, paint_raster: { "raster-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-hue-rotate": { type: "number", default: 0, period: 360, transition: !0, units: "degrees", expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-brightness-min": { type: "number", default: 0, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-brightness-max": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-saturation": { type: "number", default: 0, minimum: -1, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-contrast": { type: "number", default: 0, minimum: -1, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, resampling: { type: "enum", values: { linear: {}, nearest: {} }, default: "linear", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-resampling": { type: "enum", values: { linear: {}, nearest: {} }, default: "linear", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "raster-fade-duration": { type: "number", default: 300, minimum: 0, transition: !1, units: "milliseconds", expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" } }, paint_hillshade: { "hillshade-illumination-direction": { type: "numberArray", default: 335, minimum: 0, maximum: 359, transition: !1, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "hillshade-illumination-altitude": { type: "numberArray", default: 45, minimum: 0, maximum: 90, transition: !1, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "hillshade-illumination-anchor": { type: "enum", values: { map: {}, viewport: {} }, default: "viewport", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, "hillshade-exaggeration": { type: "number", default: 0.5, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "hillshade-shadow-color": { type: "colorArray", default: "#000000", transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "hillshade-highlight-color": { type: "colorArray", default: "#FFFFFF", transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "hillshade-accent-color": { type: "color", default: "#000000", transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "hillshade-method": { type: "enum", values: { standard: {}, basic: {}, combined: {}, igor: {}, multidirectional: {} }, default: "standard", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" }, resampling: { type: "enum", values: { linear: {}, nearest: {} }, default: "linear", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" } }, "paint_color-relief": { "color-relief-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "color-relief-color": { type: "color", transition: !1, expression: { interpolated: !0, parameters: ["elevation"] }, "property-type": "color-ramp" }, resampling: { type: "enum", values: { linear: {}, nearest: {} }, default: "linear", expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "data-constant" } }, paint_background: { "background-color": { type: "color", default: "#000000", transition: !0, requires: [{ "!": "background-pattern" }], expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" }, "background-pattern": { type: "resolvedImage", transition: !0, expression: { interpolated: !1, parameters: ["zoom"] }, "property-type": "cross-faded" }, "background-opacity": { type: "number", default: 1, minimum: 0, maximum: 1, transition: !0, expression: { interpolated: !0, parameters: ["zoom"] }, "property-type": "data-constant" } }, transition: { duration: { type: "number", default: 300, minimum: 0, units: "milliseconds" }, delay: { type: "number", default: 0, minimum: 0, units: "milliseconds" } }, "property-type": { "data-driven": { type: "property-type" }, "cross-faded": { type: "property-type" }, "cross-faded-data-driven": { type: "property-type" }, "color-ramp": { type: "property-type" }, "data-constant": { type: "property-type" }, constant: { type: "property-type" } }, promoteId: { "*": { type: "string" } }, interpolation: { type: "array", value: "interpolation_name", minimum: 1 }, interpolation_name: { type: "enum", values: { linear: { syntax: { overloads: [{ parameters: [], "output-type": "interpolation" }], parameters: [] } }, exponential: { syntax: { overloads: [{ parameters: ["base"], "output-type": "interpolation" }], parameters: [{ name: "base", type: "number literal" }] } }, "cubic-bezier": { syntax: { overloads: [{ parameters: ["x1", "y1", "x2", "y2"], "output-type": "interpolation" }], parameters: [{ name: "x1", type: "number literal" }, { name: "y1", type: "number literal" }, { name: "x2", type: "number literal" }, { name: "y2", type: "number literal" }] } } } } };
-    const aa = jO, toe = ["type", "source", "source-layer", "minzoom", "maxzoom", "filter", "layout"];
+    const ia = jO, toe = ["type", "source", "source-layer", "minzoom", "maxzoom", "filter", "layout"];
     var Da = class {
       constructor(e, t, a, i, n = "error") {
         this.message = (e ? `${e}: ` : "") + a, i && (this.identifier = i), this.severity = n, t != null && t.__line__ && (this.line = t.__line__);
@@ -115831,7 +115832,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
       let t = e.value, a = e.key, i = xf(e);
       return i.length || (t.indexOf("{fontstack}") === -1 && i.push(new Da(a, t, '"glyphs" url must include a "{fontstack}" token')), t.indexOf("{range}") === -1 && i.push(new Da(a, t, '"glyphs" url must include a "{range}" token'))), i;
     }
-    function Qc(e, t = aa) {
+    function Qc(e, t = ia) {
       let a = [];
       return a = a.concat(M5({ key: "", value: e, valueSpec: t.$root, styleSpec: t, style: e, validateSpec: M5, objectElementValidators: { glyphs: HF, "*": () => [] } })), e.constants && (a = a.concat(wF({ key: "constants", value: e.constants }))), NF(a);
     }
@@ -115870,7 +115871,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
     function $se(e, t, a) {
       return new Jse(e, t, a);
     }
-    const dc = Qc, VF = new Set(Object.keys(aa).filter((e) => e.startsWith("source_")).map((e) => e.slice(7).replaceAll("_", "-")));
+    const dc = Qc, VF = new Set(Object.keys(ia).filter((e) => e.startsWith("source_")).map((e) => e.slice(7).replaceAll("_", "-")));
     function ele(e) {
       return Object.entries(e.sources ?? {}).filter(([, t]) => !VF.has(t.type)).map(([t]) => `sources.${t}`);
     }
@@ -115884,7 +115885,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
       return a;
     }
     function R1(e, t, a, i) {
-      return i?.validate !== !1 && L8(e, t({ styleSpec: aa, ...a }));
+      return i?.validate !== !1 && L8(e, t({ styleSpec: ia, ...a }));
     }
     var O8 = class x$ {
       constructor(t, a, i) {
@@ -116524,7 +116525,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
       }
     };
     let fle;
-    const yle = () => fle ||= new zl({ "raster-opacity": new si(aa.paint_raster["raster-opacity"], "raster-opacity"), "raster-hue-rotate": new si(aa.paint_raster["raster-hue-rotate"], "raster-hue-rotate"), "raster-brightness-min": new si(aa.paint_raster["raster-brightness-min"], "raster-brightness-min"), "raster-brightness-max": new si(aa.paint_raster["raster-brightness-max"], "raster-brightness-max"), "raster-saturation": new si(aa.paint_raster["raster-saturation"], "raster-saturation"), "raster-contrast": new si(aa.paint_raster["raster-contrast"], "raster-contrast"), resampling: new si(aa.paint_raster.resampling, "resampling"), "raster-resampling": new si(aa.paint_raster["raster-resampling"], "raster-resampling"), "raster-fade-duration": new si(aa.paint_raster["raster-fade-duration"], "raster-fade-duration") });
+    const yle = () => fle ||= new zl({ "raster-opacity": new si(ia.paint_raster["raster-opacity"], "raster-opacity"), "raster-hue-rotate": new si(ia.paint_raster["raster-hue-rotate"], "raster-hue-rotate"), "raster-brightness-min": new si(ia.paint_raster["raster-brightness-min"], "raster-brightness-min"), "raster-brightness-max": new si(ia.paint_raster["raster-brightness-max"], "raster-brightness-max"), "raster-saturation": new si(ia.paint_raster["raster-saturation"], "raster-saturation"), "raster-contrast": new si(ia.paint_raster["raster-contrast"], "raster-contrast"), resampling: new si(ia.paint_raster.resampling, "resampling"), "raster-resampling": new si(ia.paint_raster["raster-resampling"], "raster-resampling"), "raster-fade-duration": new si(ia.paint_raster["raster-fade-duration"], "raster-fade-duration") });
     var ble = { get paint() {
       return yle();
     } };
@@ -117952,9 +117953,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
     }
     let sue;
     pi("CircleBucket", dE, { omit: ["layers"] });
-    const lue = () => sue ||= new zl({ "circle-sort-key": new qi(aa.layout_circle["circle-sort-key"], "circle-sort-key") });
+    const lue = () => sue ||= new zl({ "circle-sort-key": new qi(ia.layout_circle["circle-sort-key"], "circle-sort-key") });
     let uue;
-    const cue = () => uue ||= new zl({ "circle-radius": new qi(aa.paint_circle["circle-radius"], "circle-radius"), "circle-color": new qi(aa.paint_circle["circle-color"], "circle-color"), "circle-blur": new qi(aa.paint_circle["circle-blur"], "circle-blur"), "circle-opacity": new qi(aa.paint_circle["circle-opacity"], "circle-opacity"), "circle-translate": new si(aa.paint_circle["circle-translate"], "circle-translate"), "circle-translate-anchor": new si(aa.paint_circle["circle-translate-anchor"], "circle-translate-anchor"), "circle-pitch-scale": new si(aa.paint_circle["circle-pitch-scale"], "circle-pitch-scale"), "circle-pitch-alignment": new si(aa.paint_circle["circle-pitch-alignment"], "circle-pitch-alignment"), "circle-stroke-width": new qi(aa.paint_circle["circle-stroke-width"], "circle-stroke-width"), "circle-stroke-color": new qi(aa.paint_circle["circle-stroke-color"], "circle-stroke-color"), "circle-stroke-opacity": new qi(aa.paint_circle["circle-stroke-opacity"], "circle-stroke-opacity") });
+    const cue = () => uue ||= new zl({ "circle-radius": new qi(ia.paint_circle["circle-radius"], "circle-radius"), "circle-color": new qi(ia.paint_circle["circle-color"], "circle-color"), "circle-blur": new qi(ia.paint_circle["circle-blur"], "circle-blur"), "circle-opacity": new qi(ia.paint_circle["circle-opacity"], "circle-opacity"), "circle-translate": new si(ia.paint_circle["circle-translate"], "circle-translate"), "circle-translate-anchor": new si(ia.paint_circle["circle-translate-anchor"], "circle-translate-anchor"), "circle-pitch-scale": new si(ia.paint_circle["circle-pitch-scale"], "circle-pitch-scale"), "circle-pitch-alignment": new si(ia.paint_circle["circle-pitch-alignment"], "circle-pitch-alignment"), "circle-stroke-width": new qi(ia.paint_circle["circle-stroke-width"], "circle-stroke-width"), "circle-stroke-color": new qi(ia.paint_circle["circle-stroke-color"], "circle-stroke-color"), "circle-stroke-opacity": new qi(ia.paint_circle["circle-stroke-opacity"], "circle-stroke-opacity") });
     var due = { get paint() {
       return cue();
     }, get layout() {
@@ -117980,7 +117981,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
     };
     let pue;
     pi("HeatmapBucket", IR, { omit: ["layers"] });
-    const hue = () => pue ||= new zl({ "heatmap-radius": new qi(aa.paint_heatmap["heatmap-radius"], "heatmap-radius"), "heatmap-weight": new qi(aa.paint_heatmap["heatmap-weight"], "heatmap-weight"), "heatmap-intensity": new si(aa.paint_heatmap["heatmap-intensity"], "heatmap-intensity"), "heatmap-color": new L5(aa.paint_heatmap["heatmap-color"], "heatmap-color"), "heatmap-opacity": new si(aa.paint_heatmap["heatmap-opacity"], "heatmap-opacity") });
+    const hue = () => pue ||= new zl({ "heatmap-radius": new qi(ia.paint_heatmap["heatmap-radius"], "heatmap-radius"), "heatmap-weight": new qi(ia.paint_heatmap["heatmap-weight"], "heatmap-weight"), "heatmap-intensity": new si(ia.paint_heatmap["heatmap-intensity"], "heatmap-intensity"), "heatmap-color": new L5(ia.paint_heatmap["heatmap-color"], "heatmap-color"), "heatmap-opacity": new si(ia.paint_heatmap["heatmap-opacity"], "heatmap-opacity") });
     var gue = { get paint() {
       return hue();
     } };
@@ -118096,7 +118097,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
       }
     };
     let bue;
-    const vue = () => bue ||= new zl({ "hillshade-illumination-direction": new si(aa.paint_hillshade["hillshade-illumination-direction"], "hillshade-illumination-direction"), "hillshade-illumination-altitude": new si(aa.paint_hillshade["hillshade-illumination-altitude"], "hillshade-illumination-altitude"), "hillshade-illumination-anchor": new si(aa.paint_hillshade["hillshade-illumination-anchor"], "hillshade-illumination-anchor"), "hillshade-exaggeration": new si(aa.paint_hillshade["hillshade-exaggeration"], "hillshade-exaggeration"), "hillshade-shadow-color": new si(aa.paint_hillshade["hillshade-shadow-color"], "hillshade-shadow-color"), "hillshade-highlight-color": new si(aa.paint_hillshade["hillshade-highlight-color"], "hillshade-highlight-color"), "hillshade-accent-color": new si(aa.paint_hillshade["hillshade-accent-color"], "hillshade-accent-color"), "hillshade-method": new si(aa.paint_hillshade["hillshade-method"], "hillshade-method"), resampling: new si(aa.paint_hillshade.resampling, "resampling") });
+    const vue = () => bue ||= new zl({ "hillshade-illumination-direction": new si(ia.paint_hillshade["hillshade-illumination-direction"], "hillshade-illumination-direction"), "hillshade-illumination-altitude": new si(ia.paint_hillshade["hillshade-illumination-altitude"], "hillshade-illumination-altitude"), "hillshade-illumination-anchor": new si(ia.paint_hillshade["hillshade-illumination-anchor"], "hillshade-illumination-anchor"), "hillshade-exaggeration": new si(ia.paint_hillshade["hillshade-exaggeration"], "hillshade-exaggeration"), "hillshade-shadow-color": new si(ia.paint_hillshade["hillshade-shadow-color"], "hillshade-shadow-color"), "hillshade-highlight-color": new si(ia.paint_hillshade["hillshade-highlight-color"], "hillshade-highlight-color"), "hillshade-accent-color": new si(ia.paint_hillshade["hillshade-accent-color"], "hillshade-accent-color"), "hillshade-method": new si(ia.paint_hillshade["hillshade-method"], "hillshade-method"), resampling: new si(ia.paint_hillshade.resampling, "resampling") });
     var Aue = { get paint() {
       return vue();
     } };
@@ -118116,7 +118117,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
       }
     };
     let xue;
-    const zue = () => xue ||= new zl({ "color-relief-opacity": new si(aa["paint_color-relief"]["color-relief-opacity"], "color-relief-opacity"), "color-relief-color": new L5(aa["paint_color-relief"]["color-relief-color"], "color-relief-color"), resampling: new si(aa["paint_color-relief"].resampling, "resampling") });
+    const zue = () => xue ||= new zl({ "color-relief-opacity": new si(ia["paint_color-relief"]["color-relief-opacity"], "color-relief-opacity"), "color-relief-color": new L5(ia["paint_color-relief"]["color-relief-color"], "color-relief-color"), resampling: new si(ia["paint_color-relief"].resampling, "resampling") });
     var Sue = { get paint() {
       return zue();
     } };
@@ -118949,9 +118950,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
     };
     let ice;
     pi("FillBucket", ZR, { omit: ["layers", "patternFeatures"] });
-    const nce = () => ice ||= new zl({ "fill-sort-key": new qi(aa.layout_fill["fill-sort-key"], "fill-sort-key") });
+    const nce = () => ice ||= new zl({ "fill-sort-key": new qi(ia.layout_fill["fill-sort-key"], "fill-sort-key") });
     let rce;
-    const oce = () => rce ||= new zl({ "fill-antialias": new si(aa.paint_fill["fill-antialias"], "fill-antialias"), "fill-opacity": new qi(aa.paint_fill["fill-opacity"], "fill-opacity"), "fill-layer-opacity": new si(aa.paint_fill["fill-layer-opacity"], "fill-layer-opacity"), "fill-color": new qi(aa.paint_fill["fill-color"], "fill-color"), "fill-outline-color": new qi(aa.paint_fill["fill-outline-color"], "fill-outline-color"), "fill-translate": new si(aa.paint_fill["fill-translate"], "fill-translate"), "fill-translate-anchor": new si(aa.paint_fill["fill-translate-anchor"], "fill-translate-anchor"), "fill-pattern": new V1(aa.paint_fill["fill-pattern"], "fill-pattern") });
+    const oce = () => rce ||= new zl({ "fill-antialias": new si(ia.paint_fill["fill-antialias"], "fill-antialias"), "fill-opacity": new qi(ia.paint_fill["fill-opacity"], "fill-opacity"), "fill-layer-opacity": new si(ia.paint_fill["fill-layer-opacity"], "fill-layer-opacity"), "fill-color": new qi(ia.paint_fill["fill-color"], "fill-color"), "fill-outline-color": new qi(ia.paint_fill["fill-outline-color"], "fill-outline-color"), "fill-translate": new si(ia.paint_fill["fill-translate"], "fill-translate"), "fill-translate-anchor": new si(ia.paint_fill["fill-translate-anchor"], "fill-translate-anchor"), "fill-pattern": new V1(ia.paint_fill["fill-pattern"], "fill-pattern") });
     var sce = { get paint() {
       return oce();
     }, get layout() {
@@ -119386,9 +119387,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
     }
     let zce;
     pi("FillExtrusionBucket", iH, { omit: ["layers", "features"] });
-    const Sce = () => zce ||= new zl({ "fill-extrusion-rounded-corner-distance": new si(aa["layout_fill-extrusion"]["fill-extrusion-rounded-corner-distance"], "fill-extrusion-rounded-corner-distance") });
+    const Sce = () => zce ||= new zl({ "fill-extrusion-rounded-corner-distance": new si(ia["layout_fill-extrusion"]["fill-extrusion-rounded-corner-distance"], "fill-extrusion-rounded-corner-distance") });
     let jce;
-    const Pce = () => jce ||= new zl({ "fill-extrusion-opacity": new si(aa["paint_fill-extrusion"]["fill-extrusion-opacity"], "fill-extrusion-opacity"), "fill-extrusion-color": new qi(aa["paint_fill-extrusion"]["fill-extrusion-color"], "fill-extrusion-color"), "fill-extrusion-translate": new si(aa["paint_fill-extrusion"]["fill-extrusion-translate"], "fill-extrusion-translate"), "fill-extrusion-translate-anchor": new si(aa["paint_fill-extrusion"]["fill-extrusion-translate-anchor"], "fill-extrusion-translate-anchor"), "fill-extrusion-pattern": new V1(aa["paint_fill-extrusion"]["fill-extrusion-pattern"], "fill-extrusion-pattern"), "fill-extrusion-height": new qi(aa["paint_fill-extrusion"]["fill-extrusion-height"], "fill-extrusion-height"), "fill-extrusion-base": new qi(aa["paint_fill-extrusion"]["fill-extrusion-base"], "fill-extrusion-base"), "fill-extrusion-vertical-gradient": new si(aa["paint_fill-extrusion"]["fill-extrusion-vertical-gradient"], "fill-extrusion-vertical-gradient") });
+    const Pce = () => jce ||= new zl({ "fill-extrusion-opacity": new si(ia["paint_fill-extrusion"]["fill-extrusion-opacity"], "fill-extrusion-opacity"), "fill-extrusion-color": new qi(ia["paint_fill-extrusion"]["fill-extrusion-color"], "fill-extrusion-color"), "fill-extrusion-translate": new si(ia["paint_fill-extrusion"]["fill-extrusion-translate"], "fill-extrusion-translate"), "fill-extrusion-translate-anchor": new si(ia["paint_fill-extrusion"]["fill-extrusion-translate-anchor"], "fill-extrusion-translate-anchor"), "fill-extrusion-pattern": new V1(ia["paint_fill-extrusion"]["fill-extrusion-pattern"], "fill-extrusion-pattern"), "fill-extrusion-height": new qi(ia["paint_fill-extrusion"]["fill-extrusion-height"], "fill-extrusion-height"), "fill-extrusion-base": new qi(ia["paint_fill-extrusion"]["fill-extrusion-base"], "fill-extrusion-base"), "fill-extrusion-vertical-gradient": new si(ia["paint_fill-extrusion"]["fill-extrusion-vertical-gradient"], "fill-extrusion-vertical-gradient") });
     var Cce = { get paint() {
       return Pce();
     }, get layout() {
@@ -119619,9 +119620,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
     };
     let Gce;
     pi("LineBucket", oH, { omit: ["layers", "patternFeatures"] });
-    const Uce = () => Gce ||= new zl({ "line-cap": new qi(aa.layout_line["line-cap"], "line-cap"), "line-join": new qi(aa.layout_line["line-join"], "line-join"), "line-miter-limit": new qi(aa.layout_line["line-miter-limit"], "line-miter-limit"), "line-round-limit": new qi(aa.layout_line["line-round-limit"], "line-round-limit"), "line-sort-key": new qi(aa.layout_line["line-sort-key"], "line-sort-key") });
+    const Uce = () => Gce ||= new zl({ "line-cap": new qi(ia.layout_line["line-cap"], "line-cap"), "line-join": new qi(ia.layout_line["line-join"], "line-join"), "line-miter-limit": new qi(ia.layout_line["line-miter-limit"], "line-miter-limit"), "line-round-limit": new qi(ia.layout_line["line-round-limit"], "line-round-limit"), "line-sort-key": new qi(ia.layout_line["line-sort-key"], "line-sort-key") });
     let qce;
-    const Wce = () => qce ||= new zl({ "line-opacity": new qi(aa.paint_line["line-opacity"], "line-opacity"), "line-layer-opacity": new si(aa.paint_line["line-layer-opacity"], "line-layer-opacity"), "line-color": new qi(aa.paint_line["line-color"], "line-color"), "line-translate": new si(aa.paint_line["line-translate"], "line-translate"), "line-translate-anchor": new si(aa.paint_line["line-translate-anchor"], "line-translate-anchor"), "line-width": new qi(aa.paint_line["line-width"], "line-width"), "line-gap-width": new qi(aa.paint_line["line-gap-width"], "line-gap-width"), "line-offset": new qi(aa.paint_line["line-offset"], "line-offset"), "line-blur": new qi(aa.paint_line["line-blur"], "line-blur"), "line-dasharray": new V1(aa.paint_line["line-dasharray"], "line-dasharray"), "line-pattern": new V1(aa.paint_line["line-pattern"], "line-pattern"), "line-gradient": new L5(aa.paint_line["line-gradient"], "line-gradient") });
+    const Wce = () => qce ||= new zl({ "line-opacity": new qi(ia.paint_line["line-opacity"], "line-opacity"), "line-layer-opacity": new si(ia.paint_line["line-layer-opacity"], "line-layer-opacity"), "line-color": new qi(ia.paint_line["line-color"], "line-color"), "line-translate": new si(ia.paint_line["line-translate"], "line-translate"), "line-translate-anchor": new si(ia.paint_line["line-translate-anchor"], "line-translate-anchor"), "line-width": new qi(ia.paint_line["line-width"], "line-width"), "line-gap-width": new qi(ia.paint_line["line-gap-width"], "line-gap-width"), "line-offset": new qi(ia.paint_line["line-offset"], "line-offset"), "line-blur": new qi(ia.paint_line["line-blur"], "line-blur"), "line-dasharray": new V1(ia.paint_line["line-dasharray"], "line-dasharray"), "line-pattern": new V1(ia.paint_line["line-pattern"], "line-pattern"), "line-gradient": new L5(ia.paint_line["line-gradient"], "line-gradient") });
     var sH = { get paint() {
       return Wce();
     }, get layout() {
@@ -120433,9 +120434,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
     }
     let zde;
     pi("SymbolBucket", z0, { omit: ["layers", "collisionBoxArray", "features", "compareText"] }), z0.MAX_GLYPHS = 65535, z0.addDynamicAttributes = c2;
-    const Sde = () => zde ||= new zl({ "symbol-placement": new si(aa.layout_symbol["symbol-placement"], "symbol-placement"), "symbol-spacing": new si(aa.layout_symbol["symbol-spacing"], "symbol-spacing"), "symbol-avoid-edges": new si(aa.layout_symbol["symbol-avoid-edges"], "symbol-avoid-edges"), "symbol-sort-key": new qi(aa.layout_symbol["symbol-sort-key"], "symbol-sort-key"), "symbol-z-order": new si(aa.layout_symbol["symbol-z-order"], "symbol-z-order"), "icon-allow-overlap": new si(aa.layout_symbol["icon-allow-overlap"], "icon-allow-overlap"), "icon-overlap": new si(aa.layout_symbol["icon-overlap"], "icon-overlap"), "icon-ignore-placement": new si(aa.layout_symbol["icon-ignore-placement"], "icon-ignore-placement"), "icon-optional": new si(aa.layout_symbol["icon-optional"], "icon-optional"), "icon-rotation-alignment": new qi(aa.layout_symbol["icon-rotation-alignment"], "icon-rotation-alignment"), "icon-size": new qi(aa.layout_symbol["icon-size"], "icon-size"), "icon-text-fit": new si(aa.layout_symbol["icon-text-fit"], "icon-text-fit"), "icon-text-fit-padding": new si(aa.layout_symbol["icon-text-fit-padding"], "icon-text-fit-padding"), "icon-image": new qi(aa.layout_symbol["icon-image"], "icon-image"), "icon-rotate": new qi(aa.layout_symbol["icon-rotate"], "icon-rotate"), "icon-padding": new qi(aa.layout_symbol["icon-padding"], "icon-padding"), "icon-keep-upright": new si(aa.layout_symbol["icon-keep-upright"], "icon-keep-upright"), "icon-offset": new qi(aa.layout_symbol["icon-offset"], "icon-offset"), "icon-anchor": new qi(aa.layout_symbol["icon-anchor"], "icon-anchor"), "icon-pitch-alignment": new si(aa.layout_symbol["icon-pitch-alignment"], "icon-pitch-alignment"), "text-pitch-alignment": new si(aa.layout_symbol["text-pitch-alignment"], "text-pitch-alignment"), "text-rotation-alignment": new si(aa.layout_symbol["text-rotation-alignment"], "text-rotation-alignment"), "text-field": new qi(aa.layout_symbol["text-field"], "text-field"), "text-font": new qi(aa.layout_symbol["text-font"], "text-font"), "text-size": new qi(aa.layout_symbol["text-size"], "text-size"), "text-max-width": new qi(aa.layout_symbol["text-max-width"], "text-max-width"), "text-line-height": new si(aa.layout_symbol["text-line-height"], "text-line-height"), "text-letter-spacing": new qi(aa.layout_symbol["text-letter-spacing"], "text-letter-spacing"), "text-justify": new qi(aa.layout_symbol["text-justify"], "text-justify"), "text-radial-offset": new qi(aa.layout_symbol["text-radial-offset"], "text-radial-offset"), "text-variable-anchor": new si(aa.layout_symbol["text-variable-anchor"], "text-variable-anchor"), "text-variable-anchor-offset": new qi(aa.layout_symbol["text-variable-anchor-offset"], "text-variable-anchor-offset"), "text-anchor": new qi(aa.layout_symbol["text-anchor"], "text-anchor"), "text-max-angle": new si(aa.layout_symbol["text-max-angle"], "text-max-angle"), "text-writing-mode": new si(aa.layout_symbol["text-writing-mode"], "text-writing-mode"), "text-rotate": new qi(aa.layout_symbol["text-rotate"], "text-rotate"), "text-padding": new si(aa.layout_symbol["text-padding"], "text-padding"), "text-keep-upright": new si(aa.layout_symbol["text-keep-upright"], "text-keep-upright"), "text-transform": new qi(aa.layout_symbol["text-transform"], "text-transform"), "text-offset": new qi(aa.layout_symbol["text-offset"], "text-offset"), "text-allow-overlap": new si(aa.layout_symbol["text-allow-overlap"], "text-allow-overlap"), "text-overlap": new si(aa.layout_symbol["text-overlap"], "text-overlap"), "text-ignore-placement": new si(aa.layout_symbol["text-ignore-placement"], "text-ignore-placement"), "text-optional": new si(aa.layout_symbol["text-optional"], "text-optional"), "symbol-height-offset": new qi(aa.layout_symbol["symbol-height-offset"], "symbol-height-offset"), "symbol-height-anchor": new si(aa.layout_symbol["symbol-height-anchor"], "symbol-height-anchor") });
+    const Sde = () => zde ||= new zl({ "symbol-placement": new si(ia.layout_symbol["symbol-placement"], "symbol-placement"), "symbol-spacing": new si(ia.layout_symbol["symbol-spacing"], "symbol-spacing"), "symbol-avoid-edges": new si(ia.layout_symbol["symbol-avoid-edges"], "symbol-avoid-edges"), "symbol-sort-key": new qi(ia.layout_symbol["symbol-sort-key"], "symbol-sort-key"), "symbol-z-order": new si(ia.layout_symbol["symbol-z-order"], "symbol-z-order"), "icon-allow-overlap": new si(ia.layout_symbol["icon-allow-overlap"], "icon-allow-overlap"), "icon-overlap": new si(ia.layout_symbol["icon-overlap"], "icon-overlap"), "icon-ignore-placement": new si(ia.layout_symbol["icon-ignore-placement"], "icon-ignore-placement"), "icon-optional": new si(ia.layout_symbol["icon-optional"], "icon-optional"), "icon-rotation-alignment": new qi(ia.layout_symbol["icon-rotation-alignment"], "icon-rotation-alignment"), "icon-size": new qi(ia.layout_symbol["icon-size"], "icon-size"), "icon-text-fit": new si(ia.layout_symbol["icon-text-fit"], "icon-text-fit"), "icon-text-fit-padding": new si(ia.layout_symbol["icon-text-fit-padding"], "icon-text-fit-padding"), "icon-image": new qi(ia.layout_symbol["icon-image"], "icon-image"), "icon-rotate": new qi(ia.layout_symbol["icon-rotate"], "icon-rotate"), "icon-padding": new qi(ia.layout_symbol["icon-padding"], "icon-padding"), "icon-keep-upright": new si(ia.layout_symbol["icon-keep-upright"], "icon-keep-upright"), "icon-offset": new qi(ia.layout_symbol["icon-offset"], "icon-offset"), "icon-anchor": new qi(ia.layout_symbol["icon-anchor"], "icon-anchor"), "icon-pitch-alignment": new si(ia.layout_symbol["icon-pitch-alignment"], "icon-pitch-alignment"), "text-pitch-alignment": new si(ia.layout_symbol["text-pitch-alignment"], "text-pitch-alignment"), "text-rotation-alignment": new si(ia.layout_symbol["text-rotation-alignment"], "text-rotation-alignment"), "text-field": new qi(ia.layout_symbol["text-field"], "text-field"), "text-font": new qi(ia.layout_symbol["text-font"], "text-font"), "text-size": new qi(ia.layout_symbol["text-size"], "text-size"), "text-max-width": new qi(ia.layout_symbol["text-max-width"], "text-max-width"), "text-line-height": new si(ia.layout_symbol["text-line-height"], "text-line-height"), "text-letter-spacing": new qi(ia.layout_symbol["text-letter-spacing"], "text-letter-spacing"), "text-justify": new qi(ia.layout_symbol["text-justify"], "text-justify"), "text-radial-offset": new qi(ia.layout_symbol["text-radial-offset"], "text-radial-offset"), "text-variable-anchor": new si(ia.layout_symbol["text-variable-anchor"], "text-variable-anchor"), "text-variable-anchor-offset": new qi(ia.layout_symbol["text-variable-anchor-offset"], "text-variable-anchor-offset"), "text-anchor": new qi(ia.layout_symbol["text-anchor"], "text-anchor"), "text-max-angle": new si(ia.layout_symbol["text-max-angle"], "text-max-angle"), "text-writing-mode": new si(ia.layout_symbol["text-writing-mode"], "text-writing-mode"), "text-rotate": new qi(ia.layout_symbol["text-rotate"], "text-rotate"), "text-padding": new si(ia.layout_symbol["text-padding"], "text-padding"), "text-keep-upright": new si(ia.layout_symbol["text-keep-upright"], "text-keep-upright"), "text-transform": new qi(ia.layout_symbol["text-transform"], "text-transform"), "text-offset": new qi(ia.layout_symbol["text-offset"], "text-offset"), "text-allow-overlap": new si(ia.layout_symbol["text-allow-overlap"], "text-allow-overlap"), "text-overlap": new si(ia.layout_symbol["text-overlap"], "text-overlap"), "text-ignore-placement": new si(ia.layout_symbol["text-ignore-placement"], "text-ignore-placement"), "text-optional": new si(ia.layout_symbol["text-optional"], "text-optional"), "symbol-height-offset": new qi(ia.layout_symbol["symbol-height-offset"], "symbol-height-offset"), "symbol-height-anchor": new si(ia.layout_symbol["symbol-height-anchor"], "symbol-height-anchor") });
     let jde;
-    const Pde = () => jde ||= new zl({ "icon-opacity": new qi(aa.paint_symbol["icon-opacity"], "icon-opacity"), "icon-color": new qi(aa.paint_symbol["icon-color"], "icon-color"), "icon-halo-color": new qi(aa.paint_symbol["icon-halo-color"], "icon-halo-color"), "icon-halo-width": new qi(aa.paint_symbol["icon-halo-width"], "icon-halo-width"), "icon-halo-blur": new qi(aa.paint_symbol["icon-halo-blur"], "icon-halo-blur"), "icon-translate": new si(aa.paint_symbol["icon-translate"], "icon-translate"), "icon-translate-anchor": new si(aa.paint_symbol["icon-translate-anchor"], "icon-translate-anchor"), "text-opacity": new qi(aa.paint_symbol["text-opacity"], "text-opacity"), "text-color": new qi(aa.paint_symbol["text-color"], "text-color", { runtimeType: Km, getOverride: (e) => e.textColor, hasOverride: (e) => !!e.textColor }), "text-halo-color": new qi(aa.paint_symbol["text-halo-color"], "text-halo-color"), "text-halo-width": new qi(aa.paint_symbol["text-halo-width"], "text-halo-width"), "text-halo-blur": new qi(aa.paint_symbol["text-halo-blur"], "text-halo-blur"), "text-translate": new si(aa.paint_symbol["text-translate"], "text-translate"), "text-translate-anchor": new si(aa.paint_symbol["text-translate-anchor"], "text-translate-anchor") });
+    const Pde = () => jde ||= new zl({ "icon-opacity": new qi(ia.paint_symbol["icon-opacity"], "icon-opacity"), "icon-color": new qi(ia.paint_symbol["icon-color"], "icon-color"), "icon-halo-color": new qi(ia.paint_symbol["icon-halo-color"], "icon-halo-color"), "icon-halo-width": new qi(ia.paint_symbol["icon-halo-width"], "icon-halo-width"), "icon-halo-blur": new qi(ia.paint_symbol["icon-halo-blur"], "icon-halo-blur"), "icon-translate": new si(ia.paint_symbol["icon-translate"], "icon-translate"), "icon-translate-anchor": new si(ia.paint_symbol["icon-translate-anchor"], "icon-translate-anchor"), "text-opacity": new qi(ia.paint_symbol["text-opacity"], "text-opacity"), "text-color": new qi(ia.paint_symbol["text-color"], "text-color", { runtimeType: Km, getOverride: (e) => e.textColor, hasOverride: (e) => !!e.textColor }), "text-halo-color": new qi(ia.paint_symbol["text-halo-color"], "text-halo-color"), "text-halo-width": new qi(ia.paint_symbol["text-halo-width"], "text-halo-width"), "text-halo-blur": new qi(ia.paint_symbol["text-halo-blur"], "text-halo-blur"), "text-translate": new si(ia.paint_symbol["text-translate"], "text-translate"), "text-translate-anchor": new si(ia.paint_symbol["text-translate-anchor"], "text-translate-anchor") });
     var HE = { get paint() {
       return Pde();
     }, get layout() {
@@ -120522,7 +120523,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
       }
     };
     let Ede;
-    const Tde = () => Ede ||= new zl({ "background-color": new si(aa.paint_background["background-color"], "background-color"), "background-pattern": new tR(aa.paint_background["background-pattern"], "background-pattern"), "background-opacity": new si(aa.paint_background["background-opacity"], "background-opacity") });
+    const Tde = () => Ede ||= new zl({ "background-color": new si(ia.paint_background["background-color"], "background-color"), "background-pattern": new tR(ia.paint_background["background-pattern"], "background-pattern"), "background-opacity": new si(ia.paint_background["background-opacity"], "background-opacity") });
     var Mde = { get paint() {
       return Tde();
     } };
@@ -123553,9 +123554,9 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
       return a;
     }
     function Qpe() {
-      let e = {}, t = aa.$version;
-      for (let a in aa.$root) {
-        let i = aa.$root[a];
+      let e = {}, t = ia.$version;
+      for (let a in ia.$root) {
+        let i = ia.$root[a];
         if (i.required) {
           let n = null;
           n = a === "version" ? t : i.type === "array" ? [] : {}, n != null && (e[a] = n);
@@ -123912,7 +123913,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
         e[t + m * a] = n[k] + P * P;
       }
     }
-    const ohe = aa.layout_symbol["text-font"].default.join(","), she = (e, t) => {
+    const ohe = ia.layout_symbol["text-font"].default.join(","), she = (e, t) => {
       let a = new rhe(e);
       return a.buffer = t, a;
     };
@@ -124007,7 +124008,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
       }
     };
     let uhe;
-    const che = () => uhe ||= new zl({ anchor: new si(aa.light.anchor, "anchor"), position: new si(aa.light.position, "position"), color: new si(aa.light.color, "color"), intensity: new si(aa.light.intensity, "intensity") });
+    const che = () => uhe ||= new zl({ anchor: new si(ia.light.anchor, "anchor"), position: new si(ia.light.position, "position"), color: new si(ia.light.color, "color"), intensity: new si(ia.light.intensity, "intensity") });
     var dhe = class extends Hu {
       constructor(e, t) {
         super(), this._transitionable = new I5(che(), "light", t), this.setLight(e), this._transitioning = this._transitionable.untransitioned();
@@ -124038,7 +124039,7 @@ Use an identity property function instead: \`{ "type": "identity", "property": $
       }
     };
     let mhe;
-    const _he = () => mhe ||= new zl({ "sky-color": new si(aa.sky["sky-color"], "sky-color"), "horizon-color": new si(aa.sky["horizon-color"], "horizon-color"), "fog-color": new si(aa.sky["fog-color"], "fog-color"), "fog-ground-blend": new si(aa.sky["fog-ground-blend"], "fog-ground-blend"), "horizon-fog-blend": new si(aa.sky["horizon-fog-blend"], "horizon-fog-blend"), "sky-horizon-blend": new si(aa.sky["sky-horizon-blend"], "sky-horizon-blend"), "atmosphere-blend": new si(aa.sky["atmosphere-blend"], "atmosphere-blend") });
+    const _he = () => mhe ||= new zl({ "sky-color": new si(ia.sky["sky-color"], "sky-color"), "horizon-color": new si(ia.sky["horizon-color"], "horizon-color"), "fog-color": new si(ia.sky["fog-color"], "fog-color"), "fog-ground-blend": new si(ia.sky["fog-ground-blend"], "fog-ground-blend"), "horizon-fog-blend": new si(ia.sky["horizon-fog-blend"], "horizon-fog-blend"), "sky-horizon-blend": new si(ia.sky["sky-horizon-blend"], "sky-horizon-blend"), "atmosphere-blend": new si(ia.sky["atmosphere-blend"], "atmosphere-blend") });
     var phe = class extends Hu {
       constructor(e, t) {
         super(), this._transitionable = new I5(_he(), "sky", t), this.setSky(e), this._transitioning = this._transitionable.untransitioned(), this.recalculate(new xo(0));
@@ -128932,7 +128933,7 @@ uniform ${D} ${U} u_${W};
       }
     };
     let ife;
-    const nfe = () => ife ||= new zl({ type: new si(aa.projection.type, "type") }), BT = new PE({ fill: new Hh(128, 2), line: new Hh(512, 0), tile: new Hh(128, 32), stencil: new Hh(128, 1), circle: 3 });
+    const nfe = () => ife ||= new zl({ type: new si(ia.projection.type, "type") }), BT = new PE({ fill: new Hh(128, 2), line: new Hh(512, 0), tile: new Hh(128, 32), stencil: new Hh(128, 1), circle: 3 });
     var BV = class {
       constructor() {
         this._tileMeshCache = {};

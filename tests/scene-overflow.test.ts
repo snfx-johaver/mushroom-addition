@@ -80,7 +80,7 @@ describe("single-row scene picker containment", () => {
       }>("ha-form")!;
       expect(form.schema.find(field => field.name === "scene_label_font_size")?.selector)
         .toEqual({ number: { min: 8, max: 24, step: 1, mode: "slider", unit_of_measurement: "px" } });
-      expect(form.computeLabel({ name: "scene_label_font_size" })).toBe("Label text size");
+      expect(form.computeLabel({ name: "scene_label_font_size" })).toBe("Label: Detail text size");
       const changed = vi.fn(); editor.addEventListener("config-changed", changed);
       form.dispatchEvent(new CustomEvent("value-changed", { detail: { value: { ...form.data, scene_label_font_size: 15 } }, bubbles: true }));
       const saved = changed.mock.lastCall![0].detail.config as AdditionConfig;
