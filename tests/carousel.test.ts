@@ -32,6 +32,31 @@ function tap(card: MushroomAdditionEntityCarousel) {
 afterEach(() => { document.body.replaceChildren(); vi.useRealTimers(); });
 
 describe("Carousel entity defaults and gestures", () => {
+  it("isolates the parallel touchscreen event stream while pointer swipes still select scenes", async () => {
+    const card = await create({ carousel_items: ["First", "Second"].map(name => ({ entity: entity.entity_id, name })) });
+    const parent = document.createElement("div");
+    card.replaceWith(parent); parent.append(card);
+    await card.updateComplete;
+    const dashboard = vi.fn(), actions = vi.fn();
+    card.addEventListener("hass-action", actions);
+    for (const type of ["touchstart", "touchmove", "touchend"]) parent.addEventListener(type, dashboard);
+    const surface = card.shadowRoot!.querySelector(".carousel")!;
+    for (const [pointer, touch, x] of [
+      ["pointerdown", "touchstart", 120], ["pointermove", "touchmove", 40], ["pointerup", "touchend", 40],
+    ] as const) {
+      surface.dispatchEvent(new PointerEvent(pointer, {
+        bubbles: true, composed: true, clientX: x, clientY: 20, button: 0, pointerType: "touch", isPrimary: true,
+      }));
+      const event = new Event(touch, { bubbles: true, composed: true, cancelable: true });
+      surface.dispatchEvent(event);
+      expect(event.defaultPrevented).toBe(false);
+    }
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelector<HTMLElement>(".item.active")!.dataset.carouselIndex).toBe("1");
+    expect(dashboard).not.toHaveBeenCalled();
+    expect(actions).not.toHaveBeenCalled();
+  });
+
   it("keeps the complete caption available when long names wrap or clamp", async () => {
     const name = "Evening relaxation lighting across the entire downstairs area";
     const card = await create({ carousel_items: [{ entity: entity.entity_id, name }] });

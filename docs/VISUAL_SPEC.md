@@ -28,6 +28,11 @@ padding. Their labels use two lines of theme-aware secondary text across the
 available pill width, with full names available through accessible labels and
 tooltips. Carousel captions use the same two-line secondary-text scale.
 
+Carousels, range sliders and horizontally scrolling card content isolate touch,
+pointer and mouse gesture events from dashboard swipe navigation. Native vertical
+scrolling and control actions remain available; ordinary card surfaces still
+allow dashboard swipes.
+
 Scene/navigation pills center their icon-and-label group vertically, reserving
 enough height for two label lines without reserving an empty line in short
 labels. Plain Scenes headers have a theme-controlled gap before the button row.

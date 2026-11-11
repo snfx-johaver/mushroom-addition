@@ -3,6 +3,7 @@ import { LitElement, css, html, nothing, type TemplateResult } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
 import { customElement, property, state } from "lit/decorators.js";
 import { cssUrl, fireEvent } from "./helpers";
+import { CardGestureController } from "./card-gestures";
 import type { ActionConfig, AdditionConfig, AdditionItemConfig, CarouselEffect, HassEntity, HomeAssistant } from "./types";
 
 export const carouselControlEnabled = (
@@ -20,6 +21,11 @@ const boundedSize = (value: number | undefined, fallback: number, min: number, m
 
 @customElement("mushroom-addition-entity-carousel")
 export class MushroomAdditionEntityCarousel extends LitElement {
+  constructor() {
+    super();
+    new CardGestureController(this);
+  }
+
   public static styles = css`
     :host { display: block; min-width: 0; }
     .carousel {

@@ -4,6 +4,9 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## 0.9.1 - 2026-11-11
 
+- Prevent carousel, slider and horizontal-scroll gestures from also switching
+  dashboard tabs, while preserving native scrolling and card actions.
+
 - Publish Car Advanced and the picker/editor fixes from the 0.9.0 update as a
   versioned patch release.
 - Remove Energy Insights & Purchases, Energy Plan vs Actual, Energy Battery

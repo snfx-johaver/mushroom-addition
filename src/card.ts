@@ -6,8 +6,14 @@ import { handleAction, normalizeConfig } from "./helpers";
 import { sharedStyles } from "./styles";
 import { renderAutomaticPresentation, renderByFamily, type RenderContext } from "./renderers";
 import { PARITY_BY_ID } from "./parity.generated";
+import { CardGestureController } from "./card-gestures";
 
 export class MushroomAdditionCard extends LitElement {
+  constructor() {
+    super();
+    new CardGestureController(this);
+  }
+
   public static styles: CSSResultGroup = sharedStyles;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
