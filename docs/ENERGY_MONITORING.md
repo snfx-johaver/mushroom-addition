@@ -11,6 +11,51 @@ and, only if needed, a dotted attribute `field`. A Context entity changes the
 header, not its electrical role. Picker stubs leave electrical roles unassigned
 rather than guessing from entity names.
 
+## Use your own entities
+
+Begin with a measured household-power source and, if available, a signed
+grid-power source. Read the [source checklist](ENERGY_SETUP.md#find-your-entities-before-configuring-a-card);
+neither HEMS nor solar/battery/EV equipment is required.
+
+1. In **Developer tools → States**, verify each sensor's measurement boundary,
+   power unit and update time. Use W/kW/MW, not an accumulated kWh counter.
+2. Add **Mushroom Addition: Energy Live Energy Flow**. In Features, assign
+   household and grid roles to the verified sensors; Context is only the header.
+3. Set Grid positive to Import or Export according to the source. When adding
+   a battery, independently verify its positive charge/discharge convention.
+4. Leave unknown equipment unconfigured. Mark equipment Not installed only
+   when it is genuinely absent, then save and compare values/directions with
+   the original sensors.
+
+This complete starter configuration is for a fictional household known to
+have no solar, battery or EV:
+
+```yaml
+type: custom:mushroom-addition-live-energy-flow
+name: Live household power
+energy_monitor:
+  home: { entity: sensor.example_household_power }
+  grid: { entity: sensor.example_grid_power }
+  gridPositive: import
+  solar: { absent: true }
+  battery: { absent: true }
+  ev: { absent: true }
+  maxAgeMinutes: 15
+```
+
+Replace both entity IDs. Remove any `absent: true` declaration that does not
+describe your installation. Add optional sources only for measured quantities
+you actually have. For an attribute, configure its exact field path and, when
+needed, its measured unit, for example `field: measurements.power` and `unit: W`.
+
+**If a cable does not animate:** check availability, unit, source age, sign
+convention and whether the measured value is zero. Unknown or stale values
+must not animate. Reduced-motion preferences also stop animation. A balance
+warning can reflect differently placed meters or asynchronous readings;
+never correct it by assigning an unrelated sensor or inventing an allocation.
+Use direct household measurement first; derivation requires the additional
+boundary checks described below.
+
 The following example is fictional. Replace every mapping with a verified source.
 
 ```yaml
@@ -29,7 +74,13 @@ energy_monitor:
   maxAgeMinutes: 15
 ```
 
-Power accepts `W`/`kW`. Solar generation and home consumption must be
+Power accepts `W`/`kW`/`MW` and is normalized to kW. An optional source `unit`
+overrides the entity's state unit when reading an attribute, for example
+`grid: { entity: sensor.example_device, field: power, unit: W }`.
+This declares the measured attribute's unit; it is not an arbitrary label.
+Unsupported units are rejected. No HEMS or particular equipment brand is required;
+see [community energy setup](ENERGY_SETUP.md).
+Solar generation and home consumption must be
 nonnegative. Grid is normalized positive importing/negative exporting; battery
 is normalized positive charging/negative discharging. Verify both sign
 conventions and the electrical boundaries before interpreting the arrows.
@@ -61,7 +112,7 @@ the measurement boundaries before interpreting either number.
 
 Optional `solarToEv` and `batteryToEv` sources add direct solar-to-charger and
 battery-to-charger cables. These require **dedicated, separately measured,
-nonnegative power sensors** in W/kW, or matching measured attributes selected
+nonnegative power sensors** in W/kW/MW, or matching measured attributes selected
 with `field`. A total PV, battery or EV sensor does not establish these
 allocations and must not be used as a substitute. Nothing is inferred from
 source totals, sensor names, charging state or simultaneous generation.

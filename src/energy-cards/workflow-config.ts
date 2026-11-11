@@ -1,6 +1,7 @@
 import type { HomeAssistant } from "./types";
 import type { AdditionConfig } from "../types";
 import { localizeText } from "../localize";
+import { discoverPriceSource } from "./price-source";
 
 export interface WorkflowRow {
   entity: string;
@@ -100,19 +101,21 @@ export function validateWorkflow(config: WorkflowConfig): void {
 export function workflowStub(
   hass?: HomeAssistant, entities: string[] = [], fallback: string[] = [],
 ): WorkflowConfig {
-  const available = [...new Set([...entities, ...fallback, ...Object.keys(hass?.states ?? {})])]
+  const requested = new Set([...entities, ...fallback]);
+  const available = [...new Set([...requested, ...Object.keys(hass?.states ?? {})])]
     .filter(id => hass?.states[id] && !["unknown", "unavailable"].includes(hass.states[id].state))
+    .filter(id => requested.has(id) || ["power", "energy", "battery", "monetary"].includes(String(hass?.states[id].attributes.device_class)) ||
+      !!discoverPriceSource(hass, [id]))
     .sort((left, right) => Number(right.startsWith("sensor.")) - Number(left.startsWith("sensor.")));
   return {
     type: `custom:${WORKFLOW_TAG}`,
     name: "Energy Entityworkflow",
     presentation: "sequential",
-    groups: [{ id: "input", label: localizeText(hass, "Input"), color: "#42a5f5" }, { id: "plan", label: localizeText(hass, "Plan"), color: "#26a69a" }],
     nodes: [
-      { id: "source", label: localizeText(hass, "Input"), group: "input", icon: "mdi:database-outline", entities: available[0] ? [{ entity: available[0] }] : [] },
-      { id: "proposal", label: localizeText(hass, "Proposed plan"), group: "plan", icon: "mdi:clipboard-text-outline",
-        note: localizeText(hass, "Define relationships and display existing entity values. This card does not calculate or execute a workflow."), entities: available[1] ? [{ entity: available[1] }] : [] },
+      { id: "source", label: localizeText(hass, "Input"), icon: "mdi:database-outline",
+        note: localizeText(hass, "Define relationships and display existing entity values. This card does not calculate or execute a workflow."),
+        entities: available[0] ? [{ entity: available[0] }] : [] },
     ],
-    relations: [{ from: "source", to: "proposal", label: localizeText(hass, "informs") }],
+    relations: [],
   };
 }

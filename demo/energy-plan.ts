@@ -14,6 +14,7 @@ import type { EditorField } from "../src/editor-schema";
 import type { NativeFields } from "../src/energy-editor-schema";
 import { mountSmartSavingDemo } from "./smart-saving";
 import { mountEnergyMonitors } from "./energy-monitors";
+import { mountEnergyLogDemo } from "./energy-log";
 
 const icons: Record<string, string> = {
   "mdi:calendar-clock": mdiCalendarClock, "mdi:currency-eur": mdiCurrencyEur,
@@ -192,6 +193,7 @@ document.querySelector("#preview")!.append(card);
 document.querySelector("#editor")!.append(editor);
 const smartSavingDemo = mountSmartSavingDemo();
 const energyMonitors = mountEnergyMonitors();
+const energyLogDemo = mountEnergyLogDemo();
 editor.addEventListener("config-changed", (event: Event) => {
   try {
     const next = syntheticConfig((event as CustomEvent<{ config: AdditionConfig }>).detail.config);
@@ -210,6 +212,7 @@ document.querySelector("#theme")!.addEventListener("click", () => {
   card.hass = editor.hass = { ...hass, themes: { darkMode: !light } };
   smartSavingDemo.theme(!light);
   energyMonitors.theme(!light);
+  energyLogDemo.theme(!light);
   document.querySelector("#theme")!.textContent = light ? "Dark theme" : "Light theme";
 });
 document.querySelector("#reset")!.addEventListener("click", () => {

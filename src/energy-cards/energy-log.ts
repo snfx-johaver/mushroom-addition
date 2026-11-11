@@ -8,11 +8,78 @@ import { localizeText } from "../localize";
 import { resolveColor } from "../colors";
 import { energyLogStub, readEnergyLogEntries, validateEnergyLogConfig } from "./energy-log-config";
 import type { EnergyLogConfig, EnergyLogEntry } from "./energy-log-config";
+import { MonitorHistory, type HistorySnapshot } from "../energy-monitor/history";
+import { liveEntityChanges, mergeLogEntries, recordedEntityChanges } from "./energy-log-changes";
+import { energySetupNotice } from "./helpers";
 
 export class MushroomEnergyLogCard extends MushroomAdditionCard {
   protected descriptor = getCatalogItem("mushroom-addition-energy-log");
   @property({ attribute: false }) public hass?: HomeAssistant;
   @property({ attribute: false }) protected config?: EnergyLogConfig;
+  private readonly history = new MonitorHistory(() => this.requestUpdate());
+  private historySnapshot?: HistorySnapshot;
+  private recorded: EnergyLogEntry[] = [];
+  private historyErrors: string[] = [];
+  private live: EnergyLogEntry[] = [];
+  private previousHass?: HomeAssistant;
+  private previousConnection?: HomeAssistant["connection"] | HomeAssistant["callWS"];
+  private refreshTimer?: ReturnType<typeof setInterval>;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.previousHass = this.hass;
+    this.previousConnection = this.hass?.connection ?? this.hass?.callWS;
+    this.refreshTimer = setInterval(() => this.requestUpdate(), 60_000);
+    this.requestUpdate();
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    clearInterval(this.refreshTimer);
+    this.resetHistory();
+    this.previousHass = undefined;
+    this.previousConnection = undefined;
+  }
+
+  private resetHistory(): void {
+    this.history.clear();
+    this.historySnapshot = undefined;
+    this.recorded = [];
+    this.historyErrors = [];
+    this.live = [];
+  }
+
+  protected willUpdate(): void {
+    super.willUpdate();
+    if (!this.isConnected) return;
+    if (!this.hass) {
+      this.resetHistory();
+      this.previousHass = undefined;
+      this.previousConnection = undefined;
+      return;
+    }
+    if (!this.config) return;
+    const connection = this.hass.connection ?? this.hass.callWS;
+    if (this.previousHass && this.previousConnection !== connection) {
+      this.resetHistory();
+    } else if (this.previousHass && this.previousHass !== this.hass) {
+      const now = Date.now(), start = now - (this.config.historyHours ?? 24) * 3600000;
+      this.live = mergeLogEntries({ ...this.config, limit: 500 }, [
+        ...this.live, ...liveEntityChanges(this.config, this.previousHass.states, this.hass.states, start, now),
+      ], start);
+    }
+    this.previousHass = this.hass;
+    this.previousConnection = connection;
+  }
+
+  protected updated(): void {
+    super.updated();
+    if (!this.config || !this.hass || !this.isConnected) return;
+    const ids = [...new Set(this.config.sources.filter(source => source.adapter === "changes").map(source => source.entity))];
+    if (!ids.length) return;
+    const now = Date.now(), start = Math.floor((now - (this.config.historyHours ?? 24) * 3600000) / 3600000) * 3600000;
+    void this.history.load(this.hass, ids, start, now, JSON.stringify(this.config.sources));
+  }
 
   public static getStubConfig(hass?: HomeAssistant, entities: string[] = [], fallback: string[] = []): EnergyLogConfig {
     return energyLogStub(hass, entities, fallback);
@@ -23,6 +90,12 @@ export class MushroomEnergyLogCard extends MushroomAdditionCard {
     const config = validateEnergyLogConfig({
       sources: defaults.sources, categories: defaults.categories, ...input,
     });
+    if (JSON.stringify([this.config?.sources, this.config?.categories, this.config?.historyHours])
+      !== JSON.stringify([config.sources, config.categories, config.historyHours])) {
+      this.resetHistory();
+      this.previousHass = this.hass;
+      this.previousConnection = this.hass?.connection ?? this.hass?.callWS;
+    }
     super.setConfig({
       ...structuredClone(config), name: config.name ?? config.title,
       secondary: config.secondary ?? config.subtitle,
@@ -74,6 +147,18 @@ export class MushroomEnergyLogCard extends MushroomAdditionCard {
     const config = this.config;
     if (!config) return nothing;
     const result = readEnergyLogEntries(config, this.hass?.states ?? {});
+    const hasChanges = config.sources.some(source => source.adapter === "changes");
+    const now = Date.now(), start = now - (config.historyHours ?? 24) * 3600000;
+    if (this.history.snapshot && this.history.snapshot !== this.historySnapshot) {
+      this.historySnapshot = this.history.snapshot;
+      const recorded = recordedEntityChanges(config, this.historySnapshot.response, this.historySnapshot.start, this.historySnapshot.end);
+      this.recorded = recorded.entries;
+      this.historyErrors = recorded.errors;
+    }
+    result.entries = mergeLogEntries(config, [
+      ...result.entries, ...[...this.recorded, ...this.live].filter(entry => entry.timestamp >= start),
+    ]);
+    result.errors.push(...this.historyErrors, ...(this.history.error ? [this.history.error] : []));
     const filter = this.dataset.filter ?? "all";
     const selected = filter === "all" || config.categories.some(category => category.id === filter) ? filter : "all";
     const visible = selected === "all" ? result.entries
@@ -100,6 +185,7 @@ export class MushroomEnergyLogCard extends MushroomAdditionCard {
     const empty = visible.length === 0 ? html`<p class="empty" role="status">${emptyMessage}</p>` : nothing;
     return html`<ha-card class=${`mushroom-addition-card${config.card_shadow ? " card-shadow" : ""}`}>
       ${this.renderSharedHeading()}
+      ${config.sources.length ? nothing : energySetupNotice(this.hass)}
       <nav class="filters" aria-label=${localizeText(this.hass, "Categories")}>
         <button type="button" aria-pressed=${selected === "all"} @click=${() => { this.dataset.filter = "all"; this.requestUpdate(); }}>
           ${config.allIcon ? html`<ha-icon .icon=${config.allIcon} aria-hidden="true"></ha-icon>` : nothing}
@@ -112,6 +198,9 @@ export class MushroomEnergyLogCard extends MushroomAdditionCard {
           ${category.label}
         </button>`)}
       </nav>
+      ${hasChanges ? html`<p class="history-status" role="status">${localizeText(this.hass, "Recorded history")}
+        · ${config.historyHours ?? 24} h · Home Assistant Recorder
+        ${this.history.loading ? html` · ${localizeText(this.hass, "Loading history")}` : nothing}</p>` : nothing}
       ${sourceErrors}
       ${empty}
       ${[...grouped].map(([date, entries]) => html`<section class="day">
@@ -161,6 +250,7 @@ export class MushroomEnergyLogCard extends MushroomAdditionCard {
     .source-errors { border-inline-start: 3px solid var(--error-color); padding-inline-start: 10px; color: var(--error-color); font-size: 12px; }
     .source-errors ul { margin: 4px 0; padding-inline-start: 18px; }
     .empty { color: var(--secondary-text-color); font-size: 13px; }
+    .history-status { color: var(--secondary-text-color); font-size: 12px; }
     footer { border-top: 1px solid var(--divider-color); margin-top: 6px; padding-top: 10px;
       color: var(--secondary-text-color); font-size: 12px; line-height: 1.55; white-space: pre-line; }
     @media (max-width: 430px) { .entry { grid-template-columns: 1fr; gap: 3px; } .meta { min-height: 20px; } }

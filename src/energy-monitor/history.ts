@@ -42,7 +42,9 @@ export class MonitorHistory {
       if (generation === this.generation) this.snapshot = { hass, response, end, start };
     } catch (error) {
       if (generation !== this.generation) return;
-      this.error = error instanceof Error ? error.message : String(error);
+      this.error = error instanceof Error ? error.message
+        : error && typeof error === "object" && "message" in error && typeof error.message === "string"
+          ? error.message : String(error);
       console.warn("Mushroom Addition energy history:", error);
     } finally {
       clearTimeout(timer);

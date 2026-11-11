@@ -90,7 +90,7 @@ describe("release translation integration", () => {
     const hass: HomeAssistant = { states: {}, language: "de", callService: async () => undefined };
     const editor = document.createElement(WORKFLOW_EDITOR_TAG) as MushroomWorkflowEditor;
     const config = workflowStub(hass);
-    config.groups![0].label = "Plan";
+    config.groups = [{ id: "input", label: "Plan" }];
     config.nodes[0].label = "Source";
     editor.setConfig(config);
     editor.hass = hass;

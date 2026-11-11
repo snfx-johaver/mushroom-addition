@@ -1,6 +1,7 @@
 import type { AdditionConfig, HomeAssistant } from "../types";
 import { localizeText } from "../localize";
 import type { FieldMapping } from "../energy-cards/types";
+import { isPriceUnit } from "../energy-cards/data";
 
 export const ENERGY_PLAN_TAG = "mushroom-addition-energy-plan";
 export const ROW_KINDS = ["price", "power", "soc", "schedule"] as const;
@@ -192,7 +193,7 @@ export function validatePlan(raw: unknown, hass?: HomeAssistant): EnergyPlanConf
     number(row.low, `${p}.low`, -1000000, 1000000);
     number(row.high, `${p}.high`, -1000000, 1000000);
     if (Number(row.low) > Number(row.high)) throw new Error(`${p}: low threshold must not exceed high threshold.`);
-    if (row.kind === "price" && !/^(?:[A-Z]{3}|ct)\/kWh$/.test(String(row.unit))) throw new Error(`${p}.unit: prices require an ISO currency/kWh or ct/kWh.`);
+    if (row.kind === "price" && !isPriceUnit(row.unit)) throw new Error(`${p}.unit: prices require an ISO currency/kWh, ISO currency/MWh or ct/kWh.`);
     if (row.kind === "soc" && row.unit !== "%") throw new Error(`${p}.unit: battery level requires %.`);
   });
   metrics(merged.metrics, "energy_plan.metrics");

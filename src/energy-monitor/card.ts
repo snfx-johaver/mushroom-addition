@@ -4,7 +4,7 @@ import { MushroomAdditionCard } from "../card";
 import { getCatalogItem } from "../catalog";
 import { energyNumber, energyTime } from "../energy-format";
 import { localizeText } from "../localize";
-import { relevantHassChanged } from "../energy-cards/helpers";
+import { energySetupNotice, relevantHassChanged } from "../energy-cards/helpers";
 import type { AdditionConfig, HomeAssistant } from "../types";
 import { MONITOR_CARDS, monitorKind, monitorOptions, monitorStub, validateMonitor, type MonitorConfig, type MonitorKind } from "./config";
 import { flowReadings } from "./data";
@@ -156,6 +156,7 @@ export class EnergyMonitorCard extends MushroomAdditionCard {
     const options = monitorOptions(this.config);
     return html`<ha-card><div class="content" style=${`max-width:${options.maxContentWidth ? `${options.maxContentWidth}px` : "none"}`}>
       ${this.renderSharedHeading()}
+      ${[options.home, options.grid, options.solar, options.battery, options.ev].some(source => source.entity) ? nothing : energySetupNotice(this.hass)}
       ${this.flow()}
     </div></ha-card>`;
   }

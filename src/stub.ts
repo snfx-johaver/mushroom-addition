@@ -15,6 +15,8 @@ import { wasteStreamExamples } from "./waste-streams";
 import { EnergyPlanCard } from "./energy-plan/card";
 import { energyLogStub } from "./energy-cards/energy-log-config";
 import { monitorKind, monitorStub } from "./energy-monitor/config";
+import { discoverPriceSource } from "./energy-cards/price-source";
+import { energyPriceSlots } from "./energy-buy-sell";
 
 const firstMatchingEntity = (
   descriptor: CatalogItem,
@@ -75,6 +77,26 @@ export const createStubConfig = (
   if (descriptor.upstreamId === "weather_advanced") return weatherStub(hass, entities, entitiesFallback);
   if (descriptor.upstreamId === "smart_saving") return smartSavingStub(hass, entities, entitiesFallback);
   if (descriptor.upstreamId === "energy_entityworkflow") return workflowStub(hass, entities, entitiesFallback);
+  if (["advanced_home_energy_management", "advanced_energy_buy_sell"].includes(descriptor.upstreamId)) {
+    const ids = [...new Set([...entities, ...entitiesFallback, ...Object.keys(hass?.states ?? {})])];
+    const price = discoverPriceSource(hass, ids);
+    const legacy = descriptor.upstreamId === "advanced_energy_buy_sell" ? ids.find(id => {
+      const state = hass?.states[id];
+      return state && !["unknown", "unavailable"].includes(state.state) && energyPriceSlots(state).length > 0;
+    }) : undefined;
+    const entity = legacy ?? price?.entity;
+    return {
+      ...populatedDefaultsFor(descriptor, hass),
+      name: sampleName(descriptor),
+      tap_action: { action: "none" },
+      ...(descriptor.upstreamId === "advanced_energy_buy_sell"
+        ? { ...(entity ? { entity, tap_action: { action: "more-info" } } : {}),
+          ...(!legacy && price ? { price } : {}), buy_sell_title: "", buy_sell_axis_label: "",
+          buy_sell_show_result: false }
+        : { ...(price ? { electricity_price_entity: price.entity, tariff_price: price } : {}),
+          show_grid_phases: false, show_battery_units: false, show_tariff_timeline: !!price }),
+    };
+  }
   if (descriptor.upstreamId === "stock_card") return {
     type: `custom:${descriptor.tag}`,
     stock_source: "entity",
@@ -186,15 +208,7 @@ export const createStubConfig = (
         hass?.states[id]?.attributes.device_class === "tv" ||
         /samsung|android|apple_tv|roku|webostv|bravia/.test(hass?.entities?.[id]?.platform || "")
       )))[0] ?? findEntity(["remote"], [])
-      : descriptor.upstreamId === "advanced_home_energy_management"
-      ? findEntity(["sensor"], ["hems", "house", "consumption"]) ??
-        findEntity(["sensor"], ["house", "consumption"]) ??
-        findEntityByDeviceClass(["power"])
-      : descriptor.upstreamId === "advanced_energy_buy_sell"
-        ? findEntity(["sensor"], ["hems", "price", "overview"]) ??
-          findEntity(["sensor"], ["price", "overview"]) ??
-          findEntity(["sensor"], ["hems", "price"])
-        : descriptor.upstreamId === "advanced_energy_panel_health"
+      : descriptor.upstreamId === "advanced_energy_panel_health"
           ? discoveredPanelEntities[0]
       : descriptor.upstreamId === "mini_graph_card"
       ? miniGraphExampleEntity(hass, entities, entitiesFallback)
@@ -325,30 +339,6 @@ export const createStubConfig = (
       : undefined,
     ...(wasteExamples?.length ? { waste_streams: wasteExamples } : {}),
     panel_entities: panelEntities?.length ? panelEntities : undefined,
-    ...(descriptor.upstreamId === "advanced_home_energy_management"
-      ? {
-        grid_power_entity: findEntity(["sensor"], ["p1", "meter", "power"]),
-        grid_phase_1_entity: findEntity(["sensor"], ["p1", "meter", "power", "phase", "1"]),
-        grid_phase_2_entity: findEntity(["sensor"], ["p1", "meter", "power", "phase", "2"]),
-        grid_phase_3_entity: findEntity(["sensor"], ["p1", "meter", "power", "phase", "3"]),
-        solar_power_entity: findEntity(["sensor"], ["hems", "pv", "power"]),
-        solar_forecast_entity: findEntity(["sensor"], ["energy", "production", "today"]),
-        battery_level_entity: findEntity(["sensor"], ["zendure", "total", "state", "charge"]),
-        battery_power_entity: findEntity(["sensor"], ["zendure", "power"]),
-        battery_1_level_entity: findEntity(["sensor"], ["zendure", "1", "state", "charge"]),
-        battery_1_power_entity: findEntity(["sensor"], ["zendure", "1", "power"]),
-        battery_2_level_entity: findEntity(["sensor"], ["zendure", "2", "state", "charge"]),
-        battery_2_power_entity: findEntity(["sensor"], ["zendure", "2", "power"]),
-        battery_3_level_entity: findEntity(["sensor"], ["zendure", "3", "state", "charge"]),
-        battery_3_power_entity: findEntity(["sensor"], ["zendure", "3", "power"]),
-        ev_charger_power_entity: findEntity(["sensor"], ["alfen", "active", "power", "socket", "1"]),
-        energy_mode_entity: findEntity(["input_select", "select"], ["zendure", "operation", "mode"]),
-        energy_auto_control_entity: findEntity(["input_boolean", "binary_sensor", "switch"], ["hems", "auto", "control"]),
-        electricity_price_entity: findEntity(["sensor"], ["nordpool", "kwh", "nl", "eur"]),
-        tariff_markup_entity: findEntity(["sensor", "input_number"], ["hems", "rate", "markup"]),
-        tariff_vat_entity: findEntity(["sensor", "input_number"], ["hems", "vat", "percentage"]),
-      }
-      : {}),
     ...(descriptor.upstreamId === "custom_card_sun"
       ? {
         darkMode: false,

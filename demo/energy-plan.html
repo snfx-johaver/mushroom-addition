@@ -32,7 +32,13 @@
       <p>Synthetic live power readings. No live instance data. Times use UTC.</p>
       <div id="monitor-controls" style="display:flex;flex-wrap:wrap;gap:8px"></div>
     </section>
-    <p id="notice">Synthetic showcase only. Changes update real registered cards and are saved locally in this browser. Only fictional demo sensors are accepted. No live accounts, external data requests or device control. These lightweight selector shims exercise configuration, but are not a real Home Assistant editor test. Production uses native structured object selectors (verified against Home Assistant 2026.11).</p>
+    <section id="energy-log" style="margin-top:32px;scroll-margin-top:16px">
+      <h1>Energy Log</h1>
+      <p>Bring your own entities. This HEMS-style example uses fictional strategy, proposed-plan and execution changes. Its simulated Recorder is in memory only; production persistence belongs to Home Assistant Recorder.</p>
+      <div id="energy-log-controls" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px"></div>
+      <div id="energy-log-preview"></div>
+    </section>
+    <p id="notice">Synthetic showcase only. Energy Plan editor changes are saved locally in this browser. Only fictional demo entities are accepted. No live accounts, external data requests or device control. These lightweight selector shims exercise configuration, but are not a real Home Assistant editor test. Production uses native structured object selectors (verified against Home Assistant 2026.11).</p>
     <button id="reset">Reset synthetic example</button>
     <p id="saved" role="status"></p>
   </main>

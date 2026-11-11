@@ -10,6 +10,7 @@ const select = (label: string, options: Array<{ value: string; label: string }>,
 const sourceFields: NativeFields = {
   entity: { label: "Entity", selector: { entity: { domain: "sensor" } } },
   field: text("Field"),
+  unit: text("Unit"),
 };
 const object = (fields: NativeFields) => ({ object: { fields, multiple: false, label_field: "entity" in fields ? "entity" : Object.keys(fields)[0] } });
 const source = (label: string, absent = false) => ({

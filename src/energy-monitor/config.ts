@@ -5,7 +5,7 @@ export const MONITOR_CARDS = [
   { id: "live_energy_flow", tag: "mushroom-addition-live-energy-flow", name: "Energy Live Energy Flow", icon: "mdi:home-lightning-bolt", description: "Realistic 3D home, grid, solar, EV and battery scene with measured directional power flows." },
 ] as const;
 export type MonitorKind = typeof MONITOR_CARDS[number]["id"];
-export interface LiveSource { entity?: string; field?: string; absent?: boolean; }
+export interface LiveSource { entity?: string; field?: string; unit?: "W" | "kW" | "MW" | "%"; absent?: boolean; }
 export interface BaselineSource {
   entity?: string;
   path?: string;
@@ -77,6 +77,10 @@ export function validateMonitor(config: AdditionConfig): MonitorConfig {
     if (source.absent !== undefined && typeof source.absent !== "boolean") throw new Error(`${key}.absent: expected a boolean.`);
     if (source.absent && (source.entity || !["solar", "battery", "ev", "exportEnergy", "chargeEnergy", "dischargeEnergy"].includes(key))) throw new Error(`${key}: invalid Not installed setting.`);
     if (source.field && !source.entity) throw new Error(`${key}: select a sensor before an attribute.`);
+    if (source.unit !== undefined && (!["solar", "home", "grid", "battery", "ev", "solarToEv", "batteryToEv", "soc"].includes(key) ||
+      !["W", "kW", "MW", "%"].includes(String(source.unit)) || (key === "soc" ? source.unit !== "%" : source.unit === "%"))) {
+      throw new Error(`${key}.unit: expected a compatible power or battery-level unit.`);
+    }
     if ("recoverGaps" in source && source.recoverGaps) throw new Error(`${key}: gap recovery is not supported by these cards.`);
     if ("sourceType" in source && source.sourceType !== undefined &&
       !["unspecified", "hardware", "integrated_power"].includes(String(source.sourceType))) throw new Error(`${key}: invalid counter type.`);

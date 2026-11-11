@@ -20,9 +20,12 @@ export interface FieldMapping {
 export interface PriceConfig extends FieldMapping {
   entity: string;
   adapter?: "attribute" | "state";
-  sourceUnit?: "EUR/kWh" | "ct/kWh";
-  displayUnit?: "EUR/kWh" | "ct/kWh";
+  sourceUnit?: PriceUnit;
+  displayUnit?: PriceUnit;
+  currency?: string;
 }
+
+export type PriceUnit = `${Uppercase<string>}/kWh` | `${Uppercase<string>}/MWh` | "ct/kWh";
 
 export interface ForecastConfig extends FieldMapping {
   entity: string;

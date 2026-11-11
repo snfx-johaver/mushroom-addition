@@ -3,7 +3,7 @@ import { MushroomAdditionCard } from "../card";
 import { getCatalogItem } from "../catalog";
 import { sharedStyles } from "../styles";
 import { property, state } from "lit/decorators.js";
-import { displayName, fireEvent, stateLabel, relevantHassChanged } from "./helpers";
+import { displayName, energySetupNotice, fireEvent, stateLabel, relevantHassChanged } from "./helpers";
 import { renderEntityIcon } from "./entity-icon";
 import { localizeText, localeDirection } from "./localize";
 import { validateWorkflow, workflowStub, WORKFLOW_TAG } from "./workflow-config";
@@ -150,6 +150,7 @@ export class MushroomWorkflowCard extends MushroomAdditionCard {
     const graph = this.config.presentation === "graph";
     return html`<ha-card class=${this.config.card_shadow ? "card-shadow" : ""} dir=${localeDirection(this.hass?.language)}>
       ${this.renderSharedHeading()}
+      ${this.config.nodes.some(node => node.entities?.length) ? nothing : energySetupNotice(this.hass)}
       <div class=${graph ? "graph-scroll" : ""} tabindex=${graph ? "0" : "-1"}
         role=${graph ? "region" : nothing} aria-label=${localizeText(this.hass, "Entity workflow")}>
         <div class=${graph ? "board graph" : "board sequential"}>

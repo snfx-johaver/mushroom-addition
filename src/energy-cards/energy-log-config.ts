@@ -11,7 +11,10 @@ export interface EnergyLogCategory {
 export interface EnergyLogSource {
   id: string;
   entity: string;
-  adapter?: "attribute" | "state";
+  adapter?: "attribute" | "state" | "changes";
+  category?: string;
+  name?: string;
+  field?: string;
   path?: string;
   timestampField?: string;
   categoryField?: string;
@@ -30,6 +33,7 @@ export interface EnergyLogConfig extends AdditionConfig {
   allIcon?: string;
   categories: EnergyLogCategory[];
   limit?: number;
+  historyHours?: number;
   sortOrder?: "newest" | "oldest";
   timeZone?: string;
   clockFormat?: "12" | "24";
@@ -69,8 +73,8 @@ function text(value: unknown, label: string, required = false): void {
 export function validateEnergyLogConfig(value: unknown): EnergyLogConfig {
   if (!isRecord(value)) throw new Error("Energy Log configuration must be an object.");
   if (value.type !== `custom:${ENERGY_LOG_TAG}`) throw new Error(`Card type must be "custom:${ENERGY_LOG_TAG}".`);
-  if (!Array.isArray(value.sources) || value.sources.length === 0) {
-    throw new Error("Configure at least one Energy Log source.");
+  if (!Array.isArray(value.sources)) {
+    throw new Error("Energy Log sources must be a list.");
   }
   if (!Array.isArray(value.categories) || value.categories.length === 0) {
     throw new Error("Configure at least one Energy Log category.");
@@ -88,7 +92,7 @@ export function validateEnergyLogConfig(value: unknown): EnergyLogConfig {
   const sourceIds = new Set<string>();
   const mappingFields = [
     "adapter", "path", "timestampField", "categoryField", "titleField", "detailField",
-    "descriptionField", "sourceField",
+    "descriptionField", "sourceField", "category", "name", "field",
   ] as const;
   for (const source of value.sources) {
     if (!isRecord(source)) throw new Error("Each Energy Log source must be an object.");
@@ -99,12 +103,22 @@ export function validateEnergyLogConfig(value: unknown): EnergyLogConfig {
     }
     if (sourceIds.has(source.id as string)) throw new Error(`Duplicate Energy Log source ID: ${source.id}.`);
     sourceIds.add(source.id as string);
-    if (source.adapter !== undefined && source.adapter !== "attribute" && source.adapter !== "state") {
-      throw new Error(`Source ${String(source.id)} adapter must be "attribute" or "state".`);
+    if (source.adapter !== undefined && !["attribute", "state", "changes"].includes(String(source.adapter))) {
+      throw new Error(`Source ${String(source.id)} adapter must be "attribute", "state" or "changes".`);
     }
     for (const key of mappingFields) text(source[key], `Source ${String(source.id)} ${key}`);
-    if (source.adapter !== "state" && (typeof source.path !== "string" || !source.path.trim())) {
+    if (source.adapter === "changes" && !categories.has(String(source.category ?? ""))) {
+      throw new Error(`Source ${String(source.id)} requires a configured category ID for entity changes.`);
+    }
+    if (source.adapter !== "state" && source.adapter !== "changes" && (typeof source.path !== "string" || !source.path.trim())) {
       throw new Error(`Source ${String(source.id)} requires an attribute path.`);
+    }
+    if (new Set(value.sources.filter(source => source.adapter === "changes").map(source => source.entity)).size > 8) {
+      throw new Error("Configure at most eight distinct entity-change entities.");
+    }
+    if (value.historyHours !== undefined && (typeof value.historyHours !== "number"
+      || !Number.isFinite(value.historyHours) || value.historyHours < 1 || value.historyHours > 168)) {
+      throw new Error("Recorded history must be between 1 and 168 hours.");
     }
     for (const key of ["timestampField", "categoryField", "titleField"] as const) {
       if (typeof source[key] === "string" && !source[key].trim()) {
@@ -163,6 +177,14 @@ export function readEnergyLogEntries(
     const entity = states[source.entity];
     if (!entity) {
       errors.push(`${source.entity} is missing.`);
+      continue;
+    }
+    if (source.adapter === "changes") {
+      validSources++;
+      if (source.field && !["unknown", "unavailable"].includes(entity.state)
+        && readPath(entity.attributes, source.field) === undefined) {
+        errors.push(`${source.entity} has no attribute at "${source.field}".`);
+      }
       continue;
     }
     if (entity.state === "unknown" || entity.state === "unavailable") {
@@ -230,22 +252,17 @@ export function readEnergyLogEntries(
   };
 }
 
+export const ENERGY_LOG_SOURCE_DEFAULTS: EnergyLogSource = {
+  id: "main", entity: "", adapter: "changes", category: "general", path: "entries",
+  timestampField: "timestamp", categoryField: "category", titleField: "title", detailField: "detail",
+  descriptionField: "description", sourceField: "source",
+};
+
 export function energyLogStub(hass?: HomeAssistant, entities: string[] = [], fallback: string[] = []): EnergyLogConfig {
   const config: EnergyLogConfig = {
     type: `custom:${ENERGY_LOG_TAG}`,
     icon: "mdi:timeline-text-outline",
-    sources: [{
-      id: "main",
-      entity: "sensor.example_energy_log",
-      adapter: "attribute",
-      path: "entries",
-      timestampField: "timestamp",
-      categoryField: "category",
-      titleField: "title",
-      detailField: "detail",
-      descriptionField: "description",
-      sourceField: "source",
-    }],
+    sources: [{ ...ENERGY_LOG_SOURCE_DEFAULTS }],
     categories: [
       { id: "planning", label: "Planning", color: "purple", icon: "mdi:clipboard-text-outline" },
       { id: "measurement", label: "Measurements", color: "teal", icon: "mdi:chart-line" },
@@ -254,6 +271,7 @@ export function energyLogStub(hass?: HomeAssistant, entities: string[] = [], fal
       { id: "general", label: "General", color: "purple", icon: "mdi:information-outline" },
     ],
     limit: 50,
+    historyHours: 24,
     sortOrder: "newest",
     clockFormat: "24",
     showSource: true,
@@ -262,12 +280,13 @@ export function energyLogStub(hass?: HomeAssistant, entities: string[] = [], fal
   config.categories = config.categories.map(category => ({ ...category, label: localizeText(hass, category.label) }));
   config.emptyState = localizeText(hass, config.emptyState!);
   const ids = [...new Set([...entities, ...fallback, ...Object.keys(hass?.states ?? {})])];
+  const feed = { ...config.sources[0], adapter: "attribute" as const };
   const entity = ids.find(id => {
     const candidate = hass?.states[id];
     if (!candidate || ["unknown", "unavailable"].includes(candidate.state)) return false;
-    const result = readEnergyLogEntries({ ...config, sources: [{ ...config.sources[0], entity: id }] }, { [id]: candidate });
+    const result = readEnergyLogEntries({ ...config, sources: [{ ...feed, entity: id }] }, { [id]: candidate });
     return result.validSources === 1 && result.errors.length === 0;
   });
-  if (entity) config.sources[0].entity = entity;
+  config.sources = entity ? [{ ...feed, entity }] : [];
   return config;
 }

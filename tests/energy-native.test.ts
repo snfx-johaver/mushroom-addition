@@ -951,7 +951,7 @@ describe("energy rendering and HA lifecycle", () => {
       entries: [{ timestamp: now, category: "planning", title: "Source title" }],
     } };
     const base = tag === "energy-plan" ? planConfig()
-      : { ...energyLogStub(), sources: [{ ...energyLogStub().sources[0], entity: "sensor.log" }] };
+      : energyLogStub(h);
     const card = document.createElement(`mushroom-addition-${tag}`) as EnergyPlanCard | MushroomEnergyLogCard;
     card.hass = h;
     const config = {

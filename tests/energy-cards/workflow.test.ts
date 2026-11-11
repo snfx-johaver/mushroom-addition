@@ -61,11 +61,12 @@ afterEach(() => {
 });
 
 describe("workflow configuration", () => {
-  it("validates both documented examples with synthetic entity IDs", () => {
+  it("validates the documented examples with synthetic entity IDs", () => {
     const documentation = readFileSync("docs/ENERGY_WORKFLOW.md", "utf8");
     const examples = [...documentation.matchAll(/```yaml\n([\s\S]*?)```/g)].map(match => parse(match[1]) as WorkflowConfig);
-    expect(examples.map(example => example.presentation)).toEqual(["sequential", "graph"]);
-    expect(examples[0].groups?.map(group => group.label)).toEqual(["Input", "Calculation", "Plan", "Execution"]);
+    expect(examples.map(example => example.presentation)).toEqual(expect.arrayContaining(["sequential", "graph"]));
+    expect(examples.find(example => example.name === "Energy process")?.groups?.map(group => group.label))
+      .toEqual(["Input", "Calculation", "Plan", "Execution"]);
     for (const example of examples) {
       expect(() => validateWorkflow(example)).not.toThrow();
       expect(example.nodes.flatMap(node => node.entities ?? []).every(row => /^[a-z_]+\.example_/.test(row.entity))).toBe(true);

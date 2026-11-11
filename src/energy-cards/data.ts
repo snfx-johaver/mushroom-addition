@@ -3,6 +3,7 @@ import type {
   HassEntity,
   PeriodAverage,
   PeriodConfig,
+  PriceUnit,
   ScheduleBlock,
   TimeInterval,
   TimePoint,
@@ -106,11 +107,31 @@ export function weightedAverage(intervals: TimeInterval[]): number | null {
 
 export function convertPrice(
   value: number,
-  sourceUnit: "EUR/kWh" | "ct/kWh" = "EUR/kWh",
-  displayUnit: "EUR/kWh" | "ct/kWh" = sourceUnit,
+  sourceUnit: PriceUnit = "EUR/kWh",
+  displayUnit: PriceUnit = sourceUnit,
 ): number {
-  if (sourceUnit === displayUnit) return value;
-  return sourceUnit === "EUR/kWh" ? value * 100 : value / 100;
+  priceCurrency(sourceUnit, displayUnit);
+  const scale = (unit: PriceUnit) => unit === "ct/kWh" ? .01 : unit.endsWith("/MWh") ? .001 : 1;
+  return value * scale(sourceUnit) / scale(displayUnit);
+}
+
+export function isPriceUnit(value: unknown): value is PriceUnit {
+  return typeof value === "string" && /^(?:[A-Z]{3}\/(?:kWh|MWh)|ct\/kWh)$/.test(value);
+}
+
+export function currencyPriceUnit(currency: string): PriceUnit {
+  const unit = `${currency}/kWh`;
+  if (!isPriceUnit(unit)) throw new Error("currency: expected an ISO currency.");
+  return unit;
+}
+
+export function priceCurrency(source: PriceUnit, display = source, currency?: string): string {
+  if (!isPriceUnit(source) || !isPriceUnit(display)) throw new Error("Prices require an ISO currency/kWh, ISO currency/MWh or ct/kWh unit.");
+  if (currency !== undefined && !/^[A-Z]{3}$/.test(currency)) throw new Error("currency: expected an ISO currency.");
+  const currencies = new Set([source, display].filter(unit => unit !== "ct/kWh").map(unit => unit.split("/")[0]));
+  if (currency) currencies.add(currency);
+  if (currencies.size > 1) throw new Error("Price currencies must match; currency exchange is not supported.");
+  return [...currencies][0] ?? "EUR";
 }
 
 export function parseBlocks(

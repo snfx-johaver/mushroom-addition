@@ -351,7 +351,7 @@ resource is needed.
 | --- | --- | --- |
 | [Energy Plan](docs/ENERGY_PLAN.md) | `custom:mushroom-addition-energy-plan` | Configurable aligned timeline for supplied prices, solar, battery, grid and consumer forecasts. |
 | [Energy Live Energy Flow](docs/ENERGY_MONITORING.md#energy-live-energy-flow) | `custom:mushroom-addition-live-energy-flow` | House-centered 3D power flows with optional separately measured solar/battery-to-EV routes. |
-| [Energy Log](docs/ENERGY_LOG.md) | `custom:mushroom-addition-energy-log` | Entity-backed events with category filters, date grouping and source details. |
+| [Energy Log](docs/ENERGY_LOG.md) | `custom:mushroom-addition-energy-log` | User-selected entity changes from Recorder or existing log feeds, with category filters and source details. |
 
 These cards use the shared Mushroom presentation, theme-aware colors, shadow
 option, header actions and Context, Content, Layout, Interactions and Features
@@ -366,6 +366,13 @@ schedules or control devices. Missing, invalid and stale sources are shown
 explicitly. Picker defaults select compatible sources when available; otherwise
 configure sources using the contracts in each card's documentation.
 
+**No HEMS installation is required.** See the [community energy setup guide](docs/ENERGY_SETUP.md)
+for all seven energy cards, minimum inputs, generic mappings and currency rules.
+New cards show setup guidance when no compatible source is available, rather
+than selecting an unrelated sensor or inventing a placeholder entity.
+Electrical roles are assigned explicitly; picker defaults do not assume a
+particular battery brand, EV charger, tariff provider or automation system.
+
 For Energy Live Energy Flow, electrical roles are always assigned explicitly
 in **Features**; a Context entity changes the heading but never identifies a
 solar, grid, battery or EV boundary. Energy Live Energy Flow uses current source states only.
@@ -376,11 +383,10 @@ reduced-motion preferences. Direct EV submeasurements are never added to the
 home total. See [source contracts and examples](docs/ENERGY_MONITORING.md)
 before mapping sensors, especially when home consumption includes EV charging.
 
-**Existing cards are preserved.** Energy Plan overlaps with Smart Saving's
+**Other cards remain available.** Energy Plan overlaps with Smart Saving's
 forecast display, but has a different configuration and a customizable aligned
-timeline. It does not replace or migrate Smart Saving dashboards. Energy Insights
-adds measured accounting rather than duplicating Home Energy Management or Buy
-and Sell; Energy Log adds event history rather than duplicating Entityworkflow.
+timeline. It does not replace or migrate Smart Saving dashboards. Energy Log adds
+event history rather than duplicating Entityworkflow.
 
 ### Smart Saving and Energy Entityworkflow
 
@@ -395,7 +401,8 @@ timestamped forecasts, and configured purchase, sale, EV and solar tracks.
 It never synthesizes missing prices or forecasts and does not execute plans.
 Select the price sensor in Context, the visible horizon in Layout, and source
 attribute/JSON mappings, battery, tracks, summary and periods in Features.
-Only EUR/kWh and ct/kWh conversions are supported.
+Prices support ISO currency/kWh, ISO currency/MWh and ct/kWh, with denomination
+conversion inside one currency only; currency exchange is not performed.
 Its compact chart keeps labels readable on phones and caps wide-card content,
 marks unpublished coverage, and separates measured SoC from forecast segments.
 All time labels and price periods follow Home Assistant's configured timezone.

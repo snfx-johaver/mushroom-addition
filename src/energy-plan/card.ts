@@ -7,7 +7,8 @@ import { resolveColor } from "../colors";
 import { localizeText, normalizeLocale } from "../localize";
 import { energyNumber, energyTime } from "../energy-format";
 import { clipIntervals, timestamp, readPath } from "../energy-cards/data";
-import { relevantHassChanged } from "../energy-cards/helpers";
+import { energySetupNotice, relevantHassChanged } from "../energy-cards/helpers";
+import { discoverPriceSource } from "../energy-cards/price-source";
 import type { HomeAssistant } from "../types";
 import { ENERGY_PLAN_TAG, planOptions, validatePlan, type EnergyPlanConfig, type PlanMetric, type PlanRow } from "./config";
 import { displayIntervals, displayPowerScale, displayPriceIntervals, intervalLabel, metricValue, publishedWindow, rowCoverage, rowData, unpublishedIntervals, type RowData } from "./data";
@@ -98,9 +99,14 @@ export class EnergyPlanCard extends MushroomAdditionCard {
   public static getStubConfig(hass?: HomeAssistant, entities: string[] = [], fallback: string[] = []): EnergyPlanConfig {
     const ids = [...new Set([...entities, ...fallback, ...Object.keys(hass?.states ?? {})])];
     const now = Date.now();
-    const row = planOptions({ type: `custom:${ENERGY_PLAN_TAG}` }).rows[0];
-    const entity = ids.find(id => rowData(hass, row, id, now, now + 24 * 3600000).intervals.length > 0);
-    return { type: `custom:${ENERGY_PLAN_TAG}`, icon: "mdi:calendar-clock", visibleHours: 24, ...(entity ? { entity } : {}) };
+    const defaults = planOptions({ type: `custom:${ENERGY_PLAN_TAG}` }, hass);
+    const price = discoverPriceSource(hass, ids);
+    const row = price ? { ...defaults.rows[0], ...price, unit: price.sourceUnit ?? "EUR/kWh", valueField: price.priceField } : undefined;
+    const rows = row && price ? [row, ...defaults.rows.slice(1).filter(candidate =>
+      price.path === candidate.path && rowData(hass, candidate, price.entity, now, now + 24 * 3600000).intervals.length > 0,
+    )] : [];
+    return { type: `custom:${ENERGY_PLAN_TAG}`, icon: "mdi:calendar-clock", visibleHours: 24,
+      energy_plan: { ...defaults, rows }, ...(price ? { entity: price.entity } : {}) };
   }
 
   public getCardSize(): number { return (planOptions(this.config ?? EnergyPlanCard.getStubConfig()).rows.filter(row => row.enabled).length + 4); }
@@ -209,6 +215,10 @@ export class EnergyPlanCard extends MushroomAdditionCard {
   protected render() {
     if (!this.config) return nothing;
     const options = planOptions(this.config);
+    const rows = options.rows.filter(row => row.enabled);
+    if (!rows.length) return html`<ha-card class=${`mushroom-addition-card${this.config.card_shadow ? " card-shadow" : ""}`}><div class="content">
+      ${options.showHeader ? this.renderSharedHeading() : nothing}${energySetupNotice(this.hass)}
+    </div></ha-card>`;
     let duration = (this.config.visibleHours ?? 24) * 3600000;
     const startSource = this.hass?.states[options.startEntity || this.config.entity || ""];
     const requestedStart = options.start === "now" ? Date.now() : timestamp(options.startField ? readPath(startSource?.attributes, options.startField) : startSource?.state);
@@ -217,7 +227,6 @@ export class EnergyPlanCard extends MushroomAdditionCard {
     if (requestedStart === undefined || !Number.isFinite(new Date(requestedStart + duration).getTime()) || stale) return html`<ha-card class=${`mushroom-addition-card${this.config.card_shadow ? " card-shadow" : ""}`}><div class="content">${options.showHeader ? this.renderSharedHeading() : nothing}<p class="error" role="alert">${this.t(stale ? "Stale data source" : "Source missing")}: ${this.t("Start")}</p></div></ha-card>`;
     const origin = requestedStart;
     let end = requestedStart + duration;
-    const rows = options.rows.filter(row => row.enabled);
     let data = rows.map(row => rowData(this.hass, row, this.config?.entity, requestedStart, end, options.maxAgeMinutes));
     const window = options.horizon === "published" ? publishedWindow(data, requestedStart, end) : { start: requestedStart, end };
     const start = window.start;

@@ -1,6 +1,6 @@
 import { translationTable } from "./table";
 
-export const energyLogTranslations = translationTable([
+const logTranslations = translationTable([
   "Entry limit", "Sort order", "Time zone", "Show source", "Footer", "Empty state",
   "Sources", "Categories", "Timestamp", "Newest first", "Oldest first", "No log entries.",
 ], {
@@ -37,3 +37,41 @@ export const energyLogTranslations = translationTable([
   "zh-Hans": "条目上限|排序顺序|时区|显示来源|页脚|空状态|来源|类别|时间戳|最新优先|最早优先|没有日志条目。",
   "zh-Hant": "項目上限|排序順序|時區|顯示來源|頁尾|空狀態|來源|類別|時間戳|最新優先|最早優先|沒有日誌項目。",
 });
+
+const changeTranslations = translationTable(["Entity changes", "Recorded history", "Loading history"], {
+  ar: "تغييرات الكيانات|السجل المسجل|جارٍ تحميل السجل",
+  bg: "Промени на обекти|Записана история|Зареждане на историята",
+  ca: "Canvis d'entitats|Historial enregistrat|S'està carregant l'historial",
+  cs: "Změny entit|Zaznamenaná historie|Načítání historie",
+  da: "Entitetsændringer|Registreret historik|Indlæser historik",
+  de: "Entitätsänderungen|Aufgezeichneter Verlauf|Verlauf wird geladen",
+  el: "Αλλαγές οντοτήτων|Καταγεγραμμένο ιστορικό|Φόρτωση ιστορικού",
+  es: "Cambios de entidades|Historial registrado|Cargando historial",
+  fi: "Entiteettien muutokset|Tallennettu historia|Ladataan historiaa",
+  fr: "Changements d'entités|Historique enregistré|Chargement de l'historique",
+  he: "שינויי ישויות|היסטוריה מתועדת|טעינת היסטוריה",
+  hu: "Entitásváltozások|Rögzített előzmények|Előzmények betöltése",
+  id: "Perubahan entitas|Riwayat tercatat|Memuat riwayat",
+  it: "Modifiche delle entità|Cronologia registrata|Caricamento della cronologia",
+  "ko-KR": "엔터티 변경|기록된 이력|이력 로드 중",
+  nb: "Entitetsendringer|Registrert historikk|Laster historikk",
+  nl: "Entiteitswijzigingen|Opgeslagen geschiedenis|Geschiedenis laden",
+  pl: "Zmiany encji|Zapisana historia|Ładowanie historii",
+  "pt-BR": "Alterações de entidades|Histórico registrado|Carregando histórico",
+  "pt-PT": "Alterações de entidades|Histórico registado|A carregar histórico",
+  ro: "Modificări ale entităților|Istoric înregistrat|Se încarcă istoricul",
+  ru: "Изменения сущностей|Записанная история|Загрузка истории",
+  sk: "Zmeny entít|Zaznamenaná história|Načítavanie histórie",
+  sl: "Spremembe entitet|Zabeležena zgodovina|Nalaganje zgodovine",
+  sr: "Промене ентитета|Сачувана историја|Учитавање историје",
+  "sr-Latn": "Promene entiteta|Sačuvana istorija|Učitavanje istorije",
+  sv: "Entitetsändringar|Sparad historik|Läser in historik",
+  tr: "Varlık değişiklikleri|Kaydedilen geçmiş|Geçmiş yükleniyor",
+  uk: "Зміни сутностей|Записана історія|Завантаження історії",
+  vi: "Thay đổi thực thể|Lịch sử đã ghi|Đang tải lịch sử",
+  "zh-Hans": "实体变化|已记录的历史|正在加载历史",
+  "zh-Hant": "實體變更|已記錄的歷史|正在載入歷史",
+});
+
+export const energyLogTranslations = Object.fromEntries(Object.entries(logTranslations)
+  .map(([locale, labels]) => [locale, { ...labels, ...changeTranslations[locale] }]));

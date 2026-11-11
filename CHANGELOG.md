@@ -2,6 +2,38 @@
 
 Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
+## Unreleased
+
+- Make all seven energy cards usable without HEMS or brand-specific picker
+  defaults. Detect compatible published price formats, leave unrelated sensors
+  unselected and show source-setup guidance when no compatible source exists.
+- Start new Energy Plan cards with supplied rows only and new workflows with
+  one input node and no invented relationships. Keep existing saved dashboards
+  and legacy source formats compatible.
+- Add generic attribute/JSON price mappings to Buy and Sell and Home Energy
+  Management, including native visual-editor controls. Support same-currency
+  ISO currency/kWh, ISO currency/MWh and cents conversion; reject currency
+  exchange and retain published interval lengths in trade estimates.
+- Hide unconfigured optional Home Energy Management equipment, preserve unknown
+  measurements instead of showing zero, and expose grid/battery sign conventions.
+  Keep new Buy/Sell trade estimates disabled until explicitly configured.
+- Support explicit power-attribute units and MW measurements in Live Energy Flow.
+  Add a community setup guide and synthetic non-HEMS regression coverage across
+  all seven cards. No installation-specific configuration or live data is included.
+- Let Energy Log track user-selected state and attribute changes directly from
+  Home Assistant Recorder, with live updates, a configurable history window,
+  category filters and explicit history errors. Keep existing structured and
+  JSON log feeds compatible, including mixed sources.
+- Add native entity-change settings, localized history status and fictional
+  HEMS-style examples. History stays in Home Assistant; no persistent browser
+  log, additional sensor or device-control automation is required.
+- Require explicit Energy Log entity-change source selection instead of
+  automatically tracking an unrelated healthy entity. Clear recorded/live
+  history, errors and pending requests across connection changes and disconnects.
+- Add individual own-entity setup steps, complete starter examples and
+  troubleshooting for all seven energy cards, including dedicated Buy and Sell
+  and Home Energy Management guides.
+
 ## 0.9.1 - 2026-11-11
 
 - Give Scenes and Welcome button labels more space and add a label text size
