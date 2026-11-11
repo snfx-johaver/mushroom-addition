@@ -65399,7 +65399,7 @@ pl([
 pl([
   V()
 ], Ri.prototype, "geometry");
-const h8 = "0.8.0", Yt = {
+const h8 = "0.9.0", Yt = {
   SUNRISE_START: 360,
   // 6:00
   SUNRISE_END: 480,

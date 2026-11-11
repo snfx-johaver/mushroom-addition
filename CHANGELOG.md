@@ -2,7 +2,7 @@
 
 Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
-## Unreleased
+## 0.9.0 - 2026-11-11
 
 ### New energy monitoring cards
 

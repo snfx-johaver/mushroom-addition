@@ -40,11 +40,10 @@ These are real setups, not mockups; some cards are only partially configured.
 The NAS image is from the earlier dashboard whose layouts are now included.
 Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all cards.
 
-## Upcoming energy improvements
+## What's new in 0.9
 
-The changes below are **unreleased**; installing the current HACS release does
-not yet add the four new monitoring cards. See the
-[complete upcoming changelog](CHANGELOG.md#unreleased) for details.
+The four new monitoring cards are now included in the 0.9.0 release. See the
+[complete changelog](CHANGELOG.md#090---2026-11-11) for details.
 
 - **Four monitoring cards:** [Energy Plan vs Actual](docs/ENERGY_MONITORING.md#energy-plan-vs-actual),
   [Energy Battery Activity](docs/ENERGY_MONITORING.md#energy-battery-activity),
@@ -97,11 +96,12 @@ of a household. No additional image host or frontend dependency is needed.
   visual additional pollen sensors, and dropdowns that follow light/dark themes.
 
 Existing dashboard card types and configurations remain supported. Install
-**v0.8.0** through HACS, then reload every dashboard browser. If you have been
+**v0.9.0** through HACS, then reload every dashboard browser. If you have been
 using an unreleased hotfix, return to the single HACS-managed resource after the
 update; do not load both bundles.
 
-See the [0.8.0 changelog](CHANGELOG.md#080---2026-11-10),
+See the [0.9.0 changelog](CHANGELOG.md#090---2026-11-11),
+[0.8.0 changelog](CHANGELOG.md#080---2026-11-10),
 [original energy update](CHANGELOG.md#072---2026-11-06),
 [translation update](CHANGELOG.md#071---2026-11-02) and
 [0.7.0 release details](CHANGELOG.md#070---2026-11-02).
