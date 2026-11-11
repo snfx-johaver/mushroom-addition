@@ -189,14 +189,14 @@ export const sharedStyles = css`
   .metric-extremes { display: flex; justify-content: space-between; color: var(--secondary-text-color); font-size: 11px; }
   .ulm-scenes .scene-grid { display: grid; grid-template-columns: repeat(var(--scenes-per-row, 6), minmax(52px, 1fr)); }
   .ulm-scenes { padding: 12px; }
-  .scene-grid { display: flex; min-width: 0; gap: 8px; overflow-x: auto; padding: 4px 4px 10px; margin: -4px -4px -10px; }
+  .scene-grid { display: flex; min-width: 0; gap: 4px; overflow-x: auto; padding: 4px 4px 10px; margin: -4px -4px -10px; }
   .scene-button { display: flex; min-width: 52px; flex: 1; flex-direction: column; align-items: center; gap: 6px; border: 0; border-radius: 25px; background: var(--addition-raised-background); color: var(--primary-text-color); box-shadow: var(--addition-raised-shadow); }
   .scene-button, .welcome-items > button {
     font-family: inherit;
     box-sizing: border-box;
     min-height: calc(var(--mush-icon-size, 36px) + var(--mush-card-secondary-line-height, 16px) * 2 + 24px);
     justify-content: center;
-    padding: 9px 4px;
+    padding: 9px 1px;
   }
   .ulm-scenes > .automatic-presentation { margin-bottom: var(--mush-spacing, 12px); }
   .scene-button > span, .welcome-items small {
@@ -207,7 +207,7 @@ export const sharedStyles = css`
     white-space: normal;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
-    font-size: var(--mush-card-secondary-font-size, 12px);
+    font-size: var(--scene-label-font-size, var(--mush-card-secondary-font-size, 12px));
     font-weight: var(--mush-card-secondary-font-weight, 400);
     line-height: var(--mush-card-secondary-line-height, 16px);
     letter-spacing: var(--mush-card-secondary-letter-spacing, .4px);
@@ -370,7 +370,7 @@ export const sharedStyles = css`
   .people-avatar { display: grid; place-items: center; width: 28px; height: 28px; flex: none; border-radius: 50%; background-size: cover; background-position: center; }
   .people-state { font-size: 11px; padding-right: 8px; white-space: nowrap; }
   .people-chip:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
-  .welcome-items { display: flex; gap: 8px; overflow-x: auto; padding: 4px 4px 10px; margin: -4px -4px -10px; }
+  .welcome-items { display: flex; gap: 4px; overflow-x: auto; padding: 4px 4px 10px; margin: -4px -4px -10px; }
   .welcome-items > button { display: flex; min-width: 52px; flex: 1; flex-direction: column; align-items: center; gap: 6px; border: 0; border-radius: 25px; background: var(--addition-raised-background); color: inherit; box-shadow: var(--addition-raised-shadow); }
   .welcome-items i { display: grid; width: var(--mush-icon-size, 36px); height: var(--mush-icon-size, 36px); place-items: center; border-radius: 50%; background: rgba(var(--tone), .18); color: rgb(var(--tone)); font-style: normal; }
   .custom-welcome .welcome-items { display: grid; grid-template-columns: repeat(var(--scenes-per-row, 5), minmax(52px, 1fr)); }

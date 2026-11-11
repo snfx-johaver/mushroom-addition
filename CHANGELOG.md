@@ -4,6 +4,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
 ## 0.9.1 - 2026-11-11
 
+- Give Scenes and Welcome button labels more space and add a label text size
+  setting in Layout.
 - Prevent carousel, slider and horizontal-scroll gestures from also switching
   dashboard tabs, while preserving native scrolling and card actions.
 

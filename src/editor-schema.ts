@@ -642,6 +642,7 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
         })))] : []),
         toggle("scene_buttons_only"),
         number("scenes_per_row", 1, 24),
+        { name: "scene_label_font_size", selector: { number: { min: 8, max: 24, step: 1, mode: "slider", unit_of_measurement: "px" } } },
         ...presentation(),
       ]
   : item.upstreamId === "custom_card_trash"
@@ -899,6 +900,7 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
         ]),
         action("welcome_weather_tap_action"),
         number("scenes_per_row", 1, 24),
+        { name: "scene_label_font_size", selector: { number: { min: 8, max: 24, step: 1, mode: "slider", unit_of_measurement: "px" } } },
         ...presentation(),
       ]
     : item.upstreamId === "custom_card_plant"

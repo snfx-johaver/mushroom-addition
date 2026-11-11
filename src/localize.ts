@@ -764,6 +764,7 @@ export const localize = <T extends Pick<HomeAssistant, "language">>(
   values: Record<string, string | number> = {},
 ): string => {
   if (key === "car_show_header") return localizeText(hass, "Show card header");
+  if (key === "scene_label_font_size") return localizeText(hass, "Label text size");
   const washerButton = key.match(/^washer_button_([123])_(entity|name|icon|action)$/);
   if (washerButton) {
     const field = washerButton[2] === "action" ? "tap_action" : washerButton[2];

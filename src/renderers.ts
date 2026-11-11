@@ -385,6 +385,12 @@ const sceneItemActive = (item: AdditionItemConfig, entity?: HassEntity): boolean
       ? entity?.state === item.state
       : activeStates.has(entity?.state ?? "");
 
+const sceneLabelSize = (config: AdditionConfig): string => {
+  const size = config.scene_label_font_size;
+  return typeof size === "number" && Number.isFinite(size)
+    ? `;--scene-label-font-size:${Math.min(24, Math.max(8, size))}px` : "";
+};
+
 const renderScene = (ctx: RenderContext): TemplateResult => {
   const sceneItems: AdditionItemConfig[] = (
     ctx.config.scene_items?.length
@@ -400,7 +406,7 @@ const renderScene = (ctx: RenderContext): TemplateResult => {
   const collapseEntity = ctx.config.collapse_entity ? ctx.hass.states[ctx.config.collapse_entity] : undefined;
   const collapsed = !buttonsOnly && (ctx.config.collapsed === true || collapseEntity?.state === "on");
   return ctx.actionSurface(`ulm-scenes ${sourceGrid ? "source-scene-grid" : "scene-pills"} ${ctx.descriptor.upstreamId === "card_scenes" ? "ulm-source-scenes" : ""} ${buttonsOnly ? "scene-buttons-only" : ""}`, html`
-    ${collapsed ? nothing : html`<div class="scene-grid" style=${`--scenes-per-row:${perRow}`}>${visibleItems.map((item) => {
+    ${collapsed ? nothing : html`<div class="scene-grid" style=${`--scenes-per-row:${perRow}${sceneLabelSize(ctx.config)}`}>${visibleItems.map((item) => {
       const entity = ctx.hass.states[item.entity];
       const off = hasOnOffState(entity) && !sceneItemActive(item, entity);
       const color = configuredColor(item.color, "rgb(var(--ulm-purple))");
@@ -780,7 +786,7 @@ const renderWelcome = (ctx: RenderContext): TemplateResult => {
           </button>`;
         })}</div>`)}
     </div>` : nothing}
-    ${collapsed ? nothing : html`<div class="welcome-items" style=${`--scenes-per-row:${welcomePerRow}`}>${items.map((item, index) => {
+    ${collapsed ? nothing : html`<div class="welcome-items" style=${`--scenes-per-row:${welcomePerRow}${sceneLabelSize(ctx.config)}`}>${items.map((item, index) => {
       const entity = item.entity ? ctx.hass.states[item.entity] : undefined;
       const off = hasOnOffState(entity) && !sceneItemActive(item, entity);
       const entityPicture = item.icon_type === "entity-picture" ? attr(entity, "entity_picture") : undefined;

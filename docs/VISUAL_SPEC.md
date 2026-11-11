@@ -26,7 +26,10 @@ legacy accent roles resolve through the same palette, preferring
 Scenes and Welcome pills retain identical flexible row geometry and shadow
 padding. Their labels use two lines of theme-aware secondary text across the
 available pill width, with full names available through accessible labels and
-tooltips. Carousel captions use the same two-line secondary-text scale.
+tooltips. Reduced button padding and gaps leave more room for short names.
+Their Layout editor offers an optional label text size in pixels; when unset,
+the theme's secondary text size applies. Carousel captions use the same
+two-line secondary-text scale.
 
 Carousels, range sliders and horizontally scrolling card content isolate touch,
 pointer and mouse gesture events from dashboard swipe navigation. Native vertical

@@ -183,7 +183,7 @@ describe("default Mushroom icon sizing", () => {
   });
   it("matches scene and welcome pill geometry, spacing and labels at every card width", () => {
     for (const property of [
-      "display: flex", "gap: 8px", "overflow-x: auto",
+      "display: flex", "gap: 4px", "overflow-x: auto",
       "padding: 4px 4px 10px", "margin: -4px -4px -10px",
     ]) {
       expect(ruleFor(".scene-grid")).toContain(property);
@@ -197,7 +197,7 @@ describe("default Mushroom icon sizing", () => {
       expect(ruleFor(".welcome-items > button")).toContain(property);
     }
     for (const property of [
-      "width: 100%", "font-size: var(--mush-card-secondary-font-size, 12px)",
+      "width: 100%", "font-size: var(--scene-label-font-size, var(--mush-card-secondary-font-size, 12px))",
       "font-weight: var(--mush-card-secondary-font-weight, 400)", "white-space: normal",
       "overflow-wrap: anywhere", "-webkit-line-clamp: 2",
     ]) {
@@ -206,7 +206,7 @@ describe("default Mushroom icon sizing", () => {
     expect(styles).not.toContain(".source-scene-grid .scene-grid");
     const centered = ruleFor(".scene-button, .welcome-items > button");
     expect(centered).toContain("justify-content: center");
-    expect(centered).toContain("padding: 9px 4px");
+    expect(centered).toContain("padding: 9px 1px");
     expect(centered).toContain("min-height: calc(var(--mush-icon-size, 36px) + var(--mush-card-secondary-line-height, 16px) * 2 + 24px)");
     expect(ruleFor(".scene-button > span, .welcome-items small")).not.toContain("min-height");
     expect(ruleFor(".ulm-scenes > .automatic-presentation")).toContain("margin-bottom: var(--mush-spacing, 12px)");

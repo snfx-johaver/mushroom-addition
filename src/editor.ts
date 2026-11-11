@@ -83,6 +83,7 @@ const layoutFields = new Set([
   "group", "mini_graph_show_fill", "mini_graph_show_points", "mini_graph_show_labels",
   "mini_graph_show_labels_secondary", "carousel_visible_items", "carousel_initial_index",
   "carousel_button_width", "carousel_button_height", "carousel_icon_size",
+  "scene_label_font_size",
   "carousel_effect", "carousel_grab_cursor", "carousel_centered_slides",
   "carousel_slides_per_view", "carousel_coverflow_rotate", "carousel_coverflow_stretch",
   "carousel_coverflow_depth", "carousel_coverflow_modifier", "carousel_coverflow_slide_shadows",
