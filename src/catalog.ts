@@ -1,6 +1,7 @@
 import type { CatalogItem } from "./types";
 import { NAS_CATALOG } from "./nas-catalog";
 import { NAS_CARD_ALIASES } from "./nas/config";
+import { MONITOR_CARDS } from "./energy-monitor/config";
 
 const baseCards = [
   "battery",
@@ -197,6 +198,11 @@ export const UPSTREAM_CATALOG: readonly CatalogItem[] = [
 ] as const;
 
 export const NATIVE_CATALOG: readonly CatalogItem[] = [
+  ...MONITOR_CARDS.map(card => ({
+    upstreamId: card.id, sourcePath: "src/energy-monitor/card.ts", kind: "card" as const,
+    category: "custom-card" as const, family: "energy", tag: card.tag,
+    name: card.name, description: card.description, preferredDomains: ["sensor"],
+  })),
   {
     upstreamId: "energy_log", sourcePath: "src/energy-cards/energy-log.ts", kind: "card",
     category: "custom-card", family: "energy", tag: "mushroom-addition-energy-log",

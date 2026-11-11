@@ -12,6 +12,8 @@ const textSelector = { text: {} };
 const numberSelector = { number: { mode: "box", min: 0, max: 168, step: 1 } };
 const unitSelector = { select: { options: ["EUR/kWh", "ct/kWh"], mode: "dropdown" } };
 const adapterSelector = { select: { options: [{ value: "attribute", label: "Entity attribute" }, { value: "state", label: "State" }], mode: "dropdown" } };
+const ageSelector = { number: { mode: "box", min: 1, max: 10080 } };
+const optionalAge = (value: unknown) => value === "" || value === undefined ? undefined : Number(value);
 
 function rootLabel(name: string): string {
   const labels: Record<string, string> = {
@@ -64,6 +66,12 @@ export class SmartSavingPlanCardEditor extends LitElement {
 
   private t(text: string): string { return localizeText(this.hass, text); }
   private readonly computeLabel = (schema: { name: string }): string => {
+    if (schema.name === "currentAgeMinutes") return `${this.t("Current battery")} · ${this.t("Maximum source age (minutes)")}`;
+    if (schema.name === "forecastAgeMinutes") return `${this.t("Forecast")} · ${this.t("Maximum source age (minutes)")}`;
+    if (schema.name.endsWith("AgeMinutes")) return this.t("Maximum source age (minutes)");
+    if (schema.name === "meaning") return this.t("Type");
+    if (schema.name === "powerUnit") return `${this.t("Power")} · ${this.t("Unit")}`;
+    if (schema.name === "energyUnit") return `${this.t("Energy")} · ${this.t("Unit")}`;
     const label = rootLabel(schema.name).replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, value => value.toUpperCase());
     const direct = this.t(label);
     if (direct !== label || ["title", "subtitle", "visibleHours"].includes(schema.name)) return direct;
@@ -71,12 +79,17 @@ export class SmartSavingPlanCardEditor extends LitElement {
     return schema.name.replace(/([a-z])([A-Z])/g, "$1 $2").split(" ")
       .map(word => this.t(words[word.toLowerCase()] ?? word.replace(/^./, character => character.toUpperCase()))).join(": ");
   };
+  private readonly computeTimelineLabel = (field: { name: string }): string => this.t({
+    maxContentWidth: "Maximum content width", horizon: "Timeline horizon",
+    maxSourceAgeMinutes: "Maximum source age (minutes)", forecastGapMinutes: "Forecast connection limit (minutes)",
+  }[field.name] ?? field.name);
 
   private updatePrice(event: FormChange): void {
     if (!this._config) return;
     const values = event.detail.value;
     const current = this._config.price;
     const price: PriceConfig = {
+      ...current,
       entity: String(values.entity ?? current?.entity ?? ""),
       adapter: values.adapter === "state" ? "state" : "attribute",
       path: String(values.path ?? current?.path ?? ""),
@@ -86,6 +99,7 @@ export class SmartSavingPlanCardEditor extends LitElement {
       priceField: String(values.priceField ?? current?.priceField ?? ""),
       sourceUnit: values.sourceUnit === "ct/kWh" ? "ct/kWh" : "EUR/kWh",
       displayUnit: values.displayUnit === "EUR/kWh" ? "EUR/kWh" : "ct/kWh",
+      maxSourceAgeMinutes: optionalAge(values.maxSourceAgeMinutes),
     };
     this.fire({ ...this._config, price });
   }
@@ -95,6 +109,7 @@ export class SmartSavingPlanCardEditor extends LitElement {
     const values = event.detail.value;
     const current = this._config.tracks?.[key];
     const track: TrackConfig = {
+      ...current,
       entity: String(values.entity ?? current?.entity ?? ""),
       path: String(values.path ?? current?.path ?? ""),
       startField: String(values.startField ?? current?.startField ?? ""),
@@ -106,6 +121,10 @@ export class SmartSavingPlanCardEditor extends LitElement {
       statusField: String(values.statusField ?? current?.statusField ?? ""),
       unit: String(values.unit ?? current?.unit ?? ""),
       kind: key === "solar" ? "solar" : "schedule",
+      maxSourceAgeMinutes: optionalAge(values.maxSourceAgeMinutes),
+      powerUnit: String(values.powerUnit ?? current?.powerUnit ?? ""),
+      energyUnit: String(values.energyUnit ?? current?.energyUnit ?? ""),
+      meaning: values.meaning === "confirmed" ? "confirmed" : "supplied",
     };
     this.fire({ ...this._config, tracks: { ...this._config.tracks, [key]: track } });
   }
@@ -129,7 +148,7 @@ export class SmartSavingPlanCardEditor extends LitElement {
       ])} .computeLabel=${this.computeLabel} @value-changed=${(event: FormChange) => this.updateRoot(event)}></ha-form>`}
 
       <h3>${this.t("Prices")}</h3>
-      <p>${this.t("Map timestamps and prices to published intervals. Entries without them are ignored.")}</p>
+      <p>${this.t("Averages use published intervals only, weighted by duration. Gaps are not estimated.")}</p>
       <ha-form .hass=${this.hass} .data=${{
         entity: config.price?.entity ?? "",
         adapter: config.price?.adapter ?? "attribute",
@@ -140,6 +159,7 @@ export class SmartSavingPlanCardEditor extends LitElement {
         priceField: config.price?.priceField ?? "price",
         sourceUnit: config.price?.sourceUnit ?? "EUR/kWh",
         displayUnit: config.price?.displayUnit ?? "ct/kWh",
+        maxSourceAgeMinutes: config.price?.maxSourceAgeMinutes ?? "",
       }} .schema=${this.schemas.get([
         { name: "entity", selector: entitySelector },
         { name: "adapter", selector: { select: { ...adapterSelector.select, options: adapterSelector.select.options.map(option => ({ ...option, label: this.t(option.label) })) } } },
@@ -150,7 +170,24 @@ export class SmartSavingPlanCardEditor extends LitElement {
         { name: "priceField", selector: textSelector },
         { name: "sourceUnit", selector: unitSelector },
         { name: "displayUnit", selector: unitSelector },
+        { name: "maxSourceAgeMinutes", selector: ageSelector },
       ])} .computeLabel=${this.computeLabel} @value-changed=${(event: FormChange) => this.updatePrice(event)}></ha-form>
+
+      <h3>${this.t("Timeline")}</h3>
+      <ha-form .hass=${this.hass} .data=${{
+        maxContentWidth: config.maxContentWidth ?? 1200,
+        horizon: config.horizon ?? "configured",
+        maxSourceAgeMinutes: config.maxSourceAgeMinutes ?? 1440,
+        forecastGapMinutes: config.forecastGapMinutes ?? 60,
+      }} .schema=${this.schemas.get([
+        { name: "maxContentWidth", selector: { number: { mode: "box", min: 0, max: 2400 } } },
+        { name: "horizon", selector: { select: { mode: "dropdown", options: [
+          { value: "configured", label: this.t("Configured horizon") },
+          { value: "published", label: this.t("Published horizon") },
+        ] } } },
+        { name: "maxSourceAgeMinutes", selector: { number: { mode: "box", min: 1, max: 10080 } } },
+        { name: "forecastGapMinutes", selector: { number: { mode: "box", min: 1, max: 1440 } } },
+      ])} .computeLabel=${this.computeTimelineLabel} @value-changed=${(event: FormChange) => this.updateRoot(event)}></ha-form>
 
       <h3>${this.t("Battery")}</h3>
       <ha-form .hass=${this.hass} .data=${{
@@ -165,11 +202,15 @@ export class SmartSavingPlanCardEditor extends LitElement {
         horizonEntity: config.battery?.horizon?.entity ?? "",
         targetValue: config.battery?.target?.value ?? "",
         targetEntity: config.battery?.target?.entity ?? "",
+        currentAgeMinutes: config.battery?.current?.maxSourceAgeMinutes ?? "",
+        forecastAgeMinutes: config.battery?.forecast?.maxSourceAgeMinutes ?? "",
       }} .schema=${this.schemas.get([
         { name: "currentEntity", selector: entitySelector }, { name: "currentValue", selector: { number: { mode: "box", min: 0, max: 100 } } },
         { name: "currentField", selector: textSelector }, { name: "forecastEntity", selector: entitySelector },
+        { name: "currentAgeMinutes", selector: ageSelector },
         { name: "forecastPath", selector: textSelector }, { name: "forecastTime", selector: textSelector },
         { name: "forecastValue", selector: textSelector }, { name: "horizonHours", selector: numberSelector },
+        { name: "forecastAgeMinutes", selector: ageSelector },
         { name: "horizonEntity", selector: entitySelector }, { name: "targetValue", selector: { number: { mode: "box", min: 0, max: 100 } } },
         { name: "targetEntity", selector: entitySelector },
       ])} .computeLabel=${this.computeLabel} @value-changed=${(event: FormChange) => {
@@ -178,19 +219,24 @@ export class SmartSavingPlanCardEditor extends LitElement {
           ...config,
           battery: {
             current: {
+              ...config.battery?.current,
               entity: String(values.currentEntity ?? ""),
               value: values.currentValue === "" ? undefined : Number(values.currentValue),
               field: String(values.currentField ?? ""),
+              maxSourceAgeMinutes: optionalAge(values.currentAgeMinutes),
             },
             forecast: {
+              ...config.battery?.forecast,
               entity: String(values.forecastEntity ?? ""),
               path: String(values.forecastPath ?? ""),
               startField: String(values.forecastTime ?? ""),
               valueField: String(values.forecastValue ?? ""),
+              maxSourceAgeMinutes: optionalAge(values.forecastAgeMinutes),
             },
-            horizon: { value: values.horizonHours === "" || values.horizonHours === undefined
+            horizon: { ...config.battery?.horizon, value: values.horizonHours === "" || values.horizonHours === undefined
               ? undefined : Number(values.horizonHours), entity: String(values.horizonEntity ?? ""), unit: "hours" },
             target: {
+              ...config.battery?.target,
               value: values.targetValue === "" ? undefined : Number(values.targetValue),
               entity: String(values.targetEntity ?? ""),
             },
@@ -201,7 +247,7 @@ export class SmartSavingPlanCardEditor extends LitElement {
       <h3>${this.t("Timeline")}</h3>
       ${(["plan", "applied", "ev", "solar"] as const).map((track) => {
         const value = config.tracks?.[track] ?? {};
-        return html`<p><b>${this.t(track === "applied" ? "Applied sale" : track === "plan" ? "Plan" : track === "solar" ? "Solar forecast" : "EV")}</b></p>
+        return html`<p><b>${this.t(track === "applied" ? value.meaning === "confirmed" ? "Applied sale" : "Planned sale" : track === "plan" ? "Plan" : track === "solar" ? "Solar forecast" : "EV")}</b></p>
           <ha-form .hass=${this.hass} .data=${{
             entity: value.entity ?? "",
             path: value.path ?? "blocks",
@@ -213,12 +259,24 @@ export class SmartSavingPlanCardEditor extends LitElement {
             energyField: value.energyField ?? "energy",
             statusField: value.statusField ?? "status",
             unit: value.unit ?? "",
+            maxSourceAgeMinutes: value.maxSourceAgeMinutes ?? "",
+            powerUnit: value.powerUnit ?? "",
+            energyUnit: value.energyUnit ?? "",
+            meaning: value.meaning ?? "supplied",
           }} .schema=${this.schemas.get([
             { name: "entity", selector: entitySelector }, { name: "path", selector: textSelector },
             { name: "startField", selector: textSelector }, { name: "endField", selector: textSelector },
             { name: "durationField", selector: textSelector }, { name: "valueField", selector: textSelector },
             { name: "powerField", selector: textSelector }, { name: "energyField", selector: textSelector },
             { name: "statusField", selector: textSelector }, { name: "unit", selector: textSelector },
+            { name: "maxSourceAgeMinutes", selector: ageSelector },
+            ...(track === "solar" ? [] : [
+              { name: "powerUnit", selector: textSelector }, { name: "energyUnit", selector: textSelector },
+              { name: "meaning", selector: { select: { mode: "dropdown", options: [
+                { value: "supplied", label: this.t("Supplied schedules") },
+                { value: "confirmed", label: this.t("Confirmed action") },
+              ] } } },
+            ]),
           ])} .computeLabel=${this.computeLabel} @value-changed=${(event: FormChange) => this.updateTrack(track, event)}></ha-form>`;
       })}
 
@@ -242,8 +300,8 @@ export class SmartSavingPlanCardEditor extends LitElement {
         this.fire({
           ...config,
           summary: {
-            purchaseEnergy: { entity: String(v.purchaseEnergyEntity ?? ""), field: String(v.purchaseEnergyField ?? ""), value: v.purchaseEnergyValue === "" ? undefined : Number(v.purchaseEnergyValue) },
-            purchaseCost: { entity: String(v.purchaseCostEntity ?? ""), field: String(v.purchaseCostField ?? ""), value: v.purchaseCostValue === "" ? undefined : Number(v.purchaseCostValue) },
+            purchaseEnergy: { ...config.summary?.purchaseEnergy, entity: String(v.purchaseEnergyEntity ?? ""), field: String(v.purchaseEnergyField ?? ""), value: v.purchaseEnergyValue === "" ? undefined : Number(v.purchaseEnergyValue) },
+            purchaseCost: { ...config.summary?.purchaseCost, entity: String(v.purchaseCostEntity ?? ""), field: String(v.purchaseCostField ?? ""), value: v.purchaseCostValue === "" ? undefined : Number(v.purchaseCostValue) },
           },
           planBlocksEntity: String(v.planBlocksEntity ?? ""),
           planBlocksPath: String(v.planBlocksPath ?? ""),

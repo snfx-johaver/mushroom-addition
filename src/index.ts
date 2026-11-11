@@ -1,6 +1,7 @@
 import "./editor";
 import "./energy-plan/card";
 import "./energy-insights/card";
+import "./energy-monitor/card";
 import "./nas";
 import "./energy-cards/card";
 import { MushroomEnergyLogCard } from "./energy-cards/energy-log";
@@ -144,6 +145,7 @@ export type { AdditionConfig } from "./types";
 export type { EnergyLogConfig, EnergyLogCategory, EnergyLogSource, EnergyLogEntry } from "./energy-cards/energy-log-config";
 export type { EnergyPlanConfig, EnergyPlanOptions, PlanRow, PlanMetric, PlanPeriod } from "./energy-plan/config";
 export type { EnergyInsightsConfig, EnergyInsightsOptions, InsightsConsumer } from "./energy-insights/config";
+export type { MonitorConfig, MonitorOptions, BaselineSource } from "./energy-monitor/config";
 export type { WeatherAdvancedOptions } from "./weather-advanced/config";
 export type { SmartSavingConfig } from "./energy-cards/types";
 export type { WorkflowConfig } from "./energy-cards/workflow-config";

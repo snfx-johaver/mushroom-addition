@@ -276,6 +276,7 @@ export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, P
   todo_sort?: "list" | "due" | "summary" | "important";
   energy_plan?: import("./energy-plan/config").EnergyPlanOptions;
   energy_insights?: import("./energy-insights/config").EnergyInsightsOptions;
+  energy_monitor?: Partial<import("./energy-monitor/config").MonitorOptions>;
   weather?: import("./weather-advanced/config").WeatherAdvancedOptions;
   title?: string;
   subtitle?: string;

@@ -17,6 +17,7 @@ export interface Actuals {
   end: number;
   generated: number;
   home?: number;
+  homeSource?: "direct" | "balance";
   solar?: number;
   batteryCharge?: number;
   batteryDischarge?: number;
@@ -29,7 +30,7 @@ export interface Actuals {
   intervals: MeterInterval[];
   consumers: Array<{ id: string; energy?: number; baseline?: number }>;
   remainder?: number;
-  coverage?: Array<{ id: string; end?: number; lastUpdated?: number; error?: string; absent?: boolean }>;
+  coverage?: Array<{ id: string; end?: number; lastUpdated?: number; error?: string; absent?: boolean; sourceType?: MeterSource["sourceType"] }>;
   warnings?: string[];
   approximations?: string[];
 }
@@ -47,6 +48,7 @@ export interface PurchaseBlock {
   detail: string;
 }
 export interface PurchasePlan {
+  forecastMethod?: string;
   start: number;
   end: number;
   generated: number;
@@ -165,7 +167,7 @@ export function readActuals(hass: HomeAssistant | undefined, options: EnergyInsi
 }
 
 export const INSIGHTS_HISTORY_REFRESH_MS = 15 * 60 * 1000;
-export const INSIGHTS_HISTORY_MAX_ENTITIES = 39;
+export const INSIGHTS_HISTORY_MAX_ENTITIES = 40;
 export const INSIGHTS_HISTORY_MAX_STATES_PER_ENTITY = 50000;
 export const INSIGHTS_HISTORY_MAX_STATES = 250000;
 export const INSIGHTS_MAX_PRICED_INTERVALS = 100000;
@@ -174,6 +176,7 @@ export const INSIGHTS_APPROXIMATION_MESSAGES = {
   midnight: "Midnight uses the last recorded HA state; the physical timing of the first delta is uncertain.",
   tariffs: "Costs use held midnight states and time-proportional tariff allocations; uniform energy use is assumed within split intervals.",
   endpoint: "Counters are held until the common HA snapshot endpoint; unchanged values between reports are assumed, not simultaneous physical measurements.",
+  recovery: "Hardware-counter recovery assumes no hidden reset during the outage; interval timing is uncertain.",
 } as const;
 
 export function meteredEntityIds(options: EnergyInsightsOptions): string[] {
@@ -182,6 +185,7 @@ export function meteredEntityIds(options: EnergyInsightsOptions): string[] {
     metered.solar.entity, metered.gridImport.entity, metered.gridExport.entity,
     metered.batteryCharge.entity, metered.batteryDischarge.entity,
     metered.importRate.entity, metered.exportRate.entity,
+    metered.home?.entity,
     ...options.consumers.map(consumer => consumer.energySource?.entity),
   ].filter((entity): entity is string => Boolean(entity)))];
 }
@@ -229,7 +233,7 @@ function historyGroups(response: unknown): Map<string, unknown[]> {
   return groups;
 }
 
-interface MeterPoint { time: number; value: number; }
+interface MeterPoint { time: number; value: number; recovered?: boolean; }
 
 function pointsFor(
   hass: HomeAssistant,
@@ -247,24 +251,62 @@ function pointsFor(
     currency && (unit === `${currency.toLowerCase()}/kwh` ||
       currency === "EUR" && unit === "€/kwh" || currency === "USD" && unit === "$/kwh") ? 1 : undefined;
   if (kind === "energy" && energyFactor === undefined) fail(`${key}: use a cumulative Wh, kWh, or MWh sensor`);
+  if (kind === "energy" && entity.attributes.state_class !== undefined &&
+    !["total", "total_increasing"].includes(String(entity.attributes.state_class))) fail(`${key}: select a cumulative total or total_increasing energy sensor, not a measurement`);
+  const integrated = sourceConfig.sourceType === "integrated_power" || typeof entity.attributes.source === "string";
+  if (sourceConfig.recoverGaps && (kind !== "energy" || sourceConfig.sourceType !== "hardware" || integrated)) {
+    fail(`${key}: gap recovery requires a verified hardware counter; integrated power cannot recover energy missed during an outage`);
+  }
   if (kind === "rate" && rateFactor === undefined) fail(`${key}: price unit must be ${currency ?? "the configured currency"}/kWh or cents/kWh`);
-  const parsed = rows.map(raw => {
+  const invalid = rows.findIndex(raw => {
+    const row = object(raw, key);
+    return ["unknown", "unavailable"].includes(String(row.state ?? row.s));
+  });
+  if (invalid >= 0 && !sourceConfig.recoverGaps) {
+    const first = object(rows[invalid], key);
+    const until = rows.slice(invalid + 1).map(raw => object(raw, key))
+      .find(row => !["unknown", "unavailable"].includes(String(row.state ?? row.s)));
+    const start = timestamp(first.last_updated ?? first.last_changed ?? first.lu ?? first.lc);
+    const end = until && timestamp(until.last_updated ?? until.last_changed ?? until.lu ?? until.lc);
+    const iso = (time: number | undefined, fallback: string) => time !== undefined && Number.isFinite(new Date(time).getTime()) ? new Date(time).toISOString() : fallback;
+    fail(`${key}: history contains an invalid value (unknown or unavailable); first gap ${iso(start, "unknown timestamp")} – ${iso(end, "no recovery in requested window")}; ${kind === "energy" && integrated ? "integrated power may have lost energy during this outage; " : ""}select a continuous sensor or correct its history; this flow cannot be used for balance-derived household totals`);
+  }
+  let pendingGap = false, gapTime = 0, previousReset: unknown;
+  const parsed: MeterPoint[] = [];
+  for (const raw of rows) {
     const row = object(raw, key);
     const attrs = object(row.attributes ?? row.a ?? {}, key);
-    if (["unknown", "unavailable"].includes(String(row.state ?? row.s))) fail(`${key}: history contains an invalid value (unknown or unavailable)`);
-    const rawValue = sourceConfig.field ? readPath(attrs, sourceConfig.field) : row.state ?? row.s;
-    const value = numeric(rawValue), time = timestamp(row.last_updated ?? row.last_changed ?? row.lu ?? row.lc);
-    if (value === undefined || time === undefined) fail(`${key}: history contains an invalid value or timestamp`);
-    if (kind === "energy" && value < 0) fail(`${key}: cumulative energy cannot be negative`);
+    const time = timestamp(row.last_updated ?? row.last_changed ?? row.lu ?? row.lc);
+    if (time === undefined || !Number.isFinite(new Date(time).getTime())) fail(`${key}: history contains an invalid timestamp`);
     if (attrs.unit_of_measurement !== undefined &&
       String(attrs.unit_of_measurement).replace(/\s+/g, "").toLowerCase() !== unit) fail(`${key}: historical units changed`);
+    if (sourceConfig.recoverGaps && typeof attrs.source === "string") fail(`${key}: integrated power history cannot use hardware-counter recovery`);
+    if (kind === "energy" && attrs.last_reset !== undefined && attrs.last_reset !== null) {
+      if (previousReset !== undefined && previousReset !== attrs.last_reset) fail(`${key}: cumulative meter reset metadata changed; use a non-resetting meter`);
+      previousReset = attrs.last_reset;
+    }
+    if (["unknown", "unavailable"].includes(String(row.state ?? row.s))) {
+      if (!sourceConfig.recoverGaps || !parsed.length) fail(`${key}: unavailable baseline cannot be recovered`);
+      if (time <= parsed.at(-1)!.time) fail(`${key}: ambiguous outage timestamp`);
+      gapTime = time;
+      pendingGap = true;
+      continue;
+    }
+    const rawValue = sourceConfig.field ? readPath(attrs, sourceConfig.field) : row.state ?? row.s;
+    const value = numeric(rawValue);
+    if (value === undefined || time === undefined) fail(`${key}: history contains an invalid value or timestamp`);
+    if (kind === "energy" && value < 0) fail(`${key}: cumulative energy cannot be negative`);
     const scaled = value * (kind === "energy" ? energyFactor! : rateFactor!);
     if (!Number.isFinite(scaled) || !Number.isFinite(new Date(time).getTime())) fail(`${key}: value or timestamp is out of range`);
-    return { time, value: scaled };
-  });
+    if (pendingGap && time <= gapTime) fail(`${key}: recovery must follow the outage`);
+    parsed.push({ time, value: scaled, ...(pendingGap ? { recovered: true } : {}) });
+    pendingGap = false;
+  }
+  if (pendingGap) fail(`${key}: unavailable history has no recorded recovery; current state alone cannot fill the gap`);
   const unique = new Map<number, MeterPoint>();
   for (const point of parsed) {
     if (unique.has(point.time) && unique.get(point.time)!.value !== point.value) fail(`${key}: conflicting readings at the same timestamp`);
+    if (unique.get(point.time)?.recovered) point.recovered = true;
     unique.set(point.time, point);
   }
   return [...unique.values()].sort((a, b) => a.time - b.time);
@@ -272,7 +314,7 @@ function pointsFor(
 
 interface MeterDelta { start: number; end: number; quantity: number; approximate: boolean; }
 
-function meterDeltas(points: MeterPoint[], start: number, end: number, key: string): MeterDelta[] {
+function meterDeltas(points: MeterPoint[], start: number, end: number, key: string, includeZero = false): MeterDelta[] {
   const baseline = points.filter(point => point.time <= start).at(-1);
   if (!baseline) fail(`${key}: Recorder history has no cumulative reading at the start of today`);
   const readings = points.filter(point => point.time > start && point.time <= end);
@@ -281,11 +323,11 @@ function meterDeltas(points: MeterPoint[], start: number, end: number, key: stri
   for (const point of readings) {
     const quantity = point.value - previous.value;
     if (quantity < 0) fail(`${key}: cumulative meter reset or decreased; use a non-resetting meter`);
-    if (point.time > previous.time && quantity > 0) {
+    if (point.time > previous.time && (quantity > 0 || includeZero && quantity === 0)) {
       const left = Math.max(previous.time, start);
       deltas.push({ start: left, end: point.time,
         quantity,
-        approximate: previous.time < start });
+        approximate: previous.time < start || point.recovered === true });
     }
     previous = point;
   }
@@ -326,6 +368,7 @@ export function readMeteredActuals(
   options: EnergyInsightsOptions,
   response: unknown,
   now = Date.now(),
+  preserveZeroMeterIntervals = false,
 ): SourceResult<Actuals> {
   if (!hass) return { error: "Source missing: Home Assistant is not connected" };
   const currency = options.currency || hass.config?.currency;
@@ -338,11 +381,11 @@ export function readMeteredActuals(
     const start = localDayStart(now, zone);
     const coverage: NonNullable<Actuals["coverage"]> = [], warnings: string[] = [], approximations: string[] = [];
     const carriedSources: string[] = [];
-    const attempt = <T>(id: string, read: () => T): T | undefined => {
+    const attempt = <T>(id: string, read: () => T, sourceType?: MeterSource["sourceType"]): T | undefined => {
       try { return read(); }
       catch (error) {
         if (!(error instanceof SourceError)) throw error;
-        coverage.push({ id, error: error.message });
+        coverage.push({ id, error: error.message, sourceType });
         warnings.push(error.message);
         return undefined;
       }
@@ -368,6 +411,13 @@ export function readMeteredActuals(
       const currentTime = timestamp(entity.last_updated ?? entity.last_changed);
       if (currentTime === undefined || currentTime > now) fail(`${id}: current state has an invalid or future timestamp`);
       const current = pointsFor(hass, config, [entity], id, kind, currency)[0];
+      if (kind === "energy" && entity.attributes.last_reset !== undefined && entity.attributes.last_reset !== null) {
+        const recordedReset = relevant.filter(row => row.time! <= now).map(({ raw }) => {
+          const row = object(raw, id);
+          return object(row.attributes ?? row.a ?? {}, id).last_reset;
+        }).filter(value => value !== undefined && value !== null).at(-1);
+        if (recordedReset !== undefined && recordedReset !== entity.attributes.last_reset) fail(`${id}: current reset metadata disagrees with Recorder history`);
+      }
       const latest = all.at(-1);
       // Recorder carries microseconds; HA's ISO serialization truncates to milliseconds.
       // The frontend state subscription can also lag behind newer Recorder changes.
@@ -379,40 +429,54 @@ export function readMeteredActuals(
       all.sort((a, b) => a.time - b.time);
       // HA's captured current state is the endpoint, not its last change timestamp.
       // Do not synthesize a missing Recorder baseline from the current state.
-      if (latest) all.push({ time: now, value: all.at(-1)!.value });
+      if (latest && all.at(-1)!.time < now) all.push({ time: now, value: all.at(-1)!.value });
       return [...new Map(all.map(point => [point.time, point])).values()].sort((a, b) => a.time - b.time);
     };
-    const energy = (id: string, config: MeterSource) => attempt(id, () => {
-      if (config.absent) {
-        coverage.push({ id, end: now, absent: true });
-        return { total: 0, end: now, deltas: [] };
-      }
-      const readings = points(id, config, "energy");
-      const deltas = meterDeltas(readings, start, now, id);
-      const end = now;
-      const entity = hass.states[config.entity!];
-      const lastUpdated = timestamp(entity.last_updated ?? entity.last_changed)!;
-      if (lastUpdated < now) carriedSources.push(id);
-      if (deltas.some(item => item.approximate)) {
-        approximations.push(`${id}: ${INSIGHTS_APPROXIMATION_MESSAGES.midnight}`);
-      }
-      coverage.push({ id, end, lastUpdated });
-      return { total: deltas.reduce((sum, item) => sum + item.quantity, 0), end, deltas };
-    });
+    const energy = (id: string, config: MeterSource) => {
+      const sourceType = typeof hass.states[config.entity ?? ""]?.attributes.source === "string" ? "integrated_power" : config.sourceType ?? "unspecified";
+      return attempt(id, () => {
+        if (config.absent) {
+          coverage.push({ id, end: now, absent: true });
+          return { total: 0, end: now, deltas: [] };
+        }
+        const readings = points(id, config, "energy");
+        const deltas = meterDeltas(readings, start, now, id, preserveZeroMeterIntervals);
+        const end = now;
+        const entity = hass.states[config.entity!];
+        const lastUpdated = timestamp(entity.last_updated ?? entity.last_changed)!;
+        if (lastUpdated < now) carriedSources.push(id);
+        if (deltas.some(item => item.start === start && readings[0].time < start)) {
+          approximations.push(`${id}: ${INSIGHTS_APPROXIMATION_MESSAGES.midnight}`);
+        }
+        if (readings.some(point => point.recovered)) approximations.push(`${id}: ${INSIGHTS_APPROXIMATION_MESSAGES.recovery}`);
+        coverage.push({ id, end, lastUpdated, sourceType });
+        return { total: deltas.reduce((sum, item) => sum + item.quantity, 0), end, deltas };
+      }, sourceType);
+    };
     const solarMeter = energy("solar", options.metered.solar);
     const importMeter = energy("gridImport", options.metered.gridImport);
     const exportMeter = energy("gridExport", options.metered.gridExport);
     const chargeMeter = energy("batteryCharge", options.metered.batteryCharge);
     const dischargeMeter = energy("batteryDischarge", options.metered.batteryDischarge);
+    const homeMeter = options.metered.home?.entity ? energy("home", options.metered.home) : undefined;
     const solar = solarMeter?.total, imported = importMeter?.total, exported = exportMeter?.total;
     const batteryCharge = chargeMeter?.total, batteryDischarge = dischargeMeter?.total;
     const end = now;
-    let home: number | undefined;
-    if (solar !== undefined && imported !== undefined && exported !== undefined &&
+    let home: number | undefined = homeMeter?.total;
+    if (!options.metered.home?.entity && solar !== undefined && imported !== undefined && exported !== undefined &&
       batteryCharge !== undefined && batteryDischarge !== undefined) {
       const balanced = solar + imported + batteryDischarge - batteryCharge - exported;
       if (Number.isFinite(balanced) && balanced >= -.01) home = Math.max(0, balanced);
       else warnings.push("Invalid data source or field mapping: energy balance produces nonfinite or negative household consumption");
+    }
+    if (options.metered.home?.entity && options.homeBoundary !== "excludes_battery_charging") {
+      home = undefined;
+      warnings.push("Invalid data source or field mapping: verify that the household meter excludes battery charging");
+    }
+    if (home !== undefined && options.metered.home?.entity && solar !== undefined && imported !== undefined &&
+      exported !== undefined && batteryCharge !== undefined && batteryDischarge !== undefined &&
+      Math.abs(solar + imported + batteryDischarge - batteryCharge - exported - home) > Math.max(.01, home * .01)) {
+      warnings.push("Invalid data source or field mapping: direct household meter disagrees with the energy balance; verify measurement boundaries and battery charging exclusion");
     }
     const priceIntervals = (id: string, meter: typeof importMeter, config: MeterSource, fixed?: number) => {
       if (!meter) return { intervals: [], cost: undefined };
@@ -464,7 +528,7 @@ export function readMeteredActuals(
       approximations.unshift(`${carriedSources.join(", ")}: ${INSIGHTS_APPROXIMATION_MESSAGES.endpoint}`);
     }
     return { value: {
-      start, end, generated: now, home, solar, batteryCharge, batteryDischarge,
+      start, end, generated: now, home, homeSource: options.metered.home?.entity ? "direct" : "balance", solar, batteryCharge, batteryDischarge,
       imported, exported, importCost: purchase.cost, exportCredit: sale.cost, exportRateConfigured,
       buckets: purchase.cost === undefined ? [] : [...buckets.values()].sort((a, b) => a.rate - b.rate),
       intervals: intervals.sort((a, b) => a.start - b.start), consumers, remainder,
@@ -478,7 +542,7 @@ export function readMeteredActuals(
 
 export function readPurchasePlan(hass: HomeAssistant | undefined, options: EnergyInsightsOptions, now = Date.now()): SourceResult<PurchasePlan> {
   return source(hass, options.planSource, options, "Plan source", now, (root, start, end, generated) => {
-    if (end - start !== 86400000 || start < generated - 60000 || end <= now) fail("upcoming 24-hour window");
+    if (end - start > 86400000 || start < generated - 60000 || end <= now) fail("upcoming supplied window must be positive and at most 24 hours");
     const home = number(root, "home_kwh"), solar = number(root, "solar_kwh");
     const batteryMin = options.showPlanBattery ? number(root, "battery_min", 0, 100) : undefined;
     const reserve = options.showPlanBattery ? number(root, "battery_reserve", 0, 100) : undefined;
@@ -491,6 +555,13 @@ export function readPurchasePlan(hass: HomeAssistant | undefined, options: Energ
       const quantity = options.showPlanAllocations ? home! + ev! + battery! : number(item, "quantity_kwh");
       const rate = number(item, "rate", -1000000, 1000000);
       if (battery !== undefined && battery > quantity + .001) fail("battery_kwh exceeds purchase quantity_kwh");
+      if (options.purchaseScope === "battery") {
+        const suppliedHome = home ?? (item.home_kwh === undefined ? undefined : number(item, "home_kwh"));
+        const suppliedEv = ev ?? (item.ev_kwh === undefined ? undefined : number(item, "ev_kwh"));
+        const suppliedBattery = battery ?? (item.battery_kwh === undefined ? undefined : number(item, "battery_kwh"));
+        if (suppliedHome !== undefined && suppliedHome > .001 || suppliedEv !== undefined && suppliedEv > .001 ||
+          suppliedBattery !== undefined && Math.abs(suppliedBattery - quantity) > .001) fail("battery-only purchase scope contradicts supplied allocation");
+      }
       if (options.showPlanAllocations && item.quantity_kwh !== undefined &&
         Math.abs(number(item, "quantity_kwh") - quantity) > .001) fail("quantity_kwh does not match allocation");
       return {
@@ -507,7 +578,8 @@ export function readPurchasePlan(hass: HomeAssistant | undefined, options: Energ
       strategy: options.showForecasts && consumer.strategyField ? text(root, consumer.strategyField) : undefined,
     }));
     if (consumers.reduce((sum, item) => sum + (item.energy ?? 0), 0) > home + .001) fail("consumer forecasts exceed household forecast");
-    return { start, end, generated, home, solar, batteryMin, reserve, efficiency, blocks, consumers,
+    const forecastMethod = root.forecast_method === undefined ? undefined : text(root, "forecast_method");
+    return { start, end, generated, home, solar, batteryMin, reserve, efficiency, blocks, consumers, forecastMethod,
       quantity: blocks.reduce((sum, item) => sum + item.quantity, 0),
       cost: blocks.reduce((sum, item) => sum + item.cost, 0) };
   });

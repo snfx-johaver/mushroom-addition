@@ -13,6 +13,8 @@ import type { AdditionConfig, HassEntity, HomeAssistant } from "../src/types";
 import type { EditorField } from "../src/editor-schema";
 import type { NativeFields } from "../src/energy-editor-schema";
 import { mountInsightsDemo } from "./energy-insights";
+import { mountSmartSavingDemo } from "./smart-saving";
+import { mountEnergyMonitors } from "./energy-monitors";
 
 const icons: Record<string, string> = {
   "mdi:calendar-clock": mdiCalendarClock, "mdi:currency-eur": mdiCurrencyEur,
@@ -140,18 +142,18 @@ function sensor(name: string, state: string, attributes: Record<string, unknown>
   entities[id] = { entity_id: id, state, last_updated: new Date().toISOString(), attributes: { friendly_name: `Synthetic ${name.replaceAll("_", " ")}`, ...attributes } };
   return id;
 }
-const planEntity = sensor("plan", "ready", { start: start.toISOString(), plan });
+const planEntity = sensor("plan", "ready", { start: start.toISOString(), plan, method: "Synthetic daylight profile and illustrative demand estimate." });
 const metrics = [
   { name: "Solar forecast", entity: sensor("solar_energy", plan.reduce((sum, row) => sum + row.solar * .25, 0).toFixed(2)), unit: "kWh", icon: "mdi:white-balance-sunny", color: "amber" },
   { name: "Grid import", entity: sensor("grid_energy", plan.reduce((sum, row) => sum + Math.max(0, row.grid) * .25, 0).toFixed(2)), unit: "kWh", icon: "mdi:transmission-tower", color: "purple" },
   { name: "Import cost", entity: sensor("import_cost", plan.reduce((sum, row) => sum + Math.max(0, row.grid) * .25 * row.price, 0).toFixed(2)), unit: "EUR", icon: "mdi:currency-eur", color: "cyan" },
-  { name: "Battery at end", entity: sensor("battery_end", plan.at(-1)!.soc.toFixed(1)), unit: "%", icon: "mdi:battery", color: "green" },
+  { name: "Battery at published end", entity: sensor("battery_end", plan.at(-1)!.soc.toFixed(1)), rowId: "soc", unit: "%", icon: "mdi:battery", color: "green" },
 ];
 const initial: EnergyPlanConfig = {
   type: "custom:mushroom-addition-energy-plan", name: "Energy Plan", secondary: "Synthetic forecast - no device control",
   icon: "mdi:calendar-clock", visibleHours: 24, tap_action: { action: "none" }, entity: planEntity,
   energy_plan: {
-    ...planDefaults(), start: "source", startField: "start",
+    ...planDefaults(), start: "source", startField: "start", forecastKind: "estimate", forecastMethodField: "method",
     overview: "Let the sunshine do the work",
     description: "Store the midday surplus. Use your battery during the evening peak.",
     metrics, periods: [
@@ -190,6 +192,8 @@ try {
 card.hass = hass; editor.hass = hass; card.setConfig(config); editor.setConfig(config);
 document.querySelector("#preview")!.append(card);
 document.querySelector("#editor")!.append(editor);
+const smartSavingDemo = mountSmartSavingDemo();
+const energyMonitors = mountEnergyMonitors();
 editor.addEventListener("config-changed", (event: Event) => {
   try {
     const next = syntheticConfig((event as CustomEvent<{ config: AdditionConfig }>).detail.config);
@@ -207,6 +211,8 @@ document.querySelector("#theme")!.addEventListener("click", () => {
   document.body.classList.toggle("light", light);
   card.hass = editor.hass = { ...hass, themes: { darkMode: !light } };
   insightsDemo.theme(!light);
+  smartSavingDemo.theme(!light);
+  energyMonitors.theme(!light);
   document.querySelector("#theme")!.textContent = light ? "Dark theme" : "Light theme";
 });
 document.querySelector("#reset")!.addEventListener("click", () => {
