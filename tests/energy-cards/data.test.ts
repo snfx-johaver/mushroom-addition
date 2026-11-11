@@ -6,9 +6,11 @@ import {
   parseBlocks,
   parseIntervals,
   parsePoints,
+  priceCurrency,
   timestamp,
   weightedAverage,
 } from "../../src/energy-cards/data";
+import { validatePriceSource } from "../../src/energy-cards/price-source";
 import type { HassEntity } from "../../src/types";
 
 const entity = (attributes: Record<string, unknown>, state = "unknown"): HassEntity => ({
@@ -34,6 +36,15 @@ describe("price and interval data", () => {
       { start: "2026-01-02T10:00:00Z", duration: 15, price: 12 },
     ] }), { path: "prices", startField: "start", durationField: "duration", priceField: "price" });
     expect(parsed[0].end - parsed[0].start).toBe(15 * 60_000);
+  });
+
+  it("defaults source cents to EUR unless their currency is explicit", () => {
+    const mapping = { entity: "sensor.example", sourceUnit: "ct/kWh" as const, displayUnit: "USD/kWh" as const };
+    expect(priceCurrency("ct/kWh", "EUR/kWh")).toBe("EUR");
+    expect(() => validatePriceSource(mapping)).toThrow(/Price currencies must match/);
+    expect(() => convertPrice(100, "ct/kWh", "USD/kWh")).toThrow(/Price currencies must match/);
+    expect(validatePriceSource({ ...mapping, currency: "USD" })).toBeUndefined();
+    expect(convertPrice(100, "ct/kWh", "USD/kWh", "USD")).toBe(1);
   });
 
   it("computes duration-weighted averages and converts price units", () => {

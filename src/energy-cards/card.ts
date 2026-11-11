@@ -286,7 +286,9 @@ export class SmartSavingPlanCard extends MushroomAdditionCard {
     const unit = config.price?.displayUnit ?? sourceUnit;
     const currency = priceCurrency(sourceUnit, unit, config.price?.currency);
     const unitLabel = unit === "ct/kWh" ? `${unit} (${currency})` : unit;
-    const rawPrices = parsedPrices.items.map(item => ({ ...item, value: convertPrice(item.value, sourceUnit, unit) }));
+    const rawPrices = parsedPrices.items.map(item => ({
+      ...item, value: convertPrice(item.value, sourceUnit, unit, config.price?.currency),
+    }));
     const publishedEnds = [
       ...rawPrices.filter(item => item.start < requestedEnd && item.end > now).map(item => item.end),
       ...parsedForecast.items.filter(point => point.time > now && point.time <= requestedEnd).map(point => point.time),

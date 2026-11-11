@@ -95,11 +95,12 @@ Smart Saving and Energy Live Energy Flow remain available.
   visual additional pollen sensors, and dropdowns that follow light/dark themes.
 
 Other existing dashboard card types and configurations remain supported. Install
-**v0.9.1** through HACS, then reload every dashboard browser. If you have been
+**v0.10.0** through HACS, then reload every dashboard browser. If you have been
 using an unreleased hotfix, return to the single HACS-managed resource after the
 update; do not load both bundles.
 
-See the [0.9.1 changelog](CHANGELOG.md#091---2026-11-11),
+See the [0.10.0 changelog](CHANGELOG.md#0100---2026-11-11),
+[0.9.1 changelog](CHANGELOG.md#091---2026-11-11),
 [0.9.0 changelog](CHANGELOG.md#090---2026-11-11),
 [0.8.0 changelog](CHANGELOG.md#080---2026-11-10),
 [original energy update](CHANGELOG.md#072---2026-11-06),

@@ -30,7 +30,7 @@ export const energyPriceSlots = (entity?: HassEntity, mapping?: PriceConfig): En
     const currency = priceCurrency(sourceUnit, mapping.displayUnit, mapping.currency);
     const unit = currencyPriceUnit(currency);
     return readPriceIntervals(entity, mapping).items.map(item => ({
-      timestamp: item.start, end: item.end, price: convertPrice(item.value, sourceUnit, unit), kind: 0,
+      timestamp: item.start, end: item.end, price: convertPrice(item.value, sourceUnit, unit, mapping.currency), kind: 0,
     }));
   }
   const slots = entity?.attributes.slots;

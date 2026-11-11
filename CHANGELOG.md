@@ -2,7 +2,14 @@
 
 Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
-## Unreleased
+## 0.10.0 - 2026-11-11
+
+- Pin privileged release workflow actions to immutable revisions and avoid
+  persisting checkout credentials. Add a tracked-file privacy check to validation.
+- Document residual historical audit-data exposure and safe contribution rules;
+  published Git history is not rewritten by this release.
+- Reject ambiguous cents-to-other-currency conversions unless the source currency
+  is explicitly configured.
 
 - Make all seven energy cards usable without HEMS or brand-specific picker
   defaults. Detect compatible published price formats, leave unrelated sensors

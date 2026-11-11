@@ -109,8 +109,9 @@ export function convertPrice(
   value: number,
   sourceUnit: PriceUnit = "EUR/kWh",
   displayUnit: PriceUnit = sourceUnit,
+  currency?: string,
 ): number {
-  priceCurrency(sourceUnit, displayUnit);
+  priceCurrency(sourceUnit, displayUnit, currency);
   const scale = (unit: PriceUnit) => unit === "ct/kWh" ? .01 : unit.endsWith("/MWh") ? .001 : 1;
   return value * scale(sourceUnit) / scale(displayUnit);
 }
@@ -130,6 +131,7 @@ export function priceCurrency(source: PriceUnit, display = source, currency?: st
   if (currency !== undefined && !/^[A-Z]{3}$/.test(currency)) throw new Error("currency: expected an ISO currency.");
   const currencies = new Set([source, display].filter(unit => unit !== "ct/kWh").map(unit => unit.split("/")[0]));
   if (currency) currencies.add(currency);
+  if (source === "ct/kWh" && currency === undefined) currencies.add("EUR");
   if (currencies.size > 1) throw new Error("Price currencies must match; currency exchange is not supported.");
   return [...currencies][0] ?? "EUR";
 }

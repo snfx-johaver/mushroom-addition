@@ -104,7 +104,8 @@ describe("community energy setup", () => {
   it("converts energy denominations and cents without performing currency exchange", () => {
     expect(convertPrice(150, "USD/MWh", "USD/kWh")).toBeCloseTo(.15);
     expect(convertPrice(.15, "USD/kWh", "ct/kWh")).toBeCloseTo(15);
-    expect(convertPrice(15, "ct/kWh", "GBP/kWh")).toBeCloseTo(.15);
+    expect(() => convertPrice(15, "ct/kWh", "GBP/kWh")).toThrow("currencies must match");
+    expect(convertPrice(15, "ct/kWh", "GBP/kWh", "GBP")).toBeCloseTo(.15);
     expect(() => convertPrice(.15, "USD/kWh", "EUR/kWh")).toThrow("currencies must match");
     expect(() => validatePriceSource({ sourceUnit: "USD/kWh", currency: "EUR" })).toThrow("currencies must match");
     expect(() => validatePriceSource({ sourceUnit: "USD/hour" })).toThrow("unsupported price unit");
