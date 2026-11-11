@@ -44,7 +44,7 @@ Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all card
 
 - **[Car Advanced](docs/CAR_ADVANCED.md):** vehicle indicators, charging and range,
   images, maps and custom detail panels with a bundled engine and visual editor.
-  Added to the existing 0.9.0 release without a version bump.
+  Available in the 0.9.1 patch release.
 
 The four new monitoring cards are now included in the 0.9.0 release. See the
 [complete changelog](CHANGELOG.md#090---2026-11-11) for details.
@@ -100,11 +100,12 @@ of a household. No additional image host or frontend dependency is needed.
   visual additional pollen sensors, and dropdowns that follow light/dark themes.
 
 Existing dashboard card types and configurations remain supported. Install
-**v0.9.0** through HACS, then reload every dashboard browser. If you have been
+**v0.9.1** through HACS, then reload every dashboard browser. If you have been
 using an unreleased hotfix, return to the single HACS-managed resource after the
 update; do not load both bundles.
 
-See the [0.9.0 changelog](CHANGELOG.md#090---2026-11-11),
+See the [0.9.1 changelog](CHANGELOG.md#091---2026-11-11),
+[0.9.0 changelog](CHANGELOG.md#090---2026-11-11),
 [0.8.0 changelog](CHANGELOG.md#080---2026-11-10),
 [original energy update](CHANGELOG.md#072---2026-11-06),
 [translation update](CHANGELOG.md#071---2026-11-02) and

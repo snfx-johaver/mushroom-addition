@@ -2,6 +2,11 @@
 
 Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
+## 0.9.1 - 2026-11-11
+
+- Publish Car Advanced and the picker/editor fixes from the 0.9.0 update as a
+  versioned patch release, with all 45 public cards included.
+
 ## 0.9.0 - 2026-11-11
 
 - Add Car Advanced with a bundled MIT vehicle engine, Mushroom presentation and
