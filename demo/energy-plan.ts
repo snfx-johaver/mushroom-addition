@@ -12,7 +12,6 @@ import type { MushroomAdditionEditor } from "../src/editor";
 import type { AdditionConfig, HassEntity, HomeAssistant } from "../src/types";
 import type { EditorField } from "../src/editor-schema";
 import type { NativeFields } from "../src/energy-editor-schema";
-import { mountInsightsDemo } from "./energy-insights";
 import { mountSmartSavingDemo } from "./smart-saving";
 import { mountEnergyMonitors } from "./energy-monitors";
 
@@ -163,7 +162,6 @@ const initial: EnergyPlanConfig = {
   },
 };
 const hass: HomeAssistant = { states: entities, language: "en", themes: { darkMode: true }, callService: async () => { throw new Error("Device control is disabled in the synthetic showcase."); } };
-const insightsDemo = mountInsightsDemo(hass);
 const card = document.createElement("mushroom-addition-energy-plan") as EnergyPlanCard;
 const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
 const storageKey = "mushroom-addition-energy-plan-synthetic-config";
@@ -210,7 +208,6 @@ document.querySelector("#theme")!.addEventListener("click", () => {
   const light = document.documentElement.classList.toggle("light");
   document.body.classList.toggle("light", light);
   card.hass = editor.hass = { ...hass, themes: { darkMode: !light } };
-  insightsDemo.theme(!light);
   smartSavingDemo.theme(!light);
   energyMonitors.theme(!light);
   document.querySelector("#theme")!.textContent = light ? "Dark theme" : "Light theme";
@@ -219,7 +216,6 @@ document.querySelector("#reset")!.addEventListener("click", () => {
   try {
     localStorage.removeItem(storageKey);
     card.setConfig(initial); editor.setConfig(initial); config = initial;
-    insightsDemo.reset();
     status.textContent = "Synthetic example reset.";
   } catch (error) {
     if (!(error instanceof Error)) throw error;

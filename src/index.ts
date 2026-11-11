@@ -1,6 +1,5 @@
 import "./editor";
 import "./energy-plan/card";
-import "./energy-insights/card";
 import "./energy-monitor/card";
 import "./nas";
 import "./energy-cards/card";
@@ -128,8 +127,15 @@ for (const alias of LEGACY_ALIASES) {
 
 window.customCards = window.customCards || [];
 // Home Assistant retains this array when its picker module loads.
+const removedPickerTags = new Set([
+  MUSHROOM_AREA_TAG,
+  "mushroom-addition-energy-insights",
+  "mushroom-addition-energy-plan-actual",
+  "mushroom-addition-battery-activity",
+  "mushroom-addition-electricity-cost-timeline",
+]);
 for (let index = window.customCards.length - 1; index >= 0; index--) {
-  if (window.customCards[index].type === MUSHROOM_AREA_TAG) window.customCards.splice(index, 1);
+  if (removedPickerTags.has(window.customCards[index].type)) window.customCards.splice(index, 1);
 }
 const existing = new Set(window.customCards.map((card) => card.type));
 for (const item of CATALOG) {
@@ -153,7 +159,6 @@ export { CATALOG } from "./catalog";
 export type { AdditionConfig } from "./types";
 export type { EnergyLogConfig, EnergyLogCategory, EnergyLogSource, EnergyLogEntry } from "./energy-cards/energy-log-config";
 export type { EnergyPlanConfig, EnergyPlanOptions, PlanRow, PlanMetric, PlanPeriod } from "./energy-plan/config";
-export type { EnergyInsightsConfig, EnergyInsightsOptions, InsightsConsumer } from "./energy-insights/config";
 export type { MonitorConfig, MonitorOptions, BaselineSource } from "./energy-monitor/config";
 export type { WeatherAdvancedOptions } from "./weather-advanced/config";
 export type { SmartSavingConfig } from "./energy-cards/types";

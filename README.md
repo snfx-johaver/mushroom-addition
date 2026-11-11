@@ -5,7 +5,7 @@
 
 Your dashboard called. It wants fewer YAML headaches and a little more fun(gus).
 
-**45 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
+**41 Home Assistant dashboard cards, with visual editors and theme-aware styling.**
 Air quality, animated weather, lights, appliances, energy, media, rooms, NAS and more.
 Pick a card, pick your entities, enjoy your dashboard.
 YAML is still welcome; it just isn't compulsory.
@@ -46,27 +46,22 @@ Not every card is pictured: see the [full catalog](docs/CATALOG.md) for all card
   images, maps and custom detail panels with a bundled engine and visual editor.
   Available in the 0.9.1 patch release.
 
-The four new monitoring cards are now included in the 0.9.0 release. See the
-[complete changelog](CHANGELOG.md#090---2026-11-11) for details.
-
-- **Four monitoring cards:** [Energy Plan vs Actual](docs/ENERGY_MONITORING.md#energy-plan-vs-actual),
-  [Energy Battery Activity](docs/ENERGY_MONITORING.md#energy-battery-activity),
-  [Energy Electricity Cost Timeline](docs/ENERGY_MONITORING.md#energy-electricity-cost-timeline)
-  and [Energy Live Energy Flow](docs/ENERGY_MONITORING.md#energy-live-energy-flow).
-- **Realistic live flow:** a bundled 3D-rendered house, grid, solar panels,
+- **[Energy Live Energy Flow](docs/ENERGY_MONITORING.md):** a bundled 3D-rendered house, grid, solar panels,
   battery and EV with shaded cables and measured directional animation.
   Optional solar-to-EV and battery-to-EV routes require dedicated sensors.
-- **Clearer charts:** battery power and SoC share one chart; metered purchases
-  have a compact signed chart; Smart Saving adds a shared time inspector,
+- **Clearer charts:** Smart Saving adds a shared time inspector,
   published-coverage indicators and independent source-age controls.
-- **Explicit data boundaries:** compare only retained pre-period forecasts with
-  matching measurements, distinguish hardware counters from integrated power,
+- **Explicit data boundaries:** verify electrical roles and measurement boundaries,
   and keep missing sources, tariff gaps and accounting assumptions visible.
 
-All four cards use the existing bundle, native visual editor and 33 supported
+The cards use the existing bundle, native visual editor and 33 supported
 language catalogs. Examples and the local showcase use fictional entities and
 synthetic readings. The generated scene is illustrative, not a reconstruction
 of a household. No additional image host or frontend dependency is needed.
+
+Energy Insights & Purchases, Energy Plan vs Actual, Energy Battery Activity and
+Energy Electricity Cost Timeline were removed in 0.9.1. Energy Plan, Energy Log,
+Smart Saving and Energy Live Energy Flow remain available.
 
 ## What's new in 0.8
 
@@ -79,7 +74,7 @@ of a household. No additional image host or frontend dependency is needed.
 - **[To-do](docs/TODO.md) (0.7.6):** a frontend-only task card using standard
   Home Assistant `todo` entities, including Microsoft To Do. Add, complete, edit
   and delete tasks where supported; no Home Tasks backend is required.
-- **Energy cards (0.7.2):** Energy Plan, Energy Insights & Purchases and Energy Log,
+- **Energy cards (0.7.2):** Energy Plan and Energy Log,
   with shared Mushroom presentation, native visual editors and the shadow option.
   Smart Saving and existing energy cards remain supported.
 - **Languages:** all cards and visual editors now use the 33 Mushroom language
@@ -99,7 +94,7 @@ of a household. No additional image host or frontend dependency is needed.
 - **Privacy and editor polish:** camera privacy selectors on both Area cards,
   visual additional pollen sensors, and dropdowns that follow light/dark themes.
 
-Existing dashboard card types and configurations remain supported. Install
+Other existing dashboard card types and configurations remain supported. Install
 **v0.9.1** through HACS, then reload every dashboard browser. If you have been
 using an unreleased hotfix, return to the single HACS-managed resource after the
 update; do not load both bundles.
@@ -350,22 +345,17 @@ Please keep household screenshots and personal information out of reports.
 ## Energy cards
 
 The energy cards share the existing bundle and card picker; no additional
-resource is needed. The four monitoring cards below are part of the upcoming
-update, not the current HACS release.
+resource is needed.
 
 | Card | Configuration type | Purpose |
 | --- | --- | --- |
 | [Energy Plan](docs/ENERGY_PLAN.md) | `custom:mushroom-addition-energy-plan` | Configurable aligned timeline for supplied prices, solar, battery, grid and consumer forecasts. |
-| [Energy Insights & Purchases](docs/ENERGY_INSIGHTS.md) | `custom:mushroom-addition-energy-insights` | Measured consumption and interval-priced purchases, with a separate view for supplied future purchase allocations. |
-| [Energy Plan vs Actual](docs/ENERGY_MONITORING.md#energy-plan-vs-actual) | `custom:mushroom-addition-energy-plan-actual` | An externally retained pre-period forecast compared with matching measured energy. |
-| [Energy Battery Activity](docs/ENERGY_MONITORING.md#energy-battery-activity) | `custom:mushroom-addition-battery-activity` | Recorded power and SoC, with daily charge/discharge totals from configured counters. |
-| [Energy Electricity Cost Timeline](docs/ENERGY_MONITORING.md#energy-electricity-cost-timeline) | `custom:mushroom-addition-electricity-cost-timeline` | Recorded import costs and export credits, with honest tariff gaps and negative-rate handling. |
 | [Energy Live Energy Flow](docs/ENERGY_MONITORING.md#energy-live-energy-flow) | `custom:mushroom-addition-live-energy-flow` | House-centered 3D power flows with optional separately measured solar/battery-to-EV routes. |
 | [Energy Log](docs/ENERGY_LOG.md) | `custom:mushroom-addition-energy-log` | Entity-backed events with category filters, date grouping and source details. |
 
 These cards use the shared Mushroom presentation, theme-aware colors, shadow
 option, header actions and Context, Content, Layout, Interactions and Features
-editor sections. Repeatable rows, metrics, periods, consumers, sources, categories
+editor sections. Repeatable rows, metrics, periods, sources, categories
 and field mappings use Home Assistant's native structured object selectors.
 These editors require HA 2026.11 / frontend 20261028.4 or newer.
 Built-in labels use all 33 language catalogs; custom names and source text are
@@ -376,11 +366,9 @@ schedules or control devices. Missing, invalid and stale sources are shown
 explicitly. Picker defaults select compatible sources when available; otherwise
 configure sources using the contracts in each card's documentation.
 
-For the four monitoring cards, electrical roles are always assigned explicitly
+For Energy Live Energy Flow, electrical roles are always assigned explicitly
 in **Features**; a Context entity changes the heading but never identifies a
-solar, grid, battery or EV boundary. Energy Plan vs Actual requires an externally
-retained forecast, not the latest revised plan. History cards require access to
-Home Assistant Recorder; Energy Live Energy Flow uses current source states only.
+solar, grid, battery or EV boundary. Energy Live Energy Flow uses current source states only.
 Missing data is never substituted with a zero reading or an invented forecast.
 
 Live flow animation stops for zero, stale or invalid readings and respects

@@ -224,12 +224,6 @@ export const NATIVE_CATALOG: readonly CatalogItem[] = [
     preferredDomains: ["sensor"],
   },
   {
-    upstreamId: "energy_insights", sourcePath: "src/energy-insights/card.ts", kind: "card",
-    category: "custom-card", family: "energy", tag: "mushroom-addition-energy-insights",
-    name: "Energy Insights & Purchases", description: "Measured household consumption, interval purchase accounting and upcoming purchase allocations.",
-    preferredDomains: ["sensor"],
-  },
-  {
     upstreamId: "weather_advanced",
     sourcePath: "src/weather-advanced/card.ts",
     kind: "card",

@@ -67,6 +67,7 @@ describe("Car Advanced integration", () => {
     expect(() => validateCar({ type: `custom:${CAR_TAG}`, car: [] as never })).toThrow("object");
     expect(() => validateCar({ type: `custom:${CAR_TAG}`, car: { range_info: {} as never } })).toThrow("range_info");
     expect(() => validateCar({ type: `custom:${CAR_TAG}`, car: { mini_map: [] as never } })).toThrow("mini_map");
+    expect(() => validateCar({ type: `custom:${CAR_TAG}`, car_show_header: "false" as never })).toThrow("car_show_header");
     expect(validateCar(config())).toEqual(config());
   });
   it("selects a healthy tracker and leaves primary and secondary information unset", () => {
@@ -91,6 +92,14 @@ describe("Car Advanced integration", () => {
     expect(engine.received?.images).toEqual([{ image: "/local/changed.png" }]);
     expect(card.shadowRoot!.querySelectorAll("addition-car-engine")).toHaveLength(1);
     expect(engine.shadowRoot?.querySelector("#addition-car-theme")).not.toBeNull();
+    card.setConfig({ ...config(), car_show_header: false });
+    await settle(card);
+    expect(card.shadowRoot!.querySelector(".car-heading")).toBeNull();
+    expect(card.shadowRoot!.querySelector("addition-car-engine")).toBe(engine);
+    expect(engine.received).toEqual(engineConfig(config()));
+    card.setConfig(config());
+    await settle(card);
+    expect(card.shadowRoot!.querySelector(".car-heading")?.textContent).toContain("My car");
   });
   it("keeps all feature panels accessible and round-trips edits without losing shared or unrelated vehicle configuration", async () => {
     const editor = document.createElement("mushroom-addition-car-options") as CarAdvancedEditor;

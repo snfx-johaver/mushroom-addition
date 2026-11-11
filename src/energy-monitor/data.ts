@@ -47,7 +47,7 @@ export function flowReadings(hass: HomeAssistant | undefined, options: MonitorOp
     mismatch: residual !== undefined && Math.abs(residual) > Math.max(.1, Math.abs(home.value ?? 0) * .05) };
 }
 
-export function historyIds(kind: MonitorKind, options: MonitorOptions): string[] {
+export function historyIds(kind: MonitorKind | "battery_activity" | "energy_plan_actual" | "electricity_cost_timeline", options: MonitorOptions): string[] {
   const sources = kind === "battery_activity" ? [options.battery, options.soc, options.chargeEnergy, options.dischargeEnergy]
     : kind === "energy_plan_actual" ? [options.actualEnergy]
       : kind === "electricity_cost_timeline" ? [options.importEnergy, options.exportEnergy, options.importRate, options.exportRate] : [];

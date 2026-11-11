@@ -19,7 +19,7 @@ import type { HassEntity, HomeAssistant } from "../src/types";
 
 const start = Date.parse("2031-04-12T00:00:00Z"), hour = 3600000, end = start + 2 * hour;
 const type = (id: string) => `custom:mushroom-addition-${id}`;
-const options = () => monitorOptions({ type: type("battery-activity") });
+const options = () => monitorOptions({ type: type("live-energy-flow") });
 const row = (id: string, value: string | number, time = end, unit = "kWh"): HassEntity => ({
   entity_id: id, state: String(value), last_updated: new Date(time).toISOString(),
   attributes: { unit_of_measurement: unit, state_class: "total_increasing" },
@@ -125,7 +125,7 @@ describe("energy monitor source contracts", () => {
     expect(flow.batteryToEv.value).toBe(.6);
   });
   it("rejects unsafe settings and invalid state of charge", () => {
-    const config: MonitorConfig = { type: type("battery-activity") };
+    const config: MonitorConfig = { type: type("live-energy-flow") };
     expect(() => validateMonitor({ ...config, energy_monitor: { maxGapMinutes: 0 } })).toThrow();
     expect(() => validateMonitor({ ...config, energy_monitor: { maxContentWidth: 200 } })).toThrow();
     expect(() => validateMonitor({ ...config, energy_monitor: { chargeEnergy: { entity: "sensor.counter", sourceType: "hardware", recoverGaps: true } } })).toThrow("gap recovery");
@@ -373,59 +373,6 @@ describe("Mushroom monitor integration", () => {
     card.hass = { ...h, states: { ...h.states, "sensor.ev": row("sensor.ev", 1, end, "kW") } }; await card.updateComplete;
     expect(root.querySelector('.flow-line[data-key=ev] .flow-current')).toBeTruthy();
   });
-  const battery = async (includePower = true, includeSoc = true) => {
-    vi.useFakeTimers(); vi.setSystemTime(end);
-    const h = hass(), minute = 60000, powerId = "sensor.battery", socId = "sensor.soc";
-    const response = {
-      [powerId]: [row(powerId, 1000, start, "W"), row(powerId, -1000, start + minute, "W"), row(powerId, 0, start + 2 * minute, "W")],
-      [socId]: [
-        row(socId, 0, start, "%"), row(socId, 50, start + 10 * minute, "%"), row(socId, 100, start + 20 * minute, "%"),
-        row(socId, "unavailable", start + 30 * minute, "%"), row(socId, 70, start + 40 * minute, "%"),
-        row(socId, 65, start + 50 * minute, "%"), row(socId, 60, start + hour, "%"),
-      ],
-    };
-    h.states[powerId] = row(powerId, 0, end, "W"); h.states[socId] = row(socId, 60, end, "%");
-    h.callWS = vi.fn(async () => response) as HomeAssistant["callWS"];
-    const card = document.createElement("mushroom-addition-battery-activity") as EnergyMonitorCard;
-    card.hass = h; card.setConfig({ type: type("battery-activity"), energy_monitor: {
-      battery: includePower ? { entity: powerId } : {}, soc: includeSoc ? { entity: socId } : {},
-    } });
-    document.body.append(card); await card.updateComplete; await vi.advanceTimersByTimeAsync(1); await card.updateComplete;
-    return card.shadowRoot!;
-  };
-  it("overlays power bars and the SoC line in exactly one chart with independent axes", async () => {
-    const root = await battery();
-    expect(root.querySelectorAll("svg[role=img]")).toHaveLength(1);
-    expect(root.querySelectorAll(".plot-panel")).toHaveLength(1);
-    expect(root.querySelectorAll(".axis")).toHaveLength(1);
-    expect(root.querySelector(".power-scale")?.getAttribute("aria-label")).toContain("kW");
-    expect([...root.querySelectorAll(".soc-scale span")].map(node => node.textContent)).toEqual(["100", "50", "0"]);
-    const charge = root.querySelector(".charge-bar")!, discharge = root.querySelector(".discharge-bar")!;
-    expect(charge.getAttribute("fill")).not.toBe(discharge.getAttribute("fill"));
-    expect(Number(charge.getAttribute("y"))).toBeLessThan(90);
-    expect(Number(discharge.getAttribute("y"))).toBe(90);
-    expect(charge.getAttribute("height")).toBe(discharge.getAttribute("height"));
-    expect(root.querySelector(".soc-line")?.getAttribute("d")).toContain("M0,173");
-    expect(root.querySelector(".soc-line")?.getAttribute("d")).toContain("V7");
-  });
-  it("breaks the overlaid SoC line at gaps and never extends it into an unreported tail", async () => {
-    const root = await battery(), lines = [...root.querySelectorAll(".soc-line")];
-    expect(lines).toHaveLength(2);
-    expect(lines[0].getAttribute("d")).toContain("H166.");
-    expect(lines[1].getAttribute("d")).toMatch(/^M333\./);
-    expect(lines[1].getAttribute("d")).toContain("H500");
-    expect(lines[1].getAttribute("d")).not.toContain("H1000");
-    expect(root.querySelectorAll(".soc-gap")).toHaveLength(2);
-    expect(root.querySelector(".power-gap")).toBeTruthy();
-  });
-  it.each([[true, false], [false, true]])("preserves a usable single chart when power=%s and SoC=%s are configured", async (power, soc) => {
-    const root = await battery(power, soc);
-    expect(root.querySelectorAll("svg[role=img]")).toHaveLength(1);
-    expect(!!root.querySelector(".soc-line")).toBe(soc);
-    expect(!!root.querySelector(".soc-scale")).toBe(soc);
-    expect(!!root.querySelector(".charge-bar")).toBe(power);
-    if (!power) expect(root.querySelector(".power-scale")?.textContent).not.toContain("0");
-  });
   it("localizes every new label and preserves machine field paths in native object editors", () => {
     for (const locale of SUPPORTED_LOCALES) {
       for (const table of [energyMonitorLabels, energyMonitorSources, energyMonitorGuidance, energyFlowScene, energyDirectRoutes]) {
@@ -433,13 +380,6 @@ describe("Mushroom monitor integration", () => {
         for (const key of Object.keys(table.en)) expect(translationCatalogs[locale][key]).toBe(table[locale][key]);
       }
     }
-    const descriptor = CATALOG.find(item => item.upstreamId === "energy_plan_actual")!;
-    const field = localizeEditorSchema({ language: "nl" } as HomeAssistant, editorSchemaFor(descriptor)).find(field => field.name === "energy_monitor")!;
-    const fields = (field.selector?.object as { fields: NativeFields }).fields;
-    expect(fields.baseline.label).toBe("Bewaarde referentieprognose");
-    const baseline = (fields.baseline.selector.object as { fields: NativeFields }).fields;
-    expect(baseline.path.default).toBe("intervals");
-    expect(baseline.generatedField.default).toBe("generated");
     expect(localizeText({ language: "nl" }, "Live Energy Flow")).toBe("Actuele energiestromen");
     const flow = CATALOG.find(item => item.upstreamId === "live_energy_flow")!;
     const flowField = localizeEditorSchema({ language: "nl" } as HomeAssistant, editorSchemaFor(flow)).find(field => field.name === "energy_monitor")!;
@@ -453,28 +393,8 @@ describe("Mushroom monitor integration", () => {
     expect(card).toBeInstanceOf(EnergyMonitorCard); validateMonitor(cfg);
     expect(cfg.primary_info).toBeUndefined(); expect(cfg.secondary_info).toBeUndefined();
     expect(editorSchemaFor(descriptor, cfg).find(field => field.name === "energy_monitor")?.selector?.object).toBeTruthy();
-    expect(monitorFields(definition.id).maxContentWidth).toBeTruthy();
+    expect(monitorFields().maxContentWidth).toBeTruthy();
     expect(window.customCards?.find(item => item.type === definition.tag)?.preview).toBe(false);
-  });
-  it("loads outside rendering, keeps details lazy and updates missing-baseline states", async () => {
-    vi.useFakeTimers(); vi.setSystemTime(end);
-    const { h, opt, response } = fixture();
-    h.callWS = vi.fn(async () => response) as HomeAssistant["callWS"];
-    const card = document.createElement("mushroom-addition-energy-plan-actual") as EnergyMonitorCard;
-    card.hass = h; card.setConfig({ type: type("energy-plan-actual"), name: "Synthetic comparison", energy_monitor: { actualEnergy: opt.importEnergy } });
-    document.body.append(card); await card.updateComplete;
-    await vi.advanceTimersByTimeAsync(1); await card.updateComplete;
-    expect(card.shadowRoot?.textContent).toContain("Retained baseline missing");
-    card.remove();
-    const cost = document.createElement("mushroom-addition-electricity-cost-timeline") as EnergyMonitorCard;
-    cost.hass = h; cost.setConfig({ type: type("electricity-cost-timeline"), energy_monitor: opt });
-    document.body.append(cost); await cost.updateComplete; await vi.advanceTimersByTimeAsync(1); await cost.updateComplete;
-    expect(cost.shadowRoot?.querySelector("svg")).toBeTruthy();
-    expect(cost.shadowRoot?.querySelector("table")).toBeNull();
-    const details = [...cost.shadowRoot!.querySelectorAll("details")].find(detail => detail.textContent?.includes("Intervals"))!;
-    details.open = true; details.dispatchEvent(new Event("toggle")); await cost.updateComplete;
-    expect(cost.shadowRoot?.querySelectorAll("tbody tr").length).toBeGreaterThan(0);
-    expect(h.callService).not.toHaveBeenCalled();
   });
   it("hydrates defaults in the shared editor and reports invalid mappings without publishing them", async () => {
     const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
@@ -503,9 +423,9 @@ describe("Mushroom monitor integration", () => {
     }>("ha-form")];
     expect(forms.some(form => form.schema.some(field => field.name === "energy_monitor"))).toBe(false);
     const features = forms.find(form => form.schema.some(field => field.name === "maxContentWidth"))!;
-    expect(features.schema.map(field => field.name)).toEqual(Object.keys(monitorFields(definition.id)));
+    expect(features.schema.map(field => field.name)).toEqual(Object.keys(monitorFields()));
     const sourceField = features.schema.find(field => !field.name.startsWith("max"))!;
-    expect(features.computeLabel(sourceField)).toBe(monitorFields(definition.id)[sourceField.name].label);
+    expect(features.computeLabel(sourceField)).toBe(monitorFields()[sourceField.name].label);
     const changed = vi.fn(); editor.addEventListener("config-changed", changed);
     features.dispatchEvent(new CustomEvent("value-changed", { detail: { value: { ...features.data, maxContentWidth: 900 } } }));
     await editor.updateComplete;
@@ -513,19 +433,5 @@ describe("Mushroom monitor integration", () => {
     expect(changed.mock.calls[0][0].detail.config).toMatchObject({
       type: `custom:${definition.tag}`, name: "Custom heading", energy_monitor: { maxContentWidth: 900 },
     });
-  });
-  it("does not render a missing export tariff as a zero-valued credit series", async () => {
-    vi.useFakeTimers(); vi.setSystemTime(end);
-    const { h, opt, response } = fixture();
-    opt.exportRate = {};
-    h.callWS = vi.fn(async () => response) as HomeAssistant["callWS"];
-    const cost = document.createElement("mushroom-addition-electricity-cost-timeline") as EnergyMonitorCard;
-    cost.hass = h; cost.setConfig({ type: type("electricity-cost-timeline"), energy_monitor: opt });
-    document.body.append(cost); await cost.updateComplete; await vi.advanceTimersByTimeAsync(1); await cost.updateComplete;
-    const values = [...cost.shadowRoot!.querySelectorAll(".metric b")].map(node => node.textContent);
-    expect(values).toEqual(["0.8 EUR", "Unavailable", "Unavailable"]);
-    const titles = [...cost.shadowRoot!.querySelectorAll("rect title")].map(node => node.textContent!);
-    expect(titles.some(title => title.includes("Import cost:"))).toBe(true);
-    expect(titles.filter(title => title.includes("Export credit:")).every(title => title.includes("not zero"))).toBe(true);
   });
 });

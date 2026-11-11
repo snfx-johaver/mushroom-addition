@@ -5,7 +5,12 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
 ## 0.9.1 - 2026-11-11
 
 - Publish Car Advanced and the picker/editor fixes from the 0.9.0 update as a
-  versioned patch release, with all 45 public cards included.
+  versioned patch release.
+- Remove Energy Insights & Purchases, Energy Plan vs Actual, Energy Battery
+  Activity and Energy Electricity Cost Timeline. The public catalog has 41 cards;
+  Energy Plan, Energy Log, Smart Saving and Energy Live Energy Flow remain.
+- Allow the Car Advanced header to be hidden in the visual editor for compact
+  quick-control layouts.
 
 ## 0.9.0 - 2026-11-11
 

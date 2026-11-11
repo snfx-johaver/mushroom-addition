@@ -13,7 +13,6 @@ import { inferConsolePlatform, resolveConsoleEntities } from "./console";
 import { readUpcomingData } from "./upcoming-media";
 import { wasteStreamExamples } from "./waste-streams";
 import { EnergyPlanCard } from "./energy-plan/card";
-import { EnergyInsightsCard } from "./energy-insights/card";
 import { energyLogStub } from "./energy-cards/energy-log-config";
 import { monitorKind, monitorStub } from "./energy-monitor/config";
 
@@ -70,7 +69,6 @@ export const createStubConfig = (
   if (monitor) return monitorStub(monitor, hass, [...entities, ...entitiesFallback]);
   if (descriptor.upstreamId === "energy_log") return energyLogStub(hass, entities, entitiesFallback);
   if (descriptor.upstreamId === "energy_plan") return EnergyPlanCard.getStubConfig(hass, entities, entitiesFallback);
-  if (descriptor.upstreamId === "energy_insights") return EnergyInsightsCard.getStubConfig(hass, entities, entitiesFallback);
   if (descriptor.upstreamId === "todo") return todoStub(hass, entities, entitiesFallback);
   if (descriptor.upstreamId === "air_quality") return airQualityStub(hass);
   if (descriptor.upstreamId === "custom_card_washer") return populatedDefaultsFor(descriptor);

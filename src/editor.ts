@@ -41,7 +41,6 @@ import { populatedDefaultsFor } from "./defaults";
 import { wasteStreamsForConfig } from "./waste-streams";
 import { sceneItemDefaultsFor } from "./scene-item-defaults";
 import { planOptions, validatePlan, ENERGY_PLAN_TAG } from "./energy-plan/config";
-import { insightsOptions, validateInsights, ENERGY_INSIGHTS_TAG } from "./energy-insights/config";
 import { energyLogStub, validateEnergyLogConfig, ENERGY_LOG_TAG } from "./energy-cards/energy-log-config";
 import { ENERGY_LOG_LABELS, type NativeFields } from "./energy-editor-schema";
 import { monitorKind, monitorOptions, validateMonitor } from "./energy-monitor/config";
@@ -74,7 +73,7 @@ const editorSections: Array<{ id: EditorSectionId; title: string; icon: string }
 
 const contentFields = new Set([
   "name", "secondary", "primary_info", "secondary_info", "icon", "icon_type", "icon_color",
-  "show_icon", "show_name", "show_state", "unit", "icon_image",
+  "show_icon", "show_name", "show_state", "unit", "icon_image", "car_show_header",
   "mini_graph_show_state", "mini_graph_show_top_labels", "mini_graph_name_adaptive_color", "mini_graph_icon_adaptive_color",
 ]);
 const layoutFields = new Set([
@@ -215,7 +214,7 @@ export class MushroomAdditionEditor extends LitElement {
       variant: config.variant ?? alias?.variant,
     };
     if (tag === ENERGY_PLAN_TAG) this.config = { ...this.config, energy_plan: planOptions(this.config, this.hass) };
-    if (tag === ENERGY_INSIGHTS_TAG) this.config = { ...this.config, energy_insights: insightsOptions(this.config) };
+    if (tag === "mushroom-addition-car-advanced") this.config = { ...this.config, car_show_header: this.config.car_show_header ?? true };
     if (monitorKind(this.config.type)) this.config = { ...this.config, energy_monitor: monitorOptions(this.config) };
     if (tag === ENERGY_LOG_TAG) this.config = {
       ...energyLogStub(this.hass), ...this.config, name: config.name ?? config.title,
@@ -848,12 +847,11 @@ export class MushroomAdditionEditor extends LitElement {
         if (next[key] === undefined || next[key] === "") next[key] = id;
       }
     }
-    if (monitorKind(next.type) || [`custom:${ENERGY_PLAN_TAG}`, `custom:${ENERGY_INSIGHTS_TAG}`, `custom:${ENERGY_LOG_TAG}`].includes(next.type)) {
+    if (monitorKind(next.type) || [`custom:${ENERGY_PLAN_TAG}`, `custom:${ENERGY_LOG_TAG}`].includes(next.type)) {
       try {
         if (monitorKind(next.type)) validateMonitor(next);
         else if (next.type === `custom:${ENERGY_PLAN_TAG}`) validatePlan(next);
         else if (next.type === `custom:${ENERGY_LOG_TAG}`) validateEnergyLogConfig(next);
-        else validateInsights(next);
         this.energyError = "";
       } catch (error) {
         if (!(error instanceof Error)) throw error;

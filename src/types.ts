@@ -269,6 +269,7 @@ export interface PiHoleConfig {
 
 export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, PiHoleConfig, AirQualityOptions {
   car?: import("./car-advanced/config").CarOptions;
+  car_show_header?: boolean;
   todo_entities?: string[];
   todo_show_completed?: boolean;
   todo_allow_add?: boolean;

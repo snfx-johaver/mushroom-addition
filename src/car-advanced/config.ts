@@ -15,6 +15,7 @@ export interface CarOptions {
 export interface CarConfig extends AdditionConfig { car?: CarOptions; }
 
 export function validateCar(config: AdditionConfig): CarConfig {
+  if (config.car_show_header !== undefined && typeof config.car_show_header !== "boolean") throw new Error("car_show_header must be a boolean.");
   const car = config.car;
   if (car !== undefined) {
     if (!car || typeof car !== "object" || Array.isArray(car)) throw new Error("Car settings must be an object.");

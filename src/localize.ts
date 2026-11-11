@@ -763,6 +763,7 @@ export const localize = <T extends Pick<HomeAssistant, "language">>(
   key: string,
   values: Record<string, string | number> = {},
 ): string => {
+  if (key === "car_show_header") return localizeText(hass, "Show card header");
   const washerButton = key.match(/^washer_button_([123])_(entity|name|icon|action)$/);
   if (washerButton) {
     const field = washerButton[2] === "action" ? "tap_action" : washerButton[2];
@@ -1374,6 +1375,7 @@ export const helperCatalogs: Record<string, Record<string, string>> = {
 };
 
 export const editorHelper = (key: string, hass?: HomeAssistant, cardType?: string): string | undefined => {
+  if (key === "car_show_header") return ["Name", "Icon", "Primary information", "Secondary information"].map(label => localizeText(hass, label)).join(" / ");
   if (key === "todo_entities") return localizeText(hass, "Additional lists are shown separately; tasks are not moved between lists.");
   if (key === "todo_show_completed") return localizeText(hass, "Display only; completed tasks are not deleted.");
   if (key === "todo_sort") return ["List order", "Due", "Alphabetically"].map(label => localizeText(hass, label)).join(" / ");

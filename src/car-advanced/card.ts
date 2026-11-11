@@ -137,7 +137,7 @@ export class MushroomCarAdvancedCard extends MushroomAdditionCard {
   protected render() {
     if (!this.config) return nothing;
     return html`<ha-card class="mushroom-addition-card${this.config.card_shadow ? " card-shadow" : ""}">
-      <div class="car-heading">${this.renderSharedHeading()}</div>
+      ${this.config.car_show_header === false ? nothing : html`<div class="car-heading">${this.renderSharedHeading()}</div>`}
       ${this.failure ? html`<div role="alert">${localizeText(this.hass, "Unable to load card")}: ${this.failure}
         <button @click=${() => { this.appliedConfig = undefined; void this.load(); this.requestUpdate(); }}>${localizeText(this.hass, "Retry")}</button></div>` : nothing}
       ${this.engine ? html`<div class="engine">${this.engine}</div>`

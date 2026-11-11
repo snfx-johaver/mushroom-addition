@@ -1,158 +1,17 @@
-# Energy monitoring cards
+# Energy Live Energy Flow
 
-Four independent cards complement Energy Plan, Energy Insights & Purchases and
-Smart Saving. They do not operate devices, save forecasts, create sensors or
-repair missing Recorder data.
-
-| Card | Type | Required sources |
-|---|---|---|
-| Energy Plan vs Actual | `custom:mushroom-addition-energy-plan-actual` | Externally retained pre-period forecast and a cumulative energy counter for the same electrical quantity |
-| Energy Battery Activity | `custom:mushroom-addition-battery-activity` | Signed battery power; optional measured SoC and separate cumulative charge/discharge counters |
-| Energy Electricity Cost Timeline | `custom:mushroom-addition-electricity-cost-timeline` | Cumulative import/export counters and recorded import/export tariffs, or an explicit fixed export tariff |
-| Energy Live Energy Flow | `custom:mushroom-addition-live-energy-flow` | Measured solar, grid, home, EV and battery power, with explicit absence declarations for equipment not installed |
+This read-only card complements Energy Plan, Energy Log and Smart Saving.
+It shows measured power, not forecasts or device controls.
 
 Use the standard **Context**, **Content**, **Layout**, **Interactions** and
-**Features** editor sections. The shared Name, Primary information, Secondary
-information, icon and header actions work like other Mushroom Addition cards.
-Settings are shown directly under **Features**, with labelled native object
-selectors for each electrical mapping; use its pencil button to edit the source.
-select the entity and, only if needed, a dotted attribute `field`. A Context
-entity changes the header, not its electrical role. Picker stubs intentionally
-leave electrical roles unassigned rather than guessing from entity names.
+**Features** editor sections. The shared name, information, icon and header
+actions work like other Mushroom Addition cards. Electrical settings appear
+directly under **Features**, with native source selectors. Select the entity
+and, only if needed, a dotted attribute `field`. A Context entity changes the
+header, not its electrical role. Picker stubs leave electrical roles unassigned
+rather than guessing from entity names.
 
-All examples below are fictional; replace every `sensor.example_*` mapping with
-a verified source. A source must describe the boundary and units specified here.
-Nothing about a particular installation is built into these cards.
-
-## Energy Plan vs Actual
-
-This compares **energy**, not instantaneous power or monetary costs. The
-comparison window is today so far in Home Assistant's time zone, including
-23/25-hour DST days. Choose a single nonnegative electrical quantity, such as
-home consumption, solar generation or imported energy. The baseline and actual
-counter must represent that same quantity, boundary and unit.
-
-```yaml
-type: custom:mushroom-addition-energy-plan-actual
-name: Home demand - plan and actual
-energy_monitor:
-  actualEnergy:
-    entity: sensor.example_home_energy_total
-    sourceType: hardware
-  baseline:
-    entity: sensor.example_retained_forecast
-    path: intervals
-    generatedField: generated
-    startField: start
-    endField: end
-    valueField: energy
-    unit: kWh
-```
-
-The retained forecast entity's **attributes** must contain a structure like:
-
-```json
-{
-  "generated": "2031-04-11T22:00:00Z",
-  "intervals": [
-    { "start": "2031-04-12T00:00:00Z", "end": "2031-04-12T01:00:00Z", "energy": 0.6 },
-    { "start": "2031-04-12T01:00:00Z", "end": "2031-04-12T02:00:00Z", "energy": 0.7 }
-  ]
-}
-```
-
-`energy` is the interval's **total**, not a power reading. `unit` accepts `kWh`
-or `Wh`. Timestamps accept ISO offsets or epoch seconds/milliseconds; explicit
-ISO offsets are recommended. Custom mapping paths are relative to the entity's
-attributes; interval field paths are relative to each interval.
-
-The snapshot must have been generated **at or before local midnight**, and its
-intervals cannot predate its generation timestamp. A later planner revision is
-rejected even when it contains earlier timestamps. The card cannot verify that
-an external system truthfully retained the original forecast; retaining an
-immutable, accurately timestamped snapshot is that system's responsibility.
-It never uses the current plan as a historical baseline or browser-local
-storage as a substitute.
-
-Only overlapping supplied forecast and valid measured intervals contribute to
-Planned, Measured and Difference. Difference is measured minus planned, not
-automatically savings. Energy is apportioned by duration when boundaries differ;
-the actual timing within a counter interval is unknown. Matched and missing
-durations, the retained generation timestamp and all intervals remain visible.
-Absent, revised, empty, malformed or overlapping baselines show an explicit
-missing/invalid-baseline state instead of fabricated comparisons.
-
-## Energy Battery Activity
-
-```yaml
-type: custom:mushroom-addition-battery-activity
-energy_monitor:
-  battery: { entity: sensor.example_battery_power }
-  batteryPositive: charge
-  soc: { entity: sensor.example_battery_level }
-  chargeEnergy: { entity: sensor.example_battery_charge_total }
-  dischargeEnergy: { entity: sensor.example_battery_discharge_total }
-  maxAgeMinutes: 15
-  maxGapMinutes: 30
-```
-
-Power accepts `W`/`kW`, SoC accepts `%` between 0 and 100. Set `batteryPositive`
-to `discharge` for a source with the opposite polarity. Displayed and recorded
-signed power is normalized to **positive charging / negative discharging**.
-Live power and SoC have a configurable freshness limit. Unknown, unavailable,
-invalid-unit, future-dated and stale live sources remain unavailable.
-
-Power and SoC share **one chart and time axis**: charging/discharging bars use
-the signed kW axis on the left, while a distinct stepped SoC line uses the fixed
-0-100% axis on the right. Power bars are duration-weighted; the SoC line holds
-each recorded state until the next validated observation, never a forecast.
-Opposite power directions within a chart bucket are kept separate rather than
-cancelled. Both series retain their own gap markers and unavailable intervals.
-Unavailable samples, gaps exceeding `maxGapMinutes`, and an unreported trailing
-interval are not connected. Recorder often stores only changes: an unchanged
-source may therefore have sparse history, and this conservative gap policy may
-show missing coverage. Raise the limit only when that assumption is appropriate.
-Historical observations can remain visible even if the current live source is
-unavailable; daily counter totals are rechecked against current source health.
-
-Charged today and Discharged today require their own cumulative counters. The
-card does **not** integrate power to invent those totals, infer battery health,
-calculate cycles or claim a round-trip efficiency from incomparable flows.
-Missing counters do not suppress a valid power/SoC plot.
-
-## Energy Electricity Cost Timeline
-
-```yaml
-type: custom:mushroom-addition-electricity-cost-timeline
-energy_monitor:
-  importEnergy: { entity: sensor.example_import_total }
-  exportEnergy: { entity: sensor.example_export_total }
-  importRate: { entity: sensor.example_import_tariff }
-  exportRate: { entity: sensor.example_export_tariff }
-  currency: EUR
-```
-
-Cumulative counter changes are priced using recorded tariffs over the same
-period. Counters accept `Wh`, `kWh` or `MWh`, with `total`/`total_increasing`
-metadata when provided. Tariffs must have a supported currency-per-energy unit,
-such as `EUR/kWh` or `ct/kWh` for EUR. Currency defaults to HA's configured
-currency; `currency` explicitly overrides it with an ISO code.
-
-Instead of `exportRate`, set `fixedExportRate` in currency/kWh for a known fixed
-feed-in tariff. Do not configure both. If the installation has **no exporting
-equipment**, set `exportEnergy: { absent: true }`; this explicitly makes export
-credit zero. Missing export tariffs are **not** zero revenue: export credit and
-net cost stay unavailable while valid import costs remain visible.
-
-Net cost is import cost minus export credit. Negative tariffs are supported.
-Credits are plotted with a negative sign; negative tariffs may reverse either
-series. Import/export tariff coverage is tracked separately so a known import
-series cannot fill a missing export series with zeroes. Interval tables use the
-same signed values as the chart; summary Export credit is the earned credit.
-These are interval-based estimates, not a utility invoice. Fixed fees and taxes
-are included only when the supplied rates include them.
-
-## Energy Live Energy Flow
+The following example is fictional. Replace every mapping with a verified source.
 
 ```yaml
 type: custom:mushroom-addition-live-energy-flow
@@ -237,39 +96,15 @@ inputs are reported rather than silently made plausible. Asynchronous samples,
 conversion losses and differently placed meters can legitimately disagree; a
 warning is not proof of a faulty device.
 
-## History, assumptions and rendering
+## Rendering and refresh
 
-The three history cards request Recorder data, plus a one-hour midnight
-lookback, outside rendering. Read-only history needs normal HA access and
-Recorder inclusion for each selected entity, including rate history. Requests
-are cached for 15 minutes, time out after 30 seconds, and are invalidated on
-configuration, connection or HA day/time-zone changes. Superseded results are
-discarded; failures provide a Retry button. Requests are bounded to eight
-entities, 50,000 rows per entity and 100,000 rows overall.
-
-Counter accounting reuses Energy Insights' conservative rules: a missing
-midnight baseline, unavailable episode, decrease/reset, conflicting timestamp,
-unsupported unit or inconsistent current endpoint invalidates that counter,
-not unrelated sources. Power-integral counters are allowed but never repaired
-through outages. Hardware-gap recovery is deliberately not available here.
-
-The latest captured cumulative reading is held through the common snapshot
-endpoint; unchanged readings are not simultaneous physical measurements.
-Midnight baselines carried from before midnight and duration-proportional
-tariff splits are disclosed as approximations under **Data quality**. Configure
-continuous source history rather than treating a chart as recovery of missing
-energy. See [Energy Insights accounting](ENERGY_INSIGHTS.md) for shared details.
-
-Charts use up to 48 buckets: energy/cost is summed by duration overlap;
-power is duration-weighted; the battery SoC overlay follows recorded states.
-Full source/comparison intervals remain in lazy
-tables with 100-row pagination. Shared theme colors, locale-aware numbers,
-HA-zone times and responsive labels avoid scaling text with chart SVGs.
-`maxContentWidth` caps centered content (default 1200 px, 400-2400 px, or 0
-for no cap). No device service calls are issued by these cards; explicitly
+The card uses live Home Assistant states; it does not request Recorder history.
+Freshness is rechecked every minute, including when a source stops updating.
+Numbers follow Home Assistant's locale preferences and update times follow its
+time zone. `maxContentWidth` caps centered content (default 1200 px, 400-2400 px,
+or 0 for no cap). No device service calls are issued by the live scene; explicitly
 configured shared header actions retain their normal behavior.
 
 Run `npm run demo -- --port 4174`, then open
-`/demo/energy-plan.html#energy-monitors` for a synthetic showcase with missing
-baseline, battery-history-gap and stale-power controls, plus charging, export,
-battery-discharge and idle live-scene modes.
+`/demo/energy-plan.html#energy-monitors` for synthetic charging, export,
+battery-discharge, idle and stale-power scene modes.

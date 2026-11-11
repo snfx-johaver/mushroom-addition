@@ -5,16 +5,15 @@ import { createStubConfig } from "../src/stub";
 import { EnergyPlanCard } from "../src/energy-plan/card";
 import { planDefaults, newMetric, validatePlan, type EnergyPlanConfig } from "../src/energy-plan/config";
 import { displayIntervals, displayPowerScale, displayPriceIntervals, metricValue, publishedWindow, rowData, unpublishedIntervals } from "../src/energy-plan/data";
-import { EnergyInsightsCard } from "../src/energy-insights/card";
 import { MushroomEnergyLogCard } from "../src/energy-cards/energy-log";
 import { energyLogStub } from "../src/energy-cards/energy-log-config";
 import { editorSchemaFor, type EditorField } from "../src/editor-schema";
 import { insightsDefaults, validateInsights, type EnergyInsightsOptions } from "../src/energy-insights/config";
 import {
-  INSIGHTS_HISTORY_MAX_ENTITIES, INSIGHTS_HISTORY_MAX_STATES_PER_ENTITY,
+  INSIGHTS_HISTORY_MAX_STATES_PER_ENTITY,
   INSIGHTS_HISTORY_LOOKBACK_MS, INSIGHTS_HISTORY_MAX_STATES, localDayStart,
   INSIGHTS_APPROXIMATION_MESSAGES,
-  INSIGHTS_HISTORY_REFRESH_MS, livePower, readActuals,
+  livePower, readActuals,
   readMeteredActuals, readPurchasePlan,
 } from "../src/energy-insights/data";
 import { energyNumber, energyTime } from "../src/energy-format";
@@ -231,34 +230,6 @@ describe("energy source quality", () => {
     expect(shadow.querySelector(".period")?.textContent).toContain(energyTime(h, now + 7200000, { weekday: "short" }));
     expect(shadow.querySelector("input")?.getAttribute("aria-valuetext")).toContain(energyTime(h, now + 3600000, { weekday: "short" }));
   });
-  it("shows source-supplied forecast provenance as escaped text on both cards", async () => {
-    clock();
-    const h = hass(), config = planConfig();
-    config.energy_plan!.forecastKind = "estimate";
-    config.energy_plan!.forecastMethodField = "example_method";
-    h.states["sensor.example_energy"].attributes.example_method = "<b>Synthetic estimate</b>";
-    const plan = new EnergyPlanCard(); plan.hass = h; plan.setConfig(config);
-    document.body.append(plan); await plan.updateComplete;
-    expect(plan.shadowRoot!.querySelector(".status")?.textContent).toContain("Estimated forecast");
-    expect(plan.shadowRoot!.querySelector(".status")?.textContent).toContain("<b>Synthetic estimate</b>");
-    expect(plan.shadowRoot!.querySelector(".status b")).toBeNull();
-    plan.hass = { ...h, states: { ...h.states, "sensor.example_energy": {
-      ...h.states["sensor.example_energy"], attributes: { ...h.states["sensor.example_energy"].attributes, example_method: undefined },
-    } } };
-    await plan.updateComplete;
-    expect(plan.shadowRoot!.querySelector(".status")?.textContent).toContain("Forecast method: Not supplied");
-    const opt = options();
-    opt.forecastKind = "interval";
-    opt.planSource.fields = { forecast_method: "example_method" };
-    const root = h.states["sensor.example_energy"].attributes.plan as Record<string, unknown>;
-    root.example_method = "<b>Synthetic intervals</b>";
-    const card = new EnergyInsightsCard(); card.hass = h;
-    card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: opt });
-    document.body.append(card); await card.updateComplete;
-    expect(card.shadowRoot!.querySelector(".forecast-basis")?.textContent).toContain("Interval forecast");
-    expect(card.shadowRoot!.querySelector(".forecast-basis")?.textContent).toContain("<b>Synthetic intervals</b>");
-    expect(card.shadowRoot!.querySelector(".forecast-basis b")).toBeNull();
-  });
 });
 
 describe("native energy configuration", () => {
@@ -279,14 +250,14 @@ describe("native energy configuration", () => {
   });
   it("has one copy of each shared presentation field and preserves existing energy registrations", () => {
     const flatten = (fields: EditorField[]): string[] => fields.flatMap(field => field.schema ? flatten(field.schema) : field.name);
-    for (const id of ["energy_plan", "energy_insights", "energy_log"]) {
+    for (const id of ["energy_plan", "energy_log"]) {
       const item = CATALOG.find(item => item.upstreamId === id)!;
       const names = flatten(editorSchemaFor(item));
       for (const name of ["name", "icon", "layout", "multiline_secondary", "fill_container", "card_shadow", "primary_info", "secondary_info", "tap_action", "hold_action", "double_tap_action"]) {
         expect(names.filter(value => value === name), `${id}: ${name}`).toHaveLength(1);
       }
     }
-    expect(CATALOG).toHaveLength(45);
+    expect(CATALOG).toHaveLength(41);
     expect(new Set(CATALOG.map(item => item.tag)).size).toBe(CATALOG.length);
     expect(customElements.get("mushroom-addition-smart-saving")).toBeDefined();
     expect(customElements.get("mushroom-addition-energy-entityworkflow")).toBeDefined();
@@ -299,9 +270,6 @@ describe("native energy configuration", () => {
     h.states["sensor.plan"] = { entity_id: "sensor.plan", state: "ready", last_updated: new Date(now).toISOString(), attributes: { plan: h.states["sensor.example_energy"].attributes.timeline } };
     h.states["sensor.log"] = { entity_id: "sensor.log", state: "ready", attributes: { entries: [{ timestamp: now, category: "planning", title: "Source title" }] } };
     expect(EnergyPlanCard.getStubConfig(h, ["sensor.bad"]).entity).toBe("sensor.plan");
-    expect(EnergyInsightsCard.getStubConfig(h, ["sensor.bad"]).energy_insights).toMatchObject({
-      actualSource: { entity: "sensor.example_energy" }, planSource: { entity: "sensor.example_energy" },
-    });
     expect(energyLogStub(h, ["sensor.bad"]).sources[0].entity).toBe("sensor.log");
   });
   it("localizes generated defaults but preserves technical mappings and saved custom text", () => {
@@ -321,7 +289,7 @@ describe("native energy configuration", () => {
     expect(energyLogStub(h).categories[0].label).toBe(localizeText(h, "Planning"));
   });
   it("uses only the shared editor adapter and safe picker defaults", async () => {
-    for (const [id, Card] of [["energy_plan", EnergyPlanCard], ["energy_insights", EnergyInsightsCard]] as const) {
+    for (const [id, Card] of [["energy_plan", EnergyPlanCard]] as const) {
       const item = CATALOG.find(item => item.upstreamId === id)!;
       expect(customElements.get(item.tag)).toBe(Card);
       expect(window.customCards?.filter(card => card.type === item.tag)).toHaveLength(1);
@@ -382,13 +350,6 @@ describe("native energy configuration", () => {
     await change({ ...next, visibleHours: 48 });
     expect(saved).toHaveLength(2);
     expect(e.shadowRoot!.querySelector("[role=alert]")).toBeNull();
-    e.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: options(), name: "Insights" });
-    await e.updateComplete;
-    const insightForm = [...e.shadowRoot!.querySelectorAll<Form>("ha-form")].find(form => form.schema.some(field => field.name === "energy_insights"))!;
-    const configured = { ...options(), consumers: [...options().consumers, { id: "other", name: "Other", energyField: "other" }] };
-    insightForm.dispatchEvent(new CustomEvent("value-changed", { detail: { value: { ...insightForm.data, energy_insights: configured } } }));
-    await e.updateComplete;
-    expect(saved.at(-1)?.energy_insights).toEqual(configured);
   });
   it("localizes nested native labels but never changes configured values", () => {
     const schema = localizeEditorSchema({ ...hass(), language: "nl" }, [{ name: "energy_plan", selector: { object: { fields: PLAN_FIELDS } } }]);
@@ -935,79 +896,6 @@ describe("energy rendering and HA lifecycle", () => {
     expect(displayPowerScale({ ...row, autoScale: true }, intervals)).toBe(2);
     expect(rowData(hass(), row, config.entity, now, now + 1000).publishedEnd).toBe(now + 3600000);
   });
-  it("lazily paginates all rate and interval rows without changing accounting totals", async () => {
-    clock();
-    const h = hass(), root = actualRoot(h), count = 203, step = (now - start) / count;
-    root.intervals = Array.from({ length: count }, (_, index) => ({
-      start: start + index * step, end: index + 1 === count ? now : start + (index + 1) * step,
-      import_kwh: 7 / count, export_kwh: 2 / count, rate: .1 + index / 1000, export_rate: .05,
-    }));
-    const card = new EnergyInsightsCard(); card.hass = h;
-    card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: options() });
-    document.body.append(card); await card.updateComplete;
-    const shadow = card.shadowRoot!, total = shadow.querySelector(".kpis")!.textContent;
-    expect(shadow.querySelectorAll("details table")).toHaveLength(0);
-    for (const selector of [".rate-details", ".interval-details"]) {
-      const details = shadow.querySelector<HTMLDetailsElement>(selector)!;
-      details.open = true; details.dispatchEvent(new Event("toggle")); await card.updateComplete;
-      expect(details.querySelectorAll("tbody tr")).toHaveLength(100);
-      for (let page = 0; page < 2; page++) {
-        details.querySelector<HTMLButtonElement>(".pager button:last-child")!.click(); await card.updateComplete;
-      }
-      expect(details.querySelectorAll("tbody tr")).toHaveLength(3);
-      expect(details.querySelector<HTMLButtonElement>(".pager button:last-child")!.disabled).toBe(true);
-      details.open = false; details.dispatchEvent(new Event("toggle")); await card.updateComplete;
-      expect(details.querySelector("table")).toBeNull();
-    }
-    expect(shadow.querySelector(".kpis")!.textContent).toBe(total);
-  });
-  it("uses compact setup states and explicit live directions without negative zero", async () => {
-    clock();
-    const h = hass(), opt = options(), card = new EnergyInsightsCard();
-    opt.consumers = [];
-    opt.gridEntity = "sensor.example_grid_power"; opt.batteryEntity = "sensor.example_battery_power";
-    h.states[opt.gridEntity] = { ...h.states["sensor.example_power"], entity_id: opt.gridEntity, state: "-1.5" };
-    h.states[opt.batteryEntity] = { ...h.states["sensor.example_power"], entity_id: opt.batteryEntity, state: "-0.0001" };
-    card.hass = h; card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: opt });
-    document.body.append(card); await card.updateComplete;
-    const root = card.shadowRoot!;
-    expect(root.querySelector(".flow")?.textContent).toContain("Export · 1.5 kW");
-    expect(root.querySelector(".flow")?.textContent).not.toContain("-0");
-    expect(root.querySelector(".self-powered")).toBeNull();
-    expect(root.querySelector(".consumer-setup")?.textContent).toContain("visual editor");
-    expect(root.querySelector(".usage-card")).toBeNull();
-    expect(root.querySelector(".quality")?.textContent).toContain("Complete");
-    card.hass = { ...h, states: { ...h.states, [opt.batteryEntity]: { ...h.states[opt.batteryEntity], state: "-1.2" } } }; await card.updateComplete;
-    expect(root.querySelector(".flow")?.textContent).toContain("Discharging · 1.2 kW");
-    opt.selfPoweredEntity = "sensor.example_missing_percentage";
-    card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: opt }); await card.updateComplete;
-    expect(root.querySelector(".quality")?.textContent).toContain("Partial");
-    expect(root.querySelector(".diagnostics .error")?.textContent).toContain("selfPoweredEntity requires a fresh percentage sensor");
-    expect(root.querySelector(".self-powered")?.textContent).toContain("Source missing");
-  });
-  it("accepts a shorter supplied horizon and hides empty purchase tables without implying execution", async () => {
-    clock();
-    const h = hass(), opt = options(), source = planRoot(h);
-    source.end = now + 43200000; source.blocks = [];
-    opt.purchaseScope = "battery"; opt.consumers = [];
-    const parsed = readPurchasePlan(h, opt, now);
-    expect(parsed.value?.end).toBe(source.end);
-    const card = new EnergyInsightsCard(); card.hass = h;
-    card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: opt });
-    document.body.append(card); await card.updateComplete;
-    const panel = card.shadowRoot!.querySelector("#plan-panel")!;
-    expect(panel.querySelector("table")).toBeNull();
-    expect(panel.querySelector(".legend")).toBeNull();
-    expect(panel.textContent).toContain("No battery charging purchases in the supplied horizon.");
-    expect(panel.textContent).not.toContain("Upcoming 24 hours");
-    source.blocks = [{ start: now, end: now + 3600000, home_kwh: 1, ev_kwh: 0, battery_kwh: 1, rate: .2 }];
-    expect(readPurchasePlan(h, opt, now).error).toContain("battery-only purchase scope");
-    opt.showPlanAllocations = false; opt.showPlanEfficiency = false;
-    source.blocks[0].quantity_kwh = 1;
-    expect(readPurchasePlan(h, opt, now).error).toContain("battery-only purchase scope");
-    source.blocks[0].home_kwh = 0;
-    expect(readPurchasePlan(h, opt, now).error).toBeUndefined();
-  });
   it("identifies the first invalid battery history range while preserving other meters", () => {
     clock();
     const rows = meterHistory(), gapStart = start + 3600000;
@@ -1034,157 +922,6 @@ describe("energy rendering and HA lifecycle", () => {
       }
     }
   });
-  it.each(SUPPORTED_LOCALES)("localizes all accounting notices and bounds dense tables in %s, including cached language changes", async language => {
-    clock();
-    const h = meteredHass(), rows = meterHistory(), count = 350;
-    h.language = language;
-    h.states["sensor.solar_meter"].last_updated = new Date(now - 60000).toISOString();
-    rows[1] = Array.from({ length: count + 1 }, (_, index) => ({
-      entity_id: "sensor.import_meter", state: String(20 + 4 * index / count),
-      last_updated: new Date(index ? start + (now - start) * index / count : start - 60000).toISOString(),
-    }));
-    rows[5] = Array.from({ length: count }, (_, index) => ({
-      entity_id: "sensor.import_rate", state: String(.2 + index / 1000),
-      last_updated: new Date(start + (now - start) * index / count + (index === 1 ? 1000 : 0)).toISOString(),
-    }));
-    h.states["sensor.import_rate"].state = String(.2 + (count - 1) / 1000);
-    rows[3].splice(1, 0, { entity_id: "sensor.battery_charge_meter", state: "unavailable", last_updated: new Date(start + 1000).toISOString() });
-    const configured = meteredOptions();
-    configured.metered.batteryCharge = { ...configured.metered.batteryCharge, sourceType: "hardware", recoverGaps: true };
-    const callWS = vi.fn(async () => rows);
-    h.callWS = async <T>() => await callWS() as T;
-    const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
-    card.hass = h; card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: configured });
-    document.body.append(card); await card.updateComplete; await vi.advanceTimersByTimeAsync(0); await card.updateComplete;
-    const root = card.shadowRoot!;
-    const assertLocalized = (current: HomeAssistant) => {
-      const notice = root.querySelector(".approximation")!.textContent! + root.querySelector(".diagnostics")!.textContent!;
-      expect(notice).toContain(localizeText(current, "Approximate accounting"));
-      expect(notice).toContain(localizeText(current, "Affected totals, household shares and costs are estimates, not exact measurements."));
-      for (const message of Object.values(INSIGHTS_APPROXIMATION_MESSAGES)) {
-        expect(notice).toContain(localizeText(current, message));
-        if (current.language !== "en") expect(notice).not.toContain(message);
-      }
-      expect(notice).toContain(`gridImport: ${localizeText(current, INSIGHTS_APPROXIMATION_MESSAGES.midnight)}`);
-      expect(notice).toContain(`importRate: ${localizeText(current, INSIGHTS_APPROXIMATION_MESSAGES.tariffs)}`);
-      expect(notice).toContain(`solar: ${localizeText(current, INSIGHTS_APPROXIMATION_MESSAGES.endpoint)}`);
-      expect(root.querySelector(".rate-details summary")!.textContent).toContain(localizeText(current, "Price breakdown"));
-      expect(root.querySelector(".diagnostics")?.textContent).toContain(localizeText(current, "Last state update"));
-      if (current.language !== "en") {
-        expect(root.textContent).not.toContain("Last state update");
-        expect(root.textContent).not.toContain("Approximate accounting");
-      }
-      expect(root.textContent).toContain(`${energyNumber(current, 4.5, { maximumFractionDigits: 2 })} kWh`);
-      expect(root.textContent).not.toContain("{count}");
-    };
-    assertLocalized(h);
-    expect(root.querySelectorAll("details table tbody tr")).toHaveLength(0);
-    expect(root.querySelectorAll(".price-mix i").length).toBeLessThanOrEqual(96);
-    for (const selector of [".rate-details", ".interval-details"]) {
-      const details = root.querySelector<HTMLDetailsElement>(selector)!;
-      details.open = true; details.dispatchEvent(new Event("toggle"));
-    }
-    await card.updateComplete;
-    expect(root.querySelectorAll("details table tbody tr")).toHaveLength(200);
-    root.querySelector<HTMLButtonElement>(".interval-details .pager button:last-child")!.click();
-    await card.updateComplete;
-    expect(root.querySelector(".interval-details .pager span")?.textContent).toContain(energyNumber(h, 2, { maximumFractionDigits: 0 }));
-    expect(root.querySelectorAll(".measured-chart rect").length).toBeLessThanOrEqual(192);
-    card.hass = { ...h, language: language === "nl" ? "de" : "nl" };
-    await card.updateComplete;
-    assertLocalized(card.hass);
-    expect(callWS).toHaveBeenCalledOnce();
-    card.remove();
-  });
-  it("revalidates cached availability without moving its endpoint to newer live readings", async () => {
-    clock();
-    const h = meteredHass();
-    const callWS = vi.fn(async () => meterHistory());
-    h.callWS = async <T>() => await callWS() as T;
-    const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
-    card.hass = h; card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: meteredOptions() });
-    document.body.append(card); await card.updateComplete; await vi.advanceTimersByTimeAsync(0); await card.updateComplete;
-    await vi.advanceTimersByTimeAsync(60000);
-    card.hass = { ...h, states: { ...h.states,
-      "sensor.solar_meter": { ...h.states["sensor.solar_meter"], state: "15", last_updated: new Date(now + 60000).toISOString() },
-      "sensor.import_rate": { ...h.states["sensor.import_rate"], state: "unavailable" },
-    } };
-    await card.updateComplete; await vi.advanceTimersByTimeAsync(0); await card.updateComplete;
-    expect(callWS).toHaveBeenCalledOnce();
-    expect(card.shadowRoot!.textContent).toContain("4.5 kWh");
-    expect(card.shadowRoot!.textContent).not.toContain("future timestamp");
-    expect(card.shadowRoot!.textContent).toContain("importRate: selected sensor is missing or unavailable");
-    card.hass = { ...card.hass, states: { ...card.hass!.states, "sensor.import_rate": h.states["sensor.import_rate"] } };
-    await card.updateComplete; await vi.advanceTimersByTimeAsync(0); await card.updateComplete;
-    expect(card.shadowRoot!.textContent).not.toContain("importRate: selected sensor is missing or unavailable");
-    expect(card.shadowRoot!.textContent).toContain("4.5 kWh");
-    expect(callWS).toHaveBeenCalledOnce();
-    card.remove();
-  });
-  it("does not restore a now-unavailable sensor when an earlier history request completes", async () => {
-    clock();
-    const h = meteredHass();
-    let finish: (value: unknown) => void = () => undefined;
-    const pending = new Promise<unknown>(resolve => { finish = resolve; });
-    h.callWS = async <T>() => await pending as T;
-    const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
-    card.hass = h; card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: meteredOptions() });
-    document.body.append(card); await card.updateComplete;
-    card.hass = { ...h, states: { ...h.states, "sensor.import_meter": { ...h.states["sensor.import_meter"], state: "unavailable" } } };
-    await card.updateComplete;
-    finish(meterHistory()); await vi.advanceTimersByTimeAsync(0); await card.updateComplete;
-    expect(card.shadowRoot!.textContent).toContain("gridImport: selected sensor is missing or unavailable");
-    expect(card.shadowRoot!.textContent).not.toContain("4.5 kWh");
-    card.remove();
-  });
-  it("keeps measured energy, live power and comparison separate in responsive consumer rows", async () => {
-    clock();
-    const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
-    card.hass = hass();
-    card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: options() });
-    document.body.append(card); await card.updateComplete;
-    const root = card.shadowRoot!, row = root.querySelector(".consumer-row")!;
-    expect(row.querySelector(".consumer-name")?.textContent).toContain(options().consumers[0].name);
-    expect(row.querySelector(".consumer-power")?.textContent).toContain("Now");
-    expect(row.querySelector(".consumer-energy")?.textContent).toContain("kWh");
-    expect(row.querySelector(".variance")?.textContent).toContain("Same-window plan");
-    const chart = root.querySelector(".chart-scroll")!;
-    expect(chart.getAttribute("tabindex")).toBe("0");
-    expect(chart.getAttribute("role")).toBe("region");
-    expect(chart.getAttribute("aria-label")).toBe("Metered intervals");
-    expect(chart.querySelectorAll(".measured-chart rect").length).toBeGreaterThan(0);
-    expect(chart.querySelectorAll(".metered-times span")).toHaveLength(5);
-    expect(chart.querySelectorAll(".measured-chart text")).toHaveLength(0);
-    expect(chart.querySelector(".measured-chart")?.getAttribute("preserveAspectRatio")).toBe("none");
-    const scale = chart.querySelector(".metered-scale")!.textContent!;
-    expect(scale).toContain("0");
-    expect(scale).toContain("−");
-    const bars = [...chart.querySelectorAll<SVGRectElement>(".measured-chart rect")];
-    expect(bars).toHaveLength(4);
-    expect(bars[0].querySelector("title")?.textContent).toContain("Imported: 3 kWh");
-    expect(bars[1].querySelector("title")?.textContent).toContain("Imported: 4 kWh");
-    expect(bars[2].querySelector("title")?.textContent).toContain("Exported: 1 kWh");
-    expect(Number(bars[0].getAttribute("y"))).toBeLessThan(80);
-    expect(bars[2].getAttribute("y")).toBe("80");
-    expect(Number(bars[1].getAttribute("height"))).toBe(72);
-    root.querySelectorAll<HTMLButtonElement>('[role=tab]')[1].click();
-    await card.updateComplete;
-    expect(root.querySelectorAll(".consumer-row")).toHaveLength(options().consumers.length);
-    expect(root.querySelectorAll(".allocation-metrics > div")).toHaveLength(3);
-  });
-  it("disposes pending-request timers when removed without reporting cancelled work as a failure", async () => {
-    clock();
-    const warning = vi.spyOn(console, "warn").mockImplementation(() => undefined);
-    const h = meteredHass();
-    h.callWS = async <T>() => await new Promise<T>(() => undefined);
-    const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
-    card.hass = h; card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: meteredOptions() });
-    document.body.append(card); await card.updateComplete;
-    expect(vi.getTimerCount()).toBe(3);
-    card.remove(); await vi.advanceTimersByTimeAsync(0);
-    expect(vi.getTimerCount()).toBe(0);
-    expect(warning).not.toHaveBeenCalled();
-  });
   it("pins the plan inspector with keyboard navigation without selecting the exclusive end", async () => {
     clock();
     const card = document.createElement("mushroom-addition-energy-plan") as EnergyPlanCard;
@@ -1203,120 +940,19 @@ describe("energy rendering and HA lifecycle", () => {
     expect(slider.value).toBe("10");
     expect(card.getGridOptions().min_columns).toBe(12);
   });
-  it("keeps successful measurements and reports a bounded request timeout", async () => {
-    clock();
-    const warning = vi.spyOn(console, "warn").mockImplementation(() => undefined);
-    const h = meteredHass(), configured = meteredOptions();
-    const callWS = vi.fn<(message: Record<string, unknown>) => Promise<unknown>>()
-      .mockResolvedValueOnce(meterHistory()).mockImplementation(() => new Promise(() => undefined));
-    h.callWS = async <T>(message: Record<string, unknown>) => await callWS(message) as T;
-    const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
-    card.hass = h; card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: configured });
-    document.body.append(card);
-    await card.updateComplete; await vi.advanceTimersByTimeAsync(0); await card.updateComplete;
-    expect(card.shadowRoot!.textContent).toContain("4.5 kWh");
-    await vi.advanceTimersByTimeAsync(INSIGHTS_HISTORY_REFRESH_MS + 30000);
-    await card.updateComplete;
-    expect(card.shadowRoot!.textContent).toContain("4.5 kWh");
-    expect(card.shadowRoot!.textContent).toContain("timed out after 30 seconds");
-    expect(warning).toHaveBeenCalledOnce();
-    card.remove();
-    expect(vi.getTimerCount()).toBe(0);
-  });
-  it("refreshes a replaced connection and ignores the displaced request result", async () => {
-    clock();
-    const h = meteredHass();
-    let finish: (value: unknown) => void = () => undefined;
-    const pending = new Promise<unknown>(resolve => { finish = resolve; });
-    h.callWS = async <T>() => await pending as T;
-    const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
-    card.hass = h; card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: meteredOptions() });
-    document.body.append(card); await card.updateComplete;
-    const replacement = vi.fn(async () => meterHistory());
-    card.hass = { ...h, callWS: async <T>() => await replacement() as T };
-    await card.updateComplete; await Promise.resolve(); await card.updateComplete;
-    expect(replacement).toHaveBeenCalledOnce();
-    const old = meterHistory();
-    (old[0][1] as { state: string }).state = "100";
-    finish(old); await Promise.resolve(); await Promise.resolve(); await card.updateComplete;
-    expect(card.shadowRoot!.textContent).toContain("4.5 kWh");
-    expect(card.shadowRoot!.textContent).not.toContain("92.5 kWh");
-    card.remove();
-    expect(vi.getTimerCount()).toBe(0);
-  });
-  it("batches all 32 consumer meters with base sources and reports the actual request load", async () => {
-    clock();
-    const h = meteredHass(), configured = meteredOptions(), rows = meterHistory();
-    configured.metered.home = { entity: "sensor.example_household_total" };
-    configured.homeBoundary = "excludes_battery_charging";
-    h.states["sensor.example_household_total"] = { entity_id: "sensor.example_household_total", state: "14.5", last_updated: new Date(now).toISOString(), attributes: { unit_of_measurement: "kWh" } };
-    rows.push([10, 14.5].map((value, index) => ({
-      entity_id: "sensor.example_household_total", state: String(value), last_updated: new Date(index ? now : start).toISOString(),
-      attributes: { unit_of_measurement: "kWh" },
-    })));
-    configured.consumers = Array.from({ length: 32 }, (_, index) => {
-      const entity = `sensor.consumer_${index}`;
-      h.states[entity] = { entity_id: entity, state: "0", last_updated: new Date(now).toISOString(), attributes: { unit_of_measurement: "kWh" } };
-      rows.push([0, 1].map(position => ({
-        entity_id: entity, state: "0", last_updated: new Date(position ? now : Date.parse("2031-04-12T00:00:00Z")).toISOString(),
-        attributes: { unit_of_measurement: "kWh" },
-      })));
-      return { id: `consumer_${index}`, name: `Consumer ${index}`, energySource: { entity } };
-    });
-    const callWS = vi.fn<(message: Record<string, unknown>) => Promise<unknown[][]>>(async () => rows);
-    h.callWS = async <T>(message: Record<string, unknown>) => await callWS(message) as T;
-    const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
-    card.hass = h; card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: configured });
-    document.body.append(card); await card.updateComplete; await vi.advanceTimersByTimeAsync(0); await card.updateComplete;
-    expect(callWS).toHaveBeenCalledOnce();
-    expect(callWS.mock.calls[0][0].entity_ids).toHaveLength(INSIGHTS_HISTORY_MAX_ENTITIES);
-    expect(card.shadowRoot!.querySelector(".diagnostics")?.textContent).toMatch(/40 Sources · 80 State/);
-    expect(card.getGridOptions().min_columns).toBe(12);
-    card.remove();
-  });
-  it("batches and caches Recorder history within the documented refresh budget", async () => {
-    clock();
-    const h = meteredHass(), configured = meteredOptions();
-    const callWS = vi.fn<(message: Record<string, unknown>) => Promise<unknown[][]>>(async () => meterHistory());
-    h.callWS = async <T>(message: Record<string, unknown>) => await callWS(message) as T;
-    const card = document.createElement("mushroom-addition-energy-insights") as EnergyInsightsCard;
-    card.hass = h;
-    card.setConfig({ type: "custom:mushroom-addition-energy-insights", energy_insights: configured });
-    document.body.append(card);
-    await card.updateComplete;
-    await Promise.resolve();
-    await card.updateComplete;
-    expect(callWS).toHaveBeenCalledTimes(1);
-    const request = callWS.mock.calls[0][0] as Record<string, unknown>;
-    expect(request.type).toBe("history/history_during_period");
-    expect((request.entity_ids as string[])).toHaveLength(7);
-    expect((request.entity_ids as string[]).length).toBeLessThanOrEqual(INSIGHTS_HISTORY_MAX_ENTITIES);
-    expect(request.significant_changes_only).toBe(false);
-    expect(request.start_time).toBe(new Date(start - INSIGHTS_HISTORY_LOOKBACK_MS).toISOString());
-    card.requestUpdate();
-    await card.updateComplete;
-    expect(callWS).toHaveBeenCalledTimes(1);
-    await vi.advanceTimersByTimeAsync(INSIGHTS_HISTORY_REFRESH_MS - 1);
-    expect(callWS).toHaveBeenCalledTimes(1);
-    await vi.advanceTimersByTimeAsync(1);
-    await Promise.resolve();
-    expect(callWS).toHaveBeenCalledTimes(2);
-    card.remove();
-  });
   it("does not stretch shared headings to fill the entire card or editor preview", () => {
     expect(sharedStyles.cssText).toContain(".mushroom-addition-card > .action-surface:not(.energy-heading) { min-height: 100%; }");
     expect(sharedStyles.cssText).toContain(".energy-heading.action-surface { height: auto; min-height: 0; }");
   });
-  it.each(["energy-plan", "energy-insights", "energy-log"])("uses shared presentation, actions and shadow on %s in both data and error states", async tag => {
+  it.each(["energy-plan", "energy-log"])("uses shared presentation, actions and shadow on %s in both data and error states", async tag => {
     clock();
     const h = hass();
     h.states["sensor.log"] = { entity_id: "sensor.log", state: "ready", attributes: {
       entries: [{ timestamp: now, category: "planning", title: "Source title" }],
     } };
     const base = tag === "energy-plan" ? planConfig()
-      : tag === "energy-insights" ? { type: "custom:mushroom-addition-energy-insights", energy_insights: options() }
       : { ...energyLogStub(), sources: [{ ...energyLogStub().sources[0], entity: "sensor.log" }] };
-    const card = document.createElement(`mushroom-addition-${tag}`) as EnergyPlanCard | EnergyInsightsCard | MushroomEnergyLogCard;
+    const card = document.createElement(`mushroom-addition-${tag}`) as EnergyPlanCard | MushroomEnergyLogCard;
     card.hass = h;
     const config = {
       ...base, entity: "sensor.example_energy", name: "Custom heading", secondary: "Custom secondary",
@@ -1422,61 +1058,5 @@ describe("energy rendering and HA lifecycle", () => {
     expect(intervals[0].end).toBe(now + 1);
     expect(rowData(hass(), c.energy_plan!.rows[0], c.entity, now, now + 1).intervals).toHaveLength(1);
     expect(metricValue(hass(), { ...newMetric(), entity: "sensor.example_power" })).toBe(.12);
-  });
-  it("preserves tabs, active filtering, sorting, purchase selection and escaped rationale", async () => {
-    clock();
-    const h = hass(); planRoot(h).blocks[0].reason = "<script>alert(1)</script>";
-    const card = new EnergyInsightsCard(); card.hass = h;
-    card.setConfig({ ...EnergyInsightsCard.getStubConfig(), energy_insights: options() });
-    document.body.append(card); await card.updateComplete;
-    expect(card.shadowRoot!.querySelectorAll(".kpi")).toHaveLength(8);
-    expect(card.shadowRoot!.querySelector(".ring")).not.toBeNull();
-    expect(card.shadowRoot!.querySelectorAll(".consumer-row")).toHaveLength(1);
-    expect(card.shadowRoot!.querySelector("script")).toBeNull();
-    const tab = card.shadowRoot!.querySelector<HTMLButtonElement>("#actual-tab")!;
-    tab.dispatchEvent(new KeyboardEvent("keydown", { key: "End", bubbles: true })); await card.updateComplete;
-    expect(card.shadowRoot!.querySelector("#plan-tab")?.getAttribute("aria-selected")).toBe("true");
-    expect(card.shadowRoot!.querySelector("#actual-panel")?.hasAttribute("hidden")).toBe(true);
-    card.shadowRoot!.querySelectorAll<HTMLButtonElement>(".block-button")[1].click(); await card.updateComplete;
-    expect(card.shadowRoot!.querySelector("#block-detail")?.textContent).toContain("Home supply");
-    const sort = card.shadowRoot!.querySelector<HTMLSelectElement>("#sort")!;
-    sort.value = "power"; sort.dispatchEvent(new Event("change")); await card.updateComplete;
-    h.states["sensor.example_power"] = { ...h.states["sensor.example_power"], state: "0.01" };
-    card.hass = { ...h }; await card.updateComplete;
-    card.shadowRoot!.querySelector<HTMLButtonElement>(".controls button")!.click(); await card.updateComplete;
-    expect(card.shadowRoot!.querySelectorAll(".consumer-row")).toHaveLength(0);
-    expect(h.callService).not.toHaveBeenCalled();
-  });
-  it("reacts to relevant HA updates, expires data on timer and cleans up both refresh timers", async () => {
-    clock();
-    const clear = vi.spyOn(window, "clearInterval"), h = hass();
-    const insight = new EnergyInsightsCard(); insight.hass = h;
-    insight.setConfig({ ...EnergyInsightsCard.getStubConfig(), energy_insights: options() });
-    const plan = new EnergyPlanCard(); plan.hass = h; plan.setConfig(planConfig());
-    document.body.append(insight, plan); await Promise.all([insight.updateComplete, plan.updateComplete]);
-    insight.hass = { ...h, language: "nl", themes: { darkMode: true } }; await insight.updateComplete;
-    expect(insight.hasAttribute("dark")).toBe(true);
-    vi.advanceTimersByTime(61 * 60000); await Promise.all([insight.updateComplete, plan.updateComplete]);
-    expect(insight.shadowRoot!.querySelector("[role=alert]")).not.toBeNull();
-    expect(plan.shadowRoot!.textContent).toContain("Stale data source");
-    insight.remove(); plan.remove();
-    expect(clear).toHaveBeenCalledTimes(3);
-  });
-  it("does not break the valid plan when actuals fail, and uses a strict active threshold", async () => {
-    clock();
-    const h = hass(), opt = options();
-    const card = new EnergyInsightsCard(); card.hass = h;
-    card.setConfig({ ...EnergyInsightsCard.getStubConfig(), energy_insights: { ...opt, activeOnly: true } });
-    document.body.append(card); await card.updateComplete;
-    for (const [watts, count] of [[50, 0], [51, 1]] as const) {
-      card.hass = { ...h, states: { ...h.states,
-        "sensor.example_power": { ...h.states["sensor.example_power"], state: String(watts), attributes: { unit_of_measurement: "W" } },
-      } }; await card.updateComplete;
-      expect(card.shadowRoot!.querySelectorAll(".consumer-row")).toHaveLength(count);
-    }
-    const broken = hass(); delete actualRoot(broken).intervals[0].rate;
-    card.hass = broken; await card.updateComplete;
-    expect(card.shadowRoot!.querySelector("#actual-panel [role=alert]")).not.toBeNull();
-    expect(card.shadowRoot!.querySelectorAll(".block-button")).toHaveLength(2);
   });
 });

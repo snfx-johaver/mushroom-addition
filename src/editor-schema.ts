@@ -286,21 +286,21 @@ const schemas: Record<string, (item: CatalogItem, config?: AdditionConfig) => Ed
 
 export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass?: HomeAssistant): EditorField[] => {
   if (item.upstreamId === "car_advanced") return [
-    ...common(item), text("secondary"),
+    ...common(item), text("secondary"), toggle("car_show_header"),
     action("tap_action"), action("hold_action"), action("double_tap_action"),
   ];
   const monitor = monitorKind(`custom:${item.tag}`);
   if (monitor) return [
     ...common(item), text("secondary"),
     action("tap_action"), action("hold_action"), action("double_tap_action"),
-    monitorFeature(monitor),
+    monitorFeature(),
   ];
   if (item.upstreamId === "energy_log") return [
     ...common(item), text("secondary"),
     action("tap_action"), action("hold_action"), action("double_tap_action"),
     ...energyLogFeatureFields(),
   ];
-  if (item.upstreamId === "energy_plan" || item.upstreamId === "energy_insights") return [
+  if (item.upstreamId === "energy_plan") return [
     ...common(item), text("secondary"),
     ...(item.upstreamId === "energy_plan" ? [number("visibleHours", 1, 168)] : []),
     action("tap_action"), action("hold_action"), action("double_tap_action"),

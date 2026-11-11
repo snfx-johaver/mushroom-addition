@@ -2,9 +2,6 @@ import type { AdditionConfig, HomeAssistant } from "../types";
 import type { MeterSource } from "../energy-insights/config";
 
 export const MONITOR_CARDS = [
-  { id: "energy_plan_actual", tag: "mushroom-addition-energy-plan-actual", name: "Energy Plan vs Actual", icon: "mdi:chart-timeline-variant", description: "Compare an externally retained forecast baseline with measured energy over matching intervals." },
-  { id: "battery_activity", tag: "mushroom-addition-battery-activity", name: "Energy Battery Activity", icon: "mdi:battery-charging", description: "Measured battery power, state of charge, daily charge/discharge totals and source gaps." },
-  { id: "electricity_cost_timeline", tag: "mushroom-addition-electricity-cost-timeline", name: "Energy Electricity Cost Timeline", icon: "mdi:currency-eur", description: "Daily import costs and export credits from cumulative meters and recorded tariffs." },
   { id: "live_energy_flow", tag: "mushroom-addition-live-energy-flow", name: "Energy Live Energy Flow", icon: "mdi:home-lightning-bolt", description: "Realistic 3D home, grid, solar, EV and battery scene with measured directional power flows." },
 ] as const;
 export type MonitorKind = typeof MONITOR_CARDS[number]["id"];

@@ -8,6 +8,7 @@ The visual editor uses the standard sections:
 
 - **Context:** optional entity for the shared header and actions.
 - **Content:** Mushroom name, primary/secondary information, icon and colours.
+  Turn off **Show card header** for compact quick-control cards.
 - **Layout:** shared header layout, shadow and container options, plus vehicle
   section order, image slideshow, range layout, button grid and theme controls.
 - **Interactions:** header tap, hold and double-tap actions.

@@ -12,7 +12,7 @@ describe("Home Assistant registration", () => {
     for (const alias of LEGACY_ALIASES) expect(customElements.get(alias.tag)).toBeDefined();
   });
 
-  it.each(["custom-card-weather-metrics", "custom-card-room-overview", "custom-card-roomview", "card-welcome-scenes", "card-media-player"])("does not register the removed %s card or expose it in the picker", (removed) => {
+  it.each(["custom-card-weather-metrics", "custom-card-room-overview", "custom-card-roomview", "card-welcome-scenes", "card-media-player", "energy-insights", "energy-plan-actual", "battery-activity", "electricity-cost-timeline"])("does not register the removed %s card or expose it in the picker", (removed) => {
     const tag = `mushroom-addition-${removed}`;
     expect(customElements.get(tag)).toBeUndefined();
     expect(window.customCards?.some((item) => item.type === tag)).toBe(false);
