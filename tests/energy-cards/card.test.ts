@@ -135,7 +135,17 @@ describe("Smart Saving rendering", () => {
     card.setConfig({ ...cardConfig, battery: { current: { entity: "sensor.example_soc", field: "soc" } } });
     await card.updateComplete;
     expect(card.shadowRoot!.querySelector(".measured-point")).toBeNull();
-    expect(card.shadowRoot!.querySelector(".battery-plot")?.textContent).toContain("Forecast: Source missing");
+    expect(card.shadowRoot!.querySelector(".battery-plot")).toBeNull();
+  });
+
+  it("keeps optional empty editor sections hidden while preserving explicitly supplied zero values", async () => {
+    const card = await render({ battery: { current: {} }, summary: { purchaseCost: {}, purchaseEnergy: {} } });
+    expect(card.shadowRoot!.querySelector(".current")).toBeNull();
+    expect(card.shadowRoot!.querySelector(".summary-chips .chip")).toBeNull();
+    card.setConfig({ ...cardConfig, battery: { current: { value: 0 } }, summary: { purchaseCost: { value: 0 } } });
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelector(".current")?.textContent).toContain("0%");
+    expect(card.shadowRoot!.querySelector(".summary-chips .chip")?.textContent).toContain("EUR");
   });
 
   it("rejects partially malformed and overlapping prices instead of producing partial averages", async () => {

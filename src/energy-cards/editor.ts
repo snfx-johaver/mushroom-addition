@@ -4,13 +4,15 @@ import type { HomeAssistant, PriceConfig, SmartSavingConfig, TrackConfig } from 
 import { validateConfig } from "./validation";
 import { localizeText } from "../localize";
 import { EditorSchemaCache } from "./editor-schema";
+import { discoverPriceSource } from "./price-source";
+import { isPriceUnit } from "./data";
 
 type FormChange = CustomEvent<{ value: Record<string, unknown> }>;
 
 const entitySelector = { entity: {} };
 const textSelector = { text: {} };
 const numberSelector = { number: { mode: "box", min: 0, max: 168, step: 1 } };
-const unitSelector = { select: { options: ["EUR/kWh", "ct/kWh"], mode: "dropdown" } };
+const unitSelector = { select: { options: ["EUR/kWh", "ct/kWh", "USD/kWh", "GBP/kWh", "EUR/MWh", "USD/MWh"], custom_value: true, mode: "dropdown" } };
 const adapterSelector = { select: { options: [{ value: "attribute", label: "Entity attribute" }, { value: "state", label: "State" }], mode: "dropdown" } };
 const ageSelector = { number: { mode: "box", min: 1, max: 10080 } };
 const optionalAge = (value: unknown) => value === "" || value === undefined ? undefined : Number(value);
@@ -91,17 +93,19 @@ export class SmartSavingPlanCardEditor extends LitElement {
     const price: PriceConfig = {
       ...current,
       entity: String(values.entity ?? current?.entity ?? ""),
-      adapter: values.adapter === "state" ? "state" : "attribute",
+      adapter: (values.adapter ?? current?.adapter) === "state" ? "state" : "attribute",
       path: String(values.path ?? current?.path ?? ""),
       startField: String(values.startField ?? current?.startField ?? ""),
       endField: String(values.endField ?? current?.endField ?? ""),
       durationField: String(values.durationField ?? current?.durationField ?? ""),
       priceField: String(values.priceField ?? current?.priceField ?? ""),
-      sourceUnit: values.sourceUnit === "ct/kWh" ? "ct/kWh" : "EUR/kWh",
-      displayUnit: values.displayUnit === "EUR/kWh" ? "EUR/kWh" : "ct/kWh",
+      sourceUnit: isPriceUnit(values.sourceUnit) ? values.sourceUnit : current?.sourceUnit ?? "EUR/kWh",
+      displayUnit: isPriceUnit(values.displayUnit) ? values.displayUnit : current?.displayUnit ?? current?.sourceUnit ?? "EUR/kWh",
+      currency: String(values.currency ?? current?.currency ?? "") || undefined,
       maxSourceAgeMinutes: optionalAge(values.maxSourceAgeMinutes),
     };
-    this.fire({ ...this._config, price });
+    const discovered = price.entity !== current?.entity ? discoverPriceSource(this.hass, [price.entity]) : undefined;
+    this.fire({ ...this._config, price: discovered ? { ...price, ...discovered, currency: undefined } : price });
   }
 
   private updateTrack(key: "plan" | "applied" | "ev" | "solar", event: FormChange): void {
@@ -159,6 +163,7 @@ export class SmartSavingPlanCardEditor extends LitElement {
         priceField: config.price?.priceField ?? "price",
         sourceUnit: config.price?.sourceUnit ?? "EUR/kWh",
         displayUnit: config.price?.displayUnit ?? "ct/kWh",
+        currency: config.price?.currency ?? "",
         maxSourceAgeMinutes: config.price?.maxSourceAgeMinutes ?? "",
       }} .schema=${this.schemas.get([
         { name: "entity", selector: entitySelector },
@@ -170,6 +175,7 @@ export class SmartSavingPlanCardEditor extends LitElement {
         { name: "priceField", selector: textSelector },
         { name: "sourceUnit", selector: unitSelector },
         { name: "displayUnit", selector: unitSelector },
+        { name: "currency", selector: textSelector },
         { name: "maxSourceAgeMinutes", selector: ageSelector },
       ])} .computeLabel=${this.computeLabel} @value-changed=${(event: FormChange) => this.updatePrice(event)}></ha-form>
 

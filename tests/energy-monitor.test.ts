@@ -42,6 +42,15 @@ const fixture = () => {
 afterEach(() => { document.body.replaceChildren(); vi.useRealTimers(); vi.restoreAllMocks(); });
 
 describe("energy monitor source contracts", () => {
+  it("supports explicitly mapped power attributes without borrowing the entity state's unrelated unit", () => {
+    const h = hass();
+    h.states["sensor.example_device"] = { ...row("sensor.example_device", 60, end, "%"), attributes: { unit_of_measurement: "%", power: 850 } };
+    expect(reading(h, { entity: "sensor.example_device", field: "power", unit: "W" }, end, 15).value).toBe(.85);
+    expect(reading(h, { entity: "sensor.example_device", field: "power" }, end, 15).value).toBeUndefined();
+    h.states["sensor.example_device"].attributes.power = 1e308;
+    expect(reading(h, { entity: "sensor.example_device", field: "power", unit: "MW" }, end, 15).value).toBeUndefined();
+    expect(() => validateMonitor({ type: type("live-energy-flow"), energy_monitor: { grid: { entity: "sensor.example_device", unit: "%" } } })).toThrow("compatible");
+  });
   it("uses verified units, explicit directions and honest missing/absent states", () => {
     const h = hass(), opt = options();
     h.states = { "sensor.solar": row("sensor.solar", 2000, end, "W"), "sensor.grid": row("sensor.grid", -1, end, "kW"),

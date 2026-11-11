@@ -7,6 +7,7 @@ import { sharedStyles } from "./styles";
 import { renderAutomaticPresentation, renderByFamily, type RenderContext } from "./renderers";
 import { PARITY_BY_ID } from "./parity.generated";
 import { CardGestureController } from "./card-gestures";
+import { validatePriceSource } from "./energy-cards/price-source";
 
 export class MushroomAdditionCard extends LitElement {
   constructor() {
@@ -34,6 +35,12 @@ export class MushroomAdditionCard extends LitElement {
 
   public setConfig(config: AdditionConfig): void {
     if (!config || typeof config !== "object") throw new Error("A card configuration is required.");
+    if (config.type === "custom:mushroom-addition-advanced-energy-buy-and-sell") validatePriceSource(config.price);
+    if (config.type === "custom:mushroom-addition-advanced-home-energy-management") {
+      validatePriceSource(config.tariff_price);
+      if (config.energy_grid_positive !== undefined && !["import", "export"].includes(config.energy_grid_positive)) throw new Error("Invalid grid power direction.");
+      if (config.energy_battery_positive !== undefined && !["charge", "discharge"].includes(config.energy_battery_positive)) throw new Error("Invalid battery power direction.");
+    }
     const normalized = normalizeConfig(config);
     this.clearGestures();
     const previousKey = this.forecastKey(this.config);

@@ -3,8 +3,57 @@
 Smart Saving shows published electricity prices, a measured battery reading,
 supplied battery forecasts and optional plan, applied-sale, EV and solar tracks.
 It does not optimize schedules, execute actions, infer future battery levels,
-or perform measured-energy accounting. Energy Plan and Energy Insights &
-Purchases remain separate cards.
+or perform measured-energy accounting. Energy Plan remains a separate card.
+
+## Use your own entities
+
+Start with prices alone; no battery, solar or HEMS integration is required.
+Find the entity containing published price intervals in **Developer tools →
+States**, following the [source checklist](ENERGY_SETUP.md#find-your-entities-before-configuring-a-card).
+
+1. Add **Mushroom Addition: Smart Saving** and open **Features**.
+2. Select your price entity. Check the source type, array path, start/end or
+   duration fields and price field against its actual attributes.
+3. Enter the source unit and desired display denomination, keeping the same
+   currency. Set Layout's visible hours to the period you want to inspect.
+4. Save the card and compare one displayed interval with the original source.
+   A shorter published forecast should show missing coverage, not invented prices.
+
+For the fictional `forecast` array in [community setup](ENERGY_SETUP.md#published-prices),
+this is a complete price-only configuration:
+
+```yaml
+type: custom:mushroom-addition-smart-saving
+name: Electricity outlook
+visibleHours: 24
+horizon: published
+price:
+  entity: sensor.example_tariff
+  adapter: attribute
+  path: forecast
+  startField: from
+  endField: until
+  priceField: rate
+  sourceUnit: USD/MWh
+  displayUnit: USD/kWh
+```
+
+In that example, a published value of 125 displays as 0.125 USD/kWh.
+Replace the entity and mappings with your own. For JSON in the entity's state,
+choose `adapter: state` and the path inside that JSON, or an empty path for a
+root array. A current-price number without intervals is not sufficient.
+
+Add optional sources one at a time in Features: measured battery percentage,
+published battery forecast, solar intervals, schedule tracks and purchase
+summaries. The current battery reading uses percent; forecast points need their
+own timestamps and percentages. A measured reading cannot generate a forecast.
+Use confirmed-action labels only for independently confirmed execution.
+
+**If it is empty or reports an error:** verify entity availability, list path,
+field names, timezone and units; check that intervals overlap the rolling
+window and do not overlap each other. Check the price-specific age limit if
+an otherwise valid feed is rejected. Missing optional equipment should remain
+unconfigured, rather than pointing to a placeholder entity.
 
 ## Chart and layout
 
@@ -86,9 +135,24 @@ Timers and the chart resize observer are removed when the card disconnects.
 
 ## Source contracts
 
+HEMS is not required. Prices are the minimum input; batteries, forecasts,
+plans, EVs and solar tracks are optional. The picker recognizes compatible
+price arrays and JSON-state feeds by their structure, not entity names.
+When none is available, it opens a valid setup state instead of choosing an
+unrelated sensor. A battery percentage alone does not create a forecast plot.
+See [community energy setup](ENERGY_SETUP.md) for shared examples.
+
 Existing mappings remain supported: attributes or JSON state for prices,
 nested field paths, explicit interval ends or duration in minutes, and
-EUR/kWh ↔ ct/kWh conversion. Use ISO timestamps with an explicit timezone or
+same-currency ISO currency/kWh, ISO currency/MWh and ct/kWh conversion.
+For example, `sourceUnit: USD/MWh` and `displayUnit: USD/kWh` divide prices by
+1000 without exchanging currencies. `currency: USD` identifies cents when
+both source and display units are `ct/kWh`; otherwise the ISO unit determines
+the currency. Existing unqualified cents default to EUR. Different source
+and display currencies are rejected. Price-unit selectors accept custom ISO
+currency units. A price-specific `maxSourceAgeMinutes` rejects stale price
+data; the source's update status remains visible.
+Use ISO timestamps with an explicit timezone or
 numeric Unix timestamps in seconds/milliseconds.
 
 Smart Saving now rejects a source rather than silently dropping invalid entries:
@@ -104,10 +168,11 @@ Smart Saving now rejects a source rather than silently dropping invalid entries:
   Retained attributes on `unknown` or `unavailable` entities are not treated as
   current data. Configure a healthy publishing source.
 
-These are intentional stricter data-quality checks for Smart Saving only.
+These are intentional data-quality checks for Smart Saving.
 Fix the publisher or field mapping if a previously partial-looking chart now
-reports invalid data. Independent valid sources remain visible. The shared
-permissive parsers used by other cards are unchanged.
+reports invalid data. Independent valid sources remain visible. Generic price
+mappings on Buy and Sell and Home Energy Management also validate the whole
+interval list; their legacy feed formats retain their existing parsers.
 
 ## Synthetic example
 

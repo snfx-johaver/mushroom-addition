@@ -143,7 +143,7 @@ describe("panel health helpers and card setup", () => {
       callService: async () => undefined,
     });
 
-    expect(priceConfig.entity).toBe("sensor.hems_price_overview");
+    expect(priceConfig.entity).toBeUndefined();
     expect(editorSchemaFor(priceCard).map(({ name }) => name)).toContain("buy_sell_graph_span");
     expect(editorSchemaFor(priceCard).map(({ name }) => name)).toContain("buy_sell_update_interval");
     for (const name of [
@@ -152,7 +152,7 @@ describe("panel health helpers and card setup", () => {
     ]) expect(editorSchemaFor(priceCard).map((field) => field.name)).toContain(name);
     expect(editorSchemaFor(priceCard).find(({ name }) => name === "buy_sell_trade_power")?.selector)
       .toMatchObject({ number: { step: 0.01 } });
-    expect(priceConfig.buy_sell_show_result).toBe(true);
+    expect(priceConfig.buy_sell_show_result).toBe(false);
     expect(panelConfig.entity).toBe("sensor.inverter_4001");
     expect(panelConfig.panel_entities).toEqual(["sensor.inverter_4001", "sensor.inverter_4002"]);
     expect(editorSchemaFor(panelCard).map(({ name }) => name)).toContain("panel_entities");

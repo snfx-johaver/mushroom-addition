@@ -1,7 +1,8 @@
 import type { EditorField } from "./editor-schema";
 import { newMetric, newRow, planDefaults, ROW_KINDS } from "./energy-plan/config";
 import { insightsDefaults } from "./energy-insights/config";
-import { energyLogStub } from "./energy-cards/energy-log-config";
+import { ENERGY_LOG_SOURCE_DEFAULTS } from "./energy-cards/energy-log-config";
+import type { AdditionConfig } from "./types";
 
 export interface NativeObjectField {
   label: string;
@@ -23,12 +24,22 @@ const select = (label: string, options: string[], value?: string): NativeObjectF
     value, label: ({ price: "Prices", power: "Power magnitude", soc: "Battery level", schedule: "Plan", attribute: "Attributes", state: "State", now: "Now", source: "Source", energy: "Energy",
       unspecified: "Not specified", hardware: "Hardware counter", integrated_power: "Integrated power",
       excludes_battery_charging: "Excludes battery charging", estimate: "Estimated forecast", interval: "Interval forecast",
-      configured: "Configured horizon", published: "Published horizon",
+      configured: "Configured horizon", published: "Published horizon", changes: "Entity changes",
     } as Record<string, string>)[value] ?? value,
   })) } }, ...(value === undefined ? {} : { default: value }),
 });
 export const nativeObject = (fields: NativeFields, multiple = false): Record<string, unknown> => ({
   object: { fields, multiple, label_field: "name" in fields ? "name" : "overview" in fields ? "overview" : "path" in fields ? "path" : Object.keys(fields)[0] },
+});
+export const PRICE_SOURCE_FIELDS: NativeFields = {
+  entity: entity("Source"), adapter: select("Source type", ["attribute", "state"], "attribute"),
+  path: text("Path", "prices"), startField: text("Start field", "start"), endField: text("End field", "end"),
+  durationField: text("Duration field"), priceField: text("Value field", "price"),
+  sourceUnit: text("Unit", "EUR/kWh"), displayUnit: text("Unit override"),
+  currency: text("Currency"), maxSourceAgeMinutes: number("Maximum source age (minutes)", 1, 10080),
+};
+export const priceSourceField = (name: "price" | "tariff_price"): EditorField => ({
+  name, selector: nativeObject(PRICE_SOURCE_FIELDS),
 });
 const defaults = (fields: NativeFields, values: object): NativeFields => Object.fromEntries(
   Object.entries(fields).map(([key, field]) => [key, key in values ? {
@@ -191,27 +202,38 @@ export const energyFeatureField = (kind: "energy_plan" | "energy_insights"): Edi
 export const ENERGY_LOG_LABELS: Record<string, string> = {
   sources: "Sources", categories: "Categories", limit: "Entry limit", sortOrder: "Sort order",
   timeZone: "Time zone", clockFormat: "Clock format", showSource: "Show source",
-  footer: "Footer", emptyState: "Empty state",
+  footer: "Footer", emptyState: "Empty state", historyHours: "Visible hours",
 };
 export const ENERGY_LOG_SOURCE_FIELDS = defaults({
   id: { ...text("ID"), required: true },
   entity: { label: "Entity", required: true, selector: { entity: {} } },
-  adapter: select("Source type", ["attribute", "state"]),
+  adapter: select("Source type", ["changes", "attribute", "state"]),
+  category: text("Categories"), name: text("Name"), field: text("Field"),
   path: text("Path"), timestampField: text("Timestamp"), categoryField: text("Categories"),
   titleField: text("Title"), detailField: text("Summary"),
   descriptionField: text("Description"), sourceField: text("Source"),
-}, { ...energyLogStub().sources[0], id: undefined, entity: undefined });
+}, { ...ENERGY_LOG_SOURCE_DEFAULTS, id: undefined, entity: undefined });
 delete ENERGY_LOG_SOURCE_FIELDS.id.default;
 delete ENERGY_LOG_SOURCE_FIELDS.entity.default;
 export const ENERGY_LOG_CATEGORY_FIELDS: NativeFields = {
   id: { ...text("ID"), required: true }, label: { ...text("Label"), required: true },
   color: { label: "Color", selector: { ui_color: {} } }, icon: { label: "Icon", selector: { icon: {} } },
 };
-export const energyLogFeatureFields = (): EditorField[] => [
+export const energyLogFeatureFields = (config?: AdditionConfig): EditorField[] => {
+  const categories = (Array.isArray(config?.categories) ? config.categories : [])
+    .filter((category): category is { id: string; label: string } =>
+      !!category && typeof category.id === "string" && typeof category.label === "string")
+    .map(category => ({ value: category.id, label: category.label }));
+  const fields: NativeFields = { ...ENERGY_LOG_SOURCE_FIELDS, category: {
+    label: "Categories", default: categories.find(category => category.value === "general")?.value ?? categories[0]?.value,
+    selector: { select: { mode: "dropdown", options: categories } },
+  } };
+  return [
   { name: "allIcon", selector: { icon: {} } },
-  { name: "sources", selector: nativeObject(ENERGY_LOG_SOURCE_FIELDS, true) },
+  { name: "sources", selector: nativeObject(fields, true) },
   { name: "categories", selector: { object: { ...(nativeObject(ENERGY_LOG_CATEGORY_FIELDS, true).object as object), label_field: "label" } } },
   { name: "limit", selector: { number: { min: 1, max: 500, mode: "box", step: 1 } } },
+  { name: "historyHours", selector: { number: { min: 1, max: 168, mode: "box", step: "any" } } },
   { name: "sortOrder", selector: { select: { mode: "dropdown", options: [
     { value: "newest", label: "Newest first" }, { value: "oldest", label: "Oldest first" },
   ] } } },
@@ -220,4 +242,5 @@ export const energyLogFeatureFields = (): EditorField[] => [
   { name: "showSource", selector: { boolean: {} } },
   { name: "footer", selector: { text: { multiline: true } } },
   { name: "emptyState", selector: { text: {} } },
-];
+  ];
+};

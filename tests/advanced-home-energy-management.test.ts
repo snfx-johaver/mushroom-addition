@@ -133,6 +133,53 @@ afterEach(() => {
 });
 
 describe("Advanced Energy Home Energy Management", () => {
+  it("does not substitute zero for an unavailable configured tariff adjustment", async () => {
+    const element = document.createElement("mushroom-addition-advanced-home-energy-management") as HTMLElement & {
+      hass: HomeAssistant; setConfig(value: AdditionConfig): void; updateComplete: Promise<boolean>;
+    };
+    const now = Date.now();
+    element.hass = { states: {
+      "sensor.example_tariff": { entity_id: "sensor.example_tariff", state: "ready", attributes: {
+        unit_of_measurement: "GBP/kWh", prices: [{ start: now - 1000, end: now + 3600000, price: .2 }],
+      } },
+      "sensor.example_markup": { entity_id: "sensor.example_markup", state: "unavailable", attributes: {} },
+    }, callService: vi.fn(async () => undefined) };
+    element.setConfig({ type: "custom:mushroom-addition-advanced-home-energy-management",
+      tariff_price: { entity: "sensor.example_tariff", path: "prices", sourceUnit: "GBP/kWh" },
+      tariff_markup_entity: "sensor.example_markup", show_tariff_timeline: true });
+    document.body.append(element);
+    await element.updateComplete;
+    expect(element.shadowRoot!.querySelector('ha-alert[alert-type="warning"]')?.textContent).toContain("Unavailable");
+    expect(element.shadowRoot!.querySelectorAll('rect[y="588"]')).toHaveLength(0);
+    element.hass = { ...element.hass, states: { ...element.hass.states,
+      "sensor.example_markup": { ...element.hass.states["sensor.example_markup"], state: "0" } } };
+    await element.updateComplete;
+    expect(element.shadowRoot!.querySelectorAll('rect[y="588"]')).toHaveLength(1);
+  });
+  it("works with generic power sensors and hides equipment that was never configured", async () => {
+    const element = document.createElement("mushroom-addition-advanced-home-energy-management") as HTMLElement & {
+      hass: HomeAssistant; setConfig(value: AdditionConfig): void; updateComplete: Promise<boolean>;
+    };
+    element.hass = { states: {
+      "sensor.example_home": { entity_id: "sensor.example_home", state: "0.7", attributes: { unit_of_measurement: "kW" } },
+      "sensor.example_grid": { entity_id: "sensor.example_grid", state: "-700", attributes: { unit_of_measurement: "W" } },
+    }, callService: vi.fn(async () => undefined) };
+    const generic: AdditionConfig = { type: "custom:mushroom-addition-advanced-home-energy-management",
+      entity: "sensor.example_home", grid_power_entity: "sensor.example_grid", energy_grid_positive: "export" };
+    element.setConfig(generic);
+    document.body.append(element);
+    await element.updateComplete;
+    const flow = element.shadowRoot!.querySelector(".hems-flow")!;
+    expect(flow.textContent).toContain("GRID · Import");
+    expect(flow.textContent).toContain("700 W");
+    expect(flow.textContent).not.toMatch(/Battery|Solar Panels|EV charger|Manual|L1|0%/);
+    element.hass = { ...element.hass, states: { ...element.hass.states,
+      "sensor.example_home": { ...element.hass.states["sensor.example_home"], state: "unavailable" } } };
+    await element.updateComplete;
+    expect(flow.textContent).toContain("—");
+    expect(flow.textContent).not.toMatch(/\b0 W\b/);
+    expect(element.hass.callService).not.toHaveBeenCalled();
+  });
   it("registers as a native picker card with a complete graphical editor", () => {
     const item = CATALOG.find((candidate) =>
       candidate.upstreamId === "advanced_home_energy_management")!;
@@ -167,14 +214,21 @@ describe("Advanced Energy Home Energy Management", () => {
     }
   });
 
-  it("discovers source entities without site-specific navigation defaults", () => {
+  it("discovers compatible tariffs without guessing electrical roles or installation-specific sources", () => {
     const item = CATALOG.find((candidate) =>
       candidate.upstreamId === "advanced_home_energy_management")!;
     const hass: HomeAssistant = { states, callService: vi.fn(async () => undefined) };
     const stub = createStubConfig(item, hass, Object.keys(states), []);
-    expect(stub).toMatchObject(config);
+    expect(stub.tariff_price).toMatchObject({ entity: config.electricity_price_entity, path: "raw_today", priceField: "value" });
+    expect(stub.entity).toBeUndefined();
+    expect(stub.grid_power_entity).toBeUndefined();
+    expect(stub.battery_power_entity).toBeUndefined();
+    expect(stub.energy_mode_entity).toBeUndefined();
+    expect(stub.tariff_markup_entity).toBeUndefined();
+    expect(stub.show_grid_phases).toBe(false);
+    expect(stub.show_battery_units).toBe(false);
     expect(stub.navigation_path).toBeUndefined();
-    expect(stub.tap_action).toEqual({ action: "more-info" });
+    expect(stub.tap_action).toEqual({ action: "none" });
     expect(stub.tap_action).not.toHaveProperty("navigation_path");
   });
 

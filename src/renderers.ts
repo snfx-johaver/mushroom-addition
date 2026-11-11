@@ -26,12 +26,16 @@ import {
 import {
   energyArcPath,
   energyBarPath,
+  entityUnit,
   formatPower,
   numericEntityState,
   powerEntityWatts,
   tariffIntervals,
 } from "./energy-management";
 import { energyPriceBounds, energyPriceSlots, energyTradeResult, formatEnergyPrice } from "./energy-buy-sell";
+import { discoverPriceSource, readPriceIntervals } from "./energy-cards/price-source";
+import { convertPrice, currencyPriceUnit, priceCurrency } from "./energy-cards/data";
+import { energySetupNotice } from "./energy-cards/helpers";
 import type { EnergyTradeSelection } from "./energy-buy-sell";
 import { inverterPanelEntities, panelGaugeColor, panelGaugePercent, summarizePanels } from "./panel-health";
 import "./entity-carousel";
@@ -1889,23 +1893,39 @@ const renderAdvancedHomeEnergyManagement = (ctx: RenderContext): TemplateResult 
     config.icon,
     config.icon_type,
   ].some((value) => value !== undefined);
-  const home = powerEntityWatts(ctx.hass, config.entity) ?? 0;
-  const grid = powerEntityWatts(ctx.hass, config.grid_power_entity) ?? 0;
+  const nonnegativePower = (entityId?: string) => {
+    const power = powerEntityWatts(ctx.hass, entityId);
+    return power !== undefined && power >= 0 ? power : undefined;
+  };
+  const home = nonnegativePower(config.entity);
+  const signedPower = (entityId: string | undefined, reverse: boolean) => {
+    const power = powerEntityWatts(ctx.hass, entityId);
+    return power === undefined ? undefined : power * (reverse ? -1 : 1);
+  };
+  const grid = signedPower(config.grid_power_entity, config.energy_grid_positive === "export");
   const phases = [
     config.grid_phase_1_entity,
     config.grid_phase_2_entity,
     config.grid_phase_3_entity,
-  ].map((entityId) => powerEntityWatts(ctx.hass, entityId) ?? 0);
-  const solar = powerEntityWatts(ctx.hass, config.solar_power_entity) ?? 0;
-  const forecast = numericEntityState(ctx.hass, config.solar_forecast_entity) ?? 0;
-  const battery = powerEntityWatts(ctx.hass, config.battery_power_entity) ?? 0;
-  const batteryLevel = Math.max(0, Math.min(100,
-    numericEntityState(ctx.hass, config.battery_level_entity) ?? 0));
-  const ev = powerEntityWatts(ctx.hass, config.ev_charger_power_entity) ?? 0;
-  const batteries = [1, 2, 3].map((index) => ({
-    level: numericEntityState(ctx.hass, configured<string>(ctx, `battery_${index}_level_entity`)) ?? 0,
-    power: powerEntityWatts(ctx.hass, configured<string>(ctx, `battery_${index}_power_entity`)) ?? 0,
-  }));
+  ].map((entityId, index) => ({ index, entityId, power: signedPower(entityId, config.energy_grid_positive === "export") }))
+    .filter(phase => phase.entityId);
+  const solar = nonnegativePower(config.solar_power_entity);
+  const forecastValue = numericEntityState(ctx.hass, config.solar_forecast_entity);
+  const forecastUnit = entityUnit(ctx.hass, config.solar_forecast_entity);
+  const forecast = forecastValue === undefined || !["Wh", "kWh"].includes(forecastUnit)
+    ? undefined : forecastValue * (forecastUnit === "Wh" ? .001 : 1);
+  const battery = signedPower(config.battery_power_entity, config.energy_battery_positive === "discharge");
+  const percent = (value?: number) => value !== undefined && value >= 0 && value <= 100 ? value : undefined;
+  const batteryLevel = percent(numericEntityState(ctx.hass, config.battery_level_entity));
+  const ev = nonnegativePower(config.ev_charger_power_entity);
+  const batteries = [1, 2, 3].map((index) => {
+    const levelEntity = configured<string>(ctx, `battery_${index}_level_entity`);
+    const powerEntity = configured<string>(ctx, `battery_${index}_power_entity`);
+    return { index, levelEntity, powerEntity, level: percent(numericEntityState(ctx.hass, levelEntity)),
+      power: signedPower(powerEntity, config.energy_battery_positive === "discharge") };
+  }).filter(unit => unit.levelEntity || unit.powerEntity);
+  const hasBattery = !!(config.battery_power_entity || config.battery_level_entity || batteries.length);
+  const hasSolar = !!(config.solar_power_entity || config.solar_forecast_entity);
   const modeRaw = config.energy_mode_entity
     ? ctx.hass.states[config.energy_mode_entity]?.state ?? "-"
     : "-";
@@ -1914,20 +1934,20 @@ const renderAdvancedHomeEnergyManagement = (ctx: RenderContext): TemplateResult 
     "Dynamic Smart Matching": config.mode_smart_saving_label ?? localizeText(ctx.hass, "Smart saving"),
     "Dynamic Trading + Smart Matching": config.mode_smart_trading_label ?? localizeText(ctx.hass, "Smart trading"),
   };
-  const automatic = config.energy_auto_control_entity
-    ? ctx.hass.states[config.energy_auto_control_entity]?.state === "on"
-    : false;
-  const modeLabel = `${modeNames[modeRaw] ?? modeRaw} · ${
-    automatic ? config.energy_auto_label ?? localizeText(ctx.hass, "Auto") : config.energy_manual_label ?? localizeText(ctx.hass, "Manual")
-  }`;
-  const batteryState = battery > 20
+  const automatic = ctx.hass.states[config.energy_auto_control_entity ?? ""]?.state;
+  const modeLabel = [
+    ...(config.energy_mode_entity ? [modeNames[modeRaw] ?? modeRaw] : []),
+    ...(config.energy_auto_control_entity ? [automatic === "on" ? config.energy_auto_label ?? localizeText(ctx.hass, "Auto")
+      : automatic === "off" ? config.energy_manual_label ?? localizeText(ctx.hass, "Manual") : localizeText(ctx.hass, "Unavailable")] : []),
+  ].join(" · ");
+  const batteryState = battery === undefined ? localizeText(ctx.hass, "Unavailable") : battery > 20
     ? `${config.energy_charge_label ?? localizeText(ctx.hass, "Charging")} ${formatPower(battery)}`
     : battery < -20
       ? `${config.energy_discharge_label ?? localizeText(ctx.hass, "Discharging")} ${formatPower(battery)}`
       : config.energy_idle_label ?? localizeText(ctx.hass, "Idle");
-  const gridLabel = grid > 20
+  const gridLabel = (grid ?? 0) > 20
     ? config.energy_grid_import_label ?? localizeText(ctx.hass, "GRID · Import")
-    : grid < -20
+    : (grid ?? 0) < -20
       ? config.energy_grid_export_label ?? localizeText(ctx.hass, "GRID · Export")
       : config.energy_grid_label ?? localizeText(ctx.hass, "GRID");
   const importColor = config.import_color ?? "#ff9f43";
@@ -1935,7 +1955,7 @@ const renderAdvancedHomeEnergyManagement = (ctx: RenderContext): TemplateResult 
   const batteryColor = config.battery_color ?? "#3b82f6";
   const solarColor = config.solar_color ?? "#f5c542";
   const homeColor = config.home_color ?? "#3b82f6";
-  const gridColor = grid > 20 ? importColor : exportColor;
+  const gridColor = (grid ?? 0) > 20 ? importColor : exportColor;
   const time = new Date().toLocaleTimeString(ctx.hass.language ?? "nl-NL", {
     hour: "2-digit",
     minute: "2-digit",
@@ -1954,13 +1974,23 @@ const renderAdvancedHomeEnergyManagement = (ctx: RenderContext): TemplateResult 
     const path = energyBarPath(radius, start, end, fraction, fromEnd);
     return path ? svg`<path d=${path} stroke=${color} class="hems-bar"></path>` : nothing;
   };
-  const tariffEntity = config.electricity_price_entity
-    ? ctx.hass.states[config.electricity_price_entity]
+  const tariffEntityId = config.tariff_price?.entity || config.electricity_price_entity;
+  const tariffEntity = tariffEntityId
+    ? ctx.hass.states[tariffEntityId]
     : undefined;
-  const intervals = tariffIntervals(
+  const tariffMapping = config.tariff_price ?? discoverPriceSource(ctx.hass, tariffEntityId ? [tariffEntityId] : []);
+  const tariffSource = tariffMapping ? readPriceIntervals(tariffEntity, tariffMapping) : undefined;
+  const tariffCurrency = tariffMapping ? priceCurrency(tariffMapping.sourceUnit ?? "EUR/kWh", tariffMapping.displayUnit, tariffMapping.currency) : "EUR";
+  const tariffBaseUnit = currencyPriceUnit(tariffCurrency);
+  const tariffDisplayUnit = tariffMapping?.displayUnit ?? "ct/kWh";
+  const markup = config.tariff_markup_entity ? numericEntityState(ctx.hass, config.tariff_markup_entity) : 0;
+  const vat = config.tariff_vat_entity ? numericEntityState(ctx.hass, config.tariff_vat_entity) : 0;
+  const tariffError = markup === undefined || vat === undefined ? "Unavailable" : tariffSource?.error;
+  const intervals = tariffError ? [] : tariffIntervals(
     tariffEntity,
-    numericEntityState(ctx.hass, config.tariff_markup_entity) ?? 0,
-    numericEntityState(ctx.hass, config.tariff_vat_entity) ?? 0,
+    markup,
+    vat,
+    tariffMapping,
   );
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
@@ -1985,60 +2015,64 @@ const renderAdvancedHomeEnergyManagement = (ctx: RenderContext): TemplateResult 
     ${showPresentation ? html`
       <div class="hems-presentation">${cardHeading(ctx)}</div>
     ` : nothing}
+    ${[config.entity, config.grid_power_entity, config.solar_power_entity, config.battery_power_entity, config.ev_charger_power_entity].some(Boolean)
+      ? nothing : energySetupNotice(ctx.hass)}
+    ${config.show_tariff_timeline !== false && tariffError
+      ? html`<ha-alert alert-type="warning" role="status">${localizeText(ctx.hass, "Prices")}: ${localizeText(ctx.hass, tariffError)}</ha-alert>` : nothing}
     <svg class="hems-flow" viewBox="0 0 760 650" role="img" aria-label="${localizeText(ctx.hass, "Advanced home energy live flow")}">
-      <circle cx="380" cy="300" r="80" class="hems-track hems-battery-track"></circle>
-      ${bar(80, 0, Math.min(batteryLevel, 99.9) * 3.6, 1, batteryColor)}
+      ${hasBattery ? svg`<circle cx="380" cy="300" r="80" class="hems-track hems-battery-track"></circle>
+      ${batteryLevel === undefined ? nothing : bar(80, 0, Math.min(batteryLevel, 99.9) * 3.6, 1, batteryColor)}
       <text x="380" y="270" class="hems-muted hems-center">${localizeText(ctx.hass, "▮ Battery")}</text>
-      <text x="380" y="318" class="hems-battery-value hems-center">${Math.round(batteryLevel)}%</text>
-      <text x="380" y="346" class="hems-muted hems-center">${batteryState}</text>
+      <text x="380" y="318" class="hems-battery-value hems-center">${batteryLevel === undefined ? "—" : `${Math.round(batteryLevel)}%`}</text>
+      <text x="380" y="346" class="hems-muted hems-center">${batteryState}</text>` : nothing}
       <text x="380" y="125" class="hems-time hems-muted hems-center">${time}</text>
 
-      ${config.show_grid_phases !== false ? [250, 270, 290].map((radius, index) => svg`
-        ${track(radius, 272, 352)}
-        ${bar(radius, 272, 352, Math.abs(phases[index]) / (config.grid_phase_scale_max ?? 3000),
-          phases[index] < 0 ? exportColor : importColor)}
+      ${config.show_grid_phases !== false ? phases.map(({ power, index }) => svg`
+        ${track(250 + index * 20, 272, 352)}
+        ${power === undefined ? nothing : bar(250 + index * 20, 272, 352, Math.abs(power) / (config.grid_phase_scale_max ?? 3000),
+          power < 0 ? exportColor : importColor)}
       `) : nothing}
       <text x="180" y="185" class="hems-muted">${gridLabel}</text>
       <text x="180" y="228" class="hems-main-value" fill=${gridColor}>⚡ ${formatPower(grid)}</text>
-      ${config.show_grid_phases !== false ? phases.map((phase, index) => svg`
+      ${config.show_grid_phases !== false ? phases.map(({ power, index }) => svg`
         <text x="180" y=${258 + index * 22} class="hems-detail hems-muted">
-          L${index + 1} ${phase >= 0 ? "↓" : "↑"} ${formatPower(phase)}
+          L${index + 1} ${power === undefined ? "" : power >= 0 ? "↓" : "↑"} ${formatPower(power)}
         </text>
       `) : nothing}
 
-      ${track(265, 188, 262)}
-      ${bar(265, 188, 262, solar / (config.solar_scale_max ?? 6000), solarColor, true)}
+      ${hasSolar ? svg`${track(265, 188, 262)}
+      ${solar === undefined ? nothing : bar(265, 188, 262, solar / (config.solar_scale_max ?? 6000), solarColor, true)}
       <text x="180" y="395" class="hems-muted">${config.energy_solar_label ?? localizeText(ctx.hass, "Solar Panels")}</text>
       <text x="180" y="437" class="hems-main-value">☀️ ${formatPower(solar)}</text>
-      <text x="180" y="465" class="hems-detail hems-muted">
-        ${config.energy_forecast_label ?? localizeText(ctx.hass, "Expected")} ${forecast.toLocaleString(undefined, {
+      ${config.solar_forecast_entity ? svg`<text x="180" y="465" class="hems-detail hems-muted">
+        ${config.energy_forecast_label ?? localizeText(ctx.hass, "Expected")} ${forecast === undefined ? localizeText(ctx.hass, "Unavailable") : `${forecast.toLocaleString(undefined, {
           minimumFractionDigits: 1,
           maximumFractionDigits: 1,
-        })} kWh
-      </text>
+        })} kWh`}
+      </text>` : nothing}` : nothing}
 
-      ${config.show_battery_units !== false ? [250, 270, 290].map((radius, index) => svg`
-        ${track(radius, 8, 88)}
-        ${bar(radius, 8, 88,
-          Math.abs(batteries[index].power) / (config.battery_unit_scale_max ?? 2400),
-          batteries[index].power > 0 ? batteryColor : importColor, true)}
+      ${config.show_battery_units !== false ? batteries.map(unit => svg`
+        ${track(230 + unit.index * 20, 8, 88)}
+        ${unit.power === undefined ? nothing : bar(230 + unit.index * 20, 8, 88,
+          Math.abs(unit.power) / (config.battery_unit_scale_max ?? 2400),
+          unit.power > 0 ? batteryColor : importColor, true)}
       `) : nothing}
-      <text x="585" y="185" class="hems-muted hems-end">${config.energy_battery_label ?? localizeText(ctx.hass, "Battery")}</text>
-      ${config.show_battery_units !== false ? batteries.map((unit, index) => svg`
-        <text x="585" y=${224 + index * 22} class="hems-detail hems-muted hems-end">
-          ${index + 1} <tspan fill=${batteryColor} font-weight="600">${Math.round(unit.level)}%</tspan>
-          ${unit.power > 20 ? "↑" : unit.power < -20 ? "↓" : ""} ${formatPower(unit.power)}
+      ${hasBattery ? svg`<text x="585" y="185" class="hems-muted hems-end">${config.energy_battery_label ?? localizeText(ctx.hass, "Battery")}</text>` : nothing}
+      ${config.show_battery_units !== false ? batteries.map(unit => svg`
+        <text x="585" y=${224 + (unit.index - 1) * 22} class="hems-detail hems-muted hems-end">
+          ${unit.index} <tspan fill=${batteryColor} font-weight="600">${unit.level === undefined ? "—" : `${Math.round(unit.level)}%`}</tspan>
+          ${(unit.power ?? 0) > 20 ? "↑" : (unit.power ?? 0) < -20 ? "↓" : ""} ${formatPower(unit.power)}
         </text>
       `) : nothing}
 
       ${track(265, 98, 172)}
-      ${bar(265, 98, 172, home / (config.home_scale_max ?? 4000), homeColor)}
+      ${home === undefined ? nothing : bar(265, 98, 172, home / (config.home_scale_max ?? 4000), homeColor)}
       <text x="585" y="395" class="hems-muted hems-end">${config.energy_home_label ?? localizeText(ctx.hass, "HOME")}</text>
       <text x="585" y="437" class="hems-main-value hems-end">${formatPower(home)} ⌂</text>
-      <text x="585" y="465" class="hems-detail hems-muted hems-end">
+      ${config.ev_charger_power_entity ? svg`<text x="585" y="465" class="hems-detail hems-muted hems-end">
         🚗 ${config.energy_ev_label ?? localizeText(ctx.hass, "EV charger")} ${formatPower(ev)}
-      </text>
-      <text x="380" y="522" class="hems-mode hems-muted hems-center">${modeLabel} ▾</text>
+      </text>` : nothing}
+      ${modeLabel ? svg`<text x="380" y="522" class="hems-mode hems-muted hems-center">${modeLabel}</text>` : nothing}
 
       ${config.show_tariff_timeline !== false && intervals.length ? svg`
         ${intervals.map((interval) => {
@@ -2053,7 +2087,7 @@ const renderAdvancedHomeEnergyManagement = (ctx: RenderContext): TemplateResult 
           </text>
           <text x="670" y="574" class="hems-price hems-end"
             fill=${priceColor(currentInterval.price)}>
-            ${Math.round(currentInterval.price * 100)} cents
+            ${convertPrice(currentInterval.price, tariffBaseUnit, tariffDisplayUnit).toFixed(tariffDisplayUnit === "ct/kWh" ? 1 : 3)} ${tariffDisplayUnit}${tariffDisplayUnit === "ct/kWh" ? ` (${tariffCurrency})` : ""}
           </text>
         ` : nothing}
         <rect x=${90 + 580 * (now - dayStart) / dayDuration - 1.5} y="584"
@@ -2080,15 +2114,23 @@ const energyCardHeading = (ctx: RenderContext, title: string, secondary: string)
 };
 
 const renderEnergyBuySell = (ctx: RenderContext): TemplateResult => {
-  const entity = ctx.entity;
-  const slots = energyPriceSlots(entity);
+  const legacySlots = energyPriceSlots(ctx.entity);
+  const mapping = ctx.config.price ?? (legacySlots.length ? undefined : discoverPriceSource(ctx.hass, ctx.config.entity ? [ctx.config.entity] : []));
+  const entity = mapping ? ctx.hass.states[mapping.entity] : ctx.entity;
+  const source = mapping ? readPriceIntervals(entity, mapping) : undefined;
+  const tradeSlots = mapping ? energyPriceSlots(entity, mapping) : legacySlots;
+  const currency = mapping ? priceCurrency(mapping.sourceUnit ?? "EUR/kWh", mapping.displayUnit, mapping.currency) : "EUR";
+  const baseUnit = currencyPriceUnit(currency);
+  const displayUnit = mapping?.displayUnit ?? baseUnit;
+  const unitLabel = ctx.config.buy_sell_axis_label || (mapping ? `${displayUnit}${displayUnit === "ct/kWh" ? ` (${currency})` : ""}` : "€/kWh");
+  const slots = tradeSlots.map(slot => ({ ...slot, price: convertPrice(slot.price, baseUnit, displayUnit) }));
   const spanHours = Math.max(1, numeric(ctx.config.buy_sell_graph_span) ?? 36);
   const now = Date.now();
   const start = ctx.config.buy_sell_span_start !== "now"
     ? new Date(new Date(now).setHours(0, 0, 0, 0)).getTime()
     : now;
   const end = start + spanHours * 60 * 60 * 1000;
-  const visibleSlots = slots.filter(({ timestamp }) => timestamp >= start && timestamp < end);
+  const visibleSlots = slots.filter(slot => (slot.end === undefined ? slot.timestamp >= start : slot.end > start) && slot.timestamp < end);
   const minimum = numeric(ctx.config.buy_sell_min_value);
   const maximum = numeric(ctx.config.buy_sell_max_value);
   const bounds = energyPriceBounds(visibleSlots, minimum, maximum);
@@ -2103,6 +2145,7 @@ const renderEnergyBuySell = (ctx: RenderContext): TemplateResult => {
     plotBottom - ((value - bounds.minimum) / (bounds.maximum - bounds.minimum)) * plotHeight;
   const priceDecimals = Math.max(0, Math.min(6, Math.floor(numeric(ctx.config.buy_sell_price_decimals) ?? 3)));
   const pointDuration = (index: number) => {
+    if (visibleSlots[index].end !== undefined) return visibleSlots[index].end! - visibleSlots[index].timestamp;
     const next = visibleSlots[index + 1]?.timestamp;
     const duration = next ? next - visibleSlots[index].timestamp : 30 * 60 * 1000;
     return Math.max(60 * 1000, Math.min(duration, 6 * 60 * 60 * 1000));
@@ -2142,7 +2185,7 @@ const renderEnergyBuySell = (ctx: RenderContext): TemplateResult => {
   const feedInFee = Number(ctx.config.buy_sell_feed_in_fee ?? 0);
   const trade = tradeEnergyEntity && (!Number.isFinite(tradeEnergy) || tradeEnergy <= 0)
     ? { error: `Minimum trade size entity ${tradeEnergyEntity} must provide a positive numeric kWh value.` }
-    : energyTradeResult(slots, {
+    : energyTradeResult(tradeSlots, {
       energy: tradeEnergy,
       power: tradePower,
       efficiency: tradeEfficiency,
@@ -2168,7 +2211,9 @@ const renderEnergyBuySell = (ctx: RenderContext): TemplateResult => {
   `;
 
   return ctx.actionSurface("energy-buy-sell-card", html`
-      ${energyCardHeading(ctx, String(ctx.config.buy_sell_title || localizeText(ctx.hass, "Buy and sell moments (all-in €/kWh)")), localizeText(ctx.hass, "Price timeline"))}
+      ${energyCardHeading(ctx, String(ctx.config.buy_sell_title || (mapping ? `${localizeText(ctx.hass, "Price timeline")} · ${unitLabel}` : localizeText(ctx.hass, "Buy and sell moments (all-in €/kWh)"))), localizeText(ctx.hass, "Price timeline"))}
+      ${!mapping && !legacySlots.length ? energySetupNotice(ctx.hass) : source?.error
+        ? html`<ha-alert alert-type="warning" role="status">${localizeText(ctx.hass, source.error)}</ha-alert>` : nothing}
       <div class="energy-buy-sell-chart" style=${`height:${Math.max(120, Math.min(700, numeric(ctx.config.buy_sell_chart_height) ?? 300))}px`} role="img"
         aria-label=${localize(ctx.hass, "ui.renderer.energy_chart", { hours: spanHours })}>
         <svg viewBox="0 0 720 314" preserveAspectRatio="none" aria-hidden="true">
@@ -2185,7 +2230,7 @@ const renderEnergyBuySell = (ctx: RenderContext): TemplateResult => {
             `;
           })}
           <text x="14" y=${(plotTop + plotBottom) / 2} text-anchor="middle"
-            transform=${`rotate(-90 14 ${(plotTop + plotBottom) / 2})`} class="energy-chart-axis-title">${ctx.config.buy_sell_axis_label || "€/kWh"}</text>
+            transform=${`rotate(-90 14 ${(plotTop + plotBottom) / 2})`} class="energy-chart-axis-title">${unitLabel}</text>
           ${tickTimes.map((timestamp) => {
             const xPos = x(timestamp);
             return svg`
@@ -2200,7 +2245,7 @@ const renderEnergyBuySell = (ctx: RenderContext): TemplateResult => {
             const color = chartColors[seriesIndex];
             const valueY = y(slot.price);
             const zeroY = y(Math.max(bounds.minimum, Math.min(0, bounds.maximum)));
-            const left = x(slot.timestamp);
+            const left = x(Math.max(start, slot.timestamp));
             const right = x(Math.min(end, slot.timestamp + pointDuration(index)));
             const barWidth = Math.max(1, (right - left) * 0.88);
             const top = Math.min(valueY, zeroY);
@@ -2209,7 +2254,7 @@ const renderEnergyBuySell = (ctx: RenderContext): TemplateResult => {
               <rect x=${left} y=${top} width=${barWidth} height=${height}
                 rx=${Math.max(0, Math.min(16, numeric(ctx.config.buy_sell_bar_radius) ?? 2))}
                 fill=${color} opacity="0.88">
-                <title>${`${legendLabels[seriesIndex]}: ${formatEnergyPrice(slot.price, priceDecimals)} ${ctx.config.buy_sell_axis_label || "€/kWh"}`}</title>
+                <title>${`${legendLabels[seriesIndex]}: ${formatEnergyPrice(slot.price, priceDecimals)} ${unitLabel}`}</title>
               </rect>
             `;
           })}
@@ -2228,9 +2273,9 @@ const renderEnergyBuySell = (ctx: RenderContext): TemplateResult => {
         </svg>
       </div>
       ${ctx.config.buy_sell_show_legend !== false ? html`<div class="energy-chart-legend">
-        ${ENERGY_SERIES.map(({ kind }, index) => html`
+        ${ENERGY_SERIES.filter(({ kind }) => !mapping || slots.some(slot => slot.kind === kind)).map(({ kind }) => html`
           <span class="energy-chart-legend-item">
-            <span class="energy-chart-legend-swatch" style=${`--energy-series-color:${chartColors[index]}`}></span>
+            <span class="energy-chart-legend-swatch" style=${`--energy-series-color:${chartColors[kind]}`}></span>
             ${legendLabels[kind]}
           </span>
         `)}
@@ -2245,20 +2290,21 @@ const renderEnergyBuySell = (ctx: RenderContext): TemplateResult => {
           ${"error" in trade ? html`<p class="energy-card-empty" role="status">${trade.error}</p>` : html`
             <div class="energy-result-table-scroll" tabindex="0" role="region" aria-label="${localizeText(ctx.hass, "Buy and sell estimate")}">
               <table class="energy-result-table">
-                <thead><tr><th scope="col">${localizeText(ctx.hass, "Action")}</th><th scope="col">${localizeText(ctx.hass, "Slots")}</th><th scope="col">${localizeText(ctx.hass, "avg €/kWh")}</th><th scope="col">kWh</th><th scope="col">€</th></tr></thead>
+                <thead><tr><th scope="col">${localizeText(ctx.hass, "Action")}</th><th scope="col">${localizeText(ctx.hass, "Slots")}</th><th scope="col">${mapping ? `${localizeText(ctx.hass, "Average")} ${baseUnit}` : localizeText(ctx.hass, "avg €/kWh")}</th><th scope="col">kWh</th><th scope="col">${currency === "EUR" ? "€" : currency}</th></tr></thead>
                 <tbody>${tradeRow(localizeText(ctx.hass, "Buy"), trade.buy, chartColors[1])}${tradeRow(localizeText(ctx.hass, "Sell"), trade.sell, chartColors[2])}</tbody>
               </table>
             </div>
-            <p class="energy-result-net">${localize(ctx.hass, "ui.renderer.net_result", { energy: Number(tradeEnergy.toFixed(2)), net: signedMoney(trade.net) })}</p>
+            <p class="energy-result-net">${currency === "EUR" ? localize(ctx.hass, "ui.renderer.net_result", { energy: Number(tradeEnergy.toFixed(2)), net: signedMoney(trade.net) })
+              : `${localizeText(ctx.hass, "Buy")} + ${localizeText(ctx.hass, "Sell")}: ${signedMoney(trade.net)} ${currency}`}</p>
             <p class="energy-result-note">
               Calculated for the minimum trade size (${Number(tradeEnergy.toFixed(2))} kWh):
               the cheapest slots to buy and the most expensive remaining slots to sell,
               at ${tradePower} kW, over all published prices.
               Buy kWh = sold kWh ÷ round-trip efficiency (${tradeEfficiency}%).
-              Sell is revenue after the feed-in fee (${feedInFee} €/kWh).
+              Sell is revenue after the feed-in fee (${feedInFee} ${baseUnit}).
               Slots may be non-contiguous; the displayed times span the selected slots, not a continuous schedule.
               The final slot may be partially used. This estimate does not enforce buy-before-sell order,
-              battery capacity or available charge; the real plan follows Smart saving / Smart trading.
+              battery capacity or available charge. Use a separate integration for an executable schedule.
             </p>
           `}
         </details>

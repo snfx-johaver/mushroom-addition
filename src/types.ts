@@ -360,6 +360,9 @@ export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, P
   energy_mode_entity?: string;
   energy_auto_control_entity?: string;
   electricity_price_entity?: string;
+  tariff_price?: import("./energy-cards/types").PriceConfig;
+  energy_grid_positive?: "import" | "export";
+  energy_battery_positive?: "charge" | "discharge";
   tariff_markup_entity?: string;
   tariff_vat_entity?: string;
   energy_grid_label?: string;

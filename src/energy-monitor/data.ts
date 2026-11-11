@@ -18,9 +18,9 @@ export function reading(hass: HomeAssistant | undefined, source: LiveSource, now
   const health = sourceHealth(entity, now, maxAge);
   if (health) return { error: health };
   const raw = numeric(source.field ? readPath(entity!.attributes, source.field) : entity!.state);
-  const unit = String(entity!.attributes.unit_of_measurement ?? "");
-  const factor = kind === "soc" ? unit === "%" ? 1 : undefined : unit === "W" ? .001 : unit === "kW" ? 1 : undefined;
-  if (raw === undefined || factor === undefined || kind === "soc" && (raw < 0 || raw > 100)) return { error: "Invalid data source or field mapping" };
+  const unit = source.unit ?? String(entity!.attributes.unit_of_measurement ?? "");
+  const factor = kind === "soc" ? unit === "%" ? 1 : undefined : unit === "W" ? .001 : unit === "kW" ? 1 : unit === "MW" ? 1000 : undefined;
+  if (raw === undefined || factor === undefined || !Number.isFinite(raw * factor) || kind === "soc" && (raw < 0 || raw > 100)) return { error: "Invalid data source or field mapping" };
   return { value: Object.is(raw * factor, -0) ? 0 : raw * factor, updated: timestamp(entity!.last_updated) };
 }
 

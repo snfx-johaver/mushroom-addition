@@ -10,6 +10,46 @@ visualization card**, not an execution engine, calculator, ontology reasoner,
 or text-to-diagram service. It does not call services, fetch external data,
 or create sensors. Home Assistant automations remain responsible for execution.
 
+## Use your own entities
+
+Start with one node displaying an existing entity. No planner, forecasts,
+Recorder history or HEMS installation is required.
+
+1. Find an entity ID and any attribute you want to show in **Developer tools →
+   States**, using the [source checklist](ENERGY_SETUP.md#find-your-entities-before-configuring-a-card).
+2. Add **Mushroom Addition: Energy Entityworkflow**. In Features, edit the input
+   node and select the entity for its row.
+3. Add more nodes only when useful. Create groups for your own presentation,
+   then explicitly add relationships between node IDs when they reflect your
+   intended model.
+4. Save. Compare the displayed state with Home Assistant more-info; opening a
+   row is informational, not execution of a workflow step.
+
+This complete minimal example has no invented dependencies:
+
+```yaml
+type: custom:mushroom-addition-energy-entityworkflow
+name: Household measurement
+presentation: sequential
+groups: []
+nodes:
+  - id: household
+    label: Household power
+    entities:
+      - entity: sensor.example_household_power
+        label: Measured consumption
+relations: []
+```
+
+Replace the entity ID with your own. To show an attribute, add `attribute`
+to the entity row using its exact attribute name. Set a row's `unit` only
+when it matches the value; this changes a suffix, not the underlying number.
+
+**If a row is unavailable:** check the entity ID and attribute name. If saving
+reports a reference error, ensure node/group IDs are unique and relationships
+point to existing node IDs. A diagram does not calculate missing values,
+discover a controller or confirm that a proposed action actually happened.
+
 ## Visual editor and saving
 
 The visual editor uses the shared Context, Content, Layout, Interactions and
@@ -36,8 +76,12 @@ each group. Ungrouped nodes appear after the configured groups.
 Incomplete edits, such as a new row with no selected entity, show an explicit
 error and are not emitted as a saved configuration until corrected. YAML
 configuration is validated by the card too; invalid references are not hidden.
-The editor starts with two example groups and uses available entities only in
-your browser. The examples below contain **synthetic placeholder IDs**, not
+The picker starts with one input node and no inferred relationships. It can
+select a compatible energy entity or a healthy entity explicitly supplied to
+the picker; otherwise it shows setup guidance. Add your own entities, groups
+and relationships. No HEMS integration or planner is required. Existing saved
+graphs remain unchanged. See [community energy setup](ENERGY_SETUP.md).
+The examples below contain **synthetic placeholder IDs**, not
 personal installation data.
 
 ## Configuration

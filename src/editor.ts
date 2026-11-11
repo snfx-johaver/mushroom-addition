@@ -8,6 +8,7 @@ import "./car-advanced/editor";
 import { airQualityLabels } from "./air-quality-editor";
 import { todoLabels } from "./todo";
 import { workflowStub } from "./energy-cards/workflow-config";
+import { discoverPriceSource, validatePriceSource } from "./energy-cards/price-source";
 import { mdiDelete, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
 import type {
   ActionConfig,
@@ -544,7 +545,11 @@ export class MushroomAdditionEditor extends LitElement {
   };
 
   private readonly computeLabel = (schema: { name: string }): string =>
-    this.config?.type === `custom:${ENERGY_LOG_TAG}` && schema.name === "allIcon"
+    schema.name === "tariff_price" || schema.name === "price"
+      ? `${localizeText(this.hass, "Prices")}: ${localizeText(this.hass, "Source")}`
+    : schema.name === "energy_grid_positive" ? localizeText(this.hass, "Positive grid power")
+    : schema.name === "energy_battery_positive" ? localizeText(this.hass, "Positive battery power")
+    : this.config?.type === `custom:${ENERGY_LOG_TAG}` && schema.name === "allIcon"
       ? `${localizeText(this.hass, "All")}: ${localizeText(this.hass, "Icon")}`
     : this.config?.type === `custom:${ENERGY_LOG_TAG}` && ENERGY_LOG_LABELS[schema.name]
       ? localizeText(this.hass, ENERGY_LOG_LABELS[schema.name])
@@ -756,8 +761,9 @@ export class MushroomAdditionEditor extends LitElement {
     const changed = { ...this.config, ...value } as AdditionConfig;
     const next = Object.prototype.hasOwnProperty.call(value, "icon") && !value.icon
       ? clearCardIcon(changed) : changed;
-    if (next.type === "custom:mushroom-addition-smart-saving" && next.price && typeof value.entity === "string") {
-      next.price = { ...next.price, entity: value.entity };
+    if (next.type === "custom:mushroom-addition-smart-saving" && typeof value.entity === "string") {
+      next.price = { ...next.price, ...(value.entity !== this.config.entity ? discoverPriceSource(this.hass, [value.entity]) : {}),
+        entity: value.entity };
     }
     if (this.config.type.includes("mini-graph-card")) {
       const show = { ...(this.config.show as MiniGraphShowConfig | undefined) };
@@ -848,11 +854,13 @@ export class MushroomAdditionEditor extends LitElement {
         if (next[key] === undefined || next[key] === "") next[key] = id;
       }
     }
-    if (monitorKind(next.type) || [`custom:${ENERGY_PLAN_TAG}`, `custom:${ENERGY_LOG_TAG}`].includes(next.type)) {
+    if (monitorKind(next.type) || [`custom:${ENERGY_PLAN_TAG}`, `custom:${ENERGY_LOG_TAG}`,
+      "custom:mushroom-addition-advanced-energy-buy-and-sell", "custom:mushroom-addition-advanced-home-energy-management"].includes(next.type)) {
       try {
         if (monitorKind(next.type)) validateMonitor(next);
         else if (next.type === `custom:${ENERGY_PLAN_TAG}`) validatePlan(next);
         else if (next.type === `custom:${ENERGY_LOG_TAG}`) validateEnergyLogConfig(next);
+        else validatePriceSource(next.type.endsWith("buy-and-sell") ? next.price : next.tariff_price);
         this.energyError = "";
       } catch (error) {
         if (!(error instanceof Error)) throw error;

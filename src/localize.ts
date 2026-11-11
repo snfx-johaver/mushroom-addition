@@ -1384,7 +1384,8 @@ export const editorHelper = (key: string, hass?: HomeAssistant, cardType?: strin
   if (/^todo_allow_(add|edit|delete)$/.test(key)) return localizeText(hass, "Only actions supported by the selected list are offered. Home Assistant enforces permissions.");
   const logHelp: Record<string, string[]> = {
     allIcon: ["All", "Icon"],
-    sources: ["Source", "Path", "Field mappings"], categories: ["Label", "Color", "Icon"],
+    sources: ["Entity changes", "Source", "Path", "Field mappings"], categories: ["Label", "Color", "Icon"],
+    historyHours: ["Recorded history", "Visible hours"],
     limit: ["Entry limit"], sortOrder: ["Newest first", "Oldest first"],
     timeZone: ["Time zone"], clockFormat: ["Clock format"],
     showSource: ["Source", "Description"], footer: ["Footer", "Description"],
@@ -1394,6 +1395,9 @@ export const editorHelper = (key: string, hass?: HomeAssistant, cardType?: strin
   if (key === "energy_plan") return ["Source", "Timeline", "Summary", "Periods"].map(label => localizeText(hass, label)).join(" / ");
   if (key === "energy_insights") return ["Source", "Consumers", "Prices", "Plan"].map(label => localizeText(hass, label)).join(" / ");
   if (key === "energy_monitor") return ["Source", "Measured", "Retained baseline", "Data quality"].map(label => localizeText(hass, label)).join(" / ");
+  if (key === "price" || key === "tariff_price") return ["Source type", "Path", "Field mappings", "Unit"].map(label => localizeText(hass, label)).join(" / ");
+  if (key === "energy_grid_positive") return ["Positive grid power", "Importing", "Exporting"].map(label => localizeText(hass, label)).join(" / ");
+  if (key === "energy_battery_positive") return ["Positive battery power", "Charging", "Discharging"].map(label => localizeText(hass, label)).join(" / ");
   if (key === "washer_details_entities") return localizeText(hass, "Select settings and diagnostics from the same appliance. Expand them with the status-row chevron.");
   const airQualityHelp: Record<string, string> = {
     air_quality_show_header: "Show the Mushroom heading; the quality indicator is independent.",

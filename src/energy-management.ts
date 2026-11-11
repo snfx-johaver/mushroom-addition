@@ -1,4 +1,7 @@
 import type { HassEntity, HomeAssistant } from "./types";
+import type { PriceConfig } from "./energy-cards/types";
+import { convertPrice, currencyPriceUnit, numeric, priceCurrency } from "./energy-cards/data";
+import { readPriceIntervals } from "./energy-cards/price-source";
 
 export interface TariffInterval {
   start: number;
@@ -11,8 +14,7 @@ export const numericEntityState = (
   entityId?: string,
 ): number | undefined => {
   if (!entityId) return undefined;
-  const value = Number.parseFloat(hass.states[entityId]?.state ?? "");
-  return Number.isFinite(value) ? value : undefined;
+  return numeric(hass.states[entityId]?.state);
 };
 
 export const entityUnit = (
@@ -31,12 +33,12 @@ export const powerEntityWatts = (
   const value = numericEntityState(hass, entityId);
   if (value === undefined) return undefined;
   const unit = entityUnit(hass, entityId).toLowerCase();
-  if (unit === "mw") return value * 1_000_000;
-  if (unit === "kw") return value * 1_000;
-  return value;
+  const watts = unit === "mw" ? value * 1_000_000 : unit === "kw" ? value * 1000 : unit === "w" ? value : undefined;
+  return watts !== undefined && Number.isFinite(watts) ? watts : undefined;
 };
 
 export const formatPower = (watts?: number): string => {
+  if (watts === undefined) return "—";
   const absolute = Math.abs(watts ?? 0);
   if (absolute >= 1000) {
     return `${(absolute / 1000).toFixed(2).replace(".", ",")} kW`;
@@ -89,17 +91,27 @@ export const tariffIntervals = (
   entity: HassEntity | undefined,
   markup = 0,
   vatPercentage = 0,
-): TariffInterval[] =>
-  rawTariffIntervals(entity).flatMap((value) => {
+  mapping?: PriceConfig,
+): TariffInterval[] => {
+  if (mapping) {
+    const sourceUnit = mapping.sourceUnit ?? "EUR/kWh";
+    const currency = priceCurrency(sourceUnit, mapping.displayUnit, mapping.currency);
+    const unit = currencyPriceUnit(currency);
+    return readPriceIntervals(entity, mapping).items.map(item => ({
+      start: item.start, end: item.end, price: (convertPrice(item.value, sourceUnit, unit) + markup) * (1 + vatPercentage / 100),
+    }));
+  }
+  return rawTariffIntervals(entity).flatMap((value) => {
     if (!value || typeof value !== "object") return [];
     const record = value as Record<string, unknown>;
     const start = new Date(String(record.start ?? "")).getTime();
     const end = new Date(String(record.end ?? "")).getTime();
     const rawPrice = Number(record.value);
-    if (!Number.isFinite(start) || !Number.isFinite(end) || !Number.isFinite(rawPrice)) return [];
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start || !Number.isFinite(rawPrice)) return [];
     return [{
       start,
       end,
       price: (rawPrice + markup) * (1 + vatPercentage / 100),
     }];
   });
+};

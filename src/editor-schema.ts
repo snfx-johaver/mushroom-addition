@@ -7,7 +7,7 @@ import { FLOWER_BARS, flowerBarsForConfig, flowerEntityConfigKey } from "./flowe
 import { REMOTE_KEYS } from "./remote-card";
 import { PIHOLE_METRICS, PIHOLE_SECTIONS } from "./pi-hole";
 import { STOCK_METRICS, STOCK_RANGES, stockUsesBackend } from "./stock-data";
-import { energyFeatureField, energyLogFeatureFields } from "./energy-editor-schema";
+import { energyFeatureField, energyLogFeatureFields, priceSourceField } from "./energy-editor-schema";
 import { TODO_SORT_OPTIONS } from "./todo";
 
 export interface EditorField {
@@ -298,7 +298,7 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
   if (item.upstreamId === "energy_log") return [
     ...common(item), text("secondary"),
     action("tap_action"), action("hold_action"), action("double_tap_action"),
-    ...energyLogFeatureFields(),
+    ...energyLogFeatureFields(config),
   ];
   if (item.upstreamId === "energy_plan") return [
     ...common(item), text("secondary"),
@@ -581,6 +581,9 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
         entity(["sensor", "select", "input_select"], "energy_mode_entity"),
         entity(["binary_sensor", "input_boolean", "switch"], "energy_auto_control_entity"),
         entity(["sensor", "input_number"], "electricity_price_entity"),
+        priceSourceField("tariff_price"),
+        select("energy_grid_positive", [{ value: "import", label: "Importing" }, { value: "export", label: "Exporting" }]),
+        select("energy_battery_positive", [{ value: "charge", label: "Charging" }, { value: "discharge", label: "Discharging" }]),
         entity(["sensor", "input_number"], "tariff_markup_entity"),
         entity(["sensor", "input_number"], "tariff_vat_entity"),
         text("energy_grid_label"),
@@ -784,6 +787,7 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
     : item.upstreamId === "advanced_energy_buy_sell"
       ? [
         entity(["sensor"]),
+        priceSourceField("price"),
         text("buy_sell_title"),
         number("buy_sell_graph_span", 1, 168),
         select("buy_sell_span_start", [

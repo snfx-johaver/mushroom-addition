@@ -1,4 +1,5 @@
 import type { SmartSavingConfig } from "./types";
+import { validatePriceSource } from "./price-source";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -29,20 +30,7 @@ export function validateConfig(value: unknown): SmartSavingConfig {
   }
   const price = config.price;
   validateMapping("price", price);
-  if (!price || typeof price.entity !== "string" || !price.entity.trim()) {
-    throw new Error("Configure price.entity to select a price sensor.");
-  }
-  if (price.adapter !== undefined && !["attribute", "state"].includes(price.adapter)) {
-    throw new Error('price.adapter must be "attribute" or "state".');
-  }
-  for (const [label, unit] of [
-    ["price.sourceUnit", price.sourceUnit],
-    ["price.displayUnit", price.displayUnit],
-  ] as const) {
-    if (unit !== undefined && unit !== "EUR/kWh" && unit !== "ct/kWh") {
-      throw new Error(`${label} must be EUR/kWh or ct/kWh.`);
-    }
-  }
+  validatePriceSource(price);
   if (!Number.isFinite(config.visibleHours ?? 36) || (config.visibleHours ?? 36) <= 0 || (config.visibleHours ?? 36) > 168) {
     throw new Error("visibleHours must be a number greater than 0 and no more than 168.");
   }

@@ -1,9 +1,13 @@
 import type { HassEntity } from "./types";
+import type { PriceConfig } from "./energy-cards/types";
+import { convertPrice, currencyPriceUnit, priceCurrency } from "./energy-cards/data";
+import { readPriceIntervals } from "./energy-cards/price-source";
 
 export interface EnergyPriceSlot {
   timestamp: number;
   price: number;
   kind: 0 | 1 | 2 | 3;
+  end?: number;
 }
 
 export interface EnergyPriceBounds {
@@ -20,7 +24,15 @@ const timestampMilliseconds = (value: unknown): number | undefined => {
   return Number.isFinite(parsed) ? parsed : undefined;
 };
 
-export const energyPriceSlots = (entity?: HassEntity): EnergyPriceSlot[] => {
+export const energyPriceSlots = (entity?: HassEntity, mapping?: PriceConfig): EnergyPriceSlot[] => {
+  if (mapping) {
+    const sourceUnit = mapping.sourceUnit ?? "EUR/kWh";
+    const currency = priceCurrency(sourceUnit, mapping.displayUnit, mapping.currency);
+    const unit = currencyPriceUnit(currency);
+    return readPriceIntervals(entity, mapping).items.map(item => ({
+      timestamp: item.start, end: item.end, price: convertPrice(item.value, sourceUnit, unit), kind: 0,
+    }));
+  }
   const slots = entity?.attributes.slots;
   if (!Array.isArray(slots)) return [];
   return slots.flatMap((value): EnergyPriceSlot[] => {
@@ -100,11 +112,13 @@ export const energyTradeResult = (
   const chronological = [...slots].sort((a, b) => a.timestamp - b.timestamp);
   if (chronological.some((slot, index) =>
     !Number.isFinite(slot.timestamp) || !Number.isFinite(slot.price) ||
-    (index > 0 && slot.timestamp === chronological[index - 1].timestamp)
+    (index > 0 && slot.timestamp === chronological[index - 1].timestamp) ||
+    (slot.end !== undefined && (!Number.isFinite(slot.end) || slot.end <= slot.timestamp ||
+      index < chronological.length - 1 && slot.end > chronological[index + 1].timestamp))
   )) return { error: "Price slots must contain finite prices and unique timestamps." };
   const available = chronological.map((slot, index) => ({
     ...slot,
-    duration: Math.min(
+    duration: slot.end !== undefined ? slot.end - slot.timestamp : Math.min(
       slotMinutes * 60_000,
       chronological[index + 1] ? chronological[index + 1].timestamp - slot.timestamp : Infinity,
     ),

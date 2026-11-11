@@ -7,8 +7,9 @@ import { energyNumber, energyTime } from "../energy-format";
 import { normalizeConfig } from "../helpers";
 import { localizeText, normalizeLocale } from "../localize";
 import { smartSavingStub } from "./stub";
-import { relevantHassChanged } from "./helpers";
-import { buildPeriodAverages, clipIntervals, convertPrice, numeric, readPath, weightedAverage } from "./data";
+import { energySetupNotice, relevantHassChanged } from "./helpers";
+import { buildPeriodAverages, clipIntervals, convertPrice, numeric, priceCurrency, readPath, weightedAverage } from "./data";
+import { readPriceIntervals } from "./price-source";
 import { calendarDay } from "./calendar";
 import { coverageGaps, sourceAvailable, sourceHealth, strictBlocks, strictForecast, strictIntervals, visibleForecastSegments } from "./smart-saving-data";
 import type { FieldMapping, HomeAssistant, PeriodConfig, SmartSavingConfig, TimeInterval, ValueSource } from "./types";
@@ -171,7 +172,7 @@ export class SmartSavingPlanCard extends MushroomAdditionCard {
         entity: validated.entity ?? validated.price?.entity,
         name: validated.name ?? validated.title ?? "Smart Saving",
         secondary: validated.secondary ?? validated.subtitle,
-        price: { ...validated.price!, entity: validated.entity ?? validated.price!.entity },
+        price: validated.price ? { ...validated.price, entity: validated.entity ?? validated.price.entity } : undefined,
       };
       this.page = 0;
       this.selectedTime = undefined;
@@ -190,6 +191,7 @@ export class SmartSavingPlanCard extends MushroomAdditionCard {
 
   private t(text: string): string { return localizeText(this.hass, text); }
   private entity(id?: string) { return id ? this.hass?.states[id] : undefined; }
+  private hasValueSource(source?: ValueSource) { return !!source?.entity || source?.value !== undefined; }
   private value(source?: ValueSource): number | undefined {
     if (!source?.entity) return numeric(source?.value);
     const entity = this.entity(source.entity);
@@ -264,18 +266,12 @@ export class SmartSavingPlanCard extends MushroomAdditionCard {
   private renderCard() {
     const config = this.config;
     if (!config || !this.hass) return nothing;
+    if (!config.price?.entity) return html`<ha-card class=${config.card_shadow ? "card-shadow" : ""}><div class="content">
+      ${this.renderSharedHeading()}${energySetupNotice(this.hass)}
+    </div></ha-card>`;
     const now = Date.now(), requestedEnd = now + (config.visibleHours ?? 36) * 3_600_000;
-    const priceMapping = { startField: "start", endField: "end", ...config.price };
     const priceEntity = this.entity(config.price?.entity);
-    let priceRoot: unknown;
-    if (config.price?.adapter === "state" && priceEntity) {
-      try { priceRoot = JSON.parse(priceEntity.state) as unknown; }
-      catch (error) {
-        if (!(error instanceof SyntaxError)) throw error;
-        priceRoot = null;
-      }
-    }
-    const parsedPrices = strictIntervals(priceEntity, priceMapping, config.price?.priceField ?? "price", priceRoot);
+    const parsedPrices = readPriceIntervals(priceEntity, config.price ?? { entity: "" });
     const forecastMapping = { startField: "time", valueField: "value", ...config.battery?.forecast };
     const parsedForecast = strictForecast(this.entity(config.battery?.forecast?.entity), forecastMapping);
     const tracks = TRACKS.filter(track => config.tracks?.[track.key]?.entity).map(track => {
@@ -288,6 +284,8 @@ export class SmartSavingPlanCard extends MushroomAdditionCard {
     });
     const sourceUnit = config.price?.sourceUnit ?? "EUR/kWh";
     const unit = config.price?.displayUnit ?? sourceUnit;
+    const currency = priceCurrency(sourceUnit, unit, config.price?.currency);
+    const unitLabel = unit === "ct/kWh" ? `${unit} (${currency})` : unit;
     const rawPrices = parsedPrices.items.map(item => ({ ...item, value: convertPrice(item.value, sourceUnit, unit) }));
     const publishedEnds = [
       ...rawPrices.filter(item => item.start < requestedEnd && item.end > now).map(item => item.end),
@@ -315,17 +313,17 @@ export class SmartSavingPlanCard extends MushroomAdditionCard {
     const average = weightedAverage(prices);
     const values = prices.map(item => item.value);
     const min = Math.min(0, ...values), max = Math.max(0, ...values);
-    const padding = Math.max((max - min) * .12, unit === "EUR/kWh" ? .001 : .1);
+    const padding = Math.max((max - min) * .12, unit === "ct/kWh" ? .1 : .001);
     const chartMin = min < 0 ? min - padding : 0, chartMax = max + padding;
     const priceY = (value: number) => 144 - (value - chartMin) / (chartMax - chartMin) * 138;
     const batteryY = (value: number) => 94 - value / 100 * 88;
     const invalid = this.t("Invalid data source or field mapping");
     const priceMessage = !sourceAvailable(priceEntity) ? this.t(priceEntity ? "Unavailable" : "Source missing")
-      : !parsedPrices.valid ? invalid : !prices.length ? this.t("No published intervals") : "";
-    const forecastMessage = !sourceAvailable(this.entity(config.battery?.forecast?.entity))
+      : !parsedPrices.valid ? this.t(parsedPrices.error ?? "Invalid data source or field mapping") : !prices.length ? this.t("No published intervals") : "";
+    const forecastMessage = !config.battery?.forecast?.entity ? "" : !sourceAvailable(this.entity(config.battery?.forecast?.entity))
       ? `${this.t("Forecast")}: ${this.t(this.entity(config.battery?.forecast?.entity) ? "Unavailable" : "Source missing")}`
       : !parsedForecast.valid ? `${this.t("Forecast")}: ${invalid}` : !segments.length ? this.t("No published forecast") : "";
-    const hasBattery = !!config.battery;
+    const hasBattery = !!config.battery?.forecast?.entity;
     const periods = buildPeriodAverages(rawPrices, now, end,
       config.periods?.length ? config.periods : DEFAULT_PERIODS.map(period => ({ ...period, name: this.t(period.name) })),
       this.hass.config?.time_zone);
@@ -333,8 +331,8 @@ export class SmartSavingPlanCard extends MushroomAdditionCard {
     const planMapping = { startField: "start", endField: "end", ...config.tracks?.plan, path: config.planBlocksPath ?? "blocks" };
     const plan = strictBlocks(this.entity(config.planBlocksEntity), planMapping);
     const page = Math.min(this.page, Math.max(0, Math.ceil(plan.items.length / PAGE_SIZE) - 1));
-    const priceDigits = unit === "EUR/kWh" ? 3 : 1;
-    const priceText = (value: number) => `${this.number(value, priceDigits)} ${unit}`;
+    const priceDigits = unit === "ct/kWh" ? 1 : 3;
+    const priceText = (value: number) => `${this.number(value, priceDigits)} ${unitLabel}`;
     const intervalTooltip = (item: TimeInterval) => `${this.date(item.start)} ${this.time(item.start)} – ${this.date(item.end)} ${this.time(item.end)}`;
 
     return html`<ha-card class=${config.card_shadow ? "card-shadow" : ""}>
@@ -343,14 +341,14 @@ export class SmartSavingPlanCard extends MushroomAdditionCard {
           <div class="heading">${this.renderSharedHeading()}</div>
           ${config.statusEntity ? html`<span class="chip status">${sourceAvailable(this.entity(config.statusEntity))
             ? this.hass.formatEntityState?.(this.entity(config.statusEntity)!) ?? this.entity(config.statusEntity)!.state : this.t("Unavailable")}</span>` : nothing}
-          ${config.battery?.current ? html`<span class="current">${this.t("Current battery")} <b>${currentSoc === undefined ? this.t("Unavailable") : `${this.number(currentSoc)}%`}</b>
-            ${this.healthNote(config.battery.current.entity, config.battery.current.maxSourceAgeMinutes)}</span>` : nothing}
+          ${this.hasValueSource(config.battery?.current) ? html`<span class="current">${this.t("Current battery")} <b>${currentSoc === undefined ? this.t("Unavailable") : `${this.number(currentSoc)}%`}</b>
+            ${this.healthNote(config.battery?.current?.entity, config.battery?.current?.maxSourceAgeMinutes)}</span>` : nothing}
         </div>
         <div class="description">${this.t("Timeline")}: ${this.date(now)} ${this.time(now)} – ${this.date(end)} ${this.time(end)}
           · ${this.number((end - now) / 3_600_000)} h</div>
         <div class="timeline">
           <section class="chart-section">
-            <h2 class="chart-title">${this.t("Published electricity prices")} · ${unit}</h2>
+            <h2 class="chart-title">${this.t("Published electricity prices")} · ${unitLabel}</h2>
             <div class="plot-row">
               <div class="scale">${[chartMax, (chartMin + chartMax) / 2, chartMin].map(value => html`<span>${this.number(value, priceDigits)}</span>`)}</div>
               <div class="plot price-plot">
@@ -480,9 +478,9 @@ export class SmartSavingPlanCard extends MushroomAdditionCard {
           </div>`)}</div><p class="period-note">${this.t("Averages use published intervals only, weighted by duration. Gaps are not estimated.")}</p>` : nothing}
         </details>
         <div class="summary-chips">
-          ${config.summary?.purchaseEnergy || config.summary?.purchaseCost ? html`<span class="chip">${this.t("Planned purchase")}:
-            ${config.summary.purchaseEnergy ? html`<b>${energy === undefined ? this.t("Unavailable") : `${this.number(energy, 2)} ${this.entity(config.summary.purchaseEnergy.entity)?.attributes.unit_of_measurement ?? "kWh"}`}</b>${this.healthNote(config.summary.purchaseEnergy.entity, config.summary.purchaseEnergy.maxSourceAgeMinutes)}` : nothing}
-            ${config.summary.purchaseCost ? html`<b>${cost === undefined ? this.t("Unavailable") : `${this.number(cost, 2)} ${this.entity(config.summary.purchaseCost.entity)?.attributes.unit_of_measurement ?? "€"}`}</b>${this.healthNote(config.summary.purchaseCost.entity, config.summary.purchaseCost.maxSourceAgeMinutes)}` : nothing}
+          ${this.hasValueSource(config.summary?.purchaseEnergy) || this.hasValueSource(config.summary?.purchaseCost) ? html`<span class="chip">${this.t("Planned purchase")}:
+            ${this.hasValueSource(config.summary?.purchaseEnergy) ? html`<b>${energy === undefined ? this.t("Unavailable") : `${this.number(energy, 2)} ${this.entity(config.summary?.purchaseEnergy?.entity)?.attributes.unit_of_measurement ?? "kWh"}`}</b>${this.healthNote(config.summary?.purchaseEnergy?.entity, config.summary?.purchaseEnergy?.maxSourceAgeMinutes)}` : nothing}
+            ${this.hasValueSource(config.summary?.purchaseCost) ? html`<b>${cost === undefined ? this.t("Unavailable") : `${this.number(cost, 2)} ${this.entity(config.summary?.purchaseCost?.entity)?.attributes.unit_of_measurement ?? currency}`}</b>${this.healthNote(config.summary?.purchaseCost?.entity, config.summary?.purchaseCost?.maxSourceAgeMinutes)}` : nothing}
           </span>` : nothing}
         </div>
         ${config.planBlocksEntity ? html`<details class="plan-details" .open=${this.expanded}

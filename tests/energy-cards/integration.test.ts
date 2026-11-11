@@ -10,16 +10,156 @@ import { createStubConfig } from "../../src/stub";
 import { CATALOG } from "../../src/catalog";
 import { localize, editorHelper, SUPPORTED_LOCALES } from "../../src/localize";
 import { energyEditorLabels, energyEditorHelpers } from "../../src/translations/energy-editor";
+import { convertPrice } from "../../src/energy-cards/data";
+import { discoverPriceSource, readPriceIntervals, validatePriceSource } from "../../src/energy-cards/price-source";
+import { energyPriceSlots, energyTradeResult } from "../../src/energy-buy-sell";
+import { tariffIntervals } from "../../src/energy-management";
+import type { MushroomAdditionCard } from "../../src/card";
 
 const hass = (): HomeAssistant => ({
   states: {
-    "sensor.prices": { entity_id: "sensor.prices", state: "0.2", attributes: { prices: [] } },
+    "sensor.prices": { entity_id: "sensor.prices", state: "0.2", attributes: { prices: [
+      { start: Date.now(), end: Date.now() + 3600000, price: .2 },
+    ] } },
     "sensor.battery": { entity_id: "sensor.battery", state: "72", attributes: { unit_of_measurement: "%" } },
   },
   callService: vi.fn(async () => undefined),
 });
 const tags = ["mushroom-addition-smart-saving", "mushroom-addition-energy-entityworkflow"];
 afterEach(() => document.body.replaceChildren());
+
+describe("community energy setup", () => {
+  const ids = ["live_energy_flow", "advanced_energy_buy_sell", "advanced_home_energy_management",
+    "energy_log", "energy_plan", "smart_saving", "energy_entityworkflow"];
+  const prices = (): HomeAssistant => ({
+    states: {
+      "sensor.example_temperature": { entity_id: "sensor.example_temperature", state: "21", attributes: { unit_of_measurement: "°C" } },
+      "sensor.example_tariff": { entity_id: "sensor.example_tariff", state: "ready", last_updated: new Date().toISOString(),
+        attributes: { unit_of_measurement: "USD/MWh", raw_today: [
+          { start: Date.now(), end: Date.now() + 3600000, value: 100 },
+          { start: Date.now() + 3600000, end: Date.now() + 7200000, value: 300 },
+        ] } },
+    },
+    callService: vi.fn(async () => undefined),
+  });
+
+  it.each(ids)("opens %s without fictional sensors, fabricated measurements or configuration errors", async id => {
+    const item = CATALOG.find(item => item.upstreamId === id)!;
+    const source: HomeAssistant = { states: {}, callService: vi.fn(async () => undefined) };
+    const config = createStubConfig(item, source);
+    const card = document.createElement(item.tag) as MushroomAdditionCard;
+    card.hass = source;
+    card.setConfig(config);
+    document.body.append(card);
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelector(".energy-setup")?.textContent).toContain("Features");
+    expect(card.shadowRoot!.textContent).not.toMatch(/NaN|0 W|0 kW|0%/);
+    expect(JSON.stringify(config)).not.toContain("sensor.example");
+    expect(source.callService).not.toHaveBeenCalled();
+  });
+
+  it("uses verified common price data across cards, not entity names or an unrelated healthy sensor", () => {
+    const source = prices();
+    const mapping = discoverPriceSource(source)!;
+    expect(mapping).toMatchObject({ entity: "sensor.example_tariff", path: "raw_today", priceField: "value",
+      sourceUnit: "USD/MWh", displayUnit: "USD/kWh" });
+    for (const id of ["smart_saving", "advanced_energy_buy_sell"]) {
+      const stub = createStubConfig(CATALOG.find(item => item.upstreamId === id)!, source);
+      expect(stub.price).toEqual(mapping);
+    }
+    const plan = createStubConfig(CATALOG.find(item => item.upstreamId === "energy_plan")!, source);
+    expect(plan.energy_plan!.rows).toHaveLength(1);
+    expect(plan.energy_plan!.rows[0]).toMatchObject({ kind: "price", entity: mapping.entity, path: mapping.path,
+      valueField: "value", unit: "USD/MWh" });
+    const home = createStubConfig(CATALOG.find(item => item.upstreamId === "advanced_home_energy_management")!, source);
+    expect(home.tariff_price).toEqual(mapping);
+    expect(home.entity).toBeUndefined();
+    expect(home.grid_power_entity).toBeUndefined();
+    const workflow = createStubConfig(CATALOG.find(item => item.upstreamId === "energy_entityworkflow")!, source);
+    expect(workflow.nodes).toHaveLength(1);
+    expect(workflow.relations).toEqual([]);
+    source.states["sensor.example_tariff"].state = "unavailable";
+    expect(discoverPriceSource(source)).toBeUndefined();
+    expect(createStubConfig(CATALOG.find(item => item.upstreamId === "smart_saving")!, source).entity).toBeUndefined();
+  });
+
+  it("recognizes JSON price states and rejects partial, overlapping or non-price arrays", () => {
+    const source = prices(), entity = source.states["sensor.example_tariff"];
+    entity.state = JSON.stringify(entity.attributes.raw_today);
+    entity.attributes = { unit_of_measurement: "GBP/kWh" };
+    const mapping = discoverPriceSource(source)!;
+    expect(mapping).toMatchObject({ adapter: "state", path: "", priceField: "value", sourceUnit: "GBP/kWh" });
+    expect(readPriceIntervals(entity, mapping).items).toHaveLength(2);
+    const intervals: Array<Record<string, unknown>> = JSON.parse(entity.state);
+    entity.state = JSON.stringify([...intervals, { start: "invalid" }]);
+    expect(discoverPriceSource(source)).toBeUndefined();
+    expect(readPriceIntervals(entity, mapping).error).toContain("Invalid");
+    entity.state = JSON.stringify([intervals[0], intervals[0]]);
+    expect(discoverPriceSource(source)).toBeUndefined();
+    entity.state = JSON.stringify(intervals);
+    entity.attributes.unit_of_measurement = "kW";
+    expect(discoverPriceSource(source)).toBeUndefined();
+  });
+
+  it("converts energy denominations and cents without performing currency exchange", () => {
+    expect(convertPrice(150, "USD/MWh", "USD/kWh")).toBeCloseTo(.15);
+    expect(convertPrice(.15, "USD/kWh", "ct/kWh")).toBeCloseTo(15);
+    expect(convertPrice(15, "ct/kWh", "GBP/kWh")).toBeCloseTo(.15);
+    expect(() => convertPrice(.15, "USD/kWh", "EUR/kWh")).toThrow("currencies must match");
+    expect(() => validatePriceSource({ sourceUnit: "USD/kWh", currency: "EUR" })).toThrow("currencies must match");
+    expect(() => validatePriceSource({ sourceUnit: "USD/hour" })).toThrow("unsupported price unit");
+  });
+
+  it("preserves supplied slot lengths and uses currency/kWh for buy/sell costs and home tariffs", () => {
+    const source = prices(), mapping = discoverPriceSource(source)!;
+    const entity = source.states[mapping.entity];
+    const slots = energyPriceSlots(entity, mapping);
+    expect(slots[0].price).toBeCloseTo(.1);
+    expect(tariffIntervals(entity, .02, 10, mapping)[0].price).toBeCloseTo(.132);
+    const estimate = energyTradeResult(slots, { energy: 1, power: 1, efficiency: 100, fee: 0, slotMinutes: 15 });
+    if ("error" in estimate) throw new Error(estimate.error);
+    expect(estimate.buy.amount).toBeCloseTo(-.1);
+    expect(estimate.sell.amount).toBeCloseTo(.3);
+    expect(estimate.buy.slots[0].end - estimate.buy.slots[0].start).toBe(3600000);
+  });
+
+  it("renders non-EUR prices without invented purchase/sale series or battery forecasts", async () => {
+    const source = prices();
+    for (const id of ["smart_saving", "advanced_energy_buy_sell", "energy_plan"]) {
+      const item = CATALOG.find(item => item.upstreamId === id)!;
+      const card = document.createElement(item.tag) as MushroomAdditionCard;
+      card.hass = source;
+      card.setConfig(createStubConfig(item, source));
+      document.body.append(card);
+      await card.updateComplete;
+      expect(card.shadowRoot!.textContent).toContain("USD/");
+      expect(card.shadowRoot!.querySelector(".battery-plot")).toBeNull();
+      expect(card.shadowRoot!.querySelector(".energy-setup")).toBeNull();
+      if (id === "advanced_energy_buy_sell") {
+        expect(card.shadowRoot!.querySelectorAll(".energy-chart-legend-item")).toHaveLength(1);
+        expect(card.shadowRoot!.querySelector("title")?.textContent).toContain("0.100 USD/kWh");
+        expect(card.shadowRoot!.querySelector(".energy-buy-sell-result")).toBeNull();
+      }
+    }
+    expect(source.callService).not.toHaveBeenCalled();
+  });
+
+  it("keeps a custom currency and denomination when an unrelated price editor field changes", async () => {
+    const source = prices(), config = createStubConfig(CATALOG.find(item => item.upstreamId === "smart_saving")!, source);
+    const features = document.createElement("mushroom-addition-smart-saving-features") as SmartSavingPlanCardEditor;
+    features.hass = source;
+    features.setConfig(config as SmartSavingConfig);
+    document.body.append(features);
+    await features.updateComplete;
+    const saved: SmartSavingConfig[] = [];
+    features.addEventListener("config-changed", event => saved.push((event as CustomEvent<{ config: SmartSavingConfig }>).detail.config));
+    const form = [...features.shadowRoot!.querySelectorAll<HTMLElement & { data: Record<string, unknown>; schema: Array<{ name: string }> }>("ha-form")]
+      .find(form => form.schema.some(field => field.name === "sourceUnit"))!;
+    form.dispatchEvent(new CustomEvent("value-changed", { detail: { value: { ...form.data, maxSourceAgeMinutes: 120 } } }));
+    await features.updateComplete;
+    expect(saved.at(-1)?.price).toMatchObject({ sourceUnit: "USD/MWh", displayUnit: "USD/kWh", maxSourceAgeMinutes: 120 });
+  });
+});
 
 async function editorFor(tag: string) {
   const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;

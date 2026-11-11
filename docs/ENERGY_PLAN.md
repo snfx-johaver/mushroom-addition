@@ -8,9 +8,49 @@ This card displays supplied plans, not an optimizer or device controller.
 It never estimates missing prices, simulates a battery, or runs a schedule.
 Synthetic examples are isolated in `demo/energy-plan.html` and tests.
 
+HEMS is not required. A newly added card starts with a compatible published
+price row, plus any other default rows actually supplied by that same plan.
+It does not assume that batteries, solar or a heat pump exist. Without a
+compatible source it starts with no rows and shows setup guidance. Add your
+own rows under Features; each row can use a separate integration/entity.
+Existing saved rows and older default-row configurations are not rewritten.
+See [community energy setup](ENERGY_SETUP.md) for input requirements.
+
 ![Energy Plan synthetic illustration, not a live Home Assistant screenshot](assets/energy-plan-example.svg)
 
 The illustration uses invented forecasts and prices; it contains no home data.
+
+## Use your own entities
+
+You need at least one source publishing timestamped intervals. This can be a
+price integration, a forecast integration or your own planner; HEMS and
+battery equipment are not required. Begin with a single row.
+
+1. Inspect your entity's interval list in **Developer tools → States** using the
+   [source checklist](ENERGY_SETUP.md#find-your-entities-before-configuring-a-card).
+2. Add **Mushroom Addition: Energy Plan**. Open **Features → Energy Plan → Edit**
+   and add or edit a timeline row.
+3. Choose the row type and entity, attribute/JSON source, list path, start/end
+   or duration fields, numeric value field and the source's actual unit.
+4. Disable or remove rows for equipment/data you do not have. Save and inspect
+   one interval to compare it with the original source.
+
+The [minimal configuration](#minimal-configuration) below is a complete
+single-price-row example. Different rows may use different entities and
+attribute paths; the Context entity is only a fallback for rows without an
+explicit entity. The visual editor fills the required row appearance fields.
+
+To add battery percentage, use a `soc` row with `%` values. To add power, use a
+`power` row with matching source units and an appropriate scale. A `schedule`
+row represents supplied operating intervals, not a command to equipment.
+Configure sign labels to match the publisher. Unit labels do not perform
+W-to-kW or price-denomination conversion.
+
+**If a row is empty:** check its list path, numeric field, timestamps, source
+update age and visible window. A current-power or current-battery sensor alone
+cannot populate future intervals. Check availability and the row's error
+before increasing an age limit; unpublished gaps are expected when a planner
+has not supplied a full horizon.
 
 ## Visual editor
 
@@ -55,6 +95,10 @@ Every item needs:
 - `startField`: ISO timestamp with timezone, Unix seconds, or Unix milliseconds.
 - `endField`: timestamp after start; alternatively `durationField` in minutes.
 - `valueField`: finite number, including zero or negative values where applicable.
+
+Price-row units accept ISO currency/kWh, ISO currency/MWh or ct/kWh. These
+rows display the supplied unit; changing the unit label does not convert values.
+Power/schedule rows likewise display their configured units without conversion.
 
 Unconfigured, unavailable and malformed sources have explicit row messages.
 Malformed entries, overlaps and battery percentages outside 0–100 reject the
@@ -139,11 +183,12 @@ a full rolling forecast still requires publication by the planner.
 
 ## Rows
 
-Seven rows are provided initially: prices, solar power, battery operation,
+The legacy default row set contains prices, solar power, battery operation,
 battery percentage, grid operation, house use and heat pump operation. The default
 field names are `price`, `solar`, `battery`, `soc`, `grid`, `home` and `heat`,
 respectively, in an attribute named `plan`. These are configurable conventions,
-not automatic integration-specific entity mappings.
+not automatic integration-specific entity mappings. New picker configurations
+only enable compatible supplied rows, as described above.
 
 | Setting | Meaning |
 | --- | --- |
@@ -203,29 +248,49 @@ The following entity and field names are fictional placeholders:
 
 ```yaml
 type: custom:mushroom-addition-energy-plan
-name: Energy Plan
-entity: sensor.example_energy_plan
+name: Published prices
 visibleHours: 24
+energy_plan:
+  horizon: published
+  maxAgeMinutes: 1440
+  rows:
+    - id: prices
+      name: Electricity price
+      kind: price
+      enabled: true
+      icon: mdi:currency-usd
+      color: amber
+      entity: sensor.example_tariff
+      adapter: attribute
+      path: forecast
+      startField: from
+      endField: until
+      valueField: rate
+      unit: USD/MWh
+      scale: 5
+      low: 80
+      high: 200
+      lowColor: green
+      highColor: red
+      positiveLabel: ""
+      negativeLabel: ""
+      zeroLabel: ""
 ```
 
-Its source sensor should expose a timestamped `plan` array. For example, one
+Its source sensor should expose a timestamped `forecast` array. For example, one
 entirely synthetic interval might be:
 
 ```yaml
-plan:
-  - start: "2030-01-15T08:00:00Z"
-    end: "2030-01-15T08:15:00Z"
-    price: 0.21
-    solar: 2.8
-    battery: 1.2
-    soc: 64
-    grid: -0.5
-    home: 1.1
-    heat: 0
+forecast:
+  - from: "2031-04-12T10:00:00Z"
+    until: "2031-04-12T11:00:00Z"
+    rate: 125
 ```
 
-These values are illustrative, not a recommendation. Configure actual source
-fields through **Features** rather than copying fictional entity IDs.
+Here, 125 is displayed as 125 USD/MWh, not converted to USD/kWh. These values
+and dates are illustrative, not a recommendation or a current forecast.
+Configure actual source fields through **Features** rather than copying
+fictional entity IDs.
 
 ## Local synthetic showcase
 

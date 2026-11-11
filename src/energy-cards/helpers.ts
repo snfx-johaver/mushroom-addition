@@ -1,5 +1,12 @@
 import type { HomeAssistant } from "./types";
+import { html } from "lit";
+import { localizeText } from "../localize";
 export { stateLabel, displayName, fireEvent } from "../helpers";
+
+export function energySetupNotice(hass?: HomeAssistant) {
+  return html`<ha-alert class="energy-setup" alert-type="info" role="status">${localizeText(hass, "Source missing")}:
+    ${localizeText(hass, "Features")} / ${localizeText(hass, "Source")} / ${localizeText(hass, "Field mappings")}</ha-alert>`;
+}
 
 export function relevantHassChanged(previous: HomeAssistant | undefined, next: HomeAssistant | undefined, config: unknown): boolean {
   if (!previous || !next || previous.language !== next.language || previous.locale !== next.locale || previous.themes !== next.themes ||
