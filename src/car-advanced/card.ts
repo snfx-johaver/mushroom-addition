@@ -106,18 +106,6 @@ export class MushroomCarAdvancedCard extends MushroomAdditionCard {
       await element.updateComplete;
       const childRoot = element.shadowRoot;
       if (!childRoot) return;
-      const rule = element.localName === "addition-car-vsc-state-item" && element.closest("addition-car-vsc-btn-card")
-        ? `.container { flex-direction:column!important; gap:4px!important; text-align:center; }
-           .info { width:100%; margin:0!important; } .icon { margin:0!important; }`
-        : element.localName === "addition-car-vsc-btn-state-info"
-          ? `.container { text-align:center; } .primary { white-space:normal!important; overflow-wrap:anywhere; line-height:18px; }`
-          : "";
-      if (rule && !childRoot.querySelector("#addition-car-compact")) {
-        const style = document.createElement("style");
-        style.id = "addition-car-compact";
-        style.textContent = `@container addition-car (max-width:360px) { ${rule} }`;
-        childRoot.append(style);
-      }
       if (element.localName === "addition-car-vsc-buttons-group") {
         const buttons = this.config?.car?.button_cards?.filter(button => button.hide_button !== true) ?? [];
         await element.updateComplete;
@@ -128,6 +116,7 @@ export class MushroomCarAdvancedCard extends MushroomAdditionCard {
           const entity = typeof button?.entity === "string" ? this.hass?.states[button.entity] : undefined;
           const label = String(button?.name || entity?.attributes.friendly_name || this.descriptor?.name || "");
           item.shadowRoot?.querySelector("#clickable-background")?.setAttribute("aria-label", label);
+          item.shadowRoot?.querySelector("#clickable-background")?.setAttribute("title", label);
           item.shadowRoot?.querySelector("[slot=icon][role=button]")?.setAttribute("aria-label", label);
         }));
       }

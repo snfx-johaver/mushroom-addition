@@ -19,8 +19,9 @@ The visual editor uses the standard sections:
 Vehicle settings are saved under `car`. The top-level `name`, information and
 icon fields belong to the shared Mushroom header, so there is only one title.
 The engine's legacy internal name and header visibility are managed internally.
-At compact widths the button labels stack below their icons to remain readable
-without changing your saved grid or button configuration.
+Compact controls retain the engine's horizontal icon-and-label layout instead
+of growing into tall tiles. Full button names remain available as tooltips and
+accessible labels without changing your saved grid or button configuration.
 Existing Vehicle Status Card settings can be copied into `car` without changing
 their nested indicator, range, map, image or button configuration. Do not copy
 its top-level `type` or `name`; set the Addition type and header name instead.

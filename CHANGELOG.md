@@ -11,6 +11,8 @@ Versions follow Semantic Versioning. Release tags use the `v` prefix.
   Energy Plan, Energy Log, Smart Saving and Energy Live Energy Flow remain.
 - Allow the Car Advanced header to be hidden in the visual editor for compact
   quick-control layouts.
+- Keep compact Car Advanced controls horizontal instead of inflating them into
+  tall tiles; expose complete button names through tooltips and accessible labels.
 
 ## 0.9.0 - 2026-11-11
 
