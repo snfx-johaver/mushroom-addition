@@ -628,6 +628,7 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
     : item.upstreamId === "card_room"
       ? [
         entity(),
+        entity(["camera"], "room_camera_entity"),
         toggle("label_use_temperature"),
         entity(["sensor", "climate"], "room_temperature_entity"),
         toggle("label_use_brightness"),

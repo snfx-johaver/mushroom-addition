@@ -19,6 +19,7 @@ import { remoteOptionTranslations } from "../src/translations/remote-options";
 import { presentationOptionTranslations } from "../src/translations/presentation-options";
 import { greetingPollenTranslations } from "../src/translations/greetings-pollen";
 import { runtimeControlTranslations } from "../src/translations/runtime-controls";
+import { roomCameraLabels, roomCameraHelpers } from "../src/translations/room-camera";
 import { readUpcomingData, type MushroomUpcomingMedia } from "../src/upcoming-media";
 import type { MushroomRemote } from "../src/remote-card";
 import type { MushroomPiHole } from "../src/pi-hole";
@@ -68,6 +69,16 @@ describe("locale identity", () => {
 });
 
 describe("translated text safety and coverage", () => {
+  it.each(SUPPORTED_LOCALES)("provides the room camera label and help in %s", locale => {
+    expect(localize(makeHass(locale), "room_camera_entity")).toBe(roomCameraLabels[locale].room_camera_entity);
+    expect(editorHelper("room_camera_entity", makeHass(locale))).toBe(roomCameraHelpers[locale].room_camera_entity);
+    expect(roomCameraLabels[locale].room_camera_entity.trim()).toBeTruthy();
+    expect(roomCameraHelpers[locale].room_camera_entity.trim()).toBeTruthy();
+    if (locale !== "en") {
+      expect(roomCameraLabels[locale].room_camera_entity).not.toBe(roomCameraLabels.en.room_camera_entity);
+      expect(roomCameraHelpers[locale].room_camera_entity).not.toBe(roomCameraHelpers.en.room_camera_entity);
+    }
+  });
   it.each(SUPPORTED_LOCALES)("translates appliance details without an English fallback for %s", locale => {
     const label = translationCatalogs[locale].washer_details_entities;
     expect(label?.trim()).toBeTruthy();

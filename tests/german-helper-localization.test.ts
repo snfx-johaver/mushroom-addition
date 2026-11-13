@@ -3,13 +3,14 @@ import { englishHelpers, helperCatalogs } from "../src/localize";
 import { placeholders } from "../src/translation-coverage";
 import { germanHelpers } from "../src/translations/de-helpers";
 import { translatedHelpers } from "../src/translations/helpers";
+import { roomCameraHelpers } from "../src/translations/room-camera";
 
 describe("German helper catalog", () => {
   const helpers = { ...helperCatalogs.de, ...germanHelpers };
 
   it("covers every English helper without blanks or lost placeholders", () => {
     expect(Object.keys(germanHelpers).sort()).toEqual(
-      Object.keys(englishHelpers).filter((key) => !translatedHelpers.de?.[key]).sort(),
+      Object.keys(englishHelpers).filter((key) => !translatedHelpers.de?.[key] && !Object.hasOwn(roomCameraHelpers.de, key)).sort(),
     );
     expect(Object.keys(germanHelpers)).toHaveLength(567);
     expect(Object.keys(helpers).sort()).toEqual(Object.keys(englishHelpers).sort());

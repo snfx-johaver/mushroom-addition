@@ -2,6 +2,13 @@
 
 Versions follow Semantic Versioning. Release tags use the `v` prefix.
 
+## 0.11.0 - 2026-11-13
+
+- Add an optional camera entity to the Room card editor. Its entity picture
+  replaces the room icon when available; existing cards remain unchanged.
+- Cache Light Area scene discovery by Home Assistant state and registry snapshots,
+  including empty results, while preserving explicitly configured scene items.
+
 ## 0.10.0 - 2026-11-11
 
 - Pin privileged release workflow actions to immutable revisions and avoid
