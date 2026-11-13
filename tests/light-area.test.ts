@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { areaSceneIds, areaSceneItems } from "../src/light-area";
 import type { HomeAssistant } from "../src/types";
 
@@ -37,7 +37,36 @@ const makeHass = (): HomeAssistant => ({
   callService: async () => undefined,
 });
 
+afterEach(() => vi.restoreAllMocks());
+
 describe("Light Area scene discovery cache", () => {
+  it("indexes a states snapshot once across lights and alternating Home Assistant instances", () => {
+    const first = makeHass(), second = makeHass();
+    const keys = vi.spyOn(Object, "keys");
+    const items = areaSceneItems(first, "light.office");
+    areaSceneItems(first, "light.office_desk");
+    areaSceneItems(second, "light.office");
+    expect(areaSceneItems(first, "light.office")).toBe(items);
+    expect(keys.mock.calls.filter(([value]) => value === first.states)).toHaveLength(1);
+    expect(keys.mock.calls.filter(([value]) => value === second.states)).toHaveLength(1);
+  });
+
+  it("isolates registry identities and reuses their previous results without rescanning states", () => {
+    const hass = makeHass();
+    hass.states["scene.other"] = { entity_id: "scene.other", state: "unknown", attributes: {} };
+    const first = areaSceneItems(hass, "light.office");
+    const entities = { ...hass.entities, "scene.other": { device_id: "scene-device" } };
+    const changed = { ...hass, entities, devices: { "scene-device": { area_id: "office" } } };
+    const keys = vi.spyOn(Object, "keys");
+    const second = areaSceneItems(changed, "light.office");
+    expect(second.map(item => item.entity)).toContain("scene.other");
+    expect(first.map(item => item.entity)).not.toContain("scene.other");
+    expect(areaSceneItems(hass, "light.office")).toBe(first);
+    expect(areaSceneItems(changed, "light.office")).toBe(second);
+    expect(areaSceneItems({ ...changed, devices: {} }, "light.office").map(item => item.entity)).not.toContain("scene.other");
+    expect(keys.mock.calls.filter(([value]) => value === hass.states)).toHaveLength(0);
+  });
+
   it("reuses discovered scene IDs and rendered items for stable registry identities", () => {
     const hass = makeHass();
     const keys = vi.spyOn(Object, "keys");

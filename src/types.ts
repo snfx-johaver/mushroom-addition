@@ -315,6 +315,7 @@ export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, P
   scene_label_font_size?: number;
   room_sensors?: AdditionItemConfig[];
   room_status?: RoomStatusConfig[];
+  room_camera_entity?: string;
   room_light_entity?: string;
   room_temperature_entity?: string;
   room_brightness_entity?: string;

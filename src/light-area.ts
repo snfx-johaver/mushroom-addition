@@ -18,14 +18,41 @@ const SCENE_COLORS = [
 ];
 
 interface SceneCacheEntry {
-  states: HomeAssistant["states"];
-  entities: HomeAssistant["entities"];
-  devices: HomeAssistant["devices"];
   ids: string[];
   items?: AdditionItemConfig[];
 }
 
-const sceneCache = new Map<string, SceneCacheEntry>();
+interface SceneIndex {
+  ids: string[];
+  registries: WeakMap<object, WeakMap<object, Map<string, SceneCacheEntry>>>;
+}
+
+const missingRegistry = {};
+const sceneIndexes = new WeakMap<HomeAssistant["states"], SceneIndex>();
+
+const sceneContext = (hass: HomeAssistant): { index: SceneIndex; results: Map<string, SceneCacheEntry> } => {
+  let index = sceneIndexes.get(hass.states);
+  if (!index) {
+    index = {
+      ids: Object.keys(hass.states).filter(id => id.startsWith("scene.")).sort((a, b) => a.localeCompare(b)),
+      registries: new WeakMap(),
+    };
+    sceneIndexes.set(hass.states, index);
+  }
+  const entities = hass.entities ?? missingRegistry;
+  const devices = hass.devices ?? missingRegistry;
+  let registries = index.registries.get(entities);
+  if (!registries) {
+    registries = new WeakMap();
+    index.registries.set(entities, registries);
+  }
+  let results = registries.get(devices);
+  if (!results) {
+    results = new Map();
+    registries.set(devices, results);
+  }
+  return { index, results };
+};
 
 export const lightGroupMembers = (hass: HomeAssistant, lightId?: string): string[] => {
   const members = lightId ? hass.states[lightId]?.attributes.entity_id : undefined;
@@ -51,31 +78,21 @@ const lightAreaId = (hass: HomeAssistant, lightId: string): string | undefined =
 /** Scenes that belong to the area of a light: same area, controlling only the group's lights, or sharing its name prefix. */
 export const areaSceneIds = (hass: HomeAssistant, lightId?: string): string[] => {
   if (!lightId) return [];
-  const cached = sceneCache.get(lightId);
-  if (
-    cached?.states === hass.states &&
-    cached.entities === hass.entities &&
-    cached.devices === hass.devices
-  ) return cached.ids;
+  const { index, results } = sceneContext(hass);
+  const cached = results.get(lightId);
+  if (cached) return cached.ids;
   const area = lightAreaId(hass, lightId);
   const allowed = new Set([lightId, ...lightGroupMembers(hass, lightId)]);
   const prefix = lightId.split(".")[1] ?? "";
-  const ids = Object.keys(hass.states)
-    .filter((id) => id.startsWith("scene."))
+  const ids = index.ids
     .filter((id) => {
       if (area && areaOf(hass, id) === area) return true;
       const targets = hass.states[id].attributes.entity_id;
       if (Array.isArray(targets) && targets.length > 0 && allowed.size > 1 &&
         targets.every((target) => typeof target === "string" && allowed.has(target))) return true;
       return prefix.length > 2 && id.slice("scene.".length).startsWith(`${prefix}_`);
-    })
-    .sort((a, b) => a.localeCompare(b));
-  sceneCache.set(lightId, {
-    states: hass.states,
-    entities: hass.entities,
-    devices: hass.devices,
-    ids,
-  });
+    });
+  results.set(lightId, { ids });
   return ids;
 };
 
@@ -84,13 +101,9 @@ const titleCase = (value: string): string =>
 
 export const areaSceneItems = (hass: HomeAssistant, lightId?: string): AdditionItemConfig[] => {
   if (!lightId) return [];
-  const cached = sceneCache.get(lightId);
-  if (
-    cached?.states === hass.states &&
-    cached.entities === hass.entities &&
-    cached.devices === hass.devices &&
-    cached.items
-  ) return cached.items;
+  const { results } = sceneContext(hass);
+  const cached = results.get(lightId);
+  if (cached?.items) return cached.items;
   const lightName = String(hass.states[lightId ?? ""]?.attributes.friendly_name ?? "").trim().toLowerCase();
   const prefix = (lightId?.split(".")[1] ?? "").toLowerCase();
   const items = areaSceneIds(hass, lightId).map((id, index) => {
@@ -102,6 +115,6 @@ export const areaSceneItems = (hass: HomeAssistant, lightId?: string): AdditionI
     }
     return { entity: id, name: name.trim() || friendly, color: SCENE_COLORS[index % SCENE_COLORS.length] };
   });
-  sceneCache.get(lightId)!.items = items;
+  results.get(lightId)!.items = items;
   return items;
 };

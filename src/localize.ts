@@ -76,6 +76,7 @@ import { arabicLabels, arabicHelpers } from "./translations/ar";
 import { slovenianLabels, slovenianHelpers } from "./translations/sl";
 import { catalanLabels, catalanHelpers } from "./translations/ca";
 import { hungarianLabels, hungarianHelpers } from "./translations/hu";
+import { roomCameraLabels, roomCameraHelpers } from "./translations/room-camera";
 
 export const SUPPORTED_LOCALES = [
   "ar", "bg", "ca", "cs", "da", "de", "el", "en", "es", "fi", "fr", "he", "hu", "id", "it",
@@ -742,6 +743,7 @@ export const translationCatalogs: Record<string, Record<string, string>> = Objec
     ...runtimeDeviceTranslations[locale],
     ...runtimeValueTranslations[locale],
     ...graphErrorTranslations[locale],
+    ...roomCameraLabels[locale],
   }]),
 );
 
@@ -852,6 +854,7 @@ export const englishHelpers: Record<string, string> = {
   pihole_metric_tap_action: "By default, opens the first contributing sensor. A custom action receives the clicked metric's entity as context.",
   entity: "The Home Assistant entity shown and controlled by this card.",
   room_light_entity: "One light for both the brightness label and optional room accent. Defaults to the primary entity when it is a light. Only valid brightness is shown; active RGB group members are supported for the accent.",
+  ...roomCameraHelpers.en,
   room_temperature_entity: "Optional sensor or climate entity for the temperature label. Defaults to the primary entity. Only numeric temperatures with a temperature unit are shown.",
   room_brightness_entity: "Optional light for the brightness label. Defaults to the primary light, then the Room accent light. Only a valid brightness attribute is shown as a percentage.",
   label_use_temperature: "Room automatic/state secondary information: include a valid temperature. None, custom, composed and explicit name/time modes take precedence.",
@@ -1374,6 +1377,9 @@ export const helperCatalogs: Record<string, Record<string, string>> = {
   hu: { ...translatedHelpers.hu, ...hungarianHelpers },
   en: englishHelpers,
 };
+for (const locale of SUPPORTED_LOCALES) {
+  Object.assign(helperCatalogs[locale], roomCameraHelpers[locale]);
+}
 
 export const editorHelper = (key: string, hass?: HomeAssistant, cardType?: string): string | undefined => {
   if (key === "car_show_header") return ["Name", "Icon", "Primary information", "Secondary information"].map(label => localizeText(hass, label)).join(" / ");

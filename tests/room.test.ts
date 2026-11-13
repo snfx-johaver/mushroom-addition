@@ -74,6 +74,32 @@ describe("Room status indicators", () => {
     expect(css).not.toContain(".room-status { position: absolute;");
   });
 
+  it("uses the explicitly selected room camera picture and keeps the default icon when unset", async () => {
+    const home = hass();
+    home.states["camera.room"] = state("camera.room", "idle", {
+      friendly_name: "Room camera", entity_picture: "/api/camera_proxy/camera.room",
+    });
+    const card = await render({ room_camera_entity: "camera.room" }, home);
+    const cameraPicture = card.shadowRoot.querySelector(".room-main > .ulm-icon.entity-picture") as HTMLElement;
+    expect(cameraPicture).not.toBeNull();
+    expect(cameraPicture.title).toBe("Room camera");
+    expect(cameraPicture.style.backgroundImage).toContain("/api/camera_proxy/camera.room");
+
+    card.setConfig({ type, entity: "sensor.temperature" });
+    await card.updateComplete;
+    const defaultIcon = card.shadowRoot.querySelector(".room-main > .ulm-icon ha-state-icon") as
+      (HTMLElement & { stateObj?: HassEntity }) | null;
+    expect(defaultIcon?.stateObj?.entity_id).toBe("sensor.temperature");
+
+    home.states["camera.without_picture"] = state("camera.without_picture", "idle");
+    card.setConfig({ type, entity: "sensor.temperature", room_camera_entity: "camera.without_picture" });
+    card.hass = home;
+    await card.updateComplete;
+    const cameraIcon = card.shadowRoot.querySelector(".room-main > .ulm-icon ha-state-icon") as
+      (HTMLElement & { stateObj?: HassEntity }) | null;
+    expect(cameraIcon?.stateObj?.entity_id).toBe("camera.without_picture");
+  });
+
   it("renders at most four distinct small indicators without altering action buttons or adding visible labels", async () => {
     const card = await render({
       room_status: (["window", "door", "water", "smoke", "motion"] as RoomStatusKind[])
@@ -240,6 +266,7 @@ describe("Room status indicators", () => {
       const fields = flattenFields(schema);
       expect(fields.find((field) => field.name === "room_temperature_entity")?.selector).toEqual({ entity: { domain: ["sensor", "climate"] } });
       expect(fields.find((field) => field.name === "room_light_entity")?.selector).toEqual({ entity: { domain: ["light"] } });
+      expect(fields.find((field) => field.name === "room_camera_entity")?.selector).toEqual({ entity: { domain: ["camera"] } });
       expect(fields.find((field) => field.name === "room_brightness_entity")).toBeUndefined();
       expect(fields.find((field) => field.name === "secondary_info")?.selector).toMatchObject({ select: {
         options: expect.arrayContaining([{ value: "custom", label: expect.any(String) }, { value: "composed", label: expect.any(String) }]),

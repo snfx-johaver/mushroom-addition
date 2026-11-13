@@ -1,0 +1,42 @@
+const rows: Record<string, [string, string]> = {
+  en: ["Room camera entity", "Optional camera for this room. Its entity picture replaces the default room icon; if no picture is available, a camera icon is shown."],
+  ar: ["كاميرا الغرفة", "كاميرا اختيارية للغرفة. تحل صورتها محل رمز الغرفة؛ وإذا لم تتوفر صورة يظهر رمز الكاميرا."],
+  bg: ["Камера на стаята", "Незадължителна камера за стаята. Изображението ѝ заменя иконата на стаята; ако липсва, се показва икона на камера."],
+  ca: ["Càmera de l'habitació", "Càmera opcional de l'habitació. La seva imatge substitueix la icona de l'habitació; si no n'hi ha, es mostra una icona de càmera."],
+  cs: ["Kamera místnosti", "Volitelná kamera místnosti. Její obrázek nahradí ikonu místnosti; pokud obrázek chybí, zobrazí se ikona kamery."],
+  da: ["Kamera i rummet", "Valgfrit kamera til rummet. Dets billede erstatter rumikonet; hvis der ikke er et billede, vises et kameraikon."],
+  de: ["Raumkamera", "Optionale Kamera für den Raum. Ihr Entitätsbild ersetzt das Raumsymbol; ohne Bild wird ein Kamerasymbol angezeigt."],
+  el: ["Κάμερα δωματίου", "Προαιρετική κάμερα του δωματίου. Η εικόνα της αντικαθιστά το εικονίδιο δωματίου· χωρίς εικόνα εμφανίζεται εικονίδιο κάμερας."],
+  es: ["Cámara de la habitación", "Cámara opcional de la habitación. Su imagen sustituye al icono de la habitación; si no hay imagen, se muestra un icono de cámara."],
+  fi: ["Huoneen kamera", "Valinnainen huoneen kamera. Sen kuva korvaa huoneen kuvakkeen; jos kuvaa ei ole, näytetään kamerakuvake."],
+  fr: ["Caméra de la pièce", "Caméra facultative de la pièce. Son image remplace l'icône de la pièce ; sans image, une icône de caméra s'affiche."],
+  he: ["מצלמת החדר", "מצלמה אופציונלית לחדר. תמונת הישות מחליפה את סמל החדר; בהיעדר תמונה מוצג סמל מצלמה."],
+  hu: ["Szoba kamerája", "A szoba opcionális kamerája. A képe felváltja a szoba ikonját; kép hiányában kameraikon jelenik meg."],
+  id: ["Kamera ruangan", "Kamera opsional untuk ruangan. Gambar entitas menggantikan ikon ruangan; jika tidak tersedia, ikon kamera ditampilkan."],
+  it: ["Telecamera della stanza", "Telecamera opzionale della stanza. La sua immagine sostituisce l'icona della stanza; se manca, viene mostrata un'icona della telecamera."],
+  "ko-KR": ["방 카메라", "방에 사용할 선택적 카메라입니다. 엔티티 사진이 방 아이콘을 대체하며 사진이 없으면 카메라 아이콘이 표시됩니다."],
+  nb: ["Romkamera", "Valgfritt kamera for rommet. Entitetsbildet erstatter romikonet; uten bilde vises et kameraikon."],
+  nl: ["Camera voor de kamer", "Optionele camera voor de kamer. De entiteitsafbeelding vervangt het kamerpictogram; zonder afbeelding verschijnt een camerapictogram."],
+  pl: ["Kamera pokoju", "Opcjonalna kamera pokoju. Jej obraz zastępuje ikonę pokoju; gdy obraz jest niedostępny, wyświetlana jest ikona kamery."],
+  "pt-BR": ["Câmera do cômodo", "Câmera opcional do cômodo. Sua imagem substitui o ícone do cômodo; sem imagem, um ícone de câmera é exibido."],
+  "pt-PT": ["Câmara da divisão", "Câmara opcional da divisão. A sua imagem substitui o ícone da divisão; sem imagem, é apresentado um ícone de câmara."],
+  ro: ["Camera încăperii", "Cameră opțională pentru încăpere. Imaginea ei înlocuiește pictograma încăperii; fără imagine este afișată pictograma camerei."],
+  ru: ["Камера комнаты", "Необязательная камера комнаты. Её изображение заменяет значок комнаты; если изображения нет, показывается значок камеры."],
+  sk: ["Kamera miestnosti", "Voliteľná kamera miestnosti. Jej obrázok nahradí ikonu miestnosti; ak obrázok chýba, zobrazí sa ikona kamery."],
+  sl: ["Kamera prostora", "Izbirna kamera prostora. Njena slika nadomesti ikono prostora; če slike ni, se prikaže ikona kamere."],
+  sr: ["Камера просторије", "Опциона камера просторије. Њена слика замењује икону просторије; без слике се приказује икона камере."],
+  "sr-Latn": ["Kamera prostorije", "Opciona kamera prostorije. Njena slika zamenjuje ikonu prostorije; bez slike se prikazuje ikona kamere."],
+  sv: ["Rumskamera", "Valfri kamera för rummet. Dess entitetsbild ersätter rumsikonen; utan bild visas en kameraikon."],
+  tr: ["Oda kamerası", "Oda için isteğe bağlı kamera. Varlık resmi oda simgesinin yerini alır; resim yoksa kamera simgesi gösterilir."],
+  uk: ["Камера кімнати", "Необов'язкова камера кімнати. Її зображення замінює значок кімнати; якщо зображення немає, показується значок камери."],
+  vi: ["Camera trong phòng", "Camera tùy chọn cho phòng. Ảnh thực thể thay biểu tượng phòng; nếu không có ảnh, biểu tượng camera sẽ được hiển thị."],
+  "zh-Hans": ["房间摄像头", "房间的可选摄像头。实体图片替代房间图标；没有图片时显示摄像头图标。"],
+  "zh-Hant": ["房間攝影機", "房間的選用攝影機。實體圖片取代房間圖示；沒有圖片時顯示攝影機圖示。"],
+};
+
+export const roomCameraLabels = Object.fromEntries(
+  Object.entries(rows).map(([locale, [label]]) => [locale, { room_camera_entity: label }]),
+);
+export const roomCameraHelpers = Object.fromEntries(
+  Object.entries(rows).map(([locale, [, helper]]) => [locale, { room_camera_entity: helper }]),
+);

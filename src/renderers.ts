@@ -501,6 +501,8 @@ const renderRoom = (ctx: RenderContext): TemplateResult => {
   const roomLabel = roomSecondary(ctx.config, ctx.hass);
   const headingContext = { ...ctx, config: { ...ctx.config, secondary_info: undefined } };
   const light = roomLightEntity(ctx.config, ctx.hass);
+  const camera = ctx.config.room_camera_entity ? ctx.hass.states[ctx.config.room_camera_entity] : undefined;
+  const cameraPicture = camera ? attr(camera, "entity_picture") : undefined;
   const rgb = ctx.config.ulm_card_dynamic_color === true ? roomLightRgb(ctx.hass, light) : undefined;
   const statusItems = (ctx.config.room_status ?? []).slice(0, ROOM_STATUS_LIMIT).filter((item) => item.entity);
   return ctx.actionSurface(`ulm-room ulm-source-room ${rgb ? "dynamic-color" : ""} ${ctx.entity?.state === "unavailable" ? "is-unavailable" : ""}`, html`
@@ -521,7 +523,12 @@ const renderRoom = (ctx: RenderContext): TemplateResult => {
         })}
       </div>` : nothing}
       </div>
-      <span class="ulm-icon tone-blue">${renderEntityIcon(ctx.hass, ctx.entity, ctx.config.icon, "mdi:sofa-single")}</span>
+      ${cameraPicture
+        ? html`<span class="ulm-icon entity-picture tone-blue" title=${camera?.attributes.friendly_name ?? "Room camera"}
+            style=${styleMap({ backgroundImage: cssUrl(cameraPicture) })}></span>`
+        : html`<span class="ulm-icon tone-blue">${renderEntityIcon(
+          ctx.hass, camera ?? ctx.entity, camera ? undefined : ctx.config.icon, camera ? "mdi:camera" : "mdi:sofa-single",
+        )}</span>`}
       ${ctx.entity?.state === "unavailable"
         ? html`<span class="room-unavailable"><ha-icon icon="mdi:exclamation"></ha-icon></span>`
         : nothing}
@@ -810,11 +817,6 @@ const renderWelcome = (ctx: RenderContext): TemplateResult => {
   `);
 };
 
-const cachedSceneItems = (ctx: RenderContext): AdditionItemConfig[] => {
-  if (ctx.config.carousel_items) return ctx.config.carousel_items;
-  return areaSceneItems(ctx.hass, ctx.config.entity);
-};
-
 const renderLight = (ctx: RenderContext): TemplateResult => {
   const entity = ctx.entity;
   const unavailable = !entity || ["unavailable", "unknown"].includes(entity.state);
@@ -848,7 +850,7 @@ const renderLight = (ctx: RenderContext): TemplateResult => {
   )].filter((id) => id.startsWith("light.")).flatMap((id) => ctx.hass.states[id] ?? []);
   const perRow = Math.max(1, Math.min(12, Math.floor(Number(ctx.config.light_members_per_row)) || 4));
   const scenes = fullCollapsed || ctx.config.light_show_scenes === false ? [] :
-    cachedSceneItems(ctx).map((item) => ({
+    (ctx.config.carousel_items ?? areaSceneItems(ctx.hass, ctx.config.entity)).map((item) => ({
       ...item,
       tap_action: item.tap_action ?? (item.entity?.startsWith("scene.")
         ? { action: "perform-action", perform_action: "scene.turn_on", target: { entity_id: item.entity } }
