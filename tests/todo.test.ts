@@ -217,29 +217,36 @@ describe("Microsoft To Do operations", () => {
     expect(hass.callService).not.toHaveBeenCalled();
     expect(card.shadowRoot!.querySelector("[role=alert]")?.textContent).toContain("Task changed");
   });
-  it("renames a subtask only when the update service advertises name, preserving parent edits", async () => {
+  it.each([
+    ["step-1", "needs_action", "click"], ["step-2", "completed", "click"],
+    ["step-1", "needs_action", "enter"], ["step-2", "completed", "enter"],
+  ])("renames %s with its current %s status via %s, preserving parent edits", async (id, status, action) => {
     const hass = checklistSource();
     hass.services!.ms365_todo.update_todo_checklist_item = { fields: { name: {} } };
     const card = await mount(hass);
     card.shadowRoot!.querySelector<HTMLButtonElement>(".edit")!.click(); await settle(card);
     expect(card.shadowRoot!.querySelector(".step-editor")?.textContent).not.toContain("cannot rename");
     await input(card, "summary", "Unsaved parent");
-    await input(card, "step-step-1", " Renamed step ");
-    card.shadowRoot!.querySelector<HTMLButtonElement>(".step-save")!.click(); await settle(card);
+    await input(card, `step-${id}`, " Renamed step ");
+    const nameInput = card.shadowRoot!.querySelector<HTMLInputElement>(`[name="step-${id}"]`)!;
+    if (action === "enter") nameInput.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+    else nameInput.closest("li")!.querySelector<HTMLButtonElement>(".step-save")!.click();
+    await settle(card);
     expect(hass.callService).toHaveBeenLastCalledWith("ms365_todo", "update_todo_checklist_item", {
-      entity_id: "todo.microsoft", todo_id: "uid-1", checklist_item_id: "step-1", name: "Renamed step",
+      entity_id: "todo.microsoft", todo_id: "uid-1", checklist_item_id: id, name: "Renamed step", status,
     });
     expect(card.shadowRoot!.querySelector<HTMLInputElement>("[name=summary]")!.value).toBe("Unsaved parent");
     expect(card.shadowRoot!.querySelector(".step-editor")).not.toBeNull();
   });
-  it("refuses renamed or removed steps and revoked rename capabilities before writing", async () => {
+  it.each(["name", "completion"])("refuses stale subtask %s and revoked rename capabilities before writing", async changed => {
     const hass = checklistSource();
     hass.services!.ms365_todo.update_todo_checklist_item = { fields: { name: {} } };
     const card = await mount(hass);
     card.shadowRoot!.querySelector<HTMLButtonElement>(".edit")!.click(); await settle(card);
     await input(card, "step-step-1", "Local name");
-    const metadata = hass.states["todo.microsoft"].attributes.all_todos as { checklist_items: { name: string }[] }[];
-    metadata[0].checklist_items[0].name = "Remote name";
+    const metadata = hass.states["todo.microsoft"].attributes.all_todos as { checklist_items: { name: string; is_checked: boolean }[] }[];
+    if (changed === "name") metadata[0].checklist_items[0].name = "Remote name";
+    else metadata[0].checklist_items[0].is_checked = true;
     card.shadowRoot!.querySelector<HTMLButtonElement>(".step-save")!.click(); await settle(card);
     expect(hass.callService).not.toHaveBeenCalled();
     expect(card.shadowRoot!.querySelector("[role=alert]")?.textContent).toContain("Task changed");
@@ -284,6 +291,127 @@ describe("Microsoft To Do operations", () => {
     expect(card.shadowRoot!.querySelector("[role=alert]")?.textContent).toContain("Task changed");
     expect(sortTodo([task({ uid: "a" }), task({ uid: "b", important: true }), task({ uid: "c", important: false })],
       "important").map(item => item.uid)).toEqual(["b", "a", "c"]);
+  });
+  it.each([
+    ["high", true], ["normal", false], ["low", false],
+  ] as const)("prefers native %s importance over conflicting legacy metadata", async (importance, important) => {
+    const hass = checklistSource();
+    const metadata = hass.states["todo.microsoft"].attributes.all_todos as Record<string, unknown>[];
+    metadata[0].importance = importance;
+    metadata[0].is_important = !important;
+    expect((await readTodo(hass, "todo.microsoft"))[0]).toMatchObject({ importance, important });
+    const card = await mount(hass);
+    const star = card.shadowRoot!.querySelector(".row-actions .importance")!;
+    expect(star.localName).toBe("span");
+    expect(star.classList.contains("important")).toBe(important);
+    expect((star.querySelector("ha-icon") as HTMLElement & { icon: string }).icon)
+      .toBe(important ? "mdi:star" : "mdi:star-outline");
+    expect(hass.callService).not.toHaveBeenCalled();
+  });
+  it.each(["unexpected", "", 0, undefined, null])("does not invent importance from unknown or missing %s metadata", async importance => {
+    const hass = checklistSource();
+    const metadata = hass.states["todo.microsoft"].attributes.all_todos as Record<string, unknown>[];
+    metadata[0].importance = importance;
+    if (importance != null) metadata[0].is_important = false;
+    hass.services!.ms365_todo.update_todo = { fields: { importance: {} } };
+    expect((await readTodo(hass, "todo.microsoft"))[0].important).toBeUndefined();
+    const card = await mount(hass);
+    expect(card.shadowRoot!.querySelector(".importance")).toBeNull();
+    expect(hass.callService).not.toHaveBeenCalled();
+  });
+  it("falls back to legacy metadata when native importance is absent", async () => {
+    const hass = checklistSource();
+    const metadata = hass.states["todo.microsoft"].attributes.all_todos as Record<string, unknown>[];
+    metadata[0].importance = null;
+    metadata[0].is_important = false;
+    expect((await readTodo(hass, "todo.microsoft"))[0].important).toBe(false);
+    metadata[0].importance = "high";
+    metadata[0].is_important = "invalid legacy value";
+    expect((await readTodo(hass, "todo.microsoft"))[0].important).toBe(true);
+  });
+  it.each([
+    ["normal", "high"], ["low", "high"], ["high", "normal"],
+  ] as const)("toggles native %s importance to %s by UID and retains parent edits", async (importance, expected) => {
+    const hass = checklistSource();
+    const metadata = hass.states["todo.microsoft"].attributes.all_todos as Record<string, unknown>[];
+    metadata[0].importance = importance;
+    hass.services!.ms365_todo.update_todo = { fields: { importance: {} } };
+    const card = await mount(hass);
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".edit")!.click(); await settle(card);
+    await input(card, "summary", "Unsaved parent");
+    const star = card.shadowRoot!.querySelector<HTMLButtonElement>("form button.importance")!;
+    expect(star.disabled).toBe(false);
+    expect(star.getAttribute("aria-pressed")).toBe(String(importance === "high"));
+    star.click(); await settle(card);
+    expect(hass.callService).toHaveBeenCalledExactlyOnceWith("ms365_todo", "update_todo",
+      { entity_id: "todo.microsoft", todo_id: "uid-1", importance: expected });
+    expect(card.shadowRoot!.querySelector<HTMLInputElement>("[name=summary]")!.value).toBe("Unsaved parent");
+    expect(star.getAttribute("aria-pressed")).toBe(String(importance === "high"));
+  });
+  it("preserves low importance during ordinary parent edits", async () => {
+    const hass = checklistSource();
+    const metadata = hass.states["todo.microsoft"].attributes.all_todos as Record<string, unknown>[];
+    metadata[0].importance = "low";
+    hass.services!.ms365_todo.update_todo = { fields: { importance: {} } };
+    const card = await mount(hass);
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".edit")!.click(); await settle(card);
+    await input(card, "summary", "Renamed parent"); await submit(card);
+    expect(hass.callService).toHaveBeenCalledExactlyOnceWith("todo", "update_item",
+      { entity_id: "todo.microsoft", item: "uid-1", rename: "Renamed parent" });
+    expect(metadata[0].importance).toBe("low");
+  });
+  it.each([
+    [true, true, { importance: "normal" }],
+    [true, false, { importance: "high" }],
+    [false, true, { is_important: false }],
+  ])("uses the advertised native field %s with legacy metadata %s fallback", async (nativeField, legacyMetadata, expected) => {
+    const hass = checklistSource();
+    const metadata = hass.states["todo.microsoft"].attributes.all_todos as Record<string, unknown>[];
+    if (legacyMetadata) metadata[0].is_important = true;
+    else metadata[0].importance = "normal";
+    hass.services!.ms365_todo.update_todo = { fields: nativeField ? { importance: {}, is_important: {} } : { is_important: {} } };
+    const card = await mount(hass);
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".row-actions button.importance")!.click(); await settle(card);
+    expect(hass.callService).toHaveBeenCalledExactlyOnceWith("ms365_todo", "update_todo",
+      { entity_id: "todo.microsoft", todo_id: "uid-1", ...expected });
+  });
+  it.each(["normal", "unexpected"])("rejects stale low importance changed to %s before writing", async importance => {
+    const hass = checklistSource();
+    const metadata = hass.states["todo.microsoft"].attributes.all_todos as Record<string, unknown>[];
+    metadata[0].importance = "low";
+    hass.services!.ms365_todo.update_todo = { fields: { importance: {} } };
+    const card = await mount(hass);
+    metadata[0].importance = importance;
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".row-actions button.importance")!.click(); await settle(card);
+    expect(hass.callService).not.toHaveBeenCalled();
+    expect(card.shadowRoot!.querySelector("[role=alert]")?.textContent).toContain("Task changed");
+  });
+  it("rechecks the advertised importance field after reading and rejects revoked support", async () => {
+    const hass = checklistSource();
+    const metadata = hass.states["todo.microsoft"].attributes.all_todos as Record<string, unknown>[];
+    metadata[0].importance = "normal";
+    hass.services!.ms365_todo.update_todo = { fields: { importance: {} } };
+    const card = await mount(hass);
+    vi.mocked(hass.callWS!).mockImplementationOnce(async () => {
+      hass.services!.ms365_todo.update_todo = { fields: {} };
+      return { items: [task()] };
+    });
+    card.shadowRoot!.querySelector<HTMLButtonElement>(".row-actions button.importance")!.click(); await settle(card);
+    expect(hass.callService).not.toHaveBeenCalled();
+    expect(card.shadowRoot!.querySelector("[role=alert]")?.textContent).toContain("Unable to change");
+  });
+  it.each([
+    [0, true], [119, false],
+  ])("disables native importance writes with feature mask %s and editing %s", async (features, allowEdit) => {
+    const hass = checklistSource();
+    (hass.states["todo.microsoft"].attributes.all_todos as Record<string, unknown>[])[0].importance = "high";
+    hass.states["todo.microsoft"].attributes.supported_features = features;
+    hass.services!.ms365_todo.update_todo = { fields: { importance: {} } };
+    const card = await mount(hass, { todo_allow_edit: allowEdit });
+    const star = card.shadowRoot!.querySelector<HTMLButtonElement>(".row-actions button.importance")!;
+    expect(star.disabled).toBe(true);
+    star.click(); await settle(card);
+    expect(hass.callService).not.toHaveBeenCalled();
   });
   it("keeps the bottom quick-add input outside the scrolling list and retains failed input", async () => {
     const hass = source(), card = await mount(hass);
