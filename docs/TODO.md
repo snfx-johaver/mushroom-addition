@@ -103,6 +103,8 @@ unsaved parent edits are retained. When `update_todo_checklist_item` advertises 
 `name` field, each subtask has an editable name and a Save icon (Enter also saves).
 Without that field, names remain read-only and the editor explains the limitation.
 Renaming updates the existing step ID; it never deletes/recreates the step.
+Rename writes include the step's revalidated current completion status alongside
+its name, so a completed step stays completed and an incomplete step stays incomplete.
 
 **Completed Microsoft tasks:** enable `show_completed` for the list in the
 MS365-ToDo integration's UI list settings. Its default is false: the integration
@@ -110,10 +112,16 @@ then excludes completed tasks before Home Assistant or any frontend can see them
 The card shows an explicit empty-group message when none are supplied. It does
 not modify integration settings automatically.
 
-**Importance:** when the integration supplies `all_todos[].is_important` as a
-boolean, a filled/outline star beside Edit reflects that value, and sorting by
-importance puts starred tasks first. If `ms365_todo.update_todo` advertises
-`is_important`, the star is a button that updates the real task by UID. Otherwise
+**Importance:** the card prefers native `all_todos[].importance` values from
+MS365-ToDo (`high`, `normal`, `low`): only `high` gets a filled star; `normal`
+and `low` get outline stars. If native importance is missing, the legacy boolean
+`is_important` is supported. Unknown or missing values are not treated as false
+and have no star. Sorting by importance puts starred tasks first.
+If `ms365_todo.update_todo` advertises `importance`, toggling the star writes
+`high` or `normal` by task UID. The legacy `is_important` boolean is used only
+when the native service field is absent. A `low` task remains `low` unless its
+star is toggled (to `high`); un-starring a `high` task writes `normal`.
+Without either advertised service field,
 it is a read-only indicator with an explanatory tooltip. Importance changes
 save immediately and retain unsaved parent edits, like subtask changes.
 The card never invents local importance or sends unsupported fields.

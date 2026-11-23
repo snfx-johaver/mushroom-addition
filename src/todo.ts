@@ -8,6 +8,7 @@ export interface TodoItem {
   due?: string | null;
   checklist?: TodoChecklistItem[];
   important?: boolean;
+  importance?: "low" | "normal" | "high";
 }
 
 export interface TodoChecklistItem { id: string; name: string; checked: boolean }
@@ -111,11 +112,14 @@ export async function readTodo(hass: HomeAssistant, entity: string): Promise<Tod
     (item.due != null && typeof item.due !== "string"))) throw new Error("Invalid to-do response.");
   return result.items.map(item => {
     const metadata = todoMetadata(item, hass.states[entity]);
-    if (metadata?.is_important != null && typeof metadata.is_important !== "boolean") {
+    const native = metadata?.importance;
+    const importance = native === "low" || native === "normal" || native === "high" ? native : undefined;
+    if (native == null && metadata?.is_important != null && typeof metadata.is_important !== "boolean") {
       throw new Error("Invalid to-do importance response.");
     }
     return { ...item, checklist: todoChecklist(metadata),
-      important: typeof metadata?.is_important === "boolean" ? metadata.is_important : undefined };
+      importance, important: native != null ? (importance ? importance === "high" : undefined)
+        : typeof metadata?.is_important === "boolean" ? metadata.is_important : undefined };
   });
 }
 
@@ -124,4 +128,9 @@ export function todoServiceField(hass: HomeAssistant | undefined, service: strin
   if (!definition || typeof definition !== "object" || !("fields" in definition)) return false;
   const fields = definition.fields;
   return !!fields && typeof fields === "object" && Object.hasOwn(fields, field);
+}
+
+export function todoImportanceField(hass?: HomeAssistant): "importance" | "is_important" | undefined {
+  return todoServiceField(hass, "update_todo", "importance") ? "importance"
+    : todoServiceField(hass, "update_todo", "is_important") ? "is_important" : undefined;
 }
