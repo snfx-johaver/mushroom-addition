@@ -101,6 +101,54 @@ describe("Car Advanced integration", () => {
     await settle(card);
     expect(card.shadowRoot!.querySelector(".car-heading")?.textContent).toContain("My car");
   });
+  it("isolates vehicle button and image swiper gestures across nested shadow roots without cancelling clicks", async () => {
+    const parent = document.createElement("div");
+    const card = document.createElement(CAR_TAG) as MushroomCarAdvancedCard;
+    card.hass = source();
+    card.setConfig(config());
+    parent.append(card);
+    document.body.append(parent);
+    await settle(card);
+    const engine = card.shadowRoot!.querySelector<TestEngine>("addition-car-engine")!;
+    await engine.updateComplete;
+    const dashboard = vi.fn();
+    const clicks = vi.fn();
+    const internal = vi.fn();
+    for (const type of ["touchstart", "touchmove", "touchend", "touchcancel", "pointerdown", "pointermove", "pointerup", "pointercancel"]) {
+      parent.addEventListener(type, dashboard);
+    }
+    parent.addEventListener("click", clicks);
+    for (const tag of ["addition-car-vsc-buttons-group", "addition-car-vsc-buttons-grid", "addition-car-vsc-images-slide"]) {
+      const child = document.createElement(tag);
+      const root = child.attachShadow({ mode: "open" });
+      root.innerHTML = '<div class="swiper-container"><div class="swiper-wrapper"><div class="swiper-slide"><vehicle-button></vehicle-button></div></div></div>';
+      const container = root.querySelector(".swiper-container")!;
+      const swiper = {
+        params: { nested: false },
+        onTouchMove: vi.fn((event: Event) => { if (event.type === "pointermove") event.preventDefault(); }),
+        onTouchEnd: vi.fn(),
+      };
+      Object.assign(container, { swiper });
+      const button = root.querySelector("vehicle-button")!.attachShadow({ mode: "open" });
+      button.innerHTML = "<button>Item</button>";
+      engine.shadowRoot!.append(child);
+      const target = button.querySelector("button")!;
+      for (const type of ["touchstart", "touchmove", "touchend", "touchcancel", "pointerdown", "pointermove", "pointerup", "pointercancel"]) {
+        target.addEventListener(type, internal);
+        const event = new Event(type, { bubbles: true, composed: true, cancelable: true });
+        target.dispatchEvent(event);
+        expect(event.defaultPrevented).toBe(type === "pointermove");
+      }
+      expect(swiper.onTouchMove).toHaveBeenCalledTimes(2);
+      expect(swiper.onTouchEnd).toHaveBeenCalledTimes(4);
+      target.click();
+    }
+    expect(internal).toHaveBeenCalledTimes(24);
+    expect(dashboard).not.toHaveBeenCalled();
+    expect(clicks).toHaveBeenCalledTimes(3);
+    engine.shadowRoot!.querySelector("ha-card")!.dispatchEvent(new Event("touchstart", { bubbles: true, composed: true }));
+    expect(dashboard).toHaveBeenCalledOnce();
+  });
   it("keeps all feature panels accessible and round-trips edits without losing shared or unrelated vehicle configuration", async () => {
     const editor = document.createElement("mushroom-addition-car-options") as CarAdvancedEditor;
     editor.hass = source(); editor.config = config(); document.body.append(editor); await settle(editor);
