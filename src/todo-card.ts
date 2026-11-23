@@ -4,7 +4,7 @@ import { MushroomAdditionCard } from "./card";
 import { getCatalogItem } from "./catalog";
 import { localize, localizeText } from "./localize";
 import { renderAutomaticPresentation, type RenderContext } from "./renderers";
-import { readTodo, safeTodoUid, sortTodo, TODO_FEATURE, TODO_SORT_OPTIONS, todoEntities, todoServiceField, todoStub, todoSupports, validateTodo, type TodoChecklistItem, type TodoItem, type TodoSort } from "./todo";
+import { readTodo, safeTodoUid, sortTodo, TODO_FEATURE, TODO_SORT_OPTIONS, todoEntities, todoImportanceField, todoServiceField, todoStub, todoSupports, validateTodo, type TodoChecklistItem, type TodoItem, type TodoSort } from "./todo";
 import type { AdditionConfig, HomeAssistant } from "./types";
 
 type Draft = { uid?: string; summary: string; description: string; due: string; dueType: "date" | "datetime" };
@@ -264,7 +264,7 @@ export class MushroomTodoCard extends MushroomAdditionCard {
     return this.writable && this.config?.todo_allow_edit !== false && safeTodoUid(item, this.items) &&
       this.supports(TODO_FEATURE.update) && Array.isArray(this.hass?.states[this.selected]?.attributes.all_todos) &&
       Boolean(this.hass?.services?.ms365_todo?.[service]) &&
-      (service !== "update_todo" || typeof item.important === "boolean" && todoServiceField(this.hass, service, "is_important")) &&
+      (service !== "update_todo" || typeof item.important === "boolean" && !!todoImportanceField(this.hass)) &&
       (service !== "new_todo_checklist_item" || this.config?.todo_allow_add !== false && this.supports(TODO_FEATURE.create)) &&
       (service !== "delete_todo_checklist_item" || this.config?.todo_allow_delete !== false && this.supports(TODO_FEATURE.delete));
   }
@@ -285,20 +285,26 @@ export class MushroomTodoCard extends MushroomAdditionCard {
       const parent = latest.find(row => row.uid === item.uid);
       const currentStep = step && parent?.checklist?.find(row => row.id === step.id);
       if (!parent || !safeTodoUid(parent, latest) || parent.status !== item.status ||
-        service === "update_todo" && parent.important !== item.important ||
+        service === "update_todo" && (parent.important !== item.important || parent.importance !== item.importance) ||
         step && (!currentStep || currentStep.name !== step.name || currentStep.checked !== step.checked)) {
         this.items = latest;
         this.error = "Task changed or has no safe UID. Refresh before editing.";
         return;
       }
+      const importanceField = todoImportanceField(this.hass);
       if (this.config?.todo_allow_edit === false || !this.supports(TODO_FEATURE.update) ||
         !this.hass?.services?.ms365_todo?.[service] ||
         "name" in data && service === "update_todo_checklist_item" && !todoServiceField(this.hass, service, "name") ||
-        service === "update_todo" && !todoServiceField(this.hass, service, "is_important") ||
+        service === "update_todo" && !importanceField ||
         service === "new_todo_checklist_item" && (this.config?.todo_allow_add === false || !this.supports(TODO_FEATURE.create)) ||
         service === "delete_todo_checklist_item" && (this.config?.todo_allow_delete === false || !this.supports(TODO_FEATURE.delete))) throw new Error("Unsupported action");
       await hass.callService("ms365_todo", service, {
-        ...data, entity_id: entity, todo_id: item.uid, ...(step ? { checklist_item_id: step.id } : {}),
+        ...data, ...(service === "update_todo_checklist_item" && "name" in data && currentStep
+          ? { status: currentStep.checked ? "completed" : "needs_action" } : {}),
+        ...(service === "update_todo" && importanceField
+          ? { [importanceField]: importanceField === "importance" ? (parent.important ? "normal" : "high") : !parent.important }
+          : {}),
+        entity_id: entity, todo_id: item.uid, ...(step ? { checklist_item_id: step.id } : {}),
       });
       written = true;
       if (!this.current(generation, entity)) return;
@@ -502,10 +508,10 @@ export class MushroomTodoCard extends MushroomAdditionCard {
     if (typeof item.important !== "boolean") return nothing;
     const label = localizeText(this.hass, "Important");
     const icon = html`<ha-icon .icon=${item.important ? "mdi:star" : "mdi:star-outline"}></ha-icon>`;
-    return todoServiceField(this.hass, "update_todo", "is_important") ? html`
+    return todoImportanceField(this.hass) ? html`
       <button type="button" class="icon-button importance" aria-label=${`${label}: ${item.summary}`} title=${label}
         aria-pressed=${item.important} ?disabled=${!this.canChangeChecklist(item, "update_todo")}
-        @click=${() => void this.changeChecklist(item, "update_todo", { is_important: !item.important })}>${icon}</button>`
+        @click=${() => void this.changeChecklist(item, "update_todo", {})}>${icon}</button>`
       : html`<span class=${`importance${item.important ? " important" : ""}`} role="img"
           aria-label=${`${label}: ${item.important}`} title=${localizeText(this.hass, "Importance is read-only in this integration.")}>${icon}</span>`;
   }
