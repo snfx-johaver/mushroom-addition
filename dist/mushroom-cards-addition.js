@@ -64769,7 +64769,7 @@ o7([
 o7([
   li()
 ], Kw.prototype, "geometry");
-const BHe = "0.11.0", Yg = {
+const BHe = "0.11.1", Yg = {
   SUNRISE_START: 360,
   // 6:00
   SUNRISE_END: 480,
