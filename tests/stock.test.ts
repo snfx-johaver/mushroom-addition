@@ -8,7 +8,7 @@ import { MushroomStockContent, parseStockSnapshot, stockOptions, stockSeries, st
 import type { AdditionConfig, HomeAssistant } from "../src/types";
 import type { MushroomAdditionEditor } from "../src/editor";
 import type { MushroomAdditionCard } from "../src/card";
-import { stockMetricValue, stockEntityQuote, stockProviderQuote } from "../src/stock-data";
+import { stockMetricValue, stockEntityQuote, stockProviderQuote, stockRangeLabel } from "../src/stock-data";
 
 const type = "custom:mushroom-addition-stock-card";
 const snapshot = {
@@ -88,7 +88,7 @@ describe("Stock Card", () => {
     resolveOld(snapshot); await settle(e);
     expect(e.shadowRoot!.textContent).toContain("Microsoft");
     expect(e.shadowRoot!.textContent).not.toContain("Apple");
-    const range = [...e.shadowRoot!.querySelectorAll("button")].find(b => b.textContent === "1Y")!;
+    const range = [...e.shadowRoot!.querySelectorAll("button")].find(b => b.textContent === stockRangeLabel("1Y", "en"))!;
     range.click(); await settle(e);
     expect(call.mock.calls.at(-1)![0]).toMatchObject({ symbol: "MSFT", range: "1Y" });
   });
@@ -200,6 +200,68 @@ describe("Stock Card", () => {
     expect(card.shadowRoot!.querySelector(".ulm-label")?.textContent).toBe("Watchlist");
   });
 
+  it("does not claim a missing entity for backend cards while preserving explicit secondary text", async () => {
+    const card = document.createElement("mushroom-addition-stock-card") as MushroomAdditionCard;
+    card.hass = makeHass();
+    card.setConfig({ type, stock_source: "yahoo", stock_symbol: "MSFT", name: "Portfolio" });
+    document.body.append(card); await card.updateComplete;
+    expect(card.shadowRoot!.textContent).not.toContain("Entity unavailable");
+    card.setConfig({ type, stock_source: "yahoo", stock_symbol: "MSFT", secondary_info: "state" });
+    await card.updateComplete;
+    expect(card.shadowRoot!.textContent).not.toContain("Entity unavailable");
+    card.setConfig({ type, stock_source: "yahoo", stock_symbol: "MSFT", secondary: "Watchlist" });
+    await card.updateComplete;
+    expect(card.shadowRoot!.textContent).toContain("Watchlist");
+  });
+
+  it("controls instrument name, optional warnings and chart labels without hiding other errors", async () => {
+    const call = vi.fn().mockResolvedValue({ ...snapshot, warnings: [
+      "Provider did not supply: marketCap, beta.", "Company statistics unavailable (RuntimeError).", "Unexpected provider warning",
+    ] });
+    const e = await content({ stock_source: "yahoo", stock_symbol: "AAPL", stock_show_instrument_name: false,
+      stock_show_optional_warnings: false, stock_show_date_labels: false, stock_show_price_labels: false }, makeHass(call));
+    expect(e.shadowRoot!.querySelector(".quote")?.textContent).not.toContain("Apple");
+    expect(e.shadowRoot!.textContent).not.toContain("Provider did not supply");
+    expect(e.shadowRoot!.textContent).not.toContain("Company statistics unavailable");
+    expect(e.shadowRoot!.textContent).toContain("Unexpected provider warning");
+    expect(e.shadowRoot!.querySelectorAll(".axis")).toHaveLength(0);
+    expect(e.shadowRoot!.textContent).toContain("Period change");
+    expect(e.shadowRoot!.textContent).toContain("$2.00");
+    expect(e.shadowRoot!.textContent).toContain("1.01%");
+  });
+
+  it("supports pointer and keyboard chart inspection and handles zero starting prices", async () => {
+    const call = vi.fn().mockResolvedValue({ ...snapshot, chart: { t: [1, 2, 3], c: [0, 5, 10], v: [] } });
+    const e = await content({ stock_source: "yahoo", stock_symbol: "AAPL" }, makeHass(call));
+    const chart = e.shadowRoot!.querySelector("svg")!;
+    vi.spyOn(chart, "getBoundingClientRect").mockReturnValue({ left: 10, width: 100 } as DOMRect);
+    chart.dispatchEvent(new PointerEvent("pointerdown", { clientX: 60, pointerType: "touch", bubbles: true }));
+    await settle(e);
+    expect(e.shadowRoot!.querySelector(".chart-selection")?.textContent).toContain("$5.00");
+    expect(e.shadowRoot!.querySelector("svg line")).not.toBeNull();
+    chart.dispatchEvent(new PointerEvent("pointerleave", { pointerType: "touch" }));
+    await settle(e);
+    expect(e.shadowRoot!.querySelector(".chart-selection")?.textContent).toContain("$5.00");
+    chart.dispatchEvent(new KeyboardEvent("keydown", { key: "End", bubbles: true }));
+    await settle(e);
+    expect(e.shadowRoot!.querySelector(".chart-selection")?.textContent).toContain("$10.00");
+    expect(e.shadowRoot!.querySelector(".period-change")?.textContent).not.toContain("%");
+  });
+
+  it("offers localized six-month Yahoo history and restricts unsupported Deluxe ranges", async () => {
+    const hass = { ...makeHass(), language: "de" };
+    const e = await content({ stock_source: "yahoo", stock_symbol: "AAPL" }, hass);
+    expect(e.shadowRoot!.textContent).toContain("Markt geöffnet");
+    const button = [...e.shadowRoot!.querySelectorAll("button")].find(b => b.textContent === stockRangeLabel("6M", "de"))!;
+    button.click(); await settle(e);
+    expect(hass.callWS).toHaveBeenLastCalledWith(expect.objectContaining({ range: "6M" }));
+    expect(() => stockOptions({ type, stock_source: "stock_market_deluxe", stock_range: "6M" })).toThrow();
+    const item = CATALOG.find(item => item.upstreamId === "stock_card")!;
+    const names = editorSchemaFor(item, { type, stock_source: "yahoo" }).map(field => field.name);
+    expect(names).toEqual(expect.arrayContaining(["stock_show_instrument_name", "stock_show_optional_warnings",
+      "stock_show_date_labels", "stock_show_price_labels"]));
+  });
+
   it("shows actual metric defaults in the editor and preserves explicit empty attributes", async () => {
     const editor = document.createElement("mushroom-addition-editor") as MushroomAdditionEditor;
     editor.hass = makeHass();
@@ -240,7 +302,9 @@ describe("Stock Card", () => {
       type: "mushroom_addition_market/data", symbol: "MSFT", range: "5Y", interval: 300,
     });
     expect(e.shadowRoot!.querySelector("svg polyline")).not.toBeNull();
-    expect(e.shadowRoot!.querySelector("svg circle title")?.textContent).toContain("$198.00");
+    e.shadowRoot!.querySelector("svg")!.dispatchEvent(new KeyboardEvent("keydown", { key: "Home", bubbles: true }));
+    await settle(e);
+    expect(e.shadowRoot!.querySelector(".chart-selection")?.textContent).toContain("$198.00");
     expect(e.shadowRoot!.querySelector("mushroom-addition-mini-graph-card")).toBeNull();
     expect(e.shadowRoot!.textContent).toContain("Microsoft");
     expect(e.shadowRoot!.textContent).toContain("3T");
@@ -248,7 +312,7 @@ describe("Stock Card", () => {
     expect(e.shadowRoot!.textContent).not.toContain("Market closed");
     const stats = [...e.shadowRoot!.querySelectorAll("dl > div")].map(el => el.textContent);
     expect(stats).toEqual(expect.arrayContaining(["Open198", "EPS8", "Beta1.1"]));
-    [...e.shadowRoot!.querySelectorAll("button")].find(b => b.textContent === "1M")!.click();
+    [...e.shadowRoot!.querySelectorAll("button")].find(b => b.textContent === stockRangeLabel("1M", "en"))!.click();
     await settle(e);
     expect(call.mock.calls.at(-1)![0]).toMatchObject({ range: "1M" });
   });
@@ -258,7 +322,7 @@ describe("Stock Card", () => {
     hass.states["sensor.yahoo"] = { entity_id: "sensor.yahoo", state: "200", attributes: { symbol: "MSFT" } };
     expect(stockOptions({ type, entity: "sensor.yahoo", stock_source: "yahoo" }, hass).symbol).toBe("MSFT");
     expect(() => stockOptions({ type, stock_source: "yahoo" })).toThrow("symbol");
-    expect(() => stockOptions({ type, stock_source: "stock_market_deluxe", stock_range: "5Y" })).toThrow("five-year");
+    expect(() => stockOptions({ type, stock_source: "stock_market_deluxe", stock_range: "5Y" })).toThrow("Stock Market Deluxe range");
     const item = CATALOG.find(item => item.upstreamId === "stock_card")!;
     const schema = editorSchemaFor(item, { type, stock_source: "yahoo" });
     expect(schema.find(f => f.name === "stock_range")?.selector).toMatchObject({

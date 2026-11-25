@@ -112,6 +112,10 @@ const stockLabels: Record<string, string> = {
   stock_show_statistics: "Show company statistics",
   stock_show_volume: "Show trading volume",
   stock_show_trends: "Show SMA / EMA trends",
+  stock_show_instrument_name: "Show instrument name",
+  stock_show_optional_warnings: "Show optional statistics warnings",
+  stock_show_date_labels: "Show chart dates",
+  stock_show_price_labels: "Show chart prices",
 };
 
 const sectionForField = (field: EditorField): EditorSectionId => {

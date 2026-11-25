@@ -2,7 +2,7 @@ import { LitElement, css, html, nothing, svg, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import type { AdditionConfig, HomeAssistant } from "./types";
 import { localizeText } from "./localize";
-import { STOCK_RANGES, stockEntityQuote, stockMetricSource, stockMetricValue, stockProviderQuote,
+import { STOCK_RANGES, stockEntityQuote, stockMetricSource, stockMetricValue, stockProviderQuote, stockRangesFor, stockRangeLabel,
   stockUsesBackend, type StockRange } from "./stock-data";
 import type { MushroomMiniGraphCard, MiniGraphCardConfig } from "./mini-graph";
 
@@ -81,8 +81,8 @@ export function stockOptions(config: AdditionConfig, hass?: HomeAssistant) {
   if (!finite(interval) || interval < 180 || interval > 86400) throw new Error("Refresh interval must be between 180 and 86400 seconds.");
   const range = config.stock_range ?? "1D";
   if (!STOCK_RANGES.includes(range)) throw new Error("Select a supported stock chart range.");
-  if (config.stock_source === "stock_market_deluxe" && range === "5Y") {
-    throw new Error("Select Yahoo Finance for five-year market history, or select a shorter Stock Market Deluxe range.");
+  if (!stockRangesFor(config).includes(range)) {
+    throw new Error("Select a supported Stock Market Deluxe range, or use Yahoo Finance for 6M and 5Y history.");
   }
   return { symbol, shares, interval: Math.round(interval), range };
 }
@@ -113,6 +113,7 @@ export class MushroomStockContent extends LitElement {
   @state() private error?: string;
   @state() private loading = false;
   @state() private range?: StockRange;
+  @state() private selectedPoint?: number;
   private requestKey?: string;
   private generation = 0;
   private timer?: ReturnType<typeof setTimeout>;
@@ -150,7 +151,7 @@ export class MushroomStockContent extends LitElement {
         this.error = undefined;
         return;
       }
-      if (this.config.stock_source === "stock_market_deluxe" && this.range === "5Y") this.range = options.range;
+      if (this.range && !stockRangesFor(this.config).includes(this.range)) this.range = options.range;
       const key = JSON.stringify([this.config.stock_source, options.symbol, options.interval, this.range ?? options.range]);
       const previousHass = changes.get("hass") as HomeAssistant | undefined;
       const connectionChanged = changes.has("hass") && (
@@ -158,6 +159,7 @@ export class MushroomStockContent extends LitElement {
       if (key !== this.requestKey || connectionChanged) {
         this.requestKey = key;
         this.data = undefined;
+        this.selectedPoint = undefined;
         void this.load();
       }
     } catch (error) {
@@ -227,7 +229,7 @@ export class MushroomStockContent extends LitElement {
     if (!slot || !this.config || !this.hass) return;
     const { id, attribute } = stockMetricSource(this.config, this.hass, "price");
     if (!id) return;
-    const hours = { "1D": 24, "5D": 120, "1M": 720, "3M": 2160, "1Y": 8760, "5Y": 43830 }[this.range ?? this.config.stock_range ?? "1D"];
+    const hours = { "1D": 24, "5D": 120, "1M": 720, "3M": 2160, "6M": 4380, "1Y": 8760, "5Y": 43830 }[this.range ?? this.config.stock_range ?? "1D"];
     const config: MiniGraphCardConfig = {
       type: "custom:mushroom-addition-mini-graph-card",
       entities: [{ entity: id, ...(attribute ? { attribute } : {}) }],
@@ -266,8 +268,26 @@ export class MushroomStockContent extends LitElement {
     const maxVolume = Math.max(1, ...points.map(p => p.volume));
     const date = (time: number) => new Date(time * 1000).toLocaleString(this.hass?.language);
     const currency = this.config?.stock_currency || this.data?.quote?.currency;
+    const index = this.selectedPoint === undefined ? undefined : Math.min(this.selectedPoint, points.length - 1);
+    const selected = index === undefined ? undefined : points[index];
+    const first = points[0].price, last = points.at(-1)!.price;
+    const difference = last - first;
+    const onPointer = (event: PointerEvent) => {
+      const rect = (event.currentTarget as SVGSVGElement).getBoundingClientRect();
+      if (!rect.width) return;
+      this.selectedPoint = Math.round(Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)) * (points.length - 1));
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      event.preventDefault();
+      this.selectedPoint = event.key === "Home" ? 0 : event.key === "End" ? points.length - 1
+        : Math.max(0, Math.min(points.length - 1, (this.selectedPoint ?? 0) + (event.key === "ArrowRight" ? 1 : -1)));
+    };
     return html`
-      <svg viewBox="0 0 500 180" role="img" aria-label=${localizeText(this.hass, "Stock price history")}>
+      <svg viewBox="0 0 500 180" role="img" tabindex="0" aria-label=${localizeText(this.hass, "Stock price history")}
+        @pointerdown=${onPointer} @pointermove=${onPointer}
+        @pointerleave=${(event: PointerEvent) => { if (event.pointerType === "mouse") this.selectedPoint = undefined; }}
+        @keydown=${onKey}>
         ${this.config?.stock_show_volume !== false ? points.map((p, i) => svg`
           <rect x=${x(i)} y=${180 - p.volume / maxVolume * 28} width=${Math.max(.5, 500 / points.length - 1)}
             height=${p.volume / maxVolume * 28} fill="var(--divider-color)"></rect>`) : nothing}
@@ -275,13 +295,16 @@ export class MushroomStockContent extends LitElement {
         ${this.config?.stock_show_trends !== false ? svg`
           <polyline points=${line(trends.sma)} fill="none" stroke="var(--info-color, #039be5)" vector-effect="non-scaling-stroke"></polyline>
           <polyline points=${line(trends.ema)} fill="none" stroke="var(--warning-color, #ffa600)" vector-effect="non-scaling-stroke"></polyline>` : nothing}
-        ${points.map((point, i) => svg`<circle cx=${x(i)} cy=${y(point.price)} r="5" fill="transparent">
-          <title>${date(point.time)}: ${this.format(point.price, currency)}</title>
-        </circle>`)}
+        ${selected && index !== undefined ? svg`<line x1=${x(index)} x2=${x(index)} y1="0" y2="150"
+          stroke="var(--secondary-text-color)" vector-effect="non-scaling-stroke"></line>
+          <circle cx=${x(index)} cy=${y(selected.price)} r="4" fill="var(--primary-color)"></circle>` : nothing}
       </svg>
-      <div class="axis"><span>${localizeText(this.hass, "Low")}: ${this.format(low, currency)}</span>
-        <span>${localizeText(this.hass, "High")}: ${this.format(high, currency)}</span></div>
-      <div class="axis"><span>${date(points[0].time)}</span><span>${date(points.at(-1)!.time)}</span></div>
+      ${selected ? html`<div class="chart-selection" role="status">${date(selected.time)}: ${this.format(selected.price, currency)}</div>` : nothing}
+      ${this.config?.stock_show_price_labels !== false ? html`<div class="axis"><span>${localizeText(this.hass, "Low")}: ${this.format(low, currency)}</span>
+        <span>${localizeText(this.hass, "High")}: ${this.format(high, currency)}</span></div>` : nothing}
+      ${this.config?.stock_show_date_labels !== false ? html`<div class="axis"><span>${date(points[0].time)}</span><span>${date(points.at(-1)!.time)}</span></div>` : nothing}
+      ${points.length > 1 ? html`<div class="period-change">${localizeText(this.hass, "Period change")}:
+        ${this.format(difference, currency)}${first !== 0 ? html` (${this.format(difference / first * 100)}%)` : nothing}</div>` : nothing}
       ${this.config?.stock_show_trends !== false ? html`<div class="legend">SMA 20 / EMA 20</div>` : nothing}`;
   }
   protected render() {
@@ -301,7 +324,7 @@ export class MushroomStockContent extends LitElement {
       ${entityMode && !hasPrice ? html`<p role="alert">${localizeText(this.hass,
         "Select an available stock price entity, or map its price attribute, in the visual editor.")}</p>` : nothing}
       ${quote && hasPrice && !(entityMode && this.error) ? html`
-        <div class="quote"><div><strong>${quote.longName || quote.shortName || snapshot!.symbol}</strong>
+        <div class="quote"><div>${this.config?.stock_show_instrument_name !== false ? html`<strong>${quote.longName || quote.shortName || snapshot!.symbol}</strong>` : nothing}
           <div class="muted">${snapshot!.symbol}${!entityMode && snapshot!.market_open !== undefined
             ? html` - ${localizeText(this.hass, snapshot!.market_open ? "Market open" : "Market closed")}` : nothing}</div></div>
           <div><strong class="price">${this.format(quote.regularMarketPrice, currency)}</strong>
@@ -309,10 +332,12 @@ export class MushroomStockContent extends LitElement {
             ${this.format(change)} (${this.format(quote.regularMarketChangePercent)}%)</div></div></div>
         ${snapshot!.rate_limited ? html`<p role="status">${localizeText(this.hass, "Rate limited: showing cached stock data.")}</p>` : nothing}
         ${finite(snapshot!.quote_age) ? html`<p class="muted">${localizeText(this.hass, "Updated")} ${Math.floor(snapshot!.quote_age! / 60)} min</p>` : nothing}
-        ${snapshot!.warnings?.map(warning => html`<p role="status">${localizeText(this.hass, warning)}</p>`)}
+        ${snapshot!.warnings?.filter(warning => this.config?.stock_show_optional_warnings !== false ||
+          !/^(Company statistics unavailable \(|Provider did not supply: )/.test(warning))
+          .map(warning => html`<p role="status">${localizeText(this.hass, warning)}</p>`)}
         <div class="ranges" role="group" aria-label=${localizeText(this.hass, "Chart range")}>
-          ${STOCK_RANGES.filter(range => range !== "5Y" || this.config?.stock_source !== "stock_market_deluxe").map(range => html`<button aria-pressed=${range === (this.range ?? this.config?.stock_range ?? "1D")}
-            @click=${() => { this.range = range; }}>${range}</button>`)}</div>
+          ${stockRangesFor(this.config).map(range => html`<button aria-pressed=${range === (this.range ?? this.config?.stock_range ?? "1D")}
+            @click=${() => { this.selectedPoint = undefined; this.range = range; }}>${stockRangeLabel(range, this.hass?.language)}</button>`)}</div>
         ${this.config?.stock_source === "yahoo" ? html`<p class="muted">${localizeText(this.hass, "Yahoo Finance market history")}</p>`
           : entityMode ? html`<p class="muted">${localizeText(this.hass, "Home Assistant recorder history (limited by retention)")}</p>` : nothing}
         ${entityMode ? html`<div class="entity-chart"></div>` : this.chart()}
@@ -343,7 +368,8 @@ export class MushroomStockContent extends LitElement {
     button:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
     button[aria-pressed="true"] { background: var(--primary-color); color: var(--text-primary-color, #fff); }
     .ranges { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
-    svg { width: 100%; height: auto; display: block; overflow: visible; }
+    svg { width: 100%; height: auto; display: block; overflow: visible; touch-action: pan-y; }
+    svg:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
     .axis, .position { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
     .axis, .legend { font-size: 10px; } .legend { text-align: center; margin: 8px; }
     .position { margin-top: 12px; padding: 12px; border-radius: 12px; background: var(--secondary-background-color); }

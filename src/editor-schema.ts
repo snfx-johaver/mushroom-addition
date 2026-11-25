@@ -6,7 +6,7 @@ import { variantForSource } from "./catalog";
 import { FLOWER_BARS, flowerBarsForConfig, flowerEntityConfigKey } from "./flower";
 import { REMOTE_KEYS } from "./remote-card";
 import { PIHOLE_METRICS, PIHOLE_SECTIONS } from "./pi-hole";
-import { STOCK_METRICS, STOCK_RANGES, stockUsesBackend } from "./stock-data";
+import { STOCK_METRICS, stockRangesFor, stockUsesBackend } from "./stock-data";
 import { energyFeatureField, energyLogFeatureFields, priceSourceField } from "./energy-editor-schema";
 import { TODO_SORT_OPTIONS } from "./todo";
 
@@ -345,10 +345,12 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
     text("stock_symbol"), text("stock_currency"),
     number("stock_shares", 0, 100000000, 0.001),
     number("stock_interval", 180, 86400),
-    select("stock_range", STOCK_RANGES.filter(range => range !== "5Y" || config?.stock_source !== "stock_market_deluxe")
+    select("stock_range", stockRangesFor(config)
       .map(value => ({ value, label: value }))),
     toggle("stock_show_position"), toggle("stock_show_statistics"),
-    ...(stockUsesBackend(config) ? [toggle("stock_show_volume"), toggle("stock_show_trends")] : []),
+    toggle("stock_show_instrument_name"),
+    ...(stockUsesBackend(config) ? [toggle("stock_show_volume"), toggle("stock_show_trends"),
+      toggle("stock_show_optional_warnings"), toggle("stock_show_date_labels"), toggle("stock_show_price_labels")] : []),
     ...(config?.stock_source === "stock_market_deluxe" ? [] : STOCK_METRICS.flatMap(([key]) => [
         entity(["sensor", "input_number"], `stock_${key}_entity`),
         text(`stock_${key}_attribute`),

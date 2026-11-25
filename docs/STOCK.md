@@ -42,7 +42,7 @@ entity-mode cards or other card types.
 ## What the backend retrieves
 
 History uses 5-minute samples for 1D, 30-minute samples for 5D, daily samples for
-1M/3M/1Y, and weekly samples for 5Y. Prices are closing prices with
+1M/3M/6M/1Y, and weekly samples for 5Y. Prices are closing prices with
 `auto_adjust=False`, not dividend-adjusted total returns. Trading gaps and
 shorter listing histories are normal. A newly created HA sensor does not limit
 Yahoo market history.
@@ -57,6 +57,21 @@ Historical volume and SMA/EMA overlays use the selected chart's samples.
 Weekly volume is weekly volume, not current daily volume. SMA/EMA 20 means
 20 samples, not always 20 days. Chart dates reflect the actual returned
 history, not synthetic five-year points.
+
+The Yahoo and Stock Market Deluxe charts support mouse hover, touch and keyboard
+arrow keys to inspect a point's date and price. The period change compares the
+first and last available chart prices, not the daily change or a dividend-adjusted
+total return. A percentage is omitted if the first price is zero. Entity mode
+uses the recorder graph and remains limited by recorder retention; period change
+is available for backend charts only. The 6M range requires the updated Yahoo
+backend; it is not offered for Stock Market Deluxe.
+
+In the visual editor (or YAML), `stock_show_instrument_name`,
+`stock_show_optional_warnings`, `stock_show_date_labels`, and
+`stock_show_price_labels` can be set to `false`. Existing cards retain their
+previous display defaults. Hiding optional statistics warnings does not hide
+backend errors or other warnings. Date and price label options apply to backend
+charts; the instrument name is independent of the shared card title.
 
 Yahoo mode prefers backend values. Under **Features**, entity/attribute mappings
 can supplement missing values. An explicit per-metric **entity override** takes
