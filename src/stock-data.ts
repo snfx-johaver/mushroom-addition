@@ -1,9 +1,16 @@
 import type { AdditionConfig, HassEntity, HomeAssistant } from "./types";
 
-export const STOCK_RANGES = ["1D", "5D", "1M", "3M", "1Y", "5Y"] as const;
+export const STOCK_RANGES = ["1D", "5D", "1M", "3M", "6M", "1Y", "5Y"] as const;
 export type StockRange = typeof STOCK_RANGES[number];
 export const stockUsesBackend = (config?: AdditionConfig) =>
   config?.stock_source === "yahoo" || config?.stock_source === "stock_market_deluxe";
+export const stockRangesFor = (config?: AdditionConfig) =>
+  STOCK_RANGES.filter(range => config?.stock_source !== "stock_market_deluxe" || !["6M", "5Y"].includes(range));
+
+export function stockRangeLabel(range: StockRange, language?: string): string {
+  const unit = range.endsWith("D") ? "day" : range.endsWith("M") ? "month" : "year";
+  return new Intl.NumberFormat(language, { style: "unit", unit, unitDisplay: "short" }).format(parseInt(range, 10));
+}
 
 export const STOCK_METRICS = [
   ["price", "Price", "regularMarketPrice"],
@@ -42,6 +49,10 @@ export const stockEditorHelper = (field: string): string | undefined => {
     stock_show_statistics: "Show market capitalization, highs/lows and valuation ratios.",
     stock_show_volume: "Show backend trading volume.",
     stock_show_trends: "Show 20-sample simple/exponential moving averages.",
+    stock_show_instrument_name: "Show the provider's instrument name independently of the card title.",
+    stock_show_optional_warnings: "Show warnings about unavailable optional statistics. Other warnings and errors remain visible.",
+    stock_show_date_labels: "Show the first and last dates on the backend chart.",
+    stock_show_price_labels: "Show the low and high prices on the backend chart.",
   };
   return helpers[field];
 };

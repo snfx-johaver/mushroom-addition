@@ -72,7 +72,7 @@ def test_five_year_history_and_fundamentals(ticker):
 
 @pytest.mark.parametrize("chart_range,period,interval", [
     ("1D", "1d", "5m"), ("5D", "5d", "30m"), ("1M", "1mo", "1d"),
-    ("3M", "3mo", "1d"), ("1Y", "1y", "1d"),
+    ("3M", "3mo", "1d"), ("6M", "6mo", "1d"), ("1Y", "1y", "1d"),
 ])
 def test_range_contract(ticker, chart_range, period, interval):
     finance.fetch_snapshot("MSFT", chart_range)

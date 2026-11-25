@@ -2,6 +2,7 @@ import type { HomeAssistant } from "./types";
 import type { EditorField } from "./editor-schema";
 import { localizeText, normalizeLocale } from "./localize";
 import type { NativeFields } from "./energy-editor-schema";
+import { STOCK_RANGES, stockRangeLabel, type StockRange } from "./stock-data";
 
 const defaultTextFields = new Set(["name", "label", "overview", "timelineTitle", "positiveLabel", "negativeLabel", "zeroLabel"]);
 function localizeDefault(hass: HomeAssistant | undefined, key: string, value: unknown): unknown {
@@ -44,7 +45,9 @@ export const localizeEditorSchema = (hass: HomeAssistant | undefined, fields: Ed
               typeof option === "object" && option !== null && "label" in option && typeof option.label === "string"
                 ? { ...option, label: ["locale", "language"].includes(field.name) && "value" in option && typeof option.value === "string" && option.value !== "auto"
                   ? new Intl.DisplayNames([normalizeLocale(hass?.language)], { type: "language" }).of(option.value) ?? option.label
-                  : localizeText(hass, option.label) }
+                  : field.name === "stock_range" && "value" in option && STOCK_RANGES.includes(option.value as StockRange)
+                    ? stockRangeLabel(option.value as StockRange, hass?.language)
+                    : localizeText(hass, option.label) }
                 : option),
           },
         },

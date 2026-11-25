@@ -300,11 +300,15 @@ export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, P
   stock_symbol?: string;
   stock_shares?: number;
   stock_interval?: number;
-  stock_range?: "1D" | "5D" | "1M" | "3M" | "1Y" | "5Y";
+  stock_range?: "1D" | "5D" | "1M" | "3M" | "6M" | "1Y" | "5Y";
   stock_show_position?: boolean;
   stock_show_statistics?: boolean;
   stock_show_volume?: boolean;
   stock_show_trends?: boolean;
+  stock_show_instrument_name?: boolean;
+  stock_show_optional_warnings?: boolean;
+  stock_show_date_labels?: boolean;
+  stock_show_price_labels?: boolean;
   type: string;
   entity?: string;
   primary_entity?: string;

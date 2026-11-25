@@ -44,6 +44,7 @@ import { readUpcomingData, upcomingItems } from "./upcoming-media";
 import "./remote-card";
 import "./pi-hole";
 import "./stock";
+import { stockUsesBackend } from "./stock-data";
 import "./appliance-details";
 
 export interface RenderContext {
@@ -121,7 +122,8 @@ const selectedSecondary = (ctx: RenderContext, recommended?: string | TemplateRe
   switch (ctx.config.secondary_info) {
     case "none": return undefined;
     case "name": return displayName(ctx.config, ctx.entity, ctx.hass);
-    case "state": return stateLabel(ctx.entity, ctx.hass);
+    case "state": return ctx.descriptor.upstreamId === "stock_card" && stockUsesBackend(ctx.config) && !ctx.config.entity
+      ? undefined : stateLabel(ctx.entity, ctx.hass);
     case "last-changed": return ctx.entity?.last_changed
       ? relativeTime(ctx, ctx.entity.last_changed)
       : localizeText(ctx.hass, "Last changed unavailable");
@@ -134,7 +136,8 @@ const selectedSecondary = (ctx: RenderContext, recommended?: string | TemplateRe
 const selectedPrimary = (ctx: RenderContext, recommended?: string): string | TemplateResult => {
   switch (ctx.config.primary_info) {
     case "none": return "";
-    case "state": return stateLabel(ctx.entity, ctx.hass);
+    case "state": return ctx.descriptor.upstreamId === "stock_card" && stockUsesBackend(ctx.config) && !ctx.config.entity
+      ? "" : stateLabel(ctx.entity, ctx.hass);
     case "last-changed": return ctx.entity?.last_changed
       ? relativeTime(ctx, ctx.entity.last_changed)
       : localizeText(ctx.hass, "Last changed unavailable");
@@ -2584,7 +2587,7 @@ const renderGeneric = (ctx: RenderContext): TemplateResult => {
 export const renderByFamily = (ctx: RenderContext): TemplateResult => {
   switch (ctx.descriptor.upstreamId) {
     case "stock_card":
-      return ctx.actionSurface("stock-card", html`${cardHeading(ctx, ctx.config.secondary, displayName(ctx.config, ctx.entity, ctx.hass) || ctx.descriptor.name)}
+      return ctx.actionSurface("stock-card", html`${cardHeading(ctx, ctx.config.secondary ?? (stockUsesBackend(ctx.config) && !ctx.config.entity ? "" : stateLabel(ctx.entity, ctx.hass)), displayName(ctx.config, ctx.entity, ctx.hass) || ctx.descriptor.name)}
         <mushroom-addition-stock .hass=${ctx.hass} .config=${ctx.config}></mushroom-addition-stock>`);
     case "remote_card":
       return ctx.actionSurface("remote-card", html`${cardHeading(ctx, stateLabel(ctx.entity, ctx.hass), displayName(ctx.config, ctx.entity, ctx.hass) || ctx.descriptor.name)}
