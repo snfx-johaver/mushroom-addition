@@ -268,6 +268,17 @@ export class MushroomStockContent extends LitElement {
     const maxVolume = Math.max(1, ...points.map(p => p.volume));
     const date = (time: number) => new Date(time * 1000).toLocaleString(this.hass?.language);
     const currency = this.config?.stock_currency || this.data?.quote?.currency;
+    const range = this.range ?? this.config?.stock_range ?? "1D";
+    const dateOptions: Intl.DateTimeFormatOptions = range === "1D"
+      ? { hour: "numeric", minute: "2-digit" }
+      : ["5D", "1M", "3M"].includes(range)
+        ? { month: "short", day: "numeric" }
+        : { month: "short", year: "numeric" };
+    const dateTicks = [...new Set([0, Math.round((points.length - 1) / 2), points.length - 1])];
+    const priceTicks = high === low ? [low] : [high, (high + low) / 2, low];
+    const axes = this.config?.stock_show_chart_axes === true;
+    const dateLabels = this.config?.stock_show_date_labels !== false;
+    const priceLabels = this.config?.stock_show_price_labels !== false;
     const index = this.selectedPoint === undefined ? undefined : Math.min(this.selectedPoint, points.length - 1);
     const selected = index === undefined ? undefined : points[index];
     const first = points[0].price, last = points.at(-1)!.price;
@@ -284,10 +295,26 @@ export class MushroomStockContent extends LitElement {
         : Math.max(0, Math.min(points.length - 1, (this.selectedPoint ?? 0) + (event.key === "ArrowRight" ? 1 : -1)));
     };
     return html`
+      <div class="chart-layout">
+      ${axes && priceLabels ? html`<div class="price-axis" aria-hidden="true">
+        <div class="price-sizer">${priceTicks.map(price => html`<span>${this.format(price, currency)}</span>`)}</div>
+        <div class="price-axis-ticks" style=${`bottom:${dateLabels ? 18 : 0}px`}>
+          ${priceTicks.map(price => html`<span style=${`top:${y(price) / 180 * 100}%`}>${this.format(price, currency)}</span>`)}
+        </div>
+      </div>` : nothing}
+      <div class="chart-plot">
       <svg viewBox="0 0 500 180" role="img" tabindex="0" aria-label=${localizeText(this.hass, "Stock price history")}
         @pointerdown=${onPointer} @pointermove=${onPointer}
         @pointerleave=${(event: PointerEvent) => { if (event.pointerType === "mouse") this.selectedPoint = undefined; }}
         @keydown=${onKey}>
+        ${this.config?.stock_show_chart_grid === true ? svg`<g class="chart-grid" aria-hidden="true">
+          ${priceTicks.map(price => svg`<line x1="0" x2="500" y1=${y(price)} y2=${y(price)}></line>`)}
+          ${dateTicks.map(i => svg`<line x1=${x(i)} x2=${x(i)} y1="10" y2="140"></line>`)}
+        </g>` : nothing}
+        ${axes ? svg`<g class="chart-axis" aria-hidden="true">
+          ${priceLabels ? svg`<line x1="0" x2="0" y1="10" y2="140"></line>` : nothing}
+          ${dateLabels ? svg`<line x1="0" x2="500" y1="140" y2="140"></line>` : nothing}
+        </g>` : nothing}
         ${this.config?.stock_show_volume !== false ? points.map((p, i) => svg`
           <rect x=${x(i)} y=${180 - p.volume / maxVolume * 28} width=${Math.max(.5, 500 / points.length - 1)}
             height=${p.volume / maxVolume * 28} fill="var(--divider-color)"></rect>`) : nothing}
@@ -299,10 +326,15 @@ export class MushroomStockContent extends LitElement {
           stroke="var(--secondary-text-color)" vector-effect="non-scaling-stroke"></line>
           <circle cx=${x(index)} cy=${y(selected.price)} r="4" fill="var(--primary-color)"></circle>` : nothing}
       </svg>
+      ${axes && dateLabels ? html`<div class="date-axis" aria-hidden="true">
+        ${dateTicks.map((i, tick) => html`<span class=${dateTicks.length === 1 ? "middle" : tick === 0 ? "first" : tick === dateTicks.length - 1 ? "last" : "middle"}
+          style=${`left:${x(i) / 5}%`}>${new Date(points[i].time * 1000).toLocaleDateString(this.hass?.language, dateOptions)}</span>`)}
+      </div>` : nothing}
+      </div></div>
       ${selected ? html`<div class="chart-selection" role="status">${date(selected.time)}: ${this.format(selected.price, currency)}</div>` : nothing}
-      ${this.config?.stock_show_price_labels !== false ? html`<div class="axis"><span>${localizeText(this.hass, "Low")}: ${this.format(low, currency)}</span>
+      ${!axes && priceLabels ? html`<div class="axis"><span>${localizeText(this.hass, "Low")}: ${this.format(low, currency)}</span>
         <span>${localizeText(this.hass, "High")}: ${this.format(high, currency)}</span></div>` : nothing}
-      ${this.config?.stock_show_date_labels !== false ? html`<div class="axis"><span>${date(points[0].time)}</span><span>${date(points.at(-1)!.time)}</span></div>` : nothing}
+      ${!axes && dateLabels ? html`<div class="axis"><span>${date(points[0].time)}</span><span>${date(points.at(-1)!.time)}</span></div>` : nothing}
       ${points.length > 1 ? html`<div class="period-change">${localizeText(this.hass, "Period change")}:
         ${this.format(difference, currency)}${first !== 0 ? html` (${this.format(difference / first * 100)}%)` : nothing}</div>` : nothing}
       ${this.config?.stock_show_trends !== false ? html`<div class="legend">SMA 20 / EMA 20</div>` : nothing}`;
@@ -370,6 +402,20 @@ export class MushroomStockContent extends LitElement {
     .ranges { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
     svg { width: 100%; height: auto; display: block; overflow: visible; touch-action: pan-y; }
     svg:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+    .chart-layout { display: flex; min-width: 0; gap: 6px; }
+    .chart-plot { flex: 1; min-width: 0; }
+    .price-axis { position: relative; flex: none; align-self: stretch;
+      color: var(--secondary-text-color); font-size: 10px; white-space: nowrap; text-align: right; }
+    .price-sizer { display: grid; visibility: hidden; }
+    .price-sizer span { grid-area: 1 / 1; }
+    .price-axis-ticks { position: absolute; top: 0; left: 0; right: 0; }
+    .price-axis-ticks span { position: absolute; right: 0; transform: translateY(-50%); }
+    .date-axis { position: relative; height: 18px; color: var(--secondary-text-color); font-size: 10px; white-space: nowrap; }
+    .date-axis span { position: absolute; top: 3px; }
+    .date-axis .middle { transform: translateX(-50%); }
+    .date-axis .last { transform: translateX(-100%); }
+    .chart-grid line { stroke: var(--divider-color, #888); stroke-width: 1; opacity: .5; vector-effect: non-scaling-stroke; }
+    .chart-axis line { stroke: var(--secondary-text-color); opacity: .6; vector-effect: non-scaling-stroke; }
     .axis, .position { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
     .axis, .legend { font-size: 10px; } .legend { text-align: center; margin: 8px; }
     .position { margin-top: 12px; padding: 12px; border-radius: 12px; background: var(--secondary-background-color); }

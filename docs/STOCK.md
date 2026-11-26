@@ -73,6 +73,13 @@ previous display defaults. Hiding optional statistics warnings does not hide
 backend errors or other warnings. Date and price label options apply to backend
 charts; the instrument name is independent of the shared card title.
 
+For labeled axes, turn on **Show chart axes** (`stock_show_chart_axes: true`).
+The chart then shows intermediate dates and currency-formatted price levels,
+using the existing date and price toggles to control each axis. Turn on **Show
+chart gridlines** (`stock_show_chart_grid: true`) independently for subtle
+horizontal and vertical lines aligned with those levels. Both options default to
+off, preserving existing card layouts. These options apply to backend charts.
+
 Yahoo mode prefers backend values. Under **Features**, entity/attribute mappings
 can supplement missing values. An explicit per-metric **entity override** takes
 priority over a backend value; leave it empty for Yahoo's value. The attribute

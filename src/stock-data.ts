@@ -53,6 +53,8 @@ export const stockEditorHelper = (field: string): string | undefined => {
     stock_show_optional_warnings: "Show warnings about unavailable optional statistics. Other warnings and errors remain visible.",
     stock_show_date_labels: "Show the first and last dates on the backend chart.",
     stock_show_price_labels: "Show the low and high prices on the backend chart.",
+    stock_show_chart_axes: "Show chart axes",
+    stock_show_chart_grid: "Show chart gridlines",
   };
   return helpers[field];
 };

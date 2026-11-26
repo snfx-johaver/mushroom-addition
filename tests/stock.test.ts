@@ -248,6 +248,52 @@ describe("Stock Card", () => {
     expect(e.shadowRoot!.querySelector(".period-change")?.textContent).not.toContain("%");
   });
 
+  it("adds optional aligned axes and gridlines without changing the default chart", async () => {
+    const e = await content({ stock_source: "yahoo", stock_symbol: "AAPL" });
+    expect(e.shadowRoot!.querySelector(".chart-grid")).toBeNull();
+    expect(e.shadowRoot!.querySelector(".date-axis")).toBeNull();
+    expect(e.shadowRoot!.querySelectorAll(".axis")).toHaveLength(2);
+    e.config = { ...e.config!, stock_show_chart_axes: true, stock_show_chart_grid: true };
+    await settle(e);
+    const dates = [...e.shadowRoot!.querySelectorAll<HTMLElement>(".date-axis span")];
+    const prices = [...e.shadowRoot!.querySelectorAll<HTMLElement>(".price-axis-ticks span")];
+    expect(dates.map(el => el.style.left)).toEqual(["0%", "50%", "100%"]);
+    expect(prices.map(el => el.textContent)).toEqual(["$200.00", "$199.00", "$198.00"]);
+    const grid = [...e.shadowRoot!.querySelectorAll(".chart-grid line")];
+    expect(grid.slice(0, 3).map(line => line.getAttribute("y1"))).toEqual(["10", "75", "140"]);
+    expect(grid.slice(3).map(line => line.getAttribute("x1"))).toEqual(["0", "250", "500"]);
+    expect(e.shadowRoot!.querySelectorAll(".axis")).toHaveLength(0);
+    expect(e.shadowRoot!.querySelectorAll(".chart-axis line")).toHaveLength(2);
+    e.config = { ...e.config!, stock_show_chart_grid: false, stock_show_date_labels: false };
+    await settle(e);
+    expect(e.shadowRoot!.querySelector(".chart-grid")).toBeNull();
+    expect(e.shadowRoot!.querySelector(".date-axis")).toBeNull();
+    expect(e.shadowRoot!.querySelectorAll(".price-axis-ticks span")).toHaveLength(3);
+    expect(e.shadowRoot!.querySelectorAll(".chart-axis line")).toHaveLength(1);
+    e.config = { ...e.config!, stock_show_chart_grid: true, stock_show_price_labels: false };
+    await settle(e);
+    expect(e.shadowRoot!.querySelector(".price-axis")).toBeNull();
+    expect(e.shadowRoot!.querySelector(".chart-grid")).not.toBeNull();
+  });
+
+  it("uses localized range-specific date labels and handles flat or single-point history", async () => {
+    const call = vi.fn().mockResolvedValue({ ...snapshot, chart: {
+      t: [1704067200, 1719792000, 1735603200], c: [10, 10, 10], v: [],
+    } });
+    const hass = { ...makeHass(call), language: "de" };
+    const e = await content({ stock_source: "yahoo", stock_symbol: "AAPL", stock_range: "1Y",
+      stock_show_chart_axes: true, stock_show_chart_grid: true }, hass);
+    expect(e.shadowRoot!.querySelector(".date-axis")?.textContent).toContain("2024");
+    expect(e.shadowRoot!.querySelectorAll(".price-axis-ticks span")).toHaveLength(1);
+    expect(e.shadowRoot!.querySelector(".chart-grid line")?.getAttribute("y1")).toBe("75");
+    call.mockResolvedValue({ ...snapshot, chart: { t: [1704067200], c: [10], v: [] } });
+    [...e.shadowRoot!.querySelectorAll("button")].find(b => b.textContent === stockRangeLabel("1D", "de"))!.click();
+    await settle(e);
+    expect(e.shadowRoot!.querySelectorAll(".date-axis span")).toHaveLength(1);
+    expect(e.shadowRoot!.querySelector<HTMLElement>(".date-axis span")?.style.left).toBe("50%");
+    expect(e.shadowRoot!.querySelector(".period-change")).toBeNull();
+  });
+
   it("offers localized six-month Yahoo history and restricts unsupported Deluxe ranges", async () => {
     const hass = { ...makeHass(), language: "de" };
     const e = await content({ stock_source: "yahoo", stock_symbol: "AAPL" }, hass);
