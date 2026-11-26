@@ -350,7 +350,8 @@ export const editorSchemaFor = (item: CatalogItem, config?: AdditionConfig, hass
     toggle("stock_show_position"), toggle("stock_show_statistics"),
     toggle("stock_show_instrument_name"),
     ...(stockUsesBackend(config) ? [toggle("stock_show_volume"), toggle("stock_show_trends"),
-      toggle("stock_show_optional_warnings"), toggle("stock_show_date_labels"), toggle("stock_show_price_labels")] : []),
+      toggle("stock_show_optional_warnings"), toggle("stock_show_date_labels"), toggle("stock_show_price_labels"),
+      toggle("stock_show_chart_axes"), toggle("stock_show_chart_grid")] : []),
     ...(config?.stock_source === "stock_market_deluxe" ? [] : STOCK_METRICS.flatMap(([key]) => [
         entity(["sensor", "input_number"], `stock_${key}_entity`),
         text(`stock_${key}_attribute`),

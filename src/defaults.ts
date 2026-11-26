@@ -97,7 +97,8 @@ export const populatedDefaultsFor = (
       : item.upstreamId === "stock_card"
       ? { stock_source: "entity", stock_shares: 0, stock_interval: 300, stock_range: "1D",
         stock_show_position: true, stock_show_statistics: true, stock_show_volume: true, stock_show_trends: true,
-        stock_show_instrument_name: true, stock_show_optional_warnings: true, stock_show_date_labels: true, stock_show_price_labels: true }
+        stock_show_instrument_name: true, stock_show_optional_warnings: true, stock_show_date_labels: true, stock_show_price_labels: true,
+        stock_show_chart_axes: false, stock_show_chart_grid: false }
       : item.upstreamId === "pi_hole_card"
       ? PIHOLE_DEFAULTS
       : item.upstreamId === "remote_card"

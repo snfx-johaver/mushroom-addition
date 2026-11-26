@@ -116,6 +116,8 @@ const stockLabels: Record<string, string> = {
   stock_show_optional_warnings: "Show optional statistics warnings",
   stock_show_date_labels: "Show chart dates",
   stock_show_price_labels: "Show chart prices",
+  stock_show_chart_axes: "Show chart axes",
+  stock_show_chart_grid: "Show chart gridlines",
 };
 
 const sectionForField = (field: EditorField): EditorSectionId => {

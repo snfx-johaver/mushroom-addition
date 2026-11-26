@@ -309,6 +309,8 @@ export interface AdditionConfig extends UpcomingMediaConfig, RemoteCardConfig, P
   stock_show_optional_warnings?: boolean;
   stock_show_date_labels?: boolean;
   stock_show_price_labels?: boolean;
+  stock_show_chart_axes?: boolean;
+  stock_show_chart_grid?: boolean;
   type: string;
   entity?: string;
   primary_entity?: string;

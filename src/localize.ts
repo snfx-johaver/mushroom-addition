@@ -14,6 +14,7 @@ import { releaseGuidanceTranslations } from "./translations/release-guidance";
 import { workflowTranslations } from "./translations/workflow";
 import { stockTranslations } from "./translations/stock";
 import { stockChartTranslations } from "./translations/stock-chart";
+import { stockAxesTranslations } from "./translations/stock-axes";
 import { nasTranslations } from "./translations/nas";
 import { nasGuidanceTranslations } from "./translations/nas-guidance";
 import { stockGuidanceTranslations } from "./translations/stock-guidance";
@@ -675,6 +676,7 @@ export const translationCatalogs: Record<string, Record<string, string>> = Objec
     ...workflowTranslations[locale],
     ...stockTranslations[locale],
     ...stockChartTranslations[locale],
+    ...stockAxesTranslations[locale],
     ...nasTranslations[locale],
     ...nasGuidanceTranslations[locale],
     ...stockGuidanceTranslations[locale],
